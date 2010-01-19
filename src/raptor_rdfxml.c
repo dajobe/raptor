@@ -282,49 +282,65 @@ static const struct {
 };
 
 
+/*
+ * raptor_rdfxml_check_propertyElement_name:
+ * @name: rdf namespace term
+ *
+ * Check if an rdf namespace name is allowed to be used as a Node Element.
+ *
+ * Return value: < 0 if unknown rdf namespace term, 0 if known and not allowed, > 0 if known and allowed
+ */
 static int
-raptor_rdfxml_forbidden_nodeElement_name(const char *name) 
+raptor_rdfxml_check_nodeElement_name(const char *name) 
 {
   int i;
 
   if(*name == '_')
-    return 0;
+    return 1;
   
   for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
     if(!strcmp(raptor_rdf_ns_terms_info[i].name, name))
-      return !raptor_rdf_ns_terms_info[i].allowed_as_nodeElement;
+      return raptor_rdf_ns_terms_info[i].allowed_as_nodeElement;
+
+  return -1;
+}
+
+
+/*
+ * raptor_rdfxml_check_propertyElement_name:
+ * @name: rdf namespace term
+ *
+ * Check if an rdf namespace name is allowed to be used as a Property Element.
+ *
+ * Return value: < 0 if unknown rdf namespace term, 0 if known and not allowed, > 0 if known and allowed
+ */
+static int
+raptor_rdfxml_check_propertyElement_name(const char *name) 
+{
+  int i;
+
+  if(*name == '_')
+    return 1;
+  
+  for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
+    if(!strcmp(raptor_rdf_ns_terms_info[i].name, (const char*)name))
+      return raptor_rdf_ns_terms_info[i].allowed_as_propertyElement;
 
   return -1;
 }
 
 
 static int
-raptor_rdfxml_forbidden_propertyElement_name(const char *name) 
+raptor_rdfxml_check_propertyAttribute_name(const char *name) 
 {
   int i;
 
   if(*name == '_')
-    return 0;
+    return 1;
   
   for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
     if(!strcmp(raptor_rdf_ns_terms_info[i].name, (const char*)name))
-      return !raptor_rdf_ns_terms_info[i].allowed_as_propertyElement;
-
-  return -1;
-}
-
-
-static int
-raptor_rdfxml_forbidden_propertyAttribute_name(const char *name) 
-{
-  int i;
-
-  if(*name == '_')
-    return 0;
-  
-  for(i = 0; raptor_rdf_ns_terms_info[i].name; i++)
-    if(!strcmp(raptor_rdf_ns_terms_info[i].name, (const char*)name))
-      return !raptor_rdf_ns_terms_info[i].allowed_as_propertyAttribute;
+      return raptor_rdf_ns_terms_info[i].allowed_as_propertyAttribute;
 
   return -1;
 }
@@ -1549,13 +1565,16 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
                               ordinal, attr->local_name, name);
         }
       } else {
+        int rc;
+
         raptor_rdfxml_update_document_locator(rdf_parser);
 
-        if(raptor_rdfxml_forbidden_propertyAttribute_name((const char*)name) > 0)
+        rc = raptor_rdfxml_check_propertyAttribute_name((const char*)name);
+        if(!rc)
           raptor_parser_error(rdf_parser,
                               "RDF term %s is forbidden as a property attribute.",
                               name);
-        else
+        else if(rc < 0)
           raptor_parser_warning(rdf_parser,
                                 "Unknown RDF namespace property attribute '%s'.", 
                                 name);
@@ -1610,11 +1629,17 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     
     if(raptor_rdf_ns_terms_info[i].type == RAPTOR_TERM_TYPE_UNKNOWN) {
       const char *name = raptor_rdf_ns_terms_info[i].name;
-      if(raptor_rdfxml_forbidden_propertyAttribute_name(name)) {
+      int rc = raptor_rdfxml_check_propertyAttribute_name(name);
+      if(!rc) {
         raptor_rdfxml_update_document_locator(rdf_parser);
-        raptor_parser_error(rdf_parser, "RDF term %s is forbidden as a property attribute.", name);
+        raptor_parser_error(rdf_parser,
+                            "RDF term %s is forbidden as a property attribute.",
+                            name);
         continue;
-      }
+      } else if(rc < 0)
+        raptor_parser_warning(rdf_parser,
+                              "Unknown RDF namespace property attribute '%s'.", 
+                              name);
     }
 
     if(object_is_literal && !raptor_utf8_is_nfc(value, value_len)) {
@@ -1730,15 +1755,21 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             break;
           }
 
-          if(element_in_rdf_ns && (rc = raptor_rdfxml_forbidden_nodeElement_name((const char*)el_name))) {
-            if(rc > 0) {
-              raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
+          if(element_in_rdf_ns) {
+            rc = raptor_rdfxml_check_nodeElement_name((const char*)el_name);
+            if(!rc) {
+              raptor_parser_error(rdf_parser,
+                                  "rdf:%s is forbidden as a node element.",
+                                  el_name);
               state = RAPTOR_STATE_SKIPPING;
               element->child_state = RAPTOR_STATE_SKIPPING;
               finished = 1;
               break;
-            } else
-              raptor_parser_warning(rdf_parser, "rdf:%s is an unknown RDF namespaced element.", el_name);
+            } else if(rc < 0) {
+              raptor_parser_warning(rdf_parser, 
+                                    "rdf:%s is an unknown RDF namespaced element.", 
+                                    el_name);
+            }
           }
         }
 
@@ -1798,17 +1829,22 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           break;
         }
 
-        if(element_in_rdf_ns &&
-           (rc = raptor_rdfxml_forbidden_nodeElement_name((const char*)el_name))) {
-          if(rc > 0) {
-            raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a node element.", el_name);
+        if(element_in_rdf_ns) {
+          rc = raptor_rdfxml_check_nodeElement_name((const char*)el_name);
+          if(!rc) {
+            raptor_parser_error(rdf_parser,
+                                "rdf:%s is forbidden as a node element.",
+                                el_name);
             state = RAPTOR_STATE_SKIPPING;
             element->state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
             break;
-          } else
-            raptor_parser_warning(rdf_parser, "rdf:%s is an unknown RDF namespaced element.", el_name);
+          } else if(rc < 0) {
+            raptor_parser_warning(rdf_parser,
+                                  "rdf:%s is an unknown RDF namespaced element.", 
+                                  el_name);
+          }
         }
 
         if(element->content_type !=RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION &&
@@ -2180,16 +2216,21 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
         }
 
 
-        if(element_in_rdf_ns && 
-           (rc = raptor_rdfxml_forbidden_propertyElement_name((const char*)el_name))) {
-          if(rc > 0) {
-            raptor_parser_error(rdf_parser, "rdf:%s is forbidden as a property element.", el_name);
+        if(element_in_rdf_ns) {
+          rc = raptor_rdfxml_check_propertyElement_name((const char*)el_name);
+          if(!rc) {
+            raptor_parser_error(rdf_parser, 
+                                "rdf:%s is forbidden as a property element.",
+                                el_name);
             state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
             break;
-          } else
-            raptor_parser_warning(rdf_parser, "rdf:%s is an unknown RDF namespaced element.", el_name);
+          } else if(rc < 0) {
+            raptor_parser_warning(rdf_parser,
+                                  "rdf:%s is an unknown RDF namespaced element.",
+                                  el_name);
+          }
         }
           
 
