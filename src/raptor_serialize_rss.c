@@ -803,14 +803,14 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   }
 
   if(!raptor_uri_equals(statement->predicate->value.uri,
-                        RAPTOR_RSS_RDF_type_URI(rss_model))) 
+                        RAPTOR_RDF_type_URI(serializer->world))) 
     goto savetriple;
   
 
   /* Look for triple (?resource rdf:type rdf:Seq) */
   if(statement->object->type == RAPTOR_TERM_TYPE_URI &&
      raptor_uri_equals(statement->object->value.uri,
-                       RAPTOR_RSS_RDF_Seq_URI(rss_model))) {
+                       RAPTOR_RDF_Seq_URI(serializer->world))) {
     
     if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
       RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",

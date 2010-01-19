@@ -483,7 +483,8 @@ verb: predicate
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  uri = raptor_new_uri_for_rdf_concept(((raptor_parser*)rdf_parser)->world, "type");
+  uri = raptor_new_uri_for_rdf_concept(((raptor_parser*)rdf_parser)->world, 
+                                       (const unsigned char*)"type");
   if(!uri)
     YYERROR;
   $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, uri);
@@ -975,7 +976,7 @@ blank: BLANK_LITERAL
 collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   int i;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_world* world = ((raptor_parser*)rdf_parser)->world;
   raptor_term* first_identifier = NULL;
   raptor_term* rest_identifier = NULL;
   raptor_term* object = NULL;
@@ -987,12 +988,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  first_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, 
-                                              turtle_parser->first_uri);
+  first_identifier = raptor_new_term_from_uri(world, RAPTOR_RDF_first_URI(world));
   if(!first_identifier)
     goto err_collection;
-  rest_identifier = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                             turtle_parser->rest_uri);
+  rest_identifier = raptor_new_term_from_uri(world, RAPTOR_RDF_rest_URI(world));
   if(!rest_identifier)
     goto err_collection;
   
@@ -1003,8 +1002,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   printf("\n");
 #endif
 
-  object = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                    turtle_parser->nil_uri);
+  object = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
   if(!object)
     goto err_collection;
 
@@ -1081,14 +1079,13 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_world* world = ((raptor_parser*)rdf_parser)->world;
 
 #if RAPTOR_DEBUG > 1  
   printf("collection\n empty\n");
 #endif
 
-  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world,
-                                turtle_parser->nil_uri);
+  $$ = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
   if(!$$)
     YYERROR;
 }
@@ -1201,13 +1198,6 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   if(raptor_namespaces_init(rdf_parser->world, &turtle_parser->namespaces, 0))
     return 1;
 
-  turtle_parser->nil_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "nil");
-  turtle_parser->first_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "first");
-  turtle_parser->rest_uri = raptor_new_uri_for_rdf_concept(rdf_parser->world, "rest");
-
-  if(!turtle_parser->nil_uri || !turtle_parser->first_uri || !turtle_parser->rest_uri)
-    return 1;
-
   turtle_parser->trig=!strcmp(name, "trig");
 
   return 0;
@@ -1225,13 +1215,6 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
 static void
 raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-
-  if(turtle_parser->nil_uri)
-    raptor_free_uri(turtle_parser->nil_uri);
-  if(turtle_parser->first_uri)
-    raptor_free_uri(turtle_parser->first_uri);
-  if(turtle_parser->rest_uri)
-    raptor_free_uri(turtle_parser->rest_uri);
 
   raptor_namespaces_clear(&turtle_parser->namespaces);
 

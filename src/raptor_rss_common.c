@@ -395,8 +395,6 @@ raptor_rss_model_init(raptor_world* world, raptor_rss_model* rss_model)
   rss_model->last = rss_model->items = NULL;
   rss_model->items_count = 0;
 
-  RAPTOR_RSS_RDF_type_URI(rss_model) = raptor_new_uri_for_rdf_concept(world, "type");
-  RAPTOR_RSS_RDF_Seq_URI(rss_model) = raptor_new_uri_for_rdf_concept(world, "Seq");
   RAPTOR_RSS_RSS_items_URI(rss_model) = raptor_new_uri_relative_to_base(world, world->rss_namespaces_info_uris[RSS1_0_NS], (const unsigned char*)"items");
 }
   

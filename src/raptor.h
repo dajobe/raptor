@@ -792,7 +792,7 @@ raptor_uri* raptor_new_uri_relative_to_base(raptor_world* world, raptor_uri *bas
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name);
+raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name);
 RAPTOR_API
 void raptor_free_uri(raptor_uri *uri);
 RAPTOR_API

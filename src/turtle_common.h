@@ -60,10 +60,6 @@ struct raptor_turtle_parser_s {
 
   int lineno;
 
-  raptor_uri* nil_uri;
-  raptor_uri* first_uri;
-  raptor_uri* rest_uri;
-
   /* for creating long literals */
   raptor_stringbuffer* sb;
 

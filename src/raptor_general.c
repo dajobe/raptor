@@ -161,15 +161,19 @@ raptor_world_open(raptor_world* world)
   if(world->opened)
     return 0; /* not an error */
 
+  rc = raptor_uri_init(world);
+  if(rc)
+    return rc;
+
+  rc = raptor_concepts_init(world);
+  if(rc)
+    return rc;
+
   rc = raptor_parsers_init(world);
   if(rc)
     return rc;
 
   rc = raptor_serializers_init(world);
-  if(rc)
-    return rc;
-
-  rc = raptor_uri_init(world);
   if(rc)
     return rc;
 
@@ -217,6 +221,8 @@ raptor_free_world(raptor_world* world)
   raptor_serializers_finish(world);
 
   raptor_parsers_finish(world);
+
+  raptor_concepts_finish(world);
 
   raptor_uri_finish(world);
 

@@ -305,7 +305,7 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
  * Return value: a new #raptor_uri object or NULL on failure
  **/
 raptor_uri*
-raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name) 
+raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name) 
 {
   raptor_uri *new_uri;
   unsigned char *new_uri_string;
@@ -316,13 +316,13 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const char *name)
   if(!name)
     return NULL;
   
-  new_uri_string_len = base_uri_string_len + strlen(name) + 1;
+  new_uri_string_len = base_uri_string_len + strlen((const char*)name) + 1;
   new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, new_uri_string_len);
   if(!new_uri_string)
     return NULL;
 
   strcpy((char*)new_uri_string, (const char*)base_uri_string);
-  strcpy((char*)new_uri_string + base_uri_string_len, name);
+  strcpy((char*)new_uri_string + base_uri_string_len, (const char*)name);
 
   new_uri = raptor_new_uri(world, new_uri_string);
   RAPTOR_FREE(cstring, new_uri_string);

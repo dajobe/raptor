@@ -1071,7 +1071,7 @@ raptor_rss_emit_type_triple(raptor_parser* rdf_parser,
   rss_parser->statement.subject = resource;
   
   predicate_term = raptor_new_term_from_uri(rdf_parser->world, 
-                                            RAPTOR_RSS_RDF_type_URI(&rss_parser->model));
+                                            RAPTOR_RDF_type_URI(rdf_parser->world));
   rss_parser->statement.predicate = predicate_term;
 
   object_term = raptor_new_term_from_uri(rdf_parser->world, type_uri);
@@ -1346,7 +1346,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
 
     /* _:genid1 rdf:type rdf:Seq . */
     if(raptor_rss_emit_type_triple(rdf_parser, items,
-                                   RAPTOR_RSS_RDF_Seq_URI(&rss_parser->model))) {
+                                   RAPTOR_RDF_Seq_URI(rdf_parser->world))) {
       raptor_free_term(items);
       return 1;
     }

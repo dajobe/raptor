@@ -381,11 +381,9 @@ typedef struct raptor_rss_item_s raptor_rss_item;
 
 
 /* raptor_rss_common.c */
-#define RAPTOR_RSS_N_CONCEPTS 3
+#define RAPTOR_RSS_N_CONCEPTS 1
 
-#define RAPTOR_RSS_RDF_type_URI(rss_model)  ((rss_model)->concepts[0])
-#define RAPTOR_RSS_RDF_Seq_URI(rss_model)   ((rss_model)->concepts[1])
-#define RAPTOR_RSS_RSS_items_URI(rss_model) ((rss_model)->concepts[2])
+#define RAPTOR_RSS_RSS_items_URI(rss_model) ((rss_model)->concepts[0])
 
 
 typedef struct {

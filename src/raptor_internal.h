@@ -280,6 +280,112 @@ struct raptor_avltree_s {
 };
 
 
+/* raptor_concepts.c */
+
+/*
+ * raptor_rdf_ns_term_id:
+ *
+ * RDF namespace syntax terms, properties and classes. 
+ *
+ * The order must match names in the raptor_rdf_ns_terms_info table
+ *
+ */
+typedef enum {
+  /* These terms are used only in the RDF/XML syntax; never in RDF graph */
+  RDF_NS_RDF             = 0,
+  RDF_NS_Description     = 1,
+  RDF_NS_li              = 2,
+  RDF_NS_about           = 3,
+  RDF_NS_aboutEach       = 4,
+  RDF_NS_aboutEachPrefix = 5,
+  RDF_NS_ID              = 6,
+  RDF_NS_bagID           = 7,
+  RDF_NS_resource        = 8,
+  RDF_NS_parseType       = 9,
+  RDF_NS_nodeID          = 10,
+  RDF_NS_datatype        = 11,
+  /* These terms are all properties in RDF model (of type rdf:Property) */
+  RDF_NS_type            = 12,
+  RDF_NS_value           = 13,
+  RDF_NS_subject         = 14,
+  RDF_NS_predicate       = 15,
+  RDF_NS_object          = 16,
+  RDF_NS_first           = 17,
+  RDF_NS_rest            = 18,
+  /* These terms are all classes in the RDF model (of type rdfs:Class) */
+  RDF_NS_Seq             = 19,
+  RDF_NS_Bag             = 20,
+  RDF_NS_Alt             = 21,
+  RDF_NS_Statement       = 22,
+  RDF_NS_Property        = 23,
+  RDF_NS_List            = 24,
+  /* These terms are all resources in the RDF model (of type rdfs:Resource) */
+  RDF_NS_nil             = 25,
+
+  /* These terms are datatypes */
+  RDF_NS_XMLLiteral      = 26,
+  RDF_NS_PlainLiteral    = 27, /* http://www.w3.org/TR/rdf-text/ */
+
+  /* These terms are internal */
+  RDF_NS_LAST            = RDF_NS_PlainLiteral
+} raptor_rdf_ns_term_id;
+
+
+typedef struct { 
+  /* term name */
+  const char *name;
+
+  /* RDF/XML: the statement object type of this when used as an attribute */
+  raptor_term_type type;
+
+  /* RDF/XML: name restrictions */
+  unsigned int allowed_as_nodeElement : 1;
+  unsigned int allowed_as_propertyElement : 1;
+  unsigned int allowed_as_propertyAttribute : 1;
+  unsigned int allowed_unprefixed_on_attribute : 1;
+} raptor_rdf_ns_term_info;
+
+
+extern const raptor_rdf_ns_term_info raptor_rdf_ns_terms_info[(RDF_NS_LAST + 1) + 1];
+
+#define RAPTOR_RDF_RDF_URI(world)         world->concepts[RDF_NS_RDF]
+#define RAPTOR_RDF_Description_URI(world) world->concepts[RDF_NS_Description]
+#define RAPTOR_RDF_li_URI(world)          world->concepts[RDF_NS_li]
+#define RAPTOR_RDF_about(world)           world->concepts[RDF_NS_about]
+#define RAPTOR_RDF_aboutEach(world)       world->concepts[RDF_NS_aboutEach]
+#define RAPTOR_RDF_aboutEachPrefix(world) world->concepts[RDF_NS_aboutEachPrefix]
+#define RAPTOR_RDF_ID(world)              world->concepts[RDF_NS_ID]
+#define RAPTOR_RDF_bagID(world)           world->concepts[RDF_NS_bagID]
+#define RAPTOR_RDF_resource(world)        world->concepts[RDF_NS_resource]
+#define RAPTOR_RDF_parseType(world)       world->concepts[RDF_NS_parseType]
+#define RAPTOR_RDF_nodeID(world)          world->concepts[RDF_NS_nodeID]
+#define RAPTOR_RDF_datatype(world)        world->concepts[RDF_NS_datatype]
+
+#define RAPTOR_RDF_type_URI(world)        world->concepts[RDF_NS_type]
+#define RAPTOR_RDF_value_URI(world)       world->concepts[RDF_NS_value]
+#define RAPTOR_RDF_subject_URI(world)     world->concepts[RDF_NS_subject]
+#define RAPTOR_RDF_predicate_URI(world)   world->concepts[RDF_NS_predicate]
+#define RAPTOR_RDF_object_URI(world)      world->concepts[RDF_NS_object]
+#define RAPTOR_RDF_first_URI(world)       world->concepts[RDF_NS_first]
+#define RAPTOR_RDF_rest_URI(world)        world->concepts[RDF_NS_rest]
+                                         
+#define RAPTOR_RDF_Seq_URI(world)         world->concepts[RDF_NS_Seq]
+#define RAPTOR_RDF_Bag_URI(world)         world->concepts[RDF_NS_Bag]
+#define RAPTOR_RDF_Alt_URI(world)         world->concepts[RDF_NS_Alt]
+#define RAPTOR_RDF_Statement_URI(world)   world->concepts[RDF_NS_Statement]
+#define RAPTOR_RDF_Property_URI(world)    world->concepts[RDF_NS_Property]
+#define RAPTOR_RDF_List_URI(world)        world->concepts[RDF_NS_List]
+
+#define RAPTOR_RDF_nil_URI(world)          world->concepts[RDF_NS_nil]
+#define RAPTOR_RDF_XMLLiteral_URI(world)   world->concepts[RDF_NS_XMLLiteral]
+#define RAPTOR_RDF_PlainLiteral_URI(world) world->concepts[RDF_NS_PlainLiteral]
+
+
+int raptor_concepts_init(raptor_world* world);
+void raptor_concepts_finish(raptor_world* world);
+
+
+
 /* raptor_iostream.c */
 raptor_world* raptor_iostream_get_world(raptor_iostream *iostr);
 
@@ -1340,6 +1446,8 @@ struct raptor_world_s {
 #endif  
 
   raptor_avltree *uris_tree;
+
+  raptor_uri* concepts[RDF_NS_LAST + 2];
 };
 
 /* end of RAPTOR_INTERNAL */
