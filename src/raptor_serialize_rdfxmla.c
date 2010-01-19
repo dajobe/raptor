@@ -875,20 +875,21 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->subjects =
     raptor_new_avltree(serializer->world,
-		       (raptor_data_compare_function)raptor_abbrev_subject_cmp,
+		       (raptor_data_compare_function)raptor_abbrev_subject_compare,
 		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
 
   context->blanks =
     raptor_new_avltree(serializer->world,
-		       (raptor_data_compare_function)raptor_abbrev_subject_cmp,
+		       (raptor_data_compare_function)raptor_abbrev_subject_compare,
 		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
   
   context->nodes =
     raptor_new_avltree(serializer->world,
-                       (raptor_data_compare_function)raptor_abbrev_node_cmp,
+                       (raptor_data_compare_function)raptor_abbrev_node_compare,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, "type");
+  rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, 
+                                                (const unsigned char*)"type");
   if(rdf_type_uri) {
     raptor_term* uri_term;
     uri_term = raptor_new_term_from_uri(serializer->world,

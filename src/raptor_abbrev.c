@@ -93,7 +93,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
 
 
 /**
- * raptor_abbrev_node_cmp:
+ * raptor_abbrev_node_compare:
  * @node1: node 1
  * @node2: node 2
  *
@@ -106,7 +106,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
  * than @node2 respectively
  */
 int
-raptor_abbrev_node_cmp(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
+raptor_abbrev_node_compare(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
   if(node1 == node2)
     return 0;
@@ -201,9 +201,9 @@ raptor_compare_abbrev_po(raptor_abbrev_node** nodes1,
                          raptor_abbrev_node** nodes2)
 {
   int d;
-  d = raptor_abbrev_node_cmp(nodes1[0], nodes2[0]);
+  d = raptor_abbrev_node_compare(nodes1[0], nodes2[0]);
   if(!d)
-    d = raptor_abbrev_node_cmp(nodes1[1], nodes2[1]);
+    d = raptor_abbrev_node_compare(nodes1[1], nodes2[1]);
 
   return d;
 }
@@ -380,10 +380,10 @@ raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject,
 
 
 int
-raptor_abbrev_subject_cmp(raptor_abbrev_subject* subject1,
-			  raptor_abbrev_subject* subject2)
+raptor_abbrev_subject_compare(raptor_abbrev_subject* subject1,
+                              raptor_abbrev_subject* subject2)
 {
-  return raptor_abbrev_node_cmp(subject1->node, subject2->node);
+  return raptor_abbrev_node_compare(subject1->node, subject2->node);
 }
 
 
