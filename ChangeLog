@@ -1,4 +1,185 @@
+2010-01-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c: GRDDL parser code style - whitespace, break
+	long lines, loop pre-counting
+
+	Whitespace around operators and break long lines.
+
+	For fixed size raptor_sequence or array loops, store size in a var
+	'size' rather than run a function on every if/while loop.
+
+	* src/raptor_grddl.c: code style: break into 2 lines the long
+	assignments to grddl_parser
+
+	* src/raptor_grddl.c: Update conformance urls and doc ptr
+
+	* src/raptor_rdfxml.c: Code style fixes - indenting, whitespace, add
+	vars to break long lines.
+
+	Code style, indenting and whitespace. Add variables to break long
+	lines especially error reporting Use __func__ for internal error
+	message rather than hardcoding function name.
+
+	* src/Makefile.am, src/raptor.h, src/raptor_concepts.c,
+	src/raptor_general.c, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c, src/raptor_uri.c, src/turtle_common.h,
+	src/turtle_parser.y: Update rdf namespace concepts to add
+	PlainLiteral, share across parsers
+
+	raptor_rdf_ns_term_id gains RDF_NS_PlainLiteral; reordered to put
+	together with RDF_NS_XMLLiteral, the other datatype.
+
+	raptor_world gains an array of pointers to raptor_uri* concepts.
+
+	turtle_parser loses nil_uri, first_uri, rest_uri that are now
+	available via the macros.
+
+	rss_parser loses rdf:type and rdf:Seq concept URIs that are now
+	available via the macros.
+
+	Added macros RAPTOR_RDF_{name}_URI(world) to get pointer to static
+	raptor_uri* for NS terms.
+
+	RDF/XML parser cuts down to just 5 DAML NS URIs to manage itself. 
+
+	(raptor_new_uri_for_rdf_concept): now takes const name. 
+
+	(raptor_concepts_init, raptor_concepts_finish): Added. 
+
+	(raptor_world_open): Call raptor_concepts_init; re-order to init
+	URIs then concepts first. 
+
+	(raptor_free_world): Call raptor_concepts_finish
+
+	Update RDF/XML, RSS and Turtle parsers to use shared URIs.
+
+	* src/fix-flex: alter lexer output to remove signed/unsigned
+	comparison that gcc 4.x warns.
+
+	* src/raptor_librdfa.c: Do not strdup language in
+	raptor_librdfa_generate_statement
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_rss_common.c, src/raptor_serialize_rss.c,
+	src/raptor_statement.c, src/turtle_parser.y: Change
+	raptor_new_term_from_blank calling semantics to copy id inside. 
+
+	(raptor_new_term_from_blank): Copy blank ID.
+
+	Update all calls to raptor_new_term_from_blank to remove strdup()s
+	and add a few RAPTOR_FREE for generated IDs.
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_statement.c, src/turtle_parser.y:
+	Change raptor_new_term_from_literal calling semantics to copy inside.
+
+	(raptor_new_term_from_literal): Copy literals, optional language
+	and datatype URIs.
+
+	Update all calls to raptor_new_term_from_literal to remove strdup(),
+	malloc/free, or stringbuffer copy for literal string; remove copy
+	URI for datatype URI.
+
+	* src/raptor_rdfxml.c: Rename RDF ns-checking functions and document
+	their returns
+
+	(raptor_rdfxml_check_propertyElement_name): Renamed from
+	raptor_rdfxml_forbidden_nodeElement_name and returns tri-state flag
+
+	(raptor_rdfxml_check_propertyElement_name): Renamed from
+	raptor_rdfxml_forbidden_propertyElement_name and returns tri-state
+	flag. 
+
+	(raptor_rdfxml_check_propertyAttribute_name): Renamed from
+	raptor_rdfxml_forbidden_propertyAttribute_name and returns
+	tri-state flag.
+
+	Update callers to check for <0: unknown name, 0: allowed, >0: not
+	allowed
+
+	* src/raptor_rdfxml.c: Set raptor_rdf_ns_terms_info as unsigned int
+	1 bit so bool works
+
+	* src/raptor_rdfxml.c: Adjust raptor_rdf_ns_terms_info fields:
+	reorder, make positive and use bitfields.
+
+	Altered raptor_rdf_ns_terms_info field order to group flag
+	attributes together and use 1 bit each, make them positive allowed
+	flags rather than mix of forbidden/allowed.
+
+	Adjust the raptor_rdfxml_forbidden_TEST_name calling code to use
+	!raptor_rdf_ns_terms_info[field].allowed_TEST
+
+	* src/raptor_rdfxml.c: Tidy comments for raptor_rdf_ns_term_id names
+
+	* src/raptor_rdfxml.c: Tidy RDF terms description
+	raptor_rdf_ns_term_id: Renamed enum from rdf_attr.  Names are all
+	RDF_ATTR_[name] now.
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_statement.c,
+	src/turtle_parser.y: Change raptor_new_term_from_uri calling
+	semantics to take URI copy inside
+
+	(raptor_new_term_from_uri): autodocs and call raptor_uri_copy.
+
+	Updated all calls to raptor_new_term_from_uri to remove a
+	raptor_uri_copy or add a raptor_uri_free as appropriate.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c: Make
+	raptor_abbrev_node use raptor_term rather than another embedded
+	node
+
+	raptor_abbrev_node loses the 'value' union and a pile of
+	sub-structure duplicating raptor_term* contents; yet another
+	librdf_node copy bites the dust. 
+
+	(raptor_new_abbrev_node): Use raptor_new_term_from_term
+
+	(raptor_free_abbrev_node): Use raptor_free_term
+
+	(raptor_abbrev_node_cmp): Thin wrapper around raptor_term_compare.
+
+	(raptor_abbrev_node_equals): Thin wrapper around
+	raptor_term_equals.
+
+	Update all references to the raptor_abbrev_node internals above. 
+
+	(raptor_rdfxmla_serialize_init, raptor_turtle_emit_subject): Fix a
+	couple of places where a static raptor_term was used for creating a
+	raptor_abbrev_node; now make a dynamic one so it can be reference
+	counted and freed.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_statement.c: Make raptor_term_print_as_ntriples internal
+	so can use for raptor_abbrev
+
+	(raptor_term_print_as_ntriples): No longer static.
+
 2010-01-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/rdfprint.c, examples/rdfprint.c, src/raptor.h,
+	src/raptor_grddl.c, src/raptor_rdfxml.c, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rdfdiff.c: Rename
+	statement printing methods to raptor_statement_NAME() form
+
+	(raptor_statement_print): Renamed from
+	raptor_print_statement
+
+	(raptor_statement_print_as_ntriples): Renamed from
+	raptor_print_statement_as_ntriples
+
+	* src/raptor.h: Remove unused typedefs for old URI handler code
+	raptor_new_uri_func, raptor_new_uri_from_uri_local_name_func,
+	raptor_new_uri_relative_to_base_func,
+	raptor_new_uri_for_rdf_concept_func, raptor_free_uri_func,
+	raptor_uri_equals_func, raptor_uri_compare_func,
+	raptor_uri_copy_func, raptor_uri_as_string_func,
+	raptor_uri_as_counted_string_func: Deleted.
 
 	* docs/rdfcat.c, docs/rdfprint.c, examples/grapper.c,
 	examples/raptor_abort.c, examples/rdfcat.c, examples/rdfprint.c,
@@ -1590,8 +1771,6 @@
 	now: current 3  revision  0  age 2
 
 	* docs/libraptor.3: 1.4.19 changes
-
-2009-07-17  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_turtle_writer.c:
 	(raptor_turtle_writer_literal): More silly games to prevent stupid
