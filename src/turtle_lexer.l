@@ -816,13 +816,6 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 }
 
 
-static void
-turtle_lexer_discard_error(void* user_data, const char *message, ...)
-{
-  return;
-}
-
-
 int
 main(int argc, char *argv[]) 
 {
@@ -834,8 +827,9 @@ main(int argc, char *argv[])
   YYSTYPE lval;
   const unsigned char *uri_string;
   const char *filename = NULL;
+  raptor_world* world;
   
-  raptor_init();
+  world = raptor_new_world();
   
   if(argc > 1) {
     filename = argv[1];
@@ -853,15 +847,12 @@ main(int argc, char *argv[])
   memset(&rdf_parser, 0, sizeof(rdf_parser));
   memset(&turtle_parser, 0, sizeof(turtle_parser));
 
-  rdf_parser.world = raptor_world_instance();
+  rdf_parser.world = world;
 
   /* discard namespace errors - caused by not interpreting @prefix 
    * and hence causing failed qname construction
    */
-  raptor_namespaces_init(rdf_parser.world,
-                         &turtle_parser.namespaces,
-                         turtle_lexer_discard_error, NULL,
-                         0);
+  raptor_namespaces_init(rdf_parser.world, &turtle_parser.namespaces, 0);
 
   yylex_init(&turtle_parser.scanner);
   scanner = turtle_parser.scanner;
@@ -869,13 +860,13 @@ main(int argc, char *argv[])
   turtle_lexer_set_extra(&rdf_parser, scanner);
 
   /* Initialise enough of the parser and locator to get error messages */
-  rdf_parser.context=&turtle_parser;
+  rdf_parser.context = &turtle_parser;
   turtle_parser.lineno = 1;
   rdf_parser.locator.file = filename;
-  rdf_parser.locator.column= -1;
+  rdf_parser.locator.column = -1;
 
   uri_string = raptor_uri_filename_to_uri_string(filename);
-  rdf_parser.base_uri = raptor_new_uri(uri_string);
+  rdf_parser.base_uri = raptor_new_uri(world, uri_string);
   RAPTOR_FREE(cstring, (void*)uri_string);
   
   while(1) {
@@ -884,11 +875,11 @@ main(int argc, char *argv[])
       printf("yyinput '%s'\n", turtle_lexer_get_text(scanner));
     token = yylex(&lval, scanner);
 #ifdef RAPTOR_DEBUG
-    printf("token %s\n", turtle_token_print(raptor_world_instance(), token, &lval)); /* FIXME */
+    printf("token %s\n", turtle_token_print(world, token, &lval));
 #else
     printf("token %d\n", token);
 #endif
-    turtle_token_free(raptor_world_instance(), token, &lval); /* FIXME */
+    turtle_token_free(world, token, &lval);
     if(!token || token == EOF || token == ERROR_TOKEN)
       break;
   }
@@ -899,7 +890,7 @@ main(int argc, char *argv[])
   
   raptor_free_uri(rdf_parser.base_uri);
 
-  raptor_finish();
+  raptor_free_world(world);
 
 
   if(token == ERROR_TOKEN)
