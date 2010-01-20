@@ -46,6 +46,14 @@ with the value of the base URI to allow some XSLT sheets to work. These
 set of parameters cannot be disabled.
 </para>
 
+<para>If the XSLT transform returns an empty string, no further
+processing of the result is done, and a warning is generated.  The
+xsl:output method is mapped to result document mime types as follows:
+'text' to text/plain; 'xml' to application/xml and 'html' to text/html.
+Any result that is of type 'application/xml' or unknown mime type
+is assumed to be RDF/XML.
+</para>
+
 <para>The URIs that are processed during GRDDL operations can be checked
 and skipped if required using a handler set with the
 <link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link>
