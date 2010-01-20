@@ -356,12 +356,12 @@ extern const raptor_rdf_ns_term_info raptor_rdf_ns_terms_info[(RDF_NS_LAST + 1) 
 #define RAPTOR_RDF_about(world)           world->concepts[RDF_NS_about]
 #define RAPTOR_RDF_aboutEach(world)       world->concepts[RDF_NS_aboutEach]
 #define RAPTOR_RDF_aboutEachPrefix(world) world->concepts[RDF_NS_aboutEachPrefix]
-#define RAPTOR_RDF_ID(world)              world->concepts[RDF_NS_ID]
-#define RAPTOR_RDF_bagID(world)           world->concepts[RDF_NS_bagID]
-#define RAPTOR_RDF_resource(world)        world->concepts[RDF_NS_resource]
-#define RAPTOR_RDF_parseType(world)       world->concepts[RDF_NS_parseType]
-#define RAPTOR_RDF_nodeID(world)          world->concepts[RDF_NS_nodeID]
-#define RAPTOR_RDF_datatype(world)        world->concepts[RDF_NS_datatype]
+#define RAPTOR_RDF_ID_URI(world)              world->concepts[RDF_NS_ID]
+#define RAPTOR_RDF_bagID_URI(world)           world->concepts[RDF_NS_bagID]
+#define RAPTOR_RDF_resource_URI(world)        world->concepts[RDF_NS_resource]
+#define RAPTOR_RDF_parseType_URI(world)       world->concepts[RDF_NS_parseType]
+#define RAPTOR_RDF_nodeID_URI(world)          world->concepts[RDF_NS_nodeID]
+#define RAPTOR_RDF_datatype_URI(world)        world->concepts[RDF_NS_datatype]
 
 #define RAPTOR_RDF_type_URI(world)        world->concepts[RDF_NS_type]
 #define RAPTOR_RDF_value_URI(world)       world->concepts[RDF_NS_value]
@@ -381,6 +381,28 @@ extern const raptor_rdf_ns_term_info raptor_rdf_ns_terms_info[(RDF_NS_LAST + 1) 
 #define RAPTOR_RDF_nil_URI(world)          world->concepts[RDF_NS_nil]
 #define RAPTOR_RDF_XMLLiteral_URI(world)   world->concepts[RDF_NS_XMLLiteral]
 #define RAPTOR_RDF_PlainLiteral_URI(world) world->concepts[RDF_NS_PlainLiteral]
+
+
+/* syntax only (RDF:RDF ... RDF:datatype) are not provided as terms */
+
+#define RAPTOR_RDF_type_term(world)        world->terms[RDF_NS_type]
+#define RAPTOR_RDF_value_term(world)       world->terms[RDF_NS_value]
+#define RAPTOR_RDF_subject_term(world)     world->terms[RDF_NS_subject]
+#define RAPTOR_RDF_predicate_term(world)   world->terms[RDF_NS_predicate]
+#define RAPTOR_RDF_object_term(world)      world->terms[RDF_NS_object]
+#define RAPTOR_RDF_first_term(world)       world->terms[RDF_NS_first]
+#define RAPTOR_RDF_rest_term(world)        world->terms[RDF_NS_rest]
+                                         
+#define RAPTOR_RDF_Seq_term(world)         world->terms[RDF_NS_Seq]
+#define RAPTOR_RDF_Bag_term(world)         world->terms[RDF_NS_Bag]
+#define RAPTOR_RDF_Alt_term(world)         world->terms[RDF_NS_Alt]
+#define RAPTOR_RDF_Statement_term(world)   world->terms[RDF_NS_Statement]
+#define RAPTOR_RDF_Property_term(world)    world->terms[RDF_NS_Property]
+#define RAPTOR_RDF_List_term(world)        world->terms[RDF_NS_List]
+
+#define RAPTOR_RDF_nil_term(world)          world->terms[RDF_NS_nil]
+#define RAPTOR_RDF_XMLLiteral_term(world)   world->terms[RDF_NS_XMLLiteral]
+#define RAPTOR_RDF_PlainLiteral_term(world) world->terms[RDF_NS_PlainLiteral]
 
 
 int raptor_concepts_init(raptor_world* world);
