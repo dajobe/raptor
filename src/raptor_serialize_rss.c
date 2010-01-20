@@ -1841,7 +1841,6 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           if(content_type_field && content_type_field->value)
             content_type = content_type_field->value;
           else
-            /* FIXME - default content type */
             content_type = (const unsigned char*)"text/html";
 
           predicate_attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, 
