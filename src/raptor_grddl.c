@@ -732,7 +732,6 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xsltSaveResultToString(&doc_txt, &doc_txt_len, res, sheet);
   
   if(!doc_txt || !doc_txt_len) {
-    /* FIXME: continue with an empty document? */
     raptor_parser_warning(rdf_parser, "XSLT returned an empty document");
     goto cleanup_xslt;
   }
@@ -742,7 +741,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
                 (sheet->method ? (const char*)sheet->method : "NULL"),
                 (sheet->mediaType ? (const char*)sheet->mediaType : "NULL"));
 
-  /* FIXME: Assumes mime types for XSLT <xsl:output method> */
+  /* Set mime types for XSLT <xsl:output method> content */
   if(sheet->mediaType == NULL && sheet->method) {
     if(!(strcmp((const char*)sheet->method, "text"))) {
       sheet->mediaType = (xmlChar*)xmlMalloc(11);
@@ -752,12 +751,11 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
       strncpy((char*)sheet->mediaType, "application/xml",16);
     } else if(!(strcmp((const char*)sheet->method, "html"))) {
       sheet->mediaType = (xmlChar*)xmlMalloc(10);
-      /* FIXME: use xhtml mime type? */
       strncpy((char*)sheet->mediaType, "text/html",10);
     }
   }
 
-  /* FIXME: Assume all that all media XML is RDF/XML and also that
+  /* Assume all that all media XML is RDF/XML and also that
    * with no information at all we have RDF/XML
    */
   if(!sheet->mediaType ||
