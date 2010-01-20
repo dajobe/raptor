@@ -41,6 +41,11 @@ tags that point to RDF/XML.  Parts of the GRDDL process can be
 altered by configuration, which are describe below.
 </para>
 
+<para>The GRDDL parser defines 'base', 'Base' and 'url' XSLT parameters
+with the value of the base URI to allow some XSLT sheets to work. These
+set of parameters cannot be disabled.
+</para>
+
 <para>The URIs that are processed during GRDDL operations can be checked
 and skipped if required using a handler set with the
 <link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link>
