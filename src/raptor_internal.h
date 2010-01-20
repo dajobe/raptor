@@ -322,11 +322,13 @@ typedef enum {
   /* These terms are all resources in the RDF model (of type rdfs:Resource) */
   RDF_NS_nil             = 25,
 
-  /* These terms are datatypes */
+  /* These terms are datatypes (used as a literal datatype URI) */
   RDF_NS_XMLLiteral      = 26,
   RDF_NS_PlainLiteral    = 27, /* http://www.w3.org/TR/rdf-text/ */
 
   /* These terms are internal */
+  RDF_NS_LAST_SYNTAX_TERM = RDF_NS_datatype,
+
   RDF_NS_LAST            = RDF_NS_PlainLiteral
 } raptor_rdf_ns_term_id;
 
@@ -1448,6 +1450,8 @@ struct raptor_world_s {
   raptor_avltree *uris_tree;
 
   raptor_uri* concepts[RDF_NS_LAST + 1];
+
+  raptor_term* terms[RDF_NS_LAST + 1];
 };
 
 /* end of RAPTOR_INTERNAL */

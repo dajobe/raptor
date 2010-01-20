@@ -73,6 +73,9 @@
 
 /* (number of terms in RDF NS) + 1: for final sentinel row */
 const raptor_rdf_ns_term_info raptor_rdf_ns_terms_info[RDF_NS_LAST + 2] = {
+  /* term allowed boolean flags:
+   *  node element; property element; property attr; unprefixed attr
+   */
   /* syntax only */
   { "RDF",             RAPTOR_TERM_TYPE_UNKNOWN, 0, 0, 0, 0 }, /* just root */
   { "Description",     RAPTOR_TERM_TYPE_UNKNOWN, 1, 0, 0, 0 },
@@ -127,6 +130,18 @@ raptor_concepts_init(raptor_world* world)
     world->concepts[i] = raptor_new_uri_for_rdf_concept(world, name);
     if(!world->concepts[i])
       return 1;
+
+    /* only make a term for things that are not syntax-only */
+    /* OR use:
+       raptor_rdf_ns_terms_info[i].allowed_as_nodeElement ||
+       raptor_rdf_ns_terms_info[i].allowed_as_propertyElement ||
+       raptor_rdf_ns_terms_info[i].allowed_as_propertyAttribute)
+    */
+    if(i > RDF_NS_LAST_SYNTAX_TERM) {
+      world->terms[i] = raptor_new_term_from_uri(world, world->concepts[i]);
+      if(!world->terms[i])
+        return 1;
+    }
   }
 
   return 0;
@@ -145,6 +160,8 @@ raptor_concepts_finish(raptor_world* world)
       raptor_free_uri(concept_uri);
       world->concepts[i] = NULL;
     }
+    if(world->terms[i])
+      raptor_free_term(world->terms[i]);
   }
   
 }
