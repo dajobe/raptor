@@ -125,6 +125,8 @@ raptor_concepts_init(raptor_world* world)
   for(i = 0; i < RDF_NS_LAST + 2; i++) {
     unsigned char* name = (unsigned char*)raptor_rdf_ns_terms_info[i].name;
     world->concepts[i] = raptor_new_uri_for_rdf_concept(world, name);
+    if(world->concepts[i])
+      return 1;
   }
 
   return 0;
