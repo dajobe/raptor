@@ -363,7 +363,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
   } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
     size_t len = strlen(string);
     block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
-    if(block->strings[offset])
+    if(!block->strings[offset])
       return 1;
 
     strncpy(block->strings[offset], string, len+1);
@@ -371,6 +371,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
 #endif
+    return 1;
   }
 
   return 0;
