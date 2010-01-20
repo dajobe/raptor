@@ -1735,20 +1735,27 @@ raptor_world_guess_parser_name(raptor_world* world,
   unsigned int i;
   raptor_parser_factory *factory;
   unsigned char *suffix = NULL;
-/* FIXME - up to 10 parsers :) */
-#define MAX_PARSERS 10
-  struct syntax_score scores[MAX_PARSERS];
+  struct syntax_score* scores;
 
+  scores = (struct syntax_score*)RAPTOR_CALLOC(syntax_scores,
+                                               raptor_sequence_size(world->parsers),
+                                               sizeof(struct syntax_score));
+  if(!scores)
+    return NULL;
+  
   if(identifier) {
     unsigned char *p = (unsigned char*)strrchr((const char*)identifier, '.');
     if(p) {
       unsigned char *from, *to;
+
       p++;
-      suffix = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((const char*)p)+1);
+      suffix = (unsigned char*)RAPTOR_MALLOC(cstring,
+                                             strlen((const char*)p) + 1);
       if(!suffix)
         return NULL;
+
       for(from = p, to = suffix; *from; ) {
-        unsigned char c=*from++;
+        unsigned char c = *from++;
         /* discard the suffix if it wasn't '\.[a-zA-Z0-9]+$' */
         if(!isalpha(c) && !isdigit(c)) {
           RAPTOR_FREE(cstring, suffix);
@@ -1756,17 +1763,17 @@ raptor_world_guess_parser_name(raptor_world* world,
           to = NULL;
           break;
         }
-        *to++=isupper((char)c) ? (unsigned char)tolower((char)c): c;
+        *to++ = isupper((char)c) ? (unsigned char)tolower((char)c): c;
       }
       if(to)
-        *to='\0';
+        *to = '\0';
     }
   }
 
   for(i = 0;
       (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
-    int score= -1;
+    int score = -1;
     raptor_type_q* type_q = NULL;
     
     if(mime_type && factory->mime_types) {
@@ -1793,7 +1800,7 @@ raptor_world_guess_parser_name(raptor_world* world,
       break;
 
     if(factory->recognise_syntax) {
-      int c= -1;
+      int c = -1;
     
       /* Only use first N bytes to avoid HTML documents that contain
        * RDF/XML examples
@@ -1801,7 +1808,7 @@ raptor_world_guess_parser_name(raptor_world* world,
 #define FIRSTN 1024
       if(buffer && len && len > FIRSTN) {
         c = buffer[FIRSTN];
-        ((char*)buffer)[FIRSTN]='\0';
+        ((char*)buffer)[FIRSTN] = '\0';
       }
 
       score += factory->recognise_syntax(factory, buffer, len, 
@@ -1812,15 +1819,8 @@ raptor_world_guess_parser_name(raptor_world* world,
         ((char*)buffer)[FIRSTN] = c;
     }
 
-    if(i > MAX_PARSERS) {
-      RAPTOR_DEBUG2("Number of parsers greater than static buffer size %d\n",
-                    MAX_PARSERS);
-      if(suffix)
-        RAPTOR_FREE(cstring, suffix);
-      return NULL;
-    }
-
-    scores[i].score = score < 10 ? score : 10; scores[i].factory = factory;
+    scores[i].score = score < 10 ? score : 10; 
+    scores[i].factory = factory;
 #if RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Score %15s : %d\n", factory->name, score);
 #endif
@@ -1836,6 +1836,8 @@ raptor_world_guess_parser_name(raptor_world* world,
   if(suffix)
     RAPTOR_FREE(cstring, suffix);
 
+  RAPTOR_FREE(syntax_scores, scores);
+  
   return factory ? factory->name : NULL;
 }
 
