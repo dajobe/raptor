@@ -266,6 +266,9 @@ typedef struct {
 extern const raptor_field_pair raptor_atom_to_rss[];
 
 
+#define RAPTOR_RSS_LINK_HREF_URL_OFFSET 0
+#define RAPTOR_RSS_LINK_REL_STRING_OFFSET 0
+
 #define RSS_BLOCK_FIELD_TYPE_URL 0
 #define RSS_BLOCK_FIELD_TYPE_STRING 1
 

@@ -959,12 +959,13 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
     if(block->rss_type != RAPTOR_ATOM_LINK)
       continue;
     
-    /* FIXME - <link @href> is url 0 and <link @rel> is string 0
-     * We just "know" this although the raptor_rss_block_fields_info
-     * structure records it.
+    /* <link @href> is url at offset RAPTOR_RSS_LINK_HREF_URL_OFFSET
+     * <link @rel> is string at offset RAPTOR_RSS_LINK_REL_STRING_OFFSET
+     * The raptor_rss_block_fields_info structure records this
      */
-    if(!block->urls[0] || 
-       (block->strings[0] && strcmp(block->strings[0], "self"))
+    if(!block->urls[RAPTOR_RSS_LINK_HREF_URL_OFFSET] || 
+       (block->strings[RAPTOR_RSS_LINK_REL_STRING_OFFSET] &&
+        strcmp(block->strings[RAPTOR_RSS_LINK_REL_STRING_OFFSET], "self"))
        )
       continue;
     
