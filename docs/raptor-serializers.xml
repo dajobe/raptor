@@ -36,6 +36,12 @@ respecively.  The extra triples are enabled when serializer feature
 'rssTriples' is set to string value 'atom-triples'.
 </para>
 
+<para>
+If no atom triples content type field (at:contentType predicate) is
+given, the type is set to 'text/html' when writing out an
+atom:content field in Atom 1.0 format.
+</para>
+
 </section>
 
 
