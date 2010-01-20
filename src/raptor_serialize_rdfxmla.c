@@ -48,12 +48,6 @@
 
 
 /*
- * FIXME Duplicate code
- *
- * Parts of this is taken from redland librdf_node.h and librdf_node.c
- */
-
-/*
  * Raptor rdfxml-abbrev serializer object
  */
 typedef struct {
