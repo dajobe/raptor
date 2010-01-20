@@ -689,8 +689,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   saved_xsltGenericErrorContext = xsltGenericErrorContext;
   xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
 
-#if 1
-  /* FIXME:
+  /*
    * Define 'base', 'Base' and 'url' params to allow some XSLT sheets to work:
    * base:
    *   http://www.w3.org/2000/07/uri43/uri.xsl
@@ -714,10 +713,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   params[6] = NULL;
 
   res = xsltApplyStylesheetUser(sheet, doc, params, NULL, NULL, userCtxt);
-#else
-  /* No params */
-  res = xsltApplyStylesheetUser(sheet, doc, NULL, NULL, NULL, userCtxt);
-#endif
+
   if(!res) {
     raptor_parser_error(rdf_parser, "Failed to apply stylesheet in '%s'",
                         raptor_uri_as_string(xslt_uri));
