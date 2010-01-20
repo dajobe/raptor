@@ -1447,7 +1447,7 @@ struct raptor_world_s {
 
   raptor_avltree *uris_tree;
 
-  raptor_uri* concepts[RDF_NS_LAST + 2];
+  raptor_uri* concepts[RDF_NS_LAST + 1];
 };
 
 /* end of RAPTOR_INTERNAL */

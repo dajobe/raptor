@@ -122,7 +122,7 @@ raptor_concepts_init(raptor_world* world)
 {
   int i;
   
-  for(i = 0; i < RDF_NS_LAST + 2; i++) {
+  for(i = 0; i < RDF_NS_LAST + 1; i++) {
     unsigned char* name = (unsigned char*)raptor_rdf_ns_terms_info[i].name;
     world->concepts[i] = raptor_new_uri_for_rdf_concept(world, name);
     if(!world->concepts[i])
@@ -139,7 +139,7 @@ raptor_concepts_finish(raptor_world* world)
 {
   int i;
   
-  for(i = 0; i < RDF_NS_LAST + 2; i++) {
+  for(i = 0; i < RDF_NS_LAST + 1; i++) {
     raptor_uri* concept_uri = world->concepts[i];
     if(concept_uri) {
       raptor_free_uri(concept_uri);
