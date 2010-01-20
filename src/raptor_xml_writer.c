@@ -174,12 +174,6 @@ struct nsd {
 };
 
 
-/*
- * FIXME: This is duplicate code taken from raptor_sax2.c:
- *   struct nsd
- *  raptor_xml_writer_nsd_compare (from raptor_nsd_compare)
- */
-
 static int
 raptor_xml_writer_nsd_compare(const void *a, const void *b)
 {
