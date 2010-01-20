@@ -49,14 +49,22 @@
 
 
 /*
- * raptor_abbrev_node implementation.
+ * raptor_abbrev_node implementation
  *
- * FIXME Duplicate code
- *
- * Parts of this is taken from redland librdf_node.h and librdf_node.c
- *
- **/
+ */
 
+
+/**
+ * raptor_new_abbrev_node:
+ * @world: raptor world
+ * @term: term to use
+ *
+ * INTERNAL - Constructor for raptor_abbrev_node
+ *
+ * The @term is copied by the constructor.
+ *
+ * Return value: new raptor abbrev node or NULL on failure
+ **/
 raptor_abbrev_node* 
 raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
 {
@@ -77,6 +85,12 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
 }
 
 
+/**
+ * raptor_new_abbrev_node:
+ * @node: raptor abbrev node
+ *
+ * INTERNAL - Destructor for raptor_abbrev_node
+ */
 void
 raptor_free_abbrev_node(raptor_abbrev_node* node)
 {
@@ -97,7 +111,7 @@ raptor_free_abbrev_node(raptor_abbrev_node* node)
  * @node1: node 1
  * @node2: node 2
  *
- * INTERNAL -compare two raptor_abbrev_nodes.
+ * INTERNAL - compare two raptor_abbrev_nodes.
  *
  * This needs to be a strong ordering for use by raptor_avltree.
  * This is very performance critical, anything to make it faster is worth it.
@@ -114,6 +128,16 @@ raptor_abbrev_node_compare(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
   return raptor_term_compare(node1->term, node2->term);
 }
 
+
+/**
+ * raptor_abbrev_node_equals:
+ * @node1: node 1
+ * @node2: node 2
+ *
+ * INTERNAL - compare two raptor_abbrev_nodes for equality
+ *
+ * Return value: non-0 if nodes are equal
+ */
 int
 raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
 {
