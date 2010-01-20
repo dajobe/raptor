@@ -1281,17 +1281,20 @@ void
 raptor_uri_print(const raptor_uri* uri, FILE *stream)
 {
   int rc = 0;
+  size_t len;
   
   if(uri) {
-    size_t len;
-    unsigned char *string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
+    unsigned char *string;
+    string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
     rc = fwrite(string, len, 1, stream);
-  } else 
-    rc = fwrite("(NULL URI)", 10, 1, stream);
-
-  /* FIXME  Until world gains an error handler, there is nowhere to
-   * report the IO error
-   */
+  } else  {
+    len = 10;
+    rc = fwrite("(NULL URI)", len, 1, stream);
+  }
+  
+  if(rc < (int)len)
+    raptor_log_error_formatted(uri->world, RAPTOR_LOG_LEVEL_ERROR,
+                               NULL, "fwrite failed - %s", strerror(errno));
 }
 
 
