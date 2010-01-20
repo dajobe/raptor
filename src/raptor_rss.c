@@ -2,7 +2,7 @@
  *
  * raptor_rss.c - Raptor Feeds (RSS and Atom) tag soup parser
  *
- * Copyright (C) 2003-2009, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -180,13 +180,15 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
 
   /* Initialise the namespaces */
   for(n = 0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++) {
-    unsigned const char* prefix = (unsigned const char*)raptor_rss_namespaces_info[n].prefix;
-    raptor_uri* uri = rdf_parser->world->rss_namespaces_info_uris[n];
+    unsigned const char* prefix;
+    raptor_uri* uri;
     raptor_namespace* nspace = NULL;
 
+    prefix = (unsigned const char*)raptor_rss_namespaces_info[n].prefix;
+    uri = rdf_parser->world->rss_namespaces_info_uris[n];
     if(prefix && uri)
       nspace = raptor_new_namespace_from_uri(rss_parser->nstack,
-                                           prefix, uri, 0);
+                                             prefix, uri, 0);
     rss_parser->nspaces[n] = nspace;
   }
 
@@ -342,7 +344,7 @@ raptor_rss_get_current_item(raptor_rss_parser *rss_parser)
 }
 
 
-static void
+static int
 raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
                            raptor_rss_block *block,
                            const raptor_rss_block_field_info *bfi,
@@ -354,16 +356,24 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
     raptor_uri* uri;
     uri = raptor_new_uri_relative_to_base(world, base_uri,
                                              (const unsigned char*)string);
+    if(!uri)
+      return 1;
+    
     block->urls[offset] = uri;
   } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
     size_t len = strlen(string);
     block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
+    if(block->strings[offset])
+      return 1;
+
     strncpy(block->strings[offset], string, len+1);
   } else {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
 #endif
   }
+
+  return 0;
 }
 
 
@@ -388,7 +398,11 @@ raptor_rss_start_element_handler(void *user_data,
 
   rss_element = (raptor_rss_element*)RAPTOR_CALLOC(raptor_rss_element, 1,
                                                    sizeof(*rss_element));
-  /* FIXME: check for alloc failure */
+  if(!rss_element) {
+    rdf_parser->failed = 1;
+    return;
+  }
+
   rss_element->world = rdf_parser->world;
   rss_element->sb = raptor_new_stringbuffer();
 
@@ -553,8 +567,12 @@ raptor_rss_start_element_handler(void *user_data,
         
         /* Found attribute for this block type */
         RAPTOR_DEBUG3("  found block attribute %s=%s\n", attrName, attrValue);
-        raptor_rss_block_set_field(rdf_parser->world, base_uri,
-                                   block, bfi, (const char*)attrValue);
+        if(raptor_rss_block_set_field(rdf_parser->world, base_uri,
+                                      block, bfi, (const char*)attrValue)) {
+          rdf_parser->failed = 1;
+          return;
+        }
+
       }
 
     }
@@ -603,6 +621,10 @@ raptor_rss_start_element_handler(void *user_data,
               size_t len = strlen((const char*)attrValue);
               RAPTOR_DEBUG2("    setting guid to string '%s'\n", attrValue);
               field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+              if(!field->value) {
+                rdf_parser->failed = 1;
+                return;
+              }
               strncpy((char*)field->value, (char*)attrValue, len+1);
             }
           }
@@ -711,9 +733,13 @@ raptor_rss_end_element_handler(void *user_data,
           continue;
 
         /* Set author name from element */
-        raptor_rss_block_set_field(rdf_parser->world, base_uri,
-                                   rss_parser->current_block,
-                                   bfi, (const char*)cdata);
+        if(raptor_rss_block_set_field(rdf_parser->world, base_uri,
+                                      rss_parser->current_block,
+                                      bfi, (const char*)cdata)) {
+          rdf_parser->failed = 1;
+          return;
+        }
+        
         handled = 1;
         break;
       }
@@ -764,6 +790,11 @@ raptor_rss_end_element_handler(void *user_data,
         RAPTOR_DEBUG4("Added text '%s' to field %s of type %s\n", cdata, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_items_info[rss_parser->current_type].name);
         field->uri = NULL;
         field->value = (unsigned char*)RAPTOR_MALLOC(cstring, cdata_len+1);
+        if(!field->value) {
+          rdf_parser->failed = 1;
+          return;
+        }
+        
         strncpy((char*)field->value, (const char*)cdata, cdata_len);
         field->value[cdata_len] = '\0';
       }
@@ -895,7 +926,7 @@ raptor_rss_sax2_new_namespace_handler(void *user_data,
  *   atom:id
  *   atom:link[@rel="self"]/@href 
  */
-static void
+static int
 raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
                           raptor_rss_item* item) 
 {
@@ -910,11 +941,17 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
     size_t len = strlen(value);
 
     field = raptor_rss_new_field(item->world);
+    if(!field)
+      return 1;
+    
     field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+    if(!field->value)
+      return 1;
+    
     strncpy((char*)field->value, (const char*)value, len + 1);
     raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
 
-    return;
+    return 0;
   }
   
   
@@ -936,12 +973,14 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
     field->value = raptor_uri_to_string(block->urls[0]);
 
     raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
-    return;
+    return 0;
   }
+
+  return 0;
 }
 
 
-static void
+static int
 raptor_rss_insert_identifiers(raptor_parser* rdf_parser) 
 {
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
@@ -999,8 +1038,10 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       }
 
       /* Try to add an rss:link if missing */
-      if(i == RAPTOR_RSS_CHANNEL && !item->fields[RAPTOR_RSS_FIELD_LINK])
-        raptor_rss_insert_rss_link(rdf_parser, item);
+      if(i == RAPTOR_RSS_CHANNEL && !item->fields[RAPTOR_RSS_FIELD_LINK]) {
+        if(raptor_rss_insert_rss_link(rdf_parser, item))
+          return 1;
+      }
 
       item->node_type = &raptor_rss_items_info[i];
       item->node_typei = i;
@@ -1011,8 +1052,11 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     raptor_rss_block *block;
     raptor_uri* uri;
     
-    if(!item->fields[RAPTOR_RSS_FIELD_LINK]) 
-      raptor_rss_insert_rss_link(rdf_parser, item);
+    if(!item->fields[RAPTOR_RSS_FIELD_LINK])  {
+      if(raptor_rss_insert_rss_link(rdf_parser, item))
+        return 1;
+    }
+    
 
     if(item->uri) {
       uri = raptor_uri_copy(item->uri);
@@ -1051,6 +1095,8 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
     item->node_type = &raptor_rss_items_info[RAPTOR_RSS_ITEM];
     item->node_typei = RAPTOR_RSS_ITEM;
   }
+
+  return 0;
 }
 
 
@@ -1412,6 +1458,9 @@ raptor_rss_copy_field(raptor_rss_parser* rss_parser,
       len = strlen((const char*)item->fields[from_field]->value);
 
       field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+      if(!field->value)
+        return 1;
+      
       strncpy((char*)field->value,
               (const char*)item->fields[from_field]->value, len + 1);
     }
@@ -1520,7 +1569,10 @@ raptor_rss_parse_chunk(raptor_parser* rdf_parser,
     return 1;
 
   /* turn strings into URIs, move things around if needed */
-  raptor_rss_insert_identifiers(rdf_parser);
+  if(raptor_rss_insert_identifiers(rdf_parser)) {
+    rdf_parser->failed = 1;
+    return 1;
+  }
   
   /* add some new fields  */
   raptor_rss_uplift_items(rdf_parser);
