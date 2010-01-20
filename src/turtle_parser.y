@@ -1387,8 +1387,7 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
       score += 3;
   }
 
-  /* FIXME: Should do this as long as N3 is not also present since
-   * shares the same syntax */
+  /* Do this as long as N3 is not supported since it shares the same syntax */
   if(buffer && len) {
 #define  HAS_TURTLE_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
 /* The following could also be found with N-Triples but not with @prefix */
@@ -1436,8 +1435,7 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
   }
 
 #ifndef RAPTOR_PARSER_TURTLE
-  /* FIXME: Should do this as long as N3 is not also present since
-   * shares the same syntax */
+  /* Do this as long as N3 is not supported since it shares the same syntax */
   if(buffer && len) {
 #define  HAS_TRIG_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
 /* The following could also be found with N-Triples but not with @prefix */
