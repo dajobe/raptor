@@ -64,10 +64,10 @@
 
     <!-- source repository -->
     <repository>
-      <SVNRepository>
-	<location rdf:resource="http://svn.librdf.org/repository/raptor/" />
-	<browse rdf:resource="http://svn.librdf.org/view/raptor/" />
-      </SVNRepository>
+      <SVNepository>
+	<location rdf:resource="git://git.librdf.org/repositories/raptor.git" />
+	<browse rdf:resource="http://git.librdf.org/view?p=raptor.git;a=summary" />
+      </SVNepository>
     </repository>
   </Project>
 
