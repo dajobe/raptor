@@ -128,15 +128,15 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 {
   /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement=&parser->statement;
-  raptor_uri *subject_uri = NULL;
   raptor_uri *predicate_uri = NULL;
-  raptor_uri *object_uri = NULL;
   raptor_uri *datatype_uri = NULL;
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject = raptor_new_term_from_blank(parser->world, subject);
   } else {
+    raptor_uri *subject_uri;
+
     /* must be RAPTOR_TERM_TYPE_URI */
     subject_uri = raptor_new_uri(parser->world, subject);
     if(!subject_uri) {
@@ -145,7 +145,6 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     }
     statement->subject = raptor_new_term_from_uri(parser->world, subject_uri);
     raptor_free_uri(subject_uri);
-    subject_uri = NULL;
   }
 
   if(object_literal_datatype) {
@@ -175,6 +174,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   
   /* Three choices for object from N-Triples */
   if(object_type == RAPTOR_TERM_TYPE_URI) {
+    raptor_uri *object_uri;
+
     object_uri = raptor_new_uri(parser->world, (const unsigned char*)object);
     if(!object_uri) {
       raptor_parser_error(parser, "Could not create object uri '%s', skipping", (const char *)object);
@@ -201,12 +202,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   (*parser->statement_handler)(parser->user_data, statement);
 
   cleanup:
-  if(subject_uri)
-    raptor_free_uri(subject_uri);
   if(predicate_uri)
     raptor_free_uri(predicate_uri);
-  if(object_uri)
-    raptor_free_uri(object_uri);
   if(datatype_uri)
     raptor_free_uri(datatype_uri);
 }
