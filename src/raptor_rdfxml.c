@@ -2487,19 +2487,18 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
         /* Handle terminating a rdf:parseType="Collection" list */
         if(element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_COLLECTION ||
            element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-          raptor_uri* nil_uri = NULL;
           raptor_term* nil_term;
 
           if(element->child_content_type == RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION) {
-            nil_uri = RAPTOR_DAML_nil_URI(rdf_xml_parser);
+            raptor_uri* nil_uri = RAPTOR_DAML_nil_URI(rdf_xml_parser);
             nil_term = raptor_new_term_from_uri(rdf_parser->world, nil_uri);
           } else {
-            nil_term = RAPTOR_RDF_nil_term(rdf_parser->world);
+            nil_term = raptor_new_term_from_term(RAPTOR_RDF_nil_term(rdf_parser->world));
           }
           
           if(!element->tail_id) {
             /* If No List: set object of statement to rdf:nil */
-            element->object = nil_term;
+            element->object = raptor_new_term_from_term(nil_term);
           } else {
             raptor_uri* rest_uri = NULL;
             raptor_term* tail_id_term;
@@ -2523,8 +2522,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
             raptor_free_term(tail_id_term);
           }
 
-          if(nil_uri)
-            raptor_free_term(nil_term);
+          raptor_free_term(nil_term);
           
         } /* end rdf:parseType="Collection" termination */
         
@@ -2750,8 +2748,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               if(predicate_ordinal >= 0)
                 raptor_free_uri(predicate_uri);
 
-              if(object_term)
-                raptor_free_term(object_term);
+              raptor_free_term(object_term);
             }
             
             break;
