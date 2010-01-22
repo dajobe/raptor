@@ -611,7 +611,7 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
   "trace",
   "debug",
   "info",
-  "warning"
+  "warning",
   "error",
   "fatal error"
 };
