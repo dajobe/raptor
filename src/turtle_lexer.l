@@ -250,12 +250,19 @@ EXPONENT [eE][+-]?[0-9]+
                   return STRING_LITERAL; }
 
 <LITERAL>\"|(\\[^uU]|\\u....|\\U........|[^\"]|\n)*	{
+		  char *p;
+
 		  if(*yytext == EOF) {
                     BEGIN(INITIAL);
                     turtle_syntax_error(rdf_parser, "End of file in middle of literal");
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
                     return EOF;
+                  }
+
+		  for(p = yytext; *p; p++) {
+                    if(*p == '\n')
+                      turtle_parser->lineno++;
                   }
 
                   if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) { /* " */
