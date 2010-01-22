@@ -1,3 +1,146 @@
+2010-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l:
+	Make Turtle long literals count raw newlines
+	correctly
+
+	(Rule <LITERAL>\" ....): Count the raw newlines seen in	the yytext
+	to adjust the line numbers correctly for long literals.
+	Fixes Issue#0000331 http://bugs.librdf.org/mantis/view.php?id=331
+
+	* src/raptor_general.c:	,
+
+	* raptor.rdf.in: Update DOAP with GIT information.
+
+2010-01-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: Always take a copy of world concepts so
+	they are consitently freed
+
+	* src/ntriples_parse.c, src/raptor_rdfxml.c: Use rdf namespace
+	raptor_terms to reduce raptor_term creations in parsers.
+
+	(raptor_ntriples_generate_statement): Tidy code, moving URI
+	construction to local blocks.
+
+	(raptor_rdfxml_generate_statement): Use concept terms for refiying
+	predicates and rdf:Statement class.
+
+	(raptor_rdfxml_start_element_grammar,
+	raptor_rdfxml_end_element_grammar): Update to use concept terms.
+
+	* src/raptor_internal.h:
+	Added macros to access the static RDF namespace raptor terms
+
+	Added macros RAPTOR_RDF_{NAME}_term(world) to get a shared pointer
+	to the static raptor_term for rdf namespace concepts.
+
+	* src/raptor_concepts.c, src/raptor_internal.h:
+	Make a set of raptor_term for RDF namespace terms used in graph.
+
+	raptor_rdf_ns_term_id gains an alias RDF_NS_LAST_SYNTAX_TERM for the
+	last syntax term.
+
+	raptor_world gains an array of raptor_term 'terms'; not all of these
+	will be used, the first few are syntax only.
+
+	(raptor_concepts_init, raptor_concepts_finish): Initialised and
+	free the terms.
+
+2010-01-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_set_field): Fix failure check
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Turn two magic number offsets 0 into defines in raptor_rss.h
+
+	Add defines RAPTOR_RSS_LINK_HREF_URL_OFFSET and
+	RAPTOR_RSS_LINK_REL_STRING_OFFSET for indexes into block
+	urls/strings arrays - both at offset 0.
+
+	(raptor_rss_insert_rss_link): Use above defines and remove fixme.
+
+	Update raptor_rss_block_fields_info to use defines.
+
+	* src/raptor_xml_writer.c: raptor_xml_writer_nsd_compare - Remove
+	FIXME; duplicating a 3 line function is not a worry.
+
+	* src/raptor_uri.c:
+	(raptor_uri_print): Use world to report fwrite failure, remove
+	FIXME.
+
+	* src/raptor_serialize_rss.c: raptor_rss10_emit_item - remove
+	fixme now it is documented.
+
+	* docs/raptor-serializers.xml: note default atom:content type on
+	serializing to atom 1.0
+
+	* src/raptor_serialize_rdfxmla.c:
+	remove FIXME no longer relevant
+
+	* src/raptor_rss.c:
+	Add some resilience to calloc/malloc failure
+
+	(raptor_rss_parse_init): Code tidy.
+
+	(raptor_rss_block_set_field): Add return value for failure. Check
+	for URI and string alloc failure.
+
+	(raptor_rss_start_element_handler, raptor_rss_end_element_handler):
+	Set parser failure and end on alloc failure.
+
+	(raptor_rss_insert_rss_link): Add return value for failure and check
+	for new field, string failure.
+
+	(raptor_rss_insert_identifiers): Add return value for failure and
+	check for above function failing.
+
+	(raptor_rss_copy_field): Return failure on string alloc failure.
+
+	(raptor_rss_parse_chunk): Fail to parse when
+	raptor_rss_insert_identifiers fails.
+
+	* src/raptor_parse.c: Make score sorting us a dynamic buffer in
+	raptor_world_guess_parser_name
+
+	(raptor_world_guess_parser_name): Calloc/free the array and remove
+	FIXME!
+
+	* src/raptor_grddl.c: raptor_grddl_run_grddl_transform_doc -
+	remove FIXMEs now that these are documented
+
+	* docs/raptor-parsers.xml: document more GRDDL parser features
+
+	* src/raptor_grddl.c: raptor_grddl_run_grddl_transform_doc -
+	remove FIXME now that the XSLT params are documented
+
+	* docs/raptor-parsers.xml: document GRDDL XSTL parameters
+
+	* src/raptor_abbrev.c: autodocs
+
+	* src/turtle_parser.y: remove FIXMEs
+
+	* src/turtle_lexer.l: Update test code to Raptor V2 APIs.
+
+	* src/raptor_concepts.c, src/raptor_internal.h: Do not try to make
+	an rdf namespace concept URI for the NULL name
+
+	* src/raptor_concepts.c:
+	(raptor_concepts_init): Return 1 if URI alloc failed not succeeded
+
+	* src/raptor_concepts.c:
+	(raptor_concepts_init): Return 1 if URI alloc failed.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Rename abbrev struct compare functions to standard naming.
+
+	(raptor_abbrev_node_compare): Renamed from raptor_abbrev_node_cmp.
+
+	(raptor_abbrev_subject_compare): Renamed from
+	raptor_abbrev_subject_cmp.
+
 2010-01-18  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c: GRDDL parser code style - whitespace, break
