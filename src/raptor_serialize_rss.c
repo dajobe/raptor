@@ -49,8 +49,7 @@
 
 typedef struct {
   raptor_world* world;
-  /* owned by this: URI OR bnode if starts with _: */
-  raptor_uri* uri;
+  raptor_term* term;
   /* shared pointer */
   raptor_rss_item* item;
 } raptor_rss_group_map;
@@ -125,8 +124,8 @@ typedef struct {
 static void
 raptor_free_group_map(raptor_rss_group_map* gm) 
 {
-  if(gm->uri)
-    raptor_free_uri(gm->uri);
+  if(gm->term)
+    raptor_free_term(gm->term);
   RAPTOR_FREE(raptor_rss_group_map, gm);
 }
 
@@ -135,19 +134,19 @@ static int
 raptor_rss_group_map_compare(raptor_rss_group_map* gm1,
                              raptor_rss_group_map* gm2)
 {
-  return raptor_uri_compare(gm1->uri, gm2->uri);
+  return raptor_term_compare(gm1->term, gm2->term);
 }
 
 
 static raptor_rss_item*
 raptor_rss10_get_group_item(raptor_rss10_serializer_context *rss_serializer,
-                            raptor_uri* uri)
+                            raptor_term* term)
 {
   raptor_rss_group_map search_gm;
   raptor_rss_group_map* gm;
 
   search_gm.world = rss_serializer->world;
-  search_gm.uri = uri;
+  search_gm.term = term;
   gm = (raptor_rss_group_map*)raptor_avltree_search(rss_serializer->group_map,
                                                   (void*)&search_gm);
 
@@ -157,17 +156,17 @@ raptor_rss10_get_group_item(raptor_rss10_serializer_context *rss_serializer,
 
 static int
 raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
-                            raptor_uri* uri, raptor_rss_item *item)
+                            raptor_term* term, raptor_rss_item *item)
 {
   raptor_rss_group_map* gm;
 
-  if(raptor_rss10_get_group_item(rss_serializer, uri))
+  if(raptor_rss10_get_group_item(rss_serializer, term))
     return 0;
  
   gm = (raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
                                             sizeof(*gm));
   gm->world = rss_serializer->world;
-  gm->uri = raptor_uri_copy(uri);
+  gm->term = raptor_new_term_from_term(term);
   gm->item = item;
   
   raptor_avltree_add(rss_serializer->group_map, gm);
@@ -333,10 +332,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
      * for this item, and to the group map (blank node closure)
      */
     if(s->object->type == RAPTOR_TERM_TYPE_BLANK) {
-      raptor_uri* fake_uri = raptor_new_uri(rss_serializer->world, 
-                                            s->object->value.blank);
-      raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
-      raptor_free_uri(fake_uri);
+      raptor_rss10_set_item_group(rss_serializer, s->object, item);
 
       RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
                     raptor_uri_as_string(s->predicate->value.uri),
@@ -459,7 +455,6 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
     
     for(t = 0; t< raptor_sequence_size(rss_serializer->triples); t++) {
       raptor_statement* s;
-      raptor_uri* fake_uri;
       raptor_rss_item* item;
       
       s = (raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, t);
@@ -469,9 +464,7 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
       if(s->subject->type != RAPTOR_TERM_TYPE_BLANK)
         continue;
       
-      fake_uri = raptor_new_uri(rss_serializer->world, s->subject->value.blank);
-      item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
-      raptor_free_uri(fake_uri);
+      item = raptor_rss10_get_group_item(rss_serializer, s->subject);
       
       if(item) {
         /* triple matched an existing item */
@@ -482,12 +475,8 @@ raptor_rss10_move_anonymous_statements(raptor_rss10_serializer_context *rss_seri
         moved_count++;
 #endif
 
-        if(s->object->type == RAPTOR_TERM_TYPE_BLANK) {
-          fake_uri = raptor_new_uri(rss_serializer->world, 
-                                    s->object->value.blank);
-          raptor_rss10_set_item_group(rss_serializer, fake_uri, item);
-          raptor_free_uri(fake_uri);
-        }
+        if(s->object->type == RAPTOR_TERM_TYPE_BLANK)
+          raptor_rss10_set_item_group(rss_serializer, s->object, item);
         
 
         handled = 1;
@@ -648,15 +637,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   raptor_rss_item *item = NULL;
   int handled = 0;
   int is_atom = rss_serializer->is_atom;
-  raptor_uri* fake_uri;
   
-  if(s->subject->type == RAPTOR_TERM_TYPE_URI)
-    fake_uri = raptor_uri_copy(s->subject->value.uri);
-  else
-    fake_uri = raptor_new_uri(rss_serializer->world, s->subject->value.blank);
-  item = raptor_rss10_get_group_item(rss_serializer, fake_uri);
-  raptor_free_uri(fake_uri);
-
+  item = raptor_rss10_get_group_item(rss_serializer, s->subject);
   if(item && s->object->type != RAPTOR_TERM_TYPE_BLANK) {
     int f;
 
@@ -881,7 +863,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     /* Move any existing statements to the newly discovered item */
     raptor_rss10_move_statements(rss_serializer, type, item);
     
-    raptor_rss10_set_item_group(rss_serializer, item->uri, item);
+    raptor_rss10_set_item_group(rss_serializer, item->term, item);
     
     handled = 1;
   }
@@ -956,7 +938,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
         /* Move any existing statements to the newly discovered item */
         raptor_rss10_move_statements(rss_serializer, RAPTOR_RSS_ITEM, item);
 
-        raptor_rss10_set_item_group(rss_serializer, item->uri, item);
+        raptor_rss10_set_item_group(rss_serializer, item->term, item);
       }
     }
   }
