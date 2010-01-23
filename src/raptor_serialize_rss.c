@@ -75,8 +75,8 @@ typedef struct {
   /* Sequence of raptor_rss_item* (?x rdf:type rss:Enclosure) */
   raptor_sequence *enclosures;
 
-  /* URI of rdf:Seq node */
-  raptor_uri *seq_uri;
+  /* Term of rdf:Seq node */
+  raptor_term *seq_term;
 
   /* Namespace stack for serializing */
   raptor_namespace_stack *nstack;
@@ -242,8 +242,8 @@ raptor_rss10_serialize_terminate(raptor_serializer* serializer)
   if(rss_serializer->enclosures)
     raptor_free_sequence(rss_serializer->enclosures);
 
-  if(rss_serializer->seq_uri)
-    raptor_free_uri(rss_serializer->seq_uri);
+  if(rss_serializer->seq_term)
+    raptor_free_term(rss_serializer->seq_term);
 
   if(rss_serializer->xml_writer)
     raptor_free_xml_writer(rss_serializer->xml_writer);
@@ -812,16 +812,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
      raptor_uri_equals(statement->object->value.uri,
                        RAPTOR_RDF_Seq_URI(serializer->world))) {
     
-    if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-      RAPTOR_DEBUG2("Saw rdf:Seq with blank node %s\n",
-                    (char*)statement->subject->value.blank);
-      rss_serializer->seq_uri = raptor_new_uri(rss_serializer->world,
-                                               statement->subject->value.blank);
-    } else {
-      RAPTOR_DEBUG2("Saw rdf:Seq with URI <%s>\n",
-                    raptor_uri_as_string(statement->subject->value.uri));
-      rss_serializer->seq_uri = raptor_uri_copy(rss_serializer->seq_uri);
-    }
+    rss_serializer->seq_term = raptor_new_term_from_term(statement->subject);
     
     handled = 1;
     goto savetriple;
@@ -914,12 +905,11 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
   raptor_rss_model* rss_model=&rss_serializer->model;
   int i;
 
-  if(!rss_serializer->seq_uri)
+  if(!rss_serializer->seq_term)
     return;
   
   for(i = 0; i < raptor_sequence_size(rss_serializer->triples); i++) {
     int ordinal= -1;
-    raptor_uri* fake_uri = NULL;
     raptor_statement* s;
 
     s = (raptor_statement*)raptor_sequence_get_at(rss_serializer->triples, i);
@@ -939,18 +929,14 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     }
   
 
-    if(s->subject->type == RAPTOR_TERM_TYPE_BLANK)
-      fake_uri = raptor_new_uri(rss_serializer->world, s->subject->value.blank);
-    else
-      fake_uri = raptor_uri_copy(s->subject->value.uri);
-      
-    if(raptor_uri_equals(fake_uri, rss_serializer->seq_uri)) {
+    if(raptor_term_equals(s->subject, rss_serializer->seq_term)) {
       const unsigned char* uri_str;
       /* found <seq URI> <some predicate> <some URI> triple */
 
       /* predicate is a resource */
       uri_str = raptor_uri_as_string(s->predicate->value.uri);
-      if(!strncmp((const char*)uri_str, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
+      if(!strncmp((const char*)uri_str,
+                  "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
         ordinal= raptor_check_ordinal(uri_str+44);
 
       RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", ordinal,
@@ -973,8 +959,6 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
         raptor_rss10_set_item_group(rss_serializer, item->uri, item);
       }
     }
-
-    raptor_free_uri(fake_uri);
   }
 
   rss_model->items_count = raptor_sequence_size(rss_serializer->items);
