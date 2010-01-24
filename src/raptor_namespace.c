@@ -93,6 +93,7 @@ const unsigned char * const raptor_xml_namespace_uri = (const unsigned char *)"h
 const unsigned char * const raptor_rdf_namespace_uri = (const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const unsigned int raptor_rdf_namespace_uri_len = 43;
 const unsigned char * const raptor_rdf_schema_namespace_uri = (const unsigned char *)"http://www.w3.org/2000/01/rdf-schema#";
+const unsigned int raptor_rdf_schema_namespace_uri_len = 37;
 const unsigned char * const raptor_xmlschema_datatypes_namespace_uri = (const unsigned char *)"http://www.w3.org/2001/XMLSchema#";
 const unsigned char * const raptor_owl_namespace_uri = (const unsigned char *)"http://www.w3.org/2002/07/owl#";
 
@@ -151,12 +152,14 @@ raptor_namespaces_init(raptor_world* world,
 
   nstack->def_namespace = NULL;
 
-  nstack->rdf_ms_uri = raptor_new_uri(nstack->world,
-                                         (const unsigned char*)raptor_rdf_namespace_uri);
+  nstack->rdf_ms_uri = raptor_new_uri_from_counted_string(nstack->world,
+                                                          (const unsigned char*)raptor_rdf_namespace_uri,
+                                                          raptor_rdf_namespace_uri_len);
   failures += !nstack->rdf_ms_uri;
    
-  nstack->rdf_schema_uri = raptor_new_uri(nstack->world,
-                                             (const unsigned char*)raptor_rdf_schema_namespace_uri);
+  nstack->rdf_schema_uri = raptor_new_uri_from_counted_string(nstack->world,
+                                                              (const unsigned char*)raptor_rdf_schema_namespace_uri,
+                                                              raptor_rdf_schema_namespace_uri_len);
   failures += !nstack->rdf_schema_uri;
 
   /* raptor_new_namespace_from_uri() that eventually gets called by
