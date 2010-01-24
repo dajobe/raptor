@@ -71,7 +71,7 @@ struct raptor_uri_s {
   /* the URI string */
   unsigned char *string;
   /* length of string */
-  int length;
+  unsigned int length;
   /* usage count */
   int usage;
 };
@@ -97,6 +97,11 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   
   if(!uri_string || !*uri_string)
     return NULL;
+
+#ifdef DEBUG
+  RAPTOR_ASSERT(strlen((const char*)uri_string) != length,
+                "URI string is not declared length");
+#endif
 
   if(world->uris_tree) {
     raptor_uri key; /* on stack - not allocated */
@@ -246,7 +251,8 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   unsigned char *buffer;
   int buffer_length;
   raptor_uri* new_uri;
-                                  
+  size_t actual_length;
+  
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(base_uri, raptor_uri, NULL);
 
   if(!uri_string)
@@ -256,16 +262,16 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   if(!*uri_string)
     return raptor_uri_copy(base_uri);
   
-  /* +2 is for \0 plus an extra 1 for adding any missing URI path '/' */
-  buffer_length = base_uri->length + strlen((const char*)uri_string) +2;
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, buffer_length);
+  /* +1 for adding any missing URI path '/' */
+  buffer_length = base_uri->length + strlen((const char*)uri_string) + 1;
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, buffer_length + 1);
   if(!buffer)
     return NULL;
   
-  raptor_uri_resolve_uri_reference(base_uri->string, uri_string,
-                                   buffer, buffer_length);
+  actual_length = raptor_uri_resolve_uri_reference(base_uri->string, uri_string,
+                                                   buffer, buffer_length);
 
-  new_uri = raptor_new_uri_from_counted_string(world, buffer, buffer_length);
+  new_uri = raptor_new_uri_from_counted_string(world, buffer, actual_length);
   RAPTOR_FREE(cstring, buffer);
   return new_uri;
 }
@@ -336,8 +342,9 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   if(!name)
     return NULL;
   
-  new_uri_string_len = base_uri_string_len + strlen((const char*)name) + 1;
-  new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, new_uri_string_len);
+  new_uri_string_len = base_uri_string_len + strlen((const char*)name);
+  new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring,
+                                                 new_uri_string_len + 1);
   if(!new_uri_string)
     return NULL;
 
@@ -1413,6 +1420,22 @@ static const char *program;
 
 
 static int
+assert_uri_is_valid(raptor_uri* uri)
+{
+  if(strlen((const char*)uri->string) != uri->length) {
+    fprintf(stderr,
+            "%s: URI with string '%s' is invalid. length is %d, recorded in object as %d\n",
+            program, uri->string,
+            (int)strlen((const char*)uri->string),
+            (int)uri->length);
+    return 0;
+  }
+
+  return 1;
+}
+
+
+static int
 assert_filename_to_uri (const char *filename, const char *reference_uri)
 {
   unsigned char *uri;
@@ -1470,8 +1493,17 @@ assert_uri_to_relative(raptor_world *world, const char *base, const char *uri, c
   raptor_uri* reference_uri = raptor_new_uri(world, (const unsigned char*)uri);
   size_t length = 0;
 
-  if(base)
+  if(!assert_uri_is_valid(reference_uri))
+    return 1;
+
+  if(base) {
     base_uri = raptor_new_uri(world, (const unsigned char*)base);
+    if(base_uri && !assert_uri_is_valid(base_uri)) {
+      raptor_free_uri(reference_uri);
+      raptor_free_uri(base_uri);
+      return 1;
+    }
+  }
   
   output = raptor_uri_to_relative_counted_uri_string(base_uri, reference_uri, 
                                                      &length);
