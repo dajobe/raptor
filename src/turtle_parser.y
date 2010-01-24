@@ -707,6 +707,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, NULL, $3);
+  RAPTOR_FREE(cstring, $1);
+  RAPTOR_FREE(cstring, $3);
   if(!$$)
     YYERROR;
 }
@@ -719,6 +721,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($5) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, $3);
+    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(cstring, $3);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
@@ -735,6 +739,8 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($5) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, $3);
+    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(cstring, $3);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
@@ -751,6 +757,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $3, NULL);
+    RAPTOR_FREE(cstring, $1);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -767,6 +774,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $3, NULL);
+    RAPTOR_FREE(cstring, $1);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -781,6 +789,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, NULL, NULL);
+  RAPTOR_FREE(cstring, $1);
   if(!$$)
     YYERROR;
 }
@@ -797,6 +806,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
+  RAPTOR_FREE(cstring, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
@@ -814,6 +824,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
+  RAPTOR_FREE(cstring, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
@@ -831,6 +842,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
+  RAPTOR_FREE(cstring, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
