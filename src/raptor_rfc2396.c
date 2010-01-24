@@ -303,12 +303,15 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
         *p++ = *src++;
       *p='\0';
     }
+
+    result_len = p - buffer;
     goto resolve_tidy;
   }
   
   /* reference has a scheme - is an absolute URI */
   if(ref->scheme) {
     strncpy((char*)buffer, (const char*)reference_uri, ref->uri_len+1);
+
     result_len = ref->uri_len;
     goto resolve_tidy;
   }
