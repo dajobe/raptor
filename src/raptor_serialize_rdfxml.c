@@ -68,9 +68,6 @@ typedef struct {
   /* User declared namespaces */
   raptor_sequence *namespaces;
 
-  /* URI of rdf:XMLLiteral */
-  raptor_uri* rdf_xml_literal_uri;
-
   /* non zero if rdf:RDF has been written (and thus no new namespaces
    * can be declared).
    */
@@ -104,10 +101,7 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->namespaces = raptor_new_sequence(NULL, NULL);
 
-  context->rdf_xml_literal_uri = raptor_new_uri(serializer->world, raptor_xml_literal_datatype_uri_string);
-
-  if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
-     !context->rdf_xml_literal_uri) {
+  if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces) {
     raptor_rdfxml_serialize_terminate(serializer);
     return 1;
   }
@@ -146,11 +140,6 @@ raptor_rdfxml_serialize_terminate(raptor_serializer* serializer)
   if(context->xml_nspace) {
     raptor_free_namespace(context->xml_nspace);
     context->xml_nspace = NULL;
-  }
-
-  if(context->rdf_xml_literal_uri) {
-    raptor_free_uri(context->rdf_xml_literal_uri);
-    context->rdf_xml_literal_uri = NULL;
   }
 
   if(context->namespaces) {
@@ -511,7 +500,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       object_is_parseTypeLiteral = 0;
       if(statement->object->value.literal.datatype &&
          raptor_uri_equals(statement->object->value.literal.datatype,
-                              context->rdf_xml_literal_uri))
+                           RAPTOR_RDF_XMLLiteral_URI(serializer->world)))
         object_is_parseTypeLiteral = 1;
 
       if(statement->object->value.literal.language) {
