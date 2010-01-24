@@ -270,6 +270,15 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
 }
 
 
+/* 58 == strlen(grddl_namespaceTransformation_uri_string) */
+#define GRDDL_NAMESPACETRANSFORMATION_URI_STRING_LEN 58
+static const unsigned char * const grddl_namespaceTransformation_uri_string = (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation";
+
+/* 56 == strlen(grddl_profileTransformation_uri_string) */
+#define GRDDL_PROFILETRANSFORMATION_URI_STRING_LEN 56
+static const unsigned char * const grddl_profileTransformation_uri_string =  (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation";
+
+
 static int
 raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
 {
@@ -283,8 +292,8 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   /* Sequence of URIs from <head profile> */
   grddl_parser->profile_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
 
-  grddl_parser->namespace_transformation_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#namespaceTransformation");
-  grddl_parser->profile_transformation_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2003/g/data-view#profileTransformation");
+  grddl_parser->namespace_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_namespaceTransformation_uri_string, GRDDL_NAMESPACETRANSFORMATION_URI_STRING_LEN);
+  grddl_parser->profile_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_profileTransformation_uri_string, GRDDL_PROFILETRANSFORMATION_URI_STRING_LEN);
 
   /* Sequence of URIs visited - may be overwritten if this is not
    * the depth 0 grddl parser
