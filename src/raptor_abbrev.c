@@ -614,7 +614,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(!name || (name == uri_string))
     return NULL;
 
-  ns_uri_string_len = name - uri_string;
+  ns_uri_string_len = name - uri_string + 1;
   ns_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, ns_uri_string_len + 1);
   if(!ns_uri_string)
     return NULL;
