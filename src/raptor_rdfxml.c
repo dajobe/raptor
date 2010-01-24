@@ -932,6 +932,9 @@ raptor_rdfxml_comment_handler(void *user_data, raptor_xml_element* xml_element,
 }
 
 
+static const unsigned char* const daml_namespace_uri_string = (const unsigned char*)"http://www.daml.org/2001/03/daml+oil#";
+static int daml_namespace_uri_string_len = 37;
+
 
 static int
 raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
@@ -955,7 +958,9 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_namespace_handler(sax2, raptor_rdfxml_sax2_new_namespace_handler);
 
   /* Allocate uris */  
-  RAPTOR_DAML_NS_URI(rdf_xml_parser) = raptor_new_uri(world, (const unsigned char*)"http://www.daml.org/2001/03/daml+oil#");
+  RAPTOR_DAML_NS_URI(rdf_xml_parser) = raptor_new_uri_from_counted_string(world,
+                                                                          daml_namespace_uri_string,
+                                                                          daml_namespace_uri_string_len);
 
   RAPTOR_DAML_List_URI(rdf_xml_parser) = raptor_new_uri_from_uri_local_name(world, RAPTOR_DAML_NS_URI(rdf_xml_parser), (const unsigned char *)"List");
   RAPTOR_DAML_first_URI(rdf_xml_parser) = raptor_new_uri_from_uri_local_name(world, RAPTOR_DAML_NS_URI(rdf_xml_parser) ,(const unsigned char *)"first");
