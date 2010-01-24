@@ -153,8 +153,9 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     
   } else if(triple->object_type == RDF_TYPE_XML_LITERAL) {
     raptor_uri* datatype_uri;
-    datatype_uri = raptor_new_uri(parser->world,
-                                  (const unsigned char*)raptor_xml_literal_datatype_uri_string);
+    datatype_uri = raptor_new_uri_from_counted_string(parser->world,
+                                                      (const unsigned char*)raptor_xml_literal_datatype_uri_string,
+                                                      raptor_xml_literal_datatype_uri_string_len);
     object_term = raptor_new_term_from_literal(parser->world,
                                                (const unsigned char*)triple->object,
                                                datatype_uri,
