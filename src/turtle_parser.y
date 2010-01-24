@@ -876,6 +876,7 @@ resource: URI_LITERAL
 
   if($1) {
     $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
+    raptor_free_uri($1);
     if(!$$)
       YYERROR;
   } else
@@ -889,6 +890,7 @@ resource: URI_LITERAL
 
   if($1) {
     $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
+    raptor_free_uri($1);
     if(!$$)
       YYERROR;
   } else
@@ -1284,6 +1286,10 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
 
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
+
+  raptor_free_term(statement->subject); statement->subject = NULL;
+  raptor_free_term(statement->predicate); statement->predicate = NULL;
+  raptor_free_term(statement->object); statement->object = NULL;
 }
 
 
