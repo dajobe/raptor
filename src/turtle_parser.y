@@ -1284,10 +1284,6 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
 
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
-
-  raptor_free_term(statement->subject); statement->subject = NULL;
-  raptor_free_term(statement->predicate); statement->predicate = NULL;
-  raptor_free_term(statement->object); statement->object = NULL;
 }
 
 
