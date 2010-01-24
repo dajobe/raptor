@@ -71,7 +71,7 @@ struct raptor_uri_s {
   /* the URI string */
   unsigned char *string;
   /* length of string */
-  int string_length;
+  int length;
   /* usage count */
   int usage;
 };
@@ -105,7 +105,7 @@ raptor_new_uri_from_counted_string(raptor_world* world,
     memset(&key, 0, sizeof(key));
 
     key.string = (unsigned char*)uri_string;
-    key.string_length = length;
+    key.length = length;
 
     /* if existing URI found in tree, return it */
     new_uri = (raptor_uri*)raptor_avltree_search(world->uris_tree, &key);
@@ -133,7 +133,7 @@ raptor_new_uri_from_counted_string(raptor_world* world,
     goto unlock;
 
   new_uri->world = world;
-  new_uri->string_length = length;
+  new_uri->length = length;
 
   new_string = (unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
   if(!new_string) {
@@ -212,16 +212,16 @@ raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
   
   local_name_length = strlen((const char*)local_name);
   
-  len = uri->string_length + local_name_length;
+  len = uri->length + local_name_length;
   new_string = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
   if(!new_string)
     return NULL;
 
-  memcpy((char*)new_string, (const char*)uri->string, uri->string_length);
-  memcpy((char*)(new_string + uri->string_length), (const char*)local_name,
+  memcpy((char*)new_string, (const char*)uri->string, uri->length);
+  memcpy((char*)(new_string + uri->length), (const char*)local_name,
          local_name_length + 1);
 
-  new_uri = raptor_new_uri(world, new_string);
+  new_uri = raptor_new_uri_from_counted_string(world, new_string, len);
   RAPTOR_FREE(cstring, new_string);
 
   return new_uri;
@@ -257,7 +257,7 @@ raptor_new_uri_relative_to_base(raptor_world* world,
     return raptor_uri_copy(base_uri);
   
   /* +2 is for \0 plus an extra 1 for adding any missing URI path '/' */
-  buffer_length = base_uri->string_length + strlen((const char*)uri_string) +2;
+  buffer_length = base_uri->length + strlen((const char*)uri_string) +2;
   buffer = (unsigned char*)RAPTOR_MALLOC(cstring, buffer_length);
   if(!buffer)
     return NULL;
@@ -265,7 +265,7 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   raptor_uri_resolve_uri_reference(base_uri->string, uri_string,
                                    buffer, buffer_length);
 
-  new_uri = raptor_new_uri(world, buffer);
+  new_uri = raptor_new_uri_from_counted_string(world, buffer, buffer_length);
   RAPTOR_FREE(cstring, buffer);
   return new_uri;
 }
@@ -344,7 +344,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   strcpy((char*)new_uri_string, (const char*)base_uri_string);
   strcpy((char*)new_uri_string + base_uri_string_len, (const char*)name);
 
-  new_uri = raptor_new_uri(world, new_uri_string);
+  new_uri = raptor_new_uri_from_counted_string(world, new_uri_string,
+                                               new_uri_string_len);
   RAPTOR_FREE(cstring, new_uri_string);
   
   return new_uri;
@@ -499,7 +500,7 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(uri, raptor_uri, NULL);
 
   if(len_p)
-    *len_p = uri->string_length;
+    *len_p = uri->length;
   return uri->string;
 }
 
