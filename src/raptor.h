@@ -840,7 +840,7 @@ int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_ve
 
 /* raptor_rfc2396.c */
 RAPTOR_API
-void raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const unsigned char *reference_uri, unsigned char* buffer, size_t length);
+size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const unsigned char *reference_uri, unsigned char* buffer, size_t length);
 
 /* raptor_uri.c */
 RAPTOR_API

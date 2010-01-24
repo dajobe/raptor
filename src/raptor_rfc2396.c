@@ -256,8 +256,9 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
  *
  * Resolve a URI to a base URI.
  * 
+ * Return value: length of resolved string or 0 on failure
  **/
-void
+size_t
 raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
                                  const unsigned char *reference_uri,
                                  unsigned char *buffer, size_t length)
@@ -268,7 +269,8 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   unsigned char *path_buffer = NULL;
   unsigned char *p, *cur, *prev, *s;
   unsigned char last_char;
-
+  size_t result_len = 0;
+  
 #if RAPTOR_DEBUG > 2
   RAPTOR_DEBUG4("base uri='%s', reference_uri='%s, buffer size %d\n",
                 (base_uri ? (const char*)base_uri : "NULL"),
@@ -307,6 +309,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   /* reference has a scheme - is an absolute URI */
   if(ref->scheme) {
     strncpy((char*)buffer, (const char*)reference_uri, ref->uri_len+1);
+    result_len = ref->uri_len;
     goto resolve_tidy;
   }
   
@@ -367,8 +370,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
 
   /* the resulting path can be no longer than result.path_len */
   path_buffer = (unsigned char*)RAPTOR_MALLOC(cstring, result.path_len+1);
-  if(!path_buffer)
+  if(!path_buffer) {
+    result_len = 0;
     goto resolve_tidy;
+  }
   result.path = path_buffer;
   *path_buffer = '\0';
   
@@ -588,6 +593,8 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   }
   *p = '\0';
   
+  result_len = p - buffer;
+
   resolve_tidy:
   if(path_buffer)
     RAPTOR_FREE(cstring, path_buffer);
@@ -595,6 +602,13 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     raptor_free_uri_detail(base);
   if(ref)
     raptor_free_uri_detail(ref);
+
+#ifdef RAPTOR_DEBUG
+  RAPTOR_ASSERT(result_len && strlen((const char*)buffer) != result_len,
+                "URI string is not declared length");
+#endif
+
+  return result_len;
 }
 
 #endif
