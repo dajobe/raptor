@@ -1019,7 +1019,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
     blank = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world,
                                        blank_id);
-    RAPTOR_FREE(cstring, blank);
+    RAPTOR_FREE(cstring, blank_id);
     if(!blank)
       goto err_collection;
     
