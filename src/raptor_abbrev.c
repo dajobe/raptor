@@ -621,7 +621,8 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   memcpy(ns_uri_string, (const char*)uri_string, ns_uri_string_len);
   ns_uri_string[ns_uri_string_len] = '\0';
   
-  ns_uri = raptor_new_uri(node->world, ns_uri_string);
+  ns_uri = raptor_new_uri_from_counted_string(node->world, ns_uri_string,
+                                              ns_uri_string_len);
   RAPTOR_FREE(cstring, ns_uri_string);
   
   if(!ns_uri)
