@@ -62,9 +62,6 @@ typedef struct {
   raptor_avltree *nodes;                /* nodes */
   raptor_abbrev_node *rdf_type;         /* rdf:type uri */
 
-  /* URI of rdf:XMLLiteral */
-  raptor_uri* rdf_xml_literal_uri;
-
   /* non-zero if is Adobe XMP abbreviated form */
   int is_xmp;
 
@@ -856,9 +853,11 @@ raptor_rdfxmla_serialize_init_nstack(raptor_serializer* serializer,
 static int
 raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 {
-  raptor_rdfxmla_context* context = (raptor_rdfxmla_context*)serializer->context;
-  raptor_uri *rdf_type_uri;
-  
+  raptor_rdfxmla_context* context;
+  raptor_term* type_term;
+
+  context = (raptor_rdfxmla_context*)serializer->context;
+
   context->nstack = raptor_new_namespaces(serializer->world, 1);
   if(!context->nstack)
     return 1;
@@ -882,21 +881,12 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_compare,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  rdf_type_uri = raptor_new_uri_for_rdf_concept(serializer->world, 
-                                                (const unsigned char*)"type");
-  if(rdf_type_uri) {
-    raptor_term* uri_term;
-    uri_term = raptor_new_term_from_uri(serializer->world,
-                                        raptor_uri_copy(rdf_type_uri));
-    context->rdf_type = raptor_new_abbrev_node(serializer->world, uri_term);
-  }
-
-  context->rdf_xml_literal_uri = raptor_new_uri(serializer->world,
-                                                raptor_xml_literal_datatype_uri_string);
+  type_term = raptor_new_term_from_term(RAPTOR_RDF_type_term(serializer->world));
+  context->rdf_type = raptor_new_abbrev_node(serializer->world, type_term);
 
   if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
-     !context->rdf_type || !context->rdf_xml_literal_uri) {
+     !context->rdf_type) {
     raptor_rdfxmla_serialize_terminate(serializer);
     return 1;
   }
@@ -987,11 +977,6 @@ raptor_rdfxmla_serialize_terminate(raptor_serializer* serializer)
   if(context->rdf_type) {
     raptor_free_abbrev_node(context->rdf_type);
     context->rdf_type = NULL;
-  }
-  
-  if(context->rdf_xml_literal_uri) {
-    raptor_free_uri(context->rdf_xml_literal_uri);
-    context->rdf_xml_literal_uri = NULL;
   }
 }
 
