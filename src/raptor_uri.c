@@ -78,25 +78,25 @@ struct raptor_uri_s {
 
 
 /**
- * raptor_new_uri:
+ * raptor_new_uri_from_counted_string:
  * @world: raptor_world object
  * @uri_string: URI string.
+ * @length: lenght of URI string
  * 
  * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
  * 
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri(raptor_world* world, const unsigned char *uri_string) 
+raptor_new_uri_from_counted_string(raptor_world* world,
+                                   const unsigned char *uri_string,
+                                   size_t length)
 {
   raptor_uri* new_uri;
   unsigned char *new_string;
-  int length;
   
   if(!uri_string || !*uri_string)
     return NULL;
-
-  length = strlen((const char*)uri_string);
 
   if(world->uris_tree) {
     raptor_uri key; /* on stack - not allocated */
@@ -159,6 +159,26 @@ raptor_new_uri(raptor_world* world, const unsigned char *uri_string)
  unlock:
 
   return new_uri;
+}
+
+
+/**
+ * raptor_new_uri:
+ * @world: raptor_world object
+ * @uri_string: URI string.
+ * 
+ * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri(raptor_world* world, const unsigned char *uri_string) 
+{
+  if(!world || !uri_string)
+    return NULL;
+  
+  return raptor_new_uri_from_counted_string(world, uri_string,
+                                            strlen((const char*)uri_string));
 }
 
 

@@ -784,6 +784,8 @@ void* raptor_calloc_memory(size_t nmemb, size_t size);
 
 /* URI functions */
 RAPTOR_API
+raptor_uri* raptor_new_uri_from_counted_string(raptor_world* world, const unsigned char *uri_string, size_t length);
+RAPTOR_API
 raptor_uri* raptor_new_uri(raptor_world* world, const unsigned char *uri_string);
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri, const unsigned char *local_name);
