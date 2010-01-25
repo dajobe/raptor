@@ -477,17 +477,11 @@ verb: predicate
 }
 | A
 {
-  raptor_uri *uri;
-
 #if RAPTOR_DEBUG > 1  
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  uri = raptor_new_uri_for_rdf_concept(((raptor_parser*)rdf_parser)->world, 
-                                       (const unsigned char*)"type");
-  if(!uri)
-    YYERROR;
-  $$ = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, uri);
+  $$ = raptor_new_term_from_term(RAPTOR_RDF_type_term(((raptor_parser*)rdf_parser)->world));
   if(!$$)
     YYERROR;
 }
