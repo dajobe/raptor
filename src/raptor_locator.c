@@ -153,6 +153,7 @@ raptor_locator_line(raptor_locator *locator)
   return locator->line;
 }
 
+
 /**
  * raptor_locator_column:
  * @locator: locator
@@ -169,6 +170,7 @@ raptor_locator_column(raptor_locator *locator)
   return locator->column;
 }
 
+
 /**
  * raptor_locator_byte:
  * @locator: locator
@@ -184,6 +186,7 @@ raptor_locator_byte(raptor_locator *locator)
     return -1;
   return locator->byte;
 }
+
 
 /**
  * raptor_locator_file:
