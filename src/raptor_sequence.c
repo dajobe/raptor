@@ -303,7 +303,8 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
       if(seq->free_handler)
         seq->free_handler(seq->sequence[seq->start+idx]);
       else if(seq->context_free_handler)
-        seq->context_free_handler(seq->handler_context, seq->sequence[seq->start+idx]);
+        seq->context_free_handler(seq->handler_context,
+                                  seq->sequence[seq->start+idx]);
     }      
     /*  size remains the same */
   } else {
