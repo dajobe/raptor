@@ -544,44 +544,6 @@ raptor_sequence_print_string(char *data, FILE *fh)
 
 
 /**
- * raptor_sequence_set_print_handler:
- * @seq: sequence
- * @print_handler: print handler
- *
- * Set the print handler for the sequence.
- *
- * This is set in the raptor_new_sequence() constructor and can be
- * overridden here.
- */
-void
-raptor_sequence_set_print_handler(raptor_sequence *seq,
-                                  raptor_sequence_print_handler *print_handler) {
-  if(!seq)
-    return;
-  seq->print_handler = print_handler;
-}
-
-
-/**
- * raptor_sequence_set_print_handler_v2:
- * @seq: sequence
- * @print_handler: print handler
- *
- * Set the print handler for the sequence.
- *
- * This is set in the raptor_new_sequence_v2() constructor and can be
- * overridden here.
- */
-void
-raptor_sequence_set_print_handler_v2(raptor_sequence *seq,
-                                     raptor_sequence_print_handler_v2 *print_handler) {
-  if(!seq)
-    return;
-  seq->print_handler_v2 = print_handler;
-}
-
-
-/**
  * raptor_sequence_print:
  * @seq: sequence to sort
  * @fh: file handle

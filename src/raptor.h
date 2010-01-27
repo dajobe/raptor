@@ -1064,7 +1064,7 @@ typedef void (raptor_sequence_free_handler_v2(void* context, void* object));
  *
  * Handler function for printing a sequence item.
  *
- * Set by raptor_new_sequence() or raptor_sequence_set_print_handler().
+ * Set by raptor_new_sequence()
  */
 typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
 
@@ -1076,7 +1076,7 @@ typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
  *
  * Handler function for printing a sequence item.
  *
- * Set by raptor_new_sequence_v2() or raptor_sequence_set_print_handler_v2().
+ * Set by raptor_new_sequence_v2()
  */
 typedef void (raptor_sequence_print_handler_v2(void *context, void *object, FILE *fh));
 
@@ -1115,10 +1115,6 @@ void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, cons
 /* helper for printing sequences of strings */ 
 RAPTOR_API
 void raptor_sequence_print_string(char *data, FILE *fh);
-RAPTOR_API
-void raptor_sequence_set_print_handler(raptor_sequence *seq, raptor_sequence_print_handler *print_handler);
-RAPTOR_API
-void raptor_sequence_set_print_handler_v2(raptor_sequence *seq, raptor_sequence_print_handler_v2 *print_handler);
 RAPTOR_API
 void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
