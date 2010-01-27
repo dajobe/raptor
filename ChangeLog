@@ -1,3 +1,196 @@
+2010-01-24  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	(verb): Get rdf:type term from static term and do not lose an URI
+	reference.
+
+	* src/turtle_parser.y: Free literal strings passed into
+	raptor_new_term_from_literal()
+
+	* src/turtle_parser.y:
+	(resource): Free uri object references when making resource from
+	QNAME_LITERAL or URI_LITERAL.
+
+	(raptor_turtle_generate_statement): Redo - free constructed terms
+
+	* src/turtle_parser.y:
+	(raptor_turtle_generate_statement): UNDO Free constructed terms
+
+	* src/turtle_parser.y:
+	(raptor_turtle_generate_statement): Free constructed terms
+
+	* src/turtle_parser.y: Free blank_id not blank
+
+	* src/raptor_rdfxml.c:
+	When creating new URIs or terms, free allocated values early.
+
+	Since functions like raptor_new_term_from_uri() take copies of their
+	arguments, any allocated objects passed in such as URIs or literals
+	should be freed.  Adjust the code so that's done early.  
+
+	(raptor_rdfxml_generate_statement): Free bag_predicate_uri.  
+
+	(raptor_rdfxml_start_element_grammar): For rdf:ID, move the syntax
+	checks earlier to save extra complexity on errors.
+
+	Generally update all places to free generated IDs and constructed
+	URIs just after making raptor_uri or raptor_term
+
+	* src/raptor_uri.c: Use raptor_uri_resolve_uri_reference length
+	with raptor_new_uri_from_counted_string internally.
+
+	raptor_uri length is now unsigned int 
+	
+	(raptor_new_uri_from_counted_string): Add maintainer assert that URI
+	string is length it is declared to be.  
+
+	(raptor_new_uri_relative_to_base): Use
+	raptor_uri_resolve_uri_reference return value to call
+	raptor_new_uri_from_counted_string.
+
+	(raptor_new_uri_for_rdf_concept): Correctly calcuate passed in
+	buffer length - it was malloced correctly.  
+
+	(assert_uri_is_valid): Added.  
+
+	(assert_uri_to_relative): Use above for checks.
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): set result_len when relative
+	is #frag.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Calculate the length of namespace
+	part of predicate URI correctly.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Namespace URI buffer was too short
+	by 1.
+
+	* src/raptor_serialize_rdfxmla.c: Replace rdf_xml_literal_uri with
+	use of static rdf:XMLLiteral URI
+
+	raptor_rdfxmla_serializer_context loses rdf_xml_literal_uri
+	
+	(raptor_rdfxmla_serialize_init): Remove init with rdf_type_uri,
+	copy RAPTOR_RDF_type_term().  Remove rdf_xml_literal_uri.
+
+	(raptor_rdfxmla_serialize_terminate): Remove free of
+	rdf_xml_literal_uri.
+
+	* src/raptor_serialize_rdfxml.c:
+	Replace rdf_xml_literal_uri with use of static rdf:XMLLiteral URI
+
+	raptor_rdfxml_serializer_context loses rdf_xml_literal_uri 
+	
+	(raptor_rdfxml_serialize_init, raptor_rdfxml_serialize_terminate):
+	Remove init, free.
+
+	(raptor_rdfxml_serialize_statement): Use
+	RAPTOR_RDF_XMLLiteral_URI()
+
+	* src/raptor.h, src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Now returns length of URI.
+
+2010-01-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_generate_statement): Use
+	raptor_new_uri_from_counted_string for rdf:XMLLiteral datatype.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_feature.c: Create feature URI prefix from counted URI
+	string
+
+	(raptor_features_enumerate_common): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_rdfxml.c:
+	Create daml namespaces from counted string URIs
+
+	Added daml_namespace_uri_string and daml_namespace_uri_string
+	statics for DAML namespace URI.
+	
+	(raptor_rdfxml_parse_init): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_namespace.c: Create rdf and rdfs namespaces from
+	counted string URIs
+
+	Added raptor_rdf_schema_namespace_uri_len constant int.  
+
+	(raptor_namespaces_init): Use raptor_new_uri_from_counted_string.
+
+	* src/raptor_uri.c:
+	Ensure URI string field is always set
+
+	Renamed raptor_uri_s field string_length to length.  
+
+	(raptor_new_uri_from_uri_local_name,
+	raptor_new_uri_relative_to_base, raptor_new_uri_for_rdf_concept):
+	Use raptor_new_uri_from_counted_string with already calculated
+	length.
+
+	* src/raptor_grddl.c:
+	Create constant strings / lengths for GRDDL predicate URIs
+
+	Added grddl_namespaceTransformation_uri_string and
+	grddl_profileTransformation_uri_string constant strings with
+	macros for lengths.
+	
+	(raptor_grddl_parse_init): Use above to create grddl parser URIs
+	with raptor_new_uri_from_counted_string.
+
+	* src/raptor.h, src/raptor_uri.c:
+	Added new uri constructor raptor_new_uri_from_counted_string 
+	
+	(raptor_new_uri_from_counted_string): Added 
+
+	(raptor_new_uri): Now a wrapper around
+	raptor_new_uri_from_counted_string.
+
+2010-01-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	Use raptor_term instead of URIs and 'fake' URIs
+
+	raptor_rss_group_map uses a raptor_term as identifier, not URI.
+	
+	(raptor_free_group_map): Free term.  
+
+	(raptor_rss_group_map_compare): Compare terms.  
+
+	(raptor_rss10_get_group_item): Use terms in search.  
+
+	(raptor_rss10_set_item_group): Use term to create a new gm.  
+
+	(raptor_rss10_move_statements,
+	raptor_rss10_move_anonymous_statements,
+	raptor_rss10_store_statement): Replace URIs with terms from subject,
+	removing all fake_uri.  
+
+	(raptor_rss10_serialize_statement, raptor_rss10_build_items): Use
+	item term for calling raptor_rss10_set_item_group
+
+	* src/raptor_serialize_rss.c:
+	Use raptor_term for rdf:Seq node identity and remove a fake_uri
+
+	raptor_rss10_serializer_context replace seq_uri with raptor_term*
+	seq_term
+	
+	(raptor_rss10_serialize_terminate): Free term.  
+
+	(raptor_rss10_serialize_statement): Copy statement subject to get
+	seq node identity.  
+
+	(raptor_rss10_build_items): Use seq_term for comparisons with
+	subject and delete fake_uri
+
+	* raptor.rdf.in: GITRepository
+
 2010-01-21  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_lexer.l:
