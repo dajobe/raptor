@@ -1047,15 +1047,15 @@ typedef struct raptor_sequence_s raptor_sequence;
 typedef void (raptor_sequence_free_handler(void* object));
 
 /**
- * raptor_sequence_free_handler_v2:
+ * raptor_sequence_context_free_handler:
  * @context: context data for the free handler
  * @object: object to free
  *
- * Handler function for freeing a sequence item.
+ * Handler function for freeing a sequence item with a contextual pointer.
  *
- * Set by raptor_new_sequence_v2().
+ * Set by raptor_new_sequence_with_context().
 */
-typedef void (raptor_sequence_free_handler_v2(void* context, void* object));
+typedef void (raptor_sequence_context_free_handler(void* context, void* object));
 
 /**
  * raptor_sequence_print_handler:
@@ -1069,22 +1069,22 @@ typedef void (raptor_sequence_free_handler_v2(void* context, void* object));
 typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
 
 /**
- * raptor_sequence_print_handler_v2:
+ * raptor_sequence_context_print_handler:
  * @context: context data for the print handler
  * @object: object to print
  * @fh: FILE* to print to
  *
  * Handler function for printing a sequence item.
  *
- * Set by raptor_new_sequence_v2()
+ * Set by raptor_new_sequence_with_context()
  */
-typedef void (raptor_sequence_print_handler_v2(void *context, void *object, FILE *fh));
+typedef void (raptor_sequence_context_print_handler(void *context, void *object, FILE *fh));
 
 /* Create */
 RAPTOR_API
 raptor_sequence* raptor_new_sequence(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler);
 RAPTOR_API
-raptor_sequence* raptor_new_sequence_v2(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context);
+raptor_sequence* raptor_new_sequence_with_context(raptor_sequence_context_free_handler* free_handler, raptor_sequence_context_print_handler* print_handler, void* handler_context);
 /* Destroy */
 RAPTOR_API
 void raptor_free_sequence(raptor_sequence* seq);

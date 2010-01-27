@@ -259,7 +259,7 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->rdf_parser = rdf_parser;
 
   /* Sequence of URIs of XSLT sheets to transform the document */
-  grddl_parser->doc_transform_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, rdf_parser->world);
+  grddl_parser->doc_transform_uris = raptor_new_sequence_with_context((raptor_sequence_context_free_handler*)grddl_free_xml_context, NULL, rdf_parser->world);
 
   grddl_parser->grddl_processing = 1;
   grddl_parser->xinclude_processing = 1;
@@ -290,7 +290,7 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_grddl_parse_init_common(rdf_parser, name);
 
   /* Sequence of URIs from <head profile> */
-  grddl_parser->profile_uris = raptor_new_sequence_v2((raptor_sequence_free_handler_v2*)grddl_free_xml_context, NULL, (void*)world);
+  grddl_parser->profile_uris = raptor_new_sequence_with_context((raptor_sequence_context_free_handler*)grddl_free_xml_context, NULL, (void*)world);
 
   grddl_parser->namespace_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_namespaceTransformation_uri_string, GRDDL_NAMESPACETRANSFORMATION_URI_STRING_LEN);
   grddl_parser->profile_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_profileTransformation_uri_string, GRDDL_PROFILETRANSFORMATION_URI_STRING_LEN);
