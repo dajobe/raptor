@@ -642,7 +642,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   buffer = raptor_vsnprintf(message, arguments);
   if(!buffer) {
     if(locator && world) {
-      raptor_print_locator(stderr, locator);
+      raptor_print_locator(locator, stderr);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);
@@ -700,7 +700,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
     handler(handler_data, locator, message);
   else {
     if(locator && world) {
-      raptor_print_locator(stderr, locator);
+      raptor_print_locator(locator, stderr);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);

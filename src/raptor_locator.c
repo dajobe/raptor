@@ -50,14 +50,14 @@
 
 /**
  * raptor_print_locator:
- * @stream: stream to print to
  * @locator: #raptor_locator to print
+ * @stream: stream to print to
  *
  * Print a raptor locator to a stream.
  * 
  **/
 void
-raptor_print_locator(FILE *stream, raptor_locator* locator) 
+raptor_print_locator(raptor_locator* locator, FILE *stream)
 {
   if(!locator)
     return;
