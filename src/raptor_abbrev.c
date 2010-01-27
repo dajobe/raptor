@@ -235,7 +235,7 @@ raptor_compare_abbrev_po(raptor_abbrev_node** nodes1,
 
 #ifdef RAPTOR_DEBUG
 static void
-raptor_print_abbrev_po(FILE* handle, raptor_abbrev_node** nodes)
+raptor_print_abbrev_po(raptor_abbrev_node** nodes, FILE* handle)
 {
   raptor_abbrev_node* p = nodes[0];
   raptor_abbrev_node* o = nodes[1];
@@ -290,11 +290,11 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
                          0);
 #ifdef RAPTOR_DEBUG
     raptor_avltree_set_print_handler(subject->properties,
-                                     (raptor_data_print_function)raptor_print_abbrev_po);
+                                     (raptor_data_print_handler*)raptor_print_abbrev_po);
 #endif
 
     subject->list_items =
-      raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_abbrev_node, NULL);
+      raptor_new_sequence((raptor_data_free_handler *)raptor_free_abbrev_node, NULL);
 
     if(!subject->node || !subject->properties || !subject->list_items) {
       raptor_free_abbrev_subject(subject);

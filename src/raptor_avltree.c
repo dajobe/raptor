@@ -916,7 +916,7 @@ raptor_avltree_size(raptor_avltree* tree)
  */
 void
 raptor_avltree_set_print_handler(raptor_avltree* tree,
-                                 raptor_data_print_function print_fn)
+                                 raptor_data_print_handler* print_fn)
 {
   tree->print_fn = print_fn;
 }
@@ -1405,12 +1405,12 @@ raptor_avltree_print(raptor_avltree* tree, FILE* stream)
   for(i = 0, (iter = raptor_new_avltree_iterator(tree, NULL, NULL, 1));
       iter && !rv;
       i++, (rv = raptor_avltree_iterator_next(iter))) {
-    const void* data = raptor_avltree_iterator_get(iter);
+    void* data = raptor_avltree_iterator_get(iter);
     if(!data)
       continue;
     fprintf(stream, "%d) ", i);
     if(tree->print_fn)
-      tree->print_fn(stream, data);
+      tree->print_fn(data, stream);
     else
       fprintf(stream, "Data Node %p\n", data);
   }
@@ -1435,7 +1435,7 @@ raptor_avltree_dump_internal(raptor_avltree* tree, raptor_avltree_node* node,
   if(tree->print_fn) {
     for(i= 0; i < depth; i++)
       fputs("  ", stream);
-    tree->print_fn(stream, node->data);
+    tree->print_fn(node->data, stream);
   }
   
   if(!raptor_avltree_dump_internal(tree, node->left, depth+1, stream))

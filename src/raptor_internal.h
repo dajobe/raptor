@@ -250,7 +250,6 @@ typedef struct raptor_avltree_node_s raptor_avltree_node;
 typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
 typedef void (*raptor_data_free_function)(void* data);
 typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
-typedef void (*raptor_data_print_function)(FILE* handle, const void* data);
 
 /* AVL-tree */
 struct raptor_avltree_s {
@@ -267,7 +266,7 @@ struct raptor_avltree_s {
   raptor_data_free_function free_fn;
 
   /* node print function (optional) */
-  raptor_data_print_function print_fn;
+  raptor_data_print_handler* print_fn;
 
   /* tree flags (none defined at present) */
   unsigned int flags;
@@ -1393,7 +1392,7 @@ int raptor_avltree_delete(raptor_avltree* tree, void* p_user);
 void* raptor_avltree_search(raptor_avltree* tree, const void* p_user);
 int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
 int raptor_avltree_size(raptor_avltree* tree);
-void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_function print_fn);
+void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_handler print_fn);
 void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
 
 #ifdef RAPTOR_DEBUG
