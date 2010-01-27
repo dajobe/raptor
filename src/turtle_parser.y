@@ -358,10 +358,10 @@ objectList: objectList COMMA object
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
-    $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement,
-                             (raptor_sequence_print_handler*)raptor_statement_print);
+    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement,
+                             (raptor_data_print_handler*)raptor_statement_print);
 #else
-    $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);
@@ -442,10 +442,10 @@ itemList: itemList object
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
-    $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement,
-                             (raptor_sequence_print_handler*)raptor_statement_print);
+    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement,
+                             (raptor_data_print_handler*)raptor_statement_print);
 #else
-    $$ = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);

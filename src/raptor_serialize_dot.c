@@ -118,17 +118,17 @@ raptor_dot_serializer_init(raptor_serializer *serializer, const char *name)
 
   /* Setup namespace handling */
   context->nstack = raptor_new_namespaces(serializer->world, 1);
-  context->namespaces = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_namespace, NULL);
+  context->namespaces = raptor_new_sequence((raptor_data_free_handler *)raptor_free_namespace, NULL);
 
   /* We keep a list of nodes to avoid duplication (which isn't
    * critical in graphviz, but why bloat the file?)
    */
   context->resources =
-    raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_term, NULL);
+    raptor_new_sequence((raptor_data_free_handler*)raptor_free_term, NULL);
   context->literals =
-    raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_term, NULL);
+    raptor_new_sequence((raptor_data_free_handler*)raptor_free_term, NULL);
   context->bnodes =
-    raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_term, NULL);
+    raptor_new_sequence((raptor_data_free_handler*)raptor_free_term, NULL);
 
   return 0;
 }

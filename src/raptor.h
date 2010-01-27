@@ -1044,10 +1044,10 @@ typedef struct raptor_sequence_s raptor_sequence;
  *
  * Set by raptor_new_sequence().
 */
-typedef void (raptor_sequence_free_handler(void* object));
+typedef void (raptor_data_free_handler)(void* object);
 
 /**
- * raptor_sequence_context_free_handler:
+ * raptor_data_context_free_handler:
  * @context: context data for the free handler
  * @object: object to free
  *
@@ -1055,36 +1055,36 @@ typedef void (raptor_sequence_free_handler(void* object));
  *
  * Set by raptor_new_sequence_with_context().
 */
-typedef void (raptor_sequence_context_free_handler(void* context, void* object));
+typedef void (raptor_data_context_free_handler)(void* context, void* object);
 
 /**
- * raptor_sequence_print_handler:
+ * raptor_data_print_handler:
  * @object: object to print
  * @fh: FILE* to print to
  *
- * Handler function for printing a sequence item.
+ * Handler function for printing an object to a stream.
  *
  * Set by raptor_new_sequence()
  */
-typedef void (raptor_sequence_print_handler(void *object, FILE *fh));
+typedef int (raptor_data_print_handler)(void *object, FILE *fh);
 
 /**
- * raptor_sequence_context_print_handler:
+ * raptor_data_context_print_handler:
  * @context: context data for the print handler
  * @object: object to print
  * @fh: FILE* to print to
  *
- * Handler function for printing a sequence item.
+ * Handler function for printing an object with data context to a stream.
  *
  * Set by raptor_new_sequence_with_context()
  */
-typedef void (raptor_sequence_context_print_handler(void *context, void *object, FILE *fh));
+typedef int (raptor_data_context_print_handler)(void *context, void *object, FILE *fh);
 
 /* Create */
 RAPTOR_API
-raptor_sequence* raptor_new_sequence(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler);
+raptor_sequence* raptor_new_sequence(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler);
 RAPTOR_API
-raptor_sequence* raptor_new_sequence_with_context(raptor_sequence_context_free_handler* free_handler, raptor_sequence_context_print_handler* print_handler, void* handler_context);
+raptor_sequence* raptor_new_sequence_with_context(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context);
 /* Destroy */
 RAPTOR_API
 void raptor_free_sequence(raptor_sequence* seq);

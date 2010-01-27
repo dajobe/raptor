@@ -92,7 +92,7 @@ raptor_parsers_init(raptor_world *world)
 {
   int rc = 0;
 
-  world->parsers = raptor_new_sequence((raptor_sequence_free_handler *)raptor_free_parser_factory, NULL);
+  world->parsers = raptor_new_sequence((raptor_data_free_handler*)raptor_free_parser_factory, NULL);
   if(!world->parsers)
     return 1;
   
@@ -213,7 +213,7 @@ raptor_parser_register_factory(raptor_world* world,
   strcpy(label_copy, label);
   parser->label = label_copy;
 
-  parser->mime_types = raptor_new_sequence((raptor_sequence_free_handler*)raptor_free_type_q, NULL);
+  parser->mime_types = raptor_new_sequence((raptor_data_free_handler*)raptor_free_type_q, NULL);
   if(!parser->mime_types)
     goto tidy;
 

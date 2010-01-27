@@ -2,7 +2,7 @@
  *
  * raptor_sequence.c - Raptor sequence support
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -79,10 +79,10 @@ struct raptor_sequence_s {
 
 
   /* handler to call to free a data item (or NULL) */
-  raptor_sequence_free_handler *free_handler;
+  raptor_data_free_handler *free_handler;
 
   /* handler to call to print a data item (or NULL) */
-  raptor_sequence_print_handler *print_handler;
+  raptor_data_print_handler *print_handler;
 
 
   /* context pointer for @context_free_handler and @context_print_handler */
@@ -90,12 +90,12 @@ struct raptor_sequence_s {
 
   /* handler to call to free a data item (or NULL) also passing in
    * as first arg the @handler_context */
-  raptor_sequence_context_free_handler *context_free_handler;
+  raptor_data_context_free_handler *context_free_handler;
 
   /* handler to call to print a data item (or NULL) also passing in
    * as first arg the @handler_context
    */
-  raptor_sequence_context_print_handler *context_print_handler;
+  raptor_data_context_print_handler *context_print_handler;
 };
 
 
@@ -119,8 +119,8 @@ static int raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_a
  * Return value: a new #raptor_sequence or NULL on failure 
  **/
 raptor_sequence*
-raptor_new_sequence(raptor_sequence_free_handler *free_handler,
-                    raptor_sequence_print_handler *print_handler)
+raptor_new_sequence(raptor_data_free_handler *free_handler,
+                    raptor_data_print_handler *print_handler)
 {
   raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
                                                          sizeof(*seq));
@@ -147,8 +147,8 @@ raptor_new_sequence(raptor_sequence_free_handler *free_handler,
  * Return value: a new #raptor_sequence or NULL on failure 
  **/
 raptor_sequence*
-raptor_new_sequence_with_context(raptor_sequence_context_free_handler *free_handler,
-                                 raptor_sequence_context_print_handler *print_handler,
+raptor_new_sequence_with_context(raptor_data_context_free_handler *free_handler,
+                                 raptor_data_context_print_handler *print_handler,
                                  void *handler_context)
 {
   raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
@@ -553,7 +553,7 @@ raptor_sequence_sort(raptor_sequence* seq,
  *
  * Helper function for printing a sequence of strings.
  *
- * Intended for use as a #raptor_sequence_print_handler passed into
+ * Intended for use as a #raptor_data_print_handler passed into
  * raptor_new_sequence().
  */
 void
@@ -646,8 +646,8 @@ int
 main(int argc, char *argv[]) 
 {
   const char *program = raptor_basename(argv[0]);
-  raptor_sequence* seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
-  raptor_sequence* seq2 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq1 = raptor_new_sequence(NULL, (raptor_data_print_handler*)raptor_sequence_print_string);
+  raptor_sequence* seq2 = raptor_new_sequence(NULL, (raptor_data_print_handler*)raptor_sequence_print_string);
   char *s;
   int i;
 
@@ -719,7 +719,7 @@ main(int argc, char *argv[])
 
   /* test sequence growing */
   
-  seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  seq1 = raptor_new_sequence(NULL, (raptor_data_print_handler*)raptor_sequence_print_string);
   for(i = 0; i < 100; i++)
     if(raptor_sequence_shift(seq1, (void*)"foo")) {
       fprintf(stderr, "%s: raptor_sequence_shift failed\n", program);
@@ -731,7 +731,7 @@ main(int argc, char *argv[])
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 0);
   raptor_free_sequence(seq1);
 
-  seq1 = raptor_new_sequence(NULL, (raptor_sequence_print_handler*)raptor_sequence_print_string);
+  seq1 = raptor_new_sequence(NULL, (raptor_data_print_handler*)raptor_sequence_print_string);
   for(i = 0; i < 100; i++)
     if(raptor_sequence_push(seq1, (void*)"foo")) {
       fprintf(stderr, "%s: raptor_sequence_push failed\n", program);
