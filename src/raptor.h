@@ -814,7 +814,7 @@ raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 
 /* Utility functions */
 RAPTOR_API
-int raptor_print_ntriples_string(FILE *stream, const unsigned char *string, const char delim);
+int raptor_print_ntriples_string(const unsigned char *string, const char delim, FILE *stream);
 RAPTOR_API
 int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API
