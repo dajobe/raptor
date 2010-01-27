@@ -1304,8 +1304,9 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
  *
  * Print a URI to a file handle.
  *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_uri_print(const raptor_uri* uri, FILE *stream)
 {
   int rc = 0;
@@ -1320,9 +1321,12 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream)
     rc = fwrite("(NULL URI)", len, 1, stream);
   }
   
-  if(rc < (int)len)
+  rc = (rc < (int)len);
+  if(rc)
     raptor_log_error_formatted(uri->world, RAPTOR_LOG_LEVEL_ERROR,
                                NULL, "fwrite failed - %s", strerror(errno));
+
+  return rc;
 }
 
 

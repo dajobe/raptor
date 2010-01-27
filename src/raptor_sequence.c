@@ -569,13 +569,16 @@ raptor_sequence_print_string(char *data, FILE *fh)
  * @fh: file handle
  *
  * Print the sequence contents using the print_handler to print the data items.
+ *
+ * Return value: non-0 on failure
  */
-void
+int
 raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 {
+  int rc = 0;
   int i;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   fputc('[', fh);
   for(i = 0; i < seq->size; i++) {
@@ -591,6 +594,8 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
       fputs("(empty)", fh);
   }
   fputc(']', fh);
+
+  return rc;
 }
 
 

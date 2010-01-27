@@ -183,10 +183,14 @@ raptor_free_statement(raptor_statement *statement)
  * @stream: #FILE* stream
  *
  * Print a raptor_statement to a stream.
+ *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_statement_print(const raptor_statement * statement, FILE *stream) 
 {
+  int rc = 0;
+  
   fputc('[', stream);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
@@ -233,6 +237,8 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
   }
 
   fputc(']', stream);
+  
+  return rc;
 }
 
 
@@ -356,9 +362,10 @@ raptor_term_as_string(raptor_term *term)
 }
 
 
-void
+int
 raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
 {
+  int rc = 0;
   raptor_uri* uri;
   
   switch(term->type) {
@@ -394,7 +401,10 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
+      rc = 1;
   }
+
+  return rc;
 }
 
 
@@ -404,18 +414,24 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
  * @stream: #FILE* stream
  *
  * Print a raptor_statement in N-Triples form.
- * 
+ *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_statement_print_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
-  raptor_term_print_as_ntriples(stream, statement->subject);
+  if(raptor_term_print_as_ntriples(stream, statement->subject))
+    return 1;
   fputc(' ', stream);
-  raptor_term_print_as_ntriples(stream, statement->predicate);
+  if(raptor_term_print_as_ntriples(stream, statement->predicate))
+    return 1;
   fputc(' ', stream);
-  raptor_term_print_as_ntriples(stream, statement->object);
+  if(raptor_term_print_as_ntriples(stream, statement->object))
+    return 1;
   fputs(" .", stream);
+
+  return 0;
 }
 
  

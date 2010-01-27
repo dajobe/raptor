@@ -649,9 +649,9 @@ RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
 
 RAPTOR_API
-void raptor_statement_print(const raptor_statement * statement, FILE *stream);
+int raptor_statement_print(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
-void raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
+int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
@@ -857,7 +857,7 @@ RAPTOR_API
 unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
 
 RAPTOR_API
-void raptor_uri_print(const raptor_uri* uri, FILE *stream);
+int raptor_uri_print(const raptor_uri* uri, FILE *stream);
 RAPTOR_API
 unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
 RAPTOR_API
@@ -1116,7 +1116,7 @@ void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, cons
 RAPTOR_API
 void raptor_sequence_print_string(char *data, FILE *fh);
 RAPTOR_API
-void raptor_sequence_print(raptor_sequence* seq, FILE* fh);
+int raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
 
