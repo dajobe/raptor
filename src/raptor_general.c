@@ -625,23 +625,6 @@ raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
 }
 
 
-/* internal */
-void
-raptor_log_error_to_handlers(raptor_world* world,
-                             raptor_error_handlers* error_handlers,
-                             raptor_log_level level,
-                             raptor_locator* locator, const char* message)
-{
-  if(level == RAPTOR_LOG_LEVEL_NONE)
-    return;
-
-  if(world->internal_ignore_errors)
-    return;
-
-  raptor_log_error(world, level, locator, message);
-}
-
-
 void
 raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
                          raptor_locator* locator,
