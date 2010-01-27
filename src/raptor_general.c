@@ -572,7 +572,8 @@ raptor_print_ntriples_string(const unsigned char *string,
  * Return value: ordinal integer or <0 if string is not a valid ordinal
  */
 int
-raptor_check_ordinal(const unsigned char *name) {
+raptor_check_ordinal(const unsigned char *name)
+{
   int ordinal= -1;
   unsigned char c;
 
