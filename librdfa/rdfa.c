@@ -101,7 +101,8 @@ void rdfa_init_context(rdfacontext* context)
    // and valgrind happy - they are not a part of the RDFa spec.
    context->bnode_count = 0;
    context->underscore_colon_bnode_name = NULL;
-   context->xml_literal_namespaces_inserted = 0;
+   context->xml_literal_namespaces_defined = 0;
+   context->xml_literal_xml_lang_defined = 0;
    context->content = NULL;
    context->datatype = NULL;
    context->property = NULL;
@@ -129,20 +130,28 @@ static size_t rdfa_init_base(
    rdfacontext* context, char** working_buffer, size_t* working_buffer_size,
    char* temp_buffer, size_t bytes_read)
 {
-   size_t temp_buffer_size = sizeof(char) * READ_BUFFER_SIZE;
    char* head_end = NULL;
    size_t offset = context->wb_offset;
+   int needed_size = (offset + bytes_read) - *working_buffer_size;
 
    // search for the end of <head>, stop if <head> was found
+
    // extend the working buffer size
-   if((offset + bytes_read) > *working_buffer_size)
+   if(needed_size > 0)
    {
+      size_t temp_buffer_size = sizeof(char) * READ_BUFFER_SIZE;
+      if((size_t)needed_size > temp_buffer_size)
+         temp_buffer_size += needed_size;
+
       *working_buffer_size += temp_buffer_size;
-      *working_buffer = (char*)realloc(working_buffer, *working_buffer_size);
+      // +1 for NUL at end, to allow strstr() etc. to work
+      *working_buffer = (char*)realloc(*working_buffer, *working_buffer_size + 1);
    }
    
    // append to the working buffer
    memmove(*working_buffer + offset, temp_buffer, bytes_read);
+   // ensure the buffer is a NUL-terminated string
+   *(*working_buffer + offset + bytes_read) = '\0';
  
    // search for the end of </head> in 
    head_end = strstr(*working_buffer, "</head>");
@@ -165,7 +174,7 @@ static size_t rdfa_init_base(
       {
          char* href_start = strstr(base_start, "href=");
          char* uri_start = href_start + 6;
-         char* uri_end = index(uri_start, '"');
+         char* uri_end = strchr(uri_start, '"');
 
          if((uri_start != NULL) && (uri_end != NULL))
          {
@@ -248,8 +257,10 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    rval->recurse = parent_context->recurse;
    rval->skip_element = 0;
    rval->callback_data = parent_context->callback_data;
-   rval->xml_literal_namespaces_inserted =
-      parent_context->xml_literal_namespaces_inserted;
+   rval->xml_literal_namespaces_defined =
+      parent_context->xml_literal_namespaces_defined;
+   rval->xml_literal_xml_lang_defined =
+      parent_context->xml_literal_xml_lang_defined;
 
    // inherit the parent context's new_subject
    // TODO: This is not anywhere in the syntax processing document
@@ -391,7 +402,6 @@ static void XMLCALL
    const char* content = NULL;
    const char* datatype_curie = NULL;
    char* datatype = NULL;
-   unsigned char insert_xml_lang_in_xml_literal = 0;
 
    rdfa_push_item(context_stack, context, RDFALIST_FLAG_CONTEXT);
 
@@ -414,8 +424,8 @@ static void XMLCALL
    context->xml_literal = rdfa_n_append_string(
       context->xml_literal, &context->xml_literal_size,
       name, strlen(name));
-   
-   if(!context->xml_literal_namespaces_inserted)
+
+   if(!context->xml_literal_namespaces_defined)
    {
       // append namespaces to XML Literal
 #ifdef LIBRDFA_IN_RAPTOR
@@ -429,8 +439,9 @@ static void XMLCALL
       char* umap_key = NULL;
       char* umap_value = NULL;
 
-      insert_xml_lang_in_xml_literal = 1;
-      
+      // if the namespaces are not defined, then neither is the xml:lang
+      context->xml_literal_xml_lang_defined = 0;
+
 #ifdef LIBRDFA_IN_RAPTOR
       ns_size = 0;
       ns_list = raptor_namespace_stack_to_array(nstack, &ns_size);
@@ -442,9 +453,9 @@ static void XMLCALL
       while(*umap != NULL)
 #endif
       {
-         unsigned char namespace_already_defined = 0;
-         const char* predefined_namespace = NULL;
-         const char* predefined_namespace_value = NULL;
+         unsigned char insert_xmlns_definition = 1;
+         const char* attr = NULL;
+         const char* value = NULL;
 
          // get the next mapping to process
 #ifdef LIBRDFA_IN_RAPTOR
@@ -464,22 +475,24 @@ static void XMLCALL
          if(attributes != NULL)
          {
             const char** attrs = attributes;
-            while((*attrs != NULL) && !namespace_already_defined)
+            while((*attrs != NULL) && insert_xmlns_definition)
             {
-               predefined_namespace = *attrs++;
-               predefined_namespace_value = *attrs++;
-               
-               if((strcmp(predefined_namespace, umap_key) == 0) ||
+               attr = *attrs++;
+               value = *attrs++;
+
+               // if the attribute is a umap_key, skip the definition
+               // of the attribute.
+               if((strcmp(attr, umap_key) == 0) ||
                   (strcmp(umap_key, XMLNS_DEFAULT_MAPPING) == 0))
                {
-                  namespace_already_defined = 1;
+                  insert_xmlns_definition = 0;
                }
             }
          }
 
          // if the namespace isn't already defined on the element,
          // copy it to the XML Literal string.
-         if(!namespace_already_defined)
+         if(insert_xmlns_definition)
          {
             // append the namespace attribute to the XML Literal
             context->xml_literal = rdfa_n_append_string(
@@ -506,25 +519,10 @@ static void XMLCALL
             context->xml_literal = rdfa_n_append_string(
                context->xml_literal, &context->xml_literal_size, "\"", 1);
          }
-         else
-         {
-            // append the namespace value
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size, " ", 1);
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size,
-               predefined_namespace, strlen(predefined_namespace));
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size, "=\"", 2);
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size,
-               predefined_namespace_value, strlen(predefined_namespace_value));
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size, "\"", 1);
-         }
-         namespace_already_defined = 0;         
+         
+         insert_xmlns_definition = 1;
       } /* end while umap not NULL */
-      context->xml_literal_namespaces_inserted = 1;
+      context->xml_literal_namespaces_defined = 1;
 
 #ifdef LIBRDFA_IN_RAPTOR
       if(ns_list)
@@ -549,14 +547,18 @@ static void XMLCALL
          // append the attribute-value pair to the XML literal
          literal_text = (char*)malloc(strlen(attr) + strlen(value) + 5);
          sprintf(literal_text, " %s=\"%s\"", attr, value);
-         if(strstr("xmlns", attr) == NULL)
-         {
-            context->xml_literal = rdfa_n_append_string(
-               context->xml_literal, &context->xml_literal_size,
-               literal_text, strlen(literal_text));
-         }
+         context->xml_literal = rdfa_n_append_string(
+            context->xml_literal, &context->xml_literal_size,
+            literal_text, strlen(literal_text));
          free(literal_text);
          
+         // if xml:lang is defined, ensure that it is not overwritten
+         if(strcmp(attr, "xml:lang") == 0)
+         {
+            context->xml_literal_xml_lang_defined = 1;
+         }
+
+         // process all of the RDFa attributes
          if(strcmp(attr, "about") == 0)
          {
             about_curie = value;
@@ -650,9 +652,10 @@ static void XMLCALL
    }
 #endif
    // check to see if we should append an xml:lang to the XML Literal
-   // if one is defined in the context and does not exist on the element.
+   // if one is defined in the context and does not exist on the
+   // element.
    if((xml_lang == NULL) && (context->language != NULL) &&
-      insert_xml_lang_in_xml_literal)
+      !context->xml_literal_xml_lang_defined)
    {
       context->xml_literal = rdfa_n_append_string(
          context->xml_literal, &context->xml_literal_size,
@@ -662,6 +665,9 @@ static void XMLCALL
          context->language, strlen(context->language));
       context->xml_literal = rdfa_n_append_string(
          context->xml_literal, &context->xml_literal_size, "\"", 1);
+
+      // ensure that the lang isn't set in a subtree (unless it's overwritten)
+      context->xml_literal_xml_lang_defined = 1;
    }
    
    // close the XML Literal value
@@ -791,7 +797,7 @@ static void XMLCALL
    // point on...
    if(property != NULL)
    {
-      context->xml_literal_namespaces_inserted = 0;
+      context->xml_literal_namespaces_defined = 0;
    }
    
    // save these for processing steps #9 and #10
@@ -902,8 +908,8 @@ static void XMLCALL
       if(context->xml_literal != NULL)
       {
          // get the data between the first tag and the last tag
-         content_start = index(context->xml_literal, '>');
-         content_end = rindex(context->xml_literal, '<');
+         content_start = strchr(context->xml_literal, '>');
+         content_end = strrchr(context->xml_literal, '<');
          
          if((content_start != NULL) && (content_end != NULL))
          {
@@ -1220,7 +1226,10 @@ int rdfa_parse_start(rdfacontext* context)
    int rval = RDFA_PARSE_SUCCESS;
    
    context->wb_allocated = sizeof(char) * READ_BUFFER_SIZE;
-   context->working_buffer = (char*)calloc(context->wb_allocated, sizeof(char));
+   // +1 for NUL at end, to allow strstr() etc. to work
+   // malloc - only the first char needs to be NUL
+   context->working_buffer = (char*)malloc(context->wb_allocated + 1);
+   *context->working_buffer = '\0';
 
 #ifndef LIBRDFA_IN_RAPTOR
    context->parser = XML_ParserCreate(NULL);
@@ -1301,8 +1310,8 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
 #endif
                  "%s at line %d, column %d\n",
                  XML_ErrorString(XML_GetErrorCode(context->parser)),
-                 XML_GetCurrentLineNumber(context->parser),
-                 XML_GetCurrentColumnNumber(context->parser));
+                 (int)XML_GetCurrentLineNumber(context->parser),
+                 (int)XML_GetCurrentColumnNumber(context->parser));
          return RDFA_PARSE_FAILED;
       }
 #endif
@@ -1328,8 +1337,8 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
 #endif
               "%s at line %d, column %d.\n",
               XML_ErrorString(XML_GetErrorCode(context->parser)),
-              XML_GetCurrentLineNumber(context->parser),
-              XML_GetCurrentColumnNumber(context->parser));
+              (int)XML_GetCurrentLineNumber(context->parser),
+              (int)XML_GetCurrentColumnNumber(context->parser));
       return RDFA_PARSE_FAILED;
    }
 #endif   

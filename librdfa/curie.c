@@ -30,13 +30,13 @@
 
 // These are all of the @rel/@rev reserved words in XHTML 1.1 that
 // should generate triples.
-#define XHTML_RELREV_RESERVED_WORDS_SIZE 23
+#define XHTML_RELREV_RESERVED_WORDS_SIZE 24
 static const char* const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
 {
    "alternate", "appendix", "bookmark", "chapter", "cite", "contents",
-   "copyright", "glossary", "help", "icon", "index", "meta", "next", "p3pv1",
-   "prev", "role",  "section",  "stylesheet", "subsection",  "start",
-   "license", "up", "last"
+   "copyright", "first", "glossary", "help", "icon", "index",
+   "meta", "next", "p3pv1", "prev", "role",  "section",  "stylesheet",
+   "subsection",  "start", "license", "up", "last"
 };
 
 // The base XHTML vocab URL is used to resolve URIs that are reserved
@@ -131,25 +131,31 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       // end of the host part.
       if(end_index != NULL)
       {
+         char* rval_copy;
+
 	 *end_index = '\0';
 	 
 	 // if the '/' character after the host part was found, copy the host
 	 // part and append the given URI to the URI.
-	 rval = rdfa_replace_string(rval, tmp);
-	 rval = rdfa_join_string(rval, uri);
+	 rval_copy = rdfa_replace_string(rval, tmp);
+	 rval = rdfa_join_string(rval_copy, uri);
+         free(rval_copy);
       }
       else
       {
          // append the host part and the URI part as-is, ensuring that a 
 	 // '/' exists at the end of the host part.
  	 unsigned int tlen = strlen(tmp) - 1;
-	 rval = rdfa_replace_string(rval, tmp);
+         char* rval_copy;
+
+	 rval_copy = rdfa_replace_string(rval, tmp);
 
 	 if(rval[tlen] == '/')
 	 {
 	    rval[tlen] = '\0';
 	 }
-	 rval = rdfa_join_string(rval, uri);
+	 rval = rdfa_join_string(rval_copy, uri);
+         free(rval_copy);
       }
 
       free(tmp);
@@ -165,7 +171,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       {
          // if we have a relative URI, chop off the name of the file
          // and replace it with the relative pathname
-         char* end_index = rindex(context->base, '/');
+         char* end_index = strrchr(context->base, '/');
 
          if(end_index != NULL)
          {
@@ -173,7 +179,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
             char* end_index2;
 
             tmpstr = rdfa_replace_string(tmpstr, context->base);
-            end_index2= rindex(tmpstr, '/');
+            end_index2= strrchr(tmpstr, '/');
             end_index2++;
             *end_index2 = '\0';
 
@@ -366,15 +372,15 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
       resource++;
    }
 
-   // search all of the XHTML @rel/@rev reserved words for a match
-   // against the given URI
+   // search all of the XHTML @rel/@rev reserved words for a
+   // case-insensitive match against the given URI
    for(i = 0; i < XHTML_RELREV_RESERVED_WORDS_SIZE; i++)
    {
-      if(strcmp(g_relrev_reserved_words[i], resource) == 0)
+      if(strcasecmp(g_relrev_reserved_words[i], resource) == 0)
       {
          // since the URI is a reserved word for @rel/@rev, generate
          // the full IRI and stop the loop.
-         rval = rdfa_join_string(XHTML_VOCAB_URI, resource);         
+         rval = rdfa_join_string(XHTML_VOCAB_URI, g_relrev_reserved_words[i]);
          i = XHTML_RELREV_RESERVED_WORDS_SIZE;
       }
    }
@@ -399,7 +405,8 @@ rdfalist* rdfa_resolve_curie_list(
    working_uris = rdfa_replace_string(working_uris, uris);
 
    // go through each item in the list of CURIEs and resolve each
-   ctoken = strtok_r(working_uris, " ", &uptr);
+   ctoken = strtok_r(working_uris, RDFA_WHITESPACE, &uptr);
+   
    while(ctoken != NULL)
    {
       char* resolved_curie = NULL;
@@ -424,7 +431,7 @@ rdfalist* rdfa_resolve_curie_list(
          free(resolved_curie);
       }
       
-      ctoken = strtok_r(NULL, " ", &uptr);
+      ctoken = strtok_r(NULL, RDFA_WHITESPACE, &uptr);
    }
    
    free(working_uris);

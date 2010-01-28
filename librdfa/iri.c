@@ -39,12 +39,12 @@ char* rdfa_iri_get_base(const char* iri)
    char* eindex = 0;
 
    // search to see if there is iquery separator
-   eindex = index(iri, '?');
+   eindex = strchr(iri, '?');
    if(eindex == NULL)
    {
       // if there is no iquery separator, check to see if there is an
       // ifragment separator
-      eindex = index(iri, '#');
+      eindex = strchr(iri, '#');
    }
 
    // check to see if the output string needs to be different from the
