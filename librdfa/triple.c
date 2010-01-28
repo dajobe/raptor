@@ -437,7 +437,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       current_object_literal = context->content;
       type = RDF_TYPE_PLAIN_LITERAL;
    }
-   else if(index(context->xml_literal, '<') == NULL)
+   else if(strchr(context->xml_literal, '<') == NULL)
    {      
       current_object_literal = context->plain_literal;
       type = RDF_TYPE_PLAIN_LITERAL;
@@ -467,7 +467,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    // [current element], i.e., not including the element itself, and
    // giving it a datatype of rdf:XMLLiteral.
    if((current_object_literal == NULL) &&
-      (index(context->xml_literal, '<') != NULL) &&
+      (strchr(context->xml_literal, '<') != NULL) &&
       ((context->datatype == NULL) ||
        (strcmp(context->datatype,
                "http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral") == 0)))

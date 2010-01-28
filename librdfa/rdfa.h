@@ -36,6 +36,13 @@
 #define _LIBRDFA_RDFA_H_
 #include <stdlib.h>
 
+// Activate the stupid Windows DLL exporting mechanism if we're building for Windows
+#ifdef WIN32
+#define DLLEXPORT __declspec(dllexport) 
+#else
+#define DLLEXPORT 
+#endif
+
 #ifdef LIBRDFA_IN_RAPTOR
 #ifdef HAVE_CONFIG_H
 #include <raptor_config.h>
@@ -51,7 +58,7 @@
 #endif
 
 #ifdef __cplusplus
-extern "C"
+extern "C" 
 {
 #endif
 
@@ -67,6 +74,8 @@ extern "C"
 
 #define XMLNS_DEFAULT_MAPPING "XMLNS_DEFAULT"
 
+#define RDFA_WHITESPACE " \t\n\v\f\r"
+   
 /**
  * An RDF resource type is used to denote the content of a triple's
  * object value.
@@ -170,7 +179,8 @@ typedef struct rdfacontext
    /* parse state */
    size_t bnode_count;
    char* underscore_colon_bnode_name;
-   unsigned char xml_literal_namespaces_inserted;
+   unsigned char xml_literal_namespaces_defined;
+   unsigned char xml_literal_xml_lang_defined;
    size_t wb_allocated;
    char* working_buffer;
    size_t wb_offset;
@@ -200,7 +210,7 @@ typedef struct rdfacontext
  * @return a pointer to the base RDFa context, or NULL if memory
  *         allocation failed.
  */
-rdfacontext* rdfa_create_context(const char* base);
+DLLEXPORT rdfacontext* rdfa_create_context(const char* base);
 
 /**
  * Sets the triple handler for the application.
@@ -208,7 +218,7 @@ rdfacontext* rdfa_create_context(const char* base);
  * @param context the base rdfa context for the application.
  * @param th the triple handler function.
  */
-void rdfa_set_triple_handler(rdfacontext* context, triple_handler_fp th);
+DLLEXPORT void rdfa_set_triple_handler(rdfacontext* context, triple_handler_fp th);
 
 /**
  * Sets the buffer filler for the application.
@@ -216,7 +226,7 @@ void rdfa_set_triple_handler(rdfacontext* context, triple_handler_fp th);
  * @param context the base rdfa context for the application.
  * @param bf the buffer filler function.
  */
-void rdfa_set_buffer_filler(rdfacontext* context, buffer_filler_fp bf);
+DLLEXPORT void rdfa_set_buffer_filler(rdfacontext* context, buffer_filler_fp bf);
 
 /**
  * Starts processing given the base rdfa context.
@@ -227,17 +237,17 @@ void rdfa_set_buffer_filler(rdfacontext* context, buffer_filler_fp bf);
  *         if there was a fatal error and RDFA_PARSE_WARNING if there
  *         was a non-fatal error.
  */
-int rdfa_parse(rdfacontext* context);
+DLLEXPORT int rdfa_parse(rdfacontext* context);
 
-int rdfa_parse_start(rdfacontext* context);
+DLLEXPORT int rdfa_parse_start(rdfacontext* context);
 
-int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done);
+DLLEXPORT int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done);
 
-void rdfa_parse_end(rdfacontext* context);
+DLLEXPORT void rdfa_parse_end(rdfacontext* context);
 
-void rdfa_init_context(rdfacontext* context);
+DLLEXPORT void rdfa_init_context(rdfacontext* context);
 
-char* rdfa_iri_get_base(const char* iri);
+DLLEXPORT char* rdfa_iri_get_base(const char* iri);
 
 /**
  * Destroys the given rdfa context by freeing all memory associated
@@ -245,7 +255,7 @@ char* rdfa_iri_get_base(const char* iri);
  *
  * @param context the rdfa context.
  */
-void rdfa_free_context(rdfacontext* context);
+DLLEXPORT void rdfa_free_context(rdfacontext* context);
 
 #ifdef __cplusplus
 }
