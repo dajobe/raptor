@@ -283,7 +283,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 
       s = buffer;
       *s++ ='"';
-      /* raptor_print_ntriples_string(stream, (const char*)term, '"'); */
+      /* raptor_print_ntriples_string((const char*)term, '"', stream); */
       strcpy((char*)s, (const char*)term->value.literal.string);
       s+= term_len;
       *s++ ='"';
@@ -325,7 +325,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 
       s = buffer;
       *s++ ='<';
-      /* raptor_print_ntriples_string(stream, raptor_uri_as_string(term->value.uri), '\0'); */
+      /* raptor_print_ntriples_string(raptor_uri_as_string(term->value.uri), '\0', stream); */
       strcpy((char*)s, (const char*)uri_string);
       s+= uri_len;
       *s++ ='>';
@@ -371,7 +371,7 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       fputc('"', stream);
-      raptor_print_ntriples_string(stream, term->value.literal.string, '"');
+      raptor_print_ntriples_string(term->value.literal.string, '"', stream);
       fputc('"', stream);
       if(term->value.literal.language) {
         fputc('@', stream);
@@ -394,7 +394,7 @@ raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
     case RAPTOR_TERM_TYPE_URI:
       uri = term->value.uri;
       fputc('<', stream);
-      raptor_print_ntriples_string(stream, raptor_uri_as_string(uri), '\0');
+      raptor_print_ntriples_string(raptor_uri_as_string(uri), '\0', stream);
       fputc('>', stream);
       break;
       

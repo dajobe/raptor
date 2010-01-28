@@ -498,19 +498,18 @@ const unsigned int raptor_xml_literal_datatype_uri_string_len = 53;
 
 /**
  * raptor_print_ntriples_string:
- * @stream: FILE* stream to print to
  * @string: UTF-8 string to print
  * @delim: Delimiter character for string (such as ") or \0 for no delim
  * escaping.
+ * @stream: FILE* stream to print to
  *
  * Print an UTF-8 string using N-Triples escapes.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
 int
-raptor_print_ntriples_string(FILE *stream,
-                             const unsigned char *string,
-                             const char delim) 
+raptor_print_ntriples_string(const unsigned char *string,
+                             const char delim, FILE *stream) 
 {
   unsigned char c;
   size_t len = strlen((const char*)string);
@@ -642,7 +641,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   buffer = raptor_vsnprintf(message, arguments);
   if(!buffer) {
     if(locator && world) {
-      raptor_print_locator(stderr, locator);
+      raptor_print_locator(locator, stderr);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);
@@ -700,7 +699,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
     handler(handler_data, locator, message);
   else {
     if(locator && world) {
-      raptor_print_locator(stderr, locator);
+      raptor_print_locator(locator, stderr);
       fputc(' ', stderr);
     }
     fputs("raptor ", stderr);

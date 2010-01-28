@@ -682,7 +682,7 @@ void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 
 /* Utility functions */
 RAPTOR_API
-void raptor_print_locator(FILE *stream, raptor_locator* locator);
+void raptor_print_locator(raptor_locator* locator, FILE *stream);
 RAPTOR_API
 int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
 RAPTOR_API
@@ -814,7 +814,7 @@ raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
 
 /* Utility functions */
 RAPTOR_API
-int raptor_print_ntriples_string(FILE *stream, const unsigned char *string, const char delim);
+int raptor_print_ntriples_string(const unsigned char *string, const char delim, FILE *stream);
 RAPTOR_API
 int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
 RAPTOR_API
