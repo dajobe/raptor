@@ -14,8 +14,49 @@
 <p>Not yet released.
 </p>
 
-<p>1.4.21+ releases are bug fix releases of the Raptor 1 series.
+<p>This is a bug fix only release with no new features.  New
+development has moved to raptor 2 where a planned ABI and API break
+is underway.</p>
+
+<p>Fixed Issues:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=318">0000318</a>: Cannot end a Turtle literal with \\ inside triple-quotes</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=319">0000319</a>: ntriples parser does not register that it accepts ntriples mime type - text/plain</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=326">0000326</a>: Turtle parser allows '.' in qnames which is not-to-spec</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=331">0000331</a>: Turtle long literals with raw newlines do not count line numbers correctly</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=332">0000332</a>: RDFXML parser finds duplicates and misbehaves (when it shouldn't)</li>
+</ul>
+
+<h3>Parser changes</h3>
+
+<p>N-Triples parser: Declare acceptance of text/plain mime type with
+q=0.1
 </p>
+
+<p>RDFA parser (via librdfa): Updated to fix some buffer management
+problems when it was passed large blocks (4096 bytes or more), a few
+memory leaks and some other minor bugs.
+</p>
+
+<p>RDF/XML parser: Properly reset the ID-checking set at the start of
+each parse.</p>
+
+<p>Turtle parser: Allow \\ at the end of triple-quoted literals.
+Forbid '.'s in prefixes and qnames (follow specification).
+Properly count newlines inside the literals for error reporting.</p>
+
+<h3>Other Changes</h3>
+
+<p>Updated <code>configure</code> and the build system to use silent
+rules for the maintainer (by default), or when
+<code>--enable-silent-rules</code> is passed to
+<code>configure</code>.  This feature requires building with automake
+1.11 which requires autoconf 2.62 or newer when building from GIT.
+</p>
+
+<p><code>autogen.sh</code> script was updated to enforce the
+autotools versions above.</p>
+
 
 
 <h2 id="rel1_4_20"><a name="rel1_4_20">Raptor 1.4.20 Changes</a></h2>
