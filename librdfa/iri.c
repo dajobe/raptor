@@ -58,7 +58,7 @@ char* rdfa_iri_get_base(const char* iri)
    else
    {
       // the output string should be concatenated
-      unsigned int length = (unsigned int)eindex - (unsigned int)iri;
+      unsigned int length = (unsigned int)(eindex - iri);
       rval = (char*)malloc(length + 1);
       rval = strncpy(rval, iri, length);
       rval[length] = '\0';
