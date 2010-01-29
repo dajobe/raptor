@@ -1,0 +1,3 @@
+# Escape end-of-file
+@prefix :  <http://example.org/ex#> .
+:a :b """\
