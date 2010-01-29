@@ -164,12 +164,18 @@ static const char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
 %}
 
-/* from SPARQL */
+/* Tokens from SPARQL spec, adjusted for Turtle */
 LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
 NCCHAR1 [A-Za-z\\\x80-\xff]
 NCCHAR {NCCHAR1}|"-"|"_"|[0-9]
-NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
-NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
+/* SPARQL allows . in prefix after first position.   Would be:
+   NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
+*/
+NCNAME_PREFIX {NCCHAR1}{NCCHAR}*
+/* SPARQL allows . in name after first position.  Would be:
+  NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
+*/
+NCNAME ("_"|{NCCHAR1}){NCCHAR}*
 QNAME {NCNAME_PREFIX}?":"{NCNAME}?
 BNAME "_:"{NCNAME}
 
