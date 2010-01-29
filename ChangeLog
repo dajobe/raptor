@@ -1,4 +1,139 @@
-2009-11-28  Dave Beckett  <dave@dajobe.org>
+2010-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: Create a new set for checking for duplicate
+	rdf:ID at start of every parse.
+
+	(raptor_rdfxml_parse_init): Remove creating set from when parser
+	is constructed.
+
+	(raptor_rdfxml_parse_start): At start of parsing, delete any
+	existing id set and only create a new one if the feature
+	RAPTOR_FEATURE_CHECK_RDF_ID is enabled.
+
+	Fixes Issue#0000332 http://bugs.librdf.org/mantis/view.php?id=332
+
+	* src/turtle_lexer.l: Alter Turtle lexer to refuse to accept . in
+	namespace prefix/local names
+
+	Adjust Turtle lexer to match spec for the prefixName and name tokens:
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#prefixName
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#name
+
+	This makes some previously accepted not-to-spec turtle documents
+	be rejected.
+
+	It makes new bad turtle syntax tests bad-21 and bad-22 pass.
+
+	(NCNAME_PREFIX): Updated for prefixName
+
+	(NCNAME): Update for name
+
+	Fixes Issue#0000326 http://bugs.librdf.org/mantis/view.php?id=326
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-21.ttl,
+	tests/turtle/bad-22.ttl: Add bad turtle tests 21, 22 for . in
+	prefix and qname
+
+	* src/ntriples_parse.c: Make ntriples parser accept text/plain
+	with q=0.1
+
+	(raptor_ntriples_parser_register_factory): Register mime type
+	text/plain via raptor_parser_factory_add_mime_type.
+	Fixes Issue#0000319 http://bugs.librdf.org/mantis/view.php?id=319
+
+	* src/turtle_lexer.l: Make Turtle lexer handle \\ at end of
+	triple-quoted literals
+
+	Alter literal regex and let
+	raptor_stringbuffer_append_turtle_string() report problems with
+	buffer ending in middle of \u and \U.
+
+	Add rule for bare \ on it's own which can only happen if input
+	ends on a \.
+
+	Fixes Issue#0000318 http://bugs.librdf.org/mantis/view.php?id=318
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-20.ttl: Add
+	bad-20.ttl test for end of file in middle of \ escape
+
+	* tests/turtle/Makefile.am, tests/turtle/test-33.out,
+	tests/turtle/test-33.ttl: Added test-33 for \\ at end of
+	triple-quoted turtle literal Added tests/turtle/test-33.ttl and
+	tests/turtle/test-33.out files to test Issue#0000318
+	http://bugs.librdf.org/mantis/view.php?id=318
+
+	* librdfa/iri.c: Update to librdfa GIT commit
+	1979d7246a1d98f95bab78704a32b87cf95d1ef6
+
+	* .gitignore, Makefile.am, configure.ac: Use build dir for
+	automake aux files.
+
+	* build/.gitignore: Ignore build files
+
+	* .gitignore, autogen.sh, configure.ac, tests/.gitignore: Update
+	build environment to latest autogen.sh - enable silent rules for
+	maintainer
+
+	* tests/rdfxml/ex-38-rdfxmla.out, tests/turtle/ex-38-turtle.out:
+	Restore to GIT raptor1 branch expected output files
+	tests/rdfxml/ex-38-rdfxmla.out tests/turtle/ex-38-turtle.out
+
+	* librdfa/curie.c, librdfa/iri.c, librdfa/rdfa.c, librdfa/rdfa.h,
+	librdfa/triple.c: Merge librdfa changes to GIT
+	88ca099befcb1b81be1a879663e5e891707e5239
+
+	Fixes several buffer alloc/realloc problems and failure to terminate
+	strings when using them with strstr().
+
+	Other librdfa changes:
+	- added "first" to list of allowed reserved words.  
+	- allow @rel/@rev reserved word values to be in any case (TC 134) 
+	- librdfa now treats the following characters as valid whitespace
+	  characters: SPACE, \t, \n, \v, \f, and \r. (TC 131) 
+	- fix generation of xml:lang if language was already in XML
+	  Literal (TC 102)
+
+	* src/turtle_lexer.l:
+	Make Turtle long literals count raw newlines correctly
+
+	(Rule <LITERAL>\" ....): Count the raw newlines seen in the yytext
+	to adjust the line numbers correctly for long literals.  
+
+	Fixes Issue#0000331 http://bugs.librdf.org/mantis/view.php?id=331
+
+2010-01-03  Dave Beckett <dave@dajobe.org>
+
+	* src/win32_raptor_config.h: Restore windows version numbers to
+	1.4.21 for raptor1 series
+
+	* configure.ac:
+	Restore soname for raptor1 series
+
+2010-01-02  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Make raptor1 branch for	raptor1 series - 1.4.21 potentially
+
+	* src/fix-bison: Remove RCS ID
+
+	* docs/tmpl/.gitignore: Update another .gitignore
+
+	* .gitignore, docs/.gitignore, docs/tmpl/.gitignore,
+	src/.gitignore, tests/.gitignore, tests/feeds/.gitignore,
+	tests/turtle/.gitignore, utils/.gitignore:
+	Add .gitignore to replace SVN properties svn:ignore
+
+	* Switched to GIT for version control.
+	SVN r15728 is GIT d6c9b7e7084671b77db75beb303b7f35308a9942
+	
+2009-11-29  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, NEWS.html, RELEASE.html, librdfa/rdfa.c:
+	Merge from raptor 1.4.20 release SVNr15728 to trunk
+
+2009-11-28  Dave Beckett <dave@dajobe.org>
+
+	* Merge RDFa changes from Raptor branch raptor1 (r15719)
 
 	* Snapshotted raptor_1_4_20 for 1.4.20 release (SVN 15727)
 	
