@@ -975,11 +975,6 @@ raptor_rdfxml_parse_init(raptor_parser* rdf_parser, const char *name)
      !RAPTOR_DAML_nil_URI(rdf_xml_parser))
     return 1;
 
-  /* Create id set object */
-  rdf_xml_parser->id_set = raptor_new_id_set(world);
-  if(!rdf_xml_parser->id_set)
-    return 1;
-
   /* Everything succeeded */
   return 0;
 }
@@ -1011,6 +1006,19 @@ raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
   
   raptor_sax2_parse_start(rdf_xml_parser->sax2, uri);
 
+  /* Delete any existing id_set */
+  if(rdf_xml_parser->id_set) {
+    raptor_free_id_set(rdf_xml_parser->id_set);
+    rdf_xml_parser->id_set = NULL;
+  }
+  
+  /* Create a new id_set if needed */
+  if(rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID]) {
+    rdf_xml_parser->id_set = raptor_new_id_set(rdf_parser->world);
+    if(!rdf_xml_parser->id_set)
+      return 1;
+  }
+  
   return 0;
 }
 
