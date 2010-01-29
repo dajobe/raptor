@@ -22,7 +22,6 @@ TODO
 aclocal.m4
 autom4te.cache
 bugs
-compile
 config.cache
 config.log
 config.status

@@ -24,6 +24,8 @@
 
 noinst_SCRIPTS = raptor-src-config
 
+ACLOCAL_AMFLAGS = -I build
+
 SUBDIRS= src utils docs data tests win32 examples librdfa
 
 pkgconfigdir = $(libdir)/pkgconfig
