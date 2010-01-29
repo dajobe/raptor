@@ -2,7 +2,7 @@
  *
  * turtle_lexer.l - Raptor Turtle lexer - making tokens for turtle grammar generator
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -249,7 +249,7 @@ EXPONENT [eE][+-]?[0-9]+
                   turtle_parser->sb=NULL;
                   return STRING_LITERAL; }
 
-<LITERAL>\"|(\\[^uU]|\\u....|\\U........|[^\"]|\n)*	{
+<LITERAL>\"|(\\.|[^\"\\]|\n)*	{
 		  char *p;
 
 		  if (*yytext == EOF) {
@@ -273,6 +273,11 @@ EXPONENT [eE][+-]?[0-9]+
                   }
                   
    }
+
+<LITERAL>\\	{
+     		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
+                turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+}
 
 {BNAME}	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!turtle_parser_lval->string)
