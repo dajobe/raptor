@@ -1155,6 +1155,9 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   rc=raptor_parser_factory_add_uri(factory, 
                                 (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples");
 
+  if(!rc)
+    rc = raptor_parser_factory_add_mime_type(factory, "text/plain", 1);
+
   return rc;
 }
 
