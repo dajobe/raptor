@@ -1,0 +1,2 @@
+# Turtle spec does not allow . in namespace prefix (token prefixName)
+@prefix foo.bar:  <http://example.org/ex#> .
