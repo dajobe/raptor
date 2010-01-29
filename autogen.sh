@@ -45,7 +45,8 @@ CONFIG_DIR=${CONFIG_DIR-../config}
 # Set an envariable of the same name in uppercase, to override scan
 #
 programs="automake aclocal autoconf autoheader libtoolize"
-confs=`find . -name configure.ac -print`
+confs=`find . -name configure.ac -print | grep -v /releases/`
+
 gtkdoc_args=
 if grep "^GTK_DOC_CHECK" $confs >/dev/null; then
   programs="$programs gtkdocize"
@@ -58,20 +59,16 @@ ltdl_args=
 if grep "^AC_LIBLTDL_" $confs >/dev/null; then
   ltdl_args="--ltdl"
 fi
-shave_args=
-if grep "^SHAVE_INIT" $confs >/dev/null; then
-  shave_args="--enable-shave"
+silent_args=
+if grep "^AM_SILENT_RULES" $confs >/dev/null; then
+  silent_args="--enable-silent-rules"
 fi
 
 # Some dependencies for autotools:
-# automake 1.11 requires autoconf 2.62
-# automake 1.10 requires autoconf 2.60
-# automake 1.9 requires autoconf 2.58
-# automake 1.8 requires autoconf 2.58
-# automake 1.7 requires autoconf 2.54
-automake_min_vers=010700
+# automake 1.11 requires autoconf 2.62 (needed for AM_SILENT_RULES)
+automake_min_vers=011100
 aclocal_min_vers=$automake_min_vers
-autoconf_min_vers=025400
+autoconf_min_vers=026200
 autoheader_min_vers=$autoconf_min_vers
 libtoolize_min_vers=020200
 gtkdocize_min_vers=010300
@@ -83,7 +80,8 @@ aclocal_args=
 autoconf_args=
 libtoolize_args="--force --copy --automake $ltdl_args"
 gtkdocize_args="--copy"
-configure_args="--enable-maintainer-mode $gtkdoc_args $shave_args"
+# --enable-gtk-doc does no harm if it's not available
+configure_args="--enable-maintainer-mode $gtkdoc_args $silent_args"
 
 
 # You should not need to edit below here
@@ -278,7 +276,7 @@ if test -d $CONFIG_DIR; then
 fi
 
 
-for coin in `find $SRCDIR -name configure.ac -print`
+for coin in `find $SRCDIR -name configure.ac -print | grep -v /releases/`
 do 
   dir=`dirname $coin`
   if test -f "$dir/NO-AUTO-GEN"; then

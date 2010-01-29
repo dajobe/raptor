@@ -1265,6 +1265,9 @@ AC_SUBST(abs_top_srcdir)
 abs_top_builddir=`pwd`
 AC_SUBST(abs_top_builddir)
 
+dnl automake 1.11
+AM_SILENT_RULES([no])
+
 AC_CONFIG_FILES([Makefile
 raptor.spec
 raptor.rdf
