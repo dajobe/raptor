@@ -25,6 +25,7 @@ is underway.</p>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=326">0000326</a>: Turtle parser allows '.' in qnames which is not-to-spec</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=331">0000331</a>: Turtle long literals with raw newlines do not count line numbers correctly</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=332">0000332</a>: RDFXML parser finds duplicates and misbehaves (when it shouldn't)</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=337">0000337</a>: raptor/turtle outputs invalid qnames which cause syntax errors on parsing</li>
 </ul>
 
 <h3>Parser changes</h3>
@@ -44,6 +45,12 @@ each parse.</p>
 <p>Turtle parser: Allow \\ at the end of triple-quoted literals.
 Forbid '.'s in prefixes and qnames (follow specification).
 Properly count newlines inside the literals for error reporting.</p>
+
+<h3>Serializer changes</h3>
+
+<p>Turtle serializer: Forbid '.'s in prefixes and qnames (follow
+specification).
+</p>
 
 <h3>Other Changes</h3>
 
