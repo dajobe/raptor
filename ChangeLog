@@ -1,4 +1,36 @@
+2010-01-29  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html: 1.4.21 and 2010 years
+
+	* RELEASE.html: 1.4.21
+
+	* src/raptor_serialize_turtle.c: Ensure serialized Turtle names
+	are legal
+
+	(raptor_turtle_is_legal_turtle_qname): Added to enforce prefix and
+	local name character constraints.
+
+	(raptor_turtle_emit_resource): Use above to ensure that XML Qnames
+	that are not legal Turtle Qnames are never serialized.
+
+	Fixes Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+	* tests/turtle/Makefile.am, tests/turtle/test-34-out.ttl,
+	tests/turtle/test-34.ttl: Add Turtle serializing test 34 for not
+	serializing a qname with a .
+
+	Test for Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+	* docs/raptor-docs.xml: 2010
+
+	* docs/libraptor.3: 1.4.21
+
+	* src/raptor_general.c: 2010
+
 2010-01-28  Dave Beckett <dave@dajobe.org>
+
+	* RELEASE.html: 1.4.21
 
 	* src/raptor_rdfxml.c: Create a new set for checking for duplicate
 	rdf:ID at start of every parse.
