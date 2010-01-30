@@ -1,0 +1,7 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-34.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> .
+@prefix dbpedia: <http://dbpedia.org/resource/> .
+
+<http://example.org>
+    <http://xmlns.com/foaf/0.1/page> <http://dbpedia.org/resource/Babylon_A.D.> .
+

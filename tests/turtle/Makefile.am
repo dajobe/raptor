@@ -54,10 +54,10 @@ rdfs-namespace.out \
 rdfq-results.out
 
 TEST_SERIALIZE_FILES= \
-test-28.ttl test-31.ttl test-32.ttl
+test-28.ttl test-31.ttl test-32.ttl test-34.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
-test-28-out.ttl test-31-out.ttl test-32-out.ttl
+test-28-out.ttl test-31-out.ttl test-32-out.ttl test-34-out.ttl
 
 TURTLE_HACK_OUT_FILES= \
 ex-38-turtle.out
