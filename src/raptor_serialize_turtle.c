@@ -3,7 +3,7 @@
  * raptor_serialize_turtle.c - Turtle serializer
  *
  * Copyright (C) 2006,2008 Dave Robillard
- * Copyright (C) 2004-2009 David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2010 David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005 University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005 Steve Shepard steveshep@gmail.com
  * 
@@ -129,6 +129,36 @@ static int raptor_turtle_serialize_end(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
 
 
+static int
+raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
+{
+  const char* prefix_name;
+  const char* local_name;
+  
+  if(!qname)
+    return 0;
+  
+  prefix_name = qname->nspace ? (const char*)qname->nspace->prefix : NULL;
+  if(prefix_name) {
+    /* prefixName: must have leading [A-Z][a-z][0-9] (nameStartChar - '_')  */
+    /* prefixName: no . anywhere */
+    if(!(isalpha(*prefix_name) || isdigit(*prefix_name)) ||
+       strchr(prefix_name, '.'))
+      return 0;
+  }
+
+  local_name = (const char*)qname->local_name;
+  if(local_name) {
+    /* nameStartChar: must have leading [A-Z][a-z][0-9]_  */
+    /* nameChar: no . anywhere */
+    if(!(isalpha(*local_name) || isdigit(*local_name) || *local_name == '_') ||
+       strchr(local_name, '.'))
+      return 0;
+  }
+  
+  return 1;
+}
+    
 /*
  * raptor_turtle_emit_resource:
  * @serializer: #raptor_serializer object
@@ -159,6 +189,12 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
   qname = raptor_namespaces_qname_from_uri(context->nstack,
                                            node->value.resource.uri, 10);
 
+  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+    raptor_free_qname(qname);
+    qname = NULL;
+  }
+  
   if(qname) {
     raptor_turtle_writer_qname(turtle_writer, qname);
     raptor_free_qname(qname);
