@@ -445,7 +445,7 @@ rdfdiff_error_handler(void *data, raptor_locator *locator,
   
   if(!ignore_errors) {
     fprintf(stderr, "%s: Error - ", program);
-    raptor_print_locator(locator, stderr);
+    raptor_locator_print(locator, stderr);
     fprintf(stderr, " - %s\n", message);
     
     raptor_parser_parse_abort(file->parser);
@@ -464,7 +464,7 @@ rdfdiff_warning_handler(void *data, raptor_locator *locator,
 
   if(!ignore_warnings) {
     fprintf(stderr, "%s: Warning - ", program);
-    raptor_print_locator(locator, stderr);
+    raptor_locator_print(locator, stderr);
     fprintf(stderr, " - %s\n", message);
   }
 

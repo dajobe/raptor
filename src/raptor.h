@@ -684,7 +684,7 @@ void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 
 /* Utility functions */
 RAPTOR_API
-void raptor_print_locator(raptor_locator* locator, FILE *stream);
+void raptor_locator_print(raptor_locator* locator, FILE *stream);
 RAPTOR_API
 int raptor_format_locator(char *buffer, size_t length, raptor_locator* locator);
 RAPTOR_API
