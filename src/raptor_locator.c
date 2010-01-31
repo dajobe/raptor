@@ -77,7 +77,7 @@ raptor_locator_print(raptor_locator* locator, FILE *stream)
 
 
 /**
- * raptor_format_locator:
+ * raptor_locator_format:
  * @buffer: buffer to store format
  * @length: size of buffer
  * @locator: #raptor_locator to format
@@ -91,7 +91,7 @@ raptor_locator_print(raptor_locator* locator, FILE *stream)
  * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
  **/
 int
-raptor_format_locator(char *buffer, size_t length, raptor_locator* locator) 
+raptor_locator_format(char *buffer, size_t length, raptor_locator* locator) 
 {
   size_t bufsize = 0;
   int count;
