@@ -89,9 +89,6 @@ struct raptor_avltree_s {
 
   /* number of nodes in tree */
   unsigned int size;
-
-  /* legacy iterator used for cursor methods */
-  raptor_avltree_iterator* cursor_iterator;
 };
 
 
@@ -168,7 +165,6 @@ raptor_new_avltree(raptor_world* world,
   tree->print_fn = NULL;
   tree->flags = flags;
   tree->size = 0;
-  tree->cursor_iterator = NULL;
   
   return tree;
 }
@@ -186,9 +182,6 @@ raptor_free_avltree(raptor_avltree* tree)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(tree, raptor_avltree);
   
   raptor_free_avltree_internal(tree, tree->root);
-
-  if(tree->cursor_iterator)
-    raptor_free_avltree_iterator(tree->cursor_iterator);
 
   RAPTOR_FREE(raptor_avltree, tree);
 }
@@ -1357,81 +1350,6 @@ raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
 }
 
 
-/* move the tree cursor to the first item by order */
-int
-raptor_avltree_cursor_first(raptor_avltree* tree)
-{
-  if(tree->cursor_iterator) {
-    raptor_free_avltree_iterator(tree->cursor_iterator);
-    tree->cursor_iterator = NULL;
-  }
-
-  if(!tree->size)
-    return 1;
-  
-  tree->cursor_iterator = raptor_new_avltree_iterator(tree, NULL, NULL, 1);
-
-  return (tree->cursor_iterator == NULL);
-}
-
-
-/* move the tree cursor to the last item by order */
-int
-raptor_avltree_cursor_last(raptor_avltree* tree)
-{
-  if(tree->cursor_iterator) {
-    raptor_free_avltree_iterator(tree->cursor_iterator);
-    tree->cursor_iterator = NULL;
-  }
-  
-  if(!tree->size)
-    return 1;
-  
-  tree->cursor_iterator = raptor_new_avltree_iterator(tree, NULL, NULL, -1);
-
-  return (tree->cursor_iterator == NULL);
-}
-
-
-/* move the tree cursor to the previous item by order */
-int
-raptor_avltree_cursor_prev(raptor_avltree* tree)
-{
-  int rc;
-  if(!tree->cursor_iterator)
-    rc = raptor_avltree_cursor_last(tree);
-  else
-    rc = raptor_avltree_iterator_next(tree->cursor_iterator);
-
-  return rc;
-}
-
-
-/* move the tree cursor to the next item by order */
-int
-raptor_avltree_cursor_next(raptor_avltree* tree)
-{
-  int rc;
-  if(!tree->cursor_iterator)
-    rc = raptor_avltree_cursor_first(tree);
-  else
-    rc = raptor_avltree_iterator_next(tree->cursor_iterator);
-
-  return rc;
-}
-
-
-/* get the item at the tree cursor (or NULL if no cursor was set) */
-void*
-raptor_avltree_cursor_get(raptor_avltree* tree)
-{
-  if(tree->cursor_iterator)
-    return raptor_avltree_iterator_get(tree->cursor_iterator);
-
-  return NULL;
-}
-
-
 /* print the items in the tree in order (for debugging) */
 void
 raptor_avltree_print(raptor_avltree* tree, FILE* stream)
@@ -1697,30 +1615,6 @@ main(int argc, char *argv[])
     }
   }
   raptor_free_avltree_iterator(iter);
-
-
-#if RAPTOR_DEBUG > 1
-  fprintf(stderr, "%s: Walking tree backwards via cursor\n", program);
-#endif
-  raptor_avltree_cursor_last(tree);
-  for(i = RESULT_COUNT-1; 1; i--) {
-    const char* data = (const char*)raptor_avltree_cursor_get(tree);
-    const char* result = results[i];
-    if((!data && data != result) || (data && strcmp(data, result))) {
-      fprintf(stderr, "%3d: Backwards cursoring expected '%s' but found '%s'\n",
-              i, result, data);
-      exit(1);
-    }
-#if RAPTOR_DEBUG > 1
-    fprintf(stderr, "%3d: Got '%s'\n", i, data);
-#endif
-    if(raptor_avltree_cursor_prev(tree))
-      break;
-    if(i < 0) {
-      fprintf(stderr, "Backwards cursor did not end on result %i as expected\n", i);
-      exit(1);
-    }
-  }
 
 
 #if RAPTOR_DEBUG > 1

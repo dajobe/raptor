@@ -1337,13 +1337,6 @@ int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
-/* raptor_avltree.c */
-int raptor_avltree_cursor_first(raptor_avltree* tree);
-int raptor_avltree_cursor_last(raptor_avltree* tree);
-int raptor_avltree_cursor_prev(raptor_avltree* tree);
-int raptor_avltree_cursor_next(raptor_avltree* tree);
-void* raptor_avltree_cursor_get(raptor_avltree* tree);
-
 /* raptor_world structure */
 struct raptor_world_s {
   /* world has been initialized with raptor_world_open() */
