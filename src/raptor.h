@@ -694,9 +694,9 @@ int raptor_locator_column(raptor_locator *locator);
 RAPTOR_API
 int raptor_locator_byte(raptor_locator *locator);
 RAPTOR_API
-const char * raptor_locator_file(raptor_locator *locator);
+const char* raptor_locator_file(raptor_locator *locator);
 RAPTOR_API
-const char * raptor_locator_uri_string(raptor_locator *locator);
+const char* raptor_locator_uri_string(raptor_locator *locator);
 
 
 RAPTOR_API
