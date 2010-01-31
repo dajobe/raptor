@@ -104,7 +104,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
 
 
 
-/*
+/**
  * raptor_new_avltree:
  * @world: raptor_world object
  * @compare_fn: item comparison function for ordering
@@ -114,7 +114,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
  *    will replace any duplicate items (default is to ignore them and
  *    return >0 on duplicates)
  *
- * INTERNAL - AVL Tree Constructor
+ * AVL Tree Constructor
  *
  * Return value: new AVL Tree or NULL on failure
  */
@@ -143,11 +143,11 @@ raptor_new_avltree(raptor_world* world,
 }
 
 
-/*
+/**
  * raptor_free_avltree:
  * @tree: AVLTree object
  *
- * INTERNAL - AVL Tree destructor
+ * AVL Tree destructor
  */
 void
 raptor_free_avltree(raptor_avltree* tree)
@@ -202,12 +202,12 @@ raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/*
+/**
  * raptor_avltree_search:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
  *
- * INTERNAL - find an item in an AVL Tree
+ * Find an item in an AVL Tree
  *
  * Return value: shared pointer to item (still owned by AVL Tree) or NULL on failure or if not found
  */
@@ -220,12 +220,12 @@ raptor_avltree_search(raptor_avltree* tree, const void* p_data)
 }
 
 
-/*
+/**
  * raptor_avltree_add:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
  *
- * INTERNAL - add an item to an AVL Tree
+ * add an item to an AVL Tree
  *
  * The item added becomes owned by the AVL Tree, and will be freed by
  * the free_fn argument given to raptor_new_avltree().
@@ -248,12 +248,12 @@ raptor_avltree_add(raptor_avltree* tree, void* p_data)
 }
 
 
-/*
+/**
  * raptor_avltree_remove:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
  *
- * INTERNAL - remove an item from an AVL Tree and return it
+ * Remove an item from an AVL Tree and return it
  *
  * The item removed is  no longer owned by the AVL Tree and is
  * owned by the caller.
@@ -279,12 +279,12 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
 }
 
 
-/*
+/**
  * raptor_avltree_delete:
  * @tree: AVL Tree object
  * @p_data: pointer to data item
  *
- * INTERNAL - remove an item from an AVL Tree and free it
+ * Remove an item from an AVL Tree and free it
  */
 int
 raptor_avltree_delete(raptor_avltree* tree, void* p_data)
@@ -325,13 +325,13 @@ raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node,
 }
 
 
-/*
+/**
  * raptor_avltree_visit:
  * @tree: AVL Tree object
  * @visit_fn: visit function to call at each item
  * @user_data: user data pointer fo visit function
  *
- * INTERNAL - perform an in-order visit of the items in the AVL Tree
+ * Perform an in-order visit of the items in the AVL Tree
  *
  * Return value: non-0 if traversal was terminated early by @visit_fn
 */
@@ -891,11 +891,11 @@ raptor_avltree_balance_right(raptor_avltree* tree,
 }
 
 
-/*
+/**
  * raptor_avltree_size:
  * @tree: AVL Tree object
  *
- * INTERNAL - Get the number of items in the AVL Tree
+ * Get the number of items in the AVL Tree
  *
  * Return value: number of items in tree
  */
@@ -906,12 +906,12 @@ raptor_avltree_size(raptor_avltree* tree)
 }
 
 
-/*
+/**
  * raptor_avltree_set_print_handler:
  * @tree: AVL Tree object
  * @print_fn: print function
  *
- * INTERNAL - set the handler for printing an item in a tree
+ * Set the handler for printing an item in a tree
  *
  */
 void
@@ -1140,14 +1140,14 @@ struct raptor_avltree_iterator_s {
 };
 
 
-/*
+/**
  * raptor_new_avltree_iterator:
  * @tree: #raptor_avltree object
  * @range: range
  * @range_free_fn: function to free @range object
  * @direction: <0 to go 'backwards' otherwise 'forwards'
  *
- * INTERNAL - Get an in-order iterator for the start of a range, or the entire contents
+ * Get an in-order iterator for the start of a range, or the entire contents
  *
  * If range is NULL, the entire tree is walked in order.  If range
  * specifies a range (i.e. the tree comparison function will 'match'
@@ -1227,11 +1227,11 @@ raptor_new_avltree_iterator(raptor_avltree* tree, void* range,
 }
 
 
-/*
+/**
  * raptor_free_avltree_iterator:
  * @iterator: AVL Tree iterator object
  *
- * INTERNAL - AVL Tree Iterator destructor
+ * AVL Tree Iterator destructor
  */
 void
 raptor_free_avltree_iterator(raptor_avltree_iterator* iterator) 
@@ -1246,11 +1246,11 @@ raptor_free_avltree_iterator(raptor_avltree_iterator* iterator)
 }
 
 
-/*
+/**
  * raptor_avltree_iterator_end:
  * @iterator: AVL Tree iterator object
  *
- * INTERNAL - test if an iteration is finished
+ * Test if an iteration is finished
  *
  * Return value: non-0 if iteration is finished
  */
@@ -1267,11 +1267,11 @@ raptor_avltree_iterator_end(raptor_avltree_iterator* iterator)
 }
 
 
-/*
+/**
  * raptor_avltree_iterator_next:
  * @iterator: AVL Tree iterator object
  *
- * INTERNAL - move iteration to next/prev object
+ * Move iteration to next/prev object
  *
  * Return value: non-0 if iteration is finished
  */
@@ -1299,11 +1299,11 @@ raptor_avltree_iterator_next(raptor_avltree_iterator* iterator)
 }
 
 
-/*
+/**
  * raptor_avltree_iterator_get:
  * @iterator: AVL Tree iterator object
  *
- * INTERNAL - get current iteration object
+ * Get current iteration object
  *
  * Return value: object or NULL if iteration is finished
  */

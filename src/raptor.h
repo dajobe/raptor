@@ -1552,6 +1552,59 @@ const unsigned char* raptor_sax2_inscope_xml_language(raptor_sax2* sax2);
 RAPTOR_API
 raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 
+
+
+/* AVL Trees */
+typedef struct raptor_avltree_s raptor_avltree;
+typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
+
+typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+typedef void (*raptor_data_free_function)(void* data);
+typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
+
+#define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
+
+RAPTOR_API
+raptor_avltree* raptor_new_avltree(raptor_world* world, raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
+RAPTOR_API
+void raptor_free_avltree(raptor_avltree* tree);
+
+/* methods */
+RAPTOR_API
+int raptor_avltree_add(raptor_avltree* tree, void* p_user);
+RAPTOR_API
+void* raptor_avltree_remove(raptor_avltree* tree, void* p_data);
+RAPTOR_API
+int raptor_avltree_delete(raptor_avltree* tree, void* p_user);
+RAPTOR_API
+void* raptor_avltree_search(raptor_avltree* tree, const void* p_user);
+RAPTOR_API
+int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
+RAPTOR_API
+int raptor_avltree_size(raptor_avltree* tree);
+RAPTOR_API
+void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_handler print_fn);
+RAPTOR_API
+void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
+
+#ifdef RAPTOR_DEBUG
+int raptor_avltree_dump(raptor_avltree* tree, FILE* stream);
+void raptor_avltree_check(raptor_avltree* tree);
+#endif
+
+RAPTOR_API
+raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_function range_free_fn, int direction);
+RAPTOR_API
+void raptor_free_avltree_iterator(raptor_avltree_iterator* iterator);
+
+RAPTOR_API
+int raptor_avltree_iterator_end(raptor_avltree_iterator* iterator);
+RAPTOR_API
+int raptor_avltree_iterator_next(raptor_avltree_iterator* iterator);
+RAPTOR_API
+void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
+
+
 #ifdef __cplusplus
 }
 #endif
