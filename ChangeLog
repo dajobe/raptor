@@ -1,3 +1,201 @@
+2010-01-30  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c, utils/rdfdiff.c: Update raptor_print_locator
+	calling convention
+
+2010-01-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Ensure serialized Turtle names
+	are legal
+
+	(raptor_turtle_is_legal_turtle_qname): Added to enforce prefix and
+	local name character constraints.
+
+	(raptor_turtle_emit_resource): Use above to ensure that XML Qnames
+	that are not legal Turtle Qnames are never serialized.
+
+	Fixes Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+	* tests/turtle/Makefile.am, tests/turtle/test-34-out.ttl,
+	tests/turtle/test-34.ttl: Add Turtle serializing test 34 for not
+	serializing a qname with a .
+
+	Test for Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+2010-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: Create a new set for checking for duplicate
+	rdf:ID at start of every parse.
+
+	(raptor_rdfxml_parse_init): Remove creating set from when parser is
+	constructed. 
+
+	(raptor_rdfxml_parse_start): At start of parsing, delete any
+	existing id set and only create a new one if the feature
+	RAPTOR_FEATURE_CHECK_RDF_ID is enabled.
+
+	* src/turtle_lexer.l: Alter Turtle lexer to refuse to accept . in
+	namespace prefix/local names
+
+	Adjust Turtle lexer to match spec for the prefixName and name
+	tokens:
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#prefixName
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#name
+
+	This makes some previously accepted not-to-spec turtle documents be
+	rejected.
+
+	It makes new bad turtle syntax tests bad-21 and bad-22 pass. 
+
+	(NCNAME_PREFIX): Updated for prefixName
+
+	(NCNAME): Update for name
+
+	Fixes Issue#0000326 http://bugs.librdf.org/mantis/view.php?id=326
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-21.ttl,
+	tests/turtle/bad-22.ttl: Add bad turtle tests 21, 22 for . in
+	prefix and qname
+
+	* src/ntriples_parse.c: Make ntriples parser accept text/plain
+	with q=0.1
+
+	(raptor_ntriples_parser_register_factory): Register mime type
+	text/plain via raptor_parser_factory_add_mime_type.
+	Fixes Issue#0000319 http://bugs.librdf.org/mantis/view.php?id=319
+
+	* src/turtle_lexer.l: Make Turtle lexer handle \\ at end of
+	triple-quoted literals
+
+	Alter literal regex and let
+	raptor_stringbuffer_append_turtle_string report problems with
+	buffer ending in middle of \u and \U.
+
+	Add rule for bare \ on it's own which can only happen if input
+	ends on a \.
+
+	Fixes Issue#0000318 http://bugs.librdf.org/mantis/view.php?id=318
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-20.ttl: Add
+	bad-20.ttl test for end of file in middle of \ escape
+
+	* tests/turtle/Makefile.am, tests/turtle/test-33.out,
+	tests/turtle/test-33.ttl: Added test-33 for \\ at end of
+	triple-quoted turtle literal
+
+	Added tests/turtle/test-33.ttl and tests/turtle/test-33.out files
+	to test Issue#0000318 http://bugs.librdf.org/mantis/view.php?id=318
+
+	* librdfa/iri.c: Update to librdfa GIT commit
+	1979d7246a1d98f95bab78704a32b87cf95d1ef6
+
+	* librdfa/curie.c, librdfa/iri.c, librdfa/rdfa.c, librdfa/rdfa.h,
+	librdfa/triple.c: Merge librdfa changes to GIT
+	88ca099befcb1b81be1a879663e5e891707e5239
+
+	Fixes several buffer alloc/realloc problems and failure to terminate
+	strings when using them with strstr().
+
+	Other librdfa changes:
+	- added "first" to list of allowed reserved words.
+	- allow @rel/@rev reserved word values to be in any case (TC 134)
+	- librdfa now treats the following characters as valid whitespace
+	  characters: SPACE, \t, \n, \v, \f, and \r. (TC 131)
+	- fix generation of xml:lang if language was already in XML
+	  Literal (TC 102)
+
+2010-01-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: ws
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_statement.c:
+	Adjust raptor_print_ntriples_string params to put FILE* last
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_locator.c: Adjust
+	raptor_print_locator params to put FILE* last like other print
+	methods.
+
+	* src/raptor_locator.c: ws
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_sax2.c:
+	Remove raptor_log_error_to_handlers and call raptor_log_error
+	directly.
+
+	(raptor_log_error_to_handlers): Deleted.  Update several sax2
+	modules to call raptor_log_error instead.
+
+	* src/raptor_sequence.c:
+	indent
+
+	* src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_internal.h: Update raptor_avltree to us
+	raptor_data_print_handler
+
+	typedef raptor_data_print_function: deleted
+
+	(raptor_new_abbrev_subject, raptor_avltree_set_print_handler): Use
+	raptor_data_print_handler* to replace raptor_data_print_function.
+
+	(raptor_print_abbrev_po): Swap args to match
+	raptor_data_print_handler calling convention.
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_parse.c,
+	src/raptor_rss_common.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_rss.c, src/turtle_parser.y: Rename
+	sequence-specific handlers typedefs to be more raptor-general
+
+	raptor_data_free_handler renamed from raptor_sequence_free_handler
+
+	raptor_data_context_free_handler renamed from
+	raptor_sequence_context_free_handler
+	
+	raptor_data_print_handler renamed from
+	raptor_sequence_print_handler and update docs
+
+	raptor_data_context_print_handler renamed from
+	raptor_sequence_context_print_handler and update docs
+
+	Update all users.
+
+	* src/raptor_internal.h: Make all print methods return an int
+	status code
+
+	(raptor_statement_print, raptor_uri_print, raptor_sequence_print,
+	raptor_term_print_as_ntriples): Return int success code.
+
+	* src/raptor.h, src/raptor_sequence.c, src/raptor_statement.c,
+	src/raptor_uri.c: Make all print methods return an int status code
+
+	(raptor_statement_print, raptor_uri_print, raptor_sequence_print,
+	raptor_term_print_as_ntriples): Return int success code.
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_sequence.c:
+	Update sequence _v2 constructor/methods to use _with_context
+
+	Rename typedefs for handlers to match, update constructor
+	documentation to explain the difference.
+
+	typedef raptor_sequence_context_print_handler renamed from
+	raptor_sequence_print_handler_v2.
+
+	raptor_sequence - renamed fields to add context_NAME for the
+	formerly _v2 handler names.
+
+	Add explanations of what they are for. 
+
+	(raptor_new_sequence): autodocs and example of use
+
+	(raptor_new_sequence_with_context): Renamed from
+	raptor_new_sequence_v2 and autodocs.
+
+	* src/raptor.h, src/raptor_sequence.c: Remove unused
+	raptor_sequence_set_print_handler() and
+	raptor_sequence_set_print_handler_2().
+
+	(raptor_sequence_set_print_handler,
+	raptor_sequence_set_print_handler_v2): Deleted.
+
 2010-01-24  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_parser.y:
