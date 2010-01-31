@@ -1598,7 +1598,7 @@ RAPTOR_API
 void raptor_free_avltree_iterator(raptor_avltree_iterator* iterator);
 
 RAPTOR_API
-int raptor_avltree_iterator_end(raptor_avltree_iterator* iterator);
+int raptor_avltree_iterator_is_end(raptor_avltree_iterator* iterator);
 RAPTOR_API
 int raptor_avltree_iterator_next(raptor_avltree_iterator* iterator);
 RAPTOR_API

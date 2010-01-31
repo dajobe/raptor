@@ -1278,7 +1278,7 @@ raptor_free_avltree_iterator(raptor_avltree_iterator* iterator)
 
 
 /**
- * raptor_avltree_iterator_end:
+ * raptor_avltree_iterator_is_end:
  * @iterator: AVL Tree iterator object
  *
  * Test if an iteration is finished
@@ -1286,7 +1286,7 @@ raptor_free_avltree_iterator(raptor_avltree_iterator* iterator)
  * Return value: non-0 if iteration is finished
  */
 int
-raptor_avltree_iterator_end(raptor_avltree_iterator* iterator)
+raptor_avltree_iterator_is_end(raptor_avltree_iterator* iterator)
 {
   raptor_avltree_node *node = iterator->current;
   
