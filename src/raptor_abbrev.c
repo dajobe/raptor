@@ -164,7 +164,7 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
   raptor_abbrev_node *rv_node;
 
   /* Create a temporary node for search comparison. */
-  lookup_node = raptor_new_abbrev_node(nodes->world, term);
+  lookup_node = raptor_new_abbrev_node(term->world, term);
   
   if(!lookup_node)
     return NULL;
@@ -420,7 +420,7 @@ raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
 
   /* datatype and language both null for a subject node */
   
-  lookup_node = raptor_new_abbrev_node(subjects->world, node);
+  lookup_node = raptor_new_abbrev_node(node->world, node);
   if(!lookup_node)
     return NULL;
   
