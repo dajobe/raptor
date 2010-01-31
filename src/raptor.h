@@ -621,6 +621,14 @@ RAPTOR_API
 int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+RAPTOR_API
+int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
+RAPTOR_API
+int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+RAPTOR_API
+int raptor_world_is_serializer_name(raptor_world* world, const char *name);
+RAPTOR_API
+raptor_feature raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri);
 
 
 /* Term Class */
@@ -628,6 +636,8 @@ RAPTOR_API
 unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_term_as_string(raptor_term *term);
+RAPTOR_API
+void raptor_iostream_write_term_ntriples(raptor_iostream* iostr, const raptor_term *term);
 
 
 /* Statement Class */
@@ -644,10 +654,10 @@ RAPTOR_API
 raptor_parser* raptor_new_parser(raptor_world* world, const char *name);
 RAPTOR_API
 raptor_parser* raptor_new_parser_for_content(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
-
-/* Destroy */
 RAPTOR_API
 void raptor_free_parser(raptor_parser* parser);
+
+/* methods */
 
 /* Handlers */
 RAPTOR_API
@@ -681,8 +691,40 @@ RAPTOR_API
 int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
 RAPTOR_API
 void raptor_parser_parse_abort(raptor_parser* rdf_parser);
+RAPTOR_API
+const char* raptor_parser_get_name(raptor_parser *rdf_parser);
+RAPTOR_API
+const char* raptor_parser_get_label(raptor_parser *rdf_parser);
+RAPTOR_API
+const char* raptor_parser_get_mime_type(raptor_parser *rdf_parser);
+RAPTOR_API
+int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
 
-/* Utility functions */
+/* parser feature methods */
+RAPTOR_API
+int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+RAPTOR_API
+int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
+RAPTOR_API
+int raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature);
+RAPTOR_API
+const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
+RAPTOR_API
+unsigned int raptor_parser_get_feature_count(void);
+
+/* parser utilit methods */
+RAPTOR_API
+void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
+RAPTOR_API
+const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
+RAPTOR_API
+unsigned char* raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type);
+RAPTOR_API
+raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
+
+
+/* Locator Class */
+/* methods */
 RAPTOR_API
 void raptor_locator_print(raptor_locator* locator, FILE *stream);
 RAPTOR_API
@@ -699,49 +741,13 @@ RAPTOR_API
 const char* raptor_locator_uri_string(raptor_locator *locator);
 
 
-RAPTOR_API
-const char* raptor_parser_get_name(raptor_parser *rdf_parser);
-RAPTOR_API
-const char* raptor_parser_get_label(raptor_parser *rdf_parser);
-RAPTOR_API
-const char* raptor_parser_get_mime_type(raptor_parser *rdf_parser);
-RAPTOR_API
-int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
-
-RAPTOR_API
-int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
-RAPTOR_API
-int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int value);
-RAPTOR_API
-int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
-RAPTOR_API
-int raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature);
-RAPTOR_API
-const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
-RAPTOR_API
-unsigned int raptor_parser_get_feature_count(void);
-RAPTOR_API
-void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
-RAPTOR_API
-const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
-
-unsigned char* raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type);
-
-RAPTOR_API
-raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
-
-/* Get serializer names */
-RAPTOR_API
-int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
-RAPTOR_API
-int raptor_world_is_serializer_name(raptor_world* world, const char *name);
-
-/* Serializing */
+/* Serializer Class */
 RAPTOR_API
 raptor_serializer* raptor_new_serializer(raptor_world* world, const char *name);
 RAPTOR_API
 void raptor_free_serializer(raptor_serializer* rdf_serializer);
 
+/* methods */
 RAPTOR_API
 int raptor_serialize_start_to_iostream(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream);
 RAPTOR_API
@@ -762,6 +768,8 @@ RAPTOR_API
 raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
+
+/* serializer feature methods */
 RAPTOR_API
 int raptor_world_enumerate_serializer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
@@ -773,8 +781,10 @@ int raptor_serializer_get_feature(raptor_serializer *serializer, raptor_feature 
 RAPTOR_API
 const unsigned char *raptor_serializer_get_feature_string(raptor_serializer *serializer, raptor_feature feature);
 
+/* utility methods */
 RAPTOR_API
 raptor_world* raptor_serializer_get_world(raptor_serializer* rdf_serializer);
+
 
 /* memory functions */
 RAPTOR_API
@@ -784,7 +794,8 @@ void* raptor_alloc_memory(size_t size);
 RAPTOR_API
 void* raptor_calloc_memory(size_t nmemb, size_t size);
 
-/* URI functions */
+
+/* URI Class */
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_counted_string(raptor_world* world, const unsigned char *uri_string, size_t length);
 RAPTOR_API
@@ -798,7 +809,13 @@ raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, co
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name);
 RAPTOR_API
+raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
+RAPTOR_API
+raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
+RAPTOR_API
 void raptor_free_uri(raptor_uri *uri);
+
+/* methods */
 RAPTOR_API
 int raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2);
 RAPTOR_API
@@ -810,21 +827,22 @@ unsigned char* raptor_uri_as_string(raptor_uri *uri);
 RAPTOR_API
 unsigned char* raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
+unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
 RAPTOR_API
-raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
+unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
+RAPTOR_API
+int raptor_uri_print(const raptor_uri* uri, FILE *stream);
+RAPTOR_API
+unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
+RAPTOR_API
+unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
-/* Utility functions */
+
+/* utility methods */
 RAPTOR_API
 int raptor_print_ntriples_string(const unsigned char *string, const char delim, FILE *stream);
-RAPTOR_API
-int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
-RAPTOR_API
-int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
-RAPTOR_API
-void raptor_iostream_write_term_ntriples(raptor_iostream* iostr, const raptor_term *term);
-RAPTOR_API
-void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
+
+/* XML utility functions */
 RAPTOR_API
 int raptor_xml_any_escape_string(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
 RAPTOR_API
@@ -833,18 +851,19 @@ RAPTOR_API
 int raptor_xml_escape_string(raptor_world *world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote);
 RAPTOR_API
 int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote);
-
-RAPTOR_API
-char* raptor_vsnprintf(const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0);
-
 RAPTOR_API
 int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
 
-/* raptor_rfc2396.c */
+
+/* portable vsnprintf utility function */
+RAPTOR_API
+char* raptor_vsnprintf(const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0);
+
+/* RFC2396 URI resolving functions */
 RAPTOR_API
 size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const unsigned char *reference_uri, unsigned char* buffer, size_t length);
 
-/* raptor_uri.c */
+/* URI String utility functions */
 RAPTOR_API
 unsigned char *raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API
@@ -853,17 +872,7 @@ RAPTOR_API
 char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
-RAPTOR_API
-unsigned char* raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p);
-RAPTOR_API
-unsigned char* raptor_uri_to_relative_uri_string(raptor_uri *base_uri,  raptor_uri *reference_uri);
 
-RAPTOR_API
-int raptor_uri_print(const raptor_uri* uri, FILE *stream);
-RAPTOR_API
-unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
-RAPTOR_API
-unsigned char* raptor_uri_to_string(raptor_uri *uri);
 
 
 /**
@@ -948,22 +957,19 @@ RAPTOR_API
 raptor_uri* raptor_www_get_final_uri(raptor_www* www);
 
 
-/* raptor_qname - XML qnames */
+/* XML QNames Class */
 RAPTOR_API
 raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value);
 RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_world* world, raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
+
+/* methods */
 RAPTOR_API
 raptor_qname* raptor_qname_copy(raptor_qname *qname);
 RAPTOR_API
 void raptor_free_qname(raptor_qname* name);
 RAPTOR_API
 int raptor_qname_equal(raptor_qname *name1, raptor_qname *name2);
-/* utility function */
-RAPTOR_API
-raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len);
-RAPTOR_API
-int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 RAPTOR_API
 unsigned char* raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p);
 RAPTOR_API
@@ -974,8 +980,14 @@ RAPTOR_API
 const unsigned char* raptor_qname_get_value(raptor_qname* name);
 RAPTOR_API
 const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p);
+RAPTOR_API
+int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
 
-/* raptor_namespace_stack - stack of XML namespaces */
+/* QName String utility functions */
+RAPTOR_API
+raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len);
+
+/* XML Namespaces Stack class */
 RAPTOR_API
 raptor_namespace* raptor_new_namespace_from_uri(raptor_namespace_stack *nstack, const unsigned char *prefix,  raptor_uri* ns_uri, int depth);
 RAPTOR_API
@@ -986,6 +998,8 @@ RAPTOR_API
 void raptor_namespaces_clear(raptor_namespace_stack *nstack);
 RAPTOR_API
 void raptor_free_namespaces(raptor_namespace_stack *nstack);
+
+/* methods */
 RAPTOR_API
 void raptor_namespaces_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *nspace);
 RAPTOR_API
@@ -1003,7 +1017,8 @@ int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const r
 RAPTOR_API
 raptor_qname* raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack,  raptor_uri *uri, int xml_version);
 
-/* raptor_namespace - XML namespace */
+
+/* XML Namespace Class */
 RAPTOR_API
 raptor_namespace* raptor_new_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, const unsigned char *ns_uri_string, int depth);
 RAPTOR_API
@@ -1020,6 +1035,8 @@ RAPTOR_API
 unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
 int raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns);
+
+/* namespace string utility function */
 RAPTOR_API
 int raptor_new_namespace_parts_from_string(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
 
@@ -1082,15 +1099,16 @@ typedef int (raptor_data_print_handler)(void *object, FILE *fh);
  */
 typedef int (raptor_data_context_print_handler)(void *context, void *object, FILE *fh);
 
-/* Create */
+
+/* Sequence Clsas */
 RAPTOR_API
 raptor_sequence* raptor_new_sequence(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler);
 RAPTOR_API
 raptor_sequence* raptor_new_sequence_with_context(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context);
-/* Destroy */
 RAPTOR_API
 void raptor_free_sequence(raptor_sequence* seq);
-/* Methods */
+
+/* methods */
 RAPTOR_API
 int raptor_sequence_size(raptor_sequence* seq);
 RAPTOR_API
@@ -1146,11 +1164,14 @@ int raptor_unicode_is_xml10_namechar(raptor_unichar c);
 RAPTOR_API
 int raptor_utf8_check(const unsigned char *string, size_t length);
 
-/* raptor_stringbuffer */
+
+/* Stringbuffer Class */
 RAPTOR_API
 raptor_stringbuffer* raptor_new_stringbuffer(void);
 RAPTOR_API
 void raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer);
+
+/* methods */
 RAPTOR_API
 int raptor_stringbuffer_append_counted_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, size_t length, int do_copy);
 RAPTOR_API
@@ -1164,7 +1185,7 @@ int raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* stringbuffer
 RAPTOR_API
 int raptor_stringbuffer_prepend_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, int do_copy);
 RAPTOR_API
-unsigned char * raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
+unsigned char* raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer);
 RAPTOR_API
 size_t raptor_stringbuffer_length(raptor_stringbuffer* stringbuffer);
 RAPTOR_API
@@ -1275,6 +1296,7 @@ typedef struct {
 } raptor_iostream_handler2;
 
 
+/* I/O Stream Class */
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_from_handler2(raptor_world* world, void *user_data, const raptor_iostream_handler2* const handler2);
 RAPTOR_API
@@ -1321,11 +1343,20 @@ int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, s
 RAPTOR_API
 int raptor_iostream_read_eof(raptor_iostream *iostr);
 
+/* I/O Stream utility functions */
+RAPTOR_API
+int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
+RAPTOR_API
+int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
+RAPTOR_API
+void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
+
+
+
 /* Parser and Serializer features */
 RAPTOR_API
-raptor_feature raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri);
-RAPTOR_API
 int raptor_feature_value_type(const raptor_feature feature);
+
 
 /* SAX2 element Class (raptor_xml_element) */
 RAPTOR_API
@@ -1334,6 +1365,8 @@ RAPTOR_API
 raptor_xml_element* raptor_new_xml_element_from_namespace_local_name(raptor_namespace *ns, const unsigned char *name, const unsigned char *xml_language, raptor_uri *xml_base);
 RAPTOR_API
 void raptor_free_xml_element(raptor_xml_element *element);
+
+/* methods */
 RAPTOR_API
 raptor_qname* raptor_xml_element_get_name(raptor_xml_element *xml_element);
 RAPTOR_API
@@ -1351,11 +1384,14 @@ int raptor_xml_element_is_empty(raptor_xml_element* xml_element);
 RAPTOR_API
 const unsigned char* raptor_xml_element_get_language(raptor_xml_element* xml_element);
 
+
 /* XML Writer Class (raptor_xml_writer) */
 RAPTOR_API
 raptor_xml_writer* raptor_new_xml_writer(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr);
 RAPTOR_API
 void raptor_free_xml_writer(raptor_xml_writer* xml_writer);
+
+/* methods */
 RAPTOR_API
 void raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer, raptor_xml_element *element);
 RAPTOR_API
@@ -1529,6 +1565,7 @@ raptor_sax2* raptor_new_sax2(raptor_world *world, raptor_locator *locator, void*
 RAPTOR_API
 void raptor_free_sax2(raptor_sax2 *sax2);
 
+/* methods */
 RAPTOR_API
 void raptor_sax2_set_start_element_handler(raptor_sax2* sax2, raptor_sax2_start_element_handler handler);
 RAPTOR_API
