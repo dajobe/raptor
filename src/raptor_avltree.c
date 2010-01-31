@@ -64,6 +64,37 @@
 
 #ifndef STANDALONE
 
+/* raptor_avltree.c */
+typedef struct raptor_avltree_node_s raptor_avltree_node;
+
+/* AVL-tree */
+struct raptor_avltree_s {
+  /* raptor_world object */
+  raptor_world* world;
+
+  /* root node of tree */
+  raptor_avltree_node* root;
+
+  /* node comparison function (optional) */
+  raptor_data_compare_function compare_fn;
+
+  /* node deletion function (optional) */
+  raptor_data_free_function free_fn;
+
+  /* node print function (optional) */
+  raptor_data_print_handler* print_fn;
+
+  /* tree flags (none defined at present) */
+  unsigned int flags;
+
+  /* number of nodes in tree */
+  unsigned int size;
+
+  /* legacy iterator used for cursor methods */
+  raptor_avltree_iterator* cursor_iterator;
+};
+
+
 /* AVL-tree node */
 struct raptor_avltree_node_s {
   /* parent tree */
