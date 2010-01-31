@@ -622,15 +622,28 @@ int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
-/* Create */
+
+/* Term Class */
+RAPTOR_API
+unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
+RAPTOR_API
+unsigned char* raptor_term_as_string(raptor_term *term);
+
+
+/* Statement Class */
+RAPTOR_API
+int raptor_statement_print(const raptor_statement * statement, FILE *stream);
+RAPTOR_API
+int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
+RAPTOR_API
+int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
+
+
+/* Parser Class */
 RAPTOR_API
 raptor_parser* raptor_new_parser(raptor_world* world, const char *name);
 RAPTOR_API
 raptor_parser* raptor_new_parser_for_content(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
-
-
-RAPTOR_API
-int raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri);
 
 /* Destroy */
 RAPTOR_API
@@ -647,26 +660,15 @@ RAPTOR_API
 void raptor_parser_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
 RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
-
-RAPTOR_API
-int raptor_statement_print(const raptor_statement * statement, FILE *stream);
-RAPTOR_API
-int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
-RAPTOR_API
-unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
-RAPTOR_API
-unsigned char* raptor_term_as_string(raptor_term *term);
-RAPTOR_API
-int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
-
-
 RAPTOR_API
 raptor_locator* raptor_parser_get_locator(raptor_parser* rdf_parser);
-
 RAPTOR_API
 void raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, char *prefix, int base);
 
+
 /* Parsing functions */
+RAPTOR_API
+int raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri);
 RAPTOR_API
 int raptor_parser_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API
