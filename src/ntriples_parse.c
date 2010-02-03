@@ -545,12 +545,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
         goto cleanup;
       }
-      if(*p == 'x') {
-        if(len < 4 || strncmp((const char*)p, "xml\"", 4)) {
-          raptor_parser_error(rdf_parser, "Saw '%c', expected xml\"...\")", *p);
-          goto cleanup;
-        }
-      }
     } else if(i == 1) {
       if(*p != '<') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>", *p);
@@ -716,107 +710,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         }
 
         break;
-
-      case 'x':
-
-        raptor_parser_error(rdf_parser, "Old N-Triples XML using xml\"string\"-lang rather than \"string\"@lang^^<%s>.", raptor_xml_literal_datatype_uri_string);
-
-        /* already know we have 'xml"' coming up */
-        term_types[i]= RAPTOR_TERM_TYPE_LITERAL;
-        
-        /* 3 = strlen("xml") */
-        p += 3;
-        len -= 3;
-
-        dest = p;
-
-        p++;
-        len--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
-
-        if(raptor_ntriples_term(rdf_parser,
-                                (const unsigned char**)&p,
-                                dest, &len, &term_length, 
-                                '"', RAPTOR_TERM_CLASS_STRING, 0)) {
-          rc = 1;
-          goto cleanup;
-        }
-
-        /* got XML literal string */
-        object_literal_datatype = (unsigned char*)raptor_xml_literal_datatype_uri_string;
-
-        if(len && (*p == '-' || *p == '@')) {
-          if(*p == '-')
-            raptor_parser_error(rdf_parser, "Old N-Triples language syntax using xml\"string\"-lang rather than xml\"string\"@lang.");
-
-          object_literal_language = p;
-
-          /* Skip - */
-          p++;
-          len--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
-
-          if(!len) {
-            raptor_parser_error(rdf_parser, "Missing language in xml\"string\"-language after -");
-            goto cleanup;
-          }
-
-          if(raptor_ntriples_term(rdf_parser,
-                                  (const unsigned char**)&p,
-                                  object_literal_language, &len, NULL,
-                                  '"', RAPTOR_TERM_CLASS_STRING, 0)) {
-            rc = 1;
-            goto cleanup;
-          }
-          
-        }
-
-        if(len >1 && *p == '^' && p[1] == '^') {
-
-          object_literal_datatype = p;
-
-          /* Skip ^^ */
-          p+= 2;
-          len-= 2;
-          rdf_parser->locator.column+= 2;
-          rdf_parser->locator.byte+= 2;
-
-          if(!len || (len && *p != '<')) {
-            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in xml\"string\"^^<URI-ref> after ^^");
-            goto cleanup;
-          }
-
-          p++;
-          len--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
-
-          if(raptor_ntriples_term(rdf_parser,
-                                  (const unsigned char**)&p,
-                                  object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI, 0)) {
-            rc = 1;
-            goto cleanup;
-          }
-          
-        }
-
-        if(len) {
-          if(*p != ' ') {
-            raptor_parser_error(rdf_parser, "Missing terminating ' '");
-            return 0;
-          }
-
-          p++;
-          len--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
-        }
-        
-        break;
-
 
       default:
         raptor_parser_fatal_error(rdf_parser, "Unknown term type");
