@@ -1236,7 +1236,7 @@ typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr,
  * Handler function for implementing raptor_iostream_write_end().
  *
  */
-typedef void (*raptor_iostream_write_end_func) (void *context);
+typedef int (*raptor_iostream_write_end_func) (void *context);
 
 /**
  * raptor_iostream_read_bytes_func:
@@ -1318,7 +1318,7 @@ int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t 
 RAPTOR_API
 int raptor_iostream_write_byte(raptor_iostream *iostr, const int byte);
 RAPTOR_API
-void raptor_iostream_write_end(raptor_iostream *iostr);
+int raptor_iostream_write_end(raptor_iostream *iostr);
 RAPTOR_API
 int raptor_iostream_write_string(raptor_iostream *iostr, const void *string);
 RAPTOR_API

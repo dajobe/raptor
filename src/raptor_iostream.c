@@ -218,11 +218,11 @@ raptor_filename_iostream_write_bytes(void *user_data,
   return (fwrite(ptr, size, nmemb, handle) == nmemb);
 }
 
-static void
+static int
 raptor_filename_iostream_write_end(void *user_data)
 {
   FILE* handle = (FILE*)user_data;
-  fclose(handle);
+  return fclose(handle);
 }
 
 static int
@@ -767,15 +767,21 @@ raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
  * @iostr: raptor iostream
  *
  * End writing to the iostream.
+ *
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_iostream_write_end(raptor_iostream *iostr)
 {
+  int rc;
+  
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
-    return;
+    return 1;
   if(iostr->handler->write_end)
-    iostr->handler->write_end(iostr->user_data);
+    rc = iostr->handler->write_end(iostr->user_data);
   iostr->flags |= RAPTOR_IOSTREAM_FLAGS_EOF;
+
+  return rc;
 }
 
 
