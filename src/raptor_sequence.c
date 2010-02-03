@@ -519,8 +519,7 @@ raptor_sequence_unshift(raptor_sequence* seq)
  **/
 RAPTOR_EXTERN_C
 void
-raptor_sequence_sort(raptor_sequence* seq, 
-                     int(*compare)(const void *, const void *))
+raptor_sequence_sort(raptor_sequence* seq,  raptor_data_compare_function compare)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
 

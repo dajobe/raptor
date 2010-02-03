@@ -595,6 +595,10 @@ typedef enum {
 } raptor_libxml_flags;
 
 
+typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+typedef void (*raptor_data_free_function)(void* data);
+
+
 /* Public functions */
 
 RAPTOR_API
@@ -1127,7 +1131,7 @@ RAPTOR_API
 void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 
 RAPTOR_API
-void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, const void *));
+void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_function compare);
 
 /* helper for printing sequences of strings */ 
 RAPTOR_API
@@ -1592,8 +1596,6 @@ raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 typedef struct raptor_avltree_s raptor_avltree;
 typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
-typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
-typedef void (*raptor_data_free_function)(void* data);
 typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
 
 #define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
