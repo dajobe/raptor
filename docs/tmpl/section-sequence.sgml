@@ -150,15 +150,6 @@ where the items are added and removed from the end.
 @fh: 
 
 
-<!-- ##### FUNCTION raptor_sequence_set_print_handler ##### -->
-<para>
-
-</para>
-
-@seq: 
-@print_handler: 
-
-
 <!-- ##### FUNCTION raptor_sequence_print ##### -->
 <para>
 
@@ -166,6 +157,7 @@ where the items are added and removed from the end.
 
 @seq: 
 @fh: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_sequence_join ##### -->

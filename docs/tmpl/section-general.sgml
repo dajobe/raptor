@@ -67,9 +67,9 @@ and various other utility functions.
 
 </para>
 
-@stream: 
 @string: 
 @delim: 
+@stream: 
 @Returns: 
 
 

@@ -162,6 +162,7 @@ current access to internals of URIs such as URI scheme, path, authority.
 @reference_uri: 
 @buffer: 
 @length: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_uri_filename_to_uri_string ##### -->
@@ -229,6 +230,7 @@ current access to internals of URIs such as URI scheme, path, authority.
 
 @uri: 
 @stream: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_uri_to_counted_string ##### -->

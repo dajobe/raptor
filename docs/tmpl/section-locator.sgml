@@ -35,8 +35,8 @@ to user code.
 
 </para>
 
-@stream: 
 @locator: 
+@stream: 
 
 
 <!-- ##### FUNCTION raptor_format_locator ##### -->
