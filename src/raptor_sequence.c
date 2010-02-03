@@ -508,23 +508,6 @@ raptor_sequence_unshift(raptor_sequence* seq)
 
 
 /**
- * raptor_compare_strings:
- * @a: pointer first string
- * @b: pointer to second string
- * 
- * Utility function for raptor_sequence_sort() to compare a sequence of strings.
- *
- * Return value: comparison of @a to @b as strings
- **/
-int
-raptor_compare_strings(const void *a, const void *b) 
-{
-  return strcmp(*(char**)a, *(char**)b);
-}
-
-
-
-/**
  * raptor_sequence_sort:
  * @seq: sequence to sort
  * @compare: comparison function
@@ -638,6 +621,12 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 #include <stdio.h>
 
 int main(int argc, char *argv[]);
+
+static int
+raptor_compare_strings(const void *a, const void *b) 
+{
+  return strcmp(*(char**)a, *(char**)b);
+}
 
 
 #define assert_match_string(function, expr, string) do { char *result = expr; if(strcmp(result, string)) { fprintf(stderr, "%s:" #function " failed - returned %s, expected %s\n", program, result, string); exit(1); } } while(0)

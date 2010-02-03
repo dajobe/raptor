@@ -1127,9 +1127,6 @@ RAPTOR_API
 void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 
 RAPTOR_API
-int raptor_compare_strings(const void *a, const void *b);
-
-RAPTOR_API
 void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, const void *));
 
 /* helper for printing sequences of strings */ 
