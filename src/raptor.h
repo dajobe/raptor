@@ -1131,8 +1131,6 @@ void raptor_sequence_sort(raptor_sequence* seq, int(*compare)(const void *, cons
 
 /* helper for printing sequences of strings */ 
 RAPTOR_API
-void raptor_sequence_print_string(char *data, FILE *fh);
-RAPTOR_API
 int raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);

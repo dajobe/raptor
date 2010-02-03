@@ -531,23 +531,6 @@ raptor_sequence_sort(raptor_sequence* seq,
 
 
 /**
- * raptor_sequence_print_string:
- * @data: data item (a char*)
- * @fh: file handle to print to
- *
- * Helper function for printing a sequence of strings.
- *
- * Intended for use as a #raptor_data_print_handler passed into
- * raptor_new_sequence().
- */
-void
-raptor_sequence_print_string(char *data, FILE *fh) 
-{
-  fputs(data, fh);
-}
-
-
-/**
  * raptor_sequence_print:
  * @seq: sequence to sort
  * @fh: file handle
@@ -628,6 +611,11 @@ raptor_compare_strings(const void *a, const void *b)
   return strcmp(*(char**)a, *(char**)b);
 }
 
+static void
+raptor_sequence_print_string(char *data, FILE *fh) 
+{
+  fputs(data, fh);
+}
 
 #define assert_match_string(function, expr, string) do { char *result = expr; if(strcmp(result, string)) { fprintf(stderr, "%s:" #function " failed - returned %s, expected %s\n", program, result, string); exit(1); } } while(0)
 #define assert_match_int(function, expr, value) do { int result = expr; if(result != value) { fprintf(stderr, "%s:" #function " failed - returned %d, expected %d\n", program, result, value); exit(1); } } while(0)
