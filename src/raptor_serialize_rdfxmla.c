@@ -881,7 +881,7 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
                        (raptor_data_compare_function)raptor_abbrev_node_compare,
                        (raptor_data_free_function)raptor_free_abbrev_node, 0);
 
-  type_term = raptor_new_term_from_term(RAPTOR_RDF_type_term(serializer->world));
+  type_term = raptor_term_copy(RAPTOR_RDF_type_term(serializer->world));
   context->rdf_type = raptor_new_abbrev_node(serializer->world, type_term);
 
   if(!context->xml_nspace || !context->rdf_nspace || !context->namespaces ||

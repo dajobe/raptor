@@ -78,7 +78,7 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
   if(node) {
     node->world = world;
     node->ref_count = 1;
-    node->term = raptor_new_term_from_term(term);
+    node->term = raptor_term_copy(term);
   }
 
   return node;

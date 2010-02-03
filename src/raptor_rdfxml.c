@@ -1791,7 +1791,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                    element->parent->child_content_type != RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_DAML_COLLECTION &&
                    element->parent->object) {
           /* copy from parent (property element), it has a URI for us */
-          element->subject = raptor_new_term_from_term(element->parent->object);
+          element->subject = raptor_term_copy(element->parent->object);
         } else {
           unsigned char* subject_id;
           subject_id = raptor_parser_internal_generate_id(rdf_parser,
@@ -1902,7 +1902,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                 object_term = raptor_new_term_from_uri(rdf_parser->world,
                                                        class_uri);
               } else
-                object_term = raptor_new_term_from_term(RAPTOR_RDF_List_term(rdf_parser->world));
+                object_term = raptor_term_copy(RAPTOR_RDF_List_term(rdf_parser->world));
               
               raptor_rdfxml_generate_statement(rdf_parser, 
                                                idList_term,
@@ -1971,7 +1971,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
                                   "Tried to set multiple objects of a statement");
             } else {
               /* Store URI of this node in our parent as the property object */
-              element->parent->object = raptor_new_term_from_term(element->subject);
+              element->parent->object = raptor_term_copy(element->subject);
               element->parent->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
             }
 
@@ -2530,12 +2530,12 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
             raptor_uri* nil_uri = RAPTOR_DAML_nil_URI(rdf_xml_parser);
             nil_term = raptor_new_term_from_uri(rdf_parser->world, nil_uri);
           } else {
-            nil_term = raptor_new_term_from_term(RAPTOR_RDF_nil_term(rdf_parser->world));
+            nil_term = raptor_term_copy(RAPTOR_RDF_nil_term(rdf_parser->world));
           }
           
           if(!element->tail_id) {
             /* If No List: set object of statement to rdf:nil */
-            element->object = raptor_new_term_from_term(nil_term);
+            element->object = raptor_term_copy(nil_term);
           } else {
             raptor_uri* rest_uri = NULL;
             raptor_term* tail_id_term;
@@ -2776,7 +2776,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                                                            literal_datatype,
                                                            literal_language);
               } else {
-                object_term = raptor_new_term_from_term(element->object);
+                object_term = raptor_term_copy(element->object);
               }
 
               raptor_rdfxml_generate_statement(rdf_parser, 

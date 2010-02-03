@@ -754,7 +754,7 @@ raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_te
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
 raptor_statement* raptor_statement_copy(raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
-raptor_term* raptor_new_term_from_term(raptor_term* term);
+raptor_term* raptor_term_copy(raptor_term* term);
 raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
 raptor_term* raptor_new_term_from_literal(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language);
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);

@@ -134,11 +134,11 @@ raptor_statement_copy(raptor_statement *statement)
 
     s2->world = statement->world;
     if(statement->subject)
-      s2->subject = raptor_new_term_from_term(statement->subject);
+      s2->subject = raptor_term_copy(statement->subject);
     if(statement->predicate)
-      s2->predicate = raptor_new_term_from_term(statement->predicate);
+      s2->predicate = raptor_term_copy(statement->predicate);
     if(statement->object)
-      s2->object = raptor_new_term_from_term(statement->object);
+      s2->object = raptor_term_copy(statement->object);
 
     return s2;
   }
@@ -590,12 +590,24 @@ raptor_free_term(raptor_term *term)
 }
 
 
+/**
+ * raptor_term_copy:
+ * @term: raptor term
+ *
+ * Copy constructor - get a copy of a statement term
+ *
+ * Return value: new term object or NULL on failure
+ */
 raptor_term*
-raptor_new_term_from_term(raptor_term* term)
+raptor_term_copy(raptor_term* term)
 {
+  if(!term)
+    return NULL;
+
   term->usage++;
   return term;
 }
+
 
 /*
  * raptor_new_term_from_uri:

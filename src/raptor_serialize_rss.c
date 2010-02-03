@@ -166,7 +166,7 @@ raptor_rss10_set_item_group(raptor_rss10_serializer_context *rss_serializer,
   gm = (raptor_rss_group_map*)RAPTOR_CALLOC(raptor_rss_group_map, 1,
                                             sizeof(*gm));
   gm->world = rss_serializer->world;
-  gm->term = raptor_new_term_from_term(term);
+  gm->term = raptor_term_copy(term);
   gm->item = item;
   
   raptor_avltree_add(rss_serializer->group_map, gm);
@@ -794,7 +794,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
      raptor_uri_equals(statement->object->value.uri,
                        RAPTOR_RDF_Seq_URI(serializer->world))) {
     
-    rss_serializer->seq_term = raptor_new_term_from_term(statement->subject);
+    rss_serializer->seq_term = raptor_term_copy(statement->subject);
     
     handled = 1;
     goto savetriple;

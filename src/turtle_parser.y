@@ -274,7 +274,7 @@ triples: subject propertyList
     /* have subject and non-empty property list, handle it  */
     for(i = 0; i < raptor_sequence_size($2); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
-      t2->subject = raptor_new_term_from_term($1);
+      t2->subject = raptor_term_copy($1);
     }
 #if RAPTOR_DEBUG > 1  
     printf(" after substitution propertyList=");
@@ -481,7 +481,7 @@ verb: predicate
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  $$ = raptor_new_term_from_term(RAPTOR_RDF_type_term(((raptor_parser*)rdf_parser)->world));
+  $$ = raptor_term_copy(RAPTOR_RDF_type_term(((raptor_parser*)rdf_parser)->world));
   if(!$$)
     YYERROR;
 }
@@ -510,7 +510,7 @@ propertyList: propertyList SEMICOLON verb objectList
     /* non-empty property list, handle it  */
     for(i = 0; i < raptor_sequence_size($4); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($4, i);
-      t2->predicate = raptor_new_term_from_term($3);
+      t2->predicate = raptor_term_copy($3);
     }
   
 #if RAPTOR_DEBUG > 1  
@@ -566,7 +566,7 @@ propertyList: propertyList SEMICOLON verb objectList
   if($1 && $2) {
     for(i = 0; i < raptor_sequence_size($2); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
-      t2->predicate = raptor_new_term_from_term($1);
+      t2->predicate = raptor_term_copy($1);
     }
 
 #if RAPTOR_DEBUG > 1  
@@ -959,7 +959,7 @@ blank: BLANK_LITERAL
 
     for(i = 0; i < raptor_sequence_size($2); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
-      t2->subject = raptor_new_term_from_term($$);
+      t2->subject = raptor_term_copy($$);
       raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 

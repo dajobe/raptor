@@ -298,7 +298,7 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
       return;
   }
 
-  raptor_sequence_push(seq, raptor_new_term_from_term(assert_node));
+  raptor_sequence_push(seq, raptor_term_copy(assert_node));
 }
 
 
