@@ -47,6 +47,10 @@
 #include "raptor_internal.h"
 
 
+/* POLICY - minimum size */
+#define RAPTOR_SEQUENCE_MIN_CAPACITY 8
+
+
 #ifndef STANDALONE
 
 /*
@@ -206,8 +210,8 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_at_front)
     return 0;
 
   /* POLICY - minimum size */
-  if(capacity < 8)
-    capacity = 8;
+  if(capacity < RAPTOR_SEQUENCE_MIN_CAPACITY)
+    capacity = RAPTOR_SEQUENCE_MIN_CAPACITY;
 
   new_sequence = (void**)RAPTOR_CALLOC(ptrarray, capacity, sizeof(void*));
   if(!new_sequence)
