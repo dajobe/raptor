@@ -1262,7 +1262,7 @@ typedef int (*raptor_iostream_read_bytes_func) (void *context, void *ptr, size_t
 typedef int (*raptor_iostream_read_eof_func) (void *context);
 
 /**
- * raptor_iostream_handler2:
+ * raptor_iostream_handler:
  * @version: interface version.  Presently 1 or 2.
  * @init:  initialisation handler - optional, called at most once (V1)
  * @finish: finishing handler -  optional, called at most once (V1)
@@ -1288,12 +1288,12 @@ typedef struct {
   /* V2 functions */
   raptor_iostream_read_bytes_func   read_bytes;
   raptor_iostream_read_eof_func     read_eof;
-} raptor_iostream_handler2;
+} raptor_iostream_handler;
 
 
 /* I/O Stream Class */
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_from_handler2(raptor_world* world, void *user_data, const raptor_iostream_handler2* const handler2);
+raptor_iostream* raptor_new_iostream_from_handler(raptor_world* world, void *user_data, const raptor_iostream_handler* const handler);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_sink(raptor_world* world);
 RAPTOR_API
