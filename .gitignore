@@ -2,12 +2,6 @@
 *~
 *.gz
 *.log
-*.n3
-*.nt
-*.owl
-*.rdf
-*.rdfs
-*.rss
 .gdb_history
 .gdbinit
 INSTALL
