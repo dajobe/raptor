@@ -1203,7 +1203,8 @@ raptor_world_enumerate_parser_features(raptor_world* world,
  *
  * Set various parser features.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_parser_features().
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
