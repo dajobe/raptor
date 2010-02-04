@@ -1289,7 +1289,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
                                  raptor_feature feature, 
                                  const unsigned char *value)
 {
-  int value_is_string = (raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
   if(!value_is_string)
     return raptor_parser_set_feature(parser, feature, atoi((const char*)value));
 
@@ -1410,7 +1410,7 @@ const unsigned char *
 raptor_parser_get_feature_string(raptor_parser *parser, 
                                  raptor_feature feature)
 {
-  int value_is_string = (raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
   if(!value_is_string)
     return NULL;
   

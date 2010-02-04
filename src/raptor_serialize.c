@@ -916,7 +916,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
                                      raptor_feature feature, 
                                      const unsigned char *value)
 {
-  int value_is_string = (raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
   if(!value_is_string)
     return raptor_serializer_set_feature(serializer, feature, 
                                          atoi((const char*)value));
@@ -1128,7 +1128,7 @@ const unsigned char *
 raptor_serializer_get_feature_string(raptor_serializer *serializer, 
                                      raptor_feature feature)
 {
-  int value_is_string = (raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
   if(!value_is_string)
     return NULL;
   

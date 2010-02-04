@@ -1353,8 +1353,25 @@ void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const rapt
 
 
 /* Parser and Serializer features */
+
+/**
+ * raptor_feature_value_type:
+ * @RAPTOR_FEATURE_VALUE_TYPE_BOOL: Boolean integer value. Non-0 is true
+ * @RAPTOR_FEATURE_VALUE_TYPE_INT: Decimal integer value
+ * @RAPTOR_FEATURE_VALUE_TYPE_STRING: String value
+ * @RAPTOR_FEATURE_VALUE_TYPE_URI: URI String value.
+ *
+ * Feature value types.
+ */
+typedef enum {
+  RAPTOR_FEATURE_VALUE_TYPE_BOOL,
+  RAPTOR_FEATURE_VALUE_TYPE_INT,
+  RAPTOR_FEATURE_VALUE_TYPE_STRING,
+  RAPTOR_FEATURE_VALUE_TYPE_URI
+} raptor_feature_value_type;
+
 RAPTOR_API
-int raptor_feature_value_type(const raptor_feature feature);
+raptor_feature_value_type raptor_feature_get_value_type(const raptor_feature feature);
 
 
 /* SAX2 element Class (raptor_xml_element) */

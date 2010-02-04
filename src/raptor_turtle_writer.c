@@ -654,7 +654,7 @@ raptor_turtle_writer_features_enumerate(raptor_world* world,
                                         raptor_uri **uri, const char **label)
 {
   return raptor_features_enumerate_common(world, feature, name, uri, label,
-                                          RAPTOR_FEATURE_AREA_XML_WRITER);
+                                          RAPTOR_FEATURE_AREA_TURTLE_WRITER);
 }
 
 
@@ -766,7 +766,7 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
                                         raptor_feature feature, 
                                         const unsigned char *value)
 {
-  int value_is_string = (raptor_feature_value_type(feature) == 1);
+  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
   if(!value_is_string)
     return raptor_turtle_writer_set_feature(turtle_writer, feature, 
                                             atoi((const char*)value));
