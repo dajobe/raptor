@@ -178,7 +178,8 @@ raptor_features_enumerate_common(raptor_world* world,
  * Return value: the type of the feature or <0 if @feature is unknown
  */
 int
-raptor_feature_value_type(const raptor_feature feature) {
+raptor_feature_value_type(const raptor_feature feature)
+{
   if(feature > RAPTOR_FEATURE_LAST)
     return -1;
   return (raptor_features_list[feature].value_type == VT_STRING) ? 1 : 0;
