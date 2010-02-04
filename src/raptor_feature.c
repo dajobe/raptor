@@ -42,6 +42,15 @@
 #include "raptor_internal.h"
 
 
+#define AREA_PARSER (1)
+#define AREA_SERIALIZER (2)
+#define AREA_XML_WRITER (8)
+
+#define VT_BOOL (0)
+#define VT_STRING (4)
+#define VT_INT (16)
+#define VT_URI (4+32)
+
 static const struct
 {
   raptor_feature feature;
@@ -59,42 +68,42 @@ static const struct
   const char *name;
   const char *label;
 } raptor_features_list[RAPTOR_FEATURE_LAST+1] = {
-  { RAPTOR_FEATURE_SCANNING                , 1, "scanForRDF", "Scan for rdf:RDF in XML content" },
-  { RAPTOR_FEATURE_ASSUME_IS_RDF           , 1, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
-  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , 1, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
-  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  , 1, "allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
-  { RAPTOR_FEATURE_ALLOW_BAGID             , 1, "allowBagID", "Allow rdf:bagID" },
-  { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST , 1, "allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
-  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      , 1, "normalizeLanguage", "Normalize xml:lang values to lowercase" },
-  { RAPTOR_FEATURE_NON_NFC_FATAL           , 1, "nonNFCfatal", "Make non-NFC literals cause a fatal error" },
-  { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , 1, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
-  { RAPTOR_FEATURE_CHECK_RDF_ID            , 1, "checkRdfID", "Check rdf:ID values for duplicates" },
-  { RAPTOR_FEATURE_RELATIVE_URIS           , 2, "relativeURIs", "Write relative URIs wherever possible in serializing." },
-  { RAPTOR_FEATURE_START_URI               , 2+4+32,"startURI", "Start URI for serializing to use." },
-  { RAPTOR_FEATURE_WRITER_AUTO_INDENT      , 8, "autoIndent", "Automatically indent elements." },
-  { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , 8, "autoEmpty", "Automatically detect and abbreviate empty elements." },
-  { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , 8, "indentWidth", "Number of spaces to indent." },
-  { RAPTOR_FEATURE_WRITER_XML_VERSION      , 2+8, "xmlVersion", "XML version to write." },
-  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 2+8, "xmlDeclaration", "Write XML declaration." },
-  { RAPTOR_FEATURE_NO_NET                  , 1,  "noNet", "Deny network requests." },
-  { RAPTOR_FEATURE_RESOURCE_BORDER   , 2+4, "resourceBorder", "DOT serializer resource border color" },
-  { RAPTOR_FEATURE_LITERAL_BORDER    , 2+4, "literalBorder", "DOT serializer literal border color" },
-  { RAPTOR_FEATURE_BNODE_BORDER      , 2+4, "bnodeBorder", "DOT serializer blank node border color" },
-  { RAPTOR_FEATURE_RESOURCE_FILL     , 2+4, "resourceFill", "DOT serializer resource fill color" },
-  { RAPTOR_FEATURE_LITERAL_FILL      , 2+4, "literalFill", "DOT serializer literal fill color" },
-  { RAPTOR_FEATURE_BNODE_FILL        , 2+4, "bnodeFill", "DOT serializer blank node fill color" },
-  { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" },
-  { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" },
-  { RAPTOR_FEATURE_HTML_LINK         , 1,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
-  { RAPTOR_FEATURE_WWW_TIMEOUT       , 1+16,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
-  { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base / xml:base directive in serializer output" },
-  { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 1+4, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
-  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 1+4, "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
-  { RAPTOR_FEATURE_JSON_CALLBACK     , 2+4, "jsonCallback", "JSON serializer callback" },
-  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 2+4, "jsonExtraData", "JSON serializer extra data" },
-  { RAPTOR_FEATURE_RSS_TRIPLES       , 2+4, "rssTriples", "Atom/RSS serializer writes extra RDF triples" },
-  { RAPTOR_FEATURE_ATOM_ENTRY_URI    , 2+4+32, "atomEntryUri", "Atom serializer Entry URI" },
-  { RAPTOR_FEATURE_PREFIX_ELEMENTS   , 2,  "prefixElements", "Atom/RSS serializers write namespace-prefixed elements" }
+  { RAPTOR_FEATURE_SCANNING                , AREA_PARSER | VT_BOOL, "scanForRDF", "Scan for rdf:RDF in XML content" },
+  { RAPTOR_FEATURE_ASSUME_IS_RDF           , AREA_PARSER | VT_BOOL, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
+  { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , AREA_PARSER | VT_BOOL, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
+  { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  , AREA_PARSER | VT_BOOL, "allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
+  { RAPTOR_FEATURE_ALLOW_BAGID             , AREA_PARSER | VT_BOOL, "allowBagID", "Allow rdf:bagID" },
+  { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST , AREA_PARSER | VT_BOOL, "allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
+  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      , AREA_PARSER | VT_BOOL, "normalizeLanguage", "Normalize xml:lang values to lowercase" },
+  { RAPTOR_FEATURE_NON_NFC_FATAL           , AREA_PARSER | VT_BOOL, "nonNFCfatal", "Make non-NFC literals cause a fatal error" },
+  { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , AREA_PARSER | VT_BOOL, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
+  { RAPTOR_FEATURE_CHECK_RDF_ID            , AREA_PARSER | VT_BOOL, "checkRdfID", "Check rdf:ID values for duplicates" },
+  { RAPTOR_FEATURE_RELATIVE_URIS           , AREA_SERIALIZER | VT_BOOL, "relativeURIs", "Write relative URIs wherever possible in serializing." },
+  { RAPTOR_FEATURE_START_URI               , AREA_SERIALIZER | VT_URI,  "startURI", "Start URI for serializing to use." },
+  { RAPTOR_FEATURE_WRITER_AUTO_INDENT      , AREA_XML_WRITER | VT_BOOL, "autoIndent", "Automatically indent elements." },
+  { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , AREA_XML_WRITER | VT_BOOL, "autoEmpty", "Automatically detect and abbreviate empty elements." },
+  { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , AREA_XML_WRITER | VT_BOOL, "indentWidth", "Number of spaces to indent." },
+  { RAPTOR_FEATURE_WRITER_XML_VERSION      , AREA_SERIALIZER | AREA_XML_WRITER | VT_INT, "xmlVersion", "XML version to write." },
+  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , AREA_SERIALIZER | AREA_XML_WRITER | VT_BOOL, "xmlDeclaration", "Write XML declaration." },
+  { RAPTOR_FEATURE_NO_NET                  , AREA_PARSER | VT_BOOL,  "noNet", "Deny network requests." },
+  { RAPTOR_FEATURE_RESOURCE_BORDER   , AREA_SERIALIZER | VT_STRING, "resourceBorder", "DOT serializer resource border color" },
+  { RAPTOR_FEATURE_LITERAL_BORDER    , AREA_SERIALIZER | VT_STRING, "literalBorder", "DOT serializer literal border color" },
+  { RAPTOR_FEATURE_BNODE_BORDER      , AREA_SERIALIZER | VT_STRING, "bnodeBorder", "DOT serializer blank node border color" },
+  { RAPTOR_FEATURE_RESOURCE_FILL     , AREA_SERIALIZER | VT_STRING, "resourceFill", "DOT serializer resource fill color" },
+  { RAPTOR_FEATURE_LITERAL_FILL      , AREA_SERIALIZER | VT_STRING, "literalFill", "DOT serializer literal fill color" },
+  { RAPTOR_FEATURE_BNODE_FILL        , AREA_SERIALIZER | VT_STRING, "bnodeFill", "DOT serializer blank node fill color" },
+  { RAPTOR_FEATURE_HTML_TAG_SOUP     , AREA_PARSER | VT_BOOL,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" },
+  { RAPTOR_FEATURE_MICROFORMATS      , AREA_PARSER | VT_BOOL,  "microformats", "GRDDL parsing looks for microformats" },
+  { RAPTOR_FEATURE_HTML_LINK         , AREA_PARSER | VT_BOOL,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
+  { RAPTOR_FEATURE_WWW_TIMEOUT       , AREA_PARSER | VT_INT,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
+  { RAPTOR_FEATURE_WRITE_BASE_URI    , AREA_SERIALIZER | VT_BOOL,  "writeBaseURI", "Write @base / xml:base directive in serializer output" },
+  { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, AREA_PARSER | VT_STRING, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
+  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , AREA_PARSER | VT_STRING, "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
+  { RAPTOR_FEATURE_JSON_CALLBACK     , AREA_SERIALIZER | VT_STRING, "jsonCallback", "JSON serializer callback" },
+  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , AREA_SERIALIZER | VT_STRING, "jsonExtraData", "JSON serializer extra data" },
+  { RAPTOR_FEATURE_RSS_TRIPLES       , AREA_SERIALIZER | VT_STRING, "rssTriples", "Atom/RSS serializer writes extra RDF triples" },
+  { RAPTOR_FEATURE_ATOM_ENTRY_URI    , AREA_SERIALIZER | VT_URI, "atomEntryUri", "Atom serializer Entry URI" },
+  { RAPTOR_FEATURE_PREFIX_ELEMENTS   , AREA_SERIALIZER | VT_BOOL,  "prefixElements", "Atom/RSS serializers write namespace-prefixed elements" }
 };
 
 
