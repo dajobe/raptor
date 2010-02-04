@@ -376,7 +376,8 @@ main(int argc, char *argv[])
               const char *feature_name;
               const char *feature_label;
               if(!raptor_world_enumerate_parser_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                raptor_feature_value_type value_type = raptor_feature_get_value_type((raptor_feature)i);
+                const char *feature_type = (value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL || value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
@@ -386,7 +387,8 @@ main(int argc, char *argv[])
               const char *feature_name;
               const char *feature_label;
               if(!raptor_world_enumerate_serializer_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                const char *feature_type = (raptor_feature_value_type((raptor_feature)i) == 0) ? "" : " (string)";
+                raptor_feature_value_type value_type = raptor_feature_get_value_type((raptor_feature)i);
+                const char *feature_type = (value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL || value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) ? "" : " (string)";
                 fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
                        feature_type);
               }
@@ -433,10 +435,14 @@ main(int argc, char *argv[])
 
               len = strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
+                raptor_feature_value_type value_type;
+
                 fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
 
                 fv->feature = (raptor_feature)i;
-                if(raptor_feature_value_type(fv->feature) == 0) {
+                value_type = raptor_feature_get_value_type(fv->feature);
+                if(value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL ||
+                   value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) {
                   if(len < arg_len && optarg[len] == '=')
                     fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
@@ -468,10 +474,14 @@ main(int argc, char *argv[])
 
               len = strlen(feature_name);
               if(!strncmp(optarg, feature_name, len)) {
+                raptor_feature_value_type value_type;
+
                 fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
 
                 fv->feature = (raptor_feature)i;
-                if(raptor_feature_value_type(fv->feature) == 0) {
+                value_type = raptor_feature_get_value_type(fv->feature);
+                if(value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL ||
+                   value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) {
                   if(len < arg_len && optarg[len] == '=')
                     fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
