@@ -2,7 +2,7 @@
  *
  * raptor_feature.c - Parser and Serializer features
  *
- * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -50,14 +50,15 @@ static const struct
    *
    *  1=parser feature
    *  2=serializer feature
-   *  4=string value (else bool/int)
+   *  4=string/uri value (else bool/int)
    *  8=xml writer feature
    * 16=bool/int value is an integer
+   * 32=string/uri value is a uri
    */
-  int flags;
+  unsigned int flags;
   const char *name;
   const char *label;
-} raptor_features_list[RAPTOR_FEATURE_LAST+1]= {
+} raptor_features_list[RAPTOR_FEATURE_LAST+1] = {
   { RAPTOR_FEATURE_SCANNING                , 1, "scanForRDF", "Scan for rdf:RDF in XML content" },
   { RAPTOR_FEATURE_ASSUME_IS_RDF           , 1, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
   { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , 1, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
@@ -69,30 +70,30 @@ static const struct
   { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , 1, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
   { RAPTOR_FEATURE_CHECK_RDF_ID            , 1, "checkRdfID", "Check rdf:ID values for duplicates" },
   { RAPTOR_FEATURE_RELATIVE_URIS           , 2, "relativeURIs", "Write relative URIs wherever possible in serializing." },
-  { RAPTOR_FEATURE_START_URI               , 6, "startURI", "Start URI for serializing to use." },
+  { RAPTOR_FEATURE_START_URI               , 2+4+32,"startURI", "Start URI for serializing to use." },
   { RAPTOR_FEATURE_WRITER_AUTO_INDENT      , 8, "autoIndent", "Automatically indent elements." },
   { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , 8, "autoEmpty", "Automatically detect and abbreviate empty elements." },
   { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , 8, "indentWidth", "Number of spaces to indent." },
-  { RAPTOR_FEATURE_WRITER_XML_VERSION      , 10, "xmlVersion", "XML version to write." },
-  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 10, "xmlDeclaration", "Write XML declaration." },
+  { RAPTOR_FEATURE_WRITER_XML_VERSION      , 2+8, "xmlVersion", "XML version to write." },
+  { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , 2+8, "xmlDeclaration", "Write XML declaration." },
   { RAPTOR_FEATURE_NO_NET                  , 1,  "noNet", "Deny network requests." },
-  { RAPTOR_FEATURE_RESOURCE_BORDER   , 6,  "resourceBorder", "DOT serializer resource border color" },
-  { RAPTOR_FEATURE_LITERAL_BORDER    , 6,  "literalBorder", "DOT serializer literal border color" },
-  { RAPTOR_FEATURE_BNODE_BORDER      , 6,  "bnodeBorder", "DOT serializer blank node border color" },
-  { RAPTOR_FEATURE_RESOURCE_FILL     , 6,  "resourceFill", "DOT serializer resource fill color" },
-  { RAPTOR_FEATURE_LITERAL_FILL      , 6,  "literalFill", "DOT serializer literal fill color" },
-  { RAPTOR_FEATURE_BNODE_FILL        , 6,  "bnodeFill", "DOT serializer blank node fill color" },
+  { RAPTOR_FEATURE_RESOURCE_BORDER   , 2+4, "resourceBorder", "DOT serializer resource border color" },
+  { RAPTOR_FEATURE_LITERAL_BORDER    , 2+4, "literalBorder", "DOT serializer literal border color" },
+  { RAPTOR_FEATURE_BNODE_BORDER      , 2+4, "bnodeBorder", "DOT serializer blank node border color" },
+  { RAPTOR_FEATURE_RESOURCE_FILL     , 2+4, "resourceFill", "DOT serializer resource fill color" },
+  { RAPTOR_FEATURE_LITERAL_FILL      , 2+4, "literalFill", "DOT serializer literal fill color" },
+  { RAPTOR_FEATURE_BNODE_FILL        , 2+4, "bnodeFill", "DOT serializer blank node fill color" },
   { RAPTOR_FEATURE_HTML_TAG_SOUP     , 1,  "htmlTagSoup", "HTML parsing uses a lax HTML parser" },
   { RAPTOR_FEATURE_MICROFORMATS      , 1,  "microformats", "GRDDL parsing looks for microformats" },
   { RAPTOR_FEATURE_HTML_LINK         , 1,  "htmlLink", "GRDDL parsing looks for <link type=\"application/rdf+xml\">" },
   { RAPTOR_FEATURE_WWW_TIMEOUT       , 1+16,  "wwwTimeout", "Set internal WWW URI retrieval timeout" },
   { RAPTOR_FEATURE_WRITE_BASE_URI    , 2,  "writeBaseURI", "Write @base / xml:base directive in serializer output" },
-  { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 5, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
-  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 5,  "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
-  { RAPTOR_FEATURE_JSON_CALLBACK     , 6,  "jsonCallback", "JSON serializer callback" },
-  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 6,  "jsonExtraData", "JSON serializer extra data" },
-  { RAPTOR_FEATURE_RSS_TRIPLES       , 6,  "rssTriples", "Atom/RSS serializer writes extra RDF triples" },
-  { RAPTOR_FEATURE_ATOM_ENTRY_URI    , 6,  "atomEntryUri", "Atom serializer Entry URI" },
+  { RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL, 1+4, "wwwHttpCacheControl", "Set HTTP Cache-Control: header value" },
+  { RAPTOR_FEATURE_WWW_HTTP_USER_AGENT , 1+4, "wwwHttpUserAgent", "Set HTTP User-Agent: header value" },
+  { RAPTOR_FEATURE_JSON_CALLBACK     , 2+4, "jsonCallback", "JSON serializer callback" },
+  { RAPTOR_FEATURE_JSON_EXTRA_DATA   , 2+4, "jsonExtraData", "JSON serializer extra data" },
+  { RAPTOR_FEATURE_RSS_TRIPLES       , 2+4, "rssTriples", "Atom/RSS serializer writes extra RDF triples" },
+  { RAPTOR_FEATURE_ATOM_ENTRY_URI    , 2+4+32, "atomEntryUri", "Atom serializer Entry URI" },
   { RAPTOR_FEATURE_PREFIX_ELEMENTS   , 2,  "prefixElements", "Atom/RSS serializers write namespace-prefixed elements" }
 };
 
