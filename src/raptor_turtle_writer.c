@@ -653,7 +653,8 @@ raptor_turtle_writer_features_enumerate(raptor_world* world,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
 {
-  return raptor_features_enumerate_common(world, feature, name, uri, label, 8);
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_XML_WRITER);
 }
 
 

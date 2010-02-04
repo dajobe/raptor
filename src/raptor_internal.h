@@ -803,7 +803,14 @@ void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE
 int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
 
 /* raptor_feature.c */
-int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, int flags);
+typedef enum {
+ RAPTOR_FEATURE_AREA_PARSER = 1,
+ RAPTOR_FEATURE_AREA_SERIALIZER = 2,
+ RAPTOR_FEATURE_AREA_XML_WRITER = 8
+} raptor_feature_area;
+
+
+int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, raptor_feature_area area);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);

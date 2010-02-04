@@ -779,7 +779,8 @@ raptor_world_enumerate_serializer_features(raptor_world* world,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
 {
-  return raptor_features_enumerate_common(world, feature, name, uri, label, 2);
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_SERIALIZER);
 }
 
 

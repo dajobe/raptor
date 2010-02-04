@@ -1191,7 +1191,8 @@ raptor_world_enumerate_parser_features(raptor_world* world,
                                        const char **name, 
                                        raptor_uri **uri, const char **label)
 {
-  return raptor_features_enumerate_common(world, feature, name, uri, label, 1);
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_PARSER);
 }
 
 
