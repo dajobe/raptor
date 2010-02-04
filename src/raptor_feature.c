@@ -174,6 +174,16 @@ raptor_feature_get_value_type(const raptor_feature feature)
 }
 
 
+int
+raptor_feature_value_is_numeric(const raptor_feature feature)
+{
+  raptor_feature_value_type t = raptor_features_list[feature].value_type;
+  
+  return t == RAPTOR_FEATURE_VALUE_TYPE_BOOL ||
+         t == RAPTOR_FEATURE_VALUE_TYPE_INT;
+}
+
+
 /**
  * raptor_world_get_feature_from_uri:
  * @world: raptor_world instance

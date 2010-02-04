@@ -1289,8 +1289,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
                                  raptor_feature feature, 
                                  const unsigned char *value)
 {
-  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
-  if(!value_is_string)
+  if(raptor_feature_value_is_numeric(feature))
     return raptor_parser_set_feature(parser, feature, atoi((const char*)value));
 
   if((feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL) ||
@@ -1410,8 +1409,7 @@ const unsigned char *
 raptor_parser_get_feature_string(raptor_parser *parser, 
                                  raptor_feature feature)
 {
-  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
-  if(!value_is_string)
+  if(raptor_feature_value_is_numeric(feature))
     return NULL;
   
   return NULL;

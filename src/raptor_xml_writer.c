@@ -934,12 +934,11 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
                                      raptor_feature feature, 
                                      const unsigned char *value)
 {
-  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
-  if(!value_is_string)
+  if(raptor_feature_value_is_numeric(feature))
     return raptor_xml_writer_set_feature(xml_writer, feature, 
                                          atoi((const char*)value));
-  else
-    return -1;
+
+  return -1;
 }
 
 

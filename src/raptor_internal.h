@@ -813,6 +813,7 @@ typedef enum {
 } raptor_feature_area;
 
 int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, raptor_feature_area area);
+int raptor_feature_value_is_numeric(const raptor_feature feature);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
