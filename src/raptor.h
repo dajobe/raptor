@@ -711,7 +711,7 @@ const unsigned char* raptor_parser_get_option_string(raptor_parser *parser, rapt
 RAPTOR_API
 unsigned int raptor_parser_get_option_count(void);
 
-/* parser utilit methods */
+/* parser utility methods */
 RAPTOR_API
 void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
 RAPTOR_API
