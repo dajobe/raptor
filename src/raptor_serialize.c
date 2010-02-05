@@ -865,7 +865,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     return raptor_serializer_set_feature(serializer, feature, 
                                          atoi((const char*)value));
 
-    /* GraphViz serializer features */
+  /* GraphViz serializer features */
   if(feature == RAPTOR_FEATURE_RESOURCE_BORDER)
     return raptor_serializer_copy_string(
       (unsigned char **)&(serializer->feature_resource_border), value);
@@ -885,13 +885,15 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
     return raptor_serializer_copy_string(
       (unsigned char **)&(serializer->feature_bnode_fill), value);
 
-    /* JSON serializer features */
+  /* JSON serializer features */
   else if(feature == RAPTOR_FEATURE_JSON_CALLBACK)
     return raptor_serializer_copy_string(
       (unsigned char **)&(serializer->feature_json_callback), value);
   else if(feature == RAPTOR_FEATURE_JSON_EXTRA_DATA)
     return raptor_serializer_copy_string(
       (unsigned char **)&(serializer->feature_json_extra_data), value);
+
+  /* ATOM serializer features */
   else if(feature == RAPTOR_FEATURE_RSS_TRIPLES)
     return raptor_serializer_copy_string(
       (unsigned char **)&(serializer->feature_rss_triples), value);
@@ -920,74 +922,25 @@ int
 raptor_serializer_get_feature(raptor_serializer *serializer, 
                               raptor_feature feature)
 {
-  int result= -1;
+  int result = -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-      result = (serializer->feature_write_base_uri != 0);
-      break;
+  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+    return -1;
 
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-      result = (serializer->feature_relative_uris != 0);
-      break;
+  if(!raptor_feature_value_is_numeric(feature))
+    return -1;
 
-    /* String features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-      result= -1;
-      break;
+  if(feature == RAPTOR_FEATURE_WRITE_BASE_URI)
+    result = (serializer->feature_write_base_uri != 0);
+  else if(feature == RAPTOR_FEATURE_RELATIVE_URIS)
+    result = (serializer->feature_relative_uris != 0);
+  else if(feature == RAPTOR_FEATURE_PREFIX_ELEMENTS)
+    result = serializer->feature_prefix_elements;
+  else if(feature == RAPTOR_FEATURE_WRITER_XML_VERSION)
+    result = serializer->xml_version;
+  else if(feature == RAPTOR_FEATURE_WRITER_XML_DECLARATION)
+    result = serializer->feature_write_xml_declaration;
 
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-      result = serializer->feature_prefix_elements;
-      break;
-      
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-      result = serializer->xml_version;
-      break;
-  
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-      result = serializer->feature_write_xml_declaration;
-      break;
-      
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
-
-    /* XML writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-
-    /* WWW features */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-
-    default:
-      break;
-  }
-  
   return result;
 }
 
@@ -1007,84 +960,46 @@ const unsigned char *
 raptor_serializer_get_feature_string(raptor_serializer *serializer, 
                                      raptor_feature feature)
 {
+  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+    return NULL;
+
   if(raptor_feature_value_is_numeric(feature))
     return NULL;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-      /* actually handled above because value is integral */
-      return NULL;
-      break;
-      
     /* GraphViz serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-      return (unsigned char *)(serializer->feature_resource_border);
-      break;
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-      return (unsigned char *)(serializer->feature_literal_border);
-      break;
-    case RAPTOR_FEATURE_BNODE_BORDER:
-      return (unsigned char *)(serializer->feature_bnode_border);
-      break;
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-      return (unsigned char *)(serializer->feature_resource_fill);
-      break;
-    case RAPTOR_FEATURE_LITERAL_FILL:
-      return (unsigned char *)(serializer->feature_literal_fill);
-      break;
-    case RAPTOR_FEATURE_BNODE_FILL:
-      return (unsigned char *)(serializer->feature_bnode_fill);
-      break;
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-      return (unsigned char *)(serializer->feature_json_callback);
-      break;
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-      return (unsigned char *)(serializer->feature_json_extra_data);
-      break;
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-      return (unsigned char *)(serializer->feature_rss_triples);
-      break;
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-      return (unsigned char *)(serializer->feature_atom_entry_uri);
-      break;
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-      return NULL;
-      break;
-        
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
+  if(feature == RAPTOR_FEATURE_RESOURCE_BORDER)
+    return (unsigned char *)(serializer->feature_resource_border);
+  else if(feature == RAPTOR_FEATURE_LITERAL_BORDER)
+    return (unsigned char *)(serializer->feature_literal_border);
+  else if(feature == RAPTOR_FEATURE_BNODE_BORDER)
+    return (unsigned char *)(serializer->feature_bnode_border);
+  else if(feature == RAPTOR_FEATURE_RESOURCE_FILL)
+    return (unsigned char *)(serializer->feature_resource_fill);
+  else if(feature == RAPTOR_FEATURE_LITERAL_FILL)
+    return (unsigned char *)(serializer->feature_literal_fill);
+  else if(feature == RAPTOR_FEATURE_BNODE_FILL)
+    return (unsigned char *)(serializer->feature_bnode_fill);
+  else if(feature == RAPTOR_FEATURE_JSON_CALLBACK)
+    return (unsigned char *)(serializer->feature_json_callback);
+  else if(feature == RAPTOR_FEATURE_JSON_EXTRA_DATA)
+    return (unsigned char *)(serializer->feature_json_extra_data);
+  else if(feature == RAPTOR_FEATURE_RSS_TRIPLES)
+    return (unsigned char *)(serializer->feature_rss_triples);
+  else if(feature == RAPTOR_FEATURE_ATOM_ENTRY_URI)
+    return (unsigned char *)(serializer->feature_atom_entry_uri);
 
-    /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
+  /* JSON serializer features */
+  else if(feature == RAPTOR_FEATURE_JSON_CALLBACK)
+    return (unsigned char *)(serializer->feature_json_callback);
+  else if(feature == RAPTOR_FEATURE_JSON_EXTRA_DATA)
+    return (unsigned char *)(serializer->feature_json_extra_data);
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+  /* ATOM serializer features */
+  else if(feature == RAPTOR_FEATURE_RSS_TRIPLES)
+    return (unsigned char *)(serializer->feature_rss_triples);
+  else if(feature == RAPTOR_FEATURE_ATOM_ENTRY_URI)
+    return (unsigned char *)(serializer->feature_atom_entry_uri);
 
-    /* WWW features */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-
-    default:
-      return NULL;
-      break;
-  }
 
   return NULL;
 }
