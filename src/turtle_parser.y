@@ -1566,7 +1566,7 @@ main(int argc, char *argv[])
   char string[TURTLE_FILE_BUF_SIZE];
   raptor_parser rdf_parser; /* static */
   raptor_turtle_parser turtle_parser; /* static */
-  raptor_locator *locator=&rdf_parser.locator;
+  raptor_locator *locator = &rdf_parser.locator;
   FILE *fh;
   const char *filename;
   int rc;
@@ -1602,8 +1602,6 @@ main(int argc, char *argv[])
   if(argc > 1)
     fclose(fh);
 
-  raptor_init();
-
   memset(&rdf_parser, 0, sizeof(rdf_parser));
   memset(&turtle_parser, 0, sizeof(turtle_parser));
 
@@ -1626,8 +1624,6 @@ main(int argc, char *argv[])
   raptor_turtle_parse_terminate(&rdf_parser);
   
   raptor_free_uri(rdf_parser.base_uri);
-
-  raptor_finish();
 
   return (0);
 }
