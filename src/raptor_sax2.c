@@ -646,71 +646,24 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
  *
  * Set various SAX2 features.
  * 
- * The allowed features are available via raptor_sax2_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_sax2_features().
  *
  * Return value: non 0 on failure or if the feature is unknown
  */
 int
 raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) && RAPTOR_FEATURE_AREA_SAX2))
     return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-      sax2->feature_normalize_language = value;
-      break;
-
-    case RAPTOR_FEATURE_NO_NET:
-      sax2->feature_no_net = value;
-      break;
-
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-      
-    default:
-      return -1;
-      break;
-  }
+  if(feature == RAPTOR_FEATURE_NORMALIZE_LANGUAGE)
+    sax2->feature_normalize_language = value;
+  else if(feature == RAPTOR_FEATURE_NO_NET)
+    sax2->feature_no_net = value;
+  else
+    return -1;
 
   return 0;
 }
