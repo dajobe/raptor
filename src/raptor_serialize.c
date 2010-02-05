@@ -800,78 +800,24 @@ int
 raptor_serializer_set_feature(raptor_serializer *serializer, 
                               raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
     return -1;
+
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-      serializer->feature_write_base_uri = value;
-      break;
-
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-      serializer->feature_relative_uris = value;
-      break;
-
-    case RAPTOR_FEATURE_START_URI:
-      return -1;
-      break;
-
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-      if(value == 10 || value == 11)
-        serializer->xml_version = value;
-      break;
-
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-      serializer->feature_write_xml_declaration = value;
-      break;
-
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-      serializer->feature_prefix_elements = value;
-      break;
-
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
-
-    /* XML writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-
-    /* String features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-
-    /* WWW features */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-
-    default:
-      return -1;
-      break;
-  }
+  if(feature == RAPTOR_FEATURE_WRITE_BASE_URI)
+    serializer->feature_write_base_uri = value;
+  else if(feature == RAPTOR_FEATURE_RELATIVE_URIS)
+    serializer->feature_relative_uris = value;
+  else if(feature == RAPTOR_FEATURE_WRITER_XML_VERSION) {
+    if(value == 10 || value == 11)
+      serializer->xml_version = value;
+  } else if(feature == RAPTOR_FEATURE_WRITER_XML_DECLARATION)
+    serializer->feature_write_xml_declaration = value;
+  else if(feature == RAPTOR_FEATURE_PREFIX_ELEMENTS)
+    serializer->feature_prefix_elements = value;
+  else
+    return -1;
 
   return 0;
 }
