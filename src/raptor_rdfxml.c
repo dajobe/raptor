@@ -933,7 +933,7 @@ raptor_rdfxml_comment_handler(void *user_data, raptor_xml_element* xml_element,
 
 
 static const unsigned char* const daml_namespace_uri_string = (const unsigned char*)"http://www.daml.org/2001/03/daml+oil#";
-static int daml_namespace_uri_string_len = 37;
+static const int daml_namespace_uri_string_len = 37;
 
 
 static int
