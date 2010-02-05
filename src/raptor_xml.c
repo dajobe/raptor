@@ -68,7 +68,7 @@ raptor_new_xml_element(raptor_qname *name,
   raptor_xml_element* xml_element;
 
   xml_element = (raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
-                                                 sizeof(*xml_element));
+                                                   sizeof(*xml_element));
   if(!xml_element)
     return NULL;
 

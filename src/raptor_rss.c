@@ -245,8 +245,8 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 
   /* Optionally forbid network requests in the XML parser */
   raptor_sax2_set_option(rss_parser->sax2, 
-                          RAPTOR_OPTION_NO_NET,
-                          rdf_parser->options[RAPTOR_OPTION_NO_NET]);
+                         RAPTOR_OPTION_NO_NET,
+                         rdf_parser->options[RAPTOR_OPTION_NO_NET]);
   
   raptor_sax2_parse_start(rss_parser->sax2, uri);
 
@@ -507,7 +507,7 @@ raptor_rss_start_element_handler(void *user_data,
     field_nspace_URI = rdf_parser->world->rss_namespaces_info_uris[raptor_rss_fields_info[i].nspace];
     
     if(raptor_uri_equals(nspace_URI,
-                            field_nspace_URI)) {
+                         field_nspace_URI)) {
       rss_parser->current_field = (raptor_rss_fields_type)i;
       break;
     }
@@ -617,7 +617,7 @@ raptor_rss_start_element_handler(void *user_data,
             if(!strcmp((const char*)attrValue, "true")) {
               RAPTOR_DEBUG2("    setting guid to URI '%s'\n", attrValue);
               field->uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
-                                                              (const unsigned char*)attrValue);
+                                                           (const unsigned char*)attrValue);
             } else {
               size_t len = strlen((const char*)attrValue);
               RAPTOR_DEBUG2("    setting guid to string '%s'\n", attrValue);
@@ -637,7 +637,7 @@ raptor_rss_start_element_handler(void *user_data,
           if(rss_element->uri)
             raptor_free_uri(rss_element->uri);
           rss_element->uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
-                                                                (const unsigned char*)attrValue);
+                                                             (const unsigned char*)attrValue);
         }
       } else if(!strcmp((const char*)attrName, "type")) {
         if(rss_parser->current_field == RAPTOR_RSS_FIELD_ATOM_LINK) {
@@ -660,7 +660,7 @@ raptor_rss_start_element_handler(void *user_data,
                                                             NULL,
                                                             rss_element->iostream);
             raptor_xml_writer_set_option(rss_element->xml_writer, 
-                                          RAPTOR_OPTION_WRITER_XML_DECLARATION, 0);
+                                         RAPTOR_OPTION_WRITER_XML_DECLARATION, 0);
 
             raptor_free_stringbuffer(rss_element->sb);
             rss_element->sb = NULL;

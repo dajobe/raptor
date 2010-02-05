@@ -60,7 +60,7 @@ typedef enum {
 #define XML_WRITER_AUTO_EMPTY(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) != 0)
 
 #define XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer)              \
-  if((xml_writer->flags & XML_WRITER_AUTO_EMPTY) &&            \
+  if((xml_writer->flags & XML_WRITER_AUTO_EMPTY) &&             \
       xml_writer->current_element &&                            \
       !(xml_writer->current_element->content_cdata_seen ||      \
         xml_writer->current_element->content_element_seen)) {   \
@@ -915,7 +915,7 @@ raptor_xml_writer_set_option_string(raptor_xml_writer *xml_writer,
 
   if(raptor_option_value_is_numeric(option))
     return raptor_xml_writer_set_option(xml_writer, option, 
-                                         atoi((const char*)value));
+                                        atoi((const char*)value));
 
   return -1;
 }

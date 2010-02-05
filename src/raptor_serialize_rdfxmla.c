@@ -1189,17 +1189,17 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
       return 1;
 
     raptor_xml_writer_set_option(xml_writer,
-                                  RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
+                                 RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
     raptor_xml_writer_set_option(xml_writer,
-                                  RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
+                                 RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
     raptor_xml_writer_set_option(xml_writer,
-                                  RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
+                                 RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
     raptor_xml_writer_set_option(xml_writer,
-                                  RAPTOR_OPTION_WRITER_XML_VERSION,
-                                  serializer->xml_version);
+                                 RAPTOR_OPTION_WRITER_XML_VERSION,
+                                 serializer->xml_version);
     raptor_xml_writer_set_option(xml_writer, 
-                                  RAPTOR_OPTION_WRITER_XML_DECLARATION, 
-                                  serializer->option_write_xml_declaration);
+                                 RAPTOR_OPTION_WRITER_XML_DECLARATION,
+                                 serializer->option_write_xml_declaration);
 
     context->xml_writer = xml_writer;
   }

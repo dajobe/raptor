@@ -501,12 +501,12 @@ raptor_init_serializer_json(raptor_world* world)
   int rc;
   
   rc = raptor_serializer_register_factory(world,
-                                        "json-triples",
-                                        "RDF/JSON Triples", 
-                                        "application/json",
-                                        NULL,
-                                        NULL,
-                                        &raptor_json_triples_serializer_register_factory);
+                                          "json-triples",
+                                          "RDF/JSON Triples",
+                                          "application/json",
+                                          NULL,
+                                          NULL,
+                                          &raptor_json_triples_serializer_register_factory);
   if(rc)
     return rc;
   

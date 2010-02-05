@@ -785,9 +785,9 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   if(!context->nstack)
     return 1;
   context->rdf_nspace = raptor_new_namespace(context->nstack,
-                                           (const unsigned char*)"rdf",
-                                           (const unsigned char*)raptor_rdf_namespace_uri,
-                                           0);
+                                             (const unsigned char*)"rdf",
+                                             (const unsigned char*)raptor_rdf_namespace_uri,
+                                              0);
 
   context->namespaces = raptor_new_sequence(NULL, NULL);
 
@@ -948,8 +948,8 @@ raptor_turtle_serialize_declare_namespace_from_namespace(raptor_serializer* seri
   }
 
   nspace = raptor_new_namespace_from_uri(context->nstack,
-                                       nspace->prefix, nspace->uri,
-                                       TURTLE_NAMESPACE_DEPTH);
+                                         nspace->prefix, nspace->uri,
+                                         TURTLE_NAMESPACE_DEPTH);
   if(!nspace)
     return 1;
   
@@ -997,9 +997,9 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
     return 1;
 
   raptor_turtle_writer_set_option(turtle_writer,
-                                   RAPTOR_OPTION_WRITER_AUTO_INDENT,1);
+                                  RAPTOR_OPTION_WRITER_AUTO_INDENT,1);
   raptor_turtle_writer_set_option(turtle_writer,
-                                   RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
+                                  RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
   
   context->turtle_writer = turtle_writer;
 

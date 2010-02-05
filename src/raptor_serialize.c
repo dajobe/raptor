@@ -184,7 +184,7 @@ raptor_serializer_register_factory(raptor_world* world,
   
 
   serializer = (raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
-                                               sizeof(*serializer));
+                                                         sizeof(*serializer));
   if(!serializer)
     return 1;
 
@@ -313,7 +313,7 @@ raptor_world_enumerate_serializers(raptor_world* world,
   raptor_serializer_factory *factory;
 
   factory = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers,
-                                                             counter);
+                                                               counter);
 
   if(!factory)
     return 1;

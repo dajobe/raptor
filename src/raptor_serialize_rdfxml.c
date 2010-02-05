@@ -90,14 +90,14 @@ raptor_rdfxml_serialize_init(raptor_serializer* serializer, const char *name)
   if(!context->nstack)
     return 1;
   context->xml_nspace = raptor_new_namespace(context->nstack,
-                                           (const unsigned char*)"xml",
-                                           (const unsigned char*)raptor_xml_namespace_uri,
-                                           0);
+                                             (const unsigned char*)"xml",
+                                             (const unsigned char*)raptor_xml_namespace_uri,
+                                             0);
 
   context->rdf_nspace = raptor_new_namespace(context->nstack,
-                                           (const unsigned char*)"rdf",
-                                           (const unsigned char*)raptor_rdf_namespace_uri,
-                                           0);
+                                             (const unsigned char*)"rdf",
+                                             (const unsigned char*)raptor_rdf_namespace_uri,
+                                             0);
 
   context->namespaces = raptor_new_sequence(NULL, NULL);
 
@@ -193,8 +193,8 @@ raptor_rdfxml_serialize_declare_namespace_from_namespace(raptor_serializer* seri
   }
 
   nspace = raptor_new_namespace_from_uri(context->nstack,
-                                       nspace->prefix, nspace->uri,
-                                       RDFXML_NAMESPACE_DEPTH);
+                                         nspace->prefix, nspace->uri,
+                                         RDFXML_NAMESPACE_DEPTH);
   if(!nspace)
     return 1;
 
@@ -214,10 +214,10 @@ raptor_rdfxml_serialize_declare_namespace(raptor_serializer* serializer,
   int rc;
 
   ns = raptor_new_namespace_from_uri(context->nstack, prefix, uri,
-                                   RDFXML_NAMESPACE_DEPTH);
+                                     RDFXML_NAMESPACE_DEPTH);
 
   rc = raptor_rdfxml_serialize_declare_namespace_from_namespace(serializer,
-                                                               ns);
+                                                                 ns);
   raptor_free_namespace(ns);
 
   return rc;
@@ -241,10 +241,10 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
   if(!xml_writer)
     return 1;
   raptor_xml_writer_set_option(xml_writer, RAPTOR_OPTION_WRITER_XML_VERSION,
-                                serializer->xml_version);
+                               serializer->xml_version);
   raptor_xml_writer_set_option(xml_writer,
-                                RAPTOR_OPTION_WRITER_XML_DECLARATION,
-                                serializer->option_write_xml_declaration);
+                               RAPTOR_OPTION_WRITER_XML_DECLARATION,
+                               serializer->option_write_xml_declaration);
 
   context->xml_writer = xml_writer;
   context->written_header = 0;
@@ -363,7 +363,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     /* Do not use raptor_uri_as_counted_string() - we want a modifiable copy */
     uri_string = raptor_uri_to_counted_string(statement->predicate->value.uri,
-                                               &uri_len);
+                                              &uri_len);
     if(!uri_string)
       goto oom;
 
@@ -392,11 +392,11 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     *name=c;
 
     predicate_ns = raptor_namespaces_find_namespace_by_uri(context->nstack,
-                                                         predicate_ns_uri);
+                                                           predicate_ns_uri);
     if(!predicate_ns) {
       predicate_ns = raptor_new_namespace_from_uri(context->nstack,
-                                                 nsprefix,
-                                                 predicate_ns_uri, 0);
+                                                   nsprefix,
+                                                   predicate_ns_uri, 0);
       if(!predicate_ns) {
         raptor_free_uri(predicate_ns_uri);
         goto oom;

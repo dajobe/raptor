@@ -1190,7 +1190,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
     reference_file++;
     
     reference_file_len = reference_detail->path_len -
-                       (reference_file - reference_detail->path);
+                         (reference_file - reference_detail->path);
     
     if(!strcmp((const char*)base_file, (const char*)reference_file)) {
       /* If the file names are equal, don't put them in the relative URI */
@@ -1207,7 +1207,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   addqueryfragment:
     /* Calculate the length of the suffix (file name + query + fragment) */
     suffix_len = reference_file_len + reference_detail->query_len + 
-               reference_detail->fragment_len;
+                 reference_detail->fragment_len;
     
     if(reference_detail->query)
       suffix_len++; /* add one char for the '?' */

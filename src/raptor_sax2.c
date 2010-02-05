@@ -831,8 +831,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
         raptor_namespace* nspace;
         nspace = raptor_new_namespace(&sax2->namespaces,
-                                    prefix, namespace_name,
-                                    raptor_sax2_get_depth(sax2));
+                                      prefix, namespace_name,
+                                      raptor_sax2_get_depth(sax2));
 
         if(nspace) {
           raptor_namespaces_start_namespace(&sax2->namespaces, nspace);

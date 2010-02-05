@@ -200,8 +200,8 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   rss_serializer->enclosures = raptor_new_sequence((raptor_data_free_handler*)raptor_free_rss_item, (raptor_data_print_handler*)NULL);
 
   rss_serializer->group_map = raptor_new_avltree(serializer->world,
-                                               (raptor_data_compare_function)raptor_rss_group_map_compare,
-                                               (raptor_data_free_function)raptor_free_group_map, 0);
+                                                 (raptor_data_compare_function)raptor_rss_group_map_compare,
+                                                 (raptor_data_free_function)raptor_free_group_map, 0);
 
   rss_serializer->user_namespaces = raptor_new_sequence((raptor_data_free_handler*)raptor_free_namespace, NULL);
 
@@ -2039,9 +2039,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                                      serializer->iostream);
   rss_serializer->xml_writer = xml_writer;
   raptor_xml_writer_set_option(xml_writer,
-                                RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
+                               RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
   raptor_xml_writer_set_option(xml_writer,
-                                RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
+                               RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
 
   raptor_rss10_build_xml_names(serializer, (is_atom && entry_uri));
 
@@ -2145,8 +2145,8 @@ raptor_rss10_serialize_declare_namespace_from_namespace(raptor_serializer* seria
   }
 
   nspace = raptor_new_namespace_from_uri(rss_serializer->nstack,
-                                       nspace->prefix, nspace->uri,
-                                       0);
+                                         nspace->prefix, nspace->uri,
+                                         0);
   if(!nspace)
     return 1;
 
