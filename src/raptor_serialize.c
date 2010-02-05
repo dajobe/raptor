@@ -831,7 +831,6 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
 
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
@@ -937,7 +936,6 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
 
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
@@ -1078,7 +1076,6 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
@@ -1179,7 +1176,6 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
         
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:

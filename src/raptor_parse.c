@@ -1216,10 +1216,7 @@ raptor_parser_set_feature(raptor_parser *parser,
   if(value < 0 || !raptor_feature_value_is_numeric(feature))
     return -1;
 
-  if(feature == RAPTOR_FEATURE_ASSUME_IS_RDF) {
-    ;
-  } else 
-    parser->features[(int)feature] = value;
+  parser->features[(int)feature] = value;
 
   return 0;
 }
@@ -1288,17 +1285,10 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 int
 raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
 {
-  int result = -1;
-
   if(!raptor_feature_value_is_numeric(feature))
     return -1;
   
-  if(feature == RAPTOR_FEATURE_ASSUME_IS_RDF)
-    result = 0;
-  else
-    result = parser->features[(int)feature];
-  
-  return result;
+  return parser->features[(int)feature];
 }
 
 

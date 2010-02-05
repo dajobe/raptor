@@ -696,7 +696,6 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
         
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
@@ -809,7 +808,6 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
       
     /* parser features */
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
