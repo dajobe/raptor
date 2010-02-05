@@ -46,8 +46,6 @@
 #include "raptor_internal.h"
 
 
-static int raptor_www_init_common(int skip_www_init_finish, int *www_initialized);
-static void raptor_www_finish_common(int skip_www_init_finish);
 static int raptor_www_file_fetch(raptor_www* www);
 
 
@@ -65,25 +63,18 @@ static int raptor_www_file_fetch(raptor_www* www);
 int
 raptor_www_init(raptor_world* world)
 {
-  return raptor_www_init_common(world->www_skip_www_init_finish, &world->www_initialized);
-}
-
-
-static int
-raptor_www_init_common(int skip_www_init_finish, int *www_initialized)
-{
   int rc = 0;
 
-  if(*www_initialized)
+  if(world->www_initialized)
     return 0;
 
-  if(!skip_www_init_finish) {
+  if(!world->www_skip_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     rc = curl_global_init(CURL_GLOBAL_ALL);
 #endif
   }
 
-  *www_initialized = 1;
+  world->www_initialized = 1;
   return rc;
 }
 
@@ -127,14 +118,7 @@ raptor_www_no_www_library_init_finish(raptor_world* world)
 void
 raptor_www_finish(raptor_world* world)
 {
-  raptor_www_finish_common(world->www_skip_www_init_finish);
-}
-
-
-static void
-raptor_www_finish_common(int skip_www_init_finish)
-{
-  if(!skip_www_init_finish) {
+  if(!world->www_skip_www_init_finish) {
 #ifdef RAPTOR_WWW_LIBCURL
     curl_global_cleanup();
 #endif
