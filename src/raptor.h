@@ -625,6 +625,8 @@ int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_fea
 RAPTOR_API
 int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
+int raptor_world_enumerate_sax2_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API
 raptor_feature raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri);
