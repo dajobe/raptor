@@ -805,11 +805,22 @@ int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_
 /* raptor_feature.c */
 
 /* These are bits and may be bit-ORed */
+/**
+ * raptor_feature_area:
+ * @RAPTOR_FEATURE_AREA_PARSER: #raptor_parser (public)
+ * @RAPTOR_FEATURE_AREA_SERIALIZER: #raptor_serializer (public)
+ * @RAPTOR_FEATURE_AREA_XML_WRITER: #raptor_xml_writer (public)
+ * @RAPTOR_FEATURE_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
+ * @RAPTOR_FEATURE_AREA_SAX2: #raptor_sax2 (public)
+ *
+ * Internal - raptor feature areas
+*/
 typedef enum {
  RAPTOR_FEATURE_AREA_PARSER = 1,
  RAPTOR_FEATURE_AREA_SERIALIZER = 2,
- RAPTOR_FEATURE_AREA_XML_WRITER = 8,
- RAPTOR_FEATURE_AREA_TURTLE_WRITER = 16
+ RAPTOR_FEATURE_AREA_XML_WRITER = 4,
+ RAPTOR_FEATURE_AREA_TURTLE_WRITER = 8,
+ RAPTOR_FEATURE_AREA_SAX2 = 16
 } raptor_feature_area;
 
 int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, raptor_feature_area area);
