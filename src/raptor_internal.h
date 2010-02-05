@@ -595,11 +595,6 @@ struct raptor_serializer_s {
    */
   int feature_relative_uris;
 
-  /* FEATURE:
-   * non NULL to start serializing from this URI
-   */
-  raptor_uri* feature_start_uri;
-
   /* FEATURES:
    * non NULL to override default border color
    */

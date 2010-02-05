@@ -295,7 +295,6 @@ typedef struct {
  *   cause an error if any are found.
  * @RAPTOR_FEATURE_RELATIVE_URIS: If true (default true) then
  *   relative URIs will be used wherever possible when serializing.
- * @RAPTOR_FEATURE_START_URI: Set the start URI for serlalizing to use.
  * @RAPTOR_FEATURE_WRITER_AUTO_INDENT: Automatically indent elements when
  *   seriailizing.
  * @RAPTOR_FEATURE_WRITER_AUTO_EMPTY: Automatically detect and
@@ -347,7 +346,6 @@ typedef enum {
   RAPTOR_FEATURE_WARN_OTHER_PARSETYPES,
   RAPTOR_FEATURE_CHECK_RDF_ID,
   RAPTOR_FEATURE_RELATIVE_URIS,
-  RAPTOR_FEATURE_START_URI,
   RAPTOR_FEATURE_WRITER_AUTO_INDENT,
   RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,

@@ -706,9 +706,6 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
 
-  if(rdf_serializer->feature_start_uri)
-    raptor_free_uri(rdf_serializer->feature_start_uri);
-
   if(rdf_serializer->feature_resource_border)
     RAPTOR_FREE(cstring, rdf_serializer->feature_resource_border);
   
@@ -811,10 +808,6 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
 
     case RAPTOR_FEATURE_RELATIVE_URIS:
       serializer->feature_relative_uris = value;
-      break;
-
-    case RAPTOR_FEATURE_START_URI:
-      return -1;
       break;
 
     case RAPTOR_FEATURE_WRITER_XML_VERSION:
@@ -925,13 +918,6 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
                                          atoi((const char*)value));
 
   switch(feature) {
-    case RAPTOR_FEATURE_START_URI:
-      if(value)
-        serializer->feature_start_uri = raptor_new_uri(serializer->world, value);
-      else
-        return -1;
-      break;
-
     case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
     case RAPTOR_FEATURE_PREFIX_ELEMENTS:
@@ -1053,7 +1039,6 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
       break;
 
     /* String features */
-    case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_RESOURCE_BORDER:
     case RAPTOR_FEATURE_LITERAL_BORDER:
     case RAPTOR_FEATURE_BNODE_BORDER:
@@ -1133,11 +1118,6 @@ raptor_serializer_get_feature_string(raptor_serializer *serializer,
     return NULL;
   
   switch(feature) {
-    case RAPTOR_FEATURE_START_URI:
-      if(serializer->feature_start_uri)
-        return raptor_uri_to_string(serializer->feature_start_uri);
-      break;
-
     case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
       /* actually handled above because value is integral */

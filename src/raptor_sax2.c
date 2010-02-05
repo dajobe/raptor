@@ -705,7 +705,6 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
     case RAPTOR_FEATURE_HTML_LINK:
     case RAPTOR_FEATURE_WWW_TIMEOUT:
     case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:

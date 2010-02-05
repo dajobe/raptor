@@ -714,7 +714,6 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
 
     /* XML writer features */
     case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
 
     /* DOT serializer features */
     case RAPTOR_FEATURE_RESOURCE_BORDER:
@@ -826,7 +825,6 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
 
     /* XML writer features */
     case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
 
     /* DOT serializer features */
     case RAPTOR_FEATURE_RESOURCE_BORDER:

@@ -1234,13 +1234,8 @@ raptor_parser_set_feature(raptor_parser *parser,
       parser->features[(int)feature] = value;
       break;
 
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      break;
-
-
     case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
     case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
     case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
@@ -1354,14 +1349,9 @@ raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
       result = parser->features[(int)feature];
       break;
 
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      result = 0;
-      break;
-
     /* serializing features */
     case RAPTOR_FEATURE_WRITE_BASE_URI:
     case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
     case RAPTOR_FEATURE_RESOURCE_BORDER:
     case RAPTOR_FEATURE_LITERAL_BORDER:
     case RAPTOR_FEATURE_BNODE_BORDER:
