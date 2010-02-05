@@ -788,7 +788,7 @@ raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer,
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_world_enumerate_xml_writer_features(raptor_world* world, 
+raptor_world_enumerate_xml_writer_features(raptor_world* world,
                                            const raptor_feature feature,
                                            const char **name, 
                                            raptor_uri **uri, const char **label)
@@ -823,7 +823,8 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
  *
  * Set xml_writer features with integer values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_xml_writer_features().
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -867,8 +868,9 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
  *
  * Set xml_writer features with string values.
  * 
- * The allowed features are available via raptor_xml_writer_features_enumerate().
- * If the feature type is integer, the value is interpreted as an integer.
+ * The allowed features are available via
+ * raptor_xml_writer_features_enumerate().  If the feature type is
+ * integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -892,7 +894,8 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
  *
  * Get various xml_writer features.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_xml_writer_features().
  *
  * Note: no feature value is negative
  *
@@ -929,7 +932,8 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
  *
  * Get xml_writer features with string values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_xml_writer_features().
  *
  * Return value: feature value or NULL for an illegal feature or no value
  **/
