@@ -807,6 +807,7 @@ int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_
 /* These are bits and may be bit-ORed */
 /**
  * raptor_feature_area:
+ * @RAPTOR_FEATURE_AREA_NONE: internal
  * @RAPTOR_FEATURE_AREA_PARSER: #raptor_parser (public)
  * @RAPTOR_FEATURE_AREA_SERIALIZER: #raptor_serializer (public)
  * @RAPTOR_FEATURE_AREA_XML_WRITER: #raptor_xml_writer (public)
@@ -816,6 +817,7 @@ int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_
  * Internal - raptor feature areas
 */
 typedef enum {
+ RAPTOR_FEATURE_AREA_NONE = 0,
  RAPTOR_FEATURE_AREA_PARSER = 1,
  RAPTOR_FEATURE_AREA_SERIALIZER = 2,
  RAPTOR_FEATURE_AREA_XML_WRITER = 4,
