@@ -166,7 +166,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 } STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
 
 %destructor {
-  /* HACK: fix-bison adds rdf_parser param to yydestruct() */
   if($$)
     raptor_free_uri($$);
 } URI_LITERAL QNAME_LITERAL
