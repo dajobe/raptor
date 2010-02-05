@@ -1213,59 +1213,13 @@ int
 raptor_parser_set_feature(raptor_parser *parser,
                           raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 || !raptor_feature_value_is_numeric(feature))
     return -1;
-  
-  switch(feature) {
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_NO_NET:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-      parser->features[(int)feature] = value;
-      break;
 
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      break;
-
-
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-      
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-    default:
-      return -1;
-      break;
-  }
+  if(feature == RAPTOR_FEATURE_ASSUME_IS_RDF) {
+    ;
+  } else 
+    parser->features[(int)feature] = value;
 
   return 0;
 }
@@ -1334,60 +1288,15 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 int
 raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
 {
-  int result= -1;
+  int result = -1;
+
+  if(!raptor_feature_value_is_numeric(feature))
+    return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_NO_NET:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-      result = parser->features[(int)feature];
-      break;
-
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
-      result = 0;
-      break;
-
-    /* serializing features */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_START_URI:
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-
-    /* XML writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-
-    /* WWW features */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-      
-    default:
-      break;
-  }
+  if(feature == RAPTOR_FEATURE_ASSUME_IS_RDF)
+    result = 0;
+  else
+    result = parser->features[(int)feature];
   
   return result;
 }
