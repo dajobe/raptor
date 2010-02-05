@@ -773,7 +773,7 @@ raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
 int
 raptor_iostream_write_end(raptor_iostream *iostr)
 {
-  int rc;
+  int rc = 0;
   
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     return 1;
