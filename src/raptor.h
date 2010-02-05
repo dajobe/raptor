@@ -264,10 +264,6 @@ typedef struct {
  *   parser will look for embedded rdf:RDF elements inside the XML
  *   content, and not require that the XML start with an rdf:RDF root
  *   element.
- * @RAPTOR_FEATURE_ASSUME_IS_RDF: If true (default false) then the
- *   RDF/XML parser will assume the content is RDF/XML, not require
- *   that rdf:RDF root element, and immediately interpret the content
- *   as RDF/XML.
  * @RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES: If true (default true)
  *   then the RDF/XML parser will allow non-XML namespaced attributes
  *   to be accepted as well as rdf: namespaced ones.  For example,
@@ -342,7 +338,6 @@ typedef struct {
  */
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
-  RAPTOR_FEATURE_ASSUME_IS_RDF,
   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES,
   RAPTOR_FEATURE_ALLOW_BAGID,

@@ -51,7 +51,6 @@ static const struct
   const char *label;
 } raptor_features_list[RAPTOR_FEATURE_LAST + 1] = {
   { RAPTOR_FEATURE_SCANNING                , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "scanForRDF", "Scan for rdf:RDF in XML content" },
-  { RAPTOR_FEATURE_ASSUME_IS_RDF           , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
   { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
   { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
   { RAPTOR_FEATURE_ALLOW_BAGID             , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowBagID", "Allow rdf:bagID" },

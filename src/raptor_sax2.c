@@ -666,7 +666,6 @@ raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
       break;
 
     case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ASSUME_IS_RDF:
     case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
     case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
     case RAPTOR_FEATURE_ALLOW_BAGID:
