@@ -831,84 +831,29 @@ int
 raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, 
                               raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
     return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-      if(value)
-        xml_writer->flags |= XML_WRITER_AUTO_INDENT;
-      else
-        xml_writer->flags &= ~XML_WRITER_AUTO_INDENT;        
-      break;
-
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-      if(value)
-        xml_writer->flags |= XML_WRITER_AUTO_EMPTY;
-      else
-        xml_writer->flags &= ~XML_WRITER_AUTO_EMPTY;        
-      break;
-
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-      xml_writer->indent = value;
-      break;
-        
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-      if(value == 10 || value == 11)
-        xml_writer->xml_version = value;
-      break;
-        
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+  if(feature == RAPTOR_FEATURE_WRITER_AUTO_INDENT) {
+    if(value)
+      xml_writer->flags |= XML_WRITER_AUTO_INDENT;
+    else
+      xml_writer->flags &= ~XML_WRITER_AUTO_INDENT;        
+  } else if(feature == RAPTOR_FEATURE_WRITER_AUTO_EMPTY) {
+    if(value)
+      xml_writer->flags |= XML_WRITER_AUTO_EMPTY;
+    else
+      xml_writer->flags &= ~XML_WRITER_AUTO_EMPTY;        
+  } else if(feature == RAPTOR_FEATURE_WRITER_INDENT_WIDTH) {
+    xml_writer->indent = value;
+  } else if(feature == RAPTOR_FEATURE_WRITER_XML_VERSION) {
+    if(value == 10 || value == 11)
+      xml_writer->xml_version = value;
+  } else if(feature == RAPTOR_FEATURE_WRITER_XML_DECLARATION) {
       xml_writer->xml_declaration = value;
-      break;
-        
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
-
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-      
-    default:
-      return -1;
-      break;
-  }
+  } else
+    return -1;
 
   return 0;
 }
@@ -957,75 +902,21 @@ int
 raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, 
                               raptor_feature feature)
 {
-  int result= -1;
+  int result = -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-      result = XML_WRITER_AUTO_INDENT(xml_writer);
-      break;
+  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
+    return -1;
 
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-      result = XML_WRITER_AUTO_EMPTY(xml_writer);
-      break;
-
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-      result = xml_writer->indent;
-      break;
-
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-      result = xml_writer->xml_version;
-      break;
-
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
-      result = xml_writer->xml_declaration;
-      break;
-      
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
-
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
-      
-    default:
-      break;
-  }
+  if(feature == RAPTOR_FEATURE_WRITER_AUTO_INDENT)
+    result = XML_WRITER_AUTO_INDENT(xml_writer);
+  else if(feature == RAPTOR_FEATURE_WRITER_AUTO_EMPTY)
+    result = XML_WRITER_AUTO_EMPTY(xml_writer);
+  else if(feature == RAPTOR_FEATURE_WRITER_INDENT_WIDTH)
+    result = xml_writer->indent;
+  else if(feature == RAPTOR_FEATURE_WRITER_XML_VERSION)
+    result = xml_writer->xml_version;
+  else if(feature == RAPTOR_FEATURE_WRITER_XML_DECLARATION)
+    result = xml_writer->xml_declaration;
   
   return result;
 }
