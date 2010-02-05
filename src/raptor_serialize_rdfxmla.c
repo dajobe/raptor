@@ -1230,7 +1230,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
   xml_writer = context->xml_writer;
   if(context->is_xmp)
     raptor_xml_writer_raw(xml_writer,
-                          (const unsigned char*)"<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n < x:xmpmeta xmlns:x='adobe:ns:meta/'>\n");
+                          (const unsigned char*)"<?xpacket begin='﻿' id='W5M0MpCehiHzreSzNTczkc9d'?>\n<x:xmpmeta xmlns:x='adobe:ns:meta/'>\n");
   
   qname = raptor_new_qname_from_namespace_local_name(serializer->world,
                                                      context->rdf_nspace,
