@@ -1127,7 +1127,7 @@ test_write_to_filename(raptor_world *world, const char* filename,
   int rc = 0;
   const char* const label="write iostream to filename";
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
@@ -1171,7 +1171,7 @@ test_write_to_file_handle(raptor_world *world, FILE* handle,
   int rc = 0;
   const char* const label="write iostream to file handle";
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
@@ -1216,7 +1216,7 @@ test_write_to_string(raptor_world *world,
   const char* const label="write iostream to a string";
 
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
@@ -1273,7 +1273,7 @@ test_write_to_sink(raptor_world *world,
   int rc = 0;
   const char* const label="write iostream to sink";
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
@@ -1318,7 +1318,7 @@ test_read_from_filename(raptor_world *world,
   int rc = 0;
   const char* const label="read iostream from filename";
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s '%s'\n", program, label, filename);
 #endif
 
@@ -1380,7 +1380,7 @@ test_read_from_file_handle(raptor_world *world, FILE* handle,
   int rc = 0;
   const char* const label="read iostream from file handle";
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
 
@@ -1439,7 +1439,7 @@ test_read_from_string(raptor_world *world,
   int rc = 0;
   const char* const label="read iostream from a string";
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
   
@@ -1489,7 +1489,7 @@ test_read_from_sink(raptor_world *world, size_t read_len, size_t expected_len)
   int rc = 0;
   const char* const label="read iostream from sink";
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Testing %s\n", program, label);
 #endif
   expected_len = 0;
