@@ -147,6 +147,136 @@ raptor_features_enumerate_common(raptor_world* world,
 
 
 /**
+ * raptor_world_enumerate_parser_features:
+ * @world: raptor_world object
+ * @feature: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ *
+ * Get list of syntax features.
+ * 
+ * If uri is not NULL, a pointer to a new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_world_enumerate_parser_features(raptor_world* world,
+                                       const raptor_feature feature,
+                                       const char **name, 
+                                       raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_PARSER);
+}
+
+
+/**
+ * raptor_world_enumerate_serializer_features:
+ * @world: raptor_world object
+ * @feature: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ *
+ * Get list of serializer features.
+ * 
+ * If uri is not NULL, a pointer toa new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_world_enumerate_serializer_features(raptor_world* world,
+                                           const raptor_feature feature,
+                                           const char **name, 
+                                           raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_SERIALIZER);
+}
+
+
+/**
+ * raptor_world_enumerate_sax2_features:
+ * @world: raptor_world object
+ * @feature: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ *
+ * Get list of SAX2 features.
+ * 
+ * If uri is not NULL, a pointer to a new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_world_enumerate_sax2_features(raptor_world* world,
+                                     const raptor_feature feature,
+                                     const char **name, 
+                                     raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_SAX2);
+}
+
+
+/**
+ * raptor_world_enumerate_turtle_writer_features:
+ * @world: raptor_world object
+ * @feature: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ *
+ * Get list of turtle_writer features.
+ * 
+ * If uri is not NULL, a pointer to a new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_world_enumerate_turtle_writer_features(raptor_world* world,
+                                        const raptor_feature feature,
+                                        const char **name, 
+                                        raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_TURTLE_WRITER);
+}
+
+
+/**
+ * raptor_world_enumerate_xml_writer_features:
+ * @world: raptor_world object
+ * @feature: feature enumeration (0+)
+ * @name: pointer to store feature short name (or NULL)
+ * @uri: pointer to store feature URI (or NULL)
+ * @label: pointer to feature label (or NULL)
+ *
+ * Get list of xml_writer features.
+ * 
+ * If uri is not NULL, a pointer to a new raptor_uri is returned
+ * that must be freed by the caller with raptor_free_uri().
+ *
+ * Return value: 0 on success, <0 on failure, >0 if feature is unknown
+ **/
+int
+raptor_world_enumerate_xml_writer_features(raptor_world* world,
+                                           const raptor_feature feature,
+                                           const char **name, 
+                                           raptor_uri **uri, const char **label)
+{
+  return raptor_features_enumerate_common(world, feature, name, uri, label,
+                                          RAPTOR_FEATURE_AREA_XML_WRITER);
+}
+
+
+/**
  * raptor_feature_get_value_type
  * @feature: raptor serializer or parser feature
  *
