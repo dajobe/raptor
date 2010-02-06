@@ -800,7 +800,8 @@ int
 raptor_serializer_set_feature(raptor_serializer *serializer, 
                               raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
     return -1;
   
   switch(feature) {
@@ -915,6 +916,10 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
                                      raptor_feature feature, 
                                      const unsigned char *value)
 {
+  if(!value ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+    return -1;
+  
   if(raptor_feature_value_is_numeric(feature))
     return raptor_serializer_set_feature(serializer, feature, 
                                          atoi((const char*)value));
