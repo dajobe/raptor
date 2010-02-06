@@ -509,7 +509,7 @@ raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
 {
   unsigned char *uri_string;
   int i;
-  raptor_option option= (raptor_option) - 1;
+  raptor_option option = (raptor_option)-1;
   
   if(!uri)
     return option;
