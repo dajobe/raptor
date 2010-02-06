@@ -2706,17 +2706,9 @@
 	* src/turtle_parser.y
 	(main): Terminate parser
 
-<<<<<<< .working
-	* configure.ac: For trunk raptor 1.9.x series update libtool
-	version to 4:0:0 which bumps the soname.
-=======
-	* src/turtle_parser.y
-	(main): Terminate parser
-
 	* src/turtle_lexer.l
 	(main): Init world and namespaces so turtle lexing test does not
 	die.
->>>>>>> .merge-right.r15728
 
 	* src/raptor_parse.c
 	(raptor_parse_file): Simplify, no need for O_LARGEFILES flag and
