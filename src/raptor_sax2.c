@@ -653,7 +653,8 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 int
 raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
 {
-  if(value < 0)
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SAX2))
     return -1;
   
   switch(feature) {
