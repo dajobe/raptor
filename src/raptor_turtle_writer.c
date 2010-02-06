@@ -633,7 +633,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
 
 
 /**
- * raptor_turtle_writer_features_enumerate:
+ * raptor_world_enumerate_turtle_writer_features:
  * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -648,7 +648,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_turtle_writer_features_enumerate(raptor_world* world,
+raptor_world_enumerate_turtle_writer_features(raptor_world* world,
                                         const raptor_feature feature,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
@@ -666,7 +666,8 @@ raptor_turtle_writer_features_enumerate(raptor_world* world,
  *
  * Set turtle_writer features with integer values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via 
+ * raptor_world_enumerate_turtle_writer_features()
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -674,8 +675,9 @@ int
 raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, 
                                  raptor_feature feature, int value)
 {
-  if(value < 0)
-    return -1;
+  if(value < 0 ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+    return 1;
   
   switch(feature) {
     case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
@@ -754,8 +756,9 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
  *
  * Set turtle_writer features with string values.
  * 
- * The allowed features are available via raptor_turtle_writer_features_enumerate().
- * If the feature type is integer, the value is interpreted as an integer.
+ * The allowed features are available via
+ * raptor_world_enumerate_turtle_writer_features().  If the feature
+ * type is integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -764,11 +767,15 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
                                         raptor_feature feature, 
                                         const unsigned char *value)
 {
+  if(!value ||
+     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+    return 1;
+
   if(raptor_feature_value_is_numeric(feature))
     return raptor_turtle_writer_set_feature(turtle_writer, feature, 
                                             atoi((const char*)value));
 
-  return -1;
+  return 1;
 }
 
 
