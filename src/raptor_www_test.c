@@ -44,16 +44,19 @@ static void
 write_content_type(raptor_www* www,
                    void *userdata, const char *content_type) 
 {
+#if RAPTOR_DEBUG > 1    
   fprintf((FILE*)userdata, "Content Type: %s\n", content_type);
+#endif
 }
 
 
 int main (int argc, char *argv[]) 
 {
+  const char *program = raptor_basename(argv[0]);
   raptor_world *world;
   const char *uri_string;
   raptor_www *www;
-  const char *user_agent="raptor-www-test";
+  const char *user_agent = "raptor_www_test/0.1";
   raptor_uri *uri;
   void *string = NULL;
   size_t string_length = 0;
@@ -61,7 +64,7 @@ int main (int argc, char *argv[])
   if(argc > 1)
     uri_string = argv[1];
   else
-    uri_string="http://librdf.org/";
+    uri_string = "http://librdf.org/";
 
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
@@ -69,7 +72,8 @@ int main (int argc, char *argv[])
 
   uri = raptor_new_uri(world, (const unsigned char*)uri_string);
   if(!uri) {
-    fprintf(stderr, "Failed to create Raptor URI for %s\n", uri_string);
+    fprintf(stderr, "%s: Failed to create Raptor URI for %s\n",
+            program, uri_string);
     exit(1);
   }
   
@@ -82,11 +86,15 @@ int main (int argc, char *argv[])
   
   if(raptor_www_fetch_to_string(www, uri,
                                 &string, &string_length, malloc)) {
-    printf("WWW fetch failed\n");
+    fprintf(stderr, "%s: WWW fetch failed\n", program);
   } else {
-    printf("HTTP response status %d\n", www->status_code);
+#if RAPTOR_DEBUG > 1    
+    fprintf(stderr, "%s: HTTP response status %d\n",
+            program, www->status_code);
     
-    printf("Returned %d bytes of content\n", (int)string_length);
+    fprintf(stderr, "%s: Returned %d bytes of content\n",
+            program, (int)string_length);
+#endif
   }
   if(string)
     free(string);
