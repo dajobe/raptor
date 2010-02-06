@@ -595,6 +595,11 @@ struct raptor_serializer_s {
    */
   int feature_relative_uris;
 
+  /* FEATURE:
+   * non NULL to start serializing from this URI
+   */
+  raptor_uri* feature_start_uri;
+
   /* FEATURES:
    * non NULL to override default border color
    */
@@ -800,29 +805,15 @@ int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_
 /* raptor_feature.c */
 
 /* These are bits and may be bit-ORed */
-/**
- * raptor_feature_area:
- * @RAPTOR_FEATURE_AREA_NONE: internal
- * @RAPTOR_FEATURE_AREA_PARSER: #raptor_parser (public)
- * @RAPTOR_FEATURE_AREA_SERIALIZER: #raptor_serializer (public)
- * @RAPTOR_FEATURE_AREA_XML_WRITER: #raptor_xml_writer (public)
- * @RAPTOR_FEATURE_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
- * @RAPTOR_FEATURE_AREA_SAX2: #raptor_sax2 (public)
- *
- * Internal - raptor feature areas
-*/
 typedef enum {
- RAPTOR_FEATURE_AREA_NONE = 0,
  RAPTOR_FEATURE_AREA_PARSER = 1,
  RAPTOR_FEATURE_AREA_SERIALIZER = 2,
- RAPTOR_FEATURE_AREA_XML_WRITER = 4,
- RAPTOR_FEATURE_AREA_TURTLE_WRITER = 8,
- RAPTOR_FEATURE_AREA_SAX2 = 16
+ RAPTOR_FEATURE_AREA_XML_WRITER = 8,
+ RAPTOR_FEATURE_AREA_TURTLE_WRITER = 16
 } raptor_feature_area;
 
 int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, raptor_feature_area area);
 int raptor_feature_value_is_numeric(const raptor_feature feature);
-raptor_feature_area raptor_feature_get_areas(const raptor_feature feature);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
@@ -1317,7 +1308,7 @@ int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_nam
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-int raptor_world_enumerate_turtle_writer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_turtle_writer_features_enumerate(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
 int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
 int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);

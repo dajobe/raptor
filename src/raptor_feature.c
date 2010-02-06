@@ -51,21 +51,23 @@ static const struct
   const char *label;
 } raptor_features_list[RAPTOR_FEATURE_LAST + 1] = {
   { RAPTOR_FEATURE_SCANNING                , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "scanForRDF", "Scan for rdf:RDF in XML content" },
+  { RAPTOR_FEATURE_ASSUME_IS_RDF           , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "assumeIsRDF", "Assume content is RDF/XML, don't require rdf:RDF" },
   { RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowNonNsAttributes", "Allow bare 'name' rather than namespaced 'rdf:name'" },
   { RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES  , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowOtherParsetypes", "Allow user-defined rdf:parseType values" },
   { RAPTOR_FEATURE_ALLOW_BAGID             , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowBagID", "Allow rdf:bagID" },
   { RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "allowRDFtypeRDFlist", "Generate the collection rdf:type rdf:List triple" },
-  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      , RAPTOR_FEATURE_AREA_PARSER | RAPTOR_FEATURE_AREA_SAX2, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "normalizeLanguage", "Normalize xml:lang values to lowercase" },
+  { RAPTOR_FEATURE_NORMALIZE_LANGUAGE      , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "normalizeLanguage", "Normalize xml:lang values to lowercase" },
   { RAPTOR_FEATURE_NON_NFC_FATAL           , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "nonNFCfatal", "Make non-NFC literals cause a fatal error" },
   { RAPTOR_FEATURE_WARN_OTHER_PARSETYPES   , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "warnOtherParseTypes", "Warn about unknown rdf:parseType values" },
   { RAPTOR_FEATURE_CHECK_RDF_ID            , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "checkRdfID", "Check rdf:ID values for duplicates" },
   { RAPTOR_FEATURE_RELATIVE_URIS           , RAPTOR_FEATURE_AREA_SERIALIZER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "relativeURIs", "Write relative URIs wherever possible in serializing." },
+  { RAPTOR_FEATURE_START_URI               , RAPTOR_FEATURE_AREA_SERIALIZER, RAPTOR_FEATURE_VALUE_TYPE_URI,  "startURI", "Start URI for serializing to use." },
   { RAPTOR_FEATURE_WRITER_AUTO_INDENT      , RAPTOR_FEATURE_AREA_XML_WRITER | RAPTOR_FEATURE_AREA_TURTLE_WRITER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "autoIndent", "Automatically indent elements." },
   { RAPTOR_FEATURE_WRITER_AUTO_EMPTY       , RAPTOR_FEATURE_AREA_XML_WRITER | RAPTOR_FEATURE_AREA_TURTLE_WRITER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "autoEmpty", "Automatically detect and abbreviate empty elements." },
   { RAPTOR_FEATURE_WRITER_INDENT_WIDTH     , RAPTOR_FEATURE_AREA_XML_WRITER | RAPTOR_FEATURE_AREA_TURTLE_WRITER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "indentWidth", "Number of spaces to indent." },
   { RAPTOR_FEATURE_WRITER_XML_VERSION      , RAPTOR_FEATURE_AREA_SERIALIZER | RAPTOR_FEATURE_AREA_XML_WRITER, RAPTOR_FEATURE_VALUE_TYPE_INT, "xmlVersion", "XML version to write." },
   { RAPTOR_FEATURE_WRITER_XML_DECLARATION  , RAPTOR_FEATURE_AREA_SERIALIZER | RAPTOR_FEATURE_AREA_XML_WRITER, RAPTOR_FEATURE_VALUE_TYPE_BOOL, "xmlDeclaration", "Write XML declaration." },
-  { RAPTOR_FEATURE_NO_NET                  , RAPTOR_FEATURE_AREA_PARSER | RAPTOR_FEATURE_AREA_SAX2, RAPTOR_FEATURE_VALUE_TYPE_BOOL,  "noNet", "Deny network requests." },
+  { RAPTOR_FEATURE_NO_NET                  , RAPTOR_FEATURE_AREA_PARSER, RAPTOR_FEATURE_VALUE_TYPE_BOOL,  "noNet", "Deny network requests." },
   { RAPTOR_FEATURE_RESOURCE_BORDER   , RAPTOR_FEATURE_AREA_SERIALIZER, RAPTOR_FEATURE_VALUE_TYPE_STRING, "resourceBorder", "DOT serializer resource border color" },
   { RAPTOR_FEATURE_LITERAL_BORDER    , RAPTOR_FEATURE_AREA_SERIALIZER, RAPTOR_FEATURE_VALUE_TYPE_STRING, "literalBorder", "DOT serializer literal border color" },
   { RAPTOR_FEATURE_BNODE_BORDER      , RAPTOR_FEATURE_AREA_SERIALIZER, RAPTOR_FEATURE_VALUE_TYPE_STRING, "bnodeBorder", "DOT serializer blank node border color" },
@@ -169,15 +171,6 @@ raptor_feature_get_value_type(const raptor_feature feature)
   if(feature > RAPTOR_FEATURE_LAST)
     return -1;
   return raptor_features_list[feature].value_type;
-}
-
-
-raptor_feature_area
-raptor_feature_get_areas(const raptor_feature feature)
-{
-  if(feature > RAPTOR_FEATURE_LAST)
-    return RAPTOR_FEATURE_AREA_NONE;
-  return raptor_features_list[feature].area;
 }
 
 

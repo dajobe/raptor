@@ -264,6 +264,10 @@ typedef struct {
  *   parser will look for embedded rdf:RDF elements inside the XML
  *   content, and not require that the XML start with an rdf:RDF root
  *   element.
+ * @RAPTOR_FEATURE_ASSUME_IS_RDF: If true (default false) then the
+ *   RDF/XML parser will assume the content is RDF/XML, not require
+ *   that rdf:RDF root element, and immediately interpret the content
+ *   as RDF/XML.
  * @RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES: If true (default true)
  *   then the RDF/XML parser will allow non-XML namespaced attributes
  *   to be accepted as well as rdf: namespaced ones.  For example,
@@ -295,6 +299,7 @@ typedef struct {
  *   cause an error if any are found.
  * @RAPTOR_FEATURE_RELATIVE_URIS: If true (default true) then
  *   relative URIs will be used wherever possible when serializing.
+ * @RAPTOR_FEATURE_START_URI: Set the start URI for serlalizing to use.
  * @RAPTOR_FEATURE_WRITER_AUTO_INDENT: Automatically indent elements when
  *   seriailizing.
  * @RAPTOR_FEATURE_WRITER_AUTO_EMPTY: Automatically detect and
@@ -337,6 +342,7 @@ typedef struct {
  */
 typedef enum {
   RAPTOR_FEATURE_SCANNING,
+  RAPTOR_FEATURE_ASSUME_IS_RDF,
   RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
   RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES,
   RAPTOR_FEATURE_ALLOW_BAGID,
@@ -346,6 +352,7 @@ typedef enum {
   RAPTOR_FEATURE_WARN_OTHER_PARSETYPES,
   RAPTOR_FEATURE_CHECK_RDF_ID,
   RAPTOR_FEATURE_RELATIVE_URIS,
+  RAPTOR_FEATURE_START_URI,
   RAPTOR_FEATURE_WRITER_AUTO_INDENT,
   RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
@@ -622,8 +629,6 @@ RAPTOR_API
 int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
-RAPTOR_API
-int raptor_world_enumerate_sax2_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API

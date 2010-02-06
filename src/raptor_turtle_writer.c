@@ -633,7 +633,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
 
 
 /**
- * raptor_world_enumerate_turtle_writer_features:
+ * raptor_turtle_writer_features_enumerate:
  * @world: raptor_world object
  * @feature: feature enumeration (0+)
  * @name: pointer to store feature short name (or NULL)
@@ -648,7 +648,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
  * Return value: 0 on success, <0 on failure, >0 if feature is unknown
  **/
 int
-raptor_world_enumerate_turtle_writer_features(raptor_world* world,
+raptor_turtle_writer_features_enumerate(raptor_world* world,
                                         const raptor_feature feature,
                                         const char **name, 
                                         raptor_uri **uri, const char **label)
@@ -666,8 +666,7 @@ raptor_world_enumerate_turtle_writer_features(raptor_world* world,
  *
  * Set turtle_writer features with integer values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_turtle_writer_features().
+ * The allowed features are available via raptor_features_enumerate().
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -675,19 +674,75 @@ int
 raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, 
                                  raptor_feature feature, int value)
 {
-  if(value < 0 ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
-    return 1;
+  if(value < 0)
+    return -1;
   
-  if(feature == RAPTOR_FEATURE_WRITER_AUTO_INDENT) {
-    if(value)
-      turtle_writer->flags |= TURTLE_WRITER_AUTO_INDENT;
-    else
-      turtle_writer->flags &= ~TURTLE_WRITER_AUTO_INDENT;        
-  } else if(feature == RAPTOR_FEATURE_WRITER_INDENT_WIDTH) {
-    turtle_writer->indent = value;
-  } else
-    return 1;
+  switch(feature) {
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+      if(value)
+        turtle_writer->flags |= TURTLE_WRITER_AUTO_INDENT;
+      else
+        turtle_writer->flags &= ~TURTLE_WRITER_AUTO_INDENT;        
+      break;
+
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+      turtle_writer->indent = value;
+      break;
+    
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      break;
+        
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
+    case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
+
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_START_URI:
+
+    /* DOT serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
+
+    /* JSON serializer features */
+    case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+    case RAPTOR_FEATURE_RSS_TRIPLES:
+    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
+    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    
+    /* Turtle serializer feature */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
+
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
+    default:
+      return -1;
+      break;
+  }
 
   return 0;
 }
@@ -701,9 +756,8 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
  *
  * Set turtle_writer features with string values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_turtle_writer_features().  If the feature
- * type is integer, the value is interpreted as an integer.
+ * The allowed features are available via raptor_turtle_writer_features_enumerate().
+ * If the feature type is integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -712,15 +766,11 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
                                         raptor_feature feature, 
                                         const unsigned char *value)
 {
-  if(!value ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
-    return 1;
-
   if(raptor_feature_value_is_numeric(feature))
     return raptor_turtle_writer_set_feature(turtle_writer, feature, 
                                             atoi((const char*)value));
 
-  return 1;
+  return -1;
 }
 
 
@@ -731,8 +781,7 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
  *
  * Get various turtle_writer features.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_turtle_writer_features().
+ * The allowed features are available via raptor_features_enumerate().
  *
  * Note: no feature value is negative
  *
@@ -742,16 +791,71 @@ int
 raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, 
                                  raptor_feature feature)
 {
-  int result = -1;
+  int result= -1;
 
-  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
-    return -1;
+  switch(feature) {
+    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+      result = TURTLE_WRITER_AUTO_INDENT(turtle_writer);
+      break;
 
-  if(feature == RAPTOR_FEATURE_WRITER_AUTO_INDENT)
-    result = TURTLE_WRITER_AUTO_INDENT(turtle_writer);
-  else if(feature == RAPTOR_FEATURE_WRITER_INDENT_WIDTH)
-    result = turtle_writer->indent;
+    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+      result = turtle_writer->indent;
+      break;
+    
+    /* writer features */
+    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+      
+    /* parser features */
+    case RAPTOR_FEATURE_SCANNING:
+    case RAPTOR_FEATURE_ASSUME_IS_RDF:
+    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_ALLOW_BAGID:
+    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
+    case RAPTOR_FEATURE_NON_NFC_FATAL:
+    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
+    case RAPTOR_FEATURE_CHECK_RDF_ID:
+    case RAPTOR_FEATURE_HTML_TAG_SOUP:
+    case RAPTOR_FEATURE_MICROFORMATS:
+    case RAPTOR_FEATURE_HTML_LINK:
+    case RAPTOR_FEATURE_WWW_TIMEOUT:
 
+    /* Shared */
+    case RAPTOR_FEATURE_NO_NET:
+
+    /* XML writer features */
+    case RAPTOR_FEATURE_RELATIVE_URIS:
+    case RAPTOR_FEATURE_START_URI:
+
+    /* DOT serializer features */
+    case RAPTOR_FEATURE_RESOURCE_BORDER:
+    case RAPTOR_FEATURE_LITERAL_BORDER:
+    case RAPTOR_FEATURE_BNODE_BORDER:
+    case RAPTOR_FEATURE_RESOURCE_FILL:
+    case RAPTOR_FEATURE_LITERAL_FILL:
+    case RAPTOR_FEATURE_BNODE_FILL:
+
+    /* JSON serializer features */
+    case RAPTOR_FEATURE_JSON_CALLBACK:
+    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
+    case RAPTOR_FEATURE_RSS_TRIPLES:
+    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
+    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    
+    /* Turtle serializer feature */
+    case RAPTOR_FEATURE_WRITE_BASE_URI:
+
+    /* WWW feature */
+    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+      
+    default:
+      break;
+  }
+  
   return result;
 }
 
@@ -763,8 +867,7 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
  *
  * Get turtle_writer features with string values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_turtle_writer_features().
+ * The allowed features are available via raptor_features_enumerate().
  *
  * Return value: feature value or NULL for an illegal feature or no value
  **/
