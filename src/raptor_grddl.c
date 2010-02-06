@@ -866,7 +866,7 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
       int libxml_options = 0;
 
 #ifdef RAPTOR_LIBXML_XML_PARSE_NONET
-      if(xpbc->rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+      if(xpbc->rdf_parser->options[RAPTOR_OPTION_NO_NET])
         libxml_options |= XML_PARSE_NONET;
 #endif
 #ifdef HAVE_XMLCTXTUSEOPTIONS
@@ -902,7 +902,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   int ret = 0;
   int ignore_errors = (flags & FETCH_IGNORE_ERRORS);
   
-  if(rdf_parser->features[RAPTOR_FEATURE_NO_NET]) {
+  if(rdf_parser->options[RAPTOR_OPTION_NO_NET]) {
     if(!raptor_uri_uri_string_is_file_uri(raptor_uri_as_string(uri)))
       return 1;
   }
@@ -933,9 +933,9 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
   raptor_www_set_content_type_handler(www, content_type_handler,
                                       content_type_user_data);
 
-  if(rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT] > 0)
+  if(rdf_parser->options[RAPTOR_OPTION_WWW_TIMEOUT] > 0)
     raptor_www_set_connection_timeout(www, 
-                                      rdf_parser->features[RAPTOR_FEATURE_WWW_TIMEOUT]);
+                                      rdf_parser->options[RAPTOR_OPTION_WWW_TIMEOUT]);
 
   ret = raptor_www_fetch(www, uri);
   
@@ -1432,7 +1432,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       }
 
 #ifdef RAPTOR_LIBXML_XML_PARSE_NONET
-      if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+      if(rdf_parser->options[RAPTOR_OPTION_NO_NET])
         libxml_options |= XML_PARSE_NONET;
 #endif
 #ifdef HAVE_XMLCTXTUSEOPTIONS
@@ -1448,7 +1448,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     } else if(loop == 1) {
   
       /* try to create an HTML parser context */
-      if(rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP]) {
+      if(rdf_parser->options[RAPTOR_OPTION_HTML_TAG_SOUP]) {
         xmlCharEncoding enc;
         int options;
 
@@ -1480,7 +1480,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         options |= HTML_PARSE_RECOVER;
 #endif
 #ifdef RAPTOR_LIBXML_HTML_PARSE_NONET
-      if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+      if(rdf_parser->options[RAPTOR_OPTION_NO_NET])
         options |= HTML_PARSE_NONET;
 #endif
 
@@ -1730,7 +1730,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
    * Value of @href is a URI
    */
   if(grddl_parser->html_link_processing &&
-     rdf_parser->features[RAPTOR_FEATURE_HTML_LINK]) {
+     rdf_parser->options[RAPTOR_OPTION_HTML_LINK]) {
     raptor_sequence* result;
     result = raptor_grddl_run_xpath_match(rdf_parser, doc, 
                                           (const xmlChar*)"/html:html/html:head/html:link[@type=\"application/rdf+xml\"]/@href",
@@ -1772,7 +1772,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     int flags = match_table[expri].flags;
 
     if((flags & MATCH_IS_HARDCODED) && 
-       !rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS])
+       !rdf_parser->options[RAPTOR_OPTION_MICROFORMATS])
       continue;
     
     result = raptor_grddl_run_xpath_match(rdf_parser, doc, 

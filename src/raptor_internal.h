@@ -449,7 +449,7 @@ struct raptor_parser_s {
   raptor_statement statement;
 
   /* Features */
-  int features[RAPTOR_FEATURE_LAST+1];
+  int options[RAPTOR_OPTION_LAST+1];
 
   /* stuff for our user */
   void *user_data;
@@ -487,15 +487,15 @@ struct raptor_parser_s {
   /* internal data for lexers */
   void* lexer_user_data;
 
-  /* FEATURE:
+  /* OPTION:
    * HTTP Cache-Control: header value to send (default NULL)
-   * RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL
+   * RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL
    */
   const char* cache_control;
 
-  /* FEATURE:
+  /* OPTION:
    * HTTP User-Agent: header value to send (default NULL)
-   * RAPTOR_FEATURE_WWW_HTTP_USER_AGENT
+   * RAPTOR_OPTION_WWW_HTTP_USER_AGENT
    */
   const char* user_agent;
 
@@ -585,29 +585,29 @@ struct raptor_serializer_s {
   /* can be filled with error location information */
   raptor_locator locator;
   
-  /* FEATURE:
+  /* OPTION:
    * non 0 to write base URI to document header (@base)
    */
-  int feature_write_base_uri;
+  int option_write_base_uri;
 
-  /* FEATURE:
+  /* OPTION:
    * non 0 to write relative URIs wherever possible
    */
-  int feature_relative_uris;
+  int option_relative_uris;
 
-  /* FEATURES:
+  /* OPTIONS:
    * non NULL to override default border color
    */
-  unsigned char *feature_resource_border;
-  unsigned char *feature_literal_border;
-  unsigned char *feature_bnode_border;
+  unsigned char *option_resource_border;
+  unsigned char *option_literal_border;
+  unsigned char *option_bnode_border;
 
-  /* FEATURES:
+  /* OPTIONS:
    * non NULL to fill with value
    */
-  unsigned char *feature_resource_fill;
-  unsigned char *feature_literal_fill;
-  unsigned char *feature_bnode_fill;
+  unsigned char *option_resource_fill;
+  unsigned char *option_literal_fill;
+  unsigned char *option_bnode_fill;
 
   void *error_user_data;
   void *warning_user_data;
@@ -635,35 +635,35 @@ struct raptor_serializer_s {
   /* XML 1.0 (10) or XML 1.1 (11) */
   int xml_version;
 
-  /* FEATURE:
+  /* OPTION:
    * non 0 to write XML 1.0 or 1.1 declaration (default 1)
    */
-  int feature_write_xml_declaration;
+  int option_write_xml_declaration;
 
-  /* FEATURE:
+  /* OPTION:
    * JSON serializer callback function name
    */
-  unsigned char *feature_json_callback;
+  unsigned char *option_json_callback;
 
-  /* FEATURE:
+  /* OPTION:
    * JSON serializer extra data
    */
-  unsigned char *feature_json_extra_data;
+  unsigned char *option_json_extra_data;
 
-  /* FEATURE:
+  /* OPTION:
    * RSS serializer triples
    */
-  unsigned char *feature_rss_triples;
+  unsigned char *option_rss_triples;
 
-  /* FEATURE:
+  /* OPTION:
    * Atom serializer entry URI string
    */
-  unsigned char *feature_atom_entry_uri;
+  unsigned char *option_atom_entry_uri;
 
-  /* FEATURE:
+  /* OPTION:
    * Namespace-prefix elements OR prefer unprefixed elements.
    */
-  int feature_prefix_elements;
+  int option_prefix_elements;
 };
 
 
@@ -797,32 +797,32 @@ void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE
 
 int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
 
-/* raptor_feature.c */
+/* raptor_option.c */
 
 /* These are bits and may be bit-ORed */
 /**
- * raptor_feature_area:
- * @RAPTOR_FEATURE_AREA_NONE: internal
- * @RAPTOR_FEATURE_AREA_PARSER: #raptor_parser (public)
- * @RAPTOR_FEATURE_AREA_SERIALIZER: #raptor_serializer (public)
- * @RAPTOR_FEATURE_AREA_XML_WRITER: #raptor_xml_writer (public)
- * @RAPTOR_FEATURE_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
- * @RAPTOR_FEATURE_AREA_SAX2: #raptor_sax2 (public)
+ * raptor_option_area:
+ * @RAPTOR_OPTION_AREA_NONE: internal
+ * @RAPTOR_OPTION_AREA_PARSER: #raptor_parser (public)
+ * @RAPTOR_OPTION_AREA_SERIALIZER: #raptor_serializer (public)
+ * @RAPTOR_OPTION_AREA_XML_WRITER: #raptor_xml_writer (public)
+ * @RAPTOR_OPTION_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
+ * @RAPTOR_OPTION_AREA_SAX2: #raptor_sax2 (public)
  *
- * Internal - raptor feature areas
+ * Internal - raptor option areas
 */
 typedef enum {
- RAPTOR_FEATURE_AREA_NONE = 0,
- RAPTOR_FEATURE_AREA_PARSER = 1,
- RAPTOR_FEATURE_AREA_SERIALIZER = 2,
- RAPTOR_FEATURE_AREA_XML_WRITER = 4,
- RAPTOR_FEATURE_AREA_TURTLE_WRITER = 8,
- RAPTOR_FEATURE_AREA_SAX2 = 16
-} raptor_feature_area;
+ RAPTOR_OPTION_AREA_NONE = 0,
+ RAPTOR_OPTION_AREA_PARSER = 1,
+ RAPTOR_OPTION_AREA_SERIALIZER = 2,
+ RAPTOR_OPTION_AREA_XML_WRITER = 4,
+ RAPTOR_OPTION_AREA_TURTLE_WRITER = 8,
+ RAPTOR_OPTION_AREA_SAX2 = 16
+} raptor_option_area;
 
-int raptor_features_enumerate_common(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label, raptor_feature_area area);
-int raptor_feature_value_is_numeric(const raptor_feature feature);
-int raptor_feature_is_valid_for_area(const raptor_feature feature, raptor_feature_area area);
+int raptor_options_enumerate_common(raptor_world* world, const raptor_option option, const char **name, raptor_uri **uri, const char **label, raptor_option_area area);
+int raptor_option_value_is_numeric(const raptor_option option);
+int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
@@ -1136,15 +1136,15 @@ struct raptor_sax2_s {
   /* New XML namespace callback */
   raptor_namespace_handler  namespace_handler;
 
-  /* FEATURE: 
+  /* OPTION: 
    * non 0 if require normalizing xml:lang attribute values to lowercase.
    */
-  int feature_normalize_language;
+  int option_normalize_language;
 
-  /* FEATURE: 
+  /* OPTION: 
    * non 0 if network access is denied
    */
-  int feature_no_net;
+  int option_no_net;
 
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces; /* static */
@@ -1166,7 +1166,7 @@ int raptor_sax2_get_depth(raptor_sax2* sax2);
 void raptor_sax2_inc_depth(raptor_sax2* sax2);
 void raptor_sax2_dec_depth(raptor_sax2* sax2);
 void raptor_sax2_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
-int raptor_sax2_set_feature(raptor_sax2* sax2, raptor_feature feature, int value);
+int raptor_sax2_set_option(raptor_sax2* sax2, raptor_option option, int value);
   
 #ifdef RAPTOR_DEBUG
 void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);
@@ -1317,11 +1317,11 @@ int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_nam
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-int raptor_world_enumerate_turtle_writer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
-int raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature, int value);
-int raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature, const unsigned char *value);
-int raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, raptor_feature feature);
-const unsigned char *raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, raptor_feature feature);
+int raptor_world_enumerate_turtle_writer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
+int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_option option, int value);
+int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
+int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
+const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
 
 
 /**

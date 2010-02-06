@@ -319,59 +319,59 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
 {
   switch(type) {
     case RAPTOR_TERM_TYPE_URI:
-      if(serializer->feature_resource_border) {
+      if(serializer->option_resource_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", color=");
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->feature_resource_border);
+                                     (const unsigned char*)serializer->option_resource_border);
       }
       else
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", color = blue");
 
-      if(serializer->feature_resource_fill) {
+      if(serializer->option_resource_fill) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)
-                                     serializer->feature_resource_fill);
+                                     serializer->option_resource_fill);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      if(serializer->feature_bnode_border) {
+      if(serializer->option_bnode_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", color=");
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->feature_bnode_border);
+                                     (const unsigned char*)serializer->option_bnode_border);
       }
       else
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", color = green");
 
-      if(serializer->feature_bnode_fill) {
+      if(serializer->option_bnode_fill) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->feature_bnode_fill);
+                                     (const unsigned char*)serializer->option_bnode_fill);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
-      if(serializer->feature_literal_border) {
+      if(serializer->option_literal_border) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", color=");
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->feature_literal_border);
+                                     (const unsigned char*)serializer->option_literal_border);
       }
 
-      if(serializer->feature_literal_fill) {
+      if(serializer->option_literal_fill) {
         raptor_iostream_write_string(serializer->iostream,
                                      (const unsigned char*)", style = filled, fillcolor=");
         raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->feature_literal_fill);
+                                     (const unsigned char*)serializer->option_literal_fill);
       }
 
       break;

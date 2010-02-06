@@ -89,7 +89,7 @@ raptor_json_serialize_init(raptor_serializer* serializer, const char *name)
   context->is_resource=!strcmp(name,"json");
 
   /* Default for JSON serializer is absolute URIs */
-  serializer->feature_relative_uris = 0;
+  serializer->option_relative_uris = 0;
   
   return 0;
 }
@@ -119,7 +119,7 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   raptor_json_context* context = (raptor_json_context*)serializer->context;
   raptor_uri* base_uri;
 
-  base_uri = (serializer->feature_relative_uris) ? serializer->base_uri : NULL;
+  base_uri = (serializer->option_relative_uris) ? serializer->base_uri : NULL;
   
   context->json_writer = raptor_new_json_writer(serializer->world,
                                                 base_uri,
@@ -140,9 +140,9 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   }
 
   /* start callback */
-  if(serializer->feature_json_callback) {
+  if(serializer->option_json_callback) {
     raptor_iostream_write_string(serializer->iostream,
-                                 serializer->feature_json_callback);
+                                 serializer->option_json_callback);
     raptor_iostream_write_byte(serializer->iostream, '(');
   }
 
@@ -429,11 +429,11 @@ raptor_json_serialize_end(raptor_serializer* serializer)
   }
 
 
-  if(serializer->feature_json_extra_data) {
+  if(serializer->option_json_extra_data) {
     raptor_iostream_write_byte(serializer->iostream, ',');
     raptor_json_writer_newline(context->json_writer);
     raptor_iostream_write_string(serializer->iostream,
-                                 serializer->feature_json_extra_data);
+                                 serializer->option_json_extra_data);
     raptor_json_writer_newline(context->json_writer);
   }
 
@@ -443,7 +443,7 @@ raptor_json_serialize_end(raptor_serializer* serializer)
   raptor_json_writer_newline(context->json_writer);
 
   /* end callback */
-  if(serializer->feature_json_callback)
+  if(serializer->option_json_callback)
     raptor_iostream_write_counted_string(serializer->iostream,
                                          (const unsigned char*)");", 2);
 

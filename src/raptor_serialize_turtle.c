@@ -990,16 +990,16 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
 
   turtle_writer = raptor_new_turtle_writer(serializer->world,
                                            serializer->base_uri,
-                                           serializer->feature_write_base_uri,
+                                           serializer->option_write_base_uri,
                                            context->nstack,
                                            serializer->iostream);
   if(!turtle_writer)
     return 1;
 
-  raptor_turtle_writer_set_feature(turtle_writer,
-                                   RAPTOR_FEATURE_WRITER_AUTO_INDENT,1);
-  raptor_turtle_writer_set_feature(turtle_writer,
-                                   RAPTOR_FEATURE_WRITER_INDENT_WIDTH,2);
+  raptor_turtle_writer_set_option(turtle_writer,
+                                   RAPTOR_OPTION_WRITER_AUTO_INDENT,1);
+  raptor_turtle_writer_set_option(turtle_writer,
+                                   RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
   
   context->turtle_writer = turtle_writer;
 

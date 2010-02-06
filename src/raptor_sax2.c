@@ -507,7 +507,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       goto handle_error;
 
 #ifdef RAPTOR_LIBXML_XML_PARSE_NONET
-    if(sax2->feature_no_net)
+    if(sax2->option_no_net)
       libxml_options |= XML_PARSE_NONET;
 #endif
 #ifdef HAVE_XMLCTXTUSEOPTIONS
@@ -639,73 +639,73 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 
 
 /**
- * raptor_sax2_set_feature:
+ * raptor_sax2_set_option:
  * @sax2: #raptor_sax2 SAX2 object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: integer feature value (0 or larger)
+ * @option: option to set from enumerated #raptor_option values
+ * @value: integer option value (0 or larger)
  *
- * Set various SAX2 features.
+ * Set various SAX2 options.
  * 
- * The allowed features are available via raptor_sax2_features_enumerate().
+ * The allowed options are available via raptor_sax2_options_enumerate().
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  */
 int
-raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
+raptor_sax2_set_option(raptor_sax2 *sax2, raptor_option option, int value)
 {
   if(value < 0 ||
-     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SAX2))
+     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SAX2))
     return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-      sax2->feature_normalize_language = value;
+  switch(option) {
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+      sax2->option_normalize_language = value;
       break;
 
-    case RAPTOR_FEATURE_NO_NET:
-      sax2->feature_no_net = value;
+    case RAPTOR_OPTION_NO_NET:
+      sax2->option_no_net = value;
       break;
 
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
+    case RAPTOR_OPTION_RELATIVE_URIS:
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
 
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    /* DOT serializer options */
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* JSON serializer options */
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
     
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
+    /* Turtle serializer option */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
 
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW option */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       return -1;
@@ -849,7 +849,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         }
 
         /* optionally normalize language to lowercase */
-        if(sax2->feature_normalize_language) {
+        if(sax2->option_normalize_language) {
           unsigned char *from = (unsigned char*)atts[i+1];
           unsigned char *to = xml_language;
           

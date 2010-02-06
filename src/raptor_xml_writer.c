@@ -499,7 +499,7 @@ raptor_xml_writer_write_xml_declaration(raptor_xml_writer* xml_writer)
  *
  * Write an empty XML element to the XML writer.
  * 
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  **/
 void
@@ -528,10 +528,10 @@ raptor_xml_writer_empty_element(raptor_xml_writer* xml_writer,
  *
  * Write a start XML element to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
- * Indents the start element if XML writer feature AUTO_INDENT is enabled.
+ * Indents the start element if XML writer option AUTO_INDENT is enabled.
  **/
 void
 raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
@@ -572,7 +572,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
  *
  * Write an end XML element to the XML writer.
  *
- * Indents the end element if XML writer feature AUTO_INDENT is enabled.
+ * Indents the end element if XML writer option AUTO_INDENT is enabled.
  **/
 void
 raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
@@ -604,7 +604,7 @@ raptor_xml_writer_end_element(raptor_xml_writer* xml_writer,
  *
  * Write a newline to the XML writer.
  *
- * Indents the next line if XML writer feature AUTO_INDENT is enabled.
+ * Indents the next line if XML writer option AUTO_INDENT is enabled.
  **/
 void
 raptor_xml_writer_newline(raptor_xml_writer* xml_writer)
@@ -620,7 +620,7 @@ raptor_xml_writer_newline(raptor_xml_writer* xml_writer)
  *
  * Write CDATA XML-escaped to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -650,7 +650,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
  *
  * Write counted CDATA XML-escaped to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -679,7 +679,7 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
  *
  * Write a string raw to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -706,7 +706,7 @@ raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
  *
  * Write a counted string raw to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -732,7 +732,7 @@ raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
  *
  * Write an XML comment to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -756,7 +756,7 @@ raptor_xml_writer_comment(raptor_xml_writer* xml_writer,
  *
  * Write a counted XML comment to the XML writer.
  *
- * Closes any previous empty element if XML writer feature AUTO_EMPTY
+ * Closes any previous empty element if XML writer option AUTO_EMPTY
  * is enabled.
  *
  **/
@@ -790,96 +790,96 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
 
 
 /**
- * raptor_xml_writer_set_feature:
+ * raptor_xml_writer_set_option:
  * @xml_writer: #raptor_xml_writer xml_writer object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: integer feature value (0 or larger)
+ * @option: option to set from enumerated #raptor_option values
+ * @value: integer option value (0 or larger)
  *
- * Set xml_writer features with integer values.
+ * Set xml_writer options with integer values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_xml_writer_features().
+ * The allowed options are available via
+ * raptor_world_enumerate_xml_writer_options().
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, 
-                              raptor_feature feature, int value)
+raptor_xml_writer_set_option(raptor_xml_writer *xml_writer, 
+                              raptor_option option, int value)
 {
   if(value < 0 ||
-     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
+     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
     return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+  switch(option) {
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
       if(value)
         xml_writer->flags |= XML_WRITER_AUTO_INDENT;
       else
         xml_writer->flags &= ~XML_WRITER_AUTO_INDENT;        
       break;
 
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
       if(value)
         xml_writer->flags |= XML_WRITER_AUTO_EMPTY;
       else
         xml_writer->flags &= ~XML_WRITER_AUTO_EMPTY;        
       break;
 
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       xml_writer->indent = value;
       break;
         
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
       if(value == 10 || value == 11)
         xml_writer->xml_version = value;
       break;
         
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
       xml_writer->xml_declaration = value;
       break;
         
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
+    /* parser options */
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
 
     /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
+    case RAPTOR_OPTION_NO_NET:
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
+    /* XML writer options */
+    case RAPTOR_OPTION_RELATIVE_URIS:
 
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    /* DOT serializer options */
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* JSON serializer options */
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
     
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
+    /* Turtle serializer option */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
 
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW option */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       return -1;
@@ -891,30 +891,30 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_set_feature_string:
+ * raptor_xml_writer_set_option_string:
  * @xml_writer: #raptor_xml_writer xml_writer object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: feature value
+ * @option: option to set from enumerated #raptor_option values
+ * @value: option value
  *
- * Set xml_writer features with string values.
+ * Set xml_writer options with string values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_xml_writer_features().  If the feature type
+ * The allowed options are available via
+ * raptor_world_enumerate_xml_writer_options().  If the option type
  * is integer, the value is interpreted as an integer.
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, 
-                                     raptor_feature feature, 
+raptor_xml_writer_set_option_string(raptor_xml_writer *xml_writer, 
+                                     raptor_option option, 
                                      const unsigned char *value)
 {
   if(!value ||
-     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
+     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
     return -1;
 
-  if(raptor_feature_value_is_numeric(feature))
-    return raptor_xml_writer_set_feature(xml_writer, feature, 
+  if(raptor_option_value_is_numeric(option))
+    return raptor_xml_writer_set_option(xml_writer, option, 
                                          atoi((const char*)value));
 
   return -1;
@@ -922,91 +922,91 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_get_feature:
+ * raptor_xml_writer_get_option:
  * @xml_writer: #raptor_xml_writer xml writer object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get various xml_writer features.
+ * Get various xml_writer options.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_xml_writer_features().
+ * The allowed options are available via
+ * raptor_world_enumerate_xml_writer_options().
  *
- * Note: no feature value is negative
+ * Note: no option value is negative
  *
- * Return value: feature value or < 0 for an illegal feature
+ * Return value: option value or < 0 for an illegal option
  **/
 int
-raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, 
-                              raptor_feature feature)
+raptor_xml_writer_get_option(raptor_xml_writer *xml_writer, 
+                              raptor_option option)
 {
   int result = -1;
   
-  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
+  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
     return -1;
 
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+  switch(option) {
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
       result = XML_WRITER_AUTO_INDENT(xml_writer);
       break;
 
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
       result = XML_WRITER_AUTO_EMPTY(xml_writer);
       break;
 
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       result = xml_writer->indent;
       break;
 
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
       result = xml_writer->xml_version;
       break;
 
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
       result = xml_writer->xml_declaration;
       break;
       
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
+    /* parser options */
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
 
     /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
+    case RAPTOR_OPTION_NO_NET:
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
+    /* XML writer options */
+    case RAPTOR_OPTION_RELATIVE_URIS:
 
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    /* DOT serializer options */
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* JSON serializer options */
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
     
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
+    /* Turtle serializer option */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
 
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW option */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       break;
@@ -1017,22 +1017,22 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
 
 
 /**
- * raptor_xml_writer_get_feature_string:
+ * raptor_xml_writer_get_option_string:
  * @xml_writer: #raptor_xml_writer xml writer object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get xml_writer features with string values.
+ * Get xml_writer options with string values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_xml_writer_features().
+ * The allowed options are available via
+ * raptor_world_enumerate_xml_writer_options().
  *
- * Return value: feature value or NULL for an illegal feature or no value
+ * Return value: option value or NULL for an illegal option or no value
  **/
 const unsigned char *
-raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, 
-                                     raptor_feature feature)
+raptor_xml_writer_get_option_string(raptor_xml_writer *xml_writer, 
+                                     raptor_option option)
 {
-  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
+  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
     return NULL;
 
   return NULL;

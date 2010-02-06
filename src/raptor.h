@@ -259,119 +259,119 @@ typedef struct {
 } raptor_locator;
 
 /**
- * raptor_feature:
- * @RAPTOR_FEATURE_SCANNING: If true (default false), the RDF/XML
+ * raptor_option:
+ * @RAPTOR_OPTION_SCANNING: If true (default false), the RDF/XML
  *   parser will look for embedded rdf:RDF elements inside the XML
  *   content, and not require that the XML start with an rdf:RDF root
  *   element.
- * @RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES: If true (default true)
+ * @RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES: If true (default true)
  *   then the RDF/XML parser will allow non-XML namespaced attributes
  *   to be accepted as well as rdf: namespaced ones.  For example,
  *   'about' and 'ID' will be interpreted as if they were rdf:about
  *   and rdf:ID respectively.
- * @RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES: If true (default true)
+ * @RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES: If true (default true)
  *   then the RDF/XML parser will allow unknown parsetypes to be
  *   present and will pass them on to the user.  Unimplemented at
  *   present.
- * @RAPTOR_FEATURE_ALLOW_BAGID: If true (default true) then the
+ * @RAPTOR_OPTION_ALLOW_BAGID: If true (default true) then the
  *   RDF/XML parser will support the rdf:bagID attribute that was
  *   removed from the RDF/XML language when it was revised.  This
  *   support may be removed in future.
- * @RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST: If true (default false)
+ * @RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST: If true (default false)
  *   then the RDF/XML parser will generate the idList rdf:type
  *   rdf:List triple in the handling of rdf:parseType="Collection".
  *   This triple was removed during the revising of RDF/XML after
  *   collections were initially added.
- * @RAPTOR_FEATURE_NORMALIZE_LANGUAGE: If true (default true) then
+ * @RAPTOR_OPTION_NORMALIZE_LANGUAGE: If true (default true) then
  *   XML language values such as from xml:lang will be normalized to
  *   lowercase.
- * @RAPTOR_FEATURE_NON_NFC_FATAL: If true (default false) then
+ * @RAPTOR_OPTION_NON_NFC_FATAL: If true (default false) then
  *  illegal Unicode Normal Form C in literals will give a fatal
  *  error, otherwise just a warning.
- * @RAPTOR_FEATURE_WARN_OTHER_PARSETYPES: If true (default true) then 
+ * @RAPTOR_OPTION_WARN_OTHER_PARSETYPES: If true (default true) then 
  *   the RDF/XML parser will warn about unknown rdf:parseType values.
- * @RAPTOR_FEATURE_CHECK_RDF_ID: If true (default true) then the
+ * @RAPTOR_OPTION_CHECK_RDF_ID: If true (default true) then the
  *   RDF/XML will check rdf:ID attribute values for duplicates and
  *   cause an error if any are found.
- * @RAPTOR_FEATURE_RELATIVE_URIS: If true (default true) then
+ * @RAPTOR_OPTION_RELATIVE_URIS: If true (default true) then
  *   relative URIs will be used wherever possible when serializing.
- * @RAPTOR_FEATURE_WRITER_AUTO_INDENT: Automatically indent elements when
+ * @RAPTOR_OPTION_WRITER_AUTO_INDENT: Automatically indent elements when
  *   seriailizing.
- * @RAPTOR_FEATURE_WRITER_AUTO_EMPTY: Automatically detect and
+ * @RAPTOR_OPTION_WRITER_AUTO_EMPTY: Automatically detect and
  *   abbreviate empty elements when serializing.
- * @RAPTOR_FEATURE_WRITER_INDENT_WIDTH: Integer number of spaces to use
+ * @RAPTOR_OPTION_WRITER_INDENT_WIDTH: Integer number of spaces to use
  *   for each indent level when serializing with auto indent.
- * @RAPTOR_FEATURE_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
- * @RAPTOR_FEATURE_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
- * @RAPTOR_FEATURE_NO_NET: Deny network requests.
- * @RAPTOR_FEATURE_RESOURCE_BORDER: Border color of resource
+ * @RAPTOR_OPTION_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
+ * @RAPTOR_OPTION_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
+ * @RAPTOR_OPTION_NO_NET: Deny network requests.
+ * @RAPTOR_OPTION_RESOURCE_BORDER: Border color of resource
  *   nodes for GraphViz DOT serializer.
- * @RAPTOR_FEATURE_LITERAL_BORDER: Border color of literal nodes
+ * @RAPTOR_OPTION_LITERAL_BORDER: Border color of literal nodes
  *   for GraphViz DOT serializer.
- * @RAPTOR_FEATURE_BNODE_BORDER: Border color of blank nodes for
+ * @RAPTOR_OPTION_BNODE_BORDER: Border color of blank nodes for
  *   GraphViz DOT serializer.
- * @RAPTOR_FEATURE_RESOURCE_FILL: Fill color of resource nodes
+ * @RAPTOR_OPTION_RESOURCE_FILL: Fill color of resource nodes
  *   for GraphViz DOT serializer.
- * @RAPTOR_FEATURE_LITERAL_FILL: Fill color of literal nodes for
+ * @RAPTOR_OPTION_LITERAL_FILL: Fill color of literal nodes for
  *   GraphViz DOT serializer.
- * @RAPTOR_FEATURE_BNODE_FILL: Fill color of blank nodes for
+ * @RAPTOR_OPTION_BNODE_FILL: Fill color of blank nodes for
  *   GraphViz DOT serializer.
- * @RAPTOR_FEATURE_HTML_TAG_SOUP: Use a lax HTML parser if an XML parser
+ * @RAPTOR_OPTION_HTML_TAG_SOUP: Use a lax HTML parser if an XML parser
  *   fails when read HTML for GRDDL parser.
- * @RAPTOR_FEATURE_MICROFORMATS: Look for microformats for GRDDL parser.
- * @RAPTOR_FEATURE_HTML_LINK: Look for head &lt;link&gt; to type rdf/xml
+ * @RAPTOR_OPTION_MICROFORMATS: Look for microformats for GRDDL parser.
+ * @RAPTOR_OPTION_HTML_LINK: Look for head &lt;link&gt; to type rdf/xml
  *   for GRDDL parser.
- * @RAPTOR_FEATURE_WWW_TIMEOUT: Set timeout for internal WWW URI requests
+ * @RAPTOR_OPTION_WWW_TIMEOUT: Set timeout for internal WWW URI requests
  *   for GRDDL parser.
- * @RAPTOR_FEATURE_WRITE_BASE_URI: Write @base directive for Turtle/N3.
- * @RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL: HTTP Cache-Control: header
- * @RAPTOR_FEATURE_WWW_HTTP_USER_AGENT: HTTP User-Agent: header
- * @RAPTOR_FEATURE_JSON_CALLBACK: JSON serializer callback function.
- * @RAPTOR_FEATURE_JSON_EXTRA_DATA: JSON serializer extra top-level data
- * @RAPTOR_FEATURE_RSS_TRIPLES: Atom/RSS serializer writes extra RDF triples it finds (none, rdf-xml, atom-triples)
- * @RAPTOR_FEATURE_ATOM_ENTRY_URI: Atom entry URI.  If given, generate an Atom Entry Document with the item having the given URI, otherwise generate an Atom Feed Document with any items found.
- * @RAPTOR_FEATURE_PREFIX_ELEMENTS: Integer. If set, generate Atom/RSS1.0 documents with prefixed elements, otherwise unprefixed.
- * @RAPTOR_FEATURE_LAST: Internal
+ * @RAPTOR_OPTION_WRITE_BASE_URI: Write @base directive for Turtle/N3.
+ * @RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL: HTTP Cache-Control: header
+ * @RAPTOR_OPTION_WWW_HTTP_USER_AGENT: HTTP User-Agent: header
+ * @RAPTOR_OPTION_JSON_CALLBACK: JSON serializer callback function.
+ * @RAPTOR_OPTION_JSON_EXTRA_DATA: JSON serializer extra top-level data
+ * @RAPTOR_OPTION_RSS_TRIPLES: Atom/RSS serializer writes extra RDF triples it finds (none, rdf-xml, atom-triples)
+ * @RAPTOR_OPTION_ATOM_ENTRY_URI: Atom entry URI.  If given, generate an Atom Entry Document with the item having the given URI, otherwise generate an Atom Feed Document with any items found.
+ * @RAPTOR_OPTION_PREFIX_ELEMENTS: Integer. If set, generate Atom/RSS1.0 documents with prefixed elements, otherwise unprefixed.
+ * @RAPTOR_OPTION_LAST: Internal
  *
- * Raptor parser, serializer or XML writer features.
+ * Raptor parser, serializer or XML writer options.
  */
 typedef enum {
-  RAPTOR_FEATURE_SCANNING,
-  RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES,
-  RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES,
-  RAPTOR_FEATURE_ALLOW_BAGID,
-  RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST,
-  RAPTOR_FEATURE_NORMALIZE_LANGUAGE,
-  RAPTOR_FEATURE_NON_NFC_FATAL,
-  RAPTOR_FEATURE_WARN_OTHER_PARSETYPES,
-  RAPTOR_FEATURE_CHECK_RDF_ID,
-  RAPTOR_FEATURE_RELATIVE_URIS,
-  RAPTOR_FEATURE_WRITER_AUTO_INDENT,
-  RAPTOR_FEATURE_WRITER_AUTO_EMPTY,
-  RAPTOR_FEATURE_WRITER_INDENT_WIDTH,
-  RAPTOR_FEATURE_WRITER_XML_VERSION,
-  RAPTOR_FEATURE_WRITER_XML_DECLARATION,
-  RAPTOR_FEATURE_NO_NET,
-  RAPTOR_FEATURE_RESOURCE_BORDER,
-  RAPTOR_FEATURE_LITERAL_BORDER,
-  RAPTOR_FEATURE_BNODE_BORDER,
-  RAPTOR_FEATURE_RESOURCE_FILL,
-  RAPTOR_FEATURE_LITERAL_FILL,
-  RAPTOR_FEATURE_BNODE_FILL,
-  RAPTOR_FEATURE_HTML_TAG_SOUP,
-  RAPTOR_FEATURE_MICROFORMATS,
-  RAPTOR_FEATURE_HTML_LINK,
-  RAPTOR_FEATURE_WWW_TIMEOUT,
-  RAPTOR_FEATURE_WRITE_BASE_URI,
-  RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL,
-  RAPTOR_FEATURE_WWW_HTTP_USER_AGENT,
-  RAPTOR_FEATURE_JSON_CALLBACK,
-  RAPTOR_FEATURE_JSON_EXTRA_DATA,
-  RAPTOR_FEATURE_RSS_TRIPLES,
-  RAPTOR_FEATURE_ATOM_ENTRY_URI,
-  RAPTOR_FEATURE_PREFIX_ELEMENTS,
-  RAPTOR_FEATURE_LAST = RAPTOR_FEATURE_PREFIX_ELEMENTS
-} raptor_feature;
+  RAPTOR_OPTION_SCANNING,
+  RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES,
+  RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES,
+  RAPTOR_OPTION_ALLOW_BAGID,
+  RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST,
+  RAPTOR_OPTION_NORMALIZE_LANGUAGE,
+  RAPTOR_OPTION_NON_NFC_FATAL,
+  RAPTOR_OPTION_WARN_OTHER_PARSETYPES,
+  RAPTOR_OPTION_CHECK_RDF_ID,
+  RAPTOR_OPTION_RELATIVE_URIS,
+  RAPTOR_OPTION_WRITER_AUTO_INDENT,
+  RAPTOR_OPTION_WRITER_AUTO_EMPTY,
+  RAPTOR_OPTION_WRITER_INDENT_WIDTH,
+  RAPTOR_OPTION_WRITER_XML_VERSION,
+  RAPTOR_OPTION_WRITER_XML_DECLARATION,
+  RAPTOR_OPTION_NO_NET,
+  RAPTOR_OPTION_RESOURCE_BORDER,
+  RAPTOR_OPTION_LITERAL_BORDER,
+  RAPTOR_OPTION_BNODE_BORDER,
+  RAPTOR_OPTION_RESOURCE_FILL,
+  RAPTOR_OPTION_LITERAL_FILL,
+  RAPTOR_OPTION_BNODE_FILL,
+  RAPTOR_OPTION_HTML_TAG_SOUP,
+  RAPTOR_OPTION_MICROFORMATS,
+  RAPTOR_OPTION_HTML_LINK,
+  RAPTOR_OPTION_WWW_TIMEOUT,
+  RAPTOR_OPTION_WRITE_BASE_URI,
+  RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL,
+  RAPTOR_OPTION_WWW_HTTP_USER_AGENT,
+  RAPTOR_OPTION_JSON_CALLBACK,
+  RAPTOR_OPTION_JSON_EXTRA_DATA,
+  RAPTOR_OPTION_RSS_TRIPLES,
+  RAPTOR_OPTION_ATOM_ENTRY_URI,
+  RAPTOR_OPTION_PREFIX_ELEMENTS,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_PREFIX_ELEMENTS
+} raptor_option;
 
 
 /**
@@ -619,15 +619,15 @@ int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 RAPTOR_API
-int raptor_world_enumerate_parser_features(raptor_world* world, const raptor_feature feature, const char **name, raptor_uri **uri, const char **label);
+int raptor_world_enumerate_parser_options(raptor_world* world, const raptor_option option, const char **name, raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
-int raptor_world_enumerate_sax2_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_world_enumerate_sax2_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API
-raptor_feature raptor_world_get_feature_from_uri(raptor_world* world, raptor_uri *uri);
+raptor_option raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri);
 
 
 /* Term Class */
@@ -699,17 +699,17 @@ const char* raptor_parser_get_mime_type(raptor_parser *rdf_parser);
 RAPTOR_API
 int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
 
-/* parser feature methods */
+/* parser option methods */
 RAPTOR_API
-int raptor_parser_set_feature(raptor_parser *parser, raptor_feature feature, int value);
+int raptor_parser_set_option(raptor_parser *parser, raptor_option option, int value);
 RAPTOR_API
-int raptor_parser_set_feature_string(raptor_parser *parser, raptor_feature feature, const unsigned char *value);
+int raptor_parser_set_option_string(raptor_parser *parser, raptor_option option, const unsigned char *value);
 RAPTOR_API
-int raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature);
+int raptor_parser_get_option(raptor_parser *parser, raptor_option option);
 RAPTOR_API
-const unsigned char* raptor_parser_get_feature_string(raptor_parser *parser, raptor_feature feature);
+const unsigned char* raptor_parser_get_option_string(raptor_parser *parser, raptor_option option);
 RAPTOR_API
-unsigned int raptor_parser_get_feature_count(void);
+unsigned int raptor_parser_get_option_count(void);
 
 /* parser utilit methods */
 RAPTOR_API
@@ -768,17 +768,17 @@ raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 
-/* serializer feature methods */
+/* serializer option methods */
 RAPTOR_API
-int raptor_world_enumerate_serializer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_world_enumerate_serializer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
-int raptor_serializer_set_feature(raptor_serializer *serializer, raptor_feature feature, int value);
+int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, int value);
 RAPTOR_API
-int raptor_serializer_set_feature_string(raptor_serializer *serializer, raptor_feature feature, const unsigned char *value);
+int raptor_serializer_set_option_string(raptor_serializer *serializer, raptor_option option, const unsigned char *value);
 RAPTOR_API
-int raptor_serializer_get_feature(raptor_serializer *serializer, raptor_feature feature);
+int raptor_serializer_get_option(raptor_serializer *serializer, raptor_option option);
 RAPTOR_API
-const unsigned char *raptor_serializer_get_feature_string(raptor_serializer *serializer, raptor_feature feature);
+const unsigned char *raptor_serializer_get_option_string(raptor_serializer *serializer, raptor_option option);
 
 /* utility methods */
 RAPTOR_API
@@ -1347,26 +1347,26 @@ void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const rapt
 
 
 
-/* Parser and Serializer features */
+/* Parser and Serializer options */
 
 /**
- * raptor_feature_value_type:
- * @RAPTOR_FEATURE_VALUE_TYPE_BOOL: Boolean integer value. Non-0 is true
- * @RAPTOR_FEATURE_VALUE_TYPE_INT: Decimal integer value
- * @RAPTOR_FEATURE_VALUE_TYPE_STRING: String value
- * @RAPTOR_FEATURE_VALUE_TYPE_URI: URI String value.
+ * raptor_option_value_type:
+ * @RAPTOR_OPTION_VALUE_TYPE_BOOL: Boolean integer value. Non-0 is true
+ * @RAPTOR_OPTION_VALUE_TYPE_INT: Decimal integer value
+ * @RAPTOR_OPTION_VALUE_TYPE_STRING: String value
+ * @RAPTOR_OPTION_VALUE_TYPE_URI: URI String value.
  *
  * Feature value types.
  */
 typedef enum {
-  RAPTOR_FEATURE_VALUE_TYPE_BOOL,
-  RAPTOR_FEATURE_VALUE_TYPE_INT,
-  RAPTOR_FEATURE_VALUE_TYPE_STRING,
-  RAPTOR_FEATURE_VALUE_TYPE_URI
-} raptor_feature_value_type;
+  RAPTOR_OPTION_VALUE_TYPE_BOOL,
+  RAPTOR_OPTION_VALUE_TYPE_INT,
+  RAPTOR_OPTION_VALUE_TYPE_STRING,
+  RAPTOR_OPTION_VALUE_TYPE_URI
+} raptor_option_value_type;
 
 RAPTOR_API
-raptor_feature_value_type raptor_feature_get_value_type(const raptor_feature feature);
+raptor_option_value_type raptor_option_get_value_type(const raptor_option option);
 
 
 /* SAX2 element Class (raptor_xml_element) */
@@ -1426,15 +1426,15 @@ void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsi
 RAPTOR_API
 void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
 RAPTOR_API
-int raptor_world_enumerate_xml_writer_features(raptor_world* world, const raptor_feature feature, const char **name,  raptor_uri **uri, const char **label);
+int raptor_world_enumerate_xml_writer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
-int raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer, raptor_feature feature, int value);
+int raptor_xml_writer_set_option(raptor_xml_writer *xml_writer, raptor_option option, int value);
 RAPTOR_API
-int raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char *value);
+int raptor_xml_writer_set_option_string(raptor_xml_writer *xml_writer, raptor_option option, const unsigned char *value);
 RAPTOR_API
-int raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer, raptor_feature feature);
+int raptor_xml_writer_get_option(raptor_xml_writer *xml_writer, raptor_option option);
 RAPTOR_API
-const unsigned char *raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, raptor_feature feature);
+const unsigned char *raptor_xml_writer_get_option_string(raptor_xml_writer *xml_writer, raptor_option option);
 RAPTOR_API
 int raptor_xml_writer_get_depth(raptor_xml_writer *xml_writer);
 

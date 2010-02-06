@@ -240,11 +240,11 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
                                      serializer->iostream);
   if(!xml_writer)
     return 1;
-  raptor_xml_writer_set_feature(xml_writer, RAPTOR_FEATURE_WRITER_XML_VERSION,
+  raptor_xml_writer_set_option(xml_writer, RAPTOR_OPTION_WRITER_XML_VERSION,
                                 serializer->xml_version);
-  raptor_xml_writer_set_feature(xml_writer,
-                                RAPTOR_FEATURE_WRITER_XML_DECLARATION,
-                                serializer->feature_write_xml_declaration);
+  raptor_xml_writer_set_option(xml_writer,
+                                RAPTOR_OPTION_WRITER_XML_DECLARATION,
+                                serializer->option_write_xml_declaration);
 
   context->xml_writer = xml_writer;
   context->written_header = 0;
@@ -288,7 +288,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
       goto tidy;
   }
 
-  if(base_uri && serializer->feature_write_base_uri) {
+  if(base_uri && serializer->option_write_base_uri) {
     const unsigned char* base_uri_string;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1,
@@ -439,7 +439,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_TERM_TYPE_URI:
       allocated = 1;
-      if(serializer->feature_relative_uris) {
+      if(serializer->option_relative_uris) {
         subject_uri_string = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                                statement->subject->value.uri);
         if(!subject_uri_string)
@@ -577,7 +577,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_URI:
       allocated = 1;
       /* must be URI */
-      if(serializer->feature_relative_uris) {
+      if(serializer->option_relative_uris) {
         object_uri_string = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                               statement->object->value.uri);
         if(!object_uri_string)

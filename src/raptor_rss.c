@@ -244,9 +244,9 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
     rss_parser->nspaces_seen[n] = 'N';
 
   /* Optionally forbid network requests in the XML parser */
-  raptor_sax2_set_feature(rss_parser->sax2, 
-                          RAPTOR_FEATURE_NO_NET,
-                          rdf_parser->features[RAPTOR_FEATURE_NO_NET]);
+  raptor_sax2_set_option(rss_parser->sax2, 
+                          RAPTOR_OPTION_NO_NET,
+                          rdf_parser->options[RAPTOR_OPTION_NO_NET]);
   
   raptor_sax2_parse_start(rss_parser->sax2, uri);
 
@@ -659,8 +659,8 @@ raptor_rss_start_element_handler(void *user_data,
             rss_element->xml_writer = raptor_new_xml_writer(rdf_parser->world,
                                                             NULL,
                                                             rss_element->iostream);
-            raptor_xml_writer_set_feature(rss_element->xml_writer, 
-                                          RAPTOR_FEATURE_WRITER_XML_DECLARATION, 0);
+            raptor_xml_writer_set_option(rss_element->xml_writer, 
+                                          RAPTOR_OPTION_WRITER_XML_DECLARATION, 0);
 
             raptor_free_stringbuffer(rss_element->sb);
             rss_element->sb = NULL;

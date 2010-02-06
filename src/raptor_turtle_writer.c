@@ -633,85 +633,85 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
 
 
 /**
- * raptor_turtle_writer_set_feature:
+ * raptor_turtle_writer_set_option:
  * @turtle_writer: #raptor_turtle_writer turtle_writer object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: integer feature value (0 or larger)
+ * @option: option to set from enumerated #raptor_option values
+ * @value: integer option value (0 or larger)
  *
- * Set turtle_writer features with integer values.
+ * Set turtle_writer options with integer values.
  * 
- * The allowed features are available via 
- * raptor_world_enumerate_turtle_writer_features()
+ * The allowed options are available via 
+ * raptor_world_enumerate_turtle_writer_options()
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer, 
-                                 raptor_feature feature, int value)
+raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, 
+                                 raptor_option option, int value)
 {
   if(value < 0 ||
-     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_TURTLE_WRITER))
     return 1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+  switch(option) {
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
       if(value)
         turtle_writer->flags |= TURTLE_WRITER_AUTO_INDENT;
       else
         turtle_writer->flags &= ~TURTLE_WRITER_AUTO_INDENT;        
       break;
 
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       turtle_writer->indent = value;
       break;
     
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
       break;
         
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
+    /* parser options */
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
 
     /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
+    case RAPTOR_OPTION_NO_NET:
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
+    /* XML writer options */
+    case RAPTOR_OPTION_RELATIVE_URIS:
 
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    /* DOT serializer options */
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* JSON serializer options */
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
     
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
+    /* Turtle serializer option */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
 
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW option */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       return -1;
@@ -723,30 +723,30 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
 
 
 /**
- * raptor_turtle_writer_set_feature_string:
+ * raptor_turtle_writer_set_option_string:
  * @turtle_writer: #raptor_turtle_writer turtle_writer object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: feature value
+ * @option: option to set from enumerated #raptor_option values
+ * @value: option value
  *
- * Set turtle_writer features with string values.
+ * Set turtle_writer options with string values.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_turtle_writer_features().  If the feature
+ * The allowed options are available via
+ * raptor_world_enumerate_turtle_writer_options().  If the option
  * type is integer, the value is interpreted as an integer.
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer, 
-                                        raptor_feature feature, 
+raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, 
+                                        raptor_option option, 
                                         const unsigned char *value)
 {
   if(!value ||
-     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_TURTLE_WRITER))
     return 1;
 
-  if(raptor_feature_value_is_numeric(feature))
-    return raptor_turtle_writer_set_feature(turtle_writer, feature, 
+  if(raptor_option_value_is_numeric(option))
+    return raptor_turtle_writer_set_option(turtle_writer, option, 
                                             atoi((const char*)value));
 
   return 1;
@@ -754,80 +754,80 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
 
 
 /**
- * raptor_turtle_writer_get_feature:
+ * raptor_turtle_writer_get_option:
  * @turtle_writer: #raptor_turtle_writer serializer object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get various turtle_writer features.
+ * Get various turtle_writer options.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed options are available via raptor_options_enumerate().
  *
- * Note: no feature value is negative
+ * Note: no option value is negative
  *
- * Return value: feature value or < 0 for an illegal feature
+ * Return value: option value or < 0 for an illegal option
  **/
 int
-raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer, 
-                                 raptor_feature feature)
+raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, 
+                                 raptor_option option)
 {
   int result= -1;
 
-  switch(feature) {
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
+  switch(option) {
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
       result = TURTLE_WRITER_AUTO_INDENT(turtle_writer);
       break;
 
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       result = turtle_writer->indent;
       break;
     
-    /* writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    /* writer options */
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
       
-    /* parser features */
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
+    /* parser options */
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
 
     /* Shared */
-    case RAPTOR_FEATURE_NO_NET:
+    case RAPTOR_OPTION_NO_NET:
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_RELATIVE_URIS:
+    /* XML writer options */
+    case RAPTOR_OPTION_RELATIVE_URIS:
 
-    /* DOT serializer features */
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    /* DOT serializer options */
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    /* JSON serializer features */
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* JSON serializer options */
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
     
-    /* Turtle serializer feature */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
+    /* Turtle serializer option */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
 
-    /* WWW feature */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW option */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       break;
@@ -838,19 +838,19 @@ raptor_turtle_writer_get_feature(raptor_turtle_writer *turtle_writer,
 
 
 /**
- * raptor_turtle_writer_get_feature_string:
+ * raptor_turtle_writer_get_option_string:
  * @turtle_writer: #raptor_turtle_writer serializer object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get turtle_writer features with string values.
+ * Get turtle_writer options with string values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed options are available via raptor_options_enumerate().
  *
- * Return value: feature value or NULL for an illegal feature or no value
+ * Return value: option value or NULL for an illegal option or no value
  **/
 const unsigned char *
-raptor_turtle_writer_get_feature_string(raptor_turtle_writer *turtle_writer, 
-                                        raptor_feature feature)
+raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, 
+                                        raptor_option option)
 {
   return NULL;
 }
@@ -909,8 +909,8 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-  raptor_turtle_writer_set_feature(turtle_writer, 
-                                   RAPTOR_FEATURE_WRITER_AUTO_INDENT, 1);
+  raptor_turtle_writer_set_option(turtle_writer, 
+                                   RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
 
   ex_ns = raptor_new_namespace(nstack,
                               (const unsigned char*)"ex",

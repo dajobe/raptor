@@ -726,14 +726,14 @@ raptor_rss10_serialize_start(raptor_serializer* serializer)
 {
   raptor_rss10_serializer_context *rss_serializer = (raptor_rss10_serializer_context*)serializer->context;
 
-  if(serializer->feature_rss_triples) {
-    if(!strcmp((const char*)serializer->feature_rss_triples,
+  if(serializer->option_rss_triples) {
+    if(!strcmp((const char*)serializer->option_rss_triples,
                "none"))
       rss_serializer->rss_triples_mode = 0;
-    else if(!strcmp((const char*)serializer->feature_rss_triples,
+    else if(!strcmp((const char*)serializer->option_rss_triples,
                "rdf-xml"))
       rss_serializer->rss_triples_mode = 1;
-    else if(!strcmp((const char*)serializer->feature_rss_triples, 
+    else if(!strcmp((const char*)serializer->option_rss_triples, 
                     "atom-triples"))
       rss_serializer->rss_triples_mode = 2;
     else
@@ -979,7 +979,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   }
   item_node_type = &raptor_rss_items_info[item_node_typei];
 
-  if(serializer->feature_prefix_elements)
+  if(serializer->option_prefix_elements)
     /* declare this NS with standard prefix */
     default_prefix = (const unsigned char*)raptor_rss_namespaces_info[default_ns_id].prefix;
   else
@@ -989,7 +989,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
                                                         default_prefix, ns_uri,
                                                         0);
   rss_serializer->free_default_nspace = 1;
-  if(serializer->feature_prefix_elements) {
+  if(serializer->option_prefix_elements) {
     rss_serializer->nspaces[default_ns_id] = rss_serializer->default_nspace;
     rss_serializer->free_default_nspace = 0;
   }
@@ -1010,7 +1010,7 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
       continue;
     
     if(i == default_ns_id) {
-      if(serializer->feature_prefix_elements)
+      if(serializer->option_prefix_elements)
         prefix = NULL;
     }
     
@@ -1331,7 +1331,7 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
 }
 
 
-/* emit a block of RDF/XML depending on the rssTriples feature mode */
+/* emit a block of RDF/XML depending on the rssTriples option mode */
 static void
 raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
                                       raptor_rss_item *item)
@@ -1991,8 +1991,8 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
 
     raptor_rss10_remove_mapped_fields(rss_serializer);
 
-    if(serializer->feature_atom_entry_uri) {
-      entry_uri = raptor_new_uri(rss_serializer->world, serializer->feature_atom_entry_uri);
+    if(serializer->option_atom_entry_uri) {
+      entry_uri = raptor_new_uri(rss_serializer->world, serializer->option_atom_entry_uri);
       for(i = 0; i < raptor_sequence_size(rss_serializer->items); i++) {
         raptor_rss_item* item;
         item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
@@ -2038,14 +2038,14 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                                      rss_serializer->nstack,
                                      serializer->iostream);
   rss_serializer->xml_writer = xml_writer;
-  raptor_xml_writer_set_feature(xml_writer,
-                                RAPTOR_FEATURE_WRITER_AUTO_INDENT, 1);
-  raptor_xml_writer_set_feature(xml_writer,
-                                RAPTOR_FEATURE_WRITER_AUTO_EMPTY, 1);
+  raptor_xml_writer_set_option(xml_writer,
+                                RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
+  raptor_xml_writer_set_option(xml_writer,
+                                RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
 
   raptor_rss10_build_xml_names(serializer, (is_atom && entry_uri));
 
-  if(serializer->base_uri && serializer->feature_write_base_uri) {
+  if(serializer->base_uri && serializer->option_write_base_uri) {
     const unsigned char* base_uri_string;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, 

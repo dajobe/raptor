@@ -494,7 +494,7 @@ raptor_new_parser(raptor_world* world, const char *name)
 
   rdf_parser->world->error_handlers.locator = &rdf_parser->locator;
   
-  /* Initialise default (lax) feature values */
+  /* Initialise default (lax) option values */
   raptor_parser_set_strict(rdf_parser, 0);
 
   if(factory->init(rdf_parser, name)) {
@@ -897,7 +897,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  else if(rdf_parser->features[RAPTOR_FEATURE_NO_NET])
+  else if(rdf_parser->options[RAPTOR_OPTION_NO_NET])
     raptor_www_set_uri_filter(rdf_parser->www, raptor_parser_set_uri_filter_no_net, rdf_parser);
   
   raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parse_uri_write_bytes, 
@@ -1171,66 +1171,66 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
 
 
 /**
- * raptor_parser_set_feature:
+ * raptor_parser_set_option:
  * @parser: #raptor_parser parser object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: integer feature value (0 or larger)
+ * @option: option to set from enumerated #raptor_option values
+ * @value: integer option value (0 or larger)
  *
- * Set various parser features.
+ * Set various parser options.
  * 
- * The allowed features are available via
- * raptor_world_enumerate_parser_features().
+ * The allowed options are available via
+ * raptor_world_enumerate_parser_options().
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_parser_set_feature(raptor_parser *parser,
-                          raptor_feature feature, int value)
+raptor_parser_set_option(raptor_parser *parser,
+                          raptor_option option, int value)
 {
   if(value < 0)
     return -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_NO_NET:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-      parser->features[(int)feature] = value;
+  switch(option) {
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
+      parser->options[(int)option] = value;
       break;
 
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    case RAPTOR_OPTION_WRITE_BASE_URI:
+    case RAPTOR_OPTION_RELATIVE_URIS:
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
 
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
 
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
       
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
     default:
       return -1;
       break;
@@ -1241,28 +1241,28 @@ raptor_parser_set_feature(raptor_parser *parser,
 
 
 /**
- * raptor_parser_set_feature_string:
+ * raptor_parser_set_option_string:
  * @parser: #raptor_parser parser object
- * @feature: feature to set from enumerated #raptor_feature values
- * @value: feature value
+ * @option: option to set from enumerated #raptor_option values
+ * @value: option value
  *
- * Set parser features with string values.
+ * Set parser options with string values.
  * 
- * The allowed features are available via raptor_features_enumerate().
- * If the feature type is integer, the value is interpreted as an integer.
+ * The allowed options are available via raptor_options_enumerate().
+ * If the option type is integer, the value is interpreted as an integer.
  *
- * Return value: non 0 on failure or if the feature is unknown
+ * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_parser_set_feature_string(raptor_parser *parser, 
-                                 raptor_feature feature, 
+raptor_parser_set_option_string(raptor_parser *parser, 
+                                 raptor_option option, 
                                  const unsigned char *value)
 {
-  if(raptor_feature_value_is_numeric(feature))
-    return raptor_parser_set_feature(parser, feature, atoi((const char*)value));
+  if(raptor_option_value_is_numeric(option))
+    return raptor_parser_set_option(parser, option, atoi((const char*)value));
 
-  if((feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL) ||
-     (feature == RAPTOR_FEATURE_WWW_HTTP_USER_AGENT)) {
+  if((option == RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL) ||
+     (option == RAPTOR_OPTION_WWW_HTTP_USER_AGENT)) {
     char *value_copy;
     size_t len = 0;
     if(value)
@@ -1275,7 +1275,7 @@ raptor_parser_set_feature_string(raptor_parser *parser,
       strncpy(value_copy, (const char*)value, len);
     value_copy[len]='\0';
     
-    if(feature == RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL)
+    if(option == RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL)
       parser->cache_control = value_copy;
     else
       parser->user_agent = value_copy;
@@ -1288,66 +1288,66 @@ raptor_parser_set_feature_string(raptor_parser *parser,
 
 
 /**
- * raptor_parser_get_feature:
+ * raptor_parser_get_option:
  * @parser: #raptor_parser parser object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get various parser features.
+ * Get various parser options.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed options are available via raptor_options_enumerate().
  *
- * Note: no feature value is negative
+ * Note: no option value is negative
  *
- * Return value: feature value or < 0 for an illegal feature
+ * Return value: option value or < 0 for an illegal option
  **/
 int
-raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
+raptor_parser_get_option(raptor_parser *parser, raptor_option option)
 {
   int result= -1;
   
-  switch(feature) {
-    case RAPTOR_FEATURE_SCANNING:
-    case RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_ALLOW_BAGID:
-    case RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_FEATURE_NORMALIZE_LANGUAGE:
-    case RAPTOR_FEATURE_NON_NFC_FATAL:
-    case RAPTOR_FEATURE_WARN_OTHER_PARSETYPES:
-    case RAPTOR_FEATURE_CHECK_RDF_ID:
-    case RAPTOR_FEATURE_NO_NET:
-    case RAPTOR_FEATURE_HTML_TAG_SOUP:
-    case RAPTOR_FEATURE_MICROFORMATS:
-    case RAPTOR_FEATURE_HTML_LINK:
-    case RAPTOR_FEATURE_WWW_TIMEOUT:
-      result = parser->features[(int)feature];
+  switch(option) {
+    case RAPTOR_OPTION_SCANNING:
+    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
+    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_ALLOW_BAGID:
+    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
+    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
+    case RAPTOR_OPTION_NON_NFC_FATAL:
+    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
+    case RAPTOR_OPTION_CHECK_RDF_ID:
+    case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_HTML_TAG_SOUP:
+    case RAPTOR_OPTION_MICROFORMATS:
+    case RAPTOR_OPTION_HTML_LINK:
+    case RAPTOR_OPTION_WWW_TIMEOUT:
+      result = parser->options[(int)option];
       break;
 
-    /* serializing features */
-    case RAPTOR_FEATURE_WRITE_BASE_URI:
-    case RAPTOR_FEATURE_RELATIVE_URIS:
-    case RAPTOR_FEATURE_RESOURCE_BORDER:
-    case RAPTOR_FEATURE_LITERAL_BORDER:
-    case RAPTOR_FEATURE_BNODE_BORDER:
-    case RAPTOR_FEATURE_RESOURCE_FILL:
-    case RAPTOR_FEATURE_LITERAL_FILL:
-    case RAPTOR_FEATURE_BNODE_FILL:
-    case RAPTOR_FEATURE_JSON_CALLBACK:
-    case RAPTOR_FEATURE_JSON_EXTRA_DATA:
-    case RAPTOR_FEATURE_RSS_TRIPLES:
-    case RAPTOR_FEATURE_ATOM_ENTRY_URI:
-    case RAPTOR_FEATURE_PREFIX_ELEMENTS:
+    /* serializing options */
+    case RAPTOR_OPTION_WRITE_BASE_URI:
+    case RAPTOR_OPTION_RELATIVE_URIS:
+    case RAPTOR_OPTION_RESOURCE_BORDER:
+    case RAPTOR_OPTION_LITERAL_BORDER:
+    case RAPTOR_OPTION_BNODE_BORDER:
+    case RAPTOR_OPTION_RESOURCE_FILL:
+    case RAPTOR_OPTION_LITERAL_FILL:
+    case RAPTOR_OPTION_BNODE_FILL:
+    case RAPTOR_OPTION_JSON_CALLBACK:
+    case RAPTOR_OPTION_JSON_EXTRA_DATA:
+    case RAPTOR_OPTION_RSS_TRIPLES:
+    case RAPTOR_OPTION_ATOM_ENTRY_URI:
+    case RAPTOR_OPTION_PREFIX_ELEMENTS:
 
-    /* XML writer features */
-    case RAPTOR_FEATURE_WRITER_AUTO_INDENT:
-    case RAPTOR_FEATURE_WRITER_AUTO_EMPTY:
-    case RAPTOR_FEATURE_WRITER_INDENT_WIDTH:
-    case RAPTOR_FEATURE_WRITER_XML_VERSION:
-    case RAPTOR_FEATURE_WRITER_XML_DECLARATION:
+    /* XML writer options */
+    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
+    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
+    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
+    case RAPTOR_OPTION_WRITER_XML_VERSION:
+    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
 
-    /* WWW features */
-    case RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_FEATURE_WWW_HTTP_USER_AGENT:
+    /* WWW options */
+    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
+    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
       
     default:
       break;
@@ -1358,22 +1358,22 @@ raptor_parser_get_feature(raptor_parser *parser, raptor_feature feature)
 
 
 /**
- * raptor_parser_get_feature_string:
+ * raptor_parser_get_option_string:
  * @parser: #raptor_parser parser object
- * @feature: feature to get value
+ * @option: option to get value
  *
- * Get parser features with string values.
+ * Get parser options with string values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed options are available via raptor_options_enumerate().
  * If a string is returned, it must be freed by the caller.
  *
- * Return value: feature value or NULL for an illegal feature or no value
+ * Return value: option value or NULL for an illegal option or no value
  **/
 const unsigned char *
-raptor_parser_get_feature_string(raptor_parser *parser, 
-                                 raptor_feature feature)
+raptor_parser_get_option_string(raptor_parser *parser, 
+                                 raptor_option option)
 {
-  if(raptor_feature_value_is_numeric(feature))
+  if(raptor_option_value_is_numeric(option))
     return NULL;
   
   return NULL;
@@ -1394,19 +1394,19 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
   is_strict = (is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
-  rdf_parser->features[RAPTOR_FEATURE_SCANNING] = 0;
+  rdf_parser->options[RAPTOR_OPTION_SCANNING] = 0;
 
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_NON_NS_ATTRIBUTES] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_OTHER_PARSETYPES] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_BAGID] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_ALLOW_RDF_TYPE_RDF_LIST] = 0;
-  rdf_parser->features[RAPTOR_FEATURE_NORMALIZE_LANGUAGE] = 1;
-  rdf_parser->features[RAPTOR_FEATURE_NON_NFC_FATAL] = is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_WARN_OTHER_PARSETYPES] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_CHECK_RDF_ID] = 1;
-  rdf_parser->features[RAPTOR_FEATURE_HTML_TAG_SOUP] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_MICROFORMATS] = !is_strict;
-  rdf_parser->features[RAPTOR_FEATURE_HTML_LINK] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_ALLOW_BAGID] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST] = 0;
+  rdf_parser->options[RAPTOR_OPTION_NORMALIZE_LANGUAGE] = 1;
+  rdf_parser->options[RAPTOR_OPTION_NON_NFC_FATAL] = is_strict;
+  rdf_parser->options[RAPTOR_OPTION_WARN_OTHER_PARSETYPES] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_CHECK_RDF_ID] = 1;
+  rdf_parser->options[RAPTOR_OPTION_HTML_TAG_SOUP] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_MICROFORMATS] = !is_strict;
+  rdf_parser->options[RAPTOR_OPTION_HTML_LINK] = !is_strict;
 }
 
 
@@ -1868,9 +1868,9 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
       rc = 1;
   }
 
-  /* copy features */
-  for(i = 0; i<= RAPTOR_FEATURE_LAST; i++)
-    to_parser->features[i]= from_parser->features[i];
+  /* copy options */
+  for(i = 0; i<= RAPTOR_OPTION_LAST; i++)
+    to_parser->options[i]= from_parser->options[i];
 
   return rc;
 }
@@ -2123,28 +2123,28 @@ main(int argc, char *argv[])
     exit(1);
   
 #ifdef RAPTOR_DEBUG
-  fprintf(stderr, "%s: Known features:\n", program);
+  fprintf(stderr, "%s: Known options:\n", program);
 #endif
 
-  for(i = 0; i <= RAPTOR_FEATURE_LAST; i++) {
-    const char *feature_name;
-    const char *feature_label;
-    raptor_uri *feature_uri;
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
+    const char *option_name;
+    const char *option_label;
+    raptor_uri *option_uri;
     int fn;
     
-    if(raptor_world_enumerate_parser_features(world, (raptor_feature)i,
-                                    &feature_name, &feature_uri, &feature_label))
+    if(raptor_world_enumerate_parser_options(world, (raptor_option)i,
+                                    &option_name, &option_uri, &option_label))
       continue;
 
 #ifdef RAPTOR_DEBUG
-    fprintf(stderr, " %2d %-20s %s\n", i, feature_name, feature_label);
+    fprintf(stderr, " %2d %-20s %s\n", i, option_name, option_label);
 #endif
-    fn = raptor_world_get_feature_from_uri(world, feature_uri);
+    fn = raptor_world_get_option_from_uri(world, option_uri);
     if(fn != i) {
-      fprintf(stderr, "raptor_feature_from_uri returned %d expected %d\n", fn, i);
+      fprintf(stderr, "raptor_option_from_uri returned %d expected %d\n", fn, i);
       return 1;
     }
-    raptor_free_uri(feature_uri);
+    raptor_free_uri(option_uri);
   }
 
   s = raptor_parser_get_accept_header_all(world);
