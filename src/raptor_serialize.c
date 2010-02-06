@@ -1027,8 +1027,14 @@ int
 raptor_serializer_get_feature(raptor_serializer *serializer, 
                               raptor_feature feature)
 {
-  int result= -1;
+  int result = -1;
   
+  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+    return -1;
+
+  if(!raptor_feature_value_is_numeric(feature))
+    return -1;
+
   switch(feature) {
     case RAPTOR_FEATURE_WRITE_BASE_URI:
       result = (serializer->feature_write_base_uri != 0);
@@ -1114,6 +1120,9 @@ const unsigned char *
 raptor_serializer_get_feature_string(raptor_serializer *serializer, 
                                      raptor_feature feature)
 {
+  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+    return NULL;
+
   if(raptor_feature_value_is_numeric(feature))
     return NULL;
   
