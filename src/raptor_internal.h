@@ -448,7 +448,7 @@ struct raptor_parser_s {
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
-  /* Features */
+  /* Options */
   int options[RAPTOR_OPTION_LAST+1];
 
   /* stuff for our user */
