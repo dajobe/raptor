@@ -376,10 +376,11 @@ main(int argc, char *argv[])
               const char *option_name;
               const char *option_label;
               if(!raptor_world_enumerate_parser_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
-                raptor_option_value_type value_type = raptor_option_get_value_type((raptor_option)i);
-                const char *option_type = (value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL || value_type == RAPTOR_OPTION_VALUE_TYPE_INT) ? "" : " (string)";
-                fprintf(stderr, "  %-21s  %s%s\n", option_name, option_label, 
-                       option_type);
+                raptor_option_value_type value_type;
+                value_type = raptor_option_get_value_type((raptor_option)i);
+                fprintf(stderr, "  %-21s  %s (%s)\n",
+                        option_name, option_label, 
+                        raptor_option_get_value_type_label(value_type));
               }
             }
             fprintf(stderr, "%s: Valid serializer options are:\n", program);
@@ -387,10 +388,11 @@ main(int argc, char *argv[])
               const char *option_name;
               const char *option_label;
               if(!raptor_world_enumerate_serializer_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
-                raptor_option_value_type value_type = raptor_option_get_value_type((raptor_option)i);
-                const char *option_type = (value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL || value_type == RAPTOR_OPTION_VALUE_TYPE_INT) ? "" : " (string)";
-                fprintf(stderr, "  %-21s  %s%s\n", option_name, option_label, 
-                       option_type);
+                raptor_option_value_type value_type;
+                value_type = raptor_option_get_value_type((raptor_option)i);
+                fprintf(stderr, "  %-21s  %s (%s)\n",
+                        option_name, option_label, 
+                        raptor_option_get_value_type_label(value_type));
               }
             }
             fputs("Options are set with `" HELP_ARG(f, option) " OPTION = VALUE or `-f OPTION'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
