@@ -281,10 +281,10 @@ rapper_uri_trace(void *user_data, raptor_uri* uri)
 
 typedef struct
 {
-  raptor_feature feature;
+  raptor_option option;
   int i_value;
   unsigned char* s_value;
-} feature_value;
+} option_value;
 
 
 
@@ -305,7 +305,7 @@ main(int argc, char *argv[])
   unsigned char *base_uri_string = NULL;
   raptor_uri *base_uri = NULL;
   const char *syntax_name="rdfxml";
-  raptor_sequence* parser_features = NULL;
+  raptor_sequence* parser_options = NULL;
   int scanning = 0;
   int strict_mode = 0;
   int trace = 0;
@@ -315,7 +315,7 @@ main(int argc, char *argv[])
   const char *serializer_syntax_name="ntriples";
   unsigned char *output_base_uri_string = NULL;
   raptor_uri *output_base_uri = NULL;
-  raptor_sequence* serializer_features = NULL;
+  raptor_sequence* serializer_options = NULL;
   raptor_sequence *namespace_declarations = NULL;
 
   /* other variables */
@@ -371,30 +371,30 @@ main(int argc, char *argv[])
           if(!strcmp(optarg, "help")) {
             int i;
             
-            fprintf(stderr, "%s: Valid parser features are:\n", program);
-            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
-              const char *feature_name;
-              const char *feature_label;
-              if(!raptor_world_enumerate_parser_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                raptor_feature_value_type value_type = raptor_feature_get_value_type((raptor_feature)i);
-                const char *feature_type = (value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL || value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) ? "" : " (string)";
-                fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
-                       feature_type);
+            fprintf(stderr, "%s: Valid parser options are:\n", program);
+            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+              const char *option_name;
+              const char *option_label;
+              if(!raptor_world_enumerate_parser_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
+                raptor_option_value_type value_type = raptor_option_get_value_type((raptor_option)i);
+                const char *option_type = (value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL || value_type == RAPTOR_OPTION_VALUE_TYPE_INT) ? "" : " (string)";
+                fprintf(stderr, "  %-21s  %s%s\n", option_name, option_label, 
+                       option_type);
               }
             }
-            fprintf(stderr, "%s: Valid serializer features are:\n", program);
-            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
-              const char *feature_name;
-              const char *feature_label;
-              if(!raptor_world_enumerate_serializer_features(world, (raptor_feature)i, &feature_name, NULL, &feature_label)) {
-                raptor_feature_value_type value_type = raptor_feature_get_value_type((raptor_feature)i);
-                const char *feature_type = (value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL || value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) ? "" : " (string)";
-                fprintf(stderr, "  %-21s  %s%s\n", feature_name, feature_label, 
-                       feature_type);
+            fprintf(stderr, "%s: Valid serializer options are:\n", program);
+            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+              const char *option_name;
+              const char *option_label;
+              if(!raptor_world_enumerate_serializer_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
+                raptor_option_value_type value_type = raptor_option_get_value_type((raptor_option)i);
+                const char *option_type = (value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL || value_type == RAPTOR_OPTION_VALUE_TYPE_INT) ? "" : " (string)";
+                fprintf(stderr, "  %-21s  %s%s\n", option_name, option_label, 
+                       option_type);
               }
             }
-            fputs("Features are set with `" HELP_ARG(f, feature) " FEATURE = VALUE or `-f FEATURE'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
-            fputs("\nA feature of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
+            fputs("Options are set with `" HELP_ARG(f, option) " OPTION = VALUE or `-f OPTION'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
+            fputs("\nA option of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
 
             raptor_free_world(world);
             exit(0);
@@ -419,30 +419,30 @@ main(int argc, char *argv[])
           } else {
             int i;
             size_t arg_len = strlen(optarg);
-            feature_value* fv;
+            option_value* fv;
             int ok = 0;
             
-            /* parser features */
-            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
-              const char *feature_name;
+            /* parser options */
+            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+              const char *option_name;
               size_t len;
               
-              if(raptor_world_enumerate_parser_features(world,
-                                                        (raptor_feature)i,
-                                                        &feature_name,
+              if(raptor_world_enumerate_parser_options(world,
+                                                        (raptor_option)i,
+                                                        &option_name,
                                                         NULL, NULL))
                 continue;
 
-              len = strlen(feature_name);
-              if(!strncmp(optarg, feature_name, len)) {
-                raptor_feature_value_type value_type;
+              len = strlen(option_name);
+              if(!strncmp(optarg, option_name, len)) {
+                raptor_option_value_type value_type;
 
-                fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
+                fv = (option_value*)raptor_calloc_memory(sizeof(option_value), 1);
 
-                fv->feature = (raptor_feature)i;
-                value_type = raptor_feature_get_value_type(fv->feature);
-                if(value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL ||
-                   value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) {
+                fv->option = (raptor_option)i;
+                value_type = raptor_option_get_value_type(fv->option);
+                if(value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL ||
+                   value_type == RAPTOR_OPTION_VALUE_TYPE_INT) {
                   if(len < arg_len && optarg[len] == '=')
                     fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
@@ -454,34 +454,34 @@ main(int argc, char *argv[])
                     fv->s_value = (unsigned char*)"";
                 }
 
-                if(!parser_features)
-                  parser_features = raptor_new_sequence(raptor_free_memory, NULL);
-                raptor_sequence_push(parser_features, fv);
+                if(!parser_options)
+                  parser_options = raptor_new_sequence(raptor_free_memory, NULL);
+                raptor_sequence_push(parser_options, fv);
                 ok = 1;
                 break;
               }
             }
             
-            for(i = 0; i < (int)raptor_parser_get_feature_count(); i++) {
-              const char *feature_name;
+            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+              const char *option_name;
               size_t len;
               
-              if(raptor_world_enumerate_serializer_features(world,
-                                                            (raptor_feature)i,
-                                                            &feature_name,
+              if(raptor_world_enumerate_serializer_options(world,
+                                                            (raptor_option)i,
+                                                            &option_name,
                                                             NULL, NULL))
                 continue;
 
-              len = strlen(feature_name);
-              if(!strncmp(optarg, feature_name, len)) {
-                raptor_feature_value_type value_type;
+              len = strlen(option_name);
+              if(!strncmp(optarg, option_name, len)) {
+                raptor_option_value_type value_type;
 
-                fv = (feature_value*)raptor_calloc_memory(sizeof(feature_value), 1);
+                fv = (option_value*)raptor_calloc_memory(sizeof(option_value), 1);
 
-                fv->feature = (raptor_feature)i;
-                value_type = raptor_feature_get_value_type(fv->feature);
-                if(value_type == RAPTOR_FEATURE_VALUE_TYPE_BOOL ||
-                   value_type == RAPTOR_FEATURE_VALUE_TYPE_INT) {
+                fv->option = (raptor_option)i;
+                value_type = raptor_option_get_value_type(fv->option);
+                if(value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL ||
+                   value_type == RAPTOR_OPTION_VALUE_TYPE_INT) {
                   if(len < arg_len && optarg[len] == '=')
                     fv->i_value = atoi(&optarg[len+1]);
                   else if(len == arg_len)
@@ -493,16 +493,16 @@ main(int argc, char *argv[])
                     fv->s_value = (unsigned char*)"";
                 }
 
-                if(!serializer_features)
-                  serializer_features = raptor_new_sequence(raptor_free_memory, NULL);
-                raptor_sequence_push(serializer_features, fv);
+                if(!serializer_options)
+                  serializer_options = raptor_new_sequence(raptor_free_memory, NULL);
+                raptor_sequence_push(serializer_options, fv);
                 ok = 1;
                 break;
               }
             }
             
             if(!ok) {
-              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, feature) "'\nTry '%s " HELP_ARG(f, feature) " help' for a list of valid features\n",
+              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, option) "'\nTry '%s " HELP_ARG(f, option) " help' for a list of valid options\n",
                       program, optarg, program);
               usage = 1;
             }
@@ -726,7 +726,7 @@ main(int argc, char *argv[])
     puts("General options:");
     puts(HELP_TEXT("c", "count           ", "Count triples only - do not print them."));
     puts(HELP_TEXT("e", "ignore-errors   ", "Ignore error messages"));
-    puts(HELP_TEXT("f FEATURE(=VALUE)", "feature FEATURE(=VALUE)", HELP_PAD "Set parser or serializer features" HELP_PAD "Use `-f help' for a list of valid features"));
+    puts(HELP_TEXT("f OPTION(=VALUE)", "feature OPTION(=VALUE)", HELP_PAD "Set parser or serializer options" HELP_PAD "Use `-f help' for a list of valid options"));
     puts(HELP_TEXT("g", "guess           ", "Guess the input syntax (same as -i guess)"));
     puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
     puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
@@ -834,19 +834,19 @@ main(int argc, char *argv[])
   raptor_parser_set_strict(rdf_parser, strict_mode);
   
   if(scanning)
-    raptor_parser_set_feature(rdf_parser, RAPTOR_FEATURE_SCANNING, 1);
+    raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_SCANNING, 1);
 
-  if(parser_features) {
-    feature_value *fv;
-    while((fv = (feature_value*)raptor_sequence_pop(parser_features))) {
+  if(parser_options) {
+    option_value *fv;
+    while((fv = (option_value*)raptor_sequence_pop(parser_options))) {
       if(fv->s_value)
-        raptor_parser_set_feature_string(rdf_parser, fv->feature, fv->s_value);
+        raptor_parser_set_option_string(rdf_parser, fv->option, fv->s_value);
       else
-        raptor_parser_set_feature(rdf_parser, fv->feature, fv->i_value);
+        raptor_parser_set_option(rdf_parser, fv->option, fv->i_value);
       raptor_free_memory(fv);
     }
-    raptor_free_sequence(parser_features);
-    parser_features = NULL;
+    raptor_free_sequence(parser_options);
+    parser_options = NULL;
   }
 
   if(trace)
@@ -915,18 +915,18 @@ main(int argc, char *argv[])
       namespace_declarations = NULL;
     }
     
-    if(serializer_features) {
-      feature_value *fv;
-      while((fv = (feature_value*)raptor_sequence_pop(serializer_features))) {
+    if(serializer_options) {
+      option_value *fv;
+      while((fv = (option_value*)raptor_sequence_pop(serializer_options))) {
         if(fv->s_value)
-          raptor_serializer_set_feature_string(serializer, fv->feature,
+          raptor_serializer_set_option_string(serializer, fv->option,
                                                fv->s_value);
         else
-          raptor_serializer_set_feature(serializer, fv->feature, fv->i_value);
+          raptor_serializer_set_option(serializer, fv->option, fv->i_value);
         raptor_free_memory(fv);
       }
-      raptor_free_sequence(serializer_features);
-      serializer_features = NULL;
+      raptor_free_sequence(serializer_options);
+      serializer_options = NULL;
     }
 
     raptor_serialize_start_to_file_handle(serializer, 
@@ -982,10 +982,10 @@ main(int argc, char *argv[])
 
   if(namespace_declarations)
     raptor_free_sequence(namespace_declarations);
-  if(parser_features)
-    raptor_free_sequence(parser_features);
-  if(serializer_features)
-    raptor_free_sequence(serializer_features);
+  if(parser_options)
+    raptor_free_sequence(parser_options);
+  if(serializer_options)
+    raptor_free_sequence(serializer_options);
 
   raptor_free_world(world);
 
