@@ -172,12 +172,13 @@ raptor_feature_get_value_type(const raptor_feature feature)
 }
 
 
-raptor_feature_area
-raptor_feature_get_areas(const raptor_feature feature)
+int
+raptor_feature_is_valid_for_area(const raptor_feature feature,
+                                 raptor_feature_area area)
 {
   if(feature > RAPTOR_FEATURE_LAST)
-    return RAPTOR_FEATURE_AREA_NONE;
-  return raptor_features_list[feature].area;
+    return 0;
+  return (raptor_features_list[feature].area & area) != 0;
 }
 
 

@@ -833,7 +833,7 @@ raptor_xml_writer_set_feature(raptor_xml_writer *xml_writer,
                               raptor_feature feature, int value)
 {
   if(value < 0 ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
     return -1;
   
   switch(feature) {
@@ -936,7 +936,7 @@ raptor_xml_writer_set_feature_string(raptor_xml_writer *xml_writer,
                                      const unsigned char *value)
 {
   if(!value ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
     return -1;
 
   if(raptor_feature_value_is_numeric(feature))
@@ -967,7 +967,7 @@ raptor_xml_writer_get_feature(raptor_xml_writer *xml_writer,
 {
   int result = -1;
   
-  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
+  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
     return -1;
 
   switch(feature) {
@@ -1058,7 +1058,7 @@ const unsigned char *
 raptor_xml_writer_get_feature_string(raptor_xml_writer *xml_writer, 
                                      raptor_feature feature)
 {
-  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_XML_WRITER))
+  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_XML_WRITER))
     return NULL;
 
   return NULL;

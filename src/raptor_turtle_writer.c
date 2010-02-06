@@ -676,7 +676,7 @@ raptor_turtle_writer_set_feature(raptor_turtle_writer *turtle_writer,
                                  raptor_feature feature, int value)
 {
   if(value < 0 ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_TURTLE_WRITER))
     return 1;
   
   switch(feature) {
@@ -768,7 +768,7 @@ raptor_turtle_writer_set_feature_string(raptor_turtle_writer *turtle_writer,
                                         const unsigned char *value)
 {
   if(!value ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_TURTLE_WRITER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_TURTLE_WRITER))
     return 1;
 
   if(raptor_feature_value_is_numeric(feature))

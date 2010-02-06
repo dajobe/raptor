@@ -680,7 +680,7 @@ int
 raptor_sax2_set_feature(raptor_sax2 *sax2, raptor_feature feature, int value)
 {
   if(value < 0 ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SAX2))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SAX2))
     return -1;
   
   switch(feature) {

@@ -798,7 +798,7 @@ raptor_serializer_set_feature(raptor_serializer *serializer,
                               raptor_feature feature, int value)
 {
   if(value < 0 ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SERIALIZER))
     return -1;
   
   switch(feature) {
@@ -910,7 +910,7 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
                                      const unsigned char *value)
 {
   if(!value ||
-     !(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+     !raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SERIALIZER))
     return -1;
   
   if(raptor_feature_value_is_numeric(feature))
@@ -1029,7 +1029,7 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
 {
   int result = -1;
   
-  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SERIALIZER))
     return -1;
 
   if(!raptor_feature_value_is_numeric(feature))
@@ -1120,7 +1120,7 @@ const unsigned char *
 raptor_serializer_get_feature_string(raptor_serializer *serializer, 
                                      raptor_feature feature)
 {
-  if(!(raptor_feature_get_areas(feature) & RAPTOR_FEATURE_AREA_SERIALIZER))
+  if(!raptor_feature_is_valid_for_area(feature, RAPTOR_FEATURE_AREA_SERIALIZER))
     return NULL;
 
   if(raptor_feature_value_is_numeric(feature))
