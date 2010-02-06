@@ -54,97 +54,97 @@ static const struct
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "scanForRDF",
-    "Scan for rdf:RDF in XML content"
+    "RDF/XML parser scans for rdf:RDF in XML content"
   },
   { RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "allowNonNsAttributes",
-    "Allow bare 'name' rather than namespaced 'rdf:name'"
+    "RDF/XML parser allows bare 'name' rather than namespaced 'rdf:name'"
   },
   { RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "allowOtherParsetypes",
-    "Allow user-defined rdf:parseType values"
+    "RDF/XML parser allows user-defined rdf:parseType values"
   },
   { RAPTOR_OPTION_ALLOW_BAGID,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "allowBagID",
-    "Allow rdf:bagID"
+    "RDF/XML parser allows rdf:bagID"
   },
   { RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "allowRDFtypeRDFlist",
-    "Generate the collection rdf:type rdf:List triple"
+    "RDF/XML parser generates the collection rdf:type rdf:List triple"
   },
   { RAPTOR_OPTION_NORMALIZE_LANGUAGE,
     RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "normalizeLanguage",
-    "Normalize xml:lang values to lowercase"
+    "RDF/XML parser normalizes xml:lang values to lowercase"
   },
   { RAPTOR_OPTION_NON_NFC_FATAL,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "nonNFCfatal",
-    "Make non-NFC literals cause a fatal error"
+    "RDF/XML parser makes non-NFC literals a fatal error"
   },
   { RAPTOR_OPTION_WARN_OTHER_PARSETYPES,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "warnOtherParseTypes",
-    "Warn about unknown rdf:parseType values"
+    "RDF/XML parser warns about unknown rdf:parseType values"
   },
   { RAPTOR_OPTION_CHECK_RDF_ID,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "checkRdfID",
-    "Check rdf:ID values for duplicates"
+    "RDF/XML parser checks rdf:ID values for duplicates"
   },
   { RAPTOR_OPTION_RELATIVE_URIS,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "relativeURIs",
-    "Write relative URIs wherever possible in serializing."
+    "Serializers write relative URIs wherever possible."
   },
   { RAPTOR_OPTION_WRITER_AUTO_INDENT,
     RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "autoIndent",
-    "Automatically indent elements."
+    "Turtle and XML Writer automatically indent elements."
   },
   { RAPTOR_OPTION_WRITER_AUTO_EMPTY,
     RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "autoEmpty",
-    "Automatically detect and abbreviate empty elements."
+    "Turtle and XML Writer automatically detect and abbreviate empty elements."
   },
   { RAPTOR_OPTION_WRITER_INDENT_WIDTH,
     RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "indentWidth",
-    "Number of spaces to indent."
+    "Turtle and XML Writer use as number of spaces to indent."
   },
   { RAPTOR_OPTION_WRITER_XML_VERSION,
     RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER,
     RAPTOR_OPTION_VALUE_TYPE_INT,
     "xmlVersion",
-    "XML version to write."
+    "Serializers and XML Writer use as XML version to write."
   },
   { RAPTOR_OPTION_WRITER_XML_DECLARATION,
     RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "xmlDeclaration",
-    "Write XML declaration."
+    "Serializers and XML Writer write XML declaration."
   },
   { RAPTOR_OPTION_NO_NET,
     RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "noNet",
-    "Deny network requests."
+    "Parsers and SAX2 XML Parser deny network requests."
   },
   { RAPTOR_OPTION_RESOURCE_BORDER,
     RAPTOR_OPTION_AREA_SERIALIZER,
@@ -186,73 +186,73 @@ static const struct
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "htmlTagSoup",
-    "HTML parsing uses a lax HTML parser"
+    "GRDDL parser uses a lax HTML parser"
   },
   { RAPTOR_OPTION_MICROFORMATS,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "microformats",
-    "GRDDL parsing looks for microformats"
+    "GRDDL parser looks for microformats"
   },
   { RAPTOR_OPTION_HTML_LINK,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "htmlLink",
-    "GRDDL parsing looks for <link type=\"application/rdf+xml\">"
+    "GRDDL parser looks for <link type=\"application/rdf+xml\">"
   },
   { RAPTOR_OPTION_WWW_TIMEOUT,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_INT,
     "wwwTimeout",
-    "Set internal WWW URI retrieval timeout"
+    "Parser WWW request retrieval timeout"
   },
   { RAPTOR_OPTION_WRITE_BASE_URI,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "writeBaseURI",
-    "Write @base / xml:base directive in serializer output"
+    "Serializers write a base URI directive @base / xml:base"
   },
   { RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "wwwHttpCacheControl",
-    "Set HTTP Cache-Control: header value"
+    "Parser WWW request HTTP Cache-Control: header value"
   },
   { RAPTOR_OPTION_WWW_HTTP_USER_AGENT,
     RAPTOR_OPTION_AREA_PARSER,
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "wwwHttpUserAgent",
-    "Set HTTP User-Agent: header value"
+    "Parser WWW request HTTP User-Agent: header value"
   },
   { RAPTOR_OPTION_JSON_CALLBACK,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "jsonCallback",
-    "JSON serializer callback"
+    "JSON serializer callback function name"
   },
   { RAPTOR_OPTION_JSON_EXTRA_DATA,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "jsonExtraData",
-    "JSON serializer extra data"
+    "JSON serializer callback data parameter"
   },
   { RAPTOR_OPTION_RSS_TRIPLES,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "rssTriples",
-    "Atom/RSS serializer writes extra RDF triples"
+    "Atom and RSS serializers write extra RDF triples"
   },
   { RAPTOR_OPTION_ATOM_ENTRY_URI,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_URI,
     "atomEntryUri",
-    "Atom serializer Entry URI"
+    "Atom serializer writes an atom:entry with this URI (otherwise atom:feed)"
   },
   { RAPTOR_OPTION_PREFIX_ELEMENTS,
     RAPTOR_OPTION_AREA_SERIALIZER,
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "prefixElements",
-    "Atom/RSS serializers write namespace-prefixed elements"
+    "Atom and RSS serializers write namespace-prefixed elements"
   }
 };
 
