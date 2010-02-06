@@ -93,7 +93,7 @@ static const char * const raptor_option_uri_prefix = "http://feature.librdf.org/
 
 
 /*
- * raptor_options_enumerate_common:
+ * raptor_world_options_enumerate_common:
  * @world: raptor_world object
  * @option: option enumeration (0+)
  * @name: pointer to store option short name (or NULL)
@@ -108,12 +108,12 @@ static const char * const raptor_option_uri_prefix = "http://feature.librdf.org/
  *
  * Return value: 0 on success, <0 on failure, >0 if option is unknown
  **/
-int
-raptor_options_enumerate_common(raptor_world* world,
-                                const raptor_option option,
-                                const char **name, 
-                                raptor_uri **uri, const char **label,
-                                raptor_option_area area)
+static int
+raptor_world_options_enumerate_common(raptor_world* world,
+                                      const raptor_option option,
+                                      const char **name, 
+                                      raptor_uri **uri, const char **label,
+                                      raptor_option_area area)
 {
   int i;
 
@@ -167,8 +167,8 @@ raptor_world_enumerate_parser_options(raptor_world* world,
                                       const char **name, 
                                       raptor_uri **uri, const char **label)
 {
-  return raptor_options_enumerate_common(world, option, name, uri, label,
-                                         RAPTOR_OPTION_AREA_PARSER);
+  return raptor_world_options_enumerate_common(world, option, name, uri, label,
+                                               RAPTOR_OPTION_AREA_PARSER);
 }
 
 
@@ -193,8 +193,8 @@ raptor_world_enumerate_serializer_options(raptor_world* world,
                                           const char **name, 
                                           raptor_uri **uri, const char **label)
 {
-  return raptor_options_enumerate_common(world, option, name, uri, label,
-                                         RAPTOR_OPTION_AREA_SERIALIZER);
+  return raptor_world_options_enumerate_common(world, option, name, uri, label,
+                                               RAPTOR_OPTION_AREA_SERIALIZER);
 }
 
 
@@ -219,8 +219,8 @@ raptor_world_enumerate_sax2_options(raptor_world* world,
                                     const char **name, 
                                     raptor_uri **uri, const char **label)
 {
-  return raptor_options_enumerate_common(world, option, name, uri, label,
-                                         RAPTOR_OPTION_AREA_SAX2);
+  return raptor_world_options_enumerate_common(world, option, name, uri, label,
+                                               RAPTOR_OPTION_AREA_SAX2);
 }
 
 
@@ -246,8 +246,8 @@ raptor_world_enumerate_turtle_writer_options(raptor_world* world,
                                              raptor_uri **uri,
                                              const char **label)
 {
-  return raptor_options_enumerate_common(world, option, name, uri, label,
-                                         RAPTOR_OPTION_AREA_TURTLE_WRITER);
+  return raptor_world_options_enumerate_common(world, option, name, uri, label,
+                                               RAPTOR_OPTION_AREA_TURTLE_WRITER);
 }
 
 
@@ -272,8 +272,8 @@ raptor_world_enumerate_xml_writer_options(raptor_world* world,
                                           const char **name, 
                                           raptor_uri **uri, const char **label)
 {
-  return raptor_options_enumerate_common(world, option, name, uri, label,
-                                         RAPTOR_OPTION_AREA_XML_WRITER);
+  return raptor_world_options_enumerate_common(world, option, name, uri, label,
+                                               RAPTOR_OPTION_AREA_XML_WRITER);
 }
 
 

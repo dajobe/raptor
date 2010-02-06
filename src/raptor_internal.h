@@ -820,7 +820,6 @@ typedef enum {
  RAPTOR_OPTION_AREA_SAX2 = 16
 } raptor_option_area;
 
-int raptor_options_enumerate_common(raptor_world* world, const raptor_option option, const char **name, raptor_uri **uri, const char **label, raptor_option_area area);
 int raptor_option_value_is_numeric(const raptor_option option);
 int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 
