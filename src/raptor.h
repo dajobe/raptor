@@ -1356,7 +1356,7 @@ void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const rapt
  * @RAPTOR_OPTION_VALUE_TYPE_STRING: String value
  * @RAPTOR_OPTION_VALUE_TYPE_URI: URI String value.
  *
- * Feature value types.
+ * Option value types.
  */
 typedef enum {
   RAPTOR_OPTION_VALUE_TYPE_BOOL,
