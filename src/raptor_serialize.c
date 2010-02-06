@@ -772,9 +772,9 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
  **/
 int
 raptor_world_enumerate_serializer_features(raptor_world* world,
-                                        const raptor_feature feature,
-                                        const char **name, 
-                                        raptor_uri **uri, const char **label)
+                                           const raptor_feature feature,
+                                           const char **name, 
+                                           raptor_uri **uri, const char **label)
 {
   return raptor_features_enumerate_common(world, feature, name, uri, label,
                                           RAPTOR_FEATURE_AREA_SERIALIZER);
@@ -789,7 +789,8 @@ raptor_world_enumerate_serializer_features(raptor_world* world,
  *
  * Set serializer features with integer values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via 
+ * raptor_world_enumerate_serializer_features().
  *
  * Return value: non 0 on failure or if the feature is unknown
  **/
@@ -899,7 +900,8 @@ raptor_serializer_copy_string(unsigned char ** dest,
  *
  * Set serializer features with string values.
  * 
- * The allowed features are available via raptor_serializer_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_serializer_features().
  * If the feature type is integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the feature is unknown
@@ -1017,7 +1019,8 @@ raptor_serializer_set_feature_string(raptor_serializer *serializer,
  *
  * Get various serializer features.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_serializer_features().
  *
  * Note: no feature value is negative
  *
@@ -1112,7 +1115,8 @@ raptor_serializer_get_feature(raptor_serializer *serializer,
  *
  * Get serializer features with string values.
  * 
- * The allowed features are available via raptor_features_enumerate().
+ * The allowed features are available via
+ * raptor_world_enumerate_serializer_features().
  *
  * Return value: feature value or NULL for an illegal feature or no value
  **/
