@@ -9,8 +9,9 @@ raptor_world_set_libxslt_security_preferences
 raptor_world_set_fatal_error_handler
 raptor_world_set_error_handler
 raptor_world_set_warning_handler
-raptor_world_enumerate_parsers_enumerate
-raptor_world_enumerate_syntaxes_enumerate
+raptor_world_enumerate_parsers_options
+raptor_world_enumerate_syntaxes_options
+raptor_world_enumerate_xml_writer_options
 raptor_world_is_parser_name
 raptor_world_guess_parser_name
 raptor_world_enumerate_serializers
@@ -40,12 +41,13 @@ raptor_set_libxslt_security_preferences
 </SECTION>
 
 <SECTION>
-<FILE>section-feature</FILE>
-raptor_feature
-raptor_get_feature_count
-raptor_features_enumerate
-raptor_feature_from_uri
-raptor_feature_value_type
+<FILE>section-option</FILE>
+raptor_option
+raptor_get_option_count
+raptor_world_enumerate_parser_options
+raptor_world_enumerate_serializer_options
+raptor_option_from_uri
+raptor_option_value_type
 </SECTION>
 
 <SECTION>
@@ -128,10 +130,10 @@ raptor_get_name
 raptor_get_label
 raptor_get_mime_type
 raptor_get_need_base_uri
-raptor_set_feature
-raptor_parser_set_feature_string
-raptor_get_feature
-raptor_parser_get_feature_string
+raptor_set_option
+raptor_parser_set_option_string
+raptor_get_option
+raptor_parser_get_option_string
 raptor_parser_set_strict
 raptor_parser_get_accept_header
 raptor_parser_set_uri_filter
@@ -167,11 +169,10 @@ raptor_serialize_statement
 raptor_serialize_end
 raptor_serializer_get_iostream
 raptor_serializer_get_locator
-raptor_serializer_features_enumerate
-raptor_serializer_set_feature
-raptor_serializer_set_feature_string
-raptor_serializer_get_feature
-raptor_serializer_get_feature_string
+raptor_serializer_set_option
+raptor_serializer_set_option_string
+raptor_serializer_get_option
+raptor_serializer_get_option_string
 raptor_serializer_get_world
 </SECTION>
 
@@ -382,12 +383,11 @@ raptor_xml_writer_comment
 raptor_xml_writer_comment_counted
 raptor_xml_writer_flush
 raptor_xml_writer_newline
-raptor_xml_writer_features_enumerate
 raptor_xml_writer_get_depth
-raptor_xml_writer_set_feature
-raptor_xml_writer_set_feature_string
-raptor_xml_writer_get_feature
-raptor_xml_writer_get_feature_string
+raptor_xml_writer_set_option
+raptor_xml_writer_set_option_string
+raptor_xml_writer_get_option
+raptor_xml_writer_get_option_string
 raptor_iostream_write_xml_element
 raptor_xml_writer
 raptor_xml_any_escape_string
