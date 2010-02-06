@@ -87,7 +87,7 @@ static const struct
 };
 
 
-static const char * const raptor_option_uri_prefix = "http://option.librdf.org/raptor-";
+static const char * const raptor_option_uri_prefix = "http://feature.librdf.org/raptor-";
 /* NOTE: this is strlen(raptor_option_uri_prefix) */
 #define RAPTOR_OPTION_URI_PREFIX_LEN 33
 
