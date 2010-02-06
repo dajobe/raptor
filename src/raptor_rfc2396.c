@@ -681,7 +681,9 @@ main(int argc, char *argv[])
 
   program = raptor_basename(argv[0]);
   
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Using base URI '%s'\n", program, base_uri);
+#endif
 
   /* Tests from RFC2396 Appendix C
    * and RFC3986 Section 5
