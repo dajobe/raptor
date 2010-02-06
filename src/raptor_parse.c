@@ -2122,7 +2122,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
   
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Known options:\n", program);
 #endif
 
@@ -2133,22 +2133,33 @@ main(int argc, char *argv[])
     int fn;
     
     if(raptor_world_enumerate_parser_options(world, (raptor_option)i,
-                                    &option_name, &option_uri, &option_label))
+                                             &option_name, &option_uri, 
+                                             &option_label))
       continue;
 
-#ifdef RAPTOR_DEBUG
-    fprintf(stderr, " %2d %-20s %s\n", i, option_name, option_label);
+#if RAPTOR_DEBUG > 1
+    fprintf(stderr, " %2d %-20s %s <%s>\n", i, option_name, option_label,
+            (option_uri ? (const char*)raptor_uri_as_string(option_uri) : ""));
 #endif
     fn = raptor_world_get_option_from_uri(world, option_uri);
     if(fn != i) {
-      fprintf(stderr, "raptor_option_from_uri returned %d expected %d\n", fn, i);
+      fprintf(stderr,
+              "%s: raptor_option_from_uri() returned %d expected %d\n",
+              program, fn, i);
       return 1;
     }
     raptor_free_uri(option_uri);
   }
 
   s = raptor_parser_get_accept_header_all(world);
+#if RAPTOR_DEBUG > 1
   fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
+#endif
+  if(!s) {
+    fprintf(stderr, "%s: raptor_parser_get_accept_header_all() failed\n",
+            program);
+    return 1;
+  }
   RAPTOR_FREE(cstring, s);
 
   raptor_free_world(world);
