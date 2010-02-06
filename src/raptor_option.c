@@ -548,3 +548,28 @@ raptor_parser_get_option_count(void)
   return RAPTOR_OPTION_LAST + 1;
 }
 
+
+const char* const
+raptor_option_value_type_labels[RAPTOR_OPTION_VALUE_TYPE_URI + 1] = {
+  "boolean",
+  "integer",
+  "string",
+  "uri"
+};
+
+
+/**
+ * raptor_option_get_value_type_label:
+ * @type: value type
+ *
+ * Get a label for a value type
+ *
+ * Return value: label for type or NULL for invalid type
+ */
+const char*
+raptor_option_get_value_type_label(const raptor_option_value_type type)
+{
+  if(type > RAPTOR_OPTION_VALUE_TYPE_LAST)
+    return NULL;
+  return raptor_option_value_type_labels[type];
+}

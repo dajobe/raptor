@@ -1355,6 +1355,7 @@ void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const rapt
  * @RAPTOR_OPTION_VALUE_TYPE_INT: Decimal integer value
  * @RAPTOR_OPTION_VALUE_TYPE_STRING: String value
  * @RAPTOR_OPTION_VALUE_TYPE_URI: URI String value.
+ * @RAPTOR_OPTION_VALUE_TYPE_LAST: internal
  *
  * Option value types.
  */
@@ -1362,11 +1363,14 @@ typedef enum {
   RAPTOR_OPTION_VALUE_TYPE_BOOL,
   RAPTOR_OPTION_VALUE_TYPE_INT,
   RAPTOR_OPTION_VALUE_TYPE_STRING,
-  RAPTOR_OPTION_VALUE_TYPE_URI
+  RAPTOR_OPTION_VALUE_TYPE_URI,
+  RAPTOR_OPTION_VALUE_TYPE_LAST = RAPTOR_OPTION_VALUE_TYPE_URI
 } raptor_option_value_type;
 
 RAPTOR_API
 raptor_option_value_type raptor_option_get_value_type(const raptor_option option);
+RAPTOR_API
+const char* raptor_option_get_value_type_label(const raptor_option_value_type type);
 
 
 /* SAX2 element Class (raptor_xml_element) */
