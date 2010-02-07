@@ -661,6 +661,14 @@ raptor_new_term_from_literal(raptor_world* world,
   else
     *new_literal = '\0';
 
+  if(language && datatype) {
+    raptor_log_error(world, RAPTOR_LOG_LEVEL_WARN, NULL,
+                     "Ignoring language used with datatyped literal");
+    RAPTOR_FREE(cstring, language);
+    language = NULL;
+  }
+  
+
   if(language) {
     size_t language_len = strlen((const char*)language);
 
