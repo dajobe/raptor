@@ -99,9 +99,7 @@ build-rdfdiff:
 
 check-local: check-rdf check-bad-rdf check-turtle-serialize \
 check-turtle-serialize-syntax check-turtle-parse-ntriples \
-check-turtle-serialize-rdf
-
-# check-warn-rdf
+check-turtle-serialize-rdf check-warn-rdf
 
 check-rdf: build-rapper $(TEST_FILES)
 	@result=0; \
