@@ -715,7 +715,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($5) {
     if($3) {
       raptor_parser_warning(rdf_parser, 
-                            "Ignoring literal used with datatyped literal");
+                            "Ignoring language used with datatyped literal");
       RAPTOR_FREE(cstring, $3);
       $3 = NULL;
     }
@@ -739,7 +739,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($5) {
     if($3) {
       raptor_parser_warning(rdf_parser, 
-                            "Ignoring literal used with datatyped literal");
+                            "Ignoring language used with datatyped literal");
       RAPTOR_FREE(cstring, $3);
       $3 = NULL;
     }
