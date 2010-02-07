@@ -713,9 +713,15 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
+    if($3) {
+      raptor_parser_warning(rdf_parser, 
+                            "Ignoring literal used with datatyped literal");
+      RAPTOR_FREE(cstring, $3);
+      $3 = NULL;
+    }
+  
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, $3);
-    RAPTOR_FREE(cstring, $1);
+                                      $1, $5, NULL);
     RAPTOR_FREE(cstring, $3);
     raptor_free_uri($5);
     if(!$$)
@@ -731,8 +737,15 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
 
   if($5) {
+    if($3) {
+      raptor_parser_warning(rdf_parser, 
+                            "Ignoring literal used with datatyped literal");
+      RAPTOR_FREE(cstring, $3);
+      $3 = NULL;
+    }
+  
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, $3);
+                                      $1, $5, NULL);
     RAPTOR_FREE(cstring, $1);
     RAPTOR_FREE(cstring, $3);
     raptor_free_uri($5);
