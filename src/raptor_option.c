@@ -81,7 +81,7 @@ static const struct
     "RDF/XML parser generates the collection rdf:type rdf:List triple"
   },
   { RAPTOR_OPTION_NORMALIZE_LANGUAGE,
-    RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "normalizeLanguage",
     "RDF/XML parser normalizes xml:lang values to lowercase"
@@ -111,37 +111,37 @@ static const struct
     "Serializers write relative URIs wherever possible."
   },
   { RAPTOR_OPTION_WRITER_AUTO_INDENT,
-    RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "autoIndent",
     "Turtle and XML Writer automatically indent elements."
   },
   { RAPTOR_OPTION_WRITER_AUTO_EMPTY,
-    RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "autoEmpty",
     "Turtle and XML Writer automatically detect and abbreviate empty elements."
   },
   { RAPTOR_OPTION_WRITER_INDENT_WIDTH,
-    RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_XML_WRITER | RAPTOR_OPTION_AREA_TURTLE_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "indentWidth",
     "Turtle and XML Writer use as number of spaces to indent."
   },
   { RAPTOR_OPTION_WRITER_XML_VERSION,
-    RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_INT,
     "xmlVersion",
     "Serializers and XML Writer use as XML version to write."
   },
   { RAPTOR_OPTION_WRITER_XML_DECLARATION,
-    RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_XML_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "xmlDeclaration",
     "Serializers and XML Writer write XML declaration."
   },
   { RAPTOR_OPTION_NO_NET,
-    RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "noNet",
     "Parsers and SAX2 XML Parser deny network requests."
@@ -468,7 +468,7 @@ raptor_option_value_type
 raptor_option_get_value_type(const raptor_option option)
 {
   if(option > RAPTOR_OPTION_LAST)
-    return -1;
+    return (raptor_option_value_type)-1;
   return raptor_options_list[option].value_type;
 }
 
