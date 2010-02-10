@@ -609,7 +609,7 @@ raptor_term_copy(raptor_term* term)
 }
 
 
-/*
+/**
  * raptor_new_term_from_uri:
  * @world: raptor world
  * @uri: uri
@@ -638,6 +638,19 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 }
 
 
+/**
+ * raptor_new_term_from_literal:
+ * @world: raptor world
+ * @literal: literal data
+ * @datatype: literal datatype URI (or NULL)
+ * @lanaguage: literal language (or NULL)
+ *
+ * Constructor - create a new literal statement term
+ *
+ * Takes copies of the passed in @literal, @datatype, @language
+ *
+ * Return value: new term or NULL on failure
+*/
 raptor_term*
 raptor_new_term_from_literal(raptor_world* world,
                              const unsigned char* literal,
@@ -704,6 +717,17 @@ raptor_new_term_from_literal(raptor_world* world,
 }
 
 
+/**
+ * raptor_new_term_from_blank:
+ * @world: raptor world
+ * @blank: blank node identifier
+ *
+ * Constructor - create a new blank node statement term
+ *
+ * Takes a copy of the passed in @blank
+ *
+ * Return value: new term or NULL on failure
+*/
 raptor_term*
 raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 {

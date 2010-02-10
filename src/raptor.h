@@ -632,6 +632,15 @@ raptor_option raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *
 
 /* Term Class */
 RAPTOR_API
+raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
+RAPTOR_API
+raptor_term* raptor_new_term_from_literal(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language);
+RAPTOR_API
+raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
+RAPTOR_API
+void raptor_free_term(raptor_term *term);
+
+RAPTOR_API
 unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_term_as_string(raptor_term *term);

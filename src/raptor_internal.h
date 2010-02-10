@@ -750,12 +750,8 @@ void raptor_statement_init(raptor_statement *statement, raptor_world *world);
 raptor_statement* raptor_statement_copy(raptor_statement *statement);
 void raptor_free_statement(raptor_statement *statement);
 raptor_term* raptor_term_copy(raptor_term* term);
-raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
-raptor_term* raptor_new_term_from_literal(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language);
-raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 int raptor_term_equals(raptor_term* term1, raptor_term* term2);
-void raptor_free_term(raptor_term *term);
 int raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term);
 
 /* raptor_parse.c */
