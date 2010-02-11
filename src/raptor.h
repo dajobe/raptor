@@ -650,6 +650,10 @@ void raptor_iostream_write_term_ntriples(raptor_iostream* iostr, const raptor_te
 
 /* Statement Class */
 RAPTOR_API
+void raptor_statement_init(raptor_statement *statement, raptor_world *world);
+RAPTOR_API
+void raptor_free_statement(raptor_statement *statement);
+RAPTOR_API
 int raptor_statement_print(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
