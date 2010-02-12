@@ -39,6 +39,14 @@ extern "C" {
 
 
 /**
+ * RAPTOR_V2_AVAILABLE
+ *
+ * Flag for marking raptor2 API availability.
+ */
+#define RAPTOR_V2_AVAILABLE 1
+
+
+/**
  * RAPTOR_API:
  *
  * Macro for wrapping API function call declarations.
