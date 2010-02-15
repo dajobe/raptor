@@ -61,12 +61,40 @@ the parameter type taken.
 @RAPTOR_OPTION_PREFIX_ELEMENTS: 
 @RAPTOR_OPTION_LAST: 
 
-<!-- ##### FUNCTION raptor_option_value_type ##### -->
+<!-- ##### FUNCTION raptor_world_enumerate_parser_options ##### -->
 <para>
 
 </para>
 
+@world: 
 @option: 
+@name: 
+@uri: 
+@label: 
 @Returns: 
 
+
+<!-- ##### FUNCTION raptor_world_enumerate_serializer_options ##### -->
+<para>
+
+</para>
+
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
+<!-- ##### ENUM raptor_option_value_type ##### -->
+<para>
+
+</para>
+
+@RAPTOR_OPTION_VALUE_TYPE_BOOL: 
+@RAPTOR_OPTION_VALUE_TYPE_INT: 
+@RAPTOR_OPTION_VALUE_TYPE_STRING: 
+@RAPTOR_OPTION_VALUE_TYPE_URI: 
+@RAPTOR_OPTION_VALUE_TYPE_LAST: 
 

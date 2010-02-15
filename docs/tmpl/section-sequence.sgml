@@ -122,16 +122,6 @@ where the items are added and removed from the end.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_compare_strings ##### -->
-<para>
-
-</para>
-
-@a: 
-@b: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_sequence_sort ##### -->
 <para>
 
@@ -139,15 +129,6 @@ where the items are added and removed from the end.
 
 @seq: 
 @compare: 
-
-
-<!-- ##### FUNCTION raptor_sequence_print_string ##### -->
-<para>
-
-</para>
-
-@data: 
-@fh: 
 
 
 <!-- ##### FUNCTION raptor_sequence_print ##### -->

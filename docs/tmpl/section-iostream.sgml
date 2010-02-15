@@ -71,6 +71,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 </para>
 
 @context: 
+@Returns: 
 
 
 <!-- ##### USER_FUNCTION raptor_iostream_read_bytes_func ##### -->
@@ -94,7 +95,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### STRUCT raptor_iostream_handler2 ##### -->
+<!-- ##### STRUCT raptor_iostream_handler ##### -->
 <para>
 
 </para>
@@ -108,14 +109,14 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @read_bytes: 
 @read_eof: 
 
-<!-- ##### FUNCTION raptor_new_iostream_from_handler2 ##### -->
+<!-- ##### FUNCTION raptor_new_iostream_from_handler ##### -->
 <para>
 
 </para>
 
 @world: 
 @user_data: 
-@handler2: 
+@handler: 
 @Returns: 
 
 
@@ -298,6 +299,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 </para>
 
 @iostr: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->

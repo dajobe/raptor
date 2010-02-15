@@ -96,6 +96,45 @@ library-wide configuration flags and options.
 @handler: 
 
 
+<!-- ##### FUNCTION raptor_world_enumerate_parser_options ##### -->
+<para>
+
+</para>
+
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_enumerate_serializer_options ##### -->
+<para>
+
+</para>
+
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_enumerate_xml_writer_options ##### -->
+<para>
+
+</para>
+
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_world_is_parser_name ##### -->
 <para>
 

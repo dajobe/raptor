@@ -255,45 +255,45 @@ a name is legal in some XML version.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_xml_writer_set_feature ##### -->
+<!-- ##### FUNCTION raptor_xml_writer_set_option ##### -->
 <para>
 
 </para>
 
 @xml_writer: 
-@feature: 
+@option: 
 @value: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_xml_writer_set_feature_string ##### -->
+<!-- ##### FUNCTION raptor_xml_writer_set_option_string ##### -->
 <para>
 
 </para>
 
 @xml_writer: 
-@feature: 
+@option: 
 @value: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_xml_writer_get_feature ##### -->
+<!-- ##### FUNCTION raptor_xml_writer_get_option ##### -->
 <para>
 
 </para>
 
 @xml_writer: 
-@feature: 
+@option: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_xml_writer_get_feature_string ##### -->
+<!-- ##### FUNCTION raptor_xml_writer_get_option_string ##### -->
 <para>
 
 </para>
 
 @xml_writer: 
-@feature: 
+@option: 
 @Returns: 
 
 

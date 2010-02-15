@@ -129,24 +129,24 @@ adjust how parsing is performed.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_parser_set_feature_string ##### -->
+<!-- ##### FUNCTION raptor_parser_set_option_string ##### -->
 <para>
 
 </para>
 
 @parser: 
-@feature: 
+@option: 
 @value: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_parser_get_feature_string ##### -->
+<!-- ##### FUNCTION raptor_parser_get_option_string ##### -->
 <para>
 
 </para>
 
 @parser: 
-@feature: 
+@option: 
 @Returns: 
 
 

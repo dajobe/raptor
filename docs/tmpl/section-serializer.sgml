@@ -151,45 +151,45 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_serializer_set_feature ##### -->
+<!-- ##### FUNCTION raptor_serializer_set_option ##### -->
 <para>
 
 </para>
 
 @serializer: 
-@feature: 
+@option: 
 @value: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_serializer_set_feature_string ##### -->
+<!-- ##### FUNCTION raptor_serializer_set_option_string ##### -->
 <para>
 
 </para>
 
 @serializer: 
-@feature: 
+@option: 
 @value: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_serializer_get_feature ##### -->
+<!-- ##### FUNCTION raptor_serializer_get_option ##### -->
 <para>
 
 </para>
 
 @serializer: 
-@feature: 
+@option: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_serializer_get_feature_string ##### -->
+<!-- ##### FUNCTION raptor_serializer_get_option_string ##### -->
 <para>
 
 </para>
 
 @serializer: 
-@feature: 
+@option: 
 @Returns: 
 
 
