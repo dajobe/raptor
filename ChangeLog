@@ -1,3 +1,82 @@
+2010-02-12  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h: Reintroduced RAPTOR_V2_AVAILABLE flag so that
+	library users can support both raptor1 and raptor2.
+
+2010-02-11  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h: Pulled
+	raptor_statement_init(), raptor_free_statement() to public
+	API.
+
+2010-02-10  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_statement.c:
+	
+	Pulled raptor_new_term_from_{uri,literal,blank}(),
+	raptor_free_term() to public API.  Added API documentation.
+
+2010-02-09  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_option.c:
+	Fixed warnings about enum-int mismatches.
+
+2010-02-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rss.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_uri.c, src/raptor_xml.c, src/raptor_xml_writer.c:
+	indent + whitespace
+
+	* src/raptor_rdfxml.c: Made daml_namespace_uri_string_len
+	const.  Does not need to be initialised data.
+
+	* src/raptor_iostream.c:
+	(raptor_iostream_write_end): Return success (0) if iostream
+	handler does not implement write_end.  Was returning an
+	uninitialized value (most likely non-0).
+
+	* src/fix-bison, src/turtle_parser.y:
+	Removed fix-bison/yydestruct hack to pass in YYPARAM* to
+	%destructors.  Was required for raptor_uri cleanup before
+	raptor_uri became a struct containting raptor_world*.
+
+	* src/raptor_www.c:
+	(raptor_www_init,raptor_www_finish): Pulled functionality
+	from similar _common functions (removed, no longer a need to
+	share functionality).
+
+	* src/raptor_serialize_rdfxmla.c:
+	Remove accidental formatting
+	whitespace from string literal.
+
+	* src/raptor_rfc2396.c: Fixed code formatter artifact in
+	comment URL.
+
+	* src/raptor.h: Fixed typo in comment.
+
+2010-02-06  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am: Add check-warn-rdf to check-local
+
+	* tests/turtle/Makefile.am: Move test-35 to TEST_WARN_FILES
+
+	* src/raptor_statement.c:
+	(raptor_new_term_from_literal): Remove language used with
+	typed literal and generate warning
+
+	* src/turtle_parser.y: Fix warning message
+
+	* src/turtle_parser.y: Remove language used with typed
+	literal and generate warning
+
+	* tests/turtle/Makefile.am, tests/turtle/test-35.out,
+	tests/turtle/test-35.ttl: Add turtle test 35 to ensure
+	language is removed when datatype is present
+
 2010-02-05  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-sections.txt: some more fn renames
