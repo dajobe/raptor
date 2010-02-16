@@ -159,13 +159,14 @@ raptor_statement_copy(raptor_statement *statement)
 void
 raptor_free_statement(raptor_statement *statement)
 {
-  /* static - not usage counted */
-  if(statement->usage < 0)
-    return;
+  /* dynamically or statically allocated? */
+  int is_dynamic = statement->usage >= 0;
 
-  if(--statement->usage)
+  /* dynamically allocated and still in use? */
+  if(!is_dynamic && --statement->usage)
     return;
   
+  /* free contained terms for both statically and dynamically allodated statements */
   if(statement->subject)
     raptor_free_term(statement->subject);
   if(statement->predicate)
@@ -173,7 +174,8 @@ raptor_free_statement(raptor_statement *statement)
   if(statement->object)
     raptor_free_term(statement->object);
 
-  RAPTOR_FREE(raptor_statement, statement);
+  if(is_dynamic)
+    RAPTOR_FREE(raptor_statement, statement);
 }
 
 
