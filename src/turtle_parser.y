@@ -258,7 +258,7 @@ triples: subject propertyList
 #if RAPTOR_DEBUG > 1  
   printf("statement 2\n subject=");
   if($1)
-    raptor_term_print(stdout, $1);
+    raptor_term_print_as_ntriples(stdout, $1);
   else
     fputs("NULL", stdout);
   if($2) {
@@ -304,7 +304,7 @@ objectList: objectList COMMA object
   printf("objectList 1\n");
   if($3) {
     printf(" object=\n");
-    raptor_term_print(stdout, $3);
+    raptor_term_print_as_ntriples(stdout, $3);
     printf("\n");
   } else  
     printf(" and empty object\n");
@@ -344,7 +344,7 @@ objectList: objectList COMMA object
   printf("objectList 2\n");
   if($1) {
     printf(" object=\n");
-    raptor_term_print(stdout, $1);
+    raptor_term_print_as_ntriples(stdout, $1);
     printf("\n");
   } else  
     printf(" and empty object\n");
@@ -388,7 +388,7 @@ itemList: itemList object
   printf("objectList 1\n");
   if($2) {
     printf(" object=\n");
-    raptor_term_print(stdout, $2);
+    raptor_term_print_as_ntriples(stdout, $2);
     printf("\n");
   } else  
     printf(" and empty object\n");
@@ -428,7 +428,7 @@ itemList: itemList object
   printf("objectList 2\n");
   if($1) {
     printf(" object=\n");
-    raptor_term_print(stdout, $1);
+    raptor_term_print_as_ntriples(stdout, $1);
     printf("\n");
   } else  
     printf(" and empty object\n");
@@ -468,7 +468,7 @@ verb: predicate
 {
 #if RAPTOR_DEBUG > 1  
   printf("verb predicate=");
-  raptor_term_print(stdout, $1);
+  raptor_term_print_as_ntriples(stdout, $1);
   printf("\n");
 #endif
 
@@ -493,7 +493,7 @@ propertyList: propertyList SEMICOLON verb objectList
   
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 1\n verb=");
-  raptor_term_print(stdout, $3);
+  raptor_term_print_as_ntriples(stdout, $3);
   printf("\n objectList=");
   raptor_sequence_print($4, stdout);
   printf("\n propertyList=");
@@ -553,7 +553,7 @@ propertyList: propertyList SEMICOLON verb objectList
   int i;
 #if RAPTOR_DEBUG > 1  
   printf("propertyList 2\n verb=");
-  raptor_term_print(stdout, $1);
+  raptor_term_print_as_ntriples(stdout, $1);
   if($2) {
     printf("\n objectList=");
     raptor_sequence_print($2, stdout);
@@ -683,7 +683,7 @@ object: resource
 {
 #if RAPTOR_DEBUG > 1  
   printf("object literal=");
-  raptor_term_print(stdout, $1);
+  raptor_term_print_as_ntriples(stdout, $1);
   printf("\n");
 #endif
 
@@ -958,7 +958,7 @@ blank: BLANK_LITERAL
   if($2 == NULL) {
 #if RAPTOR_DEBUG > 1  
     printf("resource\n propertyList=");
-    raptor_term_print(stdout, $$);
+    raptor_term_print_as_ntriples(stdout, $$);
     printf("\n");
 #endif
   } else {
