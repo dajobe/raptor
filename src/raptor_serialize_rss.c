@@ -769,11 +769,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
 #if RAPTOR_DEBUG > 1
   if(1) {
-    raptor_statement s2;
     RAPTOR_DEBUG1("Processing statement\n  ");
-    s2.s = (raptor_statement*)statement;
-    s2.world = rss_serializer->world;
-    raptor_statement_print_as_ntriples(&s2, stderr);
+    raptor_statement_print_as_ntriples(statement, stderr);
     fputc('\n', stderr);
   }
 #endif
