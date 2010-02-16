@@ -195,7 +195,7 @@ static int
 raptor_sink_iostream_write_bytes(void *user_data, const void *ptr,
                                  size_t size, size_t nmemb)
 {
-  return 0;
+  return size*nmemb; /* success */
 }
 
 static int
@@ -257,8 +257,8 @@ static int
 raptor_filename_iostream_write_bytes(void *user_data,
                                      const void *ptr, size_t size, size_t nmemb)
 {
-  FILE* handle=(FILE*)user_data;
-  return (fwrite(ptr, size, nmemb, handle) == nmemb);
+  FILE* handle = (FILE*)user_data;
+  return (int)fwrite(ptr, size, nmemb, handle);
 }
 
 static void
@@ -449,9 +449,17 @@ raptor_write_string_iostream_write_bytes(void *user_data, const void *ptr,
 {
   struct raptor_write_string_iostream_context* con;
 
+<<<<<<< HEAD
   con=(struct raptor_write_string_iostream_context*)user_data;
   return raptor_stringbuffer_append_counted_string(con->sb, 
                  (const unsigned char*)ptr, size * nmemb, 1);
+=======
+  con = (struct raptor_write_string_iostream_context*)user_data;
+  if(raptor_stringbuffer_append_counted_string(con->sb,
+                                               (const unsigned char*)ptr, size * nmemb, 1))
+    return 0; /* failure */
+  return size * nmemb; /* success */
+>>>>>>> 3044cf5... raptor_iostream write_bytes handlers are supposed to return the number of bytes written or 0 on failure
 }
 
 static const raptor_iostream_handler2 raptor_iostream_write_string_handler={
