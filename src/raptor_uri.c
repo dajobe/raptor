@@ -1410,6 +1410,21 @@ raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
 }
 
 
+/**
+ * raptor_uri_get_world:
+ * @uri: #raptor_uri object
+ *
+ * Get the raptor_world object associated with a raptor_uri.
+ *
+ * Return value: raptor_world object
+ **/
+raptor_world*
+raptor_uri_get_world(raptor_uri *uri)
+{
+  return uri->world;
+}
+
+
 #ifdef STANDALONE
 
 #include <stdio.h>

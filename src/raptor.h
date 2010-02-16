@@ -856,6 +856,8 @@ RAPTOR_API
 unsigned char* raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p);
 RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
+RAPTOR_API
+raptor_world* raptor_uri_get_world(raptor_uri *uri);
 
 
 /* utility methods */
