@@ -163,7 +163,7 @@ raptor_free_statement(raptor_statement *statement)
   int is_dynamic = statement->usage >= 0;
 
   /* dynamically allocated and still in use? */
-  if(!is_dynamic && --statement->usage)
+  if(is_dynamic && --statement->usage)
     return;
   
   /* free contained terms for both statically and dynamically allodated statements */
