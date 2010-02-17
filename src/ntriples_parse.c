@@ -206,6 +206,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   (*parser->statement_handler)(parser->user_data, statement);
 
   cleanup:
+  raptor_free_statement(statement);
+
   if(predicate_uri)
     raptor_free_uri(predicate_uri);
   if(datatype_uri)
