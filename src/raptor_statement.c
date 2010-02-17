@@ -167,13 +167,18 @@ raptor_free_statement(raptor_statement *statement)
     return;
   
   /* free contained terms for both statically and dynamically allodated statements */
-  if(statement->subject)
+  if(statement->subject) {
     raptor_free_term(statement->subject);
-  if(statement->predicate)
+    statement->subject = NULL;
+  }
+  if(statement->predicate) {
     raptor_free_term(statement->predicate);
-  if(statement->object)
+    statement->predicate = NULL;
+  }
+  if(statement->object) {
     raptor_free_term(statement->object);
-
+    statement->object = NULL;
+  }
   if(is_dynamic)
     RAPTOR_FREE(raptor_statement, statement);
 }
