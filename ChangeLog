@@ -1,3 +1,37 @@
+2010-02-16  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): Free terms contained in statically
+	allocated statements.
+
+	* src/raptor_iostream.c: raptor_iostream write_bytes handlers are
+	supposed to return the number of bytes written or 0 on failure
+
+	* src/raptor.h, src/raptor_uri.c:
+	(raptor_uri_get_world): Added new API helper function.  Needed to
+	prevent API breakage in librdf_uri.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Fixed compilation with
+	RAPTOR_DEBUG > 1.
+
+	* src/turtle_parser.y: Replaced raptor_term_print() calls with
+	raptor_term_print_as_ntriples() to compile with RAPTOR_DEBUG > 1.
+
+2010-02-14  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml.sgml: Update generated docs
+
+	* README.html: GIT
+
+	* src/raptor_parse.c:
+	(raptor_parser_get_accept_header): Static accept header should be
+	9 when string is correct.
+
 2010-02-12  Lauri Aalto <laalto@iki.fi>
 
 	* src/raptor.h: Reintroduced RAPTOR_V2_AVAILABLE flag so that
