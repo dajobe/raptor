@@ -1959,7 +1959,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     *p++ = ' ';
   }
 
-  strncpy(p, "*/*;q=0.1", 11 + 1);
+  strncpy(p, "*/*;q=0.1", 9 + 1);
 
   return accept_header;
 }
