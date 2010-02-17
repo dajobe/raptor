@@ -907,7 +907,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
       return 1;
   }
   
-  www = raptor_www_new(rdf_parser->world);
+  www = raptor_new_www(rdf_parser->world);
   if(!www)
     return 1;
   
@@ -939,7 +939,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
 
   ret = raptor_www_fetch(www, uri);
   
-  raptor_www_free(www);
+  raptor_free_www(www);
 
   if(ignore_errors)
     raptor_world_internal_set_ignore_errors(rdf_parser->world, 0);

@@ -127,7 +127,7 @@ raptor_www_finish(raptor_world* world)
 
 
 /**
- * raptor_www_new_with_connection:
+ * raptor_new_www_with_connection:
  * @world: raptor_world object
  * @connection: external WWW connection object.
  * 
@@ -141,7 +141,7 @@ raptor_www_finish(raptor_world* world)
  * Return value: a new #raptor_www object or NULL on failure.
  **/
 raptor_www* 
-raptor_www_new_with_connection(raptor_world* world, void *connection)
+raptor_new_www_with_connection(raptor_world* world, void *connection)
 {
   raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
   if(!www)
@@ -175,7 +175,7 @@ raptor_www_new_with_connection(raptor_world* world, void *connection)
 
 
 /**
- * raptor_www_new:
+ * raptor_new_www:
  * @world: raptor_world object
  * 
  * Constructor - create a new #raptor_www object.
@@ -183,20 +183,20 @@ raptor_www_new_with_connection(raptor_world* world, void *connection)
  * Return value: a new #raptor_www or NULL on failure.
  **/
 raptor_www*
-raptor_www_new(raptor_world* world)
+raptor_new_www(raptor_world* world)
 {
-  return raptor_www_new_with_connection(world, NULL);
+  return raptor_new_www_with_connection(world, NULL);
 }
 
 
 /**
- * raptor_www_free: 
+ * raptor_free_www: 
  * @www: WWW object.
  * 
  * Destructor - destroy a #raptor_www object.
  **/
 void
-raptor_www_free(raptor_www* www)
+raptor_free_www(raptor_www* www)
 {
   /* free context */
   if(www->type) {

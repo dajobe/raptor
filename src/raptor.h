@@ -944,11 +944,11 @@ void raptor_www_no_www_library_init_finish(raptor_world* world);
 
 
 RAPTOR_API
-raptor_www *raptor_www_new(raptor_world* world);
+raptor_www *raptor_new_www(raptor_world* world);
 RAPTOR_API
-raptor_www *raptor_www_new_with_connection(raptor_world* world, void* connection);
+raptor_www *raptor_new_www_with_connection(raptor_world* world, void* connection);
 RAPTOR_API
-void raptor_www_free(raptor_www *www);
+void raptor_free_www(raptor_www *www);
 RAPTOR_API
 void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API

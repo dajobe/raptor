@@ -77,7 +77,7 @@ int main (int argc, char *argv[])
     exit(1);
   }
   
-  www = raptor_www_new(world);
+  www = raptor_new_www(world);
 
   raptor_www_set_content_type_handler(www, write_content_type, (void*)stderr);
   raptor_www_set_user_agent(www, user_agent);

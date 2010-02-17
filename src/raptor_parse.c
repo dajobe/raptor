@@ -620,7 +620,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
     rdf_parser->factory->terminate(rdf_parser);
 
   if(rdf_parser->www)
-    raptor_www_free(rdf_parser->www);
+    raptor_free_www(rdf_parser->www);
 
   if(rdf_parser->context)
     RAPTOR_FREE(raptor_parser_context, rdf_parser->context);
@@ -868,8 +868,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   
   if(connection) {
     if(rdf_parser->www)
-      raptor_www_free(rdf_parser->www);
-    rdf_parser->www = raptor_www_new_with_connection(rdf_parser->world,
+      raptor_free_www(rdf_parser->www);
+    rdf_parser->www = raptor_new_www_with_connection(rdf_parser->world,
                                                      connection);
     if(!rdf_parser->www)
       return 1;
@@ -877,8 +877,8 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     const char *accept_h;
     
     if(rdf_parser->www)
-      raptor_www_free(rdf_parser->www);
-    rdf_parser->www = raptor_www_new(rdf_parser->world);
+      raptor_free_www(rdf_parser->www);
+    rdf_parser->www = raptor_new_www(rdf_parser->world);
     if(!rdf_parser->www)
       return 1;
 
@@ -921,7 +921,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
     raptor_free_uri(rpbc.final_uri);
 
   if(ret) {
-    raptor_www_free(rdf_parser->www);
+    raptor_free_www(rdf_parser->www);
     rdf_parser->www = NULL;
     return 1;
   }
@@ -929,7 +929,7 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   if(raptor_parser_parse_chunk(rdf_parser, NULL, 0, 1))
     rdf_parser->failed = 1;
 
-  raptor_www_free(rdf_parser->www);
+  raptor_free_www(rdf_parser->www);
   rdf_parser->www = NULL;
 
   return rdf_parser->failed;
