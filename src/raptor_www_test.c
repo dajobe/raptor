@@ -99,7 +99,7 @@ int main (int argc, char *argv[])
   if(string)
     free(string);
   
-  raptor_www_free(www);
+  raptor_free_www(www);
 
   raptor_free_uri(uri);
 
