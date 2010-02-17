@@ -196,7 +196,6 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                                      object,
                                                      datatype_uri,
                                                      object_literal_language);
-    datatype_uri = NULL;
   }
 
   if(!parser->statement_handler)
