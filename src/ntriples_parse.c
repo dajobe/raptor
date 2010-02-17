@@ -92,7 +92,11 @@ typedef struct raptor_ntriples_parser_context_s raptor_ntriples_parser_context;
 static int
 raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  /*raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context; */
+  raptor_ntriples_parser_context *ntriples_parser;
+  ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
+
+  raptor_statement_init(&ntriples_parser->statement, rdf_parser->world);
+  
   return 0;
 }
 
