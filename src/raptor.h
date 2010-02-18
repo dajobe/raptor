@@ -702,13 +702,13 @@ int raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri);
 RAPTOR_API
 int raptor_parser_parse_chunk(raptor_parser* rdf_parser, const unsigned char *buffer, size_t len, int is_end);
 RAPTOR_API
-int raptor_parse_file_stream(raptor_parser* rdf_parser, FILE *stream, const char *filename, raptor_uri *base_uri);
+int raptor_parser_parse_file_stream(raptor_parser* rdf_parser, FILE *stream, const char *filename, raptor_uri *base_uri);
 RAPTOR_API
-int raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
+int raptor_parser_parse_file(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API
-int raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
+int raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri);
 RAPTOR_API
-int raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
+int raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
 RAPTOR_API
 void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 RAPTOR_API

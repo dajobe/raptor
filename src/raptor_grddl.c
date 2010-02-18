@@ -1292,7 +1292,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   
   if(raptor_grddl_fetch_uri(grddl_parser->internal_parser,
                             uri,
-                            raptor_parse_uri_write_bytes, &rpbc,
+                            raptor_parser_parse_uri_write_bytes, &rpbc,
                             content_type_handler, grddl_parser->internal_parser,
                             fetch_uri_flags)) {
     if(!ignore_errors)

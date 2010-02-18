@@ -649,7 +649,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
 
 
 /**
- * raptor_parse_file_stream:
+ * raptor_parser_parse_file_stream:
  * @rdf_parser: parser
  * @stream: FILE* of RDF content
  * @filename: filename of content or NULL if it has no name
@@ -662,7 +662,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
  * Return value: non 0 on failure
  **/
 int
-raptor_parse_file_stream(raptor_parser* rdf_parser,
+raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
                          FILE *stream, const char* filename,
                          raptor_uri *base_uri)
 {
@@ -694,7 +694,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
 
 
 /**
- * raptor_parse_file:
+ * raptor_parser_parse_file:
  * @rdf_parser: parser
  * @uri: URI of RDF content or NULL to read from standard input
  * @base_uri: the base URI to use (or NULL if the same)
@@ -706,7 +706,7 @@ raptor_parse_file_stream(raptor_parser* rdf_parser,
  * Return value: non 0 on failure
  **/
 int
-raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
+raptor_parser_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
                   raptor_uri *base_uri) 
 {
   int rc = 0;
@@ -746,7 +746,7 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     fh = stdin;
   }
 
-  rc = raptor_parse_file_stream(rdf_parser, fh, filename, base_uri);
+  rc = raptor_parser_parse_file_stream(rdf_parser, fh, filename, base_uri);
 
   cleanup:
   if(uri) {
@@ -762,9 +762,9 @@ raptor_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
 
 
 void
-raptor_parse_uri_write_bytes(raptor_www* www,
-                             void *userdata, const void *ptr, 
-                             size_t size, size_t nmemb)
+raptor_parser_parse_uri_write_bytes(raptor_www* www,
+                                    void *userdata, const void *ptr, 
+                                    size_t size, size_t nmemb)
 {
   raptor_parse_bytes_context* rpbc = (raptor_parse_bytes_context*)userdata;
   int len = size*nmemb;
@@ -789,7 +789,7 @@ raptor_parse_uri_write_bytes(raptor_www* www,
 
 
 static void
-raptor_parse_uri_content_type_handler(raptor_www* www, void* userdata, 
+raptor_parser_parse_uri_content_type_handler(raptor_www* www, void* userdata, 
                                       const char* content_type)
 {
   raptor_parser* rdf_parser = (raptor_parser*)userdata;
@@ -813,7 +813,7 @@ raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri)
 
 
 /**
- * raptor_parse_uri:
+ * raptor_parser_parse_uri:
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
@@ -821,21 +821,21 @@ raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri)
  * Parse the RDF content at URI.
  * 
  * Sends an HTTP Accept: header whent the URI is of the HTTP protocol,
- * see raptor_parse_uri_with_connection() for details including
+ * see raptor_parser_parse_uri_with_connection() for details including
  * how the @base_uri is used.
  *
  * Return value: non 0 on failure
  **/
 int
-raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
+raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
                  raptor_uri *base_uri)
 {
-  return raptor_parse_uri_with_connection(rdf_parser, uri, base_uri, NULL);
+  return raptor_parser_parse_uri_with_connection(rdf_parser, uri, base_uri, NULL);
 }
 
 
 /**
- * raptor_parse_uri_with_connection:
+ * raptor_parser_parse_uri_with_connection:
  * @rdf_parser: parser
  * @uri: URI of RDF content
  * @base_uri: the base URI to use (or NULL if the same)
@@ -860,7 +860,7 @@ raptor_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * Return value: non 0 on failure
  **/
 int
-raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
+raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
                                  raptor_uri *base_uri, void *connection)
 {
   int ret = 0;
@@ -900,11 +900,11 @@ raptor_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
   else if(rdf_parser->options[RAPTOR_OPTION_NO_NET])
     raptor_www_set_uri_filter(rdf_parser->www, raptor_parser_set_uri_filter_no_net, rdf_parser);
   
-  raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parse_uri_write_bytes, 
+  raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parser_parse_uri_write_bytes, 
                                      &rpbc);
 
   raptor_www_set_content_type_handler(rdf_parser->www,
-                                      raptor_parse_uri_content_type_handler,
+                                      raptor_parser_parse_uri_content_type_handler,
                                       rdf_parser);
 
   raptor_www_set_http_cache_control(rdf_parser->www, rdf_parser->cache_control);
@@ -1540,7 +1540,7 @@ raptor_parser_get_need_base_uri(raptor_parser *rdf_parser)
  * terminated and the parser to return controlto the application
  * as soon as draining any existing buffers.
  *
- * Most useful inside raptor_parse_file or raptor_parse_uri when
+ * Most useful inside raptor_parser_parse_file or raptor_parser_parse_uri when
  * the Raptor library is directing the parsing and when one of the
  * callback handlers such as as set by raptor_parser_set_statement_handler
  * requires to return to the main application code.

@@ -715,7 +715,7 @@ struct raptor_serializer_factory_s {
 };
 
 
-/* for raptor_parse_uri_write_bytes() when used as a handler for
+/* for raptor_parser_parse_uri_write_bytes() when used as a handler for
  * raptor_www_set_write_bytes_handler()
  */
 typedef struct 
@@ -757,7 +757,7 @@ raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, cons
 void raptor_delete_parser_factories(void);
 const char* raptor_parser_get_accept_header_all(raptor_world* world);
 int raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri);
-void raptor_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
+void raptor_parser_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_simple_error(void* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);

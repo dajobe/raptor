@@ -944,13 +944,13 @@ main(int argc, char *argv[])
    */
   rc = 0;
   if(!uri || filename) {
-    if(raptor_parse_file(rdf_parser, uri, base_uri)) {
+    if(raptor_parser_parse_file(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
               FILENAME_LABEL(filename), syntax_name);
       rc = 1;
     }
   } else {
-    if(raptor_parse_uri(rdf_parser, uri, base_uri)) {
+    if(raptor_parser_parse_uri(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s %s content\n", program, 
               uri_string, syntax_name);
       rc = 1;
