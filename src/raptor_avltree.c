@@ -69,9 +69,6 @@ typedef struct raptor_avltree_node_s raptor_avltree_node;
 
 /* AVL-tree */
 struct raptor_avltree_s {
-  /* raptor_world object */
-  raptor_world* world;
-
   /* root node of tree */
   raptor_avltree_node* root;
 
@@ -134,7 +131,6 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
 
 /**
  * raptor_new_avltree:
- * @world: raptor_world object
  * @compare_fn: item comparison function for ordering
  * @free_fn: item free function (or NULL)
  * @flags: AVLTree flags - bitmask of
@@ -147,8 +143,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
  * Return value: new AVL Tree or NULL on failure
  */
 raptor_avltree*
-raptor_new_avltree(raptor_world* world,
-                   raptor_data_compare_function compare_fn,
+raptor_new_avltree(raptor_data_compare_function compare_fn,
                    raptor_data_free_function free_fn,
                    unsigned int flags)
 {
@@ -158,7 +153,6 @@ raptor_new_avltree(raptor_world* world,
   if(!tree)
     return NULL;
 
-  tree->world = world;  
   tree->root = NULL;
   tree->compare_fn = compare_fn;
   tree->free_fn = free_fn;
@@ -1522,10 +1516,9 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
   
-  tree = raptor_new_avltree(world,
-                          compare_strings,
-                          NULL, /* no free as they are static pointers above */
-                          0);
+  tree = raptor_new_avltree(compare_strings,
+                            NULL, /* no free as they are static pointers above */
+                            0);
   if(!tree) {
     fprintf(stderr, "%s: Failed to create tree\n", program);
     exit(1);

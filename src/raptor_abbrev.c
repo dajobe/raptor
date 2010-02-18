@@ -284,8 +284,7 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     subject->valid = 1;
 
     subject->properties =
-      raptor_new_avltree(node->world,
-                         (raptor_data_compare_function)raptor_compare_abbrev_po,
+      raptor_new_avltree((raptor_data_compare_function)raptor_compare_abbrev_po,
                          (raptor_data_free_function)raptor_free_abbrev_po,
                          0);
 #ifdef RAPTOR_DEBUG

@@ -1632,7 +1632,7 @@ typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_d
 #define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
 
 RAPTOR_API
-raptor_avltree* raptor_new_avltree(raptor_world* world, raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
+raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
 RAPTOR_API
 void raptor_free_avltree(raptor_avltree* tree);
 
