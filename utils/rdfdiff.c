@@ -857,7 +857,7 @@ main(int argc, char *argv[])
   raptor_parser_set_statement_handler(from_file->parser, from_file,
                                rdfdiff_collect_statements);
   
-  if(raptor_parse_uri(from_file->parser, from_uri, base_uri)) {
+  if(raptor_parser_parse_uri(from_file->parser, from_uri, base_uri)) {
     fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
             from_string, from_syntax);
     rv = 1;
@@ -867,7 +867,7 @@ main(int argc, char *argv[])
     /* Note intentional from_uri as base_uri */
     raptor_parser_set_statement_handler(to_file->parser, to_file,
                                  rdfdiff_collect_statements);
-    if(raptor_parse_uri(to_file->parser, to_uri, base_uri ? base_uri: from_uri)) {
+    if(raptor_parser_parse_uri(to_file->parser, to_uri, base_uri ? base_uri: from_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s as %s content\n", program, 
               to_string, to_syntax);
       rv = 1;
