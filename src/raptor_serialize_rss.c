@@ -1415,16 +1415,16 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
    * NOT own serializer->iostream and will not destroy it
    * when raptor_free_serializer(ser) is called.
    */
-  raptor_serialize_start_to_iostream(ser, base_uri, serializer->iostream);
+  raptor_serializer_start_to_iostream(ser, base_uri, serializer->iostream);
   
   for(t = 0; t < t_max_count; t++) {
     raptor_statement* s;
     s = (raptor_statement*)raptor_sequence_get_at(item->triples, t);
     if(s)
-      raptor_serialize_statement(ser, s);
+      raptor_serializer_serialize_statement(ser, s);
   }
   
-  raptor_serialize_end(ser);
+  raptor_serializer_serialize_end(ser);
   
   raptor_free_serializer(ser); ser = NULL;
 

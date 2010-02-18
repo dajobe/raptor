@@ -114,7 +114,7 @@ void print_triples(void *user_data, raptor_statement *triple)
         *s=' ';
   }
 
-  raptor_serialize_statement(serializer, triple);
+  raptor_serializer_serialize_statement(serializer, triple);
   return;
 }
 
@@ -157,7 +157,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
   if(report_namespace)
     print_namespaces(user_data, nspace);
 
-  raptor_serialize_set_namespace_from_namespace(rdf_serializer, nspace);
+  raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
 }
 
 
@@ -909,7 +909,7 @@ main(int argc, char *argv[])
         if(nd->uri_string)
           ns_uri = raptor_new_uri(world, nd->uri_string);
         
-        raptor_serialize_set_namespace(serializer, ns_uri, nd->prefix);
+        raptor_serializer_set_namespace(serializer, ns_uri, nd->prefix);
         if(ns_uri)
           raptor_free_uri(ns_uri);
       }
@@ -931,7 +931,7 @@ main(int argc, char *argv[])
       serializer_options = NULL;
     }
 
-    raptor_serialize_start_to_file_handle(serializer, 
+    raptor_serializer_start_to_file_handle(serializer, 
                                           output_base_uri, stdout);
 
     if(!report_namespace)
@@ -960,7 +960,7 @@ main(int argc, char *argv[])
   raptor_free_parser(rdf_parser);
 
   if(serializer) {
-    raptor_serialize_end(serializer);
+    raptor_serializer_serialize_end(serializer);
     raptor_free_serializer(serializer);
   }
   
