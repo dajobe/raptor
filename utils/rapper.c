@@ -141,7 +141,7 @@ print_namespaces(void* user_data, raptor_namespace *nspace)
   if(!report_namespace)
     return;
 
-  s = raptor_namespaces_format(nspace, NULL);
+  s = raptor_namespace_format_as_xml(nspace, NULL);
   fprintf(stderr, "%s: Namespace declared: %s\n", program, s);
   raptor_free_memory(s);
   
