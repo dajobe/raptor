@@ -79,6 +79,24 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_uri_for_xmlbase ##### -->
+<para>
+
+</para>
+
+@old_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_uri_for_retrieval ##### -->
+<para>
+
+</para>
+
+@old_uri: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_uri ##### -->
 <para>
 
@@ -135,21 +153,43 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_new_uri_for_xmlbase ##### -->
+<!-- ##### FUNCTION raptor_uri_to_relative_counted_uri_string ##### -->
 <para>
 
 </para>
 
-@old_uri: 
+@base_uri: 
+@reference_uri: 
+@length_p: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_new_uri_for_retrieval ##### -->
+<!-- ##### FUNCTION raptor_uri_to_relative_uri_string ##### -->
 <para>
 
 </para>
 
-@old_uri: 
+@base_uri: 
+@reference_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_counted_string ##### -->
+<para>
+
+</para>
+
+@uri: 
+@len_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_to_string ##### -->
+<para>
+
+</para>
+
+@uri: 
 @Returns: 
 
 
@@ -202,27 +242,6 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_uri_to_relative_counted_uri_string ##### -->
-<para>
-
-</para>
-
-@base_uri: 
-@reference_uri: 
-@length_p: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_uri_to_relative_uri_string ##### -->
-<para>
-
-</para>
-
-@base_uri: 
-@reference_uri: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_uri_print ##### -->
 <para>
 
@@ -233,31 +252,11 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_uri_to_counted_string ##### -->
+<!-- ##### FUNCTION raptor_uri_get_world ##### -->
 <para>
 
 </para>
 
-@uri: 
-@len_p: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_uri_to_string ##### -->
-<para>
-
-</para>
-
-@uri: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_uri ##### -->
-<para>
-
-</para>
-
-@iostr: 
 @uri: 
 @Returns: 
 

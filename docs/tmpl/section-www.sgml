@@ -27,7 +27,7 @@ chunks of byte content.
 </para>
 
 
-<!-- ##### FUNCTION raptor_www_init ##### -->
+<!-- ##### FUNCTION raptor_new_www ##### -->
 <para>
 
 </para>
@@ -36,12 +36,22 @@ chunks of byte content.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_www_finish ##### -->
+<!-- ##### FUNCTION raptor_new_www_with_connection ##### -->
 <para>
 
 </para>
 
 @world: 
+@connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_free_www ##### -->
+<para>
+
+</para>
+
+@www: 
 
 
 <!-- ##### USER_FUNCTION raptor_www_write_bytes_handler ##### -->
@@ -64,41 +74,6 @@ chunks of byte content.
 @www: 
 @userdata: 
 @content_type: 
-
-
-<!-- ##### FUNCTION raptor_www_no_www_library_init_finish ##### -->
-<para>
-
-</para>
-
-@world: 
-
-
-<!-- ##### FUNCTION raptor_www_new ##### -->
-<para>
-
-</para>
-
-@world: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_www_new_with_connection ##### -->
-<para>
-
-</para>
-
-@world: 
-@connection: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_www_free ##### -->
-<para>
-
-</para>
-
-@www: 
 
 
 <!-- ##### FUNCTION raptor_www_set_user_agent ##### -->

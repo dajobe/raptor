@@ -32,6 +32,15 @@ library-wide configuration flags and options.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_world_open ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_world ##### -->
 <para>
 
@@ -47,6 +56,26 @@ library-wide configuration flags and options.
 
 @RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: 
 @RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: 
+
+<!-- ##### FUNCTION raptor_world_set_error_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_world_set_fatal_error_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
 
 <!-- ##### FUNCTION raptor_world_set_libxml_flags ##### -->
 <para>
@@ -66,26 +95,6 @@ library-wide configuration flags and options.
 @security_preferences: 
 
 
-<!-- ##### FUNCTION raptor_world_set_fatal_error_handler ##### -->
-<para>
-
-</para>
-
-@world: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_world_set_error_handler ##### -->
-<para>
-
-</para>
-
-@world: 
-@user_data: 
-@handler: 
-
-
 <!-- ##### FUNCTION raptor_world_set_warning_handler ##### -->
 <para>
 
@@ -96,42 +105,26 @@ library-wide configuration flags and options.
 @handler: 
 
 
-<!-- ##### FUNCTION raptor_world_enumerate_parser_options ##### -->
+<!-- ##### FUNCTION raptor_world_set_www_flags ##### -->
 <para>
 
 </para>
 
 @world: 
-@option: 
-@name: 
-@uri: 
-@label: 
-@Returns: 
+@flags: 
 
 
-<!-- ##### FUNCTION raptor_world_enumerate_serializer_options ##### -->
+<!-- ##### FUNCTION raptor_world_enumerate_parsers ##### -->
 <para>
 
 </para>
 
 @world: 
-@option: 
+@counter: 
 @name: 
-@uri: 
 @label: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_world_enumerate_xml_writer_options ##### -->
-<para>
-
-</para>
-
-@world: 
-@option: 
-@name: 
-@uri: 
-@label: 
+@mime_type: 
+@uri_string: 
 @Returns: 
 
 
@@ -180,15 +173,6 @@ library-wide configuration flags and options.
 
 @world: 
 @name: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_world_open ##### -->
-<para>
-
-</para>
-
-@world: 
 @Returns: 
 
 

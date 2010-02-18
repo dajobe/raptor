@@ -61,6 +61,43 @@ the parameter type taken.
 @RAPTOR_OPTION_PREFIX_ELEMENTS: 
 @RAPTOR_OPTION_LAST: 
 
+<!-- ##### ENUM raptor_option_value_type ##### -->
+<para>
+
+</para>
+
+@RAPTOR_OPTION_VALUE_TYPE_BOOL: 
+@RAPTOR_OPTION_VALUE_TYPE_INT: 
+@RAPTOR_OPTION_VALUE_TYPE_STRING: 
+@RAPTOR_OPTION_VALUE_TYPE_URI: 
+@RAPTOR_OPTION_VALUE_TYPE_LAST: 
+
+<!-- ##### FUNCTION raptor_option_get_value_type ##### -->
+<para>
+
+</para>
+
+@option: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_option_get_value_type_label ##### -->
+<para>
+
+</para>
+
+@type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_parser_get_option_count ##### -->
+<para>
+
+</para>
+
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_world_enumerate_parser_options ##### -->
 <para>
 
@@ -87,14 +124,26 @@ the parameter type taken.
 @Returns: 
 
 
-<!-- ##### ENUM raptor_option_value_type ##### -->
+<!-- ##### FUNCTION raptor_world_enumerate_xml_writer_options ##### -->
 <para>
 
 </para>
 
-@RAPTOR_OPTION_VALUE_TYPE_BOOL: 
-@RAPTOR_OPTION_VALUE_TYPE_INT: 
-@RAPTOR_OPTION_VALUE_TYPE_STRING: 
-@RAPTOR_OPTION_VALUE_TYPE_URI: 
-@RAPTOR_OPTION_VALUE_TYPE_LAST: 
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_get_option_from_uri ##### -->
+<para>
+
+</para>
+
+@world: 
+@uri: 
+@Returns: 
+
 

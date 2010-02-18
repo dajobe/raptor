@@ -86,13 +86,13 @@ for XML element and attribute names.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_qname ##### -->
+<!-- ##### FUNCTION raptor_qname_write ##### -->
 <para>
 
 </para>
 
-@iostr: 
 @qname: 
+@iostr: 
 @Returns: 
 
 

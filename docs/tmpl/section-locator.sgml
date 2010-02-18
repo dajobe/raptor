@@ -30,6 +30,26 @@ to user code.
 @column: 
 @byte: 
 
+<!-- ##### FUNCTION raptor_locator_print ##### -->
+<para>
+
+</para>
+
+@locator: 
+@stream: 
+
+
+<!-- ##### FUNCTION raptor_locator_format ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@length: 
+@locator: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_locator_line ##### -->
 <para>
 
@@ -58,6 +78,15 @@ to user code.
 
 
 <!-- ##### FUNCTION raptor_locator_file ##### -->
+<para>
+
+</para>
+
+@locator: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_locator_uri_string ##### -->
 <para>
 
 </para>

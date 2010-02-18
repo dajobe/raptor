@@ -62,17 +62,6 @@ and various other utility functions.
 @statement: 
 
 
-<!-- ##### FUNCTION raptor_print_ntriples_string ##### -->
-<para>
-
-</para>
-
-@string: 
-@delim: 
-@stream: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_vsnprintf ##### -->
 <para>
 

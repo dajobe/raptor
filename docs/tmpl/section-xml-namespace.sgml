@@ -205,34 +205,13 @@ XML documents where inner namespaces can override outer ones.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_namespaces_format ##### -->
+<!-- ##### FUNCTION raptor_namespace_write ##### -->
 <para>
 
 </para>
 
 @ns: 
-@length_p: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_namespace ##### -->
-<para>
-
-</para>
-
 @iostr: 
-@ns: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_new_namespace_parts_from_string ##### -->
-<para>
-
-</para>
-
-@string: 
-@prefix: 
-@uri_string: 
 @Returns: 
 
 
@@ -250,6 +229,27 @@ XML documents where inner namespaces can override outer ones.
 @nstack: 
 @uri: 
 @xml_version: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_namespace_format_as_xml ##### -->
+<para>
+
+</para>
+
+@ns: 
+@length_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_xml_namespace_string_parse ##### -->
+<para>
+
+</para>
+
+@string: 
+@prefix: 
+@uri_string: 
 @Returns: 
 
 

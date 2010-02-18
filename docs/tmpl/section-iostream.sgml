@@ -302,15 +302,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_statement_ntriples ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@statement: 
-
-
 <!-- ##### FUNCTION raptor_iostream_write_string ##### -->
 <para>
 
@@ -321,28 +312,28 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_string_ntriples ##### -->
+<!-- ##### FUNCTION raptor_string_ntriples_write ##### -->
 <para>
 
 </para>
 
-@iostr: 
 @string: 
 @len: 
 @delim: 
+@iostr: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_iostream_write_string_python ##### -->
+<!-- ##### FUNCTION raptor_string_python_write ##### -->
 <para>
 
 </para>
 
-@iostr: 
 @string: 
 @len: 
 @delim: 
 @flags: 
+@iostr: 
 @Returns: 
 
 
