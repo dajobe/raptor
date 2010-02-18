@@ -932,7 +932,7 @@ int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
 /* raptor_www */
 RAPTOR_API
-void raptor_www_no_www_library_init_finish(raptor_world* world);
+void raptor_world_set_www_flags(raptor_world* world, int flags);
 
 
 RAPTOR_API

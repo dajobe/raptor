@@ -80,29 +80,35 @@ raptor_www_init(raptor_world* world)
 
 
 /**
- * raptor_www_no_www_library_init_finish:
+ * raptor_world_set_www_flags:
  * @world: raptor_world object
+ * @flags: WWW library flags
  *
- * Do not initialise or finish the lower level WWW library.
+ * Set flags for how the lower level WWW library is used
  *
- * If this is called then the raptor_www library will neither
- * initialise or terminate the lower level WWW library.  Usually in
- * raptor_world_open() either curl_global_init (for libcurl)
- * are called and in raptor_finish curl_global_cleanup is called.
- *
- * This allows the application finer control over these libraries such
- * as setting other global options or potentially calling and terminating
- * raptor several times.  It does mean that applications which use
- * this call must do their own extra work in order to allocate and free
- * all resources to the system.
- * 
  * This function must be called before raptor_world_open().
+ *
+ * The bits in @flags are defined as follows:
+ *
+ * Flag bit 0: when set, skip initialising or terminating the
+ * lower level WWW library.
+ *
+ * When this is set then the raptor_www library will neither
+ * initialise or terminate the lower level WWW library.  Usually in
+ * raptor initialising either curl_global_init (for libcurl) are
+ * called and in raptor cleanup, curl_global_cleanup is called.
+ *
+ * This flag allows the application finer control over these
+ * libraries such as setting other global options or potentially
+ * calling and terminating raptor several times.  It does mean that
+ * applications which use this call must do their own extra work in
+ * order to allocate and free all resources to the system.
  *
  **/
 void
-raptor_www_no_www_library_init_finish(raptor_world* world)
+raptor_world_set_www_flags(raptor_world* world, int flags)
 {
-  world->www_skip_www_init_finish = 1;
+  world->www_skip_www_init_finish = (flags & 1) != 0;
 }
 
 
