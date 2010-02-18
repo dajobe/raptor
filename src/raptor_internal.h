@@ -1379,9 +1379,6 @@ struct raptor_world_s {
   int www_skip_www_init_finish;
   int www_initialized;
 
-  /* raptor_sax2 init counter to work around issues in xml parser init/cleanup */
-  int sax2_initialized;
-
   /* This is used to store a #xsltSecurityPrefsPtr typed object
    * pointer when libxslt is compiled in.
    */
