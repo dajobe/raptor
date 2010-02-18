@@ -122,8 +122,9 @@ raptor_string_ntriples_write(const unsigned char *string,
  * 
  * Write a #raptor_term formatted in N-Triples format to a #raptor_iostream
  * 
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
 {
   unsigned char *term_str;
@@ -165,7 +166,10 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
+      return 1;
   }
+
+  return 0;
 }
 
 
@@ -176,8 +180,9 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
  * 
  * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
  * 
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_statement_ntriples_write(const raptor_statement *statement,
                                 raptor_iostream* iostr)
 {
@@ -187,6 +192,8 @@ raptor_statement_ntriples_write(const raptor_statement *statement,
   raptor_iostream_write_byte(iostr, ' ');
   raptor_term_ntriples_write(statement->object, iostr);
   raptor_iostream_write_counted_string(iostr, " .\n", 3);
+
+  return 0;
 }
 
 
