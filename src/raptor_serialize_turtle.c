@@ -183,8 +183,8 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
   if(node->term->type != RAPTOR_TERM_TYPE_URI)
     return 1;
 
-  qname = raptor_namespaces_qname_from_uri(context->nstack,
-                                           node->term->value.uri, 10);
+  qname = raptor_new_qname_from_namespace_uri(context->nstack,
+                                              node->term->value.uri, 10);
 
   /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
   if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
@@ -528,8 +528,9 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         raptor_turtle_writer_newline(turtle_writer);
       }
 
-      qname = raptor_namespaces_qname_from_uri(context->nstack,
-                                               predicate->term->value.uri, 10);
+      qname = raptor_new_qname_from_namespace_uri(context->nstack,
+                                                  predicate->term->value.uri,
+                                                  10);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type))
         raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"a");

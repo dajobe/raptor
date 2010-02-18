@@ -595,7 +595,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
   }
 
-  qname = raptor_namespaces_qname_from_uri(nstack, node->term->value.uri, 10);
+  qname = raptor_new_qname_from_namespace_uri(nstack, node->term->value.uri, 10);
   if(qname)
     return qname;
   

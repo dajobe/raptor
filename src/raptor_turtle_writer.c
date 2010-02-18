@@ -582,7 +582,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     raptor_qname* qname;
 
     raptor_iostream_write_string(turtle_writer->iostr, "^^");
-    qname = raptor_namespaces_qname_from_uri(nstack, datatype, 10);
+    qname = raptor_new_qname_from_namespace_uri(nstack, datatype, 10);
     if(qname) {
       raptor_turtle_writer_qname(turtle_writer, qname);
       raptor_free_qname(qname);

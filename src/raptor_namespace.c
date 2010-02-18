@@ -906,7 +906,7 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
 
 
 /**
- * raptor_namespaces_qname_from_uri:
+ * raptor_new_qname_from_namespace_uri:
  * @nstack: namespace stack
  * @uri: URI to use to make qname
  * @xml_version: XML Version
@@ -919,8 +919,8 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
  * Return value: #raptor_qname for the URI or NULL on failure
  **/
 raptor_qname*
-raptor_namespaces_qname_from_uri(raptor_namespace_stack *nstack, 
-                                 raptor_uri *uri, int xml_version)
+raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack, 
+                                    raptor_uri *uri, int xml_version)
 {
   unsigned char *uri_string;
   size_t uri_len;
