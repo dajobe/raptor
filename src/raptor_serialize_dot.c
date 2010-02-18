@@ -154,13 +154,13 @@ raptor_dot_iostream_write_string(raptor_iostream *iostr,
   for( ; (c = *string) ; string++ ) {
     if( (c == '\\') || (c == '"') || (c == '|') ||
         (c == '{')  || (c == '}') ) {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, c);
+      raptor_iostream_write_byte('\\', iostr);
+      raptor_iostream_write_byte(c, iostr);
     } else if( c == '\n' ) {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, 'n');
+      raptor_iostream_write_byte('\\', iostr);
+      raptor_iostream_write_byte('n', iostr);
     } else
-      raptor_iostream_write_byte(iostr, c);
+      raptor_iostream_write_byte(c, iostr);
   }
 
   return 0;
@@ -173,19 +173,19 @@ raptor_dot_serializer_write_term_type(raptor_serializer * serializer,
 {
   switch(type) {
     case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_iostream_write_byte(serializer->iostream, 'L');
+      raptor_iostream_write_byte('L', serializer->iostream);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      raptor_iostream_write_byte(serializer->iostream, 'B');
+      raptor_iostream_write_byte('B', serializer->iostream);
       break;
 
     case RAPTOR_TERM_TYPE_URI:
-      raptor_iostream_write_byte(serializer->iostream, 'R');
+      raptor_iostream_write_byte('R', serializer->iostream);
       break;
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
-      raptor_iostream_write_byte(serializer->iostream, '?');
+      raptor_iostream_write_byte('?', serializer->iostream);
       break;
   }
 }
@@ -210,18 +210,18 @@ raptor_dot_serializer_write_uri(raptor_serializer* serializer,
       const unsigned char* prefix = raptor_namespace_get_prefix(ns);
       
       if(prefix) {
-        raptor_iostream_write_string(serializer->iostream, prefix);
-        raptor_iostream_write_byte(serializer->iostream, ':');
+        raptor_iostream_string_write(prefix, serializer->iostream);
+        raptor_iostream_write_byte(':', serializer->iostream);
       }
 
-      raptor_iostream_write_string(serializer->iostream,
-                                   full + ns_uri_string_len);
+      raptor_iostream_string_write(full + ns_uri_string_len,
+                                   serializer->iostream);
 
       return;
     }
   }
 
-  raptor_iostream_write_string(serializer->iostream, full);
+  raptor_iostream_string_write(full, serializer->iostream);
 }
 
 
@@ -234,21 +234,21 @@ raptor_dot_serializer_write_term(raptor_serializer * serializer,
       raptor_dot_iostream_write_string(serializer->iostream,
                                        term->value.literal.string);
       if(term->value.literal.language) {
-        raptor_iostream_write_byte(serializer->iostream, '|');
-        raptor_iostream_write_string(serializer->iostream, "Language: ");
-        raptor_iostream_write_string(serializer->iostream,
-                                     term->value.literal.language);
+        raptor_iostream_write_byte('|', serializer->iostream);
+        raptor_iostream_string_write("Language: ", serializer->iostream);
+        raptor_iostream_string_write(term->value.literal.language,
+                                     serializer->iostream);
       }
       if(term->value.literal.datatype) {
-        raptor_iostream_write_byte(serializer->iostream, '|');
-        raptor_iostream_write_string(serializer->iostream, "Datatype: ");
+        raptor_iostream_write_byte('|', serializer->iostream);
+        raptor_iostream_string_write("Datatype: ", serializer->iostream);
         raptor_dot_serializer_write_uri(serializer, term->value.literal.datatype);
       }
       break;
       
     case RAPTOR_TERM_TYPE_BLANK:
-      raptor_iostream_write_counted_string(serializer->iostream, "_:", 2);
-      raptor_iostream_write_string(serializer->iostream, term->value.blank);
+      raptor_iostream_counted_string_write("_:", 2, serializer->iostream);
+      raptor_iostream_string_write(term->value.blank, serializer->iostream);
       break;
   
     case RAPTOR_TERM_TYPE_URI:
@@ -306,8 +306,8 @@ raptor_dot_serializer_assert_node(raptor_serializer* serializer,
 static int
 raptor_dot_serializer_start(raptor_serializer* serializer)
 {
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"digraph {\n\trankdir = LR;\n\tcharset=\"utf-8\";\n\n");
+  raptor_iostream_string_write((const unsigned char*)"digraph {\n\trankdir = LR;\n\tcharset=\"utf-8\";\n\n",
+                               serializer->iostream);
 
   return 0;
 }
@@ -320,58 +320,58 @@ raptor_dot_serializer_write_colors(raptor_serializer* serializer,
   switch(type) {
     case RAPTOR_TERM_TYPE_URI:
       if(serializer->option_resource_border) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", color=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->option_resource_border);
+        raptor_iostream_string_write((const unsigned char*)", color=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)serializer->option_resource_border,
+                                     serializer->iostream);
       }
       else
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", color = blue");
+        raptor_iostream_string_write((const unsigned char*)", color = blue",
+                                     serializer->iostream);
 
       if(serializer->option_resource_fill) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", style = filled, fillcolor=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)
-                                     serializer->option_resource_fill);
+        raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)
+                                     serializer->option_resource_fill,
+                                     serializer->iostream);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
       if(serializer->option_bnode_border) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", color=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->option_bnode_border);
+        raptor_iostream_string_write((const unsigned char*)", color=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)serializer->option_bnode_border,
+                                     serializer->iostream);
       }
       else
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", color = green");
+        raptor_iostream_string_write((const unsigned char*)", color = green",
+                                     serializer->iostream);
 
       if(serializer->option_bnode_fill) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", style = filled, fillcolor=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->option_bnode_fill);
+        raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)serializer->option_bnode_fill,
+                                     serializer->iostream);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
       if(serializer->option_literal_border) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", color=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->option_literal_border);
+        raptor_iostream_string_write((const unsigned char*)", color=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)serializer->option_literal_border,
+                                     serializer->iostream);
       }
 
       if(serializer->option_literal_fill) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)", style = filled, fillcolor=");
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)serializer->option_literal_fill);
+        raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)serializer->option_literal_fill,
+                                     serializer->iostream);
       }
 
       break;
@@ -394,71 +394,71 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
   int i;
 
   /* Print our nodes. */
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\n\t// Resources\n");
+  raptor_iostream_string_write((const unsigned char*)"\n\t// Resources\n",
+                               serializer->iostream);
   for(i = 0 ; i < raptor_sequence_size(context->resources) ; i++ ) {
     node = (raptor_term*)raptor_sequence_get_at(context->resources, i);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\t\"R");
+    raptor_iostream_string_write((const unsigned char*)"\t\"R",
+                                 serializer->iostream);
     raptor_dot_serializer_write_term(serializer, node);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\" [ label=\"");
+    raptor_iostream_string_write((const unsigned char*)"\" [ label=\"",
+                                 serializer->iostream);
     raptor_dot_serializer_write_term(serializer, node);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\", shape = ellipse");
+    raptor_iostream_string_write((const unsigned char*)"\", shape = ellipse",
+                                 serializer->iostream);
     raptor_dot_serializer_write_colors(serializer, RAPTOR_TERM_TYPE_URI);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)" ];\n");
+    raptor_iostream_string_write((const unsigned char*)" ];\n",
+                                 serializer->iostream);
     
   }
   raptor_free_sequence(context->resources);
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\n\t// Anonymous nodes\n");
+  raptor_iostream_string_write((const unsigned char*)"\n\t// Anonymous nodes\n",
+                               serializer->iostream);
   for(i = 0 ; i < raptor_sequence_size(context->bnodes) ; i++ ) {
     node = (raptor_term *)raptor_sequence_get_at(context->bnodes, i);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\t\"B");
+    raptor_iostream_string_write((const unsigned char*)"\t\"B",
+                                 serializer->iostream);
     raptor_dot_serializer_write_term(serializer, node);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\" [ label=\"");
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\", shape = circle");
+    raptor_iostream_string_write((const unsigned char*)"\" [ label=\"",
+                                 serializer->iostream);
+    raptor_iostream_string_write((const unsigned char*)"\", shape = circle",
+                                 serializer->iostream);
     raptor_dot_serializer_write_colors(serializer, RAPTOR_TERM_TYPE_BLANK);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)" ];\n");
+    raptor_iostream_string_write((const unsigned char*)" ];\n",
+                                 serializer->iostream);
   }
   raptor_free_sequence(context->bnodes);
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\n\t// Literals\n");
+  raptor_iostream_string_write((const unsigned char*)"\n\t// Literals\n",
+                               serializer->iostream);
   for(i = 0 ; i < raptor_sequence_size(context->literals) ; i++ ) {
     node = (raptor_term*)raptor_sequence_get_at(context->literals, i);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\t\"L");
+    raptor_iostream_string_write((const unsigned char*)"\t\"L",
+                                 serializer->iostream);
     raptor_dot_serializer_write_term(serializer, node);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\" [ label=\"");
+    raptor_iostream_string_write((const unsigned char*)"\" [ label=\"",
+                                 serializer->iostream);
     raptor_dot_serializer_write_term(serializer, node);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\", shape = record");
+    raptor_iostream_string_write((const unsigned char*)"\", shape = record",
+                                 serializer->iostream);
     raptor_dot_serializer_write_colors(serializer, RAPTOR_TERM_TYPE_LITERAL);
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)" ];\n");
+    raptor_iostream_string_write((const unsigned char*)" ];\n",
+                                 serializer->iostream);
   }
   raptor_free_sequence(context->literals);
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\n\tlabel=\"\\n\\nModel:\\n");
+  raptor_iostream_string_write((const unsigned char*)"\n\tlabel=\"\\n\\nModel:\\n",
+                               serializer->iostream);
   if(serializer->base_uri)
-    raptor_iostream_write_string(serializer->iostream,
-                                 raptor_uri_as_string(serializer->base_uri));
+    raptor_iostream_string_write(raptor_uri_as_string(serializer->base_uri),
+                                 serializer->iostream);
   else
-    raptor_iostream_write_string(serializer->iostream, "(Unknown)");
+    raptor_iostream_string_write("(Unknown)", serializer->iostream);
 
   if(raptor_sequence_size(context->namespaces)) {
-    raptor_iostream_write_string(serializer->iostream,
-                                 (const unsigned char*)"\\n\\nNamespaces:\\n");
+    raptor_iostream_string_write((const unsigned char*)"\\n\\nNamespaces:\\n",
+                                 serializer->iostream);
 
     for(i = 0 ; i < raptor_sequence_size(context->namespaces) ; i++ ) {
       raptor_namespace* ns;
@@ -468,25 +468,25 @@ raptor_dot_serializer_end(raptor_serializer* serializer)
 
       prefix = raptor_namespace_get_prefix(ns);
       if(prefix) {
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)ns->prefix);
-        raptor_iostream_write_string(serializer->iostream,
-                                     (const unsigned char*)": ");
+        raptor_iostream_string_write((const unsigned char*)ns->prefix,
+                                     serializer->iostream);
+        raptor_iostream_string_write((const unsigned char*)": ",
+                                     serializer->iostream);
       }
-      raptor_iostream_write_string(serializer->iostream,
-                                   raptor_uri_as_string(ns->uri));
-      raptor_iostream_write_string(serializer->iostream,
-                                   (const unsigned char*)"\\n");
+      raptor_iostream_string_write(raptor_uri_as_string(ns->uri),
+                                   serializer->iostream);
+      raptor_iostream_string_write((const unsigned char*)"\\n",
+                                   serializer->iostream);
     }
 
     raptor_free_sequence(context->namespaces);
   }
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\";\n");
+  raptor_iostream_string_write((const unsigned char*)"\";\n",
+                               serializer->iostream);
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*) "}\n");
+  raptor_iostream_string_write((const unsigned char*) "}\n",
+                               serializer->iostream);
 
   return 0;
 }
@@ -510,19 +510,19 @@ raptor_dot_serializer_statement(raptor_serializer* serializer,
   raptor_dot_serializer_assert_node(serializer, statement->subject);
   raptor_dot_serializer_assert_node(serializer, statement->object);
 
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\t\"");
+  raptor_iostream_string_write((const unsigned char*)"\t\"",
+                               serializer->iostream);
   raptor_dot_serializer_write_term_type(serializer, statement->subject->type);
   raptor_dot_serializer_write_term(serializer, statement->subject);
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\" -> \"");
+  raptor_iostream_string_write((const unsigned char*)"\" -> \"",
+                               serializer->iostream);
   raptor_dot_serializer_write_term_type(serializer, statement->object->type);
   raptor_dot_serializer_write_term(serializer, statement->object);
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\" [ label=\"");
+  raptor_iostream_string_write((const unsigned char*)"\" [ label=\"",
+                               serializer->iostream);
   raptor_dot_serializer_write_term(serializer, statement->predicate);
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\" ];\n");
+  raptor_iostream_string_write((const unsigned char*)"\" ];\n",
+                               serializer->iostream);
 
   return 0;
 }

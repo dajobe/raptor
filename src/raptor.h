@@ -1328,15 +1328,15 @@ RAPTOR_API
 void raptor_free_iostream(raptor_iostream *iostr);
 
 RAPTOR_API
-int raptor_iostream_write_bytes(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb);
+int raptor_iostream_write_bytes(const void *ptr, size_t size, size_t nmemb, raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_write_byte(raptor_iostream *iostr, const int byte);
+int raptor_iostream_write_byte(const int byte, raptor_iostream *iostr);
 RAPTOR_API
 int raptor_iostream_write_end(raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_write_string(raptor_iostream *iostr, const void *string);
+int raptor_iostream_string_write(const void *string, raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *string, size_t len);
+int raptor_iostream_counted_string_write(const void *string, size_t len, raptor_iostream *iostr);
 RAPTOR_API
 unsigned long raptor_iostream_tell(raptor_iostream *iostr);
 RAPTOR_API
@@ -1348,7 +1348,7 @@ int raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_uri_write(raptor_uri *uri, raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb);
+int raptor_iostream_read_bytes(void *ptr, size_t size, size_t nmemb, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_iostream_read_eof(raptor_iostream *iostr);
 

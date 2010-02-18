@@ -661,16 +661,15 @@ raptor_free_iostream(raptor_iostream *iostr)
 
 /**
  * raptor_iostream_write_byte:
- * @iostr: raptor iostream
  * @byte: byte to write
+ * @iostr: raptor iostream
  *
  * Write a byte to the iostream.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_byte(raptor_iostream *iostr, 
-                           const int byte)
+raptor_iostream_write_byte(const int byte, raptor_iostream *iostr)
 {
   iostr->offset++;
 
@@ -686,18 +685,18 @@ raptor_iostream_write_byte(raptor_iostream *iostr,
 
 /**
  * raptor_iostream_write_bytes:
- * @iostr: raptor iostream
  * @ptr: start of objects to write
  * @size: size of object
  * @nmemb: number of objects
+ * @iostr: raptor iostream
  *
  * Write bytes to the iostream.
  *
  * Return value: number of objects actually written, which may be less than nmemb. <0 on failure
  **/
 int
-raptor_iostream_write_bytes(raptor_iostream *iostr,
-                            const void *ptr, size_t size, size_t nmemb)
+raptor_iostream_write_bytes(const void *ptr, size_t size, size_t nmemb,
+                            raptor_iostream *iostr)
 {
   int nobj;
   
@@ -717,37 +716,37 @@ raptor_iostream_write_bytes(raptor_iostream *iostr,
 
 
 /**
- * raptor_iostream_write_string:
- * @iostr: raptor iostream
+ * raptor_iostream_string_write:
  * @string: string
+ * @iostr: raptor iostream
  *
  * Write a NULL-terminated string to the iostream.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_string(raptor_iostream *iostr, const void *string)
+raptor_iostream_string_write(const void *string, raptor_iostream *iostr)
 {
   size_t len = strlen((const char*)string);
-  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
+  return (raptor_iostream_write_bytes(string, 1, len, iostr) != (int)len);
 }
 
 
 /**
- * raptor_iostream_write_counted_string:
- * @iostr: raptor iostream
+ * raptor_iostream_counted_string_write:
  * @string: string
  * @len: string length
+ * @iostr: raptor iostream
  *
  * Write a counted string to the iostream.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_counted_string(raptor_iostream *iostr, 
-                                     const void *string, size_t len) 
+raptor_iostream_counted_string_write(const void *string, size_t len,
+                                     raptor_iostream *iostr) 
 {
-  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
+  return (raptor_iostream_write_bytes(string, 1, len, iostr) != (int)len);
 }
 
 
@@ -765,7 +764,7 @@ raptor_uri_write(raptor_uri* uri, raptor_iostream* iostr)
 {
   size_t len;
   const void *string = raptor_uri_as_counted_string(uri, &len);
-  return (raptor_iostream_write_bytes(iostr, string, 1, len) != (int)len);
+  return (raptor_iostream_write_bytes(string, 1, len, iostr) != (int)len);
 }
 
 
@@ -810,9 +809,8 @@ raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr)
   
   length = (int)raptor_stringbuffer_length(sb);
   if(length) {
-    int count = raptor_iostream_write_bytes(iostr,
-                                          raptor_stringbuffer_as_string(sb),
-                                          1, length);
+    int count = raptor_iostream_write_bytes(raptor_stringbuffer_as_string(sb),
+                                            1, length, iostr);
     return (count != length);
   } else
     return 0;
@@ -856,7 +854,7 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   if(integer < 0)
     *p= '-';
   
-  return raptor_iostream_write_bytes(iostr, buf, 1, length);
+  return raptor_iostream_write_bytes(buf, 1, length, iostr);
 }
 
 
@@ -896,7 +894,7 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
   while(p >= buf)
     *p-- = '0';
   
-  rc = raptor_iostream_write_bytes(iostr, buf, 1, width);
+  rc = raptor_iostream_write_bytes(buf, 1, width, iostr);
   RAPTOR_FREE(cstring, buf);
   return rc;
 }
@@ -905,18 +903,18 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
 
 /**
  * raptor_iostream_read_bytes:
- * @iostr: raptor iostream
  * @ptr: start of buffer to read objects into
  * @size: size of object
  * @nmemb: number of objects to read
+ * @iostr: raptor iostream
  *
  * Read bytes to the iostream.
  *
  * Return value: number of objects read, 0 or less than nmemb on EOF, <0 on failure
  **/
 int
-raptor_iostream_read_bytes(raptor_iostream *iostr,
-                           void *ptr, size_t size, size_t nmemb)
+raptor_iostream_read_bytes(void *ptr, size_t size, size_t nmemb,
+                           raptor_iostream *iostr)
 {
   int count;
   
@@ -1144,8 +1142,8 @@ test_write_to_filename(raptor_world *world, const char* filename,
     goto tidy;
   }
 
-  raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
-  raptor_iostream_write_byte(iostr, '\n');
+  raptor_iostream_write_bytes(test_string, 1, test_string_len, iostr);
+  raptor_iostream_write_byte('\n', iostr);
   
   count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
@@ -1188,8 +1186,8 @@ test_write_to_file_handle(raptor_world *world, FILE* handle,
     goto tidy;
   }
 
-  raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
-  raptor_iostream_write_byte(iostr, '\n');
+  raptor_iostream_write_bytes(test_string, 1, test_string_len, iostr);
+  raptor_iostream_write_byte('\n', iostr);
   
   count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
@@ -1234,8 +1232,8 @@ test_write_to_string(raptor_world *world,
     goto tidy;
   }
 
-  raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
-  raptor_iostream_write_byte(iostr, '\n');
+  raptor_iostream_write_bytes(test_string, 1, test_string_len, iostr);
+  raptor_iostream_write_byte('\n', iostr);
   
   count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
@@ -1290,8 +1288,8 @@ test_write_to_sink(raptor_world *world,
     goto tidy;
   }
 
-  raptor_iostream_write_bytes(iostr, test_string, 1, test_string_len);
-  raptor_iostream_write_byte(iostr, '\n');
+  raptor_iostream_write_bytes(test_string, 1, test_string_len, iostr);
+  raptor_iostream_write_byte('\n', iostr);
   
   count = raptor_iostream_tell(iostr);
   if(count != expected_bytes_count) {
@@ -1335,7 +1333,7 @@ test_read_from_filename(raptor_world *world,
     goto tidy;
   }
   
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(buffer, 1, test_string_len, iostr);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
@@ -1343,7 +1341,7 @@ test_read_from_filename(raptor_world *world,
     goto tidy;
   }
 
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(buffer, 1, test_string_len, iostr);
   if(count != expected_len2) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len2);
@@ -1397,14 +1395,14 @@ test_read_from_file_handle(raptor_world *world, FILE* handle,
     goto tidy;
   }
 
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(buffer, 1, test_string_len, iostr);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
     rc = 1;
   }
 
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(buffer, 1, test_string_len, iostr);
   if(count != expected_len2) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len2);
@@ -1457,7 +1455,7 @@ test_read_from_string(raptor_world *world,
     goto tidy;
   }
 
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, test_string_len);
+  count = raptor_iostream_read_bytes(buffer, 1, test_string_len, iostr);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);
@@ -1506,7 +1504,7 @@ test_read_from_sink(raptor_world *world, size_t read_len, size_t expected_len)
     goto tidy;
   }
 
-  count = raptor_iostream_read_bytes(iostr, buffer, 1, read_len);
+  count = raptor_iostream_read_bytes(buffer, 1, read_len, iostr);
   if(count != expected_len) {
     fprintf(stderr, "%s: %s read %d bytes, expected %d\n", program, label,
             (int)count, (int)expected_len);

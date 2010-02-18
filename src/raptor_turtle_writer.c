@@ -118,7 +118,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 {
   int num_spaces;
   
-  raptor_iostream_write_byte(turtle_writer->iostr, '\n');
+  raptor_iostream_write_byte('\n', turtle_writer->iostr);
  
   if(!TURTLE_WRITER_AUTO_INDENT(turtle_writer))
     return;
@@ -129,7 +129,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
     int count;
     count = (num_spaces > (int)SPACES_BUFFER_SIZE) ? (int)SPACES_BUFFER_SIZE : num_spaces;
 
-    raptor_iostream_write_counted_string(turtle_writer->iostr, spaces_buffer, count);
+    raptor_iostream_counted_string_write(spaces_buffer, count, turtle_writer->iostr);
 
     num_spaces -= count;
   }
@@ -244,7 +244,7 @@ void
 raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer,
                          const unsigned char *s)
 {
-  raptor_iostream_write_string(turtle_writer->iostr, s);
+  raptor_iostream_string_write(s, turtle_writer->iostr);
 }
 
 
@@ -261,7 +261,7 @@ void
 raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer,
                                  const unsigned char *s, unsigned int len)
 {
-  raptor_iostream_write_counted_string(turtle_writer->iostr, s, len);
+  raptor_iostream_counted_string_write(s, len, turtle_writer->iostr);
 }
 
 
@@ -278,13 +278,13 @@ void
 raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
                                       raptor_namespace* ns)
 {
-  raptor_iostream_write_string(turtle_writer->iostr, "@prefix ");
+  raptor_iostream_string_write("@prefix ", turtle_writer->iostr);
   if(ns->prefix)
-    raptor_iostream_write_string(turtle_writer->iostr, 
-                                 raptor_namespace_get_prefix(ns));
-  raptor_iostream_write_counted_string(turtle_writer->iostr, ": ", 2);
+    raptor_iostream_string_write(raptor_namespace_get_prefix(ns),
+                                 turtle_writer->iostr);
+  raptor_iostream_counted_string_write(": ", 2, turtle_writer->iostr);
   raptor_turtle_writer_reference(turtle_writer, raptor_namespace_get_uri(ns));
-  raptor_iostream_write_counted_string(turtle_writer->iostr, " .\n", 3);
+  raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
 }
 
 
@@ -300,9 +300,9 @@ raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
                           raptor_uri* base_uri)
 {
   if(base_uri) {
-    raptor_iostream_write_counted_string(turtle_writer->iostr, "@base ", 6);
+    raptor_iostream_counted_string_write("@base ", 6, turtle_writer->iostr);
     raptor_turtle_writer_reference(turtle_writer, base_uri);
-    raptor_iostream_write_counted_string(turtle_writer->iostr, " .\n", 3);
+    raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
   }
 }
 
@@ -324,10 +324,10 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
   
   uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &length);
 
-  raptor_iostream_write_byte(turtle_writer->iostr, '<');
+  raptor_iostream_write_byte('<', turtle_writer->iostr);
   if(uri_str)
     raptor_string_ntriples_write(uri_str, length, '>', turtle_writer->iostr);
-  raptor_iostream_write_byte(turtle_writer->iostr, '>');
+  raptor_iostream_write_byte('>', turtle_writer->iostr);
 
   RAPTOR_FREE(cstring, uri_str);
 }
@@ -348,12 +348,14 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
   raptor_iostream* iostr = turtle_writer->iostr;
   
   if(qname->nspace && qname->nspace->prefix_length > 0)
-    raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,
-                                         qname->nspace->prefix_length);
-  raptor_iostream_write_byte(iostr, ':');
+    raptor_iostream_counted_string_write(qname->nspace->prefix,
+                                         qname->nspace->prefix_length,
+                                         iostr);
+  raptor_iostream_write_byte(':', iostr);
   
-  raptor_iostream_write_counted_string(iostr, qname->local_name,
-                                       qname->local_name_length);
+  raptor_iostream_counted_string_write(qname->local_name,
+                                       qname->local_name_length,
+                                       iostr);
   return;
 }
 
@@ -388,12 +390,12 @@ raptor_string_python_write(const unsigned char *string,
   for(; (c=*string); string++, len--) {
     if((delim && c == delim && (delim == '\'' || delim == '"')) ||
        c == '\\') {
-      raptor_iostream_write_byte(iostr, '\\');
-      raptor_iostream_write_byte(iostr, c);
+      raptor_iostream_write_byte('\\', iostr);
+      raptor_iostream_write_byte(c, iostr);
       continue;
     }
     if(delim && c == delim) {
-      raptor_iostream_write_counted_string(iostr, "\\u", 2);
+      raptor_iostream_counted_string_write("\\u", 2, iostr);
       raptor_iostream_hexadecimal_write(c, 4, iostr);
       continue;
     }
@@ -403,33 +405,33 @@ raptor_string_python_write(const unsigned char *string,
 
       /* Note: NTriples is ASCII */
       if(c == 0x09) {
-        raptor_iostream_write_counted_string(iostr, "\\t", 2);
+        raptor_iostream_counted_string_write("\\t", 2, iostr);
         continue;
       } else if((flags == 3) && c == 0x08) {
         /* JSON has \b for backspace */
-        raptor_iostream_write_counted_string(iostr, "\\b", 2);
+        raptor_iostream_counted_string_write("\\b", 2, iostr);
         continue;
       } else if(c == 0x0a) {
-        raptor_iostream_write_counted_string(iostr, "\\n", 2);
+        raptor_iostream_counted_string_write("\\n", 2, iostr);
         continue;
       } else if((flags == 3) && c == 0x0b) {
         /* JSON has \f for formfeed */
-        raptor_iostream_write_counted_string(iostr, "\\f", 2);
+        raptor_iostream_counted_string_write("\\f", 2, iostr);
         continue;
       } else if(c == 0x0d) {
-        raptor_iostream_write_counted_string(iostr, "\\r", 2);
+        raptor_iostream_counted_string_write("\\r", 2, iostr);
         continue;
       } else if(c < 0x20|| c == 0x7f) {
-        raptor_iostream_write_counted_string(iostr, "\\u", 2);
+        raptor_iostream_counted_string_write("\\u", 2, iostr);
         raptor_iostream_hexadecimal_write(c, 4, iostr);
         continue;
       } else if(c < 0x80) {
-        raptor_iostream_write_byte(iostr, c);
+        raptor_iostream_write_byte(c, iostr);
         continue;
       }
     } else if(c < 0x80) {
       /* Turtle long string has no escapes except delim */
-      raptor_iostream_write_byte(iostr, c);
+      raptor_iostream_write_byte(c, iostr);
       continue;
     } 
     
@@ -442,15 +444,15 @@ raptor_string_python_write(const unsigned char *string,
 
     if(flags >= 1 && flags <= 3) {
       /* Turtle and JSON are UTF-8 - no need to escape */
-      raptor_iostream_write_counted_string(iostr, string, unichar_len);
+      raptor_iostream_counted_string_write(string, unichar_len, iostr);
     } else {
       unichar_len = raptor_utf8_to_unicode_char(&unichar, string, len);
 
       if(unichar < 0x10000) {
-        raptor_iostream_write_counted_string(iostr, "\\u", 2);
+        raptor_iostream_counted_string_write("\\u", 2, iostr);
         raptor_iostream_hexadecimal_write(unichar, 4, iostr);
       } else {
-        raptor_iostream_write_counted_string(iostr, "\\U", 2);
+        raptor_iostream_counted_string_write("\\U", 2, iostr);
         raptor_iostream_hexadecimal_write(unichar, 8, iostr);
       }
     }
@@ -490,10 +492,10 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
   flags = raptor_turtle_writer_contains_newline(s) ? 2 : 1;
   q = (flags == 2) ? quotes : quotes+2;
   q_len = (q == quotes) ? 3 : 1;
-  raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
+  raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
   raptor_string_python_write(s, strlen((const char*)s), '"', flags,
                              turtle_writer->iostr);
-  raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
+  raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
 
   return 0;
 }
@@ -533,7 +535,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       long gcc_is_stupid = strtol((const char*)s, &endptr, 10);
       if(endptr != (char*)s && !*endptr) {
-        raptor_iostream_write_string(turtle_writer->iostr, s);
+        raptor_iostream_string_write(s, turtle_writer->iostr);
         /* More gcc madness to 'use' the variable I didn't want */
         written = 1 + 0 * (int)gcc_is_stupid;
       } else {
@@ -547,7 +549,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       double gcc_is_doubly_stupid = strtod((const char*)s, &endptr);
       if(endptr != (char*)s && !*endptr) {
-        raptor_iostream_write_string(turtle_writer->iostr, s);
+        raptor_iostream_string_write(s, turtle_writer->iostr);
         /* More gcc madness to 'use' the variable I didn't want */
         written = 1 +  0 * (int)gcc_is_doubly_stupid;
       } else {
@@ -558,10 +560,10 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     /* boolean */
     } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
-        raptor_iostream_write_string(turtle_writer->iostr, "false");
+        raptor_iostream_string_write("false", turtle_writer->iostr);
         written = 1;
       } else if(!strcmp((const char*)s, "1") || !strcmp((const char*)s, "true")) {
-        raptor_iostream_write_string(turtle_writer->iostr, "true");
+        raptor_iostream_string_write("true", turtle_writer->iostr);
         written = 1;
       } else {
         raptor_log_error(turtle_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
@@ -581,7 +583,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   if(datatype) {
     raptor_qname* qname;
 
-    raptor_iostream_write_string(turtle_writer->iostr, "^^");
+    raptor_iostream_string_write("^^", turtle_writer->iostr);
     qname = raptor_new_qname_from_namespace_uri(nstack, datatype, 10);
     if(qname) {
       raptor_turtle_writer_qname(turtle_writer, qname);
@@ -590,8 +592,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       raptor_turtle_writer_reference(turtle_writer, datatype);
   } else if(lang) {
     /* literal with language tag */
-    raptor_iostream_write_byte(turtle_writer->iostr, '@');
-    raptor_iostream_write_string(turtle_writer->iostr, lang);
+    raptor_iostream_write_byte('@', turtle_writer->iostr);
+    raptor_iostream_string_write(lang, turtle_writer->iostr);
   }
 
   return 0;
@@ -613,17 +615,17 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
   unsigned char c;
   size_t len = strlen((const char*)string);
 
-  raptor_iostream_write_counted_string(turtle_writer->iostr,
-                                       (const unsigned char*)"# ", 2);
+  raptor_iostream_counted_string_write((const unsigned char*)"# ", 2,
+                                       turtle_writer->iostr);
 
   for(; (c=*string); string++, len--) {
     if(c == '\n') {
       raptor_turtle_writer_newline(turtle_writer);
-      raptor_iostream_write_counted_string(turtle_writer->iostr,
-                                           (const unsigned char*)"# ", 2);
+      raptor_iostream_counted_string_write((const unsigned char*)"# ", 2,
+                                           turtle_writer->iostr);
     } else if(c != '\r') { 
       /* skip carriage returns (windows... *sigh*) */
-      raptor_iostream_write_byte(turtle_writer->iostr, c);
+      raptor_iostream_write_byte(c, turtle_writer->iostr);
     }
   }
   

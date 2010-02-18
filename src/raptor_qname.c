@@ -498,13 +498,15 @@ int
 raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr)
 {
   if(qname->nspace && qname->nspace->prefix_length > 0) {
-    raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,
-                                         qname->nspace->prefix_length);
-    raptor_iostream_write_byte(iostr, ':');
+    raptor_iostream_counted_string_write(qname->nspace->prefix,
+                                         qname->nspace->prefix_length,
+                                         iostr);
+    raptor_iostream_write_byte(':', iostr);
   }
   
-  raptor_iostream_write_counted_string(iostr, qname->local_name,
-                                       qname->local_name_length);
+  raptor_iostream_counted_string_write(qname->local_name,
+                                       qname->local_name_length,
+                                       iostr);
   return 0;
 }
 

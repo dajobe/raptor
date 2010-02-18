@@ -141,9 +141,9 @@ raptor_json_serialize_start(raptor_serializer* serializer)
 
   /* start callback */
   if(serializer->option_json_callback) {
-    raptor_iostream_write_string(serializer->iostream,
-                                 serializer->option_json_callback);
-    raptor_iostream_write_byte(serializer->iostream, '(');
+    raptor_iostream_string_write(serializer->option_json_callback,
+                                 serializer->iostream);
+    raptor_iostream_write_byte('(', serializer->iostream);
   }
 
   if(!context->is_resource) {
@@ -152,8 +152,8 @@ raptor_json_serialize_start(raptor_serializer* serializer)
     raptor_json_writer_newline(context->json_writer);
 
     /* start triples array */
-    raptor_iostream_write_counted_string(serializer->iostream,
-                                         (const unsigned char*)"\"triples\" : ", 12);
+    raptor_iostream_counted_string_write((const unsigned char*)"\"triples\" : ", 12,
+                                         serializer->iostream);
     raptor_json_writer_start_block(context->json_writer, '[');
     raptor_json_writer_newline(context->json_writer);
   }
@@ -176,7 +176,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   }
 
   if(context->need_subject_comma) {
-    raptor_iostream_write_byte(serializer->iostream, ',');
+    raptor_iostream_write_byte(',', serializer->iostream);
     raptor_json_writer_newline(context->json_writer);
   }
 
@@ -185,8 +185,8 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   raptor_json_writer_newline(context->json_writer);
 
   /* subject */
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\"subject\" : ");
+  raptor_iostream_string_write((const unsigned char*)"\"subject\" : ",
+                               serializer->iostream);
   switch(statement->subject->type) {
     case RAPTOR_TERM_TYPE_URI:
       raptor_json_writer_uri_object(context->json_writer,
@@ -204,20 +204,20 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
         RAPTOR_FATAL1("Unsupported identifier type\n");
         break;
   }
-  raptor_iostream_write_byte(serializer->iostream, ',');
+  raptor_iostream_write_byte(',', serializer->iostream);
   raptor_json_writer_newline(context->json_writer);
   
   /* predicate */
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\"predicate\" : ");
+  raptor_iostream_string_write((const unsigned char*)"\"predicate\" : ",
+                               serializer->iostream);
   raptor_json_writer_uri_object(context->json_writer,
                                 statement->predicate->value.uri);
-  raptor_iostream_write_byte(serializer->iostream, ',');
+  raptor_iostream_write_byte(',', serializer->iostream);
   raptor_json_writer_newline(context->json_writer);
 
   /* object */
-  raptor_iostream_write_string(serializer->iostream,
-                               (const unsigned char*)"\"object\" : ");
+  raptor_iostream_string_write((const unsigned char*)"\"object\" : ",
+                               serializer->iostream);
   switch(statement->object->type) {
     case RAPTOR_TERM_TYPE_URI:
       raptor_json_writer_uri_object(context->json_writer,
@@ -287,7 +287,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   
   if(new_subject)  {
     if(context->need_subject_comma) {
-      raptor_iostream_write_byte(serializer->iostream, ',');
+      raptor_iostream_write_byte(',', serializer->iostream);
       raptor_json_writer_newline(context->json_writer);
     }
 
@@ -302,11 +302,11 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         break;
         
       case RAPTOR_TERM_TYPE_BLANK:
-        raptor_iostream_write_counted_string(serializer->iostream, "\"_:", 3);
+        raptor_iostream_counted_string_write("\"_:", 3, serializer->iostream);
         raptor_string_python_write(s1->subject->value.blank, 0,
                                    '"', 2,
                                    serializer->iostream);
-        raptor_iostream_write_byte(serializer->iostream, '"');
+        raptor_iostream_write_byte('"', serializer->iostream);
         break;
         
       case RAPTOR_TERM_TYPE_LITERAL:
@@ -317,7 +317,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         break;
     }
 
-    raptor_iostream_write_counted_string(serializer->iostream, " : ", 3);
+    raptor_iostream_counted_string_write(" : ", 3, serializer->iostream);
     raptor_json_writer_start_block(context->json_writer, '{');
   
     raptor_json_writer_newline(context->json_writer);
@@ -334,7 +334,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       if(new_predicate) {
         raptor_json_writer_newline(context->json_writer);
         raptor_json_writer_end_block(context->json_writer, ']');
-        raptor_iostream_write_byte(serializer->iostream, ',');
+        raptor_iostream_write_byte(',', serializer->iostream);
         raptor_json_writer_newline(context->json_writer);
       }
     }
@@ -347,15 +347,15 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
     raptor_json_writer_key_uri_value(context->json_writer, 
                                    NULL, 0,
                                    s1->predicate->value.uri);
-    raptor_iostream_write_counted_string(serializer->iostream, " : ", 3);
+    raptor_iostream_counted_string_write(" : ", 3, serializer->iostream);
     raptor_json_writer_start_block(context->json_writer, '[');
-    raptor_iostream_write_byte(serializer->iostream, ' ');
+    raptor_iostream_write_byte(' ', serializer->iostream);
 
     context->need_object_comma = 0;
   }
 
   if(context->need_object_comma) {
-    raptor_iostream_write_byte(serializer->iostream, ',');
+    raptor_iostream_write_byte(',', serializer->iostream);
     raptor_json_writer_newline(context->json_writer);
   }
   
@@ -430,10 +430,10 @@ raptor_json_serialize_end(raptor_serializer* serializer)
 
 
   if(serializer->option_json_extra_data) {
-    raptor_iostream_write_byte(serializer->iostream, ',');
+    raptor_iostream_write_byte(',', serializer->iostream);
     raptor_json_writer_newline(context->json_writer);
-    raptor_iostream_write_string(serializer->iostream,
-                                 serializer->option_json_extra_data);
+    raptor_iostream_string_write(serializer->option_json_extra_data,
+                                 serializer->iostream);
     raptor_json_writer_newline(context->json_writer);
   }
 
@@ -444,8 +444,8 @@ raptor_json_serialize_end(raptor_serializer* serializer)
 
   /* end callback */
   if(serializer->option_json_callback)
-    raptor_iostream_write_counted_string(serializer->iostream,
-                                         (const unsigned char*)");", 2);
+    raptor_iostream_counted_string_write((const unsigned char*)");", 2,
+                                         serializer->iostream);
 
   return 0;
 }

@@ -79,13 +79,13 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
   raptor_iostream *iostr = serializer->iostream;
   
   /* was: fprintf(stdout, "%s: Statement: ", program); */
-  raptor_iostream_write_string(iostr, "Statement: ");
+  raptor_iostream_string_write("Statement: ", iostr);
 
   /* from raptor_statement_print */
-  raptor_iostream_write_byte(iostr, '[');
+  raptor_iostream_write_byte('[', iostr);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    raptor_iostream_write_string(iostr, statement->subject->value.blank);
+    raptor_iostream_string_write(statement->subject->value.blank, iostr);
   } else {
 #ifdef RAPTOR_DEBUG
     if(!statement->subject->value.uri)
@@ -94,7 +94,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
     raptor_uri_write(statement->subject->value.uri, iostr);
   }
 
-  raptor_iostream_write_counted_string(iostr, ", ", 2);
+  raptor_iostream_counted_string_write(", ", 2, iostr);
 
 #ifdef RAPTOR_DEBUG
   if(!statement->predicate->value.uri)
@@ -102,19 +102,19 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
 #endif
   raptor_uri_write(statement->predicate->value.uri, iostr);
 
-  raptor_iostream_write_counted_string(iostr, ", ", 2);
+  raptor_iostream_counted_string_write(", ", 2, iostr);
 
   if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(statement->object->value.literal.datatype) {
-      raptor_iostream_write_byte(iostr, '<');
+      raptor_iostream_write_byte('<', iostr);
       raptor_uri_write(statement->object->value.literal.datatype, iostr);
-      raptor_iostream_write_byte(iostr, '>');
+      raptor_iostream_write_byte('>', iostr);
     }
-    raptor_iostream_write_byte(iostr, '"');
-    raptor_iostream_write_string(iostr, statement->object->value.literal.string);
-    raptor_iostream_write_byte(iostr, '"');
+    raptor_iostream_write_byte('"', iostr);
+    raptor_iostream_string_write(statement->object->value.literal.string, iostr);
+    raptor_iostream_write_byte('"', iostr);
   } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK) {
-    raptor_iostream_write_string(iostr, statement->object->value.blank);
+    raptor_iostream_string_write(statement->object->value.blank, iostr);
   } else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object->value.uri)
@@ -123,7 +123,7 @@ raptor_simple_serialize_statement(raptor_serializer* serializer,
     raptor_uri_write(statement->object->value.uri, iostr);
   }
 
-  raptor_iostream_write_counted_string(iostr, "]\n", 2);
+  raptor_iostream_counted_string_write("]\n", 2, iostr);
 
   return 0;
 }

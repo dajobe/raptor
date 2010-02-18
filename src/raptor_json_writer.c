@@ -152,17 +152,17 @@ raptor_json_writer_quoted(raptor_json_writer* json_writer,
                           const char *value, size_t value_len)
 {
   if(!value) {
-    raptor_iostream_write_counted_string(json_writer->iostr, "\"\"", 2);
+    raptor_iostream_counted_string_write("\"\"", 2, json_writer->iostr);
     return 0;
   }
   if(!value_len)
     value_len = strlen((const char*)value);
 
-  raptor_iostream_write_byte(json_writer->iostr, '\"');
+  raptor_iostream_write_byte('\"', json_writer->iostr);
   raptor_string_python_write((const unsigned char*)value, value_len,
                              '"', 3,
                              json_writer->iostr);
-  raptor_iostream_write_byte(json_writer->iostr, '\"');
+  raptor_iostream_write_byte('\"', json_writer->iostr);
 
   return 0;
 }
@@ -173,7 +173,7 @@ raptor_json_writer_spaces(raptor_json_writer* json_writer, int depth)
 {
   int i;
   for(i = 0; i < depth; i++)
-    raptor_iostream_write_byte(json_writer->iostr, ' ');
+    raptor_iostream_write_byte(' ', json_writer->iostr);
   return 0;
 }
 
@@ -181,7 +181,7 @@ raptor_json_writer_spaces(raptor_json_writer* json_writer, int depth)
 int
 raptor_json_writer_newline(raptor_json_writer* json_writer)
 {
-  raptor_iostream_write_byte(json_writer->iostr, '\n');
+  raptor_iostream_write_byte('\n', json_writer->iostr);
   if(json_writer->indent)
     raptor_json_writer_spaces(json_writer, json_writer->indent);
   return 0;
@@ -199,7 +199,7 @@ raptor_json_writer_key_value(raptor_json_writer* json_writer,
     value_len = strlen(value);
   
   raptor_json_writer_quoted(json_writer, key, key_len);
-  raptor_iostream_write_counted_string(json_writer->iostr, " : ", 3);
+  raptor_iostream_counted_string_write(" : ", 3, json_writer->iostr);
   raptor_json_writer_quoted(json_writer, value, value_len);
 
   return 0;
@@ -235,7 +235,7 @@ int
 raptor_json_writer_start_block(raptor_json_writer* json_writer, char c)
 {
   json_writer->indent += json_writer->indent_step;
-  raptor_iostream_write_byte(json_writer->iostr, c);
+  raptor_iostream_write_byte(c, json_writer->iostr);
   return 0;
 }
 
@@ -243,7 +243,7 @@ raptor_json_writer_start_block(raptor_json_writer* json_writer, char c)
 int
 raptor_json_writer_end_block(raptor_json_writer* json_writer, char c)
 {
-  raptor_iostream_write_byte(json_writer->iostr, c);
+  raptor_iostream_write_byte(c, json_writer->iostr);
   json_writer->indent -= json_writer->indent_step;
   return 0;
 }
@@ -262,13 +262,13 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
     
     raptor_json_writer_quoted(json_writer, key, 0);
   
-    raptor_iostream_write_counted_string(json_writer->iostr, " : ", 3);
+    raptor_iostream_counted_string_write(" : ", 3, json_writer->iostr);
   }
 
   raptor_json_writer_quoted(json_writer, (const char*)s, 0);
   
   if(datatype || lang) {
-    raptor_iostream_write_byte(json_writer->iostr, ',');
+    raptor_iostream_write_byte(',', json_writer->iostr);
     raptor_json_writer_newline(json_writer);
 
     if(datatype)
@@ -276,7 +276,7 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
     
     if(lang) {
       if(datatype) {
-        raptor_iostream_write_byte(json_writer->iostr, ',');
+        raptor_iostream_write_byte(',', json_writer->iostr);
         raptor_json_writer_newline(json_writer);
       }
 
@@ -286,7 +286,7 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
   }
 
   if(type_key) {
-    raptor_iostream_write_byte(json_writer->iostr, ',');
+    raptor_iostream_write_byte(',', json_writer->iostr);
     raptor_json_writer_newline(json_writer);
 
     raptor_json_writer_key_value(json_writer, type_key, 0, "literal", 0);
@@ -347,7 +347,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
         char* num_str;
 
         num_str = raptor_format_float(buf, &len, buflen, dnum, 1, max_digits, 0);
-        raptor_iostream_write_counted_string(json_writer->iostr, num_str, len);
+        raptor_iostream_counted_string_write(num_str, len, json_writer->iostr);
         written = 1;
       }
 
@@ -356,17 +356,17 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
         snprintf(buf, 20, "%.1lf", dnum);
-        raptor_iostream_write_string(json_writer->iostr, buf);
+        raptor_iostream_string_write(buf, json_writer->iostr);
         written = 1;
       }
     
     /* boolean */
     } else if(raptor_uri_equals(datatype, json_writer->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
-        raptor_iostream_write_string(json_writer->iostr, "false");
+        raptor_iostream_string_write("false", json_writer->iostr);
         written = 1;
       } else if(!strcmp((const char*)s, "1") || !strcmp((const char*)s, "true")) {
-        raptor_iostream_write_string(json_writer->iostr, "true");
+        raptor_iostream_string_write("true", json_writer->iostr);
         written = 1;
       } else {
         raptor_log_error(json_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL, 
@@ -392,14 +392,14 @@ raptor_json_writer_blank_object(raptor_json_writer* json_writer,
   raptor_json_writer_start_block(json_writer, '{');
   raptor_json_writer_newline(json_writer);
 
-  raptor_iostream_write_counted_string(json_writer->iostr, 
-                                       "\"value\" : \"_:", 13);
-  raptor_iostream_write_string(json_writer->iostr, (const char*)blank);
-  raptor_iostream_write_counted_string(json_writer->iostr, "\",", 2);
+  raptor_iostream_counted_string_write("\"value\" : \"_:", 13,
+                                       json_writer->iostr);
+  raptor_iostream_string_write((const char*)blank, json_writer->iostr);
+  raptor_iostream_counted_string_write("\",", 2, json_writer->iostr);
   raptor_json_writer_newline(json_writer);
 
-  raptor_iostream_write_counted_string(json_writer->iostr,
-                                       "\"type\" : \"bnode\"", 16);
+  raptor_iostream_counted_string_write("\"type\" : \"bnode\"", 16,
+                                       json_writer->iostr);
   raptor_json_writer_newline(json_writer);
 
   raptor_json_writer_end_block(json_writer, '}');
@@ -415,11 +415,11 @@ raptor_json_writer_uri_object(raptor_json_writer* json_writer,
   raptor_json_writer_newline(json_writer);
 
   raptor_json_writer_key_uri_value(json_writer, "value", 5, uri);
-  raptor_iostream_write_byte(json_writer->iostr, ',');
+  raptor_iostream_write_byte(',', json_writer->iostr);
   raptor_json_writer_newline(json_writer);
 
-  raptor_iostream_write_counted_string(json_writer->iostr,
-                                       "\"type\" : \"uri\"", 14);
+  raptor_iostream_counted_string_write("\"type\" : \"uri\"", 14,
+                                       json_writer->iostr);
   raptor_json_writer_newline(json_writer);
 
   raptor_json_writer_end_block(json_writer, '}');

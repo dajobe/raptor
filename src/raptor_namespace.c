@@ -794,15 +794,15 @@ raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr)
   if(ns->uri)
     uri_string = raptor_uri_as_counted_string(ns->uri, &uri_length);
   
-  raptor_iostream_write_counted_string(iostr, "xmlns", 5);
+  raptor_iostream_counted_string_write("xmlns", 5, iostr);
   if(ns->prefix) {
-    raptor_iostream_write_byte(iostr, ':');
-    raptor_iostream_write_string(iostr, ns->prefix);
+    raptor_iostream_write_byte(':', iostr);
+    raptor_iostream_string_write(ns->prefix, iostr);
   }
-  raptor_iostream_write_counted_string(iostr, "=\"", 2);
+  raptor_iostream_counted_string_write("=\"", 2, iostr);
   if(uri_length)
-    raptor_iostream_write_counted_string(iostr, uri_string, uri_length);
-  raptor_iostream_write_byte(iostr, '"');
+    raptor_iostream_counted_string_write(uri_string, uri_length, iostr);
+  raptor_iostream_write_byte('"', iostr);
 
   return 0;
 }

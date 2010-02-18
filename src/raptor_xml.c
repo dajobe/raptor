@@ -432,19 +432,19 @@ raptor_xml_element_write(raptor_xml_element *element,
 
 
 
-  raptor_iostream_write_byte(iostr, '<');
+  raptor_iostream_write_byte('<', iostr);
   if(is_end)
-    raptor_iostream_write_byte(iostr, '/');
+    raptor_iostream_write_byte('/', iostr);
 
   if(element->name->nspace && element->name->nspace->prefix_length > 0) {
-    raptor_iostream_write_counted_string(iostr, 
-                                         (const char*)element->name->nspace->prefix, 
-                                         element->name->nspace->prefix_length);
-    raptor_iostream_write_byte(iostr, ':');
+    raptor_iostream_counted_string_write((const char*)element->name->nspace->prefix, 
+                                         element->name->nspace->prefix_length,
+                                         iostr);
+    raptor_iostream_write_byte(':', iostr);
   }
-  raptor_iostream_write_counted_string(iostr, 
-                                       (const char*)element->name->local_name,
-                                       element->name->local_name_length);
+  raptor_iostream_counted_string_write((const char*)element->name->local_name,
+                                       element->name->local_name_length,
+                                       iostr);
 
   /* declare namespaces */
   if(nspace_declarations_count) {
@@ -454,10 +454,10 @@ raptor_xml_element_write(raptor_xml_element *element,
           raptor_nsd_compare);
     /* add them */
     for(i = 0; i < nspace_declarations_count; i++) {
-      raptor_iostream_write_byte(iostr, ' ');
-      raptor_iostream_write_counted_string(iostr, 
-                                           (const char*)nspace_declarations[i].declaration,
-                                           nspace_declarations[i].length);
+      raptor_iostream_write_byte(' ', iostr);
+      raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
+                                           nspace_declarations[i].length,
+                                           iostr);
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
 
@@ -470,34 +470,34 @@ raptor_xml_element_write(raptor_xml_element *element,
 
   if(!is_end && element->attributes) {
     for(i = 0; i < element->attribute_count; i++) {
-      raptor_iostream_write_byte(iostr, ' ');
+      raptor_iostream_write_byte(' ', iostr);
       
       if(element->attributes[i]->nspace && 
          element->attributes[i]->nspace->prefix_length > 0) {
-        raptor_iostream_write_counted_string(iostr,
-                                             (char*)element->attributes[i]->nspace->prefix,
-                                             element->attributes[i]->nspace->prefix_length);
-        raptor_iostream_write_byte(iostr, ':');
+        raptor_iostream_counted_string_write((char*)element->attributes[i]->nspace->prefix,
+                                             element->attributes[i]->nspace->prefix_length,
+                                             iostr);
+        raptor_iostream_write_byte(':', iostr);
       }
 
-      raptor_iostream_write_counted_string(iostr, 
-                                           (const char*)element->attributes[i]->local_name,
-                                           element->attributes[i]->local_name_length);
+      raptor_iostream_counted_string_write((const char*)element->attributes[i]->local_name,
+                                           element->attributes[i]->local_name_length,
+                                           iostr);
       
-      raptor_iostream_write_counted_string(iostr, "=\"", 2);
+      raptor_iostream_counted_string_write("=\"", 2, iostr);
       
       raptor_xml_escape_string_write(element->attributes[i]->value, 
                                       element->attributes[i]->value_length,
                                       '"',
                                       iostr);
-      raptor_iostream_write_byte(iostr, '"');
+      raptor_iostream_write_byte('"', iostr);
     }
   }
   
   if(is_empty)
-    raptor_iostream_write_byte(iostr, '/');
+    raptor_iostream_write_byte('/', iostr);
 
-  raptor_iostream_write_byte(iostr, '>');
+  raptor_iostream_write_byte('>', iostr);
 
   if(nstack)
     RAPTOR_FREE(stringarray, nspace_declarations);
@@ -802,25 +802,25 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
     }
 
     if(unichar == '&')
-      raptor_iostream_write_counted_string(iostr, "&amp;", 5);
+      raptor_iostream_counted_string_write("&amp;", 5, iostr);
     else if(unichar == '<')
-      raptor_iostream_write_counted_string(iostr, "&lt;", 4);
+      raptor_iostream_counted_string_write("&lt;", 4, iostr);
     else if(!quote && unichar == '>')
-      raptor_iostream_write_counted_string(iostr, "&gt;", 4);
+      raptor_iostream_counted_string_write("&gt;", 4, iostr);
     else if(quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
-        raptor_iostream_write_counted_string(iostr, "&apos;", 6);
+        raptor_iostream_counted_string_write("&apos;", 6, iostr);
       else
-        raptor_iostream_write_counted_string(iostr, "&quot;", 6);
+        raptor_iostream_counted_string_write("&quot;", 6, iostr);
     } else if(unichar == 0x0d ||
                (quote && (unichar == 0x09 || unichar == 0x0a))) {
       /* &#xX; */
-      raptor_iostream_write_counted_string(iostr, "&#x", 3);
+      raptor_iostream_counted_string_write("&#x", 3, iostr);
       if(unichar == 0x09)
-        raptor_iostream_write_byte(iostr, '9');
+        raptor_iostream_write_byte('9', iostr);
       else
-        raptor_iostream_write_byte(iostr, 'A'+ ((char)unichar-0x0a));
-      raptor_iostream_write_byte(iostr, ';');
+        raptor_iostream_write_byte('A'+ ((char)unichar-0x0a), iostr);
+      raptor_iostream_write_byte(';', iostr);
     } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {
       if(!unichar || xml_version < 11) {
@@ -832,12 +832,12 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
         int width = (unichar < 0x10) ? 1 : 2;
 
         /* &#xX; */
-        raptor_iostream_write_counted_string(iostr, "&#x", 3);
+        raptor_iostream_counted_string_write("&#x", 3, iostr);
         raptor_iostream_hexadecimal_write(unichar, width, iostr);
-        raptor_iostream_write_byte(iostr,  ';');
+        raptor_iostream_write_byte(';', iostr);
       }
     } else
-      raptor_iostream_write_counted_string(iostr, (const char*)p, unichar_len);
+      raptor_iostream_counted_string_write((const char*)p, unichar_len, iostr);
 
     unichar_len--; /* since loop does len-- */
     p += unichar_len; l -= unichar_len;
