@@ -1411,6 +1411,10 @@ struct raptor_world_s {
   raptor_term* terms[RDF_NS_LAST + 1];
 };
 
+/* raptor_www.c */
+int raptor_www_init(raptor_world* world);
+void raptor_www_finish(raptor_world* world);
+
 /* end of RAPTOR_INTERNAL */
 #endif
 

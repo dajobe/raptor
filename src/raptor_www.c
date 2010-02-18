@@ -50,11 +50,11 @@ static int raptor_www_file_fetch(raptor_www* www);
 
 
 
-/**
+/*
  * raptor_www_init:
  * @world: raptor_world object
  * 
- * Initialise the WWW class.
+ * INTERNAL - Initialise the WWW class.
  *
  * Must be called before creating any #raptor_www object.
  *
@@ -106,11 +106,11 @@ raptor_www_no_www_library_init_finish(raptor_world* world)
 }
 
 
-/**
+/*
  * raptor_www_finish:
  * @world: raptor_world object
  * 
- * Terminate the WWW class.
+ * INTERNAL - Terminate the WWW class.
  *
  * Must be called to clean any resources used by the WWW implementation.
  *
