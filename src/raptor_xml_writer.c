@@ -212,8 +212,8 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
   if(element->name->nspace) {
     if(nstack && !raptor_namespaces_namespace_in_scope(nstack, element->name->nspace)) {
       nspace_declarations[0].declaration=
-        raptor_namespaces_format(element->name->nspace,
-                                 &nspace_declarations[0].length);
+        raptor_namespace_format_as_xml(element->name->nspace,
+                                       &nspace_declarations[0].length);
       if(!nspace_declarations[0].declaration)
         goto error;
       nspace_declarations[0].nspace = element->name->nspace;
@@ -240,8 +240,8 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
             
           if(declare_me) {
             nspace_declarations[nspace_declarations_count].declaration=
-              raptor_namespaces_format(element->attributes[i]->nspace,
-                                       &nspace_declarations[nspace_declarations_count].length);
+              raptor_namespace_format_as_xml(element->attributes[i]->nspace,
+                                             &nspace_declarations[nspace_declarations_count].length);
             if(!nspace_declarations[nspace_declarations_count].declaration)
               goto error;
             nspace_declarations[nspace_declarations_count].nspace = element->attributes[i]->nspace;
@@ -268,8 +268,8 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       
       if(declare_me) {
         nspace_declarations[nspace_declarations_count].declaration=
-          raptor_namespaces_format(nspace,
-                                   &nspace_declarations[nspace_declarations_count].length);
+          raptor_namespace_format_as_xml(nspace,
+                                         &nspace_declarations[nspace_declarations_count].length);
         if(!nspace_declarations[nspace_declarations_count].declaration)
           goto error;
         nspace_declarations[nspace_declarations_count].nspace = nspace;

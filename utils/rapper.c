@@ -403,9 +403,9 @@ main(int argc, char *argv[])
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
             nd = (struct namespace_decl *)raptor_alloc_memory(sizeof(struct namespace_decl));
-            if(raptor_new_namespace_parts_from_string((unsigned char*)optarg,
-                                                      &nd->prefix,
-                                                      &nd->uri_string)) {
+            if(raptor_xml_namespace_string_parse((unsigned char*)optarg,
+                                                 &nd->prefix,
+                                                 &nd->uri_string)) {
               fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n", program, 
                       optarg);
               rdfdump_free_namespace_decl(nd);

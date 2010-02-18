@@ -1046,13 +1046,13 @@ const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API
 const unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
-unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
+unsigned char *raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
 int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 
 /* namespace string utility function */
 RAPTOR_API
-int raptor_new_namespace_parts_from_string(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
+int raptor_xml_namespace_string_parse(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
 
 /**
  * raptor_stringbuffer:

@@ -700,7 +700,7 @@ raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p
 
 
 /**
- * raptor_namespaces_format:
+ * raptor_namespace_format_as_xml:
  * @ns: namespace object
  * @length_p: pointer to length (or NULL)
  * 
@@ -713,12 +713,12 @@ raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p
  * If @length_p is not NULL, the length of the string is
  * stored in the address it points to.
  * 
- * See also raptor_new_namespace_parts_from_string()
+ * See also raptor_xml_namespace_string_parse()
  *
  * Return value: namespace formatted as newly allocated string or NULL on failure
  **/
 unsigned char *
-raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
+raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
 {
   size_t uri_length = 0L;
   const unsigned char *uri_string = NULL;
@@ -735,13 +735,14 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
                                               NULL, 0, quote);
   }
 
-  length = 8+xml_uri_length+ns->prefix_length; /* 8 = length of [[xmlns=""] */
+  /* 8 = length of [[xmlns=""] */
+  length = 8 + xml_uri_length + ns->prefix_length;
 
   if(ns->prefix)
     length++; /* for : */
   
   if(length_p)
-    *length_p=length;
+    *length_p = length;
 
   buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length+1);
   if(!buffer)
@@ -750,12 +751,12 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
   p = buffer;
   
   strncpy((char*)p, "xmlns", 5);
-  p+= 5;
+  p += 5;
   
   if(ns->prefix) {
     *p++ = ':';
     strncpy((char*)p, (char*)ns->prefix, ns->prefix_length);
-    p+= ns->prefix_length;
+    p += ns->prefix_length;
   }
   *p++ = '=';
   *p++ = quote;
@@ -763,7 +764,7 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
     raptor_xml_escape_string(ns->nstack->world,
                              uri_string, uri_length,
                              p, xml_uri_length, quote);
-    p+= xml_uri_length;
+    p += xml_uri_length;
   }
   *p++ = quote;
   *p++ = '\0';
@@ -808,29 +809,29 @@ raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr)
 
 
 /**
- * raptor_new_namespace_parts_from_string:
+ * raptor_xml_namespace_string_parse:
  * @string: string to parse
  * @prefix: pointer to location to store namespace prefix
  * @uri_string: pointer to location to store namespace URI
  * 
- * Parse a string containin an XML style namespace declaration
- * into a namespace prefix and URI.
+ * Parse a string containing an XML style namespace declaration
+ * into a namespace prefix and URI pair.
  * 
  * The string is of the form xmlns:prefix="uri",
  * xmlns="uri", xmlns:prefix="" or xmlns="".
  * The quotes can be single or double quotes.
  *
  * Two values are returned from this function into *@prefix and
- * *@uri_string neither of which may be NULL.
+ * *@uri_string.  Either but not both may be NULL.
  *
- * See also raptor_namespaces_format()
+ * See also raptor_namespace_format_as_xml()
  *
  * Return value: non-0 on failure.
  **/
 int
-raptor_new_namespace_parts_from_string(const unsigned char *string,
-                                       unsigned char **prefix,
-                                       unsigned char **uri_string)
+raptor_xml_namespace_string_parse(const unsigned char *string,
+                                  unsigned char **prefix,
+                                  unsigned char **uri_string)
 {
   const unsigned char *t;
   unsigned char quote;
@@ -844,8 +845,8 @@ raptor_new_namespace_parts_from_string(const unsigned char *string,
   if(strncmp((const char*)string, "xmlns", 5))
     return 1;
 
-  *prefix=NULL;
-  *uri_string=NULL;
+  *prefix = NULL;
+  *uri_string = NULL;
 
   /*
    * Four cases are expected and handled:
@@ -858,21 +859,21 @@ raptor_new_namespace_parts_from_string(const unsigned char *string,
    */
 
   /* skip "xmlns" */
-  string+= 5;
+  string += 5;
   
   if(*string == ':') {
     /* non-empty prefix */
-    t= ++string;
+    t = ++string;
     while(*string && *string != '=')
       string++;
     if(!*string || string == t)
       return 1;
 
-    *prefix=(unsigned char*)RAPTOR_MALLOC(cstring, string-t+1);
+    *prefix = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
     if(!*prefix)
       return 1;
     strncpy((char*)*prefix, (const char*)t, string-t);
-    (*prefix)[string-t]='\0';
+    (*prefix)[string-t] = '\0';
   }
 
   if(*string++ != '=')
@@ -880,7 +881,7 @@ raptor_new_namespace_parts_from_string(const unsigned char *string,
 
   if(*string != '"' && *string != '\'')
     return 1;
-  quote=*string++;
+  quote = *string++;
 
   t = string;
   while(*string && *string != quote)
@@ -889,15 +890,15 @@ raptor_new_namespace_parts_from_string(const unsigned char *string,
   if(*string != quote)
     return 1;
 
-  if(!(string-t))
+  if(!(string - t))
     /* xmlns...="" */
-    *uri_string=NULL;
+    *uri_string = NULL;
   else {
-    *uri_string=(unsigned char*)RAPTOR_MALLOC(cstring, string-t+1);
+    *uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
     if(!*uri_string)
       return 1;
-    strncpy((char*)*uri_string, (const char*)t, string-t);
-    (*uri_string)[string-t]='\0';
+    strncpy((char*)*uri_string, (const char*)t, string - t);
+    (*uri_string)[string - t] = '\0';
   }
   
   return 0;
