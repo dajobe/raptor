@@ -486,7 +486,7 @@ raptor_iostream_write_xml_element(raptor_iostream* iostr,
       
       raptor_iostream_write_counted_string(iostr, "=\"", 2);
       
-      raptor_xml_escaped_string_write(element->attributes[i]->value, 
+      raptor_xml_escape_string_write(element->attributes[i]->value, 
                                       element->attributes[i]->value_length,
                                       '"',
                                       iostr);
@@ -550,7 +550,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 
 
 /**
- * raptor_xml_any_escape_string:
+ * raptor_xml_escape_string_any:
  * @world: raptor world
  * @string: string to XML escape (UTF-8)
  * @len: length of string
@@ -595,7 +595,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * Return value: the number of bytes required / used or <0 on failure.
  **/
 int
-raptor_xml_any_escape_string(raptor_world *world,
+raptor_xml_escape_string_any(raptor_world *world,
                              const unsigned char *string, size_t len,
                              unsigned char *buffer, size_t length,
                              char quote,
@@ -738,7 +738,7 @@ raptor_xml_any_escape_string(raptor_world *world,
  *
  * Return an XML 1.0-escaped version a string.
  * 
- * See raptor_xml_any_escape_string() for the conditions on parameters.
+ * See raptor_xml_escape_string_any() for the conditions on parameters.
  *
  * Return value: the number of bytes required / used or <0 on failure.
  **/
@@ -748,7 +748,7 @@ raptor_xml_escape_string(raptor_world *world,
                          unsigned char *buffer, size_t length,
                          char quote)
 {
-  return raptor_xml_any_escape_string(world, string, len,
+  return raptor_xml_escape_string_any(world, string, len,
                                       buffer, length,
                                       quote,
                                       10);
@@ -756,7 +756,7 @@ raptor_xml_escape_string(raptor_world *world,
 
 
 /**
- * raptor_xml_any_escaped_string_write:
+ * raptor_xml_escape_string_any_write:
  * @string: string to XML escape (UTF-8)
  * @len: length of string
  * @quote: optional quote character to escape for attribute content, or 0
@@ -772,7 +772,7 @@ raptor_xml_escape_string(raptor_world *world,
  * Return value: non 0 on failure
  **/
 int
-raptor_xml_any_escaped_string_write(const unsigned char *string,
+raptor_xml_escape_string_any_write(const unsigned char *string,
                                     size_t len,
                                     char quote,
                                     int xml_version,
@@ -848,7 +848,7 @@ raptor_xml_any_escaped_string_write(const unsigned char *string,
 
 
 /**
- * raptor_xml_escaped_string_write:
+ * raptor_xml_escape_string_write:
  * @string: string to XML 1.0 escape (UTF-8)
  * @len: length of string
  * @quote: optional quote character to escape for attribute content, or 0
@@ -856,18 +856,18 @@ raptor_xml_any_escaped_string_write(const unsigned char *string,
  *
  * Write an XML 1.0-escaped version of a string to an iostream.
  * 
- * See raptor_xml_any_escaped_string_write() for the escapes
+ * See raptor_xml_escape_string_any_write() for the escapes
  * performed and the conditions on @quote and @string.
  *
  * Return value: non 0 on failure
  **/
 int
-raptor_xml_escaped_string_write(const unsigned char *string,
+raptor_xml_escape_string_write(const unsigned char *string,
                                 size_t len,
                                 char quote,
                                 raptor_iostream* iostr)
 {
-  return raptor_xml_any_escaped_string_write(string, len, quote, 10,
+  return raptor_xml_escape_string_any_write(string, len, quote, 10,
                                              iostr);
 }
 

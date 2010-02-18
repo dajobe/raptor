@@ -339,7 +339,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       
       raptor_iostream_write_counted_string(iostr, "=\"", 2);
       
-      raptor_xml_any_escaped_string_write(element->attributes[i]->value, 
+      raptor_xml_escape_string_any_write(element->attributes[i]->value, 
                                           element->attributes[i]->value_length,
                                           '"',
                                           xml_version,
@@ -632,7 +632,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_xml_any_escaped_string_write(s, strlen((const char*)s),
+  raptor_xml_escape_string_any_write(s, strlen((const char*)s),
                                       '\0',
                                       xml_writer->xml_version,
                                       xml_writer->iostr);
@@ -662,7 +662,7 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_xml_any_escaped_string_write(s, len,
+  raptor_xml_escape_string_any_write(s, len,
                                       '\0',
                                       xml_writer->xml_version,
                                       xml_writer->iostr);

@@ -862,13 +862,13 @@ raptor_world* raptor_uri_get_world(raptor_uri *uri);
 
 /* XML utility functions */
 RAPTOR_API
-int raptor_xml_any_escape_string(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
+int raptor_xml_escape_string_any(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
 RAPTOR_API
-int raptor_xml_any_escaped_string_write(const unsigned char *string, size_t len, char quote, int xml_version, raptor_iostream* iostr);
+int raptor_xml_escape_string_any_write(const unsigned char *string, size_t len, char quote, int xml_version, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_xml_escape_string(raptor_world *world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote);
 RAPTOR_API
-int raptor_xml_escaped_string_write(const unsigned char *string, size_t len, char quote, raptor_iostream* iostr);
+int raptor_xml_escape_string_write(const unsigned char *string, size_t len, char quote, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
 
