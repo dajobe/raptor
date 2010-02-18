@@ -750,7 +750,7 @@ raptor_statement* raptor_statement_copy(raptor_statement *statement);
 raptor_term* raptor_term_copy(raptor_term* term);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 int raptor_term_equals(raptor_term* term1, raptor_term* term2);
-int raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term);
+int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, const char *name);  

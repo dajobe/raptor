@@ -242,9 +242,9 @@ raptor_print_abbrev_po(raptor_abbrev_node** nodes, FILE* handle)
   
   if(p && o) {
     fputc('[', handle);
-    raptor_term_print_as_ntriples(handle, p->term);
+    raptor_term_print_as_ntriples(p->term, handle);
     fputs(" : ", handle);
-    raptor_term_print_as_ntriples(handle, o->term);
+    raptor_term_print_as_ntriples(o->term, handle);
     fputs("]\n", handle);
   }
 }

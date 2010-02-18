@@ -370,47 +370,22 @@ raptor_term_as_string(raptor_term *term)
 
 
 int
-raptor_term_print_as_ntriples(FILE* stream, const raptor_term *term)
+raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream)
 {
   int rc = 0;
-  raptor_uri* uri;
+  raptor_iostream* iostr;
+
+  if(!stream || !term)
+    return 1;
   
-  switch(term->type) {
-    case RAPTOR_TERM_TYPE_LITERAL:
-      fputc('"', stream);
-      raptor_print_ntriples_string(term->value.literal.string, '"', stream);
-      fputc('"', stream);
-      if(term->value.literal.language) {
-        fputc('@', stream);
-        fputs((const char*)term->value.literal.language, stream);
-      }
-      if(term->value.literal.datatype) {
-        uri = term->value.literal.datatype;
-        fputs("^^<", stream);
-        fputs((const char*)raptor_uri_as_string(uri), stream);
-        fputc('>', stream);
-      }
+  iostr = raptor_new_iostream_to_file_handle(term->world, stream);
+  if(!iostr)
+    return 1;
+  
+  rc = raptor_term_ntriples_write(term, iostr);
 
-      break;
-      
-    case RAPTOR_TERM_TYPE_BLANK:
-      fputs("_:", stream);
-      fputs((const char*)term->value.blank, stream);
-      break;
-      
-    case RAPTOR_TERM_TYPE_URI:
-      uri = term->value.uri;
-      fputc('<', stream);
-      raptor_print_ntriples_string(raptor_uri_as_string(uri), '\0', stream);
-      fputc('>', stream);
-      break;
-      
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-    default:
-      RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
-      rc = 1;
-  }
-
+  raptor_free_iostream(iostr);
+  
   return rc;
 }
 
@@ -428,13 +403,13 @@ int
 raptor_statement_print_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
-  if(raptor_term_print_as_ntriples(stream, statement->subject))
+  if(raptor_term_print_as_ntriples(statement->subject, stream))
     return 1;
   fputc(' ', stream);
-  if(raptor_term_print_as_ntriples(stream, statement->predicate))
+  if(raptor_term_print_as_ntriples(statement->predicate, stream))
     return 1;
   fputc(' ', stream);
-  if(raptor_term_print_as_ntriples(stream, statement->object))
+  if(raptor_term_print_as_ntriples(statement->object, stream))
     return 1;
   fputs(" .", stream);
 
