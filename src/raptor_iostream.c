@@ -693,21 +693,26 @@ raptor_iostream_write_byte(raptor_iostream *iostr,
  *
  * Write bytes to the iostream.
  *
- * Return value: number of objects written or less than nmemb or 0 on failure
+ * Return value: number of objects actually written, which may be less than nmemb. <0 on failure
  **/
 int
 raptor_iostream_write_bytes(raptor_iostream *iostr,
                             const void *ptr, size_t size, size_t nmemb)
 {
-  iostr->offset += (size*nmemb);
+  int nobj;
   
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
-    return 1;
+    return -1;
   if(!iostr->handler->write_bytes)
-    return 0;
+    return -1;
   if(!(iostr->mode & RAPTOR_IOSTREAM_MODE_WRITE))
-    return 1;
-  return iostr->handler->write_bytes(iostr->user_data, ptr, size, nmemb);
+    return -1;
+
+  nobj = iostr->handler->write_bytes(iostr->user_data, ptr, size, nmemb);
+  if(nobj > 0)
+    iostr->offset += (size * nobj);
+
+  return nobj;
 }
 
 
