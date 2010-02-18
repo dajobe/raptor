@@ -747,16 +747,16 @@ raptor_iostream_write_counted_string(raptor_iostream *iostr,
 
 
 /**
- * raptor_iostream_write_uri:
- * @iostr: raptor iostream
+ * raptor_uri_write:
  * @uri: URI
+ * @iostr: raptor iostream
  *
  * Write a raptor URI to the iostream.
  *
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_uri(raptor_iostream* iostr, raptor_uri* uri)
+raptor_uri_write(raptor_uri* uri, raptor_iostream* iostr)
 {
   size_t len;
   const void *string = raptor_uri_as_counted_string(uri, &len);
@@ -788,17 +788,16 @@ raptor_iostream_write_end(raptor_iostream *iostr)
 
 
 /**
- * raptor_iostream_write_stringbuffer:
- * @iostr: raptor iostream
+ * raptor_stringbuffer_write:
  * @sb: #raptor_stringbuffer to write
+ * @iostr: raptor iostream
  *
  * Write a stringbuffer to an iostream.
  * 
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
-                                   raptor_stringbuffer *sb)
+raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr)
 {
   int length;
   if(!sb)
@@ -816,16 +815,16 @@ raptor_iostream_write_stringbuffer(raptor_iostream* iostr,
 
 
 /**
- * raptor_iostream_write_decimal:
- * @iostr: raptor iostream
+ * raptor_iostream_decimal_write:
  * @integer: integer to format as decimal
+ * @iostr: raptor iostream
  *
  * Write an integer in decimal to the iostream.
  * 
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
+raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
 {
   /* enough for 64 bit signed integer
    * INT64_MAX is  9223372036854775807 (19 digits) + 1 for sign 
@@ -857,10 +856,10 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
 
 
 /**
- * raptor_iostream_format_hexadecimal:
- * @iostr: raptor iostream
+ * raptor_iostream_hexadecimal_write:
  * @integer: unsigned integer to format as hexadecimal
  * @width: field width
+ * @iostr: raptor iostream
  *
  * Write an integer in hexadecimal to the iostream.
  *
@@ -869,8 +868,8 @@ raptor_iostream_write_decimal(raptor_iostream* iostr, int integer)
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_format_hexadecimal(raptor_iostream* iostr, 
-                                   unsigned int integer, int width)
+raptor_iostream_hexadecimal_write(unsigned int integer, int width,
+                                  raptor_iostream* iostr)
 {
   unsigned char *buf;
   unsigned char *p;

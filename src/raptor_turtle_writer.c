@@ -394,7 +394,7 @@ raptor_string_python_write(const unsigned char *string,
     }
     if(delim && c == delim) {
       raptor_iostream_write_counted_string(iostr, "\\u", 2);
-      raptor_iostream_format_hexadecimal(iostr, c, 4);
+      raptor_iostream_hexadecimal_write(c, 4, iostr);
       continue;
     }
     
@@ -421,7 +421,7 @@ raptor_string_python_write(const unsigned char *string,
         continue;
       } else if(c < 0x20|| c == 0x7f) {
         raptor_iostream_write_counted_string(iostr, "\\u", 2);
-        raptor_iostream_format_hexadecimal(iostr, c, 4);
+        raptor_iostream_hexadecimal_write(c, 4, iostr);
         continue;
       } else if(c < 0x80) {
         raptor_iostream_write_byte(iostr, c);
@@ -448,10 +448,10 @@ raptor_string_python_write(const unsigned char *string,
 
       if(unichar < 0x10000) {
         raptor_iostream_write_counted_string(iostr, "\\u", 2);
-        raptor_iostream_format_hexadecimal(iostr, unichar, 4);
+        raptor_iostream_hexadecimal_write(unichar, 4, iostr);
       } else {
         raptor_iostream_write_counted_string(iostr, "\\U", 2);
-        raptor_iostream_format_hexadecimal(iostr, unichar, 8);
+        raptor_iostream_hexadecimal_write(unichar, 8, iostr);
       }
     }
     

@@ -329,25 +329,25 @@ raptor_nsd_compare(const void *a, const void *b)
 
 
 /**
- * raptor_iostream_write_xml_element:
- * @iostr: iostream object
+ * raptor_xml_element_write:
  * @element: XML element to format
  * @nstack: Namespace stack context to use in formatting
  * @is_empty: non-0 if element is empty
  * @is_end: non-0 if this is an end element (else is a start element)
  * @depth: XML element depth
+ * @iostr: iostream object
  *
  * Write a formatted XML element to a #raptor_iostream
  *
  * Return value: non-0 on failure
 */
 int
-raptor_iostream_write_xml_element(raptor_iostream* iostr,
-                                  raptor_xml_element *element,
-                                  raptor_namespace_stack *nstack,
-                                  int is_empty,
-                                  int is_end,
-                                  int depth)
+raptor_xml_element_write(raptor_xml_element *element,
+                         raptor_namespace_stack *nstack,
+                         int is_empty,
+                         int is_end,
+                         int depth,
+                         raptor_iostream* iostr)
 {
   struct nsd *nspace_declarations = NULL;
   size_t nspace_declarations_count = 0;  
@@ -833,7 +833,7 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
 
         /* &#xX; */
         raptor_iostream_write_counted_string(iostr, "&#x", 3);
-        raptor_iostream_format_hexadecimal(iostr, unichar, width);
+        raptor_iostream_hexadecimal_write(unichar, width, iostr);
         raptor_iostream_write_byte(iostr,  ';');
       }
     } else

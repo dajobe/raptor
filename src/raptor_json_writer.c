@@ -334,7 +334,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
     if(raptor_uri_equals(datatype, json_writer->xsd_integer_uri)) {
       long inum = strtol((const char*)s, NULL, 10);
       if(inum != LONG_MIN && inum != LONG_MAX) {
-        raptor_iostream_write_decimal(json_writer->iostr, inum);
+        raptor_iostream_decimal_write(inum, json_writer->iostr);
         written = 1;
       }
     

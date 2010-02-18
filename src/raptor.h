@@ -1340,13 +1340,13 @@ int raptor_iostream_write_counted_string(raptor_iostream *iostr, const void *str
 RAPTOR_API
 unsigned long raptor_iostream_tell(raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_write_decimal(raptor_iostream* iostr, int integer);
+int raptor_iostream_decimal_write(int integer, raptor_iostream* iostr);
 RAPTOR_API
-int raptor_iostream_format_hexadecimal(raptor_iostream* iostr, unsigned int integer, int width);
+int raptor_iostream_hexadecimal_write(unsigned int integer, int width, raptor_iostream* iostr);
 RAPTOR_API
-int raptor_iostream_write_stringbuffer(raptor_iostream* iostr, raptor_stringbuffer *sb);
+int raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr);
 RAPTOR_API
-int raptor_iostream_write_uri(raptor_iostream *iostr,  raptor_uri *uri);
+int raptor_uri_write(raptor_uri *uri, raptor_iostream *iostr);
 RAPTOR_API
 int raptor_iostream_read_bytes(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb);
 RAPTOR_API
@@ -1408,7 +1408,7 @@ int raptor_xml_element_get_attributes_count(raptor_xml_element* xml_element);
 RAPTOR_API
 int raptor_xml_element_declare_namespace(raptor_xml_element* xml_element, raptor_namespace *nspace);
 RAPTOR_API
-int raptor_iostream_write_xml_element(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, int depth);
+int raptor_xml_element_write(raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, int depth, raptor_iostream *iostr);
 RAPTOR_API
 int raptor_xml_element_is_empty(raptor_xml_element* xml_element);
 RAPTOR_API
