@@ -860,10 +860,6 @@ RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
 
 
-/* utility methods */
-RAPTOR_API
-int raptor_print_ntriples_string(const unsigned char *string, const char delim, FILE *stream);
-
 /* XML utility functions */
 RAPTOR_API
 int raptor_xml_any_escape_string(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
