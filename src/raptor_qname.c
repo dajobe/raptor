@@ -486,16 +486,16 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_iostream_write_qname:
- * @iostr: raptor iosteram
+ * raptor_qname_write:
  * @qname: QName to write
+ * @iostr: raptor iosteram
  * 
  * Write a formatted qname to an iostream
  * 
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname)
+raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr)
 {
   if(qname->nspace && qname->nspace->prefix_length > 0) {
     raptor_iostream_write_counted_string(iostr, qname->nspace->prefix,

@@ -773,16 +773,16 @@ raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p)
 
 
 /**
- * raptor_iostream_write_namespace:
- * @iostr: raptor iosteram
+ * raptor_namespace_write:
  * @ns: namespace to write
+ * @iostr: raptor iosteram
  * 
  * Write a formatted namespace to an iostream
  * 
  * Return value: non-0 on failure
  **/
 int
-raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns)
+raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr)
 {
   size_t uri_length = 0L;
   const unsigned char *uri_string = NULL;

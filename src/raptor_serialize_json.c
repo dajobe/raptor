@@ -303,9 +303,9 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         
       case RAPTOR_TERM_TYPE_BLANK:
         raptor_iostream_write_counted_string(serializer->iostream, "\"_:", 3);
-        raptor_iostream_write_string_python(serializer->iostream,
-                                            s1->subject->value.blank, 0,
-                                            '"', 2);
+        raptor_string_python_write(s1->subject->value.blank, 0,
+                                   '"', 2,
+                                   serializer->iostream);
         raptor_iostream_write_byte(serializer->iostream, '"');
         break;
         

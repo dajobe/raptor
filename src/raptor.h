@@ -653,7 +653,7 @@ unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_term_as_string(raptor_term *term);
 RAPTOR_API
-void raptor_iostream_write_term_ntriples(raptor_iostream* iostr, const raptor_term *term);
+void raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr);
 
 
 /* Statement Class */
@@ -868,11 +868,11 @@ int raptor_print_ntriples_string(const unsigned char *string, const char delim, 
 RAPTOR_API
 int raptor_xml_any_escape_string(raptor_world* world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote, int xml_version);
 RAPTOR_API
-int raptor_iostream_write_xml_any_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote, int xml_version);
+int raptor_xml_any_escaped_string_write(const unsigned char *string, size_t len, char quote, int xml_version, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_xml_escape_string(raptor_world *world, const unsigned char *string, size_t len, unsigned char *buffer, size_t length, char quote);
 RAPTOR_API
-int raptor_iostream_write_xml_escaped_string(raptor_iostream* iostr, const unsigned char *string, size_t len, char quote);
+int raptor_xml_escaped_string_write(const unsigned char *string, size_t len, char quote, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_version);
 
@@ -999,7 +999,7 @@ const unsigned char* raptor_qname_get_value(raptor_qname* name);
 RAPTOR_API
 const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p);
 RAPTOR_API
-int raptor_iostream_write_qname(raptor_iostream* iostr, raptor_qname *qname);
+int raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr);
 
 /* QName String utility functions */
 RAPTOR_API
@@ -1052,7 +1052,7 @@ const unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace 
 RAPTOR_API
 unsigned char *raptor_namespaces_format(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
-int raptor_iostream_write_namespace(raptor_iostream* iostr, raptor_namespace *ns);
+int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 
 /* namespace string utility function */
 RAPTOR_API
@@ -1358,11 +1358,11 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
 
 /* I/O Stream utility functions */
 RAPTOR_API
-int raptor_iostream_write_string_ntriples(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim);
+int raptor_string_ntriples_write(const unsigned char *string, size_t len, const char delim, raptor_iostream *iostr);
 RAPTOR_API
-int raptor_iostream_write_string_python(raptor_iostream *iostr, const unsigned char *string, size_t len, const char delim, int flags);
+int raptor_string_python_write(const unsigned char *string, size_t len, const char delim, int flags, raptor_iostream *iostr);
 RAPTOR_API
-void raptor_iostream_write_statement_ntriples(raptor_iostream* iostr, const raptor_statement *statement);
+void raptor_statement_ntriples_write(const raptor_statement *statement, raptor_iostream* iostr);
 
 
 

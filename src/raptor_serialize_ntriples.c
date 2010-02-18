@@ -94,38 +94,37 @@ raptor_ntriples_serialize_start(raptor_serializer* serializer)
 
 
 /**
- * raptor_iostream_write_string_ntriples:
- * @iostr: #raptor_iostream to write to
+ * raptor_string_ntriples_write:
  * @string: UTF-8 string to write
  * @len: length of UTF-8 string
  * @delim: Terminating delimiter character for string (such as " or >)
  * or \0 for no escaping.
+ * @iostr: #raptor_iostream to write to
  *
  * Write an UTF-8 string using N-Triples escapes to an iostream.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
 int
-raptor_iostream_write_string_ntriples(raptor_iostream *iostr,
-                                      const unsigned char *string,
-                                      size_t len,
-                                      const char delim)
+raptor_string_ntriples_write(const unsigned char *string,
+                             size_t len,
+                             const char delim,
+                             raptor_iostream *iostr)
 {
-  return raptor_iostream_write_string_python(iostr, string, len, delim, 0);
+  return raptor_string_python_write(string, len, delim, 0, iostr);
 }
 
 
 /**
- * raptor_iostream_write_term_ntriples:
- * @iostr: raptor iostream
+ * raptor_term_ntriples_write:
  * @term: term to write
+ * @iostr: raptor iostream
  * 
  * Write a #raptor_term formatted in N-Triples format to a #raptor_iostream
  * 
  **/
 void
-raptor_iostream_write_term_ntriples(raptor_iostream* iostr,
-                                    const raptor_term *term) 
+raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
 {
   unsigned char *term_str;
   size_t len;
@@ -133,9 +132,10 @@ raptor_iostream_write_term_ntriples(raptor_iostream* iostr,
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_iostream_write_byte(iostr, '"');
-      raptor_iostream_write_string_ntriples(iostr, term->value.literal.string,
-                                            strlen((const char*)term->value.literal.string),
-                                            '"');
+      raptor_string_ntriples_write(term->value.literal.string,
+                                   strlen((const char*)term->value.literal.string),
+                                   '"',
+                                   iostr);
       raptor_iostream_write_byte(iostr, '"');
       if(term->value.literal.language) {
         raptor_iostream_write_byte(iostr, '@');
@@ -158,7 +158,7 @@ raptor_iostream_write_term_ntriples(raptor_iostream* iostr,
     case RAPTOR_TERM_TYPE_URI:
       raptor_iostream_write_byte(iostr, '<');
       term_str = raptor_uri_as_counted_string(term->value.uri, &len);
-      raptor_iostream_write_string_ntriples(iostr, term_str, len, '>');
+      raptor_string_ntriples_write(term_str, len, '>', iostr);
       raptor_iostream_write_byte(iostr, '>');
       break;
       
@@ -170,22 +170,22 @@ raptor_iostream_write_term_ntriples(raptor_iostream* iostr,
 
 
 /**
- * raptor_iostream_write_statement_ntriples:
- * @iostr: raptor iostream
+ * raptor_statement_ntriples_write:
  * @statement: statement to write
+ * @iostr: raptor iostream
  * 
  * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
  * 
  **/
 void
-raptor_iostream_write_statement_ntriples(raptor_iostream* iostr,
-                                         const raptor_statement *statement)
+raptor_statement_ntriples_write(const raptor_statement *statement,
+                                raptor_iostream* iostr)
 {
-  raptor_iostream_write_term_ntriples(iostr, statement->subject);
+  raptor_term_ntriples_write(statement->subject, iostr);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_term_ntriples(iostr, statement->predicate);
+  raptor_term_ntriples_write(statement->predicate, iostr);
   raptor_iostream_write_byte(iostr, ' ');
-  raptor_iostream_write_term_ntriples(iostr, statement->object);
+  raptor_term_ntriples_write(statement->object, iostr);
   raptor_iostream_write_counted_string(iostr, " .\n", 3);
 }
 
@@ -195,7 +195,7 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     raptor_statement *statement)
 {
-  raptor_iostream_write_statement_ntriples(serializer->iostream, statement);
+  raptor_statement_ntriples_write(statement, serializer->iostream);
   return 0;
 }
 

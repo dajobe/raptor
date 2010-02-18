@@ -339,11 +339,11 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       
       raptor_iostream_write_counted_string(iostr, "=\"", 2);
       
-      raptor_iostream_write_xml_any_escaped_string(iostr,
-                                                   element->attributes[i]->value, 
-                                                   element->attributes[i]->value_length,
-                                                   '"',
-                                                   xml_version);
+      raptor_xml_any_escaped_string_write(element->attributes[i]->value, 
+                                          element->attributes[i]->value_length,
+                                          '"',
+                                          xml_version,
+                                          iostr);
       raptor_iostream_write_byte(iostr, '"');
     }
   }
@@ -632,10 +632,10 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
-                                               s, strlen((const char*)s),
-                                               '\0',
-                                               xml_writer->xml_version);
+  raptor_xml_any_escaped_string_write(s, strlen((const char*)s),
+                                      '\0',
+                                      xml_writer->xml_version,
+                                      xml_writer->iostr);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -662,10 +662,10 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_write_xml_any_escaped_string(xml_writer->iostr,
-                                               s, len,
-                                               '\0',
-                                               xml_writer->xml_version);
+  raptor_xml_any_escaped_string_write(s, len,
+                                      '\0',
+                                      xml_writer->xml_version,
+                                      xml_writer->iostr);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;

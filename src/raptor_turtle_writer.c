@@ -326,8 +326,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
 
   raptor_iostream_write_byte(turtle_writer->iostr, '<');
   if(uri_str)
-    raptor_iostream_write_string_ntriples(turtle_writer->iostr,
-                                          uri_str, length, '>');
+    raptor_string_ntriples_write(uri_str, length, '>', turtle_writer->iostr);
   raptor_iostream_write_byte(turtle_writer->iostr, '>');
 
   RAPTOR_FREE(cstring, uri_str);
@@ -360,24 +359,24 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
 
 
 /**
- * raptor_iostream_write_string_python:
- * @iostr: #raptor_iostream to write to
+ * raptor_string_python_write:
  * @string: UTF-8 string to write
  * @len: length of UTF-8 string
  * @delim: Terminating delimiter character for string (such as " or >)
  * or \0 for no escaping.
  * @flags: flags 0=N-Triples mode, 1=Turtle (allow raw UTF-8), 2=Turtle long string (allow raw UTF-8), 3=JSON
+ * @iostr: #raptor_iostream to write to
  *
  * Write a UTF-8 string using Python-style escapes (N-Triples, Turtle, JSON) to an iostream.
  * 
  * Return value: non-0 on failure such as bad UTF-8 encoding.
  **/
 int
-raptor_iostream_write_string_python(raptor_iostream *iostr,
-                                    const unsigned char *string,
-                                    size_t len,
-                                    const char delim,
-                                    int flags)
+raptor_string_python_write(const unsigned char *string,
+                           size_t len,
+                           const char delim,
+                           int flags,
+                           raptor_iostream *iostr)
 {
   unsigned char c;
   int unichar_len;
@@ -492,8 +491,8 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
   q = (flags == 2) ? quotes : quotes+2;
   q_len = (q == quotes) ? 3 : 1;
   raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
-  raptor_iostream_write_string_python(turtle_writer->iostr,
-                                      s, strlen((const char*)s), '"', flags);
+  raptor_string_python_write(s, strlen((const char*)s), '"', flags,
+                             turtle_writer->iostr);
   raptor_iostream_write_counted_string(turtle_writer->iostr, q, q_len);
 
   return 0;
