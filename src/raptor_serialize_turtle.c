@@ -794,11 +794,11 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->subjects =
     raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_subject_compare,
-		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
+                       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
 
   context->blanks =
     raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_subject_compare,
-		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
+                       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
 
   context->nodes =
     raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_node_compare,
