@@ -1171,7 +1171,7 @@ int raptor_unicode_is_xml11_namechar(raptor_unichar c);
 RAPTOR_API
 int raptor_unicode_is_xml10_namechar(raptor_unichar c);
 RAPTOR_API
-int raptor_utf8_check(const unsigned char *string, size_t length);
+int raptor_unicode_check_utf8_string(const unsigned char *string, size_t length);
 
 
 /* Stringbuffer Class */

@@ -773,12 +773,12 @@ raptor_unicode_is_extender(long c)
 }
 
 
-/**
+/*
  * raptor_unicode_check_utf8_nfc_string:
  * @input: UTF-8 string
  * @length: length of string
  *
- * Check if a Unicode UTF-8 encoded string is in Unicode Normal Form C.
+ * INTERNAL - Check if a Unicode UTF-8 encoded string is in Unicode Normal Form C.
  * 
  * Return value: Non 0 if the string is NFC
  **/
@@ -806,16 +806,16 @@ raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length)
 
 
 /**
- * raptor_utf8_check:
+ * raptor_unicode_check_utf8_string:
  * @string: UTF-8 string
  * @length: length of string
  *
- * Check a string is UTF-8.
+ * Check a string is valid Unicode UTF-8.
  * 
  * Return value: Non 0 if the string is UTF-8
  **/
 int
-raptor_utf8_check(const unsigned char *string, size_t length)
+raptor_unicode_check_utf8_string(const unsigned char *string, size_t length)
 {
   while(length > 0) {
     raptor_unichar unichar = 0;

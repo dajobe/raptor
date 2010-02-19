@@ -227,7 +227,7 @@ main (int argc, char *argv[])
     if(column4_len > max_c4_len)
       max_c4_len = column4_len;
 
-    if(!raptor_utf8_check(column2, column2_len)) {
+    if(!raptor_unicode_check_utf8_string(column2, column2_len)) {
       fprintf(stderr, "%s:%d: UTF8 column 2 failed on: '", filename, line);
       utf8_print(column2, column2_len, stderr);
       fputs("'\n", stderr);
@@ -248,7 +248,7 @@ main (int argc, char *argv[])
     if(column2_len == column4_len && !memcmp(column2, column4, column2_len))
       continue;
 
-    if(!raptor_utf8_check(column4, column4_len)) {
+    if(!raptor_unicode_check_utf8_string(column4, column4_len)) {
       fprintf(stderr, "%s:%d: UTF8 column 4 failed on: '", filename, line);
       utf8_print(column4, column4_len, stderr);
       fputs("'\n", stderr);
