@@ -120,7 +120,7 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
   
   while(i < length && *input) {
     unsigned long c;
-    int size = raptor_unicode_decode_utf8_char(&c, input, length-i);
+    int size = raptor_unicode_utf8_string_get_char(&c, input, length-i);
     if(size <= 0)
       return;
     if(i)
