@@ -58,7 +58,7 @@ AM_CPPFLAGS = $(MEM)
 libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c \
-raptor_option.c raptor_general.c raptor_utf8.c \
+raptor_option.c raptor_general.c raptor_unicode.c \
 raptor_www.c \
 raptor_statement.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \

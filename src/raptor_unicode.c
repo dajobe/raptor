@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_utf8.c - Raptor UTF-8 and Unicode support
+ * raptor_unicode.c - Raptor Unicode and UTF-8 support
  *
- * Copyright (C) 2002-2007, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2002-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
