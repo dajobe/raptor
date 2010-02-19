@@ -774,16 +774,16 @@ raptor_unicode_is_extender(long c)
 
 
 /**
- * raptor_utf8_is_nfc:
+ * raptor_unicode_check_utf8_nfc_string:
  * @input: UTF-8 string
  * @length: length of string
  *
- * Check a string is in Unicode Normal Form C.
+ * Check if a Unicode UTF-8 encoded string is in Unicode Normal Form C.
  * 
  * Return value: Non 0 if the string is NFC
  **/
 int
-raptor_utf8_is_nfc(const unsigned char *input, size_t length) 
+raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length) 
 {
   unsigned int i;
   int plain = 1;

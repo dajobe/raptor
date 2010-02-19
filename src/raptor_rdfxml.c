@@ -1365,7 +1365,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     }
 
 
-    if(!raptor_utf8_is_nfc(value, strlen((const char*)value))) {
+    if(!raptor_unicode_check_utf8_nfc_string(value, strlen((const char*)value))) {
       const char *message;
 
       message = "Property attribute '%s' has a string not in Unicode Normal Form C: %s";
@@ -1472,7 +1472,8 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
                               name);
     }
 
-    if(object_is_literal && !raptor_utf8_is_nfc(value, value_len)) {
+    if(object_is_literal &&
+       !raptor_unicode_check_utf8_nfc_string(value, value_len)) {
       const char *message;
       message = "Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2760,8 +2761,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                   literal_language = (unsigned char*)raptor_sax2_inscope_xml_language(rdf_xml_parser->sax2);
 
                 if(!literal_datatype && literal &&
-                   !raptor_utf8_is_nfc(literal, 
-                                       xml_element->content_cdata_length)) {
+                   !raptor_unicode_check_utf8_nfc_string(literal, 
+                                                        xml_element->content_cdata_length)) {
                   const char *message;
                   message = "Property element '%s' has a string not in Unicode Normal Form C: %s";
                   raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2814,7 +2815,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 length = xml_element->content_cdata_length;
               }
 
-              if(!raptor_utf8_is_nfc(buffer, length)) {
+              if(!raptor_unicode_check_utf8_nfc_string(buffer, length)) {
                 const char *message;
                 message = "Property element '%s' has XML literal content not in Unicode Normal Form C: %s";
                 raptor_rdfxml_update_document_locator(rdf_parser);

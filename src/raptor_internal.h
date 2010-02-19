@@ -938,7 +938,7 @@ int raptor_init_serializer_json(raptor_world* world);
 /* raptor_utf8.c */
 int raptor_unicode_is_namestartchar(raptor_unichar c);
 int raptor_unicode_is_namechar(raptor_unichar c);
-int raptor_utf8_is_nfc(const unsigned char *input, size_t length);
+int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length);
 
 /* raptor_www*.c */
 #ifdef RAPTOR_WWW_LIBXML
