@@ -326,7 +326,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     if(allow_utf8) {
       if(c > 0x7f) {
         /* just copy the UTF-8 bytes through */
-        size_t unichar_len = raptor_utf8_to_unicode_char(NULL, (const unsigned char*)p-1, 1+*lenp);
+        size_t unichar_len = raptor_unicode_decode_utf8_char(NULL, (const unsigned char*)p-1, 1+*lenp);
         if(unichar_len > *lenp) {
           raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
           /* UTF-8 encoding had an error or ended in the middle of a string */

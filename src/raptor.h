@@ -1161,7 +1161,7 @@ typedef unsigned long raptor_unichar;
 RAPTOR_API
 int raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output);
 RAPTOR_API
-int raptor_utf8_to_unicode_char(raptor_unichar *output, const unsigned char *input, int length);
+int raptor_unicode_decode_utf8_char(raptor_unichar *output, const unsigned char *input, int length);
 RAPTOR_API
 int raptor_unicode_is_xml11_namestartchar(raptor_unichar c);
 RAPTOR_API

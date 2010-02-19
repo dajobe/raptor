@@ -118,7 +118,7 @@ raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
 
 
 /**
- * raptor_utf8_to_unicode_char:
+ * raptor_unicode_decode_utf8_char:
  * @output: Pointer to the Unicode character or NULL
  * @input: UTF-8 string buffer
  * @length: buffer size
@@ -131,8 +131,8 @@ raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
  * Return value: bytes used from input buffer or <0 on failure: -1 input buffer too short or length error, -2 overlong UTF-8 sequence, -3 illegal code positions, -4 code out of range U+0000 to U+10FFFF.  In cases -2, -3 and -4 the coded character is stored in the output.
  */
 int
-raptor_utf8_to_unicode_char(raptor_unichar *output,
-                            const unsigned char *input, int length)
+raptor_unicode_decode_utf8_char(raptor_unichar *output,
+                                const unsigned char *input, int length)
 {
   unsigned char in;
   int size;
@@ -820,7 +820,7 @@ raptor_utf8_check(const unsigned char *string, size_t length)
   while(length > 0) {
     raptor_unichar unichar = 0;
 
-    int unichar_len = raptor_utf8_to_unicode_char(&unichar, string, length);
+    int unichar_len = raptor_unicode_decode_utf8_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
