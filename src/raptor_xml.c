@@ -613,7 +613,7 @@ raptor_xml_escape_string_any(raptor_world *world,
 
   for(l = len, p = string; l; p++, l--) {
     if(*p > 0x7f) {
-      unichar_len = raptor_unicode_decode_utf8_char(&unichar, p, l);
+      unichar_len = raptor_unicode_utf8_string_get_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
         raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Bad UTF-8 encoding.");
@@ -664,7 +664,7 @@ raptor_xml_escape_string_any(raptor_world *world,
   
   for(l = len, p = string, q = buffer; l; p++, l--) {
     if(*p > 0x7f) {
-      unichar_len = raptor_unicode_decode_utf8_char(&unichar, p, l);
+      unichar_len = raptor_unicode_utf8_string_get_char(&unichar, p, l);
     } else {
       unichar=*p;
       unichar_len = 1;
@@ -792,7 +792,7 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
     raptor_unichar unichar=*p;
 
     if(*p > 0x7f) {
-      unichar_len = raptor_unicode_decode_utf8_char(&unichar, p, l);
+      unichar_len = raptor_unicode_utf8_string_get_char(&unichar, p, l);
       if(unichar_len < 0 || unichar_len > l) {
         raptor_log_error(raptor_iostream_get_world(iostr),
                          RAPTOR_LOG_LEVEL_ERROR, NULL,
@@ -897,7 +897,8 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
   for(pos = 0; length > 0; pos++) {
     raptor_unichar unichar = 0;
 
-    int unichar_len = raptor_unicode_decode_utf8_char(&unichar, string, length);
+    int unichar_len;
+    unichar_len = raptor_unicode_utf8_string_get_char(&unichar, string, length);
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
