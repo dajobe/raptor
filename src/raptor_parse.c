@@ -258,6 +258,9 @@ raptor_parser_factory_add_alias(raptor_parser_factory* factory,
   if(!alias_copy)
     return 1;
   strcpy(alias_copy, alias);
+  /* FIXME: should probably support multiple aliases */
+  if(factory->alias)
+    RAPTOR_FREE(cstring, factory->alias);
   factory->alias = alias_copy;
 
   return 0;
