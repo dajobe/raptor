@@ -747,7 +747,6 @@ const char* raptor_basename(const char *name);
 raptor_statement* raptor_new_statement(raptor_world *world);
 raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object);
 raptor_statement* raptor_statement_copy(raptor_statement *statement);
-raptor_term* raptor_term_copy(raptor_term* term);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 int raptor_term_equals(raptor_term* term1, raptor_term* term2);
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);

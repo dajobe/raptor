@@ -646,6 +646,8 @@ raptor_term* raptor_new_term_from_literal(raptor_world* world, const unsigned ch
 RAPTOR_API
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 RAPTOR_API
+raptor_term* raptor_term_copy(raptor_term* term);
+RAPTOR_API
 void raptor_free_term(raptor_term *term);
 
 RAPTOR_API
