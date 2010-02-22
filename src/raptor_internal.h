@@ -935,7 +935,9 @@ int raptor_init_serializer_turtle(raptor_world* world);
 /* raptor_serialize_json.c */  
 int raptor_init_serializer_json(raptor_world* world);
 
-/* raptor_utf8.c */
+/* raptor_unicode.c */
+extern const raptor_unichar raptor_unicode_max_codepoint;
+
 int raptor_unicode_is_namestartchar(raptor_unichar c);
 int raptor_unicode_is_namechar(raptor_unichar c);
 int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length);

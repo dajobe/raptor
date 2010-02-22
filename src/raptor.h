@@ -1159,9 +1159,9 @@ int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
  */
 typedef unsigned long raptor_unichar;
 RAPTOR_API
-int raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output);
+int raptor_unicode_string_put_char(raptor_unichar c, unsigned char *output, size_t length);
 RAPTOR_API
-int raptor_unicode_utf8_string_get_char(raptor_unichar *output, const unsigned char *input, int length);
+int raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length, raptor_unichar *output);
 RAPTOR_API
 int raptor_unicode_is_xml11_namestartchar(raptor_unichar c);
 RAPTOR_API

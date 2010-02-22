@@ -217,7 +217,7 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
     int combining_class = 0;
     raptor_nfc_code_flag flag;
     
-    unichar_len = raptor_unicode_utf8_string_get_char(&unichar, string, len);
+    unichar_len = raptor_unicode_utf8_string_get_char(string, len, &unichar);
     if(unichar_len < 0 || unichar_len > (int)len) {
       /* UTF-8 encoding had an error or ended in the middle of a string */
       if(error)

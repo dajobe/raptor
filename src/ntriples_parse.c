@@ -327,7 +327,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
       if(c > 0x7f) {
         /* just copy the UTF-8 bytes through */
         size_t unichar_len;
-        unichar_len = raptor_unicode_utf8_string_get_char(NULL, p - 1, 1 + *lenp);
+        unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
         if(unichar_len > *lenp) {
           raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
           /* UTF-8 encoding had an error or ended in the middle of a string */
@@ -431,12 +431,14 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         rdf_parser->locator.column += ulen;
         rdf_parser->locator.byte += ulen;
         
-        if(unichar > 0x10ffff) {
-          raptor_parser_error(rdf_parser, "Illegal Unicode character with code point #x%lX.", unichar);
+        if(unichar > raptor_unicode_max_codepoint) {
+          raptor_parser_error(rdf_parser,
+                              "Illegal Unicode character with code point #x%lX (max #x%lX).",
+                              unichar, raptor_unicode_max_codepoint);
           break;
         }
           
-        dest += raptor_unicode_char_to_utf8(unichar, dest);
+        dest += raptor_unicode_string_put_char(unichar, dest, 8 /* FIXME */);
         break;
 
       default:
@@ -459,7 +461,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   *dest='\0';
 
   if(dest_lenp)
-    *dest_lenp=p-*start;
+    *dest_lenp = p - *start;
 
   *start=p;
 

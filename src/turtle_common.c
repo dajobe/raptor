@@ -119,15 +119,15 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         s+= ulen-1;
         i+= ulen-1;
         
-        if(unichar > 0x10ffff) {
+        if(unichar > raptor_unicode_max_codepoint) {
           error_handler(error_data,
-                        "Turtle string error - illegal Unicode character with code point #x%lX.", 
-                        unichar);
+                        "Turtle string error - illegal Unicode character with code point #x%lX (max #x%lX).", 
+                        unichar, raptor_unicode_max_codepoint);
           RAPTOR_FREE(cstring, string);
           return 1;
         }
           
-        d += raptor_unicode_char_to_utf8(unichar, d);
+        d += raptor_unicode_string_put_char(unichar, d, len-(d-string));
 
       } else {
         /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */

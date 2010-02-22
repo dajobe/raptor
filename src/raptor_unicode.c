@@ -45,24 +45,37 @@
 #endif
 
 
+/* Unicode defines only the range U+0000 to U+10FFFF */
+const raptor_unichar raptor_unicode_max_codepoint = 0x10FFFF;
+
+
 /**
- * raptor_unicode_char_to_utf8:
+ * raptor_unicode_string_put_char:
  * @c: Unicode character
  * @output: UTF-8 string buffer or NULL
+ * @length: length of output buffer
  *
- * Convert a Unicode character to UTF-8 encoding.
+ * Encode a Unicode character to a UTF-8 string
  * 
- * Based on librdf_unicode_char_to_utf8() with no need to calculate
- * length since the encoded character is always copied into a buffer
- * with sufficient size.
+ * If @output is NULL, then will calculate the length rather than
+ * perform the encoding.  This can be used by the called to allocate
+ * space and then re-call this function with the new buffer.
  * 
- * Return value: bytes encoded to output buffer or <0 on failure
+ * Return value: number of bytes encoded to output buffer or <0 on failure
  **/
 int
-raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
+raptor_unicode_string_put_char(raptor_unichar c,
+                               unsigned char *output, size_t length)
 {
-  int size = 0;
+  size_t size = 0;
   
+  /* check for illegal code positions:
+   * U+D800 to U+DFFF (UTF-16 surrogates)
+   * U+FFFE and U+FFFF
+   */
+  if((c > 0xD7FF && c < 0xE000) || c == 0xFFFE || c == 0xFFFF)
+    return -1;
+
   if      (c < 0x00000080)
     size = 1;
   else if(c < 0x00000800)
@@ -78,6 +91,13 @@ raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
   else
     return -1;
 
+  /* when no buffer given, return size */
+  if(!output)
+    return size;
+
+  if(size > length)
+    return -1;
+  
   switch(size) {
     case 6:
       output[5] = 0x80 | (unsigned char)(c & 0x3F);
@@ -119,9 +139,9 @@ raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
 
 /**
  * raptor_unicode_utf8_string_get_char:
- * @output: Pointer to the Unicode character or NULL
  * @input: UTF-8 string buffer
  * @length: buffer size
+ * @output: Pointer to the Unicode character or NULL
  *
  * Decode a UTF-8 encoded string to get a Unicode character.
  * 
@@ -131,11 +151,11 @@ raptor_unicode_char_to_utf8(raptor_unichar c, unsigned char *output)
  * Return value: bytes used from input buffer or <0 on failure: -1 input buffer too short or length error, -2 overlong UTF-8 sequence, -3 illegal code positions, -4 code out of range U+0000 to U+10FFFF.  In cases -2, -3 and -4 the coded character is stored in the output.
  */
 int
-raptor_unicode_utf8_string_get_char(raptor_unichar *output,
-                                    const unsigned char *input, int length)
+raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
+                                    raptor_unichar *output)
 {
   unsigned char in;
-  int size;
+  size_t size;
   raptor_unichar c = 0;
   
   if(length < 1)
@@ -229,9 +249,7 @@ raptor_unicode_utf8_string_get_char(raptor_unichar *output,
   if((c > 0xD7FF && c < 0xE000) || c == 0xFFFE || c == 0xFFFF)
     return -3;
 
-  /* Unicode 3.2 only defines U+0000 to U+10FFFF and UTF-8 encodings of it */
-  /* of course this makes some 4 byte forms illegal */
-  if(c > 0x10ffff)
+  if(c > raptor_unicode_max_codepoint)
     return -4;
 
   return size;
@@ -821,11 +839,11 @@ raptor_unicode_check_utf8_string(const unsigned char *string, size_t length)
     raptor_unichar unichar = 0;
 
     int unichar_len;
-    unichar_len = raptor_unicode_utf8_string_get_char(&unichar, string, length);
+    unichar_len = raptor_unicode_utf8_string_get_char(string, length, &unichar);
     if(unichar_len < 0 || unichar_len > (int)length)
       return 0;
 
-    if(unichar > 0x10ffff)
+    if(unichar > raptor_unicode_max_codepoint)
       return 0;
   
     string += unichar_len;

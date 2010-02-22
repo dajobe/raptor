@@ -411,12 +411,12 @@ raptor_xml_namespace_string_parse
 <FILE>section-unicode</FILE>
 raptor_unichar
 raptor_unicode_char_to_utf8
-raptor_utf8_to_unicode_char
+raptor_unicode_utf8_string_get_char
 raptor_unicode_is_xml11_namestartchar
 raptor_unicode_is_xml10_namestartchar
 raptor_unicode_is_xml11_namechar
 raptor_unicode_is_xml10_namechar
-raptor_utf8_check
+raptor_unicode_check_utf8_string
 </SECTION>
 
 <SECTION>

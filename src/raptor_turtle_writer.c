@@ -437,7 +437,7 @@ raptor_string_python_write(const unsigned char *string,
     
     /* It is unicode */
     
-    unichar_len = raptor_unicode_utf8_string_get_char(NULL, string, len);
+    unichar_len = raptor_unicode_utf8_string_get_char(string, len, NULL);
     if(unichar_len < 0 || unichar_len > (int)len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
@@ -446,7 +446,7 @@ raptor_string_python_write(const unsigned char *string,
       /* Turtle and JSON are UTF-8 - no need to escape */
       raptor_iostream_counted_string_write(string, unichar_len, iostr);
     } else {
-      unichar_len = raptor_unicode_utf8_string_get_char(&unichar, string, len);
+      unichar_len = raptor_unicode_utf8_string_get_char(string, len, &unichar);
 
       if(unichar < 0x10000) {
         raptor_iostream_counted_string_write("\\u", 2, iostr);

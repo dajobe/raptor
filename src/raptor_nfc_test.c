@@ -94,7 +94,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 
     p = (const char*)endptr;
     
-    u+= raptor_unicode_char_to_utf8(c, u);
+    u += raptor_unicode_string_put_char(c, u);
     
     if((u-utf8_string) > (int)utf8_string_length) {
       fprintf(stderr,
