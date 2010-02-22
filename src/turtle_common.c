@@ -127,7 +127,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           return 1;
         }
           
-        d += raptor_unicode_string_put_char(unichar, d, len-(d-string));
+        d += raptor_unicode_utf8_string_put_char(unichar, d, len-(d-string));
 
       } else {
         /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */

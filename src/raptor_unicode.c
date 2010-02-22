@@ -50,7 +50,7 @@ const raptor_unichar raptor_unicode_max_codepoint = 0x10FFFF;
 
 
 /**
- * raptor_unicode_string_put_char:
+ * raptor_unicode_utf8_string_put_char:
  * @c: Unicode character
  * @output: UTF-8 string buffer or NULL
  * @length: length of output buffer
@@ -64,8 +64,8 @@ const raptor_unichar raptor_unicode_max_codepoint = 0x10FFFF;
  * Return value: number of bytes encoded to output buffer or <0 on failure
  **/
 int
-raptor_unicode_string_put_char(raptor_unichar c,
-                               unsigned char *output, size_t length)
+raptor_unicode_utf8_string_put_char(raptor_unichar c,
+                                    unsigned char *output, size_t length)
 {
   size_t size = 0;
   

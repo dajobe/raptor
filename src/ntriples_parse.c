@@ -274,7 +274,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
 
 
 /*
- * raptor_ntriples_term - Parse an N-Triples term with escapes
+ * raptor_ntriples_term:
  * @parser: NTriples parser
  * @start: pointer to starting character of string (in)
  * @dest: destination of string (in)
@@ -283,7 +283,14 @@ raptor_ntriples_term_valid(unsigned char c, int position,
  * @end_char: string ending character
  * @class: string class
  * @allow_utf8: Non-0 if UTF-8 chars are allowed in the term
- * 
+ *
+ * Parse an N-Triples term with escapes.
+ *
+ * Relies that @dest is long enough; it need only be as large as the
+ * input string @start since when UTF-8 encoding, the escapes are
+ * removed and the result is always less than or equal to length of
+ * input.
+ *
  * N-Triples strings/URIs are written in ASCII at present; characters
  * outside the printable ASCII range are discarded with a warning.
  * See the grammar for full details of the allowed ranges.
@@ -437,8 +444,14 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
                               unichar, raptor_unicode_max_codepoint);
           break;
         }
-          
-        dest += raptor_unicode_string_put_char(unichar, dest, 8 /* FIXME */);
+
+        /* The destination length is set here to 4 since we know that in 
+         * all cases, the UTF-8 encoded output sequence is always shorter
+         * than the input sequence, and the buffer is edited in place.
+         *   \uXXXX: 6 bytes input - UTF-8 max 3 bytes output
+         *   \uXXXXXXXX: 10 bytes input - UTF-8 max 4 bytes output
+         */
+        dest += raptor_unicode_utf8_string_put_char(unichar, dest, 4);
         break;
 
       default:
