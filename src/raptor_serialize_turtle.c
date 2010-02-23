@@ -809,8 +809,10 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   if(rdf_type_uri) {
     raptor_term* uri_term;
     uri_term = raptor_new_term_from_uri(serializer->world,
-                                        raptor_uri_copy(rdf_type_uri));
+                                        rdf_type_uri);
+    raptor_free_uri(rdf_type_uri);
     context->rdf_type = raptor_new_abbrev_node(serializer->world, uri_term);
+    raptor_free_term(uri_term);
   } else
     context->rdf_type = NULL;
 
