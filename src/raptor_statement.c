@@ -85,6 +85,8 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
       raptor_free_term(predicate);
     if(object)
       raptor_free_term(object);
+    if(graph)
+	  raptor_free_term(graph);
     return NULL;
   }
   
