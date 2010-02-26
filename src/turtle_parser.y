@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * turtle_parser.y - Raptor Turtle / N3 parsers - over tokens from turtle grammar lexer
+ * turtle_parser.y - Raptor Turtle / TRIG / N3 parsers - over tokens from turtle grammar lexer
  *
  * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
@@ -25,6 +25,7 @@
  * Made from a subset of the terms in
  *   http://www.w3.org/DesignIssues/Notation3.html
  *
+ * TRIG is defined in http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/
  */
 
 %{
@@ -202,8 +203,12 @@ graph: graphName colonMinusOpt LEFT_CURLY
     raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
-    else
+    else {
+      if(turtle_parser->graph_name)
+        raptor_free_term(turtle_parser->graph_name);
+      turtle_parser->graph_name = $1; /* becomes owner of $1 */
       raptor_parser_set_graph_name(parser, $1->value.uri);
+    }
   }
   graphBody RIGHT_CURLY
 {
@@ -218,8 +223,12 @@ LEFT_CURLY
     raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
-    else
+    else {
+      if(turtle_parser->graph_name)
+        raptor_free_term(turtle_parser->graph_name);
+      turtle_parser->graph_name = NULL;
       raptor_parser_set_graph_name(parser, NULL);
+    }
   }
   graphBody RIGHT_CURLY
 ;
@@ -1218,7 +1227,7 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
   if(raptor_namespaces_init(rdf_parser->world, &turtle_parser->namespaces, 0))
     return 1;
 
-  turtle_parser->trig=!strcmp(name, "trig");
+  turtle_parser->trig = !strcmp(name, "trig");
 
   return 0;
 }
@@ -1245,18 +1254,27 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
 
   if(turtle_parser->buffer)
     RAPTOR_FREE(cdata, turtle_parser->buffer);
+
+  if(turtle_parser->graph_name)
+    raptor_free_term(turtle_parser->graph_name);
 }
 
 
 static void
 raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
 {
-  /* raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)parser->context; */
-  raptor_statement *statement=&parser->statement;
+  raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)parser->context;
+  raptor_statement *statement = &parser->statement;
 
   if(!t->subject || !t->predicate || !t->object)
     return;
 
+  if(!parser->statement_handler)
+    return;
+
+  if(turtle_parser->trig)
+    statement->graph = raptor_term_copy(turtle_parser->graph_name);
+  
   /* Two choices for subject for Turtle */
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject = raptor_new_term_from_blank(parser->world,
@@ -1299,15 +1317,15 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
                                                      t->object->value.literal.language);
   }
 
-  if(!parser->statement_handler)
-    return;
-
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
 
   raptor_free_term(statement->subject); statement->subject = NULL;
   raptor_free_term(statement->predicate); statement->predicate = NULL;
   raptor_free_term(statement->object); statement->object = NULL;
+  if(statement->graph) {
+    raptor_free_term(statement->graph); statement->graph = NULL;
+  }
 }
 
 
@@ -1563,7 +1581,8 @@ raptor_init_parser_trig(raptor_world* world)
 #define TURTLE_FILE_BUF_SIZE 2048
 
 static
-void turtle_parser_print_statement(void *user, const raptor_statement *statement) 
+void turtle_parser_print_statement(void *user,
+                                   const raptor_statement *statement) 
 {
   FILE* stream = (FILE*)user;
   raptor_statement_print(statement, stream);

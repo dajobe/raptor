@@ -68,6 +68,9 @@ struct raptor_turtle_parser_s {
 
   /* count of errors in current parse */
   int error_count;
+
+  /* TRIG graph name */
+  raptor_term* graph_name;
 };
 
 
