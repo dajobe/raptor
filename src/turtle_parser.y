@@ -1255,8 +1255,10 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   if(turtle_parser->buffer)
     RAPTOR_FREE(cdata, turtle_parser->buffer);
 
-  if(turtle_parser->graph_name)
+  if(turtle_parser->graph_name) {
     raptor_free_term(turtle_parser->graph_name);
+    turtle_parser->graph_name = NULL;
+  }
 }
 
 
