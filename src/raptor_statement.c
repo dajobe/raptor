@@ -561,6 +561,9 @@ raptor_statement_compare(const raptor_statement *s1,
 void
 raptor_free_term(raptor_term *term)
 {
+  if(!term)
+    return;
+  
   if(--term->usage)
     return;
   
