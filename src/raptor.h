@@ -438,7 +438,7 @@ typedef struct {
  * @subject: statement subject
  * @predicate: statement predicate
  * @object: statement object
- * @object: statement graph name (or NULL if not present)
+ * @graph: statement graph name (or NULL if not present)
  *
  * An RDF triple with optional graph name (quad)
  *
