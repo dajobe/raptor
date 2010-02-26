@@ -319,7 +319,7 @@ objectList: objectList COMMA object
   if(!$3)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $3);
+    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $3, NULL);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -353,7 +353,7 @@ objectList: objectList COMMA object
   if(!$1)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $1);
+    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $1, NULL);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
@@ -403,7 +403,7 @@ itemList: itemList object
   if(!$2)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $2);
+    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $2, NULL);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -437,7 +437,7 @@ itemList: itemList object
   if(!$1)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $1);
+    triple = raptor_new_statement_from_nodes(((raptor_parser*)rdf_parser)->world, NULL, NULL, $1, NULL);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG

@@ -745,7 +745,7 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
 raptor_statement* raptor_new_statement(raptor_world *world);
-raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object);
+raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object, raptor_term *graph);
 raptor_statement* raptor_statement_copy(raptor_statement *statement);
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
 int raptor_term_equals(raptor_term* term1, raptor_term* term2);

@@ -438,8 +438,9 @@ typedef struct {
  * @subject: statement subject
  * @predicate: statement predicate
  * @object: statement object
+ * @object: statement graph name (or NULL if not present)
  *
- * An RDF triple with graph
+ * An RDF triple with optional graph name (quad)
  *
  * See #raptor_term for a description of how the fields may be used.
  * As returned by a parser statement_handler.
@@ -450,6 +451,7 @@ typedef struct {
   raptor_term* subject;
   raptor_term* predicate;
   raptor_term* object;
+  raptor_term* graph;
 } raptor_statement;
 
 

@@ -72,7 +72,8 @@ raptor_new_statement(raptor_world *world)
 
 raptor_statement*
 raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
-                                raptor_term *predicate, raptor_term *object)
+                                raptor_term *predicate, raptor_term *object,
+                                raptor_term *graph)
 {
   raptor_statement* t;
   
@@ -90,6 +91,7 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
   t->subject = subject;
   t->predicate = predicate;
   t->object = object;
+  t->graph = graph;
 
   return t;
 }
@@ -139,6 +141,8 @@ raptor_statement_copy(raptor_statement *statement)
       s2->predicate = raptor_term_copy(statement->predicate);
     if(statement->object)
       s2->object = raptor_term_copy(statement->object);
+    if(statement->graph)
+      s2->graph = raptor_term_copy(statement->graph);
 
     return s2;
   }
@@ -178,6 +182,10 @@ raptor_free_statement(raptor_statement *statement)
   if(statement->object) {
     raptor_free_term(statement->object);
     statement->object = NULL;
+  }
+  if(statement->graph) {
+    raptor_free_term(statement->graph);
+    statement->graph = NULL;
   }
   if(is_dynamic)
     RAPTOR_FREE(raptor_statement, statement);
@@ -243,6 +251,20 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
           stream);
   }
 
+  if(statement->graph) {
+    if(statement->graph->type == RAPTOR_TERM_TYPE_BLANK &&
+       statement->graph->value.blank) {
+      fputs(", ", stream);
+
+      fputs((const char*)statement->graph->value.blank, stream);
+    } else if(statement->graph->type == RAPTOR_TERM_TYPE_URI &&
+              statement->graph->value.uri) {
+      fputs(", ", stream);
+      fputs((const char*)raptor_uri_as_string(statement->graph->value.uri),
+            stream);
+    }
+  }
+  
   fputc(']', stream);
   
   return rc;
@@ -411,6 +433,11 @@ raptor_statement_print_as_ntriples(const raptor_statement * statement,
   fputc(' ', stream);
   if(raptor_term_print_as_ntriples(statement->object, stream))
     return 1;
+  if(statement->graph) {
+    fputc(' ', stream);
+    if(raptor_term_print_as_ntriples(statement->graph, stream))
+      return 1;
+  }
   fputs(" .", stream);
 
   return 0;
@@ -513,6 +540,12 @@ raptor_statement_compare(const raptor_statement *s1,
 
   /* objects are URIs or blank nodes or literals */
   d = raptor_term_compare(s1->object, s2->object);
+  if(d)
+    return d;
+
+  /* graphs are URIs or blank nodes */
+  d = raptor_term_compare(s1->graph, s2->graph);
+
   return d;
 }
 
