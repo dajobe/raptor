@@ -467,6 +467,15 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
 {
   int d = 0;
   
+  /* check for NULL terms */
+  if(!t1 || !t2) {
+    if(!t1 && !t2)
+      return 0; /* both NULL */
+
+    /* place NULLs before any other term */
+    return t1 ? 1 : -1;
+  }
+
   if(t1->type != t2->type)
     return (t1->type - t2->type);
   
