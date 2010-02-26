@@ -224,9 +224,10 @@ LEFT_CURLY
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
     else {
-      if(turtle_parser->graph_name)
+      if(turtle_parser->graph_name) {
         raptor_free_term(turtle_parser->graph_name);
-      turtle_parser->graph_name = NULL;
+        turtle_parser->graph_name = NULL;
+      }
       raptor_parser_set_graph_name(parser, NULL);
     }
   }
