@@ -645,6 +645,8 @@ RAPTOR_API
 void raptor_world_set_error_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
 RAPTOR_API
 void raptor_world_set_warning_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
+RAPTOR_API
+const char* raptor_log_level_get_label(raptor_log_level level);
 
 /* Parser names */
 RAPTOR_API

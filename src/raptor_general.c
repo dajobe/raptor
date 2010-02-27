@@ -550,6 +550,21 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
 };
 
 
+/**
+ * raptor_log_level_get_label:
+ * @level:
+ *
+ * Get label for a log level
+ *
+ * Return value: label string or NULL if level is not valid
+ */
+const char*
+raptor_log_level_get_label(raptor_log_level level)
+{
+  return (level <= RAPTOR_LOG_LEVEL_LAST) ? raptor_log_level_labels[level] : NULL;
+}
+
+
 /* internal */
 void
 raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
