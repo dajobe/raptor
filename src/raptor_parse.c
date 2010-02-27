@@ -495,8 +495,6 @@ raptor_new_parser(raptor_world* world, const char *name)
 
   rdf_parser->failed = 0;
 
-  rdf_parser->world->error_handlers.locator = &rdf_parser->locator;
-  
   /* Initialise default (lax) option values */
   raptor_parser_set_strict(rdf_parser, 0);
 

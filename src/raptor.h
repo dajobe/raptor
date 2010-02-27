@@ -481,33 +481,19 @@ typedef enum {
 
 
 /**
- * raptor_message_handler:
+ * raptor_log_handler:
  * @user_data: user data
  * @locator: location associated with message or NULL
  * @message: message to report
  *
- * Message with location handler function.
+ * Handler function for log messages with location
  *
  * Used during parsing and serializing for errors and warnings that
- * may include location information. Multiple handlers may be set for
- * parsers and serializers by raptor_world_set_fatal_error_handler(),
- * raptor_world_set_error_handler(), raptor_world_set_warning_handler().
+ * may include location information. Handlers may be set
+ * by raptor_world_set_log_handler().
  *
  */
-typedef void (*raptor_message_handler)(void *user_data, raptor_locator* locator, const char *message);
-
-
-/**
- * raptor_message_handler_closure:
- * @user_data: user data for handler invocation
- * @handler: handler function
- *
- * The combination of a message handler and the user data to send to it.
- */
-typedef struct {
-  void *user_data;
-  raptor_message_handler handler;
-} raptor_message_handler_closure;
+typedef void (*raptor_log_handler)(void *user_data, raptor_log_level level, raptor_locator* locator, const char *message);
 
 
 /**
@@ -640,11 +626,7 @@ void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *se
 RAPTOR_API
 void raptor_world_set_libxml_flags(raptor_world *world,  int flags);
 RAPTOR_API
-void raptor_world_set_fatal_error_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
-RAPTOR_API
-void raptor_world_set_error_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
-RAPTOR_API
-void raptor_world_set_warning_handler(raptor_world *world, void *user_data, raptor_message_handler handler);
+void raptor_world_set_log_handler(raptor_world *world, void *user_data, raptor_log_handler handler);
 RAPTOR_API
 const char* raptor_log_level_get_label(raptor_log_level level);
 
@@ -1565,34 +1547,6 @@ typedef void (*raptor_sax2_unparsed_entity_decl_handler)(void *user_data, const 
  * fatal error in the handling of the external entity.
  */
 typedef int (*raptor_sax2_external_entity_ref_handler)(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
-
-
-/**
- * raptor_error_handlers:
- * @magic: magic value - must use raptor_error_handlers_init() to set this
- * @world: raptor_world object
- * @locator: raptor locator of the error
- * @last_log_level: number of log levels; size of @handlers arrays
- * @handlers: user handlers per log level
- *
- * Error handlers structure
- */
-typedef struct {
-  unsigned int magic;
-
-  raptor_world *world;
-
-  raptor_locator* locator;
-
-  /* size of handlers array */
-  raptor_log_level last_log_level;
-
-  /* this must be at the end of the structure to allow handlers array to grow */
-  raptor_message_handler_closure handlers[RAPTOR_LOG_LEVEL_LAST+1];
-} raptor_error_handlers;
-
-RAPTOR_API
-void raptor_error_handlers_init(raptor_world* world, raptor_error_handlers* error_handlers);
 
 
 /* SAX2 API */
