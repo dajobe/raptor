@@ -212,8 +212,6 @@ graph: graphName colonMinusOpt LEFT_CURLY
   }
   graphBody RIGHT_CURLY
 {
-  /* free graph name in final action */
-  raptor_free_term($1);
 }
 |
 LEFT_CURLY

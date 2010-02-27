@@ -2,7 +2,7 @@
  *
  * raptor_general.c - Raptor general routines
  *
- * Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -50,9 +50,9 @@
 
 /* statics */
 
-const char * const raptor_short_copyright_string = "Copyright 2000-2009 David Beckett. Copyright 2000-2005 University of Bristol";
+const char * const raptor_short_copyright_string = "Copyright 2000-2010 David Beckett. Copyright 2000-2005 University of Bristol";
 
-const char * const raptor_copyright_string = "Copyright (C) 2000-2009 David Beckett - http://www.dajobe.org/\nCopyright (C) 2000-2005 University of Bristol - http://www.bristol.ac.uk/";
+const char * const raptor_copyright_string = "Copyright (C) 2000-2010 David Beckett - http://www.dajobe.org/\nCopyright (C) 2000-2005 University of Bristol - http://www.bristol.ac.uk/";
 
 const char * const raptor_license_string = "LGPL 2.1 or newer, GPL 2 or newer, Apache 2.0 or newer.\nSee http://librdf.org/raptor/LICENSE.html for full terms.";
 
@@ -116,6 +116,8 @@ raptor_new_world(void)
   
   world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(*world), 1);
   if(world) {
+    world->magic = RAPTOR_WORLD_MAGIC;
+    
     /* set default libxml flags - can be updated by
      * raptor_world_set_libxml_flags()
      */
@@ -125,9 +127,6 @@ raptor_new_world(void)
      */
     world->libxml_flags = RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE |
                           RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE ;
-
-    world->error_handlers.last_log_level = RAPTOR_LOG_LEVEL_LAST;
-    raptor_error_handlers_init(world, &world->error_handlers);
 
     world->internal_ignore_errors = 0;
   }
@@ -280,65 +279,23 @@ raptor_world_set_libxml_flags(raptor_world *world, int flags)
 
 
 /**
- * raptor_world_set_fatal_error_handler:
+ * raptor_world_set_log_handler:
  * @world: world object
  * @user_data: user data to pass to function
  * @handler: pointer to the function
  *
- * Set the error handling function.
+ * Set the message (error, warning, info) handling function.
  * 
- * The function will receive callbacks when fatal errors happen
- * 
- **/
-void
-raptor_world_set_fatal_error_handler(raptor_world *world, void *user_data,
-                                     raptor_message_handler handler)
-{
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].user_data = user_data;
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_FATAL].handler = handler;
-}
-
-
-/**
- * raptor_world_set_error_handler:
- * @world: world object
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- *
- * Set the parser error handling function.
- * 
- * The function will receive callbacks when errors happen.
+ * The function will receive callbacks when messages are generated
  * 
  **/
 void
-raptor_world_set_error_handler(raptor_world *world, void *user_data,
-                               raptor_message_handler handler)
+raptor_world_set_log_handler(raptor_world *world, void *user_data,
+                             raptor_log_handler handler)
 {
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].user_data = user_data;
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_ERROR].handler = handler;
+  world->message_handler_user_data = user_data;
+  world->message_handler = handler;
 }
-
-
-/**
- * raptor_world_set_warning_handler:
- * @world: world object
- * @user_data: user data to pass to function
- * @handler: pointer to the function
- *
- * Set the parser warning handling function.
- * 
- * The function will receive callbacks when warnings happen.
- * 
- **/
-void
-raptor_world_set_warning_handler(raptor_world *world, void *user_data,
-                                 raptor_message_handler handler)
-{
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARN].user_data = user_data;
-  world->error_handlers.handlers[RAPTOR_LOG_LEVEL_WARN].handler = handler;
-}
-
-
 
 
 /* 
@@ -522,23 +479,6 @@ raptor_check_ordinal(const unsigned char *name)
 }
 
 
-/**
- * raptor_error_handlers_init:
- * @world: raptor_world object
- * @error_handlers: error handlers object
- *
- * Initialize #raptor_error_handlers object statically.
- *
- */
-void
-raptor_error_handlers_init(raptor_world *world,
-                           raptor_error_handlers* error_handlers)
-{
-  error_handlers->magic = RAPTOR_ERROR_HANDLER_MAGIC;
-  error_handlers->world = world;
-}
-
-
 static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
   "none",
   "trace",
@@ -548,6 +488,21 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
   "error",
   "fatal error"
 };
+
+
+/**
+ * raptor_log_level_get_label:
+ * @level:
+ *
+ * Get label for a log level
+ *
+ * Return value: label string or NULL if level is not valid
+ */
+const char*
+raptor_log_level_get_label(raptor_log_level level)
+{
+  return (level <= RAPTOR_LOG_LEVEL_LAST) ? raptor_log_level_labels[level] : NULL;
+}
 
 
 /* internal */
@@ -614,8 +569,7 @@ void
 raptor_log_error(raptor_world* world, raptor_log_level level,
                  raptor_locator* locator, const char* message)
 {
-  raptor_message_handler handler;
-  void* handler_data;
+  raptor_log_handler handler;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
@@ -623,14 +577,12 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
   if(world->internal_ignore_errors)
     return;
 
-  handler = world->error_handlers.handlers[level].handler;
-  handler_data = world->error_handlers.handlers[level].user_data;
-
+  handler = world->message_handler;
   if(handler)
     /* This is the place in raptor that ALL of the user error handler
      * functions are called.
      */
-    handler(handler_data, locator, message);
+    handler(world->message_handler_user_data, level, locator, message);
   else {
     if(locator && world) {
       raptor_locator_print(locator, stderr);

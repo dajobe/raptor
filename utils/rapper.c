@@ -2,7 +2,7 @@
  *
  * rapper.c - Raptor RDF Parsing and Serializing utility
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -220,36 +220,47 @@ static const char * const title_format_string="Raptor RDF syntax parsing and ser
 
 
 static void
-rdfdump_error_handler(void *data, raptor_locator *locator,
-                      const char *message)
+rapper_log_handler(void *data, raptor_log_level level,
+                   raptor_locator *locator, const char *message)
 {
   raptor_parser *parser = (raptor_parser *)data;
   
-  if(!ignore_errors) {
-    fprintf(stderr, "%s: Error - ", program);
-    raptor_locator_print(locator, stderr);
-    fprintf(stderr, " - %s\n", message);
-    
-    raptor_parser_parse_abort(parser);
+  switch(level) {
+    case RAPTOR_LOG_LEVEL_FATAL:
+    case RAPTOR_LOG_LEVEL_ERROR:
+      if(!ignore_errors) {
+        fprintf(stderr, "%s: Error - ", program);
+        raptor_locator_print(locator, stderr);
+        fprintf(stderr, " - %s\n", message);
+        
+        raptor_parser_parse_abort(parser);
+      }
+      
+      error_count++;
+      break;
+
+    case RAPTOR_LOG_LEVEL_WARN:
+      if(!ignore_warnings) {
+        fprintf(stderr, "%s: Warning - ", program);
+        raptor_locator_print(locator, stderr);
+        fprintf(stderr, " - %s\n", message);
+      }
+      
+      warning_count++;
+      break;
+
+    case RAPTOR_LOG_LEVEL_NONE:
+    case RAPTOR_LOG_LEVEL_TRACE:
+    case RAPTOR_LOG_LEVEL_DEBUG:
+    case RAPTOR_LOG_LEVEL_INFO:
+
+      fprintf(stderr, "%s: Unexpected %s message - ", program,
+              raptor_log_level_get_label(level));
+      raptor_locator_print(locator, stderr);
+      fprintf(stderr, " - %s\n", message);
+      break;
   }
-
-  error_count++;
-}
-
-
-static void
-rdfdump_warning_handler(void *data, raptor_locator *locator,
-                        const char *message) 
-{
-  /* raptor_parser *parser = (raptor_parser *)data; */
-
-  if(!ignore_warnings) {
-    fprintf(stderr, "%s: Warning - ", program);
-    raptor_locator_print(locator, stderr);
-    fprintf(stderr, " - %s\n", message);
-  }
-
-  warning_count++;
+  
 }
 
 struct namespace_decl
@@ -260,7 +271,7 @@ struct namespace_decl
 
 
 static void
-rdfdump_free_namespace_decl(void* data) {
+rapper_free_namespace_decl(void* data) {
   struct namespace_decl* nsd = (struct namespace_decl*)data;
   if(nsd->prefix)
     raptor_free_memory(nsd->prefix);
@@ -408,14 +419,14 @@ main(int argc, char *argv[])
                                                  &nd->uri_string)) {
               fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n", program, 
                       optarg);
-              rdfdump_free_namespace_decl(nd);
+              rapper_free_namespace_decl(nd);
 
               raptor_free_world(world);
               exit(0);
             }
 
             if(!namespace_declarations)
-              namespace_declarations = raptor_new_sequence(rdfdump_free_namespace_decl, NULL);
+              namespace_declarations = raptor_new_sequence(rapper_free_namespace_decl, NULL);
 
             raptor_sequence_push(namespace_declarations, nd);
           } else {
@@ -830,8 +841,7 @@ main(int argc, char *argv[])
     return(1);
   }
 
-  raptor_world_set_error_handler(world, rdf_parser, rdfdump_error_handler);
-  raptor_world_set_warning_handler(world, rdf_parser, rdfdump_warning_handler);
+  raptor_world_set_log_handler(world, rdf_parser, rapper_log_handler);
   
   raptor_parser_set_strict(rdf_parser, strict_mode);
   

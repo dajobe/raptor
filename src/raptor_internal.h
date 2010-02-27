@@ -609,12 +609,6 @@ struct raptor_serializer_s {
   unsigned char *option_literal_fill;
   unsigned char *option_bnode_fill;
 
-  void *error_user_data;
-  void *warning_user_data;
-
-  raptor_message_handler error_handler;
-  raptor_message_handler warning_handler;
-
   /* non 0 if serializer had fatal error and cannot continue */
   int failed;
 
@@ -764,8 +758,6 @@ void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_
 void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* logging */
-#define RAPTOR_ERROR_HANDLER_MAGIC 0xD00DB1FF
-
 void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
 void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
 void raptor_log_error_formatted(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, ...) RAPTOR_PRINTF_FORMAT(4, 5);
@@ -1351,14 +1343,20 @@ int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
 /* raptor_world structure */
+#define RAPTOR_WORLD_MAGIC 0xF00DD00D
+
 struct raptor_world_s {
+  /* signature to check this is a world object */
+  unsigned int magic;
+  
   /* world has been initialized with raptor_world_open() */
   int opened;
 
   /* internal flag used to ignore errors for e.g. child GRDDL parsers */
   int internal_ignore_errors;
   
-  raptor_error_handlers error_handlers;
+  void* message_handler_user_data;
+  raptor_log_handler message_handler;
 
   /* sequence of parser factories */
   raptor_sequence *parsers;

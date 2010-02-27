@@ -719,7 +719,7 @@ raptor_libxml_xmlStructuredError_handler_global(void *user_data,
   /* user_data may point to a raptor_world* */
   if(user_data) {
     world = (raptor_world*)user_data;
-    if(world->error_handlers.magic != RAPTOR_ERROR_HANDLER_MAGIC)
+    if(world->magic != RAPTOR_WORLD_MAGIC)
       world = NULL;
   }
 
