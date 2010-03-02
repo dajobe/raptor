@@ -481,10 +481,27 @@ typedef enum {
 
 
 /**
+ * raptor_log_message:
+ * @code: error code or <0
+ * @level: log level
+ * @locator: location associated with message or NULL
+ * @text: message string
+ *
+ * Log message.
+ */
+typedef struct 
+{
+  int code;
+  raptor_log_level level;
+  raptor_locator *locator;
+  const char *text;
+} raptor_log_message;
+
+
+/**
  * raptor_log_handler:
  * @user_data: user data
- * @locator: location associated with message or NULL
- * @message: message to report
+ * @message: log message
  *
  * Handler function for log messages with location
  *
@@ -493,7 +510,7 @@ typedef enum {
  * by raptor_world_set_log_handler().
  *
  */
-typedef void (*raptor_log_handler)(void *user_data, raptor_log_level level, raptor_locator* locator, const char *message);
+typedef void (*raptor_log_handler)(void *user_data, raptor_log_message *message);
 
 
 /**

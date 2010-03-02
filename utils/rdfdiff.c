@@ -143,7 +143,7 @@ static void rdfdiff_free_blank(rdfdiff_blank *blank);
 static int  rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
                                  rdfdiff_file*b1_file, rdfdiff_file*b2_file);
 
-static void rdfdiff_log_handler(void *data, raptor_log_level level, raptor_locator *locator, const char *message);
+static void rdfdiff_log_handler(void *data, raptor_log_message *message);
 
 static void rdfdiff_collect_statements(void *user_data, raptor_statement *statement);
 
@@ -436,18 +436,17 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
 
 
 static void
-rdfdiff_log_handler(void *data, raptor_log_level level,
-                    raptor_locator *locator, const char *message)
+rdfdiff_log_handler(void *data, raptor_log_message *message)
 {
   rdfdiff_file* file = (rdfdiff_file*)data;
   
-   switch(level) {
+   switch(message->level) {
     case RAPTOR_LOG_LEVEL_FATAL:
     case RAPTOR_LOG_LEVEL_ERROR:
       if(!ignore_errors) {
         fprintf(stderr, "%s: Error - ", program);
-        raptor_locator_print(locator, stderr);
-        fprintf(stderr, " - %s\n", message);
+        raptor_locator_print(message->locator, stderr);
+        fprintf(stderr, " - %s\n", message->text);
         
         raptor_parser_parse_abort(file->parser);
       }
@@ -458,8 +457,8 @@ rdfdiff_log_handler(void *data, raptor_log_level level,
     case RAPTOR_LOG_LEVEL_WARN:
       if(!ignore_warnings) {
         fprintf(stderr, "%s: Warning - ", program);
-        raptor_locator_print(locator, stderr);
-        fprintf(stderr, " - %s\n", message);
+        raptor_locator_print(message->locator, stderr);
+        fprintf(stderr, " - %s\n", message->text);
       }
       
       file->warning_count++;
@@ -471,9 +470,9 @@ rdfdiff_log_handler(void *data, raptor_log_level level,
     case RAPTOR_LOG_LEVEL_INFO:
 
       fprintf(stderr, "%s: Unexpected %s message - ", program,
-              raptor_log_level_get_label(level));
-      raptor_locator_print(locator, stderr);
-      fprintf(stderr, " - %s\n", message);
+              raptor_log_level_get_label(message->level));
+      raptor_locator_print(message->locator, stderr);
+      fprintf(stderr, " - %s\n", message->text);
       break;
   }
   

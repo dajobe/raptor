@@ -1405,6 +1405,9 @@ struct raptor_world_s {
   raptor_uri* concepts[RDF_NS_LAST + 1];
 
   raptor_term* terms[RDF_NS_LAST + 1];
+
+  /* last log message - points to data it does not own */
+  raptor_log_message message;
 };
 
 /* raptor_www.c */

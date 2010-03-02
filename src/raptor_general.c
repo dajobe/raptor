@@ -567,9 +567,15 @@ raptor_log_error_formatted(raptor_world* world, raptor_log_level level,
 /* internal */
 void
 raptor_log_error(raptor_world* world, raptor_log_level level,
-                 raptor_locator* locator, const char* message)
+                 raptor_locator* locator, const char* text)
 {
   raptor_log_handler handler;
+  
+  memset(&world->message, '\0', sizeof(&world->message));
+  world->message.code = -1;
+  world->message.level = level;
+  world->message.locator = locator;
+  world->message.text = text;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
@@ -582,7 +588,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
     /* This is the place in raptor that ALL of the user error handler
      * functions are called.
      */
-    handler(world->message_handler_user_data, level, locator, message);
+    handler(world->message_handler_user_data, &world->message);
   else {
     if(locator && world) {
       raptor_locator_print(locator, stderr);
@@ -591,7 +597,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
     fputs("raptor ", stderr);
     fputs(raptor_log_level_labels[level], stderr);
     fputs(" - ", stderr);
-    fputs(message, stderr);
+    fputs(text, stderr);
     fputc('\n', stderr);
   }
 }
