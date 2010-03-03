@@ -479,7 +479,7 @@ raptor_check_ordinal(const unsigned char *name)
 }
 
 
-static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
+static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST + 1] = {
   "none",
   "trace",
   "debug",
@@ -492,9 +492,9 @@ static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST+1]={
 
 /**
  * raptor_log_level_get_label:
- * @level:
+ * @level: log message level
  *
- * Get label for a log level
+ * Get label for a log message level
  *
  * Return value: label string or NULL if level is not valid
  */
