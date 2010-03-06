@@ -505,6 +505,38 @@ raptor_log_level_get_label(raptor_log_level level)
 }
 
 
+static const char* const raptor_domain_labels[RAPTOR_DOMAIN_LAST + 1] = {
+  "none",
+  "I/O Stream",
+  "XML Namespace",
+  "RDF Parser",
+  "XML QName",
+  "XML SAX2",
+  "RDF Serializer",
+  "RDF Term",
+  "URI",
+  "World",
+  "WWW",
+  "XML Writer"
+};
+
+
+/**
+ * raptor_domain_get_label:
+ * @domain: domain
+ *
+ * Get label for a domain
+ *
+ * Return value: label string or NULL if domain is not valid
+ */
+const char*
+raptor_domain_get_label(raptor_domain domain)
+{
+  return (domain <= RAPTOR_DOMAIN_LAST) ? raptor_domain_labels[domain] : NULL;
+}
+
+
+
 /* internal */
 void
 raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
@@ -573,6 +605,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
   
   memset(&world->message, '\0', sizeof(&world->message));
   world->message.code = -1;
+  world->message.domain = RAPTOR_DOMAIN_NONE;
   world->message.level = level;
   world->message.locator = locator;
   world->message.text = text;

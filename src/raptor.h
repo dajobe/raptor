@@ -481,8 +481,44 @@ typedef enum {
 
 
 /**
+ * raptor_domain:
+ * @RAPTOR_DOMAIN_IOSTREAM: I/O stream
+ * @RAPTOR_DOMAIN_NAMESPACE: XML Namespace / namespace stack
+ * @RAPTOR_DOMAIN_PARSER: RDF Parser
+ * @RAPTOR_DOMAIN_QNAME: XML QName
+ * @RAPTOR_DOMAIN_SAX2:  XML SAX2
+ * @RAPTOR_DOMAIN_SERIALIZER: RDF Serializer
+ * @RAPTOR_DOMAIN_TERM: RDF Term
+ * @RAPTOR_DOMAIN_URI: RDF Uri
+ * @RAPTOR_DOMAIN_WORLD: RDF world
+ * @RAPTOR_DOMAIN_WWW: WWW
+ * @RAPTOR_DOMAIN_XML_WRITER: XML Writer
+ * @RAPTOR_DOMAIN_NONE: Internal
+ * @RAPTOR_DOMAIN_LAST: Internal
+ *
+ * Log domain
+ */
+typedef enum {
+  RAPTOR_DOMAIN_NONE,
+  RAPTOR_DOMAIN_IOSTREAM,
+  RAPTOR_DOMAIN_NAMESPACE,
+  RAPTOR_DOMAIN_PARSER,
+  RAPTOR_DOMAIN_QNAME,
+  RAPTOR_DOMAIN_SAX2,
+  RAPTOR_DOMAIN_SERIALIZER,
+  RAPTOR_DOMAIN_TERM,
+  RAPTOR_DOMAIN_URI,
+  RAPTOR_DOMAIN_WORLD,
+  RAPTOR_DOMAIN_WWW,
+  RAPTOR_DOMAIN_XML_WRITER,
+  RAPTOR_DOMAIN_LAST = RAPTOR_DOMAIN_XML_WRITER
+} raptor_domain;
+
+
+/**
  * raptor_log_message:
  * @code: error code or <0
+ * @domain: message domain or RAPTOR_DOMAIN_NONE
  * @level: log level
  * @locator: location associated with message or NULL
  * @text: message string
@@ -492,6 +528,7 @@ typedef enum {
 typedef struct 
 {
   int code;
+  raptor_domain domain;
   raptor_log_level level;
   raptor_locator *locator;
   const char *text;
@@ -646,6 +683,8 @@ RAPTOR_API
 void raptor_world_set_log_handler(raptor_world *world, void *user_data, raptor_log_handler handler);
 RAPTOR_API
 const char* raptor_log_level_get_label(raptor_log_level level);
+RAPTOR_API
+const char* raptor_domain_get_label(raptor_domain domain);
 
 /* Parser names */
 RAPTOR_API
