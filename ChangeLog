@@ -1,3 +1,382 @@
+2010-03-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: Code style
+
+2010-03-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	utils/rapper.c, utils/rdfdiff.c: Added raptor_log_message for
+	message callbacks.
+
+	raptor_log_message: added struct
+
+	raptor_log_handler function prototype now takes just user dat and
+	message.
+
+	raptor_world_s gains a static raptor_log_message for use in errors.
+	No field here is reference counted.
+
+	(raptor_log_error): Rename arg to text and init raptor_log_message
+	structure in world object.
+
+	Updated rapper and rdfdiff log handler functions to new signature.
+
+2010-02-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c:
+	(raptor_log_level_get_label): Added
+
+	* src/raptor.h: Move raptor_log_level earlier
+
+	* src/turtle_parser.y:
+	(graph): Do not free graph name twice for TRIG { }
+
+	* src/raptor_general.c: 2010
+
+2010-02-26  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_term_compare): Allow NULL terms in comparison
+
+	* src/raptor_statement.c:
+	(raptor_new_statement_from_nodes): free passed in graph term on
+	alloc failure
+
+	* src/turtle_parser.y:
+	(graph): No need to NULL something that's already NULL.
+
+	* src/raptor.h:
+	(raptor_statement): fixed docs
+
+	* src/turtle_parser.y:
+	(raptor_turtle_parse_terminate): Set graph_name to NULL after
+	freeing to prevent a double free.
+
+2010-02-25  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_common.h, src/turtle_parser.y: Generate graph name in
+	raptor_statement object for TRIG syntax
+
+	struct raptor_turtle_parser_s gains raptor_term* graph_name.
+
+	Turtle parser: if trig is set, update graph_name field when { and
+	} are parsed, in addition to the raptor_parser_set_graph_name()
+	calls
+
+	(raptor_turtle_parse_terminate): Free any existing graph name.
+
+	(raptor_turtle_generate_statement): Set statement graph name for
+	TRIG, free it if copied in.  End early if there is no statement
+	handler, no need to compute and free terms.
+
+	* src/raptor_statement.c:
+	(raptor_free_term): Return if term is nULL
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_statement.c,
+	src/turtle_parser.y: Added graph name to raptor_statement
+
+	raptor_statement typedef gains an optional raptor_term* graph
+	field for the graph name of the triple.
+
+	(raptor_new_statement_from_nodes): Gains an optional graph
+	argument.
+
+	(raptor_statement_copy, raptor_free_statement,
+	raptor_statement_print, raptor_statement_print_as_ntriples):
+	Updated to use graph field if present.  Updated
+	raptor_new_statement_from_nodes() callers in turtle parser.
+
+2010-02-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_uri.c:
+	(raptor_uri_finish): Set world->uris_tree to NULL after freeing
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_serialize_init): Free rdf_type_uri, uri_term -
+	already copied to other objects.
+
+2010-02-22  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_parse.c:
+	(raptor_parser_factory_add_alias): Do not leak previously added
+	aliases.  FIXME: Discards previously added aliases.
+
+2010-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc_test.c,
+	src/raptor_unicode.c, src/turtle_common.c:
+	(raptor_unicode_utf8_string_put_char): renamed from
+	raptor_unicode_string_put_char()
+
+	* src/raptor.h, src/raptor_internal.h: Export raptor_term_copy to
+	public API.
+
+	* docs/raptor-sections.txt, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_internal.h, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_xml.c, src/turtle_common.c: Define
+	raptor_unicode_max_codepoint for magic number U+10FFFF
+
+2010-02-18  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc.c,
+	src/raptor_nfc_test.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_xml.c:
+	(raptor_unicode_utf8_string_get_char): Renamed from
+	raptor_unicode_decode_utf8_char()
+
+	* src/raptor.h, src/raptor_nfc_test.c, src/raptor_unicode.c:
+	(raptor_unicode_check_utf8_string): Renamed from
+	raptor_utf8_check()
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_unicode.c:
+	(raptor_unicode_check_utf8_nfc_string): Renamed from
+	raptor_utf8_is_nfc() Internal function rename.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc.c,
+	src/raptor_nfc_test.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_xml.c:
+	(raptor_unicode_decode_utf8_char): Renamed from
+	raptor_utf8_to_unicode_char()
+
+	* src/Makefile.am, src/raptor_unicode.c, src/raptor_utf8.c:
+	Renamed raptor_utf8.c to raptor_unicode.c
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_uri.c: raptor_new_avltree() loses
+	world arg.  (raptor_new_avltree): Delete world arg that is unused
+	and not necessary to tie an avltree to raptor world.
+
+	* src/raptor.h, src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_namespace.c, src/raptor_qname.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_simple.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Rename raptor_iostream write bytes/string
+	method to raptor_iostream_TYPE_write form with iostream arg at
+	end.
+
+	(raptor_iostream_write_bytes, raptor_iostream_write_byte,
+	raptor_iostream_read_bytes): Put iostream arg at end but don't move
+	type, bytes are the lowest level iostream read/writing routines so
+	use a different convention to writing 'types'.
+
+	(raptor_iostream_string_write); Renamed from
+	raptor_iostream_write_string().
+
+	(raptor_iostream_counted_string_write): Renamed from
+	raptor_iostream_write_counted_string().  Update callers - lots of
+	them!
+
+	* src/raptor_iostream.c:
+	(raptor_iostream_write_bytes): Move offset after a successful write.
+
+	* src/raptor.h, src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_serialize_simple.c, src/raptor_turtle_writer.c,
+	src/raptor_xml.c: Rename iostream writing methods to
+	raptor_iostream_TYPE_write form.
+
+	(raptor_iostream_decimal_write): Renamed from
+	raptor_iostream_write_decimal()
+
+	(raptor_iostream_hexadecimal_write): Renamed from
+	raptor_iostream_format_hexadecimal()
+
+	(raptor_stringbuffer_write): Renamed from
+	raptor_iostream_write_stringbuffer()
+
+	(raptor_uri_write): Renamed from raptor_iostream_write_uri()
+
+	(raptor_xml_element_write): Renamed from
+	raptor_iostream_write_xml_element()
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_namespace.c,
+	src/raptor_serialize_turtle.c, src/raptor_turtle_writer.c: Renamed
+	raptor_namespaces_qname_from_uri() to
+	raptor_new_qname_from_namespace_uri()
+
+	* src/raptor.h, src/raptor_xml.c, src/raptor_xml_writer.c: Rename
+	XML escaping utility functions to be consistent
+
+	(raptor_xml_escape_string_any): Renamed from
+	raptor_xml_any_escape_string()
+
+	(raptor_xml_escape_string_any_write): Renamed from
+	raptor_xml_any_escaped_string_write()
+
+	(raptor_xml_escape_string_write): Renamed from
+	raptor_xml_escaped_string_write()
+
+2010-02-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_internal.h, src/raptor_sax2.c:
+	(raptor_sax2_init,raptor_sax2_finish,raptor_world_s): Removed
+	sax2_initialized flag as no longer necessary.
+
+	* utils/rdfdiff.c: raptor_parse_uri() -> raptor_parser_parse_uri()
+
+2010-02-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-www.sgml, docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	update doc templates and sections for function renames
+
+	* src/raptor.h, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, utils/rapper.c: Rename serializer
+	methods to match raptor_CLASS_METHOD convention
+
+	(raptor_serializer_serialize_end): Renamed from
+	raptor_serialize_end().
+
+	(raptor_serializer_set_namespace): Renamed from
+	raptor_serialize_set_namespace().
+
+	(raptor_serializer_set_namespace_from_namespace): Renamed from
+	raptor_serialize_set_namespace_from_namespace().
+
+	(raptor_serializer_start_to_file_handle): Renamed from
+	raptor_serialize_start_to_file_handle().
+
+	(raptor_serializer_start_to_filename): Renamed from
+	raptor_serialize_start_to_filename().
+
+	(raptor_serializer_start_to_iostream): Renamed from
+	raptor_serialize_start_to_iostream().
+
+	(raptor_serializer_start_to_string): Renamed from
+	raptor_serialize_start_to_string().
+
+	(raptor_serializer_serialize_statement): Renamed from
+	raptor_serialize_statement().  Updated callers
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c, utils/rapper.c: Rename parse methods to match
+	raptor_CLASS_METHOD convention
+
+	(raptor_parser_parse_file_stream): Renamed from
+	raptor_parse_file_stream()
+
+	(raptor_parser_parse_file): Renamed from raptor_parse_file()
+
+	(raptor_parser_parse_uri): Renamed from raptor_parser_uri()
+
+	(raptor_parser_parse_uri_with_connection): Renamed from
+	raptor_parse_uri_with_connection()
+
+	* utils/rapper.c:
+	Update call to raptor_namespaces_format
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, utils/rapper.c: Rename namespace methods
+	to match raptor_CLASS_METHOD convention
+
+	(raptor_namespace_format_as_xml): Renamed from
+	raptor_namespaces_format()
+
+	(raptor_xml_namespace_string_parse): Renamed from
+	raptor_new_namespace_parts_from_string() since it is not a
+	constructor for anything.  Tidied docs and code.  Updated callers.
+
+	* src/raptor.h, src/raptor_www.c:
+	(raptor_world_set_www_flags): Renamed from
+	raptor_www_no_www_library_init_finish() and gains flags arg.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_statement.c: raptor_term_print_as_ntriples() now uses
+	raptor_term_ntriples_write()
+
+	(raptor_term_print_as_ntriples): Put handle at end like other
+	FILE* print methods.  Update callers
+
+	* src/raptor.h, src/raptor_general.c: Remove
+	raptor_print_ntriples_string() debug function
+
+	* src/raptor.h, src/raptor_serialize_ntriples.c: Give
+	raptor_term_ntriples_write() and raptor_statement_ntriples_write()
+	a return value
+
+	* src/raptor.h, src/raptor_json_writer.c, src/raptor_namespace.c,
+	src/raptor_qname.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_turtle_writer.c,
+	src/raptor_xml.c, src/raptor_xml_writer.c: Rename write to
+	iostream methods of class to follow raptor_CLASS_write() form
+
+	(raptor_term_ntriples_write): Renamed from
+	raptor_iostream_write_term_ntriples() and moved iostream to last
+	arg.
+
+	(raptor_xml_any_escaped_string_write): Renamed from
+	raptor_iostream_write_xml_any_escaped_string() and moved iostream
+	to last arg.
+
+	(raptor_xml_escaped_string_write): Renamed from
+	raptor_iostream_write_xml_escaped_string() and moved iostream to
+	last arg.
+
+	(raptor_qname_write): Renamed from raptor_iostream_write_qname()
+	and moved iostream to last arg.
+
+	(raptor_namespace_write): Renamed from
+	raptor_iostream_write_namespace() and moved iostream to last arg.
+
+	(raptor_string_ntriples_write): Renamed from
+	raptor_iostream_write_string_ntriples() and moved iostream to last
+	arg.
+
+	(raptor_string_python_write): Renamed from
+	raptor_iostream_write_string_python() and moved iostream to last
+	arg.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_www.c: Move
+	raptor_www_init and raptor_www_finish to internal API.
+
+	* src/raptor_parse.c: Define ACCEPT_HEADER_LEN since this has been
+	a crash bug twice.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_generate_statement): Let datatype URI be freed
+	after making literal term.
+
+	* src/raptor_parse.c:
+	(raptor_parser_get_accept_header): strncpy 9
+
+	* src/ntriples_parse.c: Use raptor_free_statement() to clear
+	static statement.
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): use if(dynamic...)
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): NULL triple part pointers after free
+	terms.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_init): Init static statement.
+
+2010-02-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_test.c: test fix for www
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_parse.c,
+	src/raptor_www.c, src/raptor_www_test.c: Rename raptor_www
+	constructor / destructor to standard names
+
+	(raptor_new_www): Renamed from raptor_www_new
+
+	(raptor_new_www_with_connection): Renamed from
+	raptor_www_new_with_commection
+
+	(raptor_free_www): Renamed from raptor_www_free Update all
+	callers.
+
 2010-02-16  Lauri Aalto <laalto@iki.fi>
 
 	* src/raptor_statement.c:
