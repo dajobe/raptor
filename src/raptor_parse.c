@@ -1249,7 +1249,7 @@ raptor_parser_set_option(raptor_parser *parser,
  *
  * Set parser options with string values.
  * 
- * The allowed options are available via raptor_options_enumerate().
+ * The allowed options are available via raptor_world_enumerate_parser_options().
  * If the option type is integer, the value is interpreted as an integer.
  *
  * Return value: non 0 on failure or if the option is unknown
@@ -1295,7 +1295,7 @@ raptor_parser_set_option_string(raptor_parser *parser,
  *
  * Get various parser options.
  * 
- * The allowed options are available via raptor_options_enumerate().
+ * The allowed options are available via raptor_world_enumerate_parser_options().
  *
  * Note: no option value is negative
  *
@@ -1365,7 +1365,7 @@ raptor_parser_get_option(raptor_parser *parser, raptor_option option)
  *
  * Get parser options with string values.
  * 
- * The allowed options are available via raptor_options_enumerate().
+ * The allowed options are available via raptor_world_enumerate_parser_options().
  * If a string is returned, it must be freed by the caller.
  *
  * Return value: option value or NULL for an illegal option or no value
