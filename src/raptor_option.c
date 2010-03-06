@@ -259,7 +259,7 @@ static const struct
 
 static const char * const raptor_option_uri_prefix = "http://feature.librdf.org/raptor-";
 /* NOTE: this is strlen(raptor_option_uri_prefix) */
-#define RAPTOR_OPTION_URI_PREFIX_LEN 33
+static const int raptor_option_uri_prefix_len = 33;
 
 
 /*
@@ -297,7 +297,7 @@ raptor_world_options_enumerate_common(raptor_world* world,
         raptor_uri *base_uri;
         base_uri = raptor_new_uri_from_counted_string(world,
                                                       (const unsigned char*)raptor_option_uri_prefix,
-                                                      RAPTOR_OPTION_URI_PREFIX_LEN);
+                                                      raptor_option_uri_prefix_len);
         if(!base_uri)
           return -1;
         
@@ -516,10 +516,10 @@ raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
   
   uri_string = raptor_uri_as_string(uri);
   if(strncmp((const char*)uri_string, raptor_option_uri_prefix,
-             RAPTOR_OPTION_URI_PREFIX_LEN))
+             raptor_option_uri_prefix_len))
     return option;
 
-  uri_string += RAPTOR_OPTION_URI_PREFIX_LEN;
+  uri_string += raptor_option_uri_prefix_len;
 
   for(i = 0; i <= RAPTOR_OPTION_LAST; i++)
     if(!strcmp(raptor_options_list[i].name, (const char*)uri_string)) {
