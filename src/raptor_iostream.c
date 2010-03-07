@@ -103,6 +103,7 @@ raptor_iostream_check_handler(const raptor_iostream_handler * const handler,
 
 /**
  * raptor_new_iostream_from_handler:
+ * @world: raptor_world object
  * @user_data: pointer to context information to pass in to calls
  * @handler: pointer to handler methods
  *
@@ -181,6 +182,7 @@ static const raptor_iostream_handler raptor_iostream_sink_handler = {
 
 /**
  * raptor_new_iostream_to_sink:
+ * @world: raptor_world object
  *
  * Create a new write iostream to a sink.
  * 
