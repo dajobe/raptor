@@ -1665,9 +1665,9 @@ int raptor_avltree_add(raptor_avltree* tree, void* p_user);
 RAPTOR_API
 void* raptor_avltree_remove(raptor_avltree* tree, void* p_data);
 RAPTOR_API
-int raptor_avltree_delete(raptor_avltree* tree, void* p_user);
+int raptor_avltree_delete(raptor_avltree* tree, void* p_data);
 RAPTOR_API
-void* raptor_avltree_search(raptor_avltree* tree, const void* p_user);
+void* raptor_avltree_search(raptor_avltree* tree, const void* p_data);
 RAPTOR_API
 int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
 RAPTOR_API
