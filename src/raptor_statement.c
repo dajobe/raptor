@@ -197,7 +197,7 @@ raptor_free_statement(raptor_statement *statement)
 /**
  * raptor_statement_print:
  * @statement: #raptor_statement object to print
- * @stream: #FILE* stream
+ * @stream: FILE* stream
  *
  * Print a raptor_statement to a stream.
  *
@@ -417,7 +417,7 @@ raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream)
 /**
  * raptor_statement_print_as_ntriples:
  * @statement: #raptor_statement to print
- * @stream: #FILE* stream
+ * @stream: FILE* stream
  *
  * Print a raptor_statement in N-Triples form.
  *
