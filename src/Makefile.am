@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor libraptor
 #
-# Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
+# Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -56,7 +56,7 @@ AM_CPPFLAGS = $(MEM)
 
 
 libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
-raptor_rfc2396.c raptor_uri.c raptor_locator.c \
+raptor_rfc2396.c raptor_uri.c raptor_log.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c \
 raptor_option.c raptor_general.c raptor_unicode.c \
 raptor_www.c \

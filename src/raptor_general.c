@@ -479,32 +479,6 @@ raptor_check_ordinal(const unsigned char *name)
 }
 
 
-static const char* const raptor_log_level_labels[RAPTOR_LOG_LEVEL_LAST + 1] = {
-  "none",
-  "trace",
-  "debug",
-  "info",
-  "warning",
-  "error",
-  "fatal error"
-};
-
-
-/**
- * raptor_log_level_get_label:
- * @level: log message level
- *
- * Get label for a log message level
- *
- * Return value: label string or NULL if level is not valid
- */
-const char*
-raptor_log_level_get_label(raptor_log_level level)
-{
-  return (level <= RAPTOR_LOG_LEVEL_LAST) ? raptor_log_level_labels[level] : NULL;
-}
-
-
 static const char* const raptor_domain_labels[RAPTOR_DOMAIN_LAST + 1] = {
   "none",
   "I/O Stream",
@@ -543,98 +517,6 @@ raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
 {
   world->internal_ignore_errors = flag;
 }
-
-
-void
-raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
-                         raptor_locator* locator,
-                         const char* message, va_list arguments)
-{
-  char *buffer;
-  size_t length;
-  
-  if(level == RAPTOR_LOG_LEVEL_NONE)
-    return;
-
-  if(world->internal_ignore_errors)
-    return;
-
-  buffer = raptor_vsnprintf(message, arguments);
-  if(!buffer) {
-    if(locator && world) {
-      raptor_locator_print(locator, stderr);
-      fputc(' ', stderr);
-    }
-    fputs("raptor ", stderr);
-    fputs(raptor_log_level_labels[level], stderr);
-    fputs(" - ", stderr);
-    vfprintf(stderr, message, arguments);
-    fputc('\n', stderr);
-    return;
-  }
-
-  length = strlen(buffer);
-  if(buffer[length-1] == '\n')
-    buffer[length-1]='\0';
-  
-  raptor_log_error(world, level, locator, buffer);
-
-  RAPTOR_FREE(cstring, buffer);
-}
-
-
-void
-raptor_log_error_formatted(raptor_world* world, raptor_log_level level,
-                           raptor_locator* locator,
-                           const char* message, ...)
-{
-  va_list arguments;
-
-  va_start(arguments, message);
-  raptor_log_error_varargs(world, level, locator, message, arguments);
-  va_end(arguments);
-}
-
-
-/* internal */
-void
-raptor_log_error(raptor_world* world, raptor_log_level level,
-                 raptor_locator* locator, const char* text)
-{
-  raptor_log_handler handler;
-  
-  memset(&world->message, '\0', sizeof(&world->message));
-  world->message.code = -1;
-  world->message.domain = RAPTOR_DOMAIN_NONE;
-  world->message.level = level;
-  world->message.locator = locator;
-  world->message.text = text;
-  
-  if(level == RAPTOR_LOG_LEVEL_NONE)
-    return;
-
-  if(world->internal_ignore_errors)
-    return;
-
-  handler = world->message_handler;
-  if(handler)
-    /* This is the place in raptor that ALL of the user error handler
-     * functions are called.
-     */
-    handler(world->message_handler_user_data, &world->message);
-  else {
-    if(locator && world) {
-      raptor_locator_print(locator, stderr);
-      fputc(' ', stderr);
-    }
-    fputs("raptor ", stderr);
-    fputs(raptor_log_level_labels[level], stderr);
-    fputs(" - ", stderr);
-    fputs(text, stderr);
-    fputc('\n', stderr);
-  }
-}
-
 
 
 /**
