@@ -303,6 +303,8 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
  * @p_data: pointer to data item
  *
  * Remove an item from an AVL Tree and free it
+ *
+ * Return value: non-0 on failure
  */
 int
 raptor_avltree_delete(raptor_avltree* tree, void* p_data)
