@@ -531,7 +531,7 @@ raptor_xml_element_get_language(raptor_xml_element* xml_element)
  * This checks the syntax part of the xml:ID validity constraint,
  * that it matches [ VC: Name Token ] as amended by XML Namespaces:
  *
- *   http://www.w3.org/TR/REC-xml-names/#NT-NCName
+ * See <ulink url="http://www.w3.org/TR/REC-xml-names/#NT-NCName">Namespaces in XML NCName<ulink>
  * 
  * Return value: non-zero if the ID string is valid
  **/
@@ -561,8 +561,8 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  *
  * Return an XML-escaped version a string.
  * 
- * Follows Canonical XML rules on Text Nodes and Attribute Nodes
- *   http://www.w3.org/TR/xml-c14n#ProcessingModel
+ * Follows
+ * <ulink url="http://www.w3.org/TR/xml-c14n#ProcessingModel">Canonical XML rules on Text Nodes and Attribute Nodes</ulink>
  *
  * Both:
  *   Replaces <literal>&amp;</literal> and <literal>&lt;</literal>
