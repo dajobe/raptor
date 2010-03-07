@@ -672,7 +672,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
  * @world: raptor world
  * @literal: literal data
  * @datatype: literal datatype URI (or NULL)
- * @lanaguage: literal language (or NULL)
+ * @language: literal language (or NULL)
  *
  * Constructor - create a new literal statement term
  *
