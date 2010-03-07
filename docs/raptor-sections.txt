@@ -4,13 +4,10 @@ raptor_world
 raptor_new_world
 raptor_world_open
 raptor_free_world
-raptor_libxml_flags
-raptor_world_set_error_handler
-raptor_world_set_fatal_error_handler
-raptor_world_set_libxml_flags
+raptor_world_flags
+raptor_world_set_flag
 raptor_world_set_libxslt_security_preferences
-raptor_world_set_warning_handler
-raptor_world_set_www_flags
+raptor_world_set_log_handler
 raptor_world_enumerate_parsers
 raptor_world_is_parser_name
 raptor_world_guess_parser_name
@@ -24,13 +21,10 @@ raptor_version_major
 raptor_version_minor
 raptor_version_release
 raptor_version_decimal
-raptor_message_handler
 raptor_statement_handler
 raptor_vsnprintf
 raptor_log_level
-raptor_message_handler_closure
-raptor_error_handlers
-raptor_error_handlers_init
+raptor_domain
 </SECTION>
 
 <SECTION>
@@ -281,19 +275,19 @@ raptor_new_iostream_to_filename
 raptor_new_iostream_to_file_handle
 raptor_new_iostream_to_string
 raptor_free_iostream
-raptor_iostream_format_hexadecimal
+raptor_iostream_hexadecimal_write
 raptor_iostream_read_bytes
 raptor_iostream_read_eof
 raptor_iostream_tell
+raptor_iostream_counted_string_write
+raptor_iostream_decimal_write
+raptor_iostream_string_write
+raptor_iostream_stringbuffer_write
 raptor_iostream_write_byte
 raptor_iostream_write_bytes
-raptor_iostream_write_counted_string
-raptor_iostream_write_decimal
 raptor_iostream_write_end
-raptor_iostream_write_string
 raptor_string_ntriples_write
 raptor_string_python_write
-raptor_iostream_write_stringbuffer
 </SECTION>
 
 
@@ -355,10 +349,10 @@ raptor_xml_writer_set_option_string
 raptor_xml_writer_get_option
 raptor_xml_writer_get_option_string
 raptor_xml_writer
-raptor_xml_any_escape_string
+raptor_xml_escape_string_any
+raptor_xml_escape_string_any_write
 raptor_xml_escape_string
-raptor_xml_any_escaped_string_write
-raptor_xml_escaped_string_write
+raptor_xml_escape_string_write
 raptor_xml_name_check
 </SECTION>
 
@@ -367,6 +361,7 @@ raptor_xml_name_check
 raptor_qname
 raptor_new_qname
 raptor_new_qname_from_namespace_local_name
+raptor_new_qname_from_namespace_uri
 raptor_qname_copy
 raptor_free_qname
 raptor_qname_equal
@@ -402,7 +397,6 @@ raptor_namespace_get_prefix
 raptor_namespace_get_counted_prefix
 raptor_namespace_write
 raptor_namespace_stack
-raptor_namespaces_qname_from_uri
 raptor_namespace_format_as_xml
 raptor_xml_namespace_string_parse
 </SECTION>
@@ -410,7 +404,7 @@ raptor_xml_namespace_string_parse
 <SECTION>
 <FILE>section-unicode</FILE>
 raptor_unichar
-raptor_unicode_char_to_utf8
+raptor_unicode_utf8_string_put_char
 raptor_unicode_utf8_string_get_char
 raptor_unicode_is_xml11_namestartchar
 raptor_unicode_is_xml10_namestartchar
