@@ -644,9 +644,9 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 
 /**
  * raptor_world_flag:
- * @RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE: if set (non-0 value) - save/restore the libxml generic error handler when raptor library initializes (default set)
- * @RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE: if set (non-0 value) - save/restore the libxml structured error handler when raptor library terminates (default set)
- * @RAPTOR_WORLD_FLAGS_URI_INTERNING: if set (non-0 value) - each URI is saved interned in-memory and reused (default set)
+ * @RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE: if set (non-0 value) - save/restore the libxml generic error handler when raptor library initializes (default set)
+ * @RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: if set (non-0 value) - save/restore the libxml structured error handler when raptor library terminates (default set)
+ * @RAPTOR_WORLD_FLAG_URI_INTERNING: if set (non-0 value) - each URI is saved interned in-memory and reused (default set)
  *
  * Raptor world flags
  *
@@ -664,9 +664,9 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
  *
  */
 typedef enum {
-  RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE = 1,
-  RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE = 2,
-  RAPTOR_WORLD_FLAGS_URI_INTERNING = 3
+  RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE = 1,
+  RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE = 2,
+  RAPTOR_WORLD_FLAG_URI_INTERNING = 3
 } raptor_world_flag;
 
 

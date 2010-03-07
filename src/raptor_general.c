@@ -123,8 +123,8 @@ raptor_new_world(void)
     /* set: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
      * set: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
      */
-    world->libxml_flags = RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE |
-                          RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE ;
+    world->libxml_flags = RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE |
+                          RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE ;
     /* set: URI Interning */
     world->uri_interning = 1;
 
@@ -293,15 +293,15 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
     return 1;
 
   switch(flag) {
-    case RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE:
-    case RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE:
+    case RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE:
+    case RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE:
       if(value)
         world->libxml_flags |= (int)flag;
       else
         world->libxml_flags &= ~(int)flag;
       break;
 
-    case RAPTOR_WORLD_FLAGS_URI_INTERNING:
+    case RAPTOR_WORLD_FLAG_URI_INTERNING:
       world->uri_interning = flag;
       break;
 
