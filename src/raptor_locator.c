@@ -207,7 +207,6 @@ raptor_locator_file(raptor_locator *locator)
 
 /**
  * raptor_locator_uri_string:
- * @world: raptor_world object
  * @locator: locator
  *
  * Get URI from locator.
