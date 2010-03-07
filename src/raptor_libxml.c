@@ -499,7 +499,7 @@ raptor_libxml_init(raptor_world* world)
 {
   xmlInitParser();
 
-  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE) {
+  if(world->libxml_flags & RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE) {
     world->libxml_saved_structured_error_context = xmlGenericErrorContext;
     world->libxml_saved_structured_error_handler = xmlStructuredError;
     /* sets xmlGenericErrorContext and xmlStructuredError */
@@ -507,7 +507,7 @@ raptor_libxml_init(raptor_world* world)
                               (xmlStructuredErrorFunc)raptor_libxml_xmlStructuredError_handler_global);
   }
   
-  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE) {
+  if(world->libxml_flags & RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE) {
     world->libxml_saved_generic_error_context = xmlGenericErrorContext;
     world->libxml_saved_generic_error_handler = xmlGenericError;
     /* sets xmlGenericErrorContext and xmlGenericError */
@@ -522,11 +522,11 @@ raptor_libxml_init(raptor_world* world)
 void
 raptor_libxml_finish(raptor_world* world)
 {
-  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE)
+  if(world->libxml_flags & RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE)
     xmlSetStructuredErrorFunc(world->libxml_saved_structured_error_context,
                               world->libxml_saved_structured_error_handler);
 
-  if(world->libxml_flags & RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE)
+  if(world->libxml_flags & RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE)
     xmlSetGenericErrorFunc(world->libxml_saved_generic_error_context,
                            world->libxml_saved_generic_error_handler);
 

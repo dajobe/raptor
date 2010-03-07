@@ -1408,6 +1408,9 @@ struct raptor_world_s {
 
   /* last log message - points to data it does not own */
   raptor_log_message message;
+
+  /* should */
+  int uri_interning;
 };
 
 /* raptor_www.c */

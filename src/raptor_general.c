@@ -118,15 +118,15 @@ raptor_new_world(void)
   if(world) {
     world->magic = RAPTOR_WORLD_MAGIC;
     
-    /* set default libxml flags - can be updated by
-     * raptor_world_set_libxml_flags()
-     */
+    /* set default flags - can be updated by raptor_world_set_flags() */
 
     /* set: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
      * set: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
      */
-    world->libxml_flags = RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE |
-                          RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE ;
+    world->libxml_flags = RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE |
+                          RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE ;
+    /* set: URI Interning */
+    world->uri_interning = 1;
 
     world->internal_ignore_errors = 0;
   }
@@ -244,37 +244,72 @@ raptor_free_world(raptor_world* world)
  * xsltSetCtxtSecurityPrefs() when an XSLT engine is initialised.
  *
  * If libxslt is not compiled in, the object set here is not used.
+ *
+ * Return value: 0 on success, non-0 on failure: <0 on errors and >0 if world is already opened
  */
-void
+int
 raptor_world_set_libxslt_security_preferences(raptor_world *world, 
                                               void *security_preferences)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
+
+  if(world->opened)
+    return 1;
 
   world->xslt_security_preferences = security_preferences;
+
+  return 0;
 }
 
 
 /**
- * raptor_world_set_libxml_flags:
+ * raptor_world_set_flag:
  * @world: world
- * @flags: libxml flags
+ * @flag: flag
+ * @value: value
  * 
- * Set common libxml library flags
+ * Set library-wide configuration
  *
- * If libxml is compiled into the library, @flags is a bitmask
- * taking an OR of values defined in #raptor_libxml_flags
+ * This function is used to control raptor-wide options across
+ * classes.  These options must be set before raptor_world_open() is
+ * called explicitly or implicitly (by creating a raptor object).
+ * There is no enumeration function for these flags because they are
+ * not user options and must be set before the library is
+ * initialised.  For similar reasons, there is no get function.
  *
- * See the #raptor_libxml_flags documentation for full details of
+ * See the #raptor_world_flags documentation for full details of
  * what the flags mean.
  *
+ * Return value: 0 on success, non-0 on failure: <0 on errors (-1 if flag is unknown, -2 if value is illegal) and >0 if world is already opened
  */
-void
-raptor_world_set_libxml_flags(raptor_world *world, int flags)
+int
+raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+  int rc = 0;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
 
-  world->libxml_flags = flags;
+  if(world->opened)
+    return 1;
+
+  switch(flag) {
+    case RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE:
+    case RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE:
+      if(value)
+        world->libxml_flags |= (int)flag;
+      else
+        world->libxml_flags &= ~(int)flag;
+      break;
+
+    case RAPTOR_WORLD_FLAGS_URI_INTERNING:
+      world->uri_interning = flag;
+      break;
+
+    default:
+      rc = -1;
+  }
+
+  return rc;
 }
 
 
@@ -288,13 +323,21 @@ raptor_world_set_libxml_flags(raptor_world *world, int flags)
  * 
  * The function will receive callbacks when messages are generated
  * 
+ * Return value: 0 on success, non-0 on failure: <0 on errors and >0 if world is already opened
  **/
-void
+int
 raptor_world_set_log_handler(raptor_world *world, void *user_data,
                              raptor_log_handler handler)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
+
+  if(world->opened)
+    return 1;
+
   world->message_handler_user_data = user_data;
   world->message_handler = handler;
+
+  return 0;
 }
 
 

@@ -643,24 +643,31 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 
 
 /**
- * raptor_libxml_flags:
- * @RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: if set - save/restore the libxml generic error handler when raptor library initializes (default set)
- * @RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: if set - save/restore the libxml structured error handler when raptor library terminates (default set)
+ * raptor_world_flag:
+ * @RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE: if set (non-0 value) - save/restore the libxml generic error handler when raptor library initializes (default set)
+ * @RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE: if set (non-0 value) - save/restore the libxml structured error handler when raptor library terminates (default set)
+ * @RAPTOR_WORLD_FLAGS_URI_INTERNING: if set (non-0 value) - each URI is saved interned in-memory and reused (default set)
  *
- * libxml library flags
+ * Raptor world flags
  *
- * These are used by raptor_world_set_libxml_flags() to control
- * common libxml features.
+ * These are used by raptor_world_set_flags() to control raptor-wide
+ * options across classes.  These must be set before
+ * raptor_world_open() is called explicitly or implicitly (by
+ * creating a raptor object).  There is no enumeration function for
+ * these flags because they are not user options and must be set
+ * before the library is initialised.  For similar reasons, there is
+ * no get function.
  *
- * If any handler saving/restoring is enabled, any existing handler
- * and context is saved before parsing and restored afterwards.
- * Otherwise, no saving/restoring is performed.
+ * If any libxml handler saving/restoring is enabled, any existing
+ * handler and context is saved before parsing and restored
+ * afterwards.  Otherwise, no saving/restoring is performed.
  *
  */
 typedef enum {
-  RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE    = 1,
-  RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE = 2
-} raptor_libxml_flags;
+  RAPTOR_WORLD_FLAGS_LIBXML_GENERIC_ERROR_SAVE = 1,
+  RAPTOR_WORLD_FLAGS_LIBXML_STRUCTURED_ERROR_SAVE = 2,
+  RAPTOR_WORLD_FLAGS_URI_INTERNING = 3
+} raptor_world_flag;
 
 
 typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
@@ -676,11 +683,11 @@ int raptor_world_open(raptor_world* world);
 RAPTOR_API
 void raptor_free_world(raptor_world* world);
 RAPTOR_API
-void raptor_world_set_libxslt_security_preferences(raptor_world *world, void *security_preferences);
+int raptor_world_set_libxslt_security_preferences(raptor_world *world, void *security_preferences);
 RAPTOR_API
-void raptor_world_set_libxml_flags(raptor_world *world,  int flags);
+int raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value);
 RAPTOR_API
-void raptor_world_set_log_handler(raptor_world *world, void *user_data, raptor_log_handler handler);
+int raptor_world_set_log_handler(raptor_world *world, void *user_data, raptor_log_handler handler);
 RAPTOR_API
 const char* raptor_log_level_get_label(raptor_log_level level);
 RAPTOR_API
