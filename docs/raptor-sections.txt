@@ -438,5 +438,5 @@ RAPTOR_API
 RAPTOR_DEPRECATED
 RAPTOR_PRINTF_FORMAT
 raptor_avltree_check
-raptor_avltree_debug
+raptor_avltree_dump
 </SECTION>
