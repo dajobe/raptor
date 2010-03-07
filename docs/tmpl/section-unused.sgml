@@ -50,3 +50,13 @@ With some versions of gcc this may give a compilation warning.
 @tree: 
 
 
+<!-- ##### FUNCTION raptor_avltree_dump ##### -->
+<para>
+
+</para>
+
+@tree: 
+@stream: 
+@Returns: 
+
+
