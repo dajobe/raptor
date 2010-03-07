@@ -1325,6 +1325,7 @@ typedef int (*raptor_iostream_write_bytes_func) (void *context, const void *ptr,
  *
  * Handler function for implementing raptor_iostream_write_end().
  *
+ * Return value: non-0 on failure.
  */
 typedef int (*raptor_iostream_write_end_func) (void *context);
 
