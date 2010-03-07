@@ -270,11 +270,9 @@ static int raptor_unicode_is_extender(long c);
  * 
  * Check if Unicode character is legal to start an XML 1.1 Name
  * 
- * Namespaces in XML 1.1 REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml11-20040204/#NT-NameStartChar
+ * See <ulink url="http://www.w3.org/TR/2004/REC-xml11-20040204/#NT-NameStartChar">Namespaces in XML 1.1 REC 2004-02-04 NameStartChar</ulink>
  * updating
- *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
+ * <ulink url="http://www.w3.org/TR/2004/REC-xml11-20040204/">Extensible Markup Language (XML) 1.1 REC 2004-02-04</ulink> sec 2.3, [4a]
  * excluding the ':'
  *
  * Return value: non-0 if legal
@@ -306,11 +304,9 @@ raptor_unicode_is_xml11_namestartchar(raptor_unichar c)
  *
  * Check if Unicode character is legal to start an XML 1.0 Name
  * 
- * Namespaces in XML REC 1999-01-14
- *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName
+ * See <ulink url="http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCName">Namespaces in XML REC 1999-01-14</ulink>
  * updating
- *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml-20040204/
+ * <ulink url="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04</ulink>
  * excluding the ':'
  *
  * Return value: non-0 if legal
@@ -347,11 +343,9 @@ raptor_unicode_is_namestartchar(raptor_unichar c) {
  * 
  * Check if a Unicode codepoint is a legal to continue an XML 1.1 Name
  *
- * Namespaces in XML 1.1 REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml11-20040204/
+ * See <ulink url="http://www.w3.org/TR/2004/REC-xml11-20040204/">Namespaces in XML 1.1 REC 2004-02-04</ulink>
  * updating
- *   Extensible Markup Language (XML) 1.1 REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml11-20040204/ sec 2.3, [4a]
+ * <ulink url="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04</ulink> sec 2.3, [4a]
  * excluding the ':'
  * 
  * Return value: non-0 if legal
@@ -375,11 +369,9 @@ raptor_unicode_is_xml11_namechar(raptor_unichar c)
  * 
  * Check if a Unicode codepoint is a legal to continue an XML 1.0 Name
  * 
- * Namespaces in XML REC 1999-01-14
- *   http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar
+ * See <ulink url="http://www.w3.org/TR/1999/REC-xml-names-19990114/#NT-NCNameChar">Namespaces in XML REC 1999-01-14 NCNameChar</ulink>
  * updating
- *   Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04
- *   http://www.w3.org/TR/2004/REC-xml-20040204/
+ * <ulink url="http://www.w3.org/TR/2004/REC-xml-20040204/">Extensible Markup Language (XML) 1.0 (Third Edition) REC 2004-02-04</ulink>
  * excluding the ':'
  *
  * Return value: non-0 if legal
