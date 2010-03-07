@@ -4,7 +4,7 @@ raptor_world
 raptor_new_world
 raptor_world_open
 raptor_free_world
-raptor_world_flags
+raptor_world_flag
 raptor_world_set_flag
 raptor_world_set_libxslt_security_preferences
 raptor_world_set_log_handler
@@ -207,6 +207,7 @@ raptor_stringbuffer_prepend_string
 raptor_stringbuffer_as_string
 raptor_stringbuffer_length
 raptor_stringbuffer_copy_to_string
+raptor_stringbuffer_write
 </SECTION>
 
 
@@ -282,7 +283,6 @@ raptor_iostream_tell
 raptor_iostream_counted_string_write
 raptor_iostream_decimal_write
 raptor_iostream_string_write
-raptor_iostream_stringbuffer_write
 raptor_iostream_write_byte
 raptor_iostream_write_bytes
 raptor_iostream_write_end
