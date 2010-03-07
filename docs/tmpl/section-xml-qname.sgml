@@ -48,6 +48,17 @@ for XML element and attribute names.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_qname_from_namespace_uri ##### -->
+<para>
+
+</para>
+
+@nstack: 
+@uri: 
+@xml_version: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_qname_copy ##### -->
 <para>
 

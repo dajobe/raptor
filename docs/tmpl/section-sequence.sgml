@@ -36,6 +36,17 @@ where the items are added and removed from the end.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_sequence_with_context ##### -->
+<para>
+
+</para>
+
+@free_handler: 
+@print_handler: 
+@handler_context: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_sequence ##### -->
 <para>
 

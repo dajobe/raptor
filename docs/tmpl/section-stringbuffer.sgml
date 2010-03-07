@@ -137,3 +137,13 @@ and #raptor_serializer classes.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_stringbuffer_write ##### -->
+<para>
+
+</para>
+
+@sb: 
+@iostr: 
+@Returns: 
+
+

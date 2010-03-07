@@ -137,6 +137,19 @@ the parameter type taken.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_world_enumerate_sax2_options ##### -->
+<para>
+
+</para>
+
+@world: 
+@option: 
+@name: 
+@uri: 
+@label: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_world_get_option_from_uri ##### -->
 <para>
 

@@ -72,6 +72,15 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_term_copy ##### -->
+<para>
+
+</para>
+
+@term: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_term ##### -->
 <para>
 
@@ -119,6 +128,7 @@ Some other #raptor_identifer_type forms exist but are deprecated.
 @subject: 
 @predicate: 
 @object: 
+@graph: 
 
 <!-- ##### FUNCTION raptor_statement_compare ##### -->
 <para>

@@ -209,14 +209,14 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @iostr: 
 
 
-<!-- ##### FUNCTION raptor_iostream_format_hexadecimal ##### -->
+<!-- ##### FUNCTION raptor_iostream_hexadecimal_write ##### -->
 <para>
 
 </para>
 
-@iostr: 
 @integer: 
 @width: 
+@iostr: 
 @Returns: 
 
 
@@ -225,10 +225,10 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
-@iostr: 
 @ptr: 
 @size: 
 @nmemb: 
+@iostr: 
 @Returns: 
 
 
@@ -250,13 +250,44 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_iostream_counted_string_write ##### -->
+<para>
+
+</para>
+
+@string: 
+@len: 
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_decimal_write ##### -->
+<para>
+
+</para>
+
+@integer: 
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_iostream_string_write ##### -->
+<para>
+
+</para>
+
+@string: 
+@iostr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_iostream_write_byte ##### -->
 <para>
 
 </para>
 
-@iostr: 
 @byte: 
+@iostr: 
 @Returns: 
 
 
@@ -265,31 +296,10 @@ file handles (<literal>FILE*</literal>) or to a user function.
 
 </para>
 
-@iostr: 
 @ptr: 
 @size: 
 @nmemb: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_counted_string ##### -->
-<para>
-
-</para>
-
 @iostr: 
-@string: 
-@len: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_decimal ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@integer: 
 @Returns: 
 
 
@@ -299,16 +309,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 </para>
 
 @iostr: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_string ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@string: 
 @Returns: 
 
 
@@ -334,16 +334,6 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @delim: 
 @flags: 
 @iostr: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_iostream_write_stringbuffer ##### -->
-<para>
-
-</para>
-
-@iostr: 
-@sb: 
 @Returns: 
 
 

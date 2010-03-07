@@ -43,16 +43,6 @@ and various other utility functions.
 </para>
 
 
-<!-- ##### USER_FUNCTION raptor_message_handler ##### -->
-<para>
-
-</para>
-
-@user_data: 
-@locator: 
-@message: 
-
-
 <!-- ##### USER_FUNCTION raptor_statement_handler ##### -->
 <para>
 
@@ -71,6 +61,15 @@ and various other utility functions.
 @Returns: 
 
 
+<!-- ##### USER_FUNCTION raptor_log_handler ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@message: 
+
+
 <!-- ##### ENUM raptor_log_level ##### -->
 <para>
 
@@ -85,31 +84,58 @@ and various other utility functions.
 @RAPTOR_LOG_LEVEL_FATAL: 
 @RAPTOR_LOG_LEVEL_LAST: 
 
-<!-- ##### STRUCT raptor_message_handler_closure ##### -->
+<!-- ##### FUNCTION raptor_log_level_get_label ##### -->
 <para>
 
 </para>
 
-@user_data: 
-@handler: 
+@level: 
+@Returns: 
 
-<!-- ##### STRUCT raptor_error_handlers ##### -->
+
+<!-- ##### ENUM raptor_domain ##### -->
 <para>
 
 </para>
 
-@magic: 
-@world: 
-@locator: 
-@last_log_level: 
-@handlers: 
+@RAPTOR_DOMAIN_NONE: 
+@RAPTOR_DOMAIN_IOSTREAM: 
+@RAPTOR_DOMAIN_NAMESPACE: 
+@RAPTOR_DOMAIN_PARSER: 
+@RAPTOR_DOMAIN_QNAME: 
+@RAPTOR_DOMAIN_SAX2: 
+@RAPTOR_DOMAIN_SERIALIZER: 
+@RAPTOR_DOMAIN_TERM: 
+@RAPTOR_DOMAIN_URI: 
+@RAPTOR_DOMAIN_WORLD: 
+@RAPTOR_DOMAIN_WWW: 
+@RAPTOR_DOMAIN_XML_WRITER: 
+@RAPTOR_DOMAIN_LAST: 
 
-<!-- ##### FUNCTION raptor_error_handlers_init ##### -->
+<!-- ##### FUNCTION raptor_domain_get_label ##### -->
 <para>
 
 </para>
 
-@world: 
-@error_handlers: 
+@domain: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_compare_function ##### -->
+<para>
+
+</para>
+
+@data1: 
+@data2: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_free_function ##### -->
+<para>
+
+</para>
+
+@data: 
 
 

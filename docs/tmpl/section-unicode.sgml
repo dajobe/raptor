@@ -26,24 +26,25 @@ rules.
 </para>
 
 
-<!-- ##### FUNCTION raptor_unicode_char_to_utf8 ##### -->
+<!-- ##### FUNCTION raptor_unicode_utf8_string_put_char ##### -->
 <para>
 
 </para>
 
 @c: 
 @output: 
+@length: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_utf8_to_unicode_char ##### -->
+<!-- ##### FUNCTION raptor_unicode_utf8_string_get_char ##### -->
 <para>
 
 </para>
 
-@output: 
 @input: 
 @length: 
+@output: 
 @Returns: 
 
 
@@ -83,7 +84,7 @@ rules.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_utf8_check ##### -->
+<!-- ##### FUNCTION raptor_unicode_check_utf8_string ##### -->
 <para>
 
 </para>

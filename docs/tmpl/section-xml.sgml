@@ -127,6 +127,20 @@ a name is legal in some XML version.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_xml_element_write ##### -->
+<para>
+
+</para>
+
+@element: 
+@nstack: 
+@is_empty: 
+@is_end: 
+@depth: 
+@iostr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_xml_writer ##### -->
 <para>
 
@@ -303,7 +317,7 @@ a name is legal in some XML version.
 </para>
 
 
-<!-- ##### FUNCTION raptor_xml_any_escape_string ##### -->
+<!-- ##### FUNCTION raptor_xml_escape_string_any ##### -->
 <para>
 
 </para>
@@ -315,6 +329,19 @@ a name is legal in some XML version.
 @length: 
 @quote: 
 @xml_version: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_xml_escape_string_any_write ##### -->
+<para>
+
+</para>
+
+@string: 
+@len: 
+@quote: 
+@xml_version: 
+@iostr: 
 @Returns: 
 
 
@@ -332,20 +359,7 @@ a name is legal in some XML version.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_xml_any_escaped_string_write ##### -->
-<para>
-
-</para>
-
-@string: 
-@len: 
-@quote: 
-@xml_version: 
-@iostr: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_xml_escaped_string_write ##### -->
+<!-- ##### FUNCTION raptor_xml_escape_string_write ##### -->
 <para>
 
 </para>

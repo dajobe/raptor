@@ -49,41 +49,24 @@ library-wide configuration flags and options.
 @world: 
 
 
-<!-- ##### ENUM raptor_libxml_flags ##### -->
+<!-- ##### ENUM raptor_world_flag ##### -->
 <para>
 
 </para>
 
-@RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE: 
-@RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE: 
+@RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE: 
+@RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: 
+@RAPTOR_WORLD_FLAG_URI_INTERNING: 
 
-<!-- ##### FUNCTION raptor_world_set_error_handler ##### -->
-<para>
-
-</para>
-
-@world: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_world_set_fatal_error_handler ##### -->
+<!-- ##### FUNCTION raptor_world_set_flag ##### -->
 <para>
 
 </para>
 
 @world: 
-@user_data: 
-@handler: 
-
-
-<!-- ##### FUNCTION raptor_world_set_libxml_flags ##### -->
-<para>
-
-</para>
-
-@world: 
-@flags: 
+@flag: 
+@value: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_world_set_libxslt_security_preferences ##### -->
@@ -93,9 +76,10 @@ library-wide configuration flags and options.
 
 @world: 
 @security_preferences: 
+@Returns: 
 
 
-<!-- ##### FUNCTION raptor_world_set_warning_handler ##### -->
+<!-- ##### FUNCTION raptor_world_set_log_handler ##### -->
 <para>
 
 </para>
@@ -103,6 +87,7 @@ library-wide configuration flags and options.
 @world: 
 @user_data: 
 @handler: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_world_set_www_flags ##### -->
