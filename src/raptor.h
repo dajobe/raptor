@@ -670,7 +670,29 @@ typedef enum {
 } raptor_world_flag;
 
 
+/**
+ * raptor_data_compare_function:
+ * @data1: first data object
+ * @data2: second data object
+ *
+ * Function to compare two data objects - signature like strcmp() and function pssed to qsort()
+ *
+ * Designed to be passed into generic data structure constructors
+ * like raptor_new_avltree().
+ *
+ * Return value: compare value - <0 if @data1 is before @data2, =0 if equal, >0 if @data1 is after @data2
+ */
 typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+
+/**
+ * raptor_data_free_function:
+ * @data: data object
+ *
+ * Function to free a data object - signature like free()
+ *
+ * Designed to be passed into generic data structure constructors
+ * like raptor_new_avltree().
+ */
 typedef void (*raptor_data_free_function)(void* data);
 
 
