@@ -89,6 +89,7 @@ RAPTOR_OWL_URI
 <SECTION>
 <FILE>section-avltree</FILE>
 raptor_avltree
+raptor_avltree_bitflags
 raptor_new_avltree
 raptor_free_avltree
 raptor_avltree_add

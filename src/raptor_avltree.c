@@ -133,10 +133,7 @@ static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_no
  * raptor_new_avltree:
  * @compare_fn: item comparison function for ordering
  * @free_fn: item free function (or NULL)
- * @flags: AVLTree flags - bitmask of
- *    RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES - raptor_avltree_add()
- *    will replace any duplicate items (default is to ignore them and
- *    return >0 on duplicates)
+ * @flags: AVLTree flags - bitmask of #raptor_avltree_bitflags flags.
  *
  * AVL Tree Constructor
  *

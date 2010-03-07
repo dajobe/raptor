@@ -1653,7 +1653,17 @@ typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
 typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
 
-#define RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES 1
+
+/**
+ * raptor_avltree_bitflags:
+ * @RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES: If set raptor_avltree_add() will replace any duplicate items. If not set, raptor_avltree_add() will not replace them and will return status >0 when adding a duplicate. (Default is not set)
+ *
+ * Bit flags for AVL Tree class constructor raptor_new_avltree()
+ **/
+typedef enum {
+ RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES = 1
+} raptor_avltree_bitflags;
+
 
 RAPTOR_API
 raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
