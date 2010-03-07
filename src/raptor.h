@@ -1661,7 +1661,7 @@ void raptor_free_avltree(raptor_avltree* tree);
 
 /* methods */
 RAPTOR_API
-int raptor_avltree_add(raptor_avltree* tree, void* p_user);
+int raptor_avltree_add(raptor_avltree* tree, void* p_data);
 RAPTOR_API
 void* raptor_avltree_remove(raptor_avltree* tree, void* p_data);
 RAPTOR_API
