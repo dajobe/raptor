@@ -253,7 +253,7 @@ raptor_namespaces_start_namespace(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_namespaces_start_namespace_full - 
+ * raptor_namespaces_start_namespace_full:
  * @nstack: namespace stack
  * @prefix: new namespace prefix (or NULL)
  * @ns_uri_string: new namespace URI (or NULL)
