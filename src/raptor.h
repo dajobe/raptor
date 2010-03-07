@@ -1648,9 +1648,31 @@ raptor_uri* raptor_sax2_inscope_base_uri(raptor_sax2* sax2);
 
 
 /* AVL Trees */
+
+/**
+ * raptor_avltree:
+ *
+ * AVL Tree
+ */
 typedef struct raptor_avltree_s raptor_avltree;
+
+/**
+ * raptor_avltree_iterator:
+ *
+ * AVL Tree Iterator as created by raptor_new_avltree_iterator()
+ */
 typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
+/**
+ * raptor_avltree_visit_function:
+ * @depth: depth of object in tree
+ * @data: data object being visited
+ * @user_data: user data arg to raptor_avltree_visit()
+ *
+ * AVL Tree visitor function as given to raptor_avltree_visit()
+ *
+ * Return value: non-0 to terminate visit early.
+ */
 typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
 
 
