@@ -519,8 +519,9 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
  * Converts a filename to a file: URI.
  * 
  * Handles the OS-specific escaping on turning filenames into URIs
- * and returns a new buffer that the caller must free().  Turns
- * a space in the filname into %20 and '%' into %25.
+ * and returns a new buffer that the caller must free().  Turns a
+ * space in the filename into <literal>%20</literal> and '%' into
+ * <literal>%25</literal>.
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
