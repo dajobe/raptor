@@ -1,0 +1,193 @@
+<!-- ##### SECTION Title ##### -->
+AVL Trees
+
+<!-- ##### SECTION Short_Description ##### -->
+AVL Trees
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+AVL Trees
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF raptor_avltree ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ENUM raptor_avltree_bitflags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_AVLTREE_FLAG_REPLACE_DUPLICATES: 
+
+<!-- ##### FUNCTION raptor_new_avltree ##### -->
+<para>
+
+</para>
+
+@compare_fn: 
+@free_fn: 
+@flags: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_free_avltree ##### -->
+<para>
+
+</para>
+
+@tree: 
+
+
+<!-- ##### FUNCTION raptor_avltree_add ##### -->
+<para>
+
+</para>
+
+@tree: 
+@p_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_delete ##### -->
+<para>
+
+</para>
+
+@tree: 
+@p_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_print ##### -->
+<para>
+
+</para>
+
+@tree: 
+@stream: 
+
+
+<!-- ##### FUNCTION raptor_avltree_remove ##### -->
+<para>
+
+</para>
+
+@tree: 
+@p_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_search ##### -->
+<para>
+
+</para>
+
+@tree: 
+@p_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_set_print_handler ##### -->
+<para>
+
+</para>
+
+@tree: 
+@print_fn: 
+
+
+<!-- ##### FUNCTION raptor_avltree_size ##### -->
+<para>
+
+</para>
+
+@tree: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_visit ##### -->
+<para>
+
+</para>
+
+@tree: 
+@visit_fn: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### TYPEDEF raptor_avltree_iterator ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION raptor_new_avltree_iterator ##### -->
+<para>
+
+</para>
+
+@tree: 
+@range: 
+@range_free_fn: 
+@direction: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_free_avltree_iterator ##### -->
+<para>
+
+</para>
+
+@iterator: 
+
+
+<!-- ##### FUNCTION raptor_avltree_iterator_get ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_iterator_is_end ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_avltree_iterator_next ##### -->
+<para>
+
+</para>
+
+@iterator: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_avltree_visit_function ##### -->
+<para>
+
+</para>
+
+@depth: 
+@data: 
+@user_data: 
+@Returns: 
+
+
