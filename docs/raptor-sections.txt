@@ -437,6 +437,7 @@ raptor_unicode_check_utf8_string
 RAPTOR_API
 RAPTOR_DEPRECATED
 RAPTOR_PRINTF_FORMAT
+RAPTOR_V2_AVAILABLE
 raptor_avltree_check
 raptor_avltree_dump
 </SECTION>
