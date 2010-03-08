@@ -42,6 +42,13 @@ With some versions of gcc this may give a compilation warning.
 @first_to_check_index: 
 
 
+<!-- ##### MACRO RAPTOR_V2_AVAILABLE ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### FUNCTION raptor_avltree_check ##### -->
 <para>
 
