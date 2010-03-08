@@ -224,7 +224,7 @@ while(<IN>) {
   die "$program: Bad line $.: $_\n"
     unless scalar(@fields) == $expected_n_fields;
 
-  my($old_ver, $old_return, $old_name, $old_args, $new_ver, $new_return, $new_name, $new_args)=@fields;
+  my($old_ver, $old_return, $old_name, $old_args, $new_ver, $new_return, $new_name, $new_args,$notes)=@fields;
 
   $old_version = $old_ver unless defined $old_version;
   $new_version = $new_ver unless defined $new_version;
