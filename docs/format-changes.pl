@@ -112,8 +112,8 @@ EOT
 EOT
 }
 
-sub print_renamed_functions_as_docbook_xml($@) {
-  my($title, @list)=@_;
+sub print_renamed_functions_as_docbook_xml($$$@) {
+  my($title, $old_function_header, $new_function_header, @list)=@_;
 
   print <<"EOT";
 <table border='1'>
@@ -127,8 +127,8 @@ EOT
   </thead>
   <tbody>
     <tr>
-      <th>Old Function</th>
-      <th>New Function</th>
+      <th>$old_function_header</th>
+      <th>$new_function_header</th>
     </tr>
 EOT
   for my $item (@list) {
@@ -258,22 +258,25 @@ print_start_chapter_as_docbook_xml('raptor-changes',
 				   $intro_para);
 
 print_start_section_as_docbook_xml('raptor-changes-new',
-				   "New functions in $package $new_version");
+				   "Functions added in $package $new_version");
 print_functions_list_as_docbook_xml(undef, 1, 1, @new_functions);
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-deleted',
-				   "Deleted functions in $package $new_version");
+				   "Functions deleted in $package $new_version");
 print_functions_list_as_docbook_xml(undef, 0, 0, @deleted_functions);
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-renamed',
-				   "Renamed functions in $package $new_version");
-print_renamed_functions_as_docbook_xml(undef, @renamed_functions);
+				   "Functions renamed in $package $new_version");
+print_renamed_functions_as_docbook_xml(undef,
+				       "$old_version function",
+				       "$new_version function",
+				       @renamed_functions);
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-changed',
-				   "Changed functions in $package between $old_version and $new_version");
+				   "Functions changed signature in $package $new_version");
 print_changed_functions_as_docbook_xml(undef, @changed_functions);
 print_end_section_as_docbook_xml();
 
