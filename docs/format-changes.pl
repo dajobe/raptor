@@ -99,15 +99,17 @@ sub format_fn_sig($$$$$) {
                    : $formatted_name;
 }
 
-sub format_notes($) {
-  my($notes)=@_;
+sub format_notes($$) {
+  my($is_inline,$notes)=@_;
 
-  return $nbsp if $notes eq '';
+  if ($notes eq '') {
+    return $is_inline ? '' : $nbsp;
+  }
 
   $notes =~ s{((?:raptor|librdf|rasqal)_.+?)\(}{format_function_name_as_docbook_xml($1)."("}ge;
   $notes =~ s{#((?:raptor|librdf|rasqal)\w+)}{format_type_name_as_docbook_xml($1)}ge;
 
-  return "- " . $notes;
+  return $is_inline ? "- " . $notes : $notes;
 }
 
 sub print_functions_list_as_docbook_xml($$$@) {
@@ -124,7 +126,7 @@ EOT
     my($fn_return, $fn_name, $fn_args, $notes) = @$item;
     my $formatted_fn = format_fn_sig($format_name, $show_sig, 
 				     $fn_return, $fn_name, $fn_args);
-    $notes = format_notes($notes);
+    $notes = format_notes(1, $notes);
     print "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
   }
   print <<"EOT";
@@ -156,7 +158,7 @@ EOT
     my($from, $to, $notes) = @$item;
     my $formatted_name = format_function_name_as_docbook_xml($to);
 
-    $notes = format_notes($notes);
+    $notes = format_notes(0, $notes);
     print "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
   }
   print <<"EOT";
@@ -196,7 +198,7 @@ EOT
     my $new_formatted_fn = format_fn_sig(1, 1,
 					 $new_fn_return, $new_fn_name, $new_fn_args);
 
-    $notes = format_notes($notes);
+    $notes = format_notes(0, $notes);
     print "    <tr valign='top'>\n      <td>$old_formatted_fn</td> <td>$new_formatted_fn</td> <td>$notes</td>\n    </tr>\n";
   }
   print <<"EOT";
