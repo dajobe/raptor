@@ -264,7 +264,7 @@
 1.4.21	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	1.9.0	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	-
 1.4.21	void	raptor_uri_get_handler	(const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
 1.4.21	void	raptor_uri_get_handler_v2	(raptor_world* world, const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
-1.4.21	int	raptor_uri_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	Deprecated for raptor_uri_uri_string_is_file_uri().
+1.4.21	int	raptor_uri_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	-
 1.4.21	void	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
 1.4.21	void	raptor_uri_print_v2	(raptor_world* world, const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
 1.4.21	void	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	1.9.0	size_t	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	-
