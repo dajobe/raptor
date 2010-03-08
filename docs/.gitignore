@@ -2,6 +2,7 @@
 *.stamp
 html/
 libraptor.html
+raptor-changes.xml
 raptor-decl-list.txt
 raptor-decl.txt
 raptor-docs.sgml
