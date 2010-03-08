@@ -105,7 +105,7 @@ sub format_notes($) {
   return $nbsp if $notes eq '';
 
   $notes =~ s{((?:raptor|librdf|rasqal)_.+?)\(}{format_function_name_as_docbook_xml($1)."("}ge;
-  $notes =~ s{(#(?:raptor|librdf|rasqal)\w+)}{format_type_name_as_docbook_xml($1)}ge;
+  $notes =~ s{#((?:raptor|librdf|rasqal)\w+)}{format_type_name_as_docbook_xml($1)}ge;
 
   return "- " . $notes;
 }
