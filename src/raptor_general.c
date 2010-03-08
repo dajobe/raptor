@@ -302,7 +302,7 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
       break;
 
     case RAPTOR_WORLD_FLAG_URI_INTERNING:
-      world->uri_interning = flag;
+      world->uri_interning = value;
       break;
 
     default:
