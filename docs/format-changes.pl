@@ -201,10 +201,10 @@ our($dummy, $package, $file)=@ARGV;
 
 # Read in data
 
-# Example of Format (8 fields):
-# OLD VER,OLD RETURN, OLD NAME, OLD ARGS, NEW VER, NEW RETURN, NEW NAME, NEW ARGS
-# 1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)
-our $expected_n_fields = 8;
+# Example of Format (9 fields):
+# OLD VERSION<tab>OLD RETURN<tab>OLD NAME<tab>OLD ARGS<tab>NEW VERSION<tab>NEW RETURN<tab>NEW NAME<tab>NEW ARGS<tab>NOTES
+# 1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)	-
+our $expected_n_fields = 9;
 
 my(@new_functions);
 my(@deleted_functions);
@@ -217,6 +217,8 @@ our $new_version;
 open(IN, "<$file") or die "$program: Cannot read $file - $!\n";
 while(<IN>) {
   chomp;
+
+  next if /^#/;
 
   my(@fields)=split(/\t/);
   die "$program: Bad line $.: $_\n"
