@@ -323,16 +323,13 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
  * 
  * The function will receive callbacks when messages are generated
  * 
- * Return value: 0 on success, non-0 on failure: <0 on errors and >0 if world is already opened
+ * Return value: non-0 on failure
  **/
 int
 raptor_world_set_log_handler(raptor_world *world, void *user_data,
                              raptor_log_handler handler)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
-
-  if(world->opened)
-    return 1;
 
   world->message_handler_user_data = user_data;
   world->message_handler = handler;
