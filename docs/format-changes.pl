@@ -27,6 +27,7 @@ use File::Basename;
 
 our $program = basename $0;
 
+our $nbsp = '&#160;';
 
 sub print_start_chapter_as_docbook_xml($$$) {
   my($id, $title, $intro_para)=@_;
@@ -102,10 +103,10 @@ EOT
     if defined $title;
 
   for my $item (@list) {
-    my($fn_return, $fn_name, $fn_args) = @$item;
+    my($fn_return, $fn_name, $fn_args, $notes) = @$item;
     my $formatted_fn = format_fn_sig($format_name, $show_sig, 
 				     $fn_return, $fn_name, $fn_args);
-    print "    <listitem><para>$formatted_fn</para></listitem>\n";
+    print "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
   }
   print <<"EOT";
   </itemizedlist>
@@ -129,12 +130,15 @@ EOT
     <tr>
       <th>$old_function_header</th>
       <th>$new_function_header</th>
+      <th>Notes</th>
     </tr>
 EOT
   for my $item (@list) {
-    my($from, $to) = @$item;
+    my($from, $to, $notes) = @$item;
     my $formatted_name = format_function_name_as_docbook_xml($to);
-    print "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td>\n    </tr>\n";
+
+    $notes = $nbsp if $notes eq '';
+    print "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
   }
   print <<"EOT";
   </tbody>
@@ -160,11 +164,12 @@ EOT
     <tr>
       <th>$old_function_header</th>
       <th>$new_function_header</th>
+      <th>Notes</th>
     </tr>
 EOT
   for my $item (@list) {
     my($old_fn_return, $old_fn_name, $old_fn_args,
-       $new_fn_return, $new_fn_name, $new_fn_args) = @$item;
+       $new_fn_return, $new_fn_name, $new_fn_args, $notes) = @$item;
 
     my $old_formatted_fn = format_fn_sig(0, 1,
 					 $old_fn_return, $old_fn_name, $old_fn_args);
@@ -172,7 +177,8 @@ EOT
     my $new_formatted_fn = format_fn_sig(1, 1,
 					 $new_fn_return, $new_fn_name, $new_fn_args);
 
-    print "    <tr valign='top'>\n      <td>$old_formatted_fn</td> <td>$new_formatted_fn</td>\n    </tr>\n";
+    $notes = $nbsp if $notes eq '';
+    print "    <tr valign='top'>\n      <td>$old_formatted_fn</td> <td>$new_formatted_fn</td> <td>$notes</td>\n    </tr>\n";
   }
   print <<"EOT";
   </tbody>
@@ -229,20 +235,22 @@ while(<IN>) {
   $old_version = $old_ver unless defined $old_version;
   $new_version = $new_ver unless defined $new_version;
 
+  $notes = '' if $notes eq '-';
+
   if($old_name eq '-') {
-    push(@new_functions, [$new_return, $new_name, $new_args]);
+    push(@new_functions, [$new_return, $new_name, $new_args, $notes]);
   } elsif($new_name eq '-') {
-    push(@deleted_functions, [$old_return, $old_name, $old_args]);
+    push(@deleted_functions, [$old_return, $old_name, $old_args, $notes]);
   } elsif($old_return eq $new_return && $old_name eq $new_name &&
 	  $old_args eq $new_args) {
     # same
   } elsif($old_return eq $new_return && $old_name ne $new_name &&
 	  $old_args eq $new_args) {
     # renamed but nothing else changed
-    push(@renamed_functions, [$old_name, $new_name]);
+    push(@renamed_functions, [$old_name, $new_name, $notes]);
   } else {
     # something changed - args and/or return
-    push(@changed_functions, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args]);
+    push(@changed_functions, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args, $notes]);
   }
 }
 close(IN);
