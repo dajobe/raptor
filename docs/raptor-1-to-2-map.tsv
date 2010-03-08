@@ -1,378 +1,379 @@
-1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)
-1.4.21	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	1.9.0	void*	raptor_calloc_memory	(size_t nmemb, size_t size)
-1.4.21	int	raptor_compare_strings	(const void *a, const void *b)	1.9.0	-	-	-
-1.4.21	int	raptor_copy_identifier	(raptor_identifier *dest, raptor_identifier *src)	1.9.0	-	-	-
-1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-
-1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-
-1.4.21	raptor_feature	raptor_feature_from_uri	(raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)
-1.4.21	raptor_feature	raptor_feature_from_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)
-1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	raptor_option_value_type	raptor_option_get_value_type	(const raptor_option option)
-1.4.21	int	raptor_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_parser_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	int	raptor_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_parser_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	void	raptor_finish	(void)	1.9.0	-	-	-
-1.4.21	int	raptor_format_locator	(char* buffer, size_t length, raptor_locator* locator)	1.9.0	int	raptor_locator_format	(char* buffer, size_t length, raptor_locator* locator)
-1.4.21	int	raptor_format_locator_v2	(raptor_world* world, char* buffer, size_t length, raptor_locator* locator)	1.9.0	int	raptor_locator_format	(char* buffer, size_t length, raptor_locator* locator)
-1.4.21	void	raptor_free_identifier	(raptor_identifier *identifier)	1.9.0	-	-	-
-1.4.21	void	raptor_free_iostream	(raptor_iostream *iostr)	1.9.0	void	raptor_free_iostream	(raptor_iostream *iostr)
-1.4.21	void	raptor_free_memory	(void *ptr)	1.9.0	void	raptor_free_memory	(void *ptr)
-1.4.21	void	raptor_free_namespace	(raptor_namespace *ns)	1.9.0	void	raptor_free_namespace	(raptor_namespace *ns)
-1.4.21	void	raptor_free_namespaces	(raptor_namespace_stack *nstack)	1.9.0	void	raptor_free_namespaces	(raptor_namespace_stack *nstack)
-1.4.21	void	raptor_free_parser	(raptor_parser* parser)	1.9.0	void	raptor_free_parser	(raptor_parser* parser)
-1.4.21	void	raptor_free_qname	(raptor_qname* name)	1.9.0	void	raptor_free_qname	(raptor_qname* name)
-1.4.21	void	raptor_free_sax2	(raptor_sax2 *sax2)	1.9.0	void	raptor_free_sax2	(raptor_sax2 *sax2)
-1.4.21	void	raptor_free_sequence	(raptor_sequence* seq)	1.9.0	void	raptor_free_sequence	(raptor_sequence* seq)
-1.4.21	void	raptor_free_serializer	(raptor_serializer* rdf_serializer)	1.9.0	void	raptor_free_serializer	(raptor_serializer* rdf_serializer)
-1.4.21	void	raptor_free_stringbuffer	(raptor_stringbuffer *stringbuffer)	1.9.0	void	raptor_free_stringbuffer	(raptor_stringbuffer *stringbuffer)
-1.4.21	void	raptor_free_uri	(raptor_uri *uri)	1.9.0	void	raptor_free_uri	(raptor_uri *uri)
-1.4.21	void	raptor_free_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	void	raptor_free_uri	(raptor_uri *uri)
-1.4.21	void	raptor_free_world	(raptor_world* world)	1.9.0	void	raptor_free_world	(raptor_world* world)
-1.4.21	void	raptor_free_xml_element	(raptor_xml_element *element)	1.9.0	void	raptor_free_xml_element	(raptor_xml_element *element)
-1.4.21	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)
-1.4.21	int	raptor_get_feature	(raptor_parser *parser, raptor_feature feature)	1.9.0	int	raptor_parser_get_option	(raptor_parser *parser, raptor_option option)
-1.4.21	unsigned int	raptor_get_feature_count	(void)	1.9.0	unsigned int	raptor_parser_get_option_count	(void)
-1.4.21	const char*	raptor_get_label	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_label	(raptor_parser *rdf_parser)
-1.4.21	raptor_locator*	raptor_get_locator	(raptor_parser* rdf_parser)	1.9.0	raptor_locator*	raptor_parser_get_locator	(raptor_parser* rdf_parser)
-1.4.21	const char*	raptor_get_mime_type	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_mime_type	(raptor_parser *rdf_parser)
-1.4.21	const char*	raptor_get_name	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_name	(raptor_parser *rdf_parser)
-1.4.21	int	raptor_get_need_base_uri	(raptor_parser *rdf_parser)	1.9.0	int	raptor_parser_get_need_base_uri	(raptor_parser *rdf_parser)
-1.4.21	const char*	raptor_guess_parser_name	(raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)
-1.4.21	const char*	raptor_guess_parser_name_v2	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)
-1.4.21	void	raptor_init	(void)	1.9.0	-	-	-
-1.4.21	int	raptor_iostream_format_hexadecimal	(raptor_iostream* iostr, unsigned int integer, int width)	1.9.0	int	raptor_iostream_hexadecimal_write	(unsigned int integer, int width, raptor_iostream* iostr)
-1.4.21	size_t	raptor_iostream_get_bytes_written_count	(raptor_iostream *iostr)	1.9.0	-	-	-
-1.4.21	int	raptor_iostream_read_bytes	(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb)	1.9.0	int	raptor_iostream_read_bytes	(void *ptr, size_t size, size_t nmemb, raptor_iostream* iostr)
-1.4.21	int	raptor_iostream_read_eof	(raptor_iostream *iostr)	1.9.0	int	raptor_iostream_read_eof	(raptor_iostream *iostr)
-1.4.21	unsigned long	raptor_iostream_tell	(raptor_iostream *iostr)	1.9.0	unsigned long	raptor_iostream_tell	(raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_byte	(raptor_iostream *iostr, const int byte)	1.9.0	int	raptor_iostream_write_byte	(const int byte, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_bytes	(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb)	1.9.0	int	raptor_iostream_write_bytes	(const void *ptr, size_t size, size_t nmemb, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_counted_string	(raptor_iostream *iostr, const void *string, size_t len)	1.9.0	int	raptor_iostream_counted_string_write	(const void *string, size_t len, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_decimal	(raptor_iostream* iostr, int integer)	1.9.0	int	raptor_iostream_decimal_write	(int integer, raptor_iostream* iostr)
-1.4.21	void	raptor_iostream_write_end	(raptor_iostream *iostr)	1.9.0	int	raptor_iostream_write_end	(raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_namespace	(raptor_iostream* iostr, raptor_namespace *ns)	1.9.0	int	raptor_namespace_write	(raptor_namespace *ns, raptor_iostream* iostr)
-1.4.21	int	raptor_iostream_write_qname	(raptor_iostream* iostr, raptor_qname *qname)	1.9.0	int	raptor_qname_write	(raptor_qname *qname, raptor_iostream* iostr)
-1.4.21	void	raptor_iostream_write_statement_ntriples	(raptor_iostream* iostr, const raptor_statement *statement)	1.9.0	int	raptor_statement_ntriples_write	(const raptor_statement *statement, raptor_iostream* iostr)
-1.4.21	int	raptor_iostream_write_string	(raptor_iostream *iostr, const void *string)	1.9.0	int	raptor_iostream_string_write	(const void *string, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_string_ntriples	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim)	1.9.0	int	raptor_string_ntriples_write	(const unsigned char* string, size_t len, const char delim, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_string_python	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim, int flags)	1.9.0	int	raptor_string_python_write	(const unsigned char* string, size_t len, const char delim, int flags, raptor_iostream *iostr)
-1.4.21	void	raptor_iostream_write_string_turtle	(raptor_iostream *iostr, const unsigned char* string, size_t len)	1.9.0	-	-	-
-1.4.21	int	raptor_iostream_write_stringbuffer	(raptor_iostream* iostr, raptor_stringbuffer *sb)	1.9.0	int	raptor_stringbuffer_write	(raptor_stringbuffer *sb, raptor_iostream* iostr)
-1.4.21	int	raptor_iostream_write_uri	(raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_uri_v2	(raptor_world* world, raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_xml_any_escaped_string	(raptor_iostream* iostr, const unsigned char* string, size_t len, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_any_write	(const unsigned char* string, size_t len, char quote, int xml_version, raptor_iostream* iostr)
-1.4.21	int	raptor_iostream_write_xml_element	(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth)	1.9.0	int	raptor_xml_element_write	(raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, int depth, raptor_iostream *iostr)
-1.4.21	int	raptor_iostream_write_xml_escaped_string	(raptor_iostream* iostr, const unsigned char* string, size_t len, char quote, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_write	(const unsigned char* string, size_t len, char quote, raptor_iostream* iostr)
-1.4.21	int	raptor_locator_byte	(raptor_locator *locator)	1.9.0	int	raptor_locator_byte	(raptor_locator *locator)
-1.4.21	int	raptor_locator_column	(raptor_locator *locator)	1.9.0	int	raptor_locator_column	(raptor_locator *locator)
-1.4.21	const char*	raptor_locator_file	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_file	(raptor_locator *locator)
-1.4.21	int	raptor_locator_line	(raptor_locator *locator)	1.9.0	int	raptor_locator_line	(raptor_locator *locator)
-1.4.21	const char*	raptor_locator_uri	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)
-1.4.21	const char*	raptor_locator_uri_v2	(raptor_world* world, raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)
-1.4.21	int	raptor_namespace_copy	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)	1.9.0	int	raptor_namespace_copy	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)
-1.4.21	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)	1.9.0	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)
-1.4.21	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)	1.9.0	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)
-1.4.21	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)	1.9.0	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)
-1.4.21	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)	1.9.0	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)
-1.4.21	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)	1.9.0	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)
-1.4.21	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	1.9.0	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)
-1.4.21	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)	1.9.0	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)
-1.4.21	unsigned char*	raptor_namespaces_format	(const raptor_namespace *ns, size_t *length_p)	1.9.0	unsigned char*	raptor_namespace_format_as_xml	(const raptor_namespace *ns, size_t *length_p)
-1.4.21	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)	1.9.0	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)
-1.4.21	int	raptor_namespaces_init	(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	int	raptor_namespaces_init	(raptor_world* world, raptor_namespace_stack *nstack, int defaults)
-1.4.21	int	raptor_namespaces_init_v2	(raptor_world* world, raptor_namespace_stack *nstack, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	int	raptor_namespaces_init	(raptor_world* world, raptor_namespace_stack *nstack, int defaults)
-1.4.21	int	raptor_namespaces_namespace_in_scope	(raptor_namespace_stack *nstack, const raptor_namespace *nspace)	1.9.0	int	raptor_namespaces_namespace_in_scope	(raptor_namespace_stack *nstack, const raptor_namespace *nspace)
-1.4.21	raptor_qname*	raptor_namespaces_qname_from_uri	(raptor_namespace_stack *nstack, raptor_uri *uri, int xml_version)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_uri	(raptor_namespace_stack *nstack, raptor_uri *uri, int xml_version)
-1.4.21	void	raptor_namespaces_start_namespace	(raptor_namespace_stack *nstack, raptor_namespace *nspace)	1.9.0	void	raptor_namespaces_start_namespace	(raptor_namespace_stack *nstack, raptor_namespace *nspace)
-1.4.21	int	raptor_namespaces_start_namespace_full	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	1.9.0	int	raptor_namespaces_start_namespace_full	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)
-1.4.21	raptor_identifier*	raptor_new_identifier	(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char* id, const unsigned char* literal, raptor_uri *literal_datatype, const unsigned char* literal_language)	1.9.0	-	-	-
-1.4.21	raptor_identifier*	raptor_new_identifier_v2	(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char* id, const unsigned char* literal, raptor_uri *literal_datatype, const unsigned char* literal_language)	1.9.0	-	-	-
-1.4.21	raptor_iostream*	raptor_new_iostream_from_file_handle	(FILE *handle)	1.9.0	raptor_iostream*	raptor_new_iostream_from_file_handle	(raptor_world* world, FILE *handle)
-1.4.21	raptor_iostream*	raptor_new_iostream_from_filename	(const char* filename)	1.9.0	raptor_iostream*	raptor_new_iostream_from_filename	(raptor_world* world, const char* filename)
-1.4.21	raptor_iostream*	raptor_new_iostream_from_handler	(void *context, const raptor_iostream_handler *handler)	1.9.0	raptor_iostream*	raptor_new_iostream_from_handler	(raptor_world* world, void *user_data, const raptor_iostream_handler* const handler)
-1.4.21	raptor_iostream*	raptor_new_iostream_from_handler2	(void *user_data, const raptor_iostream_handler2* const handler2)	1.9.0	raptor_iostream*	raptor_new_iostream_from_handler	(raptor_world* world, void *user_data, const raptor_iostream_handler* const handler)
-1.4.21	raptor_iostream*	raptor_new_iostream_from_sink	(void)	1.9.0	raptor_iostream*	raptor_new_iostream_from_sink	(raptor_world* world)
-1.4.21	raptor_iostream*	raptor_new_iostream_from_string	(void *string, size_t length)	1.9.0	raptor_iostream*	raptor_new_iostream_from_string	(raptor_world* world, void *string, size_t length)
-1.4.21	raptor_iostream*	raptor_new_iostream_to_file_handle	(FILE *handle)	1.9.0	raptor_iostream*	raptor_new_iostream_to_file_handle	(raptor_world* world, FILE *handle)
-1.4.21	raptor_iostream*	raptor_new_iostream_to_filename	(const char* filename)	1.9.0	raptor_iostream*	raptor_new_iostream_to_filename	(raptor_world* world, const char* filename)
-1.4.21	raptor_iostream*	raptor_new_iostream_to_sink	(void)	1.9.0	raptor_iostream*	raptor_new_iostream_to_sink	(raptor_world* world)
-1.4.21	raptor_iostream*	raptor_new_iostream_to_string	(void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	raptor_iostream*	raptor_new_iostream_to_string	(raptor_world* world, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))
-1.4.21	raptor_namespace*	raptor_new_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	1.9.0	raptor_namespace*	raptor_new_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)
-1.4.21	raptor_namespace*	raptor_new_namespace_from_uri	(raptor_namespace_stack *nstack, const unsigned char* prefix, raptor_uri* ns_uri, int depth)	1.9.0	raptor_namespace*	raptor_new_namespace_from_uri	(raptor_namespace_stack *nstack, const unsigned char* prefix, raptor_uri* ns_uri, int depth)
-1.4.21	int	raptor_new_namespace_parts_from_string	(const unsigned char* string, unsigned char* *prefix, unsigned char* *uri_string)	1.9.0	int	raptor_xml_namespace_string_parse	(const unsigned char* string, unsigned char* *prefix, unsigned char* *uri_string)
-1.4.21	raptor_namespace_stack*	raptor_new_namespaces	(const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	raptor_namespace_stack*	raptor_new_namespaces	(raptor_world* world, int defaults)
-1.4.21	raptor_namespace_stack*	raptor_new_namespaces_v2	(raptor_world* world, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	raptor_namespace_stack*	raptor_new_namespaces	(raptor_world* world, int defaults)
-1.4.21	raptor_parser*	raptor_new_parser	(const char* name)	1.9.0	raptor_parser*	raptor_new_parser	(raptor_world* world, const char* name)
-1.4.21	raptor_parser*	raptor_new_parser_for_content	(raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	raptor_parser*	raptor_new_parser_for_content	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)
-1.4.21	raptor_parser*	raptor_new_parser_for_content_v2	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	raptor_parser*	raptor_new_parser_for_content	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)
-1.4.21	raptor_parser*	raptor_new_parser_v2	(raptor_world* world, const char* name)	1.9.0	raptor_parser*	raptor_new_parser	(raptor_world* world, const char* name)
-1.4.21	raptor_qname*	raptor_new_qname	(raptor_namespace_stack *nstack, const unsigned char* name, const unsigned char* value, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	raptor_qname*	raptor_new_qname	(raptor_namespace_stack *nstack, const unsigned char* name, const unsigned char* value)
-1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)
-1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name_v2	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)
-1.4.21	raptor_sax2*	raptor_new_sax2	(void *user_data, raptor_error_handlers* error_handlers)	1.9.0	raptor_sax2*	raptor_new_sax2	(raptor_world *world, raptor_locator *locator, void* user_data)
-1.4.21	raptor_sequence*	raptor_new_sequence	(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)
-1.4.21	raptor_sequence*	raptor_new_sequence_v2	(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)
-1.4.21	raptor_serializer*	raptor_new_serializer	(const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)
-1.4.21	raptor_serializer*	raptor_new_serializer_v2	(raptor_world* world, const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)
-1.4.21	raptor_stringbuffer*	raptor_new_stringbuffer	(void)	1.9.0	raptor_stringbuffer*	raptor_new_stringbuffer	(void)
-1.4.21	raptor_uri*	raptor_new_uri	(const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri	(raptor_world* world, const unsigned char* uri_string)
-1.4.21	raptor_uri*	raptor_new_uri_for_rdf_concept	(const char* name)	1.9.0	raptor_uri*	raptor_new_uri_for_rdf_concept	(raptor_world* world, const unsigned char* name)
-1.4.21	raptor_uri*	raptor_new_uri_for_rdf_concept_v2	(raptor_world* world, const char* name)	1.9.0	raptor_uri*	raptor_new_uri_for_rdf_concept	(raptor_world* world, const unsigned char* name)
-1.4.21	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)
-1.4.21	raptor_uri*	raptor_new_uri_for_retrieval_v2	(raptor_world* world, raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)
-1.4.21	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)
-1.4.21	raptor_uri*	raptor_new_uri_for_xmlbase_v2	(raptor_world* world, raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)
-1.4.21	raptor_uri*	raptor_new_uri_from_id	(raptor_uri *base_uri, const unsigned char* id)	1.9.0	raptor_uri*	raptor_new_uri_from_id	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)
-1.4.21	raptor_uri*	raptor_new_uri_from_id_v2	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)	1.9.0	raptor_uri*	raptor_new_uri_from_id	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)
-1.4.21	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_uri *uri, const unsigned char* local_name)	1.9.0	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)
-1.4.21	raptor_uri*	raptor_new_uri_from_uri_local_name_v2	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)	1.9.0	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)
-1.4.21	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_uri *base_uri, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)
-1.4.21	raptor_uri*	raptor_new_uri_relative_to_base_v2	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)
-1.4.21	raptor_uri*	raptor_new_uri_v2	(raptor_world* world, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri	(raptor_world* world, const unsigned char* uri_string)
-1.4.21	raptor_world*	raptor_new_world	(void)	1.9.0	raptor_world*	raptor_new_world	(void)
-1.4.21	raptor_xml_element*	raptor_new_xml_element	(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base)	1.9.0	raptor_xml_element*	raptor_new_xml_element	(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base)
-1.4.21	raptor_xml_element*	raptor_new_xml_element_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* name, const unsigned char* xml_language, raptor_uri *xml_base)	1.9.0	raptor_xml_element*	raptor_new_xml_element_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* name, const unsigned char* xml_language, raptor_uri *xml_base)
-1.4.21	raptor_xml_writer*	raptor_new_xml_writer	(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize)	1.9.0	raptor_xml_writer*	raptor_new_xml_writer	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr)
-1.4.21	raptor_xml_writer*	raptor_new_xml_writer_v2	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize)	1.9.0	raptor_xml_writer*	raptor_new_xml_writer	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr)
-1.4.21	unsigned char*	raptor_ntriples_string_as_utf8_string	(raptor_parser* rdf_parser, const unsigned char* src, int len, size_t *dest_lenp)	1.9.0	-	-	-
-1.4.21	const char*	raptor_ntriples_term_as_string	(raptor_ntriples_term_type term)	1.9.0	-	-	-
-1.4.21	void	raptor_parse_abort	(raptor_parser* rdf_parser)	1.9.0	void	raptor_parser_parse_abort	(raptor_parser* rdf_parser)
-1.4.21	int	raptor_parse_chunk	(raptor_parser* rdf_parser, const unsigned char* buffer, size_t len, int is_end)	1.9.0	int	raptor_parser_parse_chunk	(raptor_parser* rdf_parser, const unsigned char* buffer, size_t len, int is_end)
-1.4.21	int	raptor_parse_file	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_file	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)
-1.4.21	int	raptor_parse_file_stream	(raptor_parser* rdf_parser, FILE *stream, const char* filename, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_file_stream	(raptor_parser* rdf_parser, FILE *stream, const char* filename, raptor_uri *base_uri)
-1.4.21	int	raptor_parse_uri	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_uri	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)
-1.4.21	int	raptor_parse_uri_with_connection	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection)	1.9.0	int	raptor_parser_parse_uri_with_connection	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection)
-1.4.21	const char*	raptor_parser_get_accept_header	(raptor_parser* rdf_parser)	1.9.0	const char*	raptor_parser_get_accept_header	(raptor_parser* rdf_parser)
-1.4.21	const unsigned char*	raptor_parser_get_feature_string	(raptor_parser *parser, raptor_feature feature)	1.9.0	const unsigned char*	raptor_parser_get_option_string	(raptor_parser *parser, raptor_option option)
-1.4.21	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)	1.9.0	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)
-1.4.21	int	raptor_parser_set_feature_string	(raptor_parser *parser, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_parser_set_option_string	(raptor_parser *parser, raptor_option option, const unsigned char* value)
-1.4.21	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)
-1.4.21	int	raptor_parsers_enumerate	(const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)
-1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)
-1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-
-1.4.21	void	raptor_print_statement	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)
-1.4.21	void	raptor_print_statement_as_ntriples	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)
-1.4.21	void	raptor_print_statement_as_ntriples_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)
-1.4.21	void	raptor_print_statement_detailed	(const raptor_statement * statement, int detailed, FILE *stream)	1.9.0	-	-	-
-1.4.21	void	raptor_print_statement_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)
-1.4.21	raptor_qname*	raptor_qname_copy	(raptor_qname *qname)	1.9.0	raptor_qname*	raptor_qname_copy	(raptor_qname *qname)
-1.4.21	int	raptor_qname_equal	(raptor_qname *name1, raptor_qname *name2)	1.9.0	int	raptor_qname_equal	(raptor_qname *name1, raptor_qname *name2)
-1.4.21	const unsigned char*	raptor_qname_get_counted_value	(raptor_qname* name, size_t* length_p)	1.9.0	const unsigned char*	raptor_qname_get_counted_value	(raptor_qname* name, size_t* length_p)
-1.4.21	const unsigned char*	raptor_qname_get_local_name	(raptor_qname* name)	1.9.0	const unsigned char*	raptor_qname_get_local_name	(raptor_qname* name)
-1.4.21	const raptor_namespace*	raptor_qname_get_namespace	(raptor_qname* name)	1.9.0	const raptor_namespace*	raptor_qname_get_namespace	(raptor_qname* name)
-1.4.21	const unsigned char*	raptor_qname_get_value	(raptor_qname* name)	1.9.0	const unsigned char*	raptor_qname_get_value	(raptor_qname* name)
-1.4.21	raptor_uri*	raptor_qname_string_to_uri	(raptor_namespace_stack *nstack, const unsigned char* name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	raptor_uri*	raptor_qname_string_to_uri	(raptor_namespace_stack *nstack, const unsigned char* name, size_t name_len)
-1.4.21	unsigned char*	raptor_qname_to_counted_name	(raptor_qname *qname, size_t* length_p)	1.9.0	unsigned char*	raptor_qname_to_counted_name	(raptor_qname *qname, size_t* length_p)
-1.4.21	raptor_uri*	raptor_sax2_inscope_base_uri	(raptor_sax2* sax2)	1.9.0	raptor_uri*	raptor_sax2_inscope_base_uri	(raptor_sax2* sax2)
-1.4.21	const unsigned char*	raptor_sax2_inscope_xml_language	(raptor_sax2* sax2)	1.9.0	const unsigned char*	raptor_sax2_inscope_xml_language	(raptor_sax2* sax2)
-1.4.21	int	raptor_sax2_parse_chunk	(raptor_sax2* sax2, const unsigned char* buffer, size_t len, int is_end)	1.9.0	int	raptor_sax2_parse_chunk	(raptor_sax2* sax2, const unsigned char* buffer, size_t len, int is_end)
-1.4.21	void	raptor_sax2_parse_start	(raptor_sax2 *sax2, raptor_uri *base_uri)	1.9.0	void	raptor_sax2_parse_start	(raptor_sax2 *sax2, raptor_uri *base_uri)
-1.4.21	void	raptor_sax2_set_cdata_handler	(raptor_sax2* sax2, raptor_sax2_cdata_handler handler)	1.9.0	void	raptor_sax2_set_cdata_handler	(raptor_sax2* sax2, raptor_sax2_cdata_handler handler)
-1.4.21	void	raptor_sax2_set_characters_handler	(raptor_sax2* sax2, raptor_sax2_characters_handler handler)	1.9.0	void	raptor_sax2_set_characters_handler	(raptor_sax2* sax2, raptor_sax2_characters_handler handler)
-1.4.21	void	raptor_sax2_set_comment_handler	(raptor_sax2* sax2, raptor_sax2_comment_handler handler)	1.9.0	void	raptor_sax2_set_comment_handler	(raptor_sax2* sax2, raptor_sax2_comment_handler handler)
-1.4.21	void	raptor_sax2_set_end_element_handler	(raptor_sax2* sax2, raptor_sax2_end_element_handler handler)	1.9.0	void	raptor_sax2_set_end_element_handler	(raptor_sax2* sax2, raptor_sax2_end_element_handler handler)
-1.4.21	void	raptor_sax2_set_external_entity_ref_handler	(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler)	1.9.0	void	raptor_sax2_set_external_entity_ref_handler	(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler)
-1.4.21	void	raptor_sax2_set_namespace_handler	(raptor_sax2* sax2, raptor_namespace_handler handler)	1.9.0	void	raptor_sax2_set_namespace_handler	(raptor_sax2* sax2, raptor_namespace_handler handler)
-1.4.21	void	raptor_sax2_set_start_element_handler	(raptor_sax2* sax2, raptor_sax2_start_element_handler handler)	1.9.0	void	raptor_sax2_set_start_element_handler	(raptor_sax2* sax2, raptor_sax2_start_element_handler handler)
-1.4.21	void	raptor_sax2_set_unparsed_entity_decl_handler	(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler)	1.9.0	void	raptor_sax2_set_unparsed_entity_decl_handler	(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler)
-1.4.21	void*	raptor_sequence_delete_at	(raptor_sequence* seq, int idx)	1.9.0	void*	raptor_sequence_delete_at	(raptor_sequence* seq, int idx)
-1.4.21	void*	raptor_sequence_get_at	(raptor_sequence* seq, int idx)	1.9.0	void*	raptor_sequence_get_at	(raptor_sequence* seq, int idx)
-1.4.21	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)	1.9.0	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)
-1.4.21	void*	raptor_sequence_pop	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_pop	(raptor_sequence* seq)
-1.4.21	void	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)	1.9.0	int	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)
-1.4.21	void	raptor_sequence_print_string	(char* data, FILE *fh)	1.9.0	-	-	-
-1.4.21	void	raptor_sequence_print_uri	(char* data, FILE *fh)	1.9.0	-	-	-
-1.4.21	int	raptor_sequence_push	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_push	(raptor_sequence* seq, void *data)
-1.4.21	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)	1.9.0	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)
-1.4.21	void	raptor_sequence_set_print_handler	(raptor_sequence *seq, raptor_sequence_print_handler *print_handler)	1.9.0	-	-	-
-1.4.21	void	raptor_sequence_set_print_handler_v2	(raptor_sequence *seq, raptor_sequence_print_handler_v2 *print_handler)	1.9.0	-	-	-
-1.4.21	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)
-1.4.21	int	raptor_sequence_size	(raptor_sequence* seq)	1.9.0	int	raptor_sequence_size	(raptor_sequence* seq)
-1.4.21	void	raptor_sequence_sort	(raptor_sequence* seq, int(*compare)(const void *, const void *))	1.9.0	void	raptor_sequence_sort	(raptor_sequence* seq, raptor_data_compare_function compare)
-1.4.21	void*	raptor_sequence_unshift	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_unshift	(raptor_sequence* seq)
-1.4.21	int	raptor_serialize_end	(raptor_serializer *rdf_serializer)	1.9.0	int	raptor_serializer_serialize_end	(raptor_serializer *rdf_serializer)
-1.4.21	int	raptor_serialize_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)	1.9.0	int	raptor_serializer_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)
-1.4.21	int	raptor_serialize_set_namespace_from_namespace	(raptor_serializer* rdf_serializer, raptor_namespace *nspace)	1.9.0	int	raptor_serializer_set_namespace_from_namespace	(raptor_serializer* rdf_serializer, raptor_namespace *nspace)
-1.4.21	int	raptor_serialize_start	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	1.9.0	int	raptor_serializer_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)
-1.4.21	int	raptor_serialize_start_to_file_handle	(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh)	1.9.0	int	raptor_serializer_start_to_file_handle	(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh)
-1.4.21	int	raptor_serialize_start_to_filename	(raptor_serializer *rdf_serializer, const char* filename)	1.9.0	int	raptor_serializer_start_to_filename	(raptor_serializer *rdf_serializer, const char* filename)
-1.4.21	int	raptor_serialize_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	1.9.0	int	raptor_serializer_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)
-1.4.21	int	raptor_serialize_start_to_string	(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p)	1.9.0	int	raptor_serializer_start_to_string	(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p)
-1.4.21	int	raptor_serialize_statement	(raptor_serializer* rdf_serializer, const raptor_statement *statement)	1.9.0	int	raptor_serializer_serialize_statement	(raptor_serializer* rdf_serializer, raptor_statement *statement)
-1.4.21	int	raptor_serializer_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_serializer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	int	raptor_serializer_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_serializer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	int	raptor_serializer_get_feature	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	int	raptor_serializer_get_option	(raptor_serializer *serializer, raptor_option option)
-1.4.21	const unsigned char*	raptor_serializer_get_feature_string	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	const unsigned char*	raptor_serializer_get_option_string	(raptor_serializer *serializer, raptor_option option)
-1.4.21	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)	1.9.0	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)
-1.4.21	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	1.9.0	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)
-1.4.21	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	1.9.0	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)
-1.4.21	void	raptor_serializer_set_error_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-
-1.4.21	int	raptor_serializer_set_feature	(raptor_serializer *serializer, raptor_feature feature, int value)	1.9.0	int	raptor_serializer_set_option	(raptor_serializer *serializer, raptor_option option, int value)
-1.4.21	int	raptor_serializer_set_feature_string	(raptor_serializer *serializer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_serializer_set_option_string	(raptor_serializer *serializer, raptor_option option, const unsigned char* value)
-1.4.21	void	raptor_serializer_set_warning_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-
-1.4.21	int	raptor_serializer_syntax_name_check	(const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)
-1.4.21	int	raptor_serializer_syntax_name_check_v2	(raptor_world* world, const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)
-1.4.21	int	raptor_serializers_enumerate	(const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_serializers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	int	raptor_serializers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_serializers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	void	raptor_set_default_generate_id_parameters	(raptor_parser* rdf_parser, char* prefix, int base)	1.9.0	void	raptor_parser_set_default_generate_id_parameters	(raptor_parser* rdf_parser, char* prefix, int base)
-1.4.21	void	raptor_set_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-
-1.4.21	void	raptor_set_fatal_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-
-1.4.21	int	raptor_set_feature	(raptor_parser *parser, raptor_feature feature, int value)	1.9.0	int	raptor_parser_set_option	(raptor_parser *parser, raptor_option option, int value)
-1.4.21	void	raptor_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)	1.9.0	void	raptor_parser_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)
-1.4.21	void	raptor_set_graph_handler	(raptor_parser* parser, void *user_data, raptor_graph_handler handler)	1.9.0	void	raptor_parser_set_graph_handler	(raptor_parser* parser, void *user_data, raptor_graph_handler handler)
-1.4.21	void	raptor_set_libxslt_security_preferences	(void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)
-1.4.21	void	raptor_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)	1.9.0	void	raptor_parser_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)
-1.4.21	void	raptor_set_parser_strict	(raptor_parser* rdf_parser, int is_strict)	1.9.0	void	raptor_parser_set_strict	(raptor_parser* rdf_parser, int is_strict)
-1.4.21	void	raptor_set_statement_handler	(raptor_parser* parser, void *user_data, raptor_statement_handler handler)	1.9.0	void	raptor_parser_set_statement_handler	(raptor_parser* parser, void *user_data, raptor_statement_handler handler)
-1.4.21	void	raptor_set_warning_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-
-1.4.21	int	raptor_start_parse	(raptor_parser *rdf_parser, raptor_uri *uri)	1.9.0	int	raptor_parser_parse_start	(raptor_parser *rdf_parser, raptor_uri *uri)
-1.4.21	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)
-1.4.21	int	raptor_statement_compare_v2	(const raptor_statement_v2 *s1, const raptor_statement_v2 *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)
-1.4.21	unsigned char*	raptor_statement_part_as_counted_string	(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-
-1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-
-1.4.21	unsigned char*	raptor_statement_part_as_string	()	1.9.0	-	-	-
-1.4.21	unsigned char*	raptor_statement_part_as_string_v2	()	1.9.0	-	-	-
-1.4.21	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)
-1.4.21	int	raptor_stringbuffer_append_decimal	(raptor_stringbuffer* stringbuffer, int integer)	1.9.0	int	raptor_stringbuffer_append_decimal	(raptor_stringbuffer* stringbuffer, int integer)
-1.4.21	int	raptor_stringbuffer_append_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	1.9.0	int	raptor_stringbuffer_append_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)
-1.4.21	int	raptor_stringbuffer_append_stringbuffer	(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append)	1.9.0	int	raptor_stringbuffer_append_stringbuffer	(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append)
-1.4.21	unsigned char*	raptor_stringbuffer_as_string	(raptor_stringbuffer* stringbuffer)	1.9.0	unsigned char*	raptor_stringbuffer_as_string	(raptor_stringbuffer* stringbuffer)
-1.4.21	int	raptor_stringbuffer_copy_to_string	(raptor_stringbuffer* stringbuffer, unsigned char* string, size_t length)	1.9.0	int	raptor_stringbuffer_copy_to_string	(raptor_stringbuffer* stringbuffer, unsigned char* string, size_t length)
-1.4.21	size_t	raptor_stringbuffer_length	(raptor_stringbuffer* stringbuffer)	1.9.0	size_t	raptor_stringbuffer_length	(raptor_stringbuffer* stringbuffer)
-1.4.21	int	raptor_stringbuffer_prepend_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_prepend_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)
-1.4.21	int	raptor_stringbuffer_prepend_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	1.9.0	int	raptor_stringbuffer_prepend_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)
-1.4.21	int	raptor_syntax_name_check	(const char* name)	1.9.0	-	-	-
-1.4.21	int	raptor_syntax_name_check_v2	(raptor_world* world, const char* name)	1.9.0	-	-	-
-1.4.21	int	raptor_syntaxes_enumerate	(const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	int	raptor_syntaxes_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)
-1.4.21	int	raptor_unicode_char_to_utf8	(raptor_unichar c, unsigned char* output)	1.9.0	int	raptor_unicode_utf8_string_put_char	(raptor_unichar c, unsigned char* output, size_t length)
-1.4.21	int	raptor_unicode_is_xml10_namechar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml10_namechar	(raptor_unichar c)
-1.4.21	int	raptor_unicode_is_xml10_namestartchar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml10_namestartchar	(raptor_unichar c)
-1.4.21	int	raptor_unicode_is_xml11_namechar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml11_namechar	(raptor_unichar c)
-1.4.21	int	raptor_unicode_is_xml11_namestartchar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml11_namestartchar	(raptor_unichar c)
-1.4.21	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)	1.9.0	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)
-1.4.21	unsigned char*	raptor_uri_as_counted_string_v2	(raptor_world* world, raptor_uri *uri, size_t* len_p)	1.9.0	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)
-1.4.21	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)
-1.4.21	unsigned char*	raptor_uri_as_string_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)
-1.4.21	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)
-1.4.21	int	raptor_uri_compare_v2	(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)
-1.4.21	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)	1.9.0	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)
-1.4.21	raptor_uri*	raptor_uri_copy_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)
-1.4.21	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)
-1.4.21	int	raptor_uri_equals_v2	(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)
-1.4.21	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	1.9.0	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)
-1.4.21	void	raptor_uri_get_handler	(const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-
-1.4.21	void	raptor_uri_get_handler_v2	(raptor_world* world, const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-
-1.4.21	int	raptor_uri_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)
-1.4.21	void	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)
-1.4.21	void	raptor_uri_print_v2	(raptor_world* world, const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)
-1.4.21	void	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	1.9.0	size_t	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)
-1.4.21	void	raptor_uri_set_handler	(const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-
-1.4.21	void	raptor_uri_set_handler_v2	(raptor_world* world, const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-
-1.4.21	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)
-1.4.21	unsigned char*	raptor_uri_to_counted_string_v2	(raptor_world* world, raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)
-1.4.21	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	1.9.0	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)
-1.4.21	unsigned char*	raptor_uri_to_relative_counted_uri_string_v2	(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	1.9.0	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)
-1.4.21	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)	1.9.0	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)
-1.4.21	unsigned char*	raptor_uri_to_relative_uri_string_v2	(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri)	1.9.0	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)
-1.4.21	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)
-1.4.21	unsigned char*	raptor_uri_to_string_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)
-1.4.21	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)
-1.4.21	char*	raptor_uri_uri_string_to_filename	(const unsigned char* uri_string)	1.9.0	char*	raptor_uri_uri_string_to_filename	(const unsigned char* uri_string)
-1.4.21	char*	raptor_uri_uri_string_to_filename_fragment	(const unsigned char* uri_string, unsigned char* *fragment_p)	1.9.0	char*	raptor_uri_uri_string_to_filename_fragment	(const unsigned char* uri_string, unsigned char* *fragment_p)
-1.4.21	int	raptor_utf8_check	(const unsigned char* string, size_t length)	1.9.0	int	raptor_unicode_check_utf8_string	(const unsigned char* string, size_t length)
-1.4.21	int	raptor_utf8_to_unicode_char	(raptor_unichar* output, const unsigned char* input, int length)	1.9.0	int	raptor_unicode_utf8_string_get_char	(const unsigned char* input, size_t length, raptor_unichar* output)
-1.4.21	char*	raptor_vsnprintf	(const char* message, va_list arguments)	1.9.0	char*	raptor_vsnprintf	(const char* message, va_list arguments)
-1.4.21	int	raptor_world_open	(raptor_world* world)	1.9.0	int	raptor_world_open	(raptor_world* world)
-1.4.21	void	raptor_world_set_libxml_flags	(raptor_world *world, int flags)	1.9.0	int	raptor_world_set_flag	(raptor_world *world, raptor_world_flag flag, int value)
-1.4.21	void	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)
-1.4.21	void	raptor_www_abort	(raptor_www *www, const char* reason)	1.9.0	void	raptor_www_abort	(raptor_www *www, const char* reason)
-1.4.21	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	1.9.0	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)
-1.4.21	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))
-1.4.21	void	raptor_www_finish	(void)	1.9.0	-	-	-
-1.4.21	void	raptor_www_finish_v2	(raptor_world* world)	1.9.0	-	-	-
-1.4.21	void	raptor_www_free	(raptor_www *www)	1.9.0	void	raptor_free_www	(raptor_www *www)
-1.4.21	void*	raptor_www_get_connection	(raptor_www *www)	1.9.0	void*	raptor_www_get_connection	(raptor_www *www)
-1.4.21	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	1.9.0	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)
-1.4.21	void	raptor_www_init	(void)	1.9.0	-	-	-
-1.4.21	int	raptor_www_init_v2	(raptor_world* world)	1.9.0	-	-	-
-1.4.21	raptor_www *	raptor_www_new	(void)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)
-1.4.21	raptor_www *	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)
-1.4.21	raptor_www *	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)
-1.4.21	raptor_www *	raptor_www_new_with_connection_v2	(raptor_world* world, void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)
-1.4.21	void	raptor_www_no_www_library_init_finish	(void)	1.9.0	-	-	-
-1.4.21	void	raptor_www_no_www_library_init_finish_v2	(raptor_world* world)	1.9.0	-	-	-
-1.4.21	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	1.9.0	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)
-1.4.21	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)	1.9.0	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)
-1.4.21	void	raptor_www_set_error_handler	(raptor_www *www, raptor_message_handler error_handler, void *error_data)	1.9.0	-	-	-
-1.4.21	void	raptor_www_set_final_uri_handler	(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data)	1.9.0	void	raptor_www_set_final_uri_handler	(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data)
-1.4.21	void	raptor_www_set_http_accept	(raptor_www *www, const char* value)	1.9.0	void	raptor_www_set_http_accept	(raptor_www *www, const char* value)
-1.4.21	int	raptor_www_set_http_cache_control	(raptor_www* www, const char* cache_control)	1.9.0	int	raptor_www_set_http_cache_control	(raptor_www* www, const char* cache_control)
-1.4.21	void	raptor_www_set_proxy	(raptor_www *www, const char* proxy)	1.9.0	void	raptor_www_set_proxy	(raptor_www *www, const char* proxy)
-1.4.21	void	raptor_www_set_uri_filter	(raptor_www* www, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_www_set_uri_filter	(raptor_www* www, raptor_uri_filter_func filter, void* user_data)
-1.4.21	void	raptor_www_set_user_agent	(raptor_www *www, const char* user_agent)	1.9.0	void	raptor_www_set_user_agent	(raptor_www *www, const char* user_agent)
-1.4.21	void	raptor_www_set_write_bytes_handler	(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data)	1.9.0	void	raptor_www_set_write_bytes_handler	(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data)
-1.4.21	int	raptor_xml_any_escape_string	(const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_any	(raptor_world* world, const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, int xml_version)
-1.4.21	int	raptor_xml_element_declare_namespace	(raptor_xml_element* xml_element, raptor_namespace *nspace)	1.9.0	int	raptor_xml_element_declare_namespace	(raptor_xml_element* xml_element, raptor_namespace *nspace)
-1.4.21	raptor_qname**	raptor_xml_element_get_attributes	(raptor_xml_element* xml_element)	1.9.0	raptor_qname**	raptor_xml_element_get_attributes	(raptor_xml_element* xml_element)
-1.4.21	int	raptor_xml_element_get_attributes_count	(raptor_xml_element* xml_element)	1.9.0	int	raptor_xml_element_get_attributes_count	(raptor_xml_element* xml_element)
-1.4.21	const unsigned char*	raptor_xml_element_get_language	(raptor_xml_element* xml_element)	1.9.0	const unsigned char*	raptor_xml_element_get_language	(raptor_xml_element* xml_element)
-1.4.21	raptor_qname*	raptor_xml_element_get_name	(raptor_xml_element *xml_element)	1.9.0	raptor_qname*	raptor_xml_element_get_name	(raptor_xml_element *xml_element)
-1.4.21	int	raptor_xml_element_is_empty	(raptor_xml_element* xml_element)	1.9.0	int	raptor_xml_element_is_empty	(raptor_xml_element* xml_element)
-1.4.21	void	raptor_xml_element_set_attributes	(raptor_xml_element* xml_element, raptor_qname **attributes, int count)	1.9.0	void	raptor_xml_element_set_attributes	(raptor_xml_element* xml_element, raptor_qname **attributes, int count)
-1.4.21	int	raptor_xml_escape_string	(const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string	(raptor_world *world, const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote)
-1.4.21	int	raptor_xml_name_check	(const unsigned char* string, size_t length, int xml_version)	1.9.0	int	raptor_xml_name_check	(const unsigned char* string, size_t length, int xml_version)
-1.4.21	void	raptor_xml_writer_cdata	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_cdata	(raptor_xml_writer* xml_writer, const unsigned char* s)
-1.4.21	void	raptor_xml_writer_cdata_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_cdata_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)
-1.4.21	void	raptor_xml_writer_comment	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_comment	(raptor_xml_writer* xml_writer, const unsigned char* s)
-1.4.21	void	raptor_xml_writer_comment_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_comment_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)
-1.4.21	void	raptor_xml_writer_empty_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_empty_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)
-1.4.21	void	raptor_xml_writer_end_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_end_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)
-1.4.21	int	raptor_xml_writer_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_xml_writer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	int	raptor_xml_writer_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_xml_writer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	void	raptor_xml_writer_flush	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_xml_writer_flush	(raptor_xml_writer* xml_writer)
-1.4.21	int	raptor_xml_writer_get_depth	(raptor_xml_writer *xml_writer)	1.9.0	int	raptor_xml_writer_get_depth	(raptor_xml_writer *xml_writer)
-1.4.21	int	raptor_xml_writer_get_feature	(raptor_xml_writer *xml_writer, raptor_feature feature)	1.9.0	int	raptor_xml_writer_get_option	(raptor_xml_writer *xml_writer, raptor_option option)
-1.4.21	const unsigned char*	raptor_xml_writer_get_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature)	1.9.0	const unsigned char*	raptor_xml_writer_get_option_string	(raptor_xml_writer *xml_writer, raptor_option option)
-1.4.21	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)
-1.4.21	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)
-1.4.21	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)
-1.4.21	int	raptor_xml_writer_set_feature	(raptor_xml_writer *xml_writer, raptor_feature feature, int value)	1.9.0	int	raptor_xml_writer_set_option	(raptor_xml_writer *xml_writer, raptor_option option, int value)
-1.4.21	int	raptor_xml_writer_set_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_xml_writer_set_option_string	(raptor_xml_writer *xml_writer, raptor_option option, const unsigned char* value)
-1.4.21	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_add	(raptor_avltree* tree, void* p_data)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_delete	(raptor_avltree* tree, void* p_data)
-1.4.21	-	-	-	1.9.0	void*	raptor_avltree_iterator_get	(raptor_avltree_iterator* iterator)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_is_end	(raptor_avltree_iterator* iterator)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_next	(raptor_avltree_iterator* iterator)
-1.4.21	-	-	-	1.9.0	void	raptor_avltree_print	(raptor_avltree* tree, FILE* stream)
-1.4.21	-	-	-	1.9.0	void*	raptor_avltree_remove	(raptor_avltree* tree, void* p_data)
-1.4.21	-	-	-	1.9.0	void*	raptor_avltree_search	(raptor_avltree* tree, const void* p_data)
-1.4.21	-	-	-	1.9.0	void	raptor_avltree_set_print_handler	(raptor_avltree* tree, raptor_data_print_handler print_fn)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_size	(raptor_avltree* tree)
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_visit	(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data)
-1.4.21	-	-	-	1.9.0	const char*	raptor_domain_get_label	(raptor_domain domain)
-1.4.21	-	-	-	1.9.0	void	raptor_free_avltree	(raptor_avltree* tree)
-1.4.21	-	-	-	1.9.0	void	raptor_free_avltree_iterator	(raptor_avltree_iterator* iterator)
-1.4.21	-	-	-	1.9.0	void	raptor_free_statement	(raptor_statement *statement)
-1.4.21	-	-	-	1.9.0	void	raptor_free_term	(raptor_term *term)
-1.4.21	-	-	-	1.9.0	const char*	raptor_log_level_get_label	(raptor_log_level level)
-1.4.21	-	-	-	1.9.0	raptor_avltree*	raptor_new_avltree	(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags)
-1.4.21	-	-	-	1.9.0	raptor_avltree_iterator*	raptor_new_avltree_iterator	(raptor_avltree* tree, void* range, raptor_data_free_function range_free_fn, int direction)
-1.4.21	-	-	-	1.9.0	raptor_sequence*	raptor_new_sequence_with_context	(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context)
-1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_blank	(raptor_world* world, const unsigned char* blank)
-1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_literal	(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language)
-1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_uri	(raptor_world* world, raptor_uri* uri)
-1.4.21	-	-	-	1.9.0	raptor_uri*	raptor_new_uri_from_counted_string	(raptor_world* world, const unsigned char* uri_string, size_t length)
-1.4.21	-	-	-	1.9.0	const char*	raptor_option_get_value_type_label	(const raptor_option_value_type type)
-1.4.21	-	-	-	1.9.0	unsigned char*	raptor_parser_get_new_generated_id	(raptor_parser *rdf_parser, raptor_genid_type type)
-1.4.21	-	-	-	1.9.0	void	raptor_statement_init	(raptor_statement *statement, raptor_world *world)
-1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_counted_string	(raptor_term *term, size_t* len_p)
-1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_string	(raptor_term *term)
-1.4.21	-	-	-	1.9.0	raptor_term*	raptor_term_copy	(raptor_term* term)
-1.4.21	-	-	-	1.9.0	int	raptor_term_ntriples_write	(const raptor_term *term, raptor_iostream* iostr)
-1.4.21	-	-	-	1.9.0	raptor_world*	raptor_uri_get_world	(raptor_uri *uri)
-1.4.21	-	-	-	1.9.0	int	raptor_world_enumerate_sax2_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)
-1.4.21	-	-	-	1.9.0	int	raptor_world_is_parser_name	(raptor_world* world, const char* name)
-1.4.21	-	-	-	1.9.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)
-1.4.21	-	-	-	1.9.0	void	raptor_world_set_www_flags	(raptor_world* world, int flags)
+# OLD VERSION<tab>OLD RETURN<tab>OLD NAME<tab>OLD ARGS<tab>NEW VERSION<tab>NEW RETURN<tab>NEW NAME<tab>NEW ARGS<tab>NOTES
+1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)	-
+1.4.21	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	1.9.0	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	-
+1.4.21	int	raptor_compare_strings	(const void *a, const void *b)	1.9.0	-	-	-	-
+1.4.21	int	raptor_copy_identifier	(raptor_identifier *dest, raptor_identifier *src)	1.9.0	-	-	-	-
+1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-	-
+1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	-
+1.4.21	raptor_feature	raptor_feature_from_uri	(raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
+1.4.21	raptor_feature	raptor_feature_from_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
+1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	raptor_option_value_type	raptor_option_get_value_type	(const raptor_option option)	-
+1.4.21	int	raptor_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_parser_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	int	raptor_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_parser_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	void	raptor_finish	(void)	1.9.0	-	-	-	-
+1.4.21	int	raptor_format_locator	(char* buffer, size_t length, raptor_locator* locator)	1.9.0	int	raptor_locator_format	(char* buffer, size_t length, raptor_locator* locator)	-
+1.4.21	int	raptor_format_locator_v2	(raptor_world* world, char* buffer, size_t length, raptor_locator* locator)	1.9.0	int	raptor_locator_format	(char* buffer, size_t length, raptor_locator* locator)	-
+1.4.21	void	raptor_free_identifier	(raptor_identifier *identifier)	1.9.0	-	-	-	-
+1.4.21	void	raptor_free_iostream	(raptor_iostream *iostr)	1.9.0	void	raptor_free_iostream	(raptor_iostream *iostr)	-
+1.4.21	void	raptor_free_memory	(void *ptr)	1.9.0	void	raptor_free_memory	(void *ptr)	-
+1.4.21	void	raptor_free_namespace	(raptor_namespace *ns)	1.9.0	void	raptor_free_namespace	(raptor_namespace *ns)	-
+1.4.21	void	raptor_free_namespaces	(raptor_namespace_stack *nstack)	1.9.0	void	raptor_free_namespaces	(raptor_namespace_stack *nstack)	-
+1.4.21	void	raptor_free_parser	(raptor_parser* parser)	1.9.0	void	raptor_free_parser	(raptor_parser* parser)	-
+1.4.21	void	raptor_free_qname	(raptor_qname* name)	1.9.0	void	raptor_free_qname	(raptor_qname* name)	-
+1.4.21	void	raptor_free_sax2	(raptor_sax2 *sax2)	1.9.0	void	raptor_free_sax2	(raptor_sax2 *sax2)	-
+1.4.21	void	raptor_free_sequence	(raptor_sequence* seq)	1.9.0	void	raptor_free_sequence	(raptor_sequence* seq)	-
+1.4.21	void	raptor_free_serializer	(raptor_serializer* rdf_serializer)	1.9.0	void	raptor_free_serializer	(raptor_serializer* rdf_serializer)	-
+1.4.21	void	raptor_free_stringbuffer	(raptor_stringbuffer *stringbuffer)	1.9.0	void	raptor_free_stringbuffer	(raptor_stringbuffer *stringbuffer)	-
+1.4.21	void	raptor_free_uri	(raptor_uri *uri)	1.9.0	void	raptor_free_uri	(raptor_uri *uri)	-
+1.4.21	void	raptor_free_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	void	raptor_free_uri	(raptor_uri *uri)	-
+1.4.21	void	raptor_free_world	(raptor_world* world)	1.9.0	void	raptor_free_world	(raptor_world* world)	-
+1.4.21	void	raptor_free_xml_element	(raptor_xml_element *element)	1.9.0	void	raptor_free_xml_element	(raptor_xml_element *element)	-
+1.4.21	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)	-
+1.4.21	int	raptor_get_feature	(raptor_parser *parser, raptor_feature feature)	1.9.0	int	raptor_parser_get_option	(raptor_parser *parser, raptor_option option)	-
+1.4.21	unsigned int	raptor_get_feature_count	(void)	1.9.0	unsigned int	raptor_parser_get_option_count	(void)	-
+1.4.21	const char*	raptor_get_label	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_label	(raptor_parser *rdf_parser)	-
+1.4.21	raptor_locator*	raptor_get_locator	(raptor_parser* rdf_parser)	1.9.0	raptor_locator*	raptor_parser_get_locator	(raptor_parser* rdf_parser)	-
+1.4.21	const char*	raptor_get_mime_type	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_mime_type	(raptor_parser *rdf_parser)	-
+1.4.21	const char*	raptor_get_name	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_name	(raptor_parser *rdf_parser)	-
+1.4.21	int	raptor_get_need_base_uri	(raptor_parser *rdf_parser)	1.9.0	int	raptor_parser_get_need_base_uri	(raptor_parser *rdf_parser)	-
+1.4.21	const char*	raptor_guess_parser_name	(raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
+1.4.21	const char*	raptor_guess_parser_name_v2	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
+1.4.21	void	raptor_init	(void)	1.9.0	-	-	-	-
+1.4.21	int	raptor_iostream_format_hexadecimal	(raptor_iostream* iostr, unsigned int integer, int width)	1.9.0	int	raptor_iostream_hexadecimal_write	(unsigned int integer, int width, raptor_iostream* iostr)	-
+1.4.21	size_t	raptor_iostream_get_bytes_written_count	(raptor_iostream *iostr)	1.9.0	-	-	-	-
+1.4.21	int	raptor_iostream_read_bytes	(raptor_iostream* iostr, void *ptr, size_t size, size_t nmemb)	1.9.0	int	raptor_iostream_read_bytes	(void *ptr, size_t size, size_t nmemb, raptor_iostream* iostr)	-
+1.4.21	int	raptor_iostream_read_eof	(raptor_iostream *iostr)	1.9.0	int	raptor_iostream_read_eof	(raptor_iostream *iostr)	-
+1.4.21	unsigned long	raptor_iostream_tell	(raptor_iostream *iostr)	1.9.0	unsigned long	raptor_iostream_tell	(raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_byte	(raptor_iostream *iostr, const int byte)	1.9.0	int	raptor_iostream_write_byte	(const int byte, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_bytes	(raptor_iostream *iostr, const void *ptr, size_t size, size_t nmemb)	1.9.0	int	raptor_iostream_write_bytes	(const void *ptr, size_t size, size_t nmemb, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_counted_string	(raptor_iostream *iostr, const void *string, size_t len)	1.9.0	int	raptor_iostream_counted_string_write	(const void *string, size_t len, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_decimal	(raptor_iostream* iostr, int integer)	1.9.0	int	raptor_iostream_decimal_write	(int integer, raptor_iostream* iostr)	-
+1.4.21	void	raptor_iostream_write_end	(raptor_iostream *iostr)	1.9.0	int	raptor_iostream_write_end	(raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_namespace	(raptor_iostream* iostr, raptor_namespace *ns)	1.9.0	int	raptor_namespace_write	(raptor_namespace *ns, raptor_iostream* iostr)	-
+1.4.21	int	raptor_iostream_write_qname	(raptor_iostream* iostr, raptor_qname *qname)	1.9.0	int	raptor_qname_write	(raptor_qname *qname, raptor_iostream* iostr)	-
+1.4.21	void	raptor_iostream_write_statement_ntriples	(raptor_iostream* iostr, const raptor_statement *statement)	1.9.0	int	raptor_statement_ntriples_write	(const raptor_statement *statement, raptor_iostream* iostr)	-
+1.4.21	int	raptor_iostream_write_string	(raptor_iostream *iostr, const void *string)	1.9.0	int	raptor_iostream_string_write	(const void *string, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_string_ntriples	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim)	1.9.0	int	raptor_string_ntriples_write	(const unsigned char* string, size_t len, const char delim, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_string_python	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim, int flags)	1.9.0	int	raptor_string_python_write	(const unsigned char* string, size_t len, const char delim, int flags, raptor_iostream *iostr)	-
+1.4.21	void	raptor_iostream_write_string_turtle	(raptor_iostream *iostr, const unsigned char* string, size_t len)	1.9.0	-	-	-	-
+1.4.21	int	raptor_iostream_write_stringbuffer	(raptor_iostream* iostr, raptor_stringbuffer *sb)	1.9.0	int	raptor_stringbuffer_write	(raptor_stringbuffer *sb, raptor_iostream* iostr)	-
+1.4.21	int	raptor_iostream_write_uri	(raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_uri_v2	(raptor_world* world, raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_xml_any_escaped_string	(raptor_iostream* iostr, const unsigned char* string, size_t len, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_any_write	(const unsigned char* string, size_t len, char quote, int xml_version, raptor_iostream* iostr)	-
+1.4.21	int	raptor_iostream_write_xml_element	(raptor_iostream *iostr, raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, raptor_simple_message_handler error_handler, void *error_data, int depth)	1.9.0	int	raptor_xml_element_write	(raptor_xml_element *element, raptor_namespace_stack *nstack, int is_empty, int is_end, int depth, raptor_iostream *iostr)	-
+1.4.21	int	raptor_iostream_write_xml_escaped_string	(raptor_iostream* iostr, const unsigned char* string, size_t len, char quote, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_write	(const unsigned char* string, size_t len, char quote, raptor_iostream* iostr)	-
+1.4.21	int	raptor_locator_byte	(raptor_locator *locator)	1.9.0	int	raptor_locator_byte	(raptor_locator *locator)	-
+1.4.21	int	raptor_locator_column	(raptor_locator *locator)	1.9.0	int	raptor_locator_column	(raptor_locator *locator)	-
+1.4.21	const char*	raptor_locator_file	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_file	(raptor_locator *locator)	-
+1.4.21	int	raptor_locator_line	(raptor_locator *locator)	1.9.0	int	raptor_locator_line	(raptor_locator *locator)	-
+1.4.21	const char*	raptor_locator_uri	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)	-
+1.4.21	const char*	raptor_locator_uri_v2	(raptor_world* world, raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)	-
+1.4.21	int	raptor_namespace_copy	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)	1.9.0	int	raptor_namespace_copy	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)	-
+1.4.21	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)	1.9.0	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)	-
+1.4.21	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)	1.9.0	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)	-
+1.4.21	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)	1.9.0	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)	-
+1.4.21	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)	1.9.0	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)	-
+1.4.21	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)	1.9.0	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)	-
+1.4.21	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	1.9.0	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	-
+1.4.21	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)	1.9.0	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)	-
+1.4.21	unsigned char*	raptor_namespaces_format	(const raptor_namespace *ns, size_t *length_p)	1.9.0	unsigned char*	raptor_namespace_format_as_xml	(const raptor_namespace *ns, size_t *length_p)	-
+1.4.21	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)	1.9.0	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)	-
+1.4.21	int	raptor_namespaces_init	(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	int	raptor_namespaces_init	(raptor_world* world, raptor_namespace_stack *nstack, int defaults)	-
+1.4.21	int	raptor_namespaces_init_v2	(raptor_world* world, raptor_namespace_stack *nstack, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	int	raptor_namespaces_init	(raptor_world* world, raptor_namespace_stack *nstack, int defaults)	-
+1.4.21	int	raptor_namespaces_namespace_in_scope	(raptor_namespace_stack *nstack, const raptor_namespace *nspace)	1.9.0	int	raptor_namespaces_namespace_in_scope	(raptor_namespace_stack *nstack, const raptor_namespace *nspace)	-
+1.4.21	raptor_qname*	raptor_namespaces_qname_from_uri	(raptor_namespace_stack *nstack, raptor_uri *uri, int xml_version)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_uri	(raptor_namespace_stack *nstack, raptor_uri *uri, int xml_version)	-
+1.4.21	void	raptor_namespaces_start_namespace	(raptor_namespace_stack *nstack, raptor_namespace *nspace)	1.9.0	void	raptor_namespaces_start_namespace	(raptor_namespace_stack *nstack, raptor_namespace *nspace)	-
+1.4.21	int	raptor_namespaces_start_namespace_full	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	1.9.0	int	raptor_namespaces_start_namespace_full	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	-
+1.4.21	raptor_identifier*	raptor_new_identifier	(raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char* id, const unsigned char* literal, raptor_uri *literal_datatype, const unsigned char* literal_language)	1.9.0	-	-	-	-
+1.4.21	raptor_identifier*	raptor_new_identifier_v2	(raptor_world* world, raptor_identifier_type type, raptor_uri *uri, raptor_uri_source uri_source, const unsigned char* id, const unsigned char* literal, raptor_uri *literal_datatype, const unsigned char* literal_language)	1.9.0	-	-	-	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_file_handle	(FILE *handle)	1.9.0	raptor_iostream*	raptor_new_iostream_from_file_handle	(raptor_world* world, FILE *handle)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_filename	(const char* filename)	1.9.0	raptor_iostream*	raptor_new_iostream_from_filename	(raptor_world* world, const char* filename)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_handler	(void *context, const raptor_iostream_handler *handler)	1.9.0	raptor_iostream*	raptor_new_iostream_from_handler	(raptor_world* world, void *user_data, const raptor_iostream_handler* const handler)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_handler2	(void *user_data, const raptor_iostream_handler2* const handler2)	1.9.0	raptor_iostream*	raptor_new_iostream_from_handler	(raptor_world* world, void *user_data, const raptor_iostream_handler* const handler)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_sink	(void)	1.9.0	raptor_iostream*	raptor_new_iostream_from_sink	(raptor_world* world)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_from_string	(void *string, size_t length)	1.9.0	raptor_iostream*	raptor_new_iostream_from_string	(raptor_world* world, void *string, size_t length)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_to_file_handle	(FILE *handle)	1.9.0	raptor_iostream*	raptor_new_iostream_to_file_handle	(raptor_world* world, FILE *handle)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_to_filename	(const char* filename)	1.9.0	raptor_iostream*	raptor_new_iostream_to_filename	(raptor_world* world, const char* filename)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_to_sink	(void)	1.9.0	raptor_iostream*	raptor_new_iostream_to_sink	(raptor_world* world)	-
+1.4.21	raptor_iostream*	raptor_new_iostream_to_string	(void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	raptor_iostream*	raptor_new_iostream_to_string	(raptor_world* world, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	-
+1.4.21	raptor_namespace*	raptor_new_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	1.9.0	raptor_namespace*	raptor_new_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, const unsigned char* ns_uri_string, int depth)	-
+1.4.21	raptor_namespace*	raptor_new_namespace_from_uri	(raptor_namespace_stack *nstack, const unsigned char* prefix, raptor_uri* ns_uri, int depth)	1.9.0	raptor_namespace*	raptor_new_namespace_from_uri	(raptor_namespace_stack *nstack, const unsigned char* prefix, raptor_uri* ns_uri, int depth)	-
+1.4.21	int	raptor_new_namespace_parts_from_string	(const unsigned char* string, unsigned char* *prefix, unsigned char* *uri_string)	1.9.0	int	raptor_xml_namespace_string_parse	(const unsigned char* string, unsigned char* *prefix, unsigned char* *uri_string)	-
+1.4.21	raptor_namespace_stack*	raptor_new_namespaces	(const raptor_uri_handler *uri_handler, void *uri_context, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	raptor_namespace_stack*	raptor_new_namespaces	(raptor_world* world, int defaults)	-
+1.4.21	raptor_namespace_stack*	raptor_new_namespaces_v2	(raptor_world* world, raptor_simple_message_handler error_handler, void *error_data, int defaults)	1.9.0	raptor_namespace_stack*	raptor_new_namespaces	(raptor_world* world, int defaults)	-
+1.4.21	raptor_parser*	raptor_new_parser	(const char* name)	1.9.0	raptor_parser*	raptor_new_parser	(raptor_world* world, const char* name)	-
+1.4.21	raptor_parser*	raptor_new_parser_for_content	(raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	raptor_parser*	raptor_new_parser_for_content	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
+1.4.21	raptor_parser*	raptor_new_parser_for_content_v2	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	raptor_parser*	raptor_new_parser_for_content	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
+1.4.21	raptor_parser*	raptor_new_parser_v2	(raptor_world* world, const char* name)	1.9.0	raptor_parser*	raptor_new_parser	(raptor_world* world, const char* name)	-
+1.4.21	raptor_qname*	raptor_new_qname	(raptor_namespace_stack *nstack, const unsigned char* name, const unsigned char* value, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	raptor_qname*	raptor_new_qname	(raptor_namespace_stack *nstack, const unsigned char* name, const unsigned char* value)	-
+1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	-
+1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name_v2	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	-
+1.4.21	raptor_sax2*	raptor_new_sax2	(void *user_data, raptor_error_handlers* error_handlers)	1.9.0	raptor_sax2*	raptor_new_sax2	(raptor_world *world, raptor_locator *locator, void* user_data)	-
+1.4.21	raptor_sequence*	raptor_new_sequence	(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)	-
+1.4.21	raptor_sequence*	raptor_new_sequence_v2	(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)	-
+1.4.21	raptor_serializer*	raptor_new_serializer	(const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)	-
+1.4.21	raptor_serializer*	raptor_new_serializer_v2	(raptor_world* world, const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)	-
+1.4.21	raptor_stringbuffer*	raptor_new_stringbuffer	(void)	1.9.0	raptor_stringbuffer*	raptor_new_stringbuffer	(void)	-
+1.4.21	raptor_uri*	raptor_new_uri	(const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri	(raptor_world* world, const unsigned char* uri_string)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_rdf_concept	(const char* name)	1.9.0	raptor_uri*	raptor_new_uri_for_rdf_concept	(raptor_world* world, const unsigned char* name)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_rdf_concept_v2	(raptor_world* world, const char* name)	1.9.0	raptor_uri*	raptor_new_uri_for_rdf_concept	(raptor_world* world, const unsigned char* name)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_retrieval_v2	(raptor_world* world, raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_retrieval	(raptor_uri* old_uri)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)	-
+1.4.21	raptor_uri*	raptor_new_uri_for_xmlbase_v2	(raptor_world* world, raptor_uri* old_uri)	1.9.0	raptor_uri*	raptor_new_uri_for_xmlbase	(raptor_uri* old_uri)	-
+1.4.21	raptor_uri*	raptor_new_uri_from_id	(raptor_uri *base_uri, const unsigned char* id)	1.9.0	raptor_uri*	raptor_new_uri_from_id	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)	-
+1.4.21	raptor_uri*	raptor_new_uri_from_id_v2	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)	1.9.0	raptor_uri*	raptor_new_uri_from_id	(raptor_world* world, raptor_uri *base_uri, const unsigned char* id)	-
+1.4.21	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_uri *uri, const unsigned char* local_name)	1.9.0	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)	-
+1.4.21	raptor_uri*	raptor_new_uri_from_uri_local_name_v2	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)	1.9.0	raptor_uri*	raptor_new_uri_from_uri_local_name	(raptor_world* world, raptor_uri *uri, const unsigned char* local_name)	-
+1.4.21	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_uri *base_uri, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)	-
+1.4.21	raptor_uri*	raptor_new_uri_relative_to_base_v2	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri_relative_to_base	(raptor_world* world, raptor_uri *base_uri, const unsigned char* uri_string)	-
+1.4.21	raptor_uri*	raptor_new_uri_v2	(raptor_world* world, const unsigned char* uri_string)	1.9.0	raptor_uri*	raptor_new_uri	(raptor_world* world, const unsigned char* uri_string)	-
+1.4.21	raptor_world*	raptor_new_world	(void)	1.9.0	raptor_world*	raptor_new_world	(void)	-
+1.4.21	raptor_xml_element*	raptor_new_xml_element	(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base)	1.9.0	raptor_xml_element*	raptor_new_xml_element	(raptor_qname* name, const unsigned char* xml_language, raptor_uri* xml_base)	-
+1.4.21	raptor_xml_element*	raptor_new_xml_element_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* name, const unsigned char* xml_language, raptor_uri *xml_base)	1.9.0	raptor_xml_element*	raptor_new_xml_element_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* name, const unsigned char* xml_language, raptor_uri *xml_base)	-
+1.4.21	raptor_xml_writer*	raptor_new_xml_writer	(raptor_namespace_stack *nstack, const raptor_uri_handler *uri_handler, void *uri_context, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize)	1.9.0	raptor_xml_writer*	raptor_new_xml_writer	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr)	-
+1.4.21	raptor_xml_writer*	raptor_new_xml_writer_v2	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr, raptor_simple_message_handler error_handler, void *error_data, int canonicalize)	1.9.0	raptor_xml_writer*	raptor_new_xml_writer	(raptor_world* world, raptor_namespace_stack *nstack, raptor_iostream* iostr)	-
+1.4.21	unsigned char*	raptor_ntriples_string_as_utf8_string	(raptor_parser* rdf_parser, const unsigned char* src, int len, size_t *dest_lenp)	1.9.0	-	-	-	-
+1.4.21	const char*	raptor_ntriples_term_as_string	(raptor_ntriples_term_type term)	1.9.0	-	-	-	-
+1.4.21	void	raptor_parse_abort	(raptor_parser* rdf_parser)	1.9.0	void	raptor_parser_parse_abort	(raptor_parser* rdf_parser)	-
+1.4.21	int	raptor_parse_chunk	(raptor_parser* rdf_parser, const unsigned char* buffer, size_t len, int is_end)	1.9.0	int	raptor_parser_parse_chunk	(raptor_parser* rdf_parser, const unsigned char* buffer, size_t len, int is_end)	-
+1.4.21	int	raptor_parse_file	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_file	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	-
+1.4.21	int	raptor_parse_file_stream	(raptor_parser* rdf_parser, FILE *stream, const char* filename, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_file_stream	(raptor_parser* rdf_parser, FILE *stream, const char* filename, raptor_uri *base_uri)	-
+1.4.21	int	raptor_parse_uri	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	1.9.0	int	raptor_parser_parse_uri	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri)	-
+1.4.21	int	raptor_parse_uri_with_connection	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection)	1.9.0	int	raptor_parser_parse_uri_with_connection	(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection)	-
+1.4.21	const char*	raptor_parser_get_accept_header	(raptor_parser* rdf_parser)	1.9.0	const char*	raptor_parser_get_accept_header	(raptor_parser* rdf_parser)	-
+1.4.21	const unsigned char*	raptor_parser_get_feature_string	(raptor_parser *parser, raptor_feature feature)	1.9.0	const unsigned char*	raptor_parser_get_option_string	(raptor_parser *parser, raptor_option option)	-
+1.4.21	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)	1.9.0	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)	-
+1.4.21	int	raptor_parser_set_feature_string	(raptor_parser *parser, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_parser_set_option_string	(raptor_parser *parser, raptor_option option, const unsigned char* value)	-
+1.4.21	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	-
+1.4.21	int	raptor_parsers_enumerate	(const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
+1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
+1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	-
+1.4.21	void	raptor_print_statement	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)	-
+1.4.21	void	raptor_print_statement_as_ntriples	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
+1.4.21	void	raptor_print_statement_as_ntriples_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
+1.4.21	void	raptor_print_statement_detailed	(const raptor_statement * statement, int detailed, FILE *stream)	1.9.0	-	-	-	-
+1.4.21	void	raptor_print_statement_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)	-
+1.4.21	raptor_qname*	raptor_qname_copy	(raptor_qname *qname)	1.9.0	raptor_qname*	raptor_qname_copy	(raptor_qname *qname)	-
+1.4.21	int	raptor_qname_equal	(raptor_qname *name1, raptor_qname *name2)	1.9.0	int	raptor_qname_equal	(raptor_qname *name1, raptor_qname *name2)	-
+1.4.21	const unsigned char*	raptor_qname_get_counted_value	(raptor_qname* name, size_t* length_p)	1.9.0	const unsigned char*	raptor_qname_get_counted_value	(raptor_qname* name, size_t* length_p)	-
+1.4.21	const unsigned char*	raptor_qname_get_local_name	(raptor_qname* name)	1.9.0	const unsigned char*	raptor_qname_get_local_name	(raptor_qname* name)	-
+1.4.21	const raptor_namespace*	raptor_qname_get_namespace	(raptor_qname* name)	1.9.0	const raptor_namespace*	raptor_qname_get_namespace	(raptor_qname* name)	-
+1.4.21	const unsigned char*	raptor_qname_get_value	(raptor_qname* name)	1.9.0	const unsigned char*	raptor_qname_get_value	(raptor_qname* name)	-
+1.4.21	raptor_uri*	raptor_qname_string_to_uri	(raptor_namespace_stack *nstack, const unsigned char* name, size_t name_len, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	raptor_uri*	raptor_qname_string_to_uri	(raptor_namespace_stack *nstack, const unsigned char* name, size_t name_len)	-
+1.4.21	unsigned char*	raptor_qname_to_counted_name	(raptor_qname *qname, size_t* length_p)	1.9.0	unsigned char*	raptor_qname_to_counted_name	(raptor_qname *qname, size_t* length_p)	-
+1.4.21	raptor_uri*	raptor_sax2_inscope_base_uri	(raptor_sax2* sax2)	1.9.0	raptor_uri*	raptor_sax2_inscope_base_uri	(raptor_sax2* sax2)	-
+1.4.21	const unsigned char*	raptor_sax2_inscope_xml_language	(raptor_sax2* sax2)	1.9.0	const unsigned char*	raptor_sax2_inscope_xml_language	(raptor_sax2* sax2)	-
+1.4.21	int	raptor_sax2_parse_chunk	(raptor_sax2* sax2, const unsigned char* buffer, size_t len, int is_end)	1.9.0	int	raptor_sax2_parse_chunk	(raptor_sax2* sax2, const unsigned char* buffer, size_t len, int is_end)	-
+1.4.21	void	raptor_sax2_parse_start	(raptor_sax2 *sax2, raptor_uri *base_uri)	1.9.0	void	raptor_sax2_parse_start	(raptor_sax2 *sax2, raptor_uri *base_uri)	-
+1.4.21	void	raptor_sax2_set_cdata_handler	(raptor_sax2* sax2, raptor_sax2_cdata_handler handler)	1.9.0	void	raptor_sax2_set_cdata_handler	(raptor_sax2* sax2, raptor_sax2_cdata_handler handler)	-
+1.4.21	void	raptor_sax2_set_characters_handler	(raptor_sax2* sax2, raptor_sax2_characters_handler handler)	1.9.0	void	raptor_sax2_set_characters_handler	(raptor_sax2* sax2, raptor_sax2_characters_handler handler)	-
+1.4.21	void	raptor_sax2_set_comment_handler	(raptor_sax2* sax2, raptor_sax2_comment_handler handler)	1.9.0	void	raptor_sax2_set_comment_handler	(raptor_sax2* sax2, raptor_sax2_comment_handler handler)	-
+1.4.21	void	raptor_sax2_set_end_element_handler	(raptor_sax2* sax2, raptor_sax2_end_element_handler handler)	1.9.0	void	raptor_sax2_set_end_element_handler	(raptor_sax2* sax2, raptor_sax2_end_element_handler handler)	-
+1.4.21	void	raptor_sax2_set_external_entity_ref_handler	(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler)	1.9.0	void	raptor_sax2_set_external_entity_ref_handler	(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler)	-
+1.4.21	void	raptor_sax2_set_namespace_handler	(raptor_sax2* sax2, raptor_namespace_handler handler)	1.9.0	void	raptor_sax2_set_namespace_handler	(raptor_sax2* sax2, raptor_namespace_handler handler)	-
+1.4.21	void	raptor_sax2_set_start_element_handler	(raptor_sax2* sax2, raptor_sax2_start_element_handler handler)	1.9.0	void	raptor_sax2_set_start_element_handler	(raptor_sax2* sax2, raptor_sax2_start_element_handler handler)	-
+1.4.21	void	raptor_sax2_set_unparsed_entity_decl_handler	(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler)	1.9.0	void	raptor_sax2_set_unparsed_entity_decl_handler	(raptor_sax2* sax2, raptor_sax2_unparsed_entity_decl_handler handler)	-
+1.4.21	void*	raptor_sequence_delete_at	(raptor_sequence* seq, int idx)	1.9.0	void*	raptor_sequence_delete_at	(raptor_sequence* seq, int idx)	-
+1.4.21	void*	raptor_sequence_get_at	(raptor_sequence* seq, int idx)	1.9.0	void*	raptor_sequence_get_at	(raptor_sequence* seq, int idx)	-
+1.4.21	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)	1.9.0	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)	-
+1.4.21	void*	raptor_sequence_pop	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_pop	(raptor_sequence* seq)	-
+1.4.21	void	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)	1.9.0	int	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)	-
+1.4.21	void	raptor_sequence_print_string	(char* data, FILE *fh)	1.9.0	-	-	-	-
+1.4.21	void	raptor_sequence_print_uri	(char* data, FILE *fh)	1.9.0	-	-	-	-
+1.4.21	int	raptor_sequence_push	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_push	(raptor_sequence* seq, void *data)	-
+1.4.21	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)	1.9.0	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)	-
+1.4.21	void	raptor_sequence_set_print_handler	(raptor_sequence *seq, raptor_sequence_print_handler *print_handler)	1.9.0	-	-	-	-
+1.4.21	void	raptor_sequence_set_print_handler_v2	(raptor_sequence *seq, raptor_sequence_print_handler_v2 *print_handler)	1.9.0	-	-	-	-
+1.4.21	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)	-
+1.4.21	int	raptor_sequence_size	(raptor_sequence* seq)	1.9.0	int	raptor_sequence_size	(raptor_sequence* seq)	-
+1.4.21	void	raptor_sequence_sort	(raptor_sequence* seq, int(*compare)(const void *, const void *))	1.9.0	void	raptor_sequence_sort	(raptor_sequence* seq, raptor_data_compare_function compare)	-
+1.4.21	void*	raptor_sequence_unshift	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_unshift	(raptor_sequence* seq)	-
+1.4.21	int	raptor_serialize_end	(raptor_serializer *rdf_serializer)	1.9.0	int	raptor_serializer_serialize_end	(raptor_serializer *rdf_serializer)	-
+1.4.21	int	raptor_serialize_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)	1.9.0	int	raptor_serializer_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)	-
+1.4.21	int	raptor_serialize_set_namespace_from_namespace	(raptor_serializer* rdf_serializer, raptor_namespace *nspace)	1.9.0	int	raptor_serializer_set_namespace_from_namespace	(raptor_serializer* rdf_serializer, raptor_namespace *nspace)	-
+1.4.21	int	raptor_serialize_start	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	1.9.0	int	raptor_serializer_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	-
+1.4.21	int	raptor_serialize_start_to_file_handle	(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh)	1.9.0	int	raptor_serializer_start_to_file_handle	(raptor_serializer *rdf_serializer, raptor_uri *uri, FILE *fh)	-
+1.4.21	int	raptor_serialize_start_to_filename	(raptor_serializer *rdf_serializer, const char* filename)	1.9.0	int	raptor_serializer_start_to_filename	(raptor_serializer *rdf_serializer, const char* filename)	-
+1.4.21	int	raptor_serialize_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	1.9.0	int	raptor_serializer_start_to_iostream	(raptor_serializer *rdf_serializer, raptor_uri *uri, raptor_iostream *iostream)	-
+1.4.21	int	raptor_serialize_start_to_string	(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p)	1.9.0	int	raptor_serializer_start_to_string	(raptor_serializer *rdf_serializer, raptor_uri *uri, void **string_p, size_t *length_p)	-
+1.4.21	int	raptor_serialize_statement	(raptor_serializer* rdf_serializer, const raptor_statement *statement)	1.9.0	int	raptor_serializer_serialize_statement	(raptor_serializer* rdf_serializer, raptor_statement *statement)	-
+1.4.21	int	raptor_serializer_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_serializer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	int	raptor_serializer_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_serializer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	int	raptor_serializer_get_feature	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	int	raptor_serializer_get_option	(raptor_serializer *serializer, raptor_option option)	-
+1.4.21	const unsigned char*	raptor_serializer_get_feature_string	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	const unsigned char*	raptor_serializer_get_option_string	(raptor_serializer *serializer, raptor_option option)	-
+1.4.21	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)	1.9.0	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)	-
+1.4.21	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	1.9.0	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	-
+1.4.21	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	1.9.0	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	-
+1.4.21	void	raptor_serializer_set_error_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	-
+1.4.21	int	raptor_serializer_set_feature	(raptor_serializer *serializer, raptor_feature feature, int value)	1.9.0	int	raptor_serializer_set_option	(raptor_serializer *serializer, raptor_option option, int value)	-
+1.4.21	int	raptor_serializer_set_feature_string	(raptor_serializer *serializer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_serializer_set_option_string	(raptor_serializer *serializer, raptor_option option, const unsigned char* value)	-
+1.4.21	void	raptor_serializer_set_warning_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	-
+1.4.21	int	raptor_serializer_syntax_name_check	(const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)	-
+1.4.21	int	raptor_serializer_syntax_name_check_v2	(raptor_world* world, const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)	-
+1.4.21	int	raptor_serializers_enumerate	(const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_serializers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	int	raptor_serializers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_serializers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	void	raptor_set_default_generate_id_parameters	(raptor_parser* rdf_parser, char* prefix, int base)	1.9.0	void	raptor_parser_set_default_generate_id_parameters	(raptor_parser* rdf_parser, char* prefix, int base)	-
+1.4.21	void	raptor_set_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	-
+1.4.21	void	raptor_set_fatal_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	-
+1.4.21	int	raptor_set_feature	(raptor_parser *parser, raptor_feature feature, int value)	1.9.0	int	raptor_parser_set_option	(raptor_parser *parser, raptor_option option, int value)	-
+1.4.21	void	raptor_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)	1.9.0	void	raptor_parser_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)	-
+1.4.21	void	raptor_set_graph_handler	(raptor_parser* parser, void *user_data, raptor_graph_handler handler)	1.9.0	void	raptor_parser_set_graph_handler	(raptor_parser* parser, void *user_data, raptor_graph_handler handler)	-
+1.4.21	void	raptor_set_libxslt_security_preferences	(void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	-
+1.4.21	void	raptor_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)	1.9.0	void	raptor_parser_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)	-
+1.4.21	void	raptor_set_parser_strict	(raptor_parser* rdf_parser, int is_strict)	1.9.0	void	raptor_parser_set_strict	(raptor_parser* rdf_parser, int is_strict)	-
+1.4.21	void	raptor_set_statement_handler	(raptor_parser* parser, void *user_data, raptor_statement_handler handler)	1.9.0	void	raptor_parser_set_statement_handler	(raptor_parser* parser, void *user_data, raptor_statement_handler handler)	-
+1.4.21	void	raptor_set_warning_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	-
+1.4.21	int	raptor_start_parse	(raptor_parser *rdf_parser, raptor_uri *uri)	1.9.0	int	raptor_parser_parse_start	(raptor_parser *rdf_parser, raptor_uri *uri)	-
+1.4.21	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
+1.4.21	int	raptor_statement_compare_v2	(const raptor_statement_v2 *s1, const raptor_statement_v2 *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
+1.4.21	unsigned char*	raptor_statement_part_as_counted_string	(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	-
+1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	-
+1.4.21	unsigned char*	raptor_statement_part_as_string	()	1.9.0	-	-	-	-
+1.4.21	unsigned char*	raptor_statement_part_as_string_v2	()	1.9.0	-	-	-	-
+1.4.21	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	-
+1.4.21	int	raptor_stringbuffer_append_decimal	(raptor_stringbuffer* stringbuffer, int integer)	1.9.0	int	raptor_stringbuffer_append_decimal	(raptor_stringbuffer* stringbuffer, int integer)	-
+1.4.21	int	raptor_stringbuffer_append_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	1.9.0	int	raptor_stringbuffer_append_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	-
+1.4.21	int	raptor_stringbuffer_append_stringbuffer	(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append)	1.9.0	int	raptor_stringbuffer_append_stringbuffer	(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append)	-
+1.4.21	unsigned char*	raptor_stringbuffer_as_string	(raptor_stringbuffer* stringbuffer)	1.9.0	unsigned char*	raptor_stringbuffer_as_string	(raptor_stringbuffer* stringbuffer)	-
+1.4.21	int	raptor_stringbuffer_copy_to_string	(raptor_stringbuffer* stringbuffer, unsigned char* string, size_t length)	1.9.0	int	raptor_stringbuffer_copy_to_string	(raptor_stringbuffer* stringbuffer, unsigned char* string, size_t length)	-
+1.4.21	size_t	raptor_stringbuffer_length	(raptor_stringbuffer* stringbuffer)	1.9.0	size_t	raptor_stringbuffer_length	(raptor_stringbuffer* stringbuffer)	-
+1.4.21	int	raptor_stringbuffer_prepend_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_prepend_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	-
+1.4.21	int	raptor_stringbuffer_prepend_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	1.9.0	int	raptor_stringbuffer_prepend_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, int do_copy)	-
+1.4.21	int	raptor_syntax_name_check	(const char* name)	1.9.0	-	-	-	-
+1.4.21	int	raptor_syntax_name_check_v2	(raptor_world* world, const char* name)	1.9.0	-	-	-	-
+1.4.21	int	raptor_syntaxes_enumerate	(const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	int	raptor_syntaxes_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	int	raptor_unicode_char_to_utf8	(raptor_unichar c, unsigned char* output)	1.9.0	int	raptor_unicode_utf8_string_put_char	(raptor_unichar c, unsigned char* output, size_t length)	-
+1.4.21	int	raptor_unicode_is_xml10_namechar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml10_namechar	(raptor_unichar c)	-
+1.4.21	int	raptor_unicode_is_xml10_namestartchar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml10_namestartchar	(raptor_unichar c)	-
+1.4.21	int	raptor_unicode_is_xml11_namechar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml11_namechar	(raptor_unichar c)	-
+1.4.21	int	raptor_unicode_is_xml11_namestartchar	(raptor_unichar c)	1.9.0	int	raptor_unicode_is_xml11_namestartchar	(raptor_unichar c)	-
+1.4.21	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)	1.9.0	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)	-
+1.4.21	unsigned char*	raptor_uri_as_counted_string_v2	(raptor_world* world, raptor_uri *uri, size_t* len_p)	1.9.0	unsigned char*	raptor_uri_as_counted_string	(raptor_uri *uri, size_t* len_p)	-
+1.4.21	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)	-
+1.4.21	unsigned char*	raptor_uri_as_string_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_as_string	(raptor_uri *uri)	-
+1.4.21	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)	-
+1.4.21	int	raptor_uri_compare_v2	(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_compare	(raptor_uri* uri1, raptor_uri* uri2)	-
+1.4.21	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)	1.9.0	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)	-
+1.4.21	raptor_uri*	raptor_uri_copy_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_uri*	raptor_uri_copy	(raptor_uri *uri)	-
+1.4.21	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	-
+1.4.21	int	raptor_uri_equals_v2	(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	-
+1.4.21	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	1.9.0	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	-
+1.4.21	void	raptor_uri_get_handler	(const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
+1.4.21	void	raptor_uri_get_handler_v2	(raptor_world* world, const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
+1.4.21	int	raptor_uri_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	-
+1.4.21	void	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
+1.4.21	void	raptor_uri_print_v2	(raptor_world* world, const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
+1.4.21	void	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	1.9.0	size_t	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	-
+1.4.21	void	raptor_uri_set_handler	(const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	-
+1.4.21	void	raptor_uri_set_handler_v2	(raptor_world* world, const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	-
+1.4.21	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	-
+1.4.21	unsigned char*	raptor_uri_to_counted_string_v2	(raptor_world* world, raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	-
+1.4.21	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	1.9.0	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	-
+1.4.21	unsigned char*	raptor_uri_to_relative_counted_uri_string_v2	(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	1.9.0	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	-
+1.4.21	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)	1.9.0	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)	-
+1.4.21	unsigned char*	raptor_uri_to_relative_uri_string_v2	(raptor_world* world, raptor_uri *base_uri, raptor_uri *reference_uri)	1.9.0	unsigned char*	raptor_uri_to_relative_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri)	-
+1.4.21	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)	-
+1.4.21	unsigned char*	raptor_uri_to_string_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	unsigned char*	raptor_uri_to_string	(raptor_uri *uri)	-
+1.4.21	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	-
+1.4.21	char*	raptor_uri_uri_string_to_filename	(const unsigned char* uri_string)	1.9.0	char*	raptor_uri_uri_string_to_filename	(const unsigned char* uri_string)	-
+1.4.21	char*	raptor_uri_uri_string_to_filename_fragment	(const unsigned char* uri_string, unsigned char* *fragment_p)	1.9.0	char*	raptor_uri_uri_string_to_filename_fragment	(const unsigned char* uri_string, unsigned char* *fragment_p)	-
+1.4.21	int	raptor_utf8_check	(const unsigned char* string, size_t length)	1.9.0	int	raptor_unicode_check_utf8_string	(const unsigned char* string, size_t length)	-
+1.4.21	int	raptor_utf8_to_unicode_char	(raptor_unichar* output, const unsigned char* input, int length)	1.9.0	int	raptor_unicode_utf8_string_get_char	(const unsigned char* input, size_t length, raptor_unichar* output)	-
+1.4.21	char*	raptor_vsnprintf	(const char* message, va_list arguments)	1.9.0	char*	raptor_vsnprintf	(const char* message, va_list arguments)	-
+1.4.21	int	raptor_world_open	(raptor_world* world)	1.9.0	int	raptor_world_open	(raptor_world* world)	-
+1.4.21	void	raptor_world_set_libxml_flags	(raptor_world *world, int flags)	1.9.0	int	raptor_world_set_flag	(raptor_world *world, raptor_world_flag flag, int value)	-
+1.4.21	void	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	-
+1.4.21	void	raptor_www_abort	(raptor_www *www, const char* reason)	1.9.0	void	raptor_www_abort	(raptor_www *www, const char* reason)	-
+1.4.21	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	1.9.0	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	-
+1.4.21	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	-
+1.4.21	void	raptor_www_finish	(void)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_finish_v2	(raptor_world* world)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_free	(raptor_www *www)	1.9.0	void	raptor_free_www	(raptor_www *www)	-
+1.4.21	void*	raptor_www_get_connection	(raptor_www *www)	1.9.0	void*	raptor_www_get_connection	(raptor_www *www)	-
+1.4.21	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	1.9.0	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	-
+1.4.21	void	raptor_www_init	(void)	1.9.0	-	-	-	-
+1.4.21	int	raptor_www_init_v2	(raptor_world* world)	1.9.0	-	-	-	-
+1.4.21	raptor_www *	raptor_www_new	(void)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)	-
+1.4.21	raptor_www *	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)	-
+1.4.21	raptor_www *	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
+1.4.21	raptor_www *	raptor_www_new_with_connection_v2	(raptor_world* world, void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
+1.4.21	void	raptor_www_no_www_library_init_finish	(void)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_no_www_library_init_finish_v2	(raptor_world* world)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	1.9.0	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	-
+1.4.21	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)	1.9.0	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)	-
+1.4.21	void	raptor_www_set_error_handler	(raptor_www *www, raptor_message_handler error_handler, void *error_data)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_set_final_uri_handler	(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data)	1.9.0	void	raptor_www_set_final_uri_handler	(raptor_www* www, raptor_www_final_uri_handler handler, void *user_data)	-
+1.4.21	void	raptor_www_set_http_accept	(raptor_www *www, const char* value)	1.9.0	void	raptor_www_set_http_accept	(raptor_www *www, const char* value)	-
+1.4.21	int	raptor_www_set_http_cache_control	(raptor_www* www, const char* cache_control)	1.9.0	int	raptor_www_set_http_cache_control	(raptor_www* www, const char* cache_control)	-
+1.4.21	void	raptor_www_set_proxy	(raptor_www *www, const char* proxy)	1.9.0	void	raptor_www_set_proxy	(raptor_www *www, const char* proxy)	-
+1.4.21	void	raptor_www_set_uri_filter	(raptor_www* www, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_www_set_uri_filter	(raptor_www* www, raptor_uri_filter_func filter, void* user_data)	-
+1.4.21	void	raptor_www_set_user_agent	(raptor_www *www, const char* user_agent)	1.9.0	void	raptor_www_set_user_agent	(raptor_www *www, const char* user_agent)	-
+1.4.21	void	raptor_www_set_write_bytes_handler	(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data)	1.9.0	void	raptor_www_set_write_bytes_handler	(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data)	-
+1.4.21	int	raptor_xml_any_escape_string	(const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, int xml_version, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string_any	(raptor_world* world, const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, int xml_version)	-
+1.4.21	int	raptor_xml_element_declare_namespace	(raptor_xml_element* xml_element, raptor_namespace *nspace)	1.9.0	int	raptor_xml_element_declare_namespace	(raptor_xml_element* xml_element, raptor_namespace *nspace)	-
+1.4.21	raptor_qname**	raptor_xml_element_get_attributes	(raptor_xml_element* xml_element)	1.9.0	raptor_qname**	raptor_xml_element_get_attributes	(raptor_xml_element* xml_element)	-
+1.4.21	int	raptor_xml_element_get_attributes_count	(raptor_xml_element* xml_element)	1.9.0	int	raptor_xml_element_get_attributes_count	(raptor_xml_element* xml_element)	-
+1.4.21	const unsigned char*	raptor_xml_element_get_language	(raptor_xml_element* xml_element)	1.9.0	const unsigned char*	raptor_xml_element_get_language	(raptor_xml_element* xml_element)	-
+1.4.21	raptor_qname*	raptor_xml_element_get_name	(raptor_xml_element *xml_element)	1.9.0	raptor_qname*	raptor_xml_element_get_name	(raptor_xml_element *xml_element)	-
+1.4.21	int	raptor_xml_element_is_empty	(raptor_xml_element* xml_element)	1.9.0	int	raptor_xml_element_is_empty	(raptor_xml_element* xml_element)	-
+1.4.21	void	raptor_xml_element_set_attributes	(raptor_xml_element* xml_element, raptor_qname **attributes, int count)	1.9.0	void	raptor_xml_element_set_attributes	(raptor_xml_element* xml_element, raptor_qname **attributes, int count)	-
+1.4.21	int	raptor_xml_escape_string	(const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote, raptor_simple_message_handler error_handler, void *error_data)	1.9.0	int	raptor_xml_escape_string	(raptor_world *world, const unsigned char* string, size_t len, unsigned char* buffer, size_t length, char quote)	-
+1.4.21	int	raptor_xml_name_check	(const unsigned char* string, size_t length, int xml_version)	1.9.0	int	raptor_xml_name_check	(const unsigned char* string, size_t length, int xml_version)	-
+1.4.21	void	raptor_xml_writer_cdata	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_cdata	(raptor_xml_writer* xml_writer, const unsigned char* s)	-
+1.4.21	void	raptor_xml_writer_cdata_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_cdata_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	-
+1.4.21	void	raptor_xml_writer_comment	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_comment	(raptor_xml_writer* xml_writer, const unsigned char* s)	-
+1.4.21	void	raptor_xml_writer_comment_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_comment_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	-
+1.4.21	void	raptor_xml_writer_empty_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_empty_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	-
+1.4.21	void	raptor_xml_writer_end_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_end_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	-
+1.4.21	int	raptor_xml_writer_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_xml_writer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	int	raptor_xml_writer_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	int	raptor_world_enumerate_xml_writer_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	void	raptor_xml_writer_flush	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_xml_writer_flush	(raptor_xml_writer* xml_writer)	-
+1.4.21	int	raptor_xml_writer_get_depth	(raptor_xml_writer *xml_writer)	1.9.0	int	raptor_xml_writer_get_depth	(raptor_xml_writer *xml_writer)	-
+1.4.21	int	raptor_xml_writer_get_feature	(raptor_xml_writer *xml_writer, raptor_feature feature)	1.9.0	int	raptor_xml_writer_get_option	(raptor_xml_writer *xml_writer, raptor_option option)	-
+1.4.21	const unsigned char*	raptor_xml_writer_get_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature)	1.9.0	const unsigned char*	raptor_xml_writer_get_option_string	(raptor_xml_writer *xml_writer, raptor_option option)	-
+1.4.21	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)	-
+1.4.21	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)	-
+1.4.21	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	-
+1.4.21	int	raptor_xml_writer_set_feature	(raptor_xml_writer *xml_writer, raptor_feature feature, int value)	1.9.0	int	raptor_xml_writer_set_option	(raptor_xml_writer *xml_writer, raptor_option option, int value)	-
+1.4.21	int	raptor_xml_writer_set_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_xml_writer_set_option_string	(raptor_xml_writer *xml_writer, raptor_option option, const unsigned char* value)	-
+1.4.21	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_add	(raptor_avltree* tree, void* p_data)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_delete	(raptor_avltree* tree, void* p_data)	-
+1.4.21	-	-	-	1.9.0	void*	raptor_avltree_iterator_get	(raptor_avltree_iterator* iterator)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_is_end	(raptor_avltree_iterator* iterator)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_next	(raptor_avltree_iterator* iterator)	-
+1.4.21	-	-	-	1.9.0	void	raptor_avltree_print	(raptor_avltree* tree, FILE* stream)	-
+1.4.21	-	-	-	1.9.0	void*	raptor_avltree_remove	(raptor_avltree* tree, void* p_data)	-
+1.4.21	-	-	-	1.9.0	void*	raptor_avltree_search	(raptor_avltree* tree, const void* p_data)	-
+1.4.21	-	-	-	1.9.0	void	raptor_avltree_set_print_handler	(raptor_avltree* tree, raptor_data_print_handler print_fn)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_size	(raptor_avltree* tree)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_visit	(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data)	-
+1.4.21	-	-	-	1.9.0	const char*	raptor_domain_get_label	(raptor_domain domain)	-
+1.4.21	-	-	-	1.9.0	void	raptor_free_avltree	(raptor_avltree* tree)	-
+1.4.21	-	-	-	1.9.0	void	raptor_free_avltree_iterator	(raptor_avltree_iterator* iterator)	-
+1.4.21	-	-	-	1.9.0	void	raptor_free_statement	(raptor_statement *statement)	-
+1.4.21	-	-	-	1.9.0	void	raptor_free_term	(raptor_term *term)	-
+1.4.21	-	-	-	1.9.0	const char*	raptor_log_level_get_label	(raptor_log_level level)	-
+1.4.21	-	-	-	1.9.0	raptor_avltree*	raptor_new_avltree	(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags)	-
+1.4.21	-	-	-	1.9.0	raptor_avltree_iterator*	raptor_new_avltree_iterator	(raptor_avltree* tree, void* range, raptor_data_free_function range_free_fn, int direction)	-
+1.4.21	-	-	-	1.9.0	raptor_sequence*	raptor_new_sequence_with_context	(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context)	-
+1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_blank	(raptor_world* world, const unsigned char* blank)	-
+1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_literal	(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language)	-
+1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_uri	(raptor_world* world, raptor_uri* uri)	-
+1.4.21	-	-	-	1.9.0	raptor_uri*	raptor_new_uri_from_counted_string	(raptor_world* world, const unsigned char* uri_string, size_t length)	-
+1.4.21	-	-	-	1.9.0	const char*	raptor_option_get_value_type_label	(const raptor_option_value_type type)	-
+1.4.21	-	-	-	1.9.0	unsigned char*	raptor_parser_get_new_generated_id	(raptor_parser *rdf_parser, raptor_genid_type type)	-
+1.4.21	-	-	-	1.9.0	void	raptor_statement_init	(raptor_statement *statement, raptor_world *world)	-
+1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_counted_string	(raptor_term *term, size_t* len_p)	-
+1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_string	(raptor_term *term)	-
+1.4.21	-	-	-	1.9.0	raptor_term*	raptor_term_copy	(raptor_term* term)	-
+1.4.21	-	-	-	1.9.0	int	raptor_term_ntriples_write	(const raptor_term *term, raptor_iostream* iostr)	-
+1.4.21	-	-	-	1.9.0	raptor_world*	raptor_uri_get_world	(raptor_uri *uri)	-
+1.4.21	-	-	-	1.9.0	int	raptor_world_enumerate_sax2_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
+1.4.21	-	-	-	1.9.0	int	raptor_world_is_parser_name	(raptor_world* world, const char* name)	-
+1.4.21	-	-	-	1.9.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)	-
+1.4.21	-	-	-	1.9.0	void	raptor_world_set_www_flags	(raptor_world* world, int flags)	-
