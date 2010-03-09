@@ -576,8 +576,8 @@ raptor_option_get_value_type_label(const raptor_option_value_type type)
 
 
 void
-raptor_object_options_copy(raptor_object_options* to,
-                           raptor_object_options* from)
+raptor_object_options_copy_state(raptor_object_options* to,
+                                 raptor_object_options* from)
 {
   int i;
   

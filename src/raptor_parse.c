@@ -1869,7 +1869,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   }
 
   /* copy options */
-  raptor_object_options_copy(&to_parser->options, &from_parser->options);
+  raptor_object_options_copy_state(&to_parser->options, &from_parser->options);
 
   return rc;
 }

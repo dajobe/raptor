@@ -254,7 +254,7 @@ typedef struct
   (object)->options.options[(int)option] = value; \
 } while(0)
 
-void raptor_object_options_copy(raptor_object_options* to, raptor_object_options* from);
+void raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
 
 
 
