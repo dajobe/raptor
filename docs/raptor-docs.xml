@@ -136,7 +136,6 @@ functionality for Unicode, UTF-8, URIs, WWW retrieval and XML writing.
     <xi:include href="xml/section-stringbuffer.xml"/>
     <xi:include href="xml/section-triples.xml"/>
     <xi:include href="xml/section-unicode.xml"/>
-    <xi:include href="xml/section-uri-factory.xml"/>
     <xi:include href="xml/section-uri.xml"/>
     <xi:include href="xml/section-www.xml"/>
     <xi:include href="xml/section-xml-namespace.xml"/>
