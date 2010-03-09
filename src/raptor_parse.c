@@ -898,7 +898,7 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *u
   if(rdf_parser->uri_filter)
     raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
-  else if(rdf_parser->options[RAPTOR_OPTION_NO_NET])
+  else if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET))
     raptor_www_set_uri_filter(rdf_parser->www, raptor_parser_set_uri_filter_no_net, rdf_parser);
   
   raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parser_parse_uri_write_bytes, 
@@ -1206,7 +1206,7 @@ raptor_parser_set_option(raptor_parser *parser,
     case RAPTOR_OPTION_MICROFORMATS:
     case RAPTOR_OPTION_HTML_LINK:
     case RAPTOR_OPTION_WWW_TIMEOUT:
-      parser->options[(int)option] = value;
+      RAPTOR_OPTIONS_SET_NUMERIC(parser, (int)option, value);
       break;
 
     case RAPTOR_OPTION_WRITE_BASE_URI:
@@ -1321,7 +1321,7 @@ raptor_parser_get_option(raptor_parser *parser, raptor_option option)
     case RAPTOR_OPTION_MICROFORMATS:
     case RAPTOR_OPTION_HTML_LINK:
     case RAPTOR_OPTION_WWW_TIMEOUT:
-      result = parser->options[(int)option];
+      result = RAPTOR_OPTIONS_GET_NUMERIC(parser, (int)option);
       break;
 
     /* serializing options */
@@ -1395,19 +1395,19 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
   is_strict = (is_strict) ? 1 : 0;
 
   /* Initialise default parser mode */
-  rdf_parser->options[RAPTOR_OPTION_SCANNING] = 0;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_SCANNING, 0);
 
-  rdf_parser->options[RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_ALLOW_BAGID] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST] = 0;
-  rdf_parser->options[RAPTOR_OPTION_NORMALIZE_LANGUAGE] = 1;
-  rdf_parser->options[RAPTOR_OPTION_NON_NFC_FATAL] = is_strict;
-  rdf_parser->options[RAPTOR_OPTION_WARN_OTHER_PARSETYPES] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_CHECK_RDF_ID] = 1;
-  rdf_parser->options[RAPTOR_OPTION_HTML_TAG_SOUP] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_MICROFORMATS] = !is_strict;
-  rdf_parser->options[RAPTOR_OPTION_HTML_LINK] = !is_strict;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_ALLOW_BAGID, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST, 0);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_NORMALIZE_LANGUAGE, 1);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL, is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_WARN_OTHER_PARSETYPES, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_CHECK_RDF_ID, 1);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_HTML_TAG_SOUP, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_MICROFORMATS, !is_strict);
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_parser, RAPTOR_OPTION_HTML_LINK, !is_strict);
 }
 
 
@@ -1870,8 +1870,10 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   }
 
   /* copy options */
-  for(i = 0; i<= RAPTOR_OPTION_LAST; i++)
-    to_parser->options[i]= from_parser->options[i];
+  for(i = 0; i<= RAPTOR_OPTION_LAST; i++) {
+    int value = RAPTOR_OPTIONS_GET_NUMERIC(from_parser, i);
+    RAPTOR_OPTIONS_SET_NUMERIC(to_parser, i, value);
+  }
 
   return rc;
 }

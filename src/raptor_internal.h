@@ -239,6 +239,23 @@ typedef struct raptor_serializer_factory_s raptor_serializer_factory;
 typedef struct raptor_id_set_s raptor_id_set;
 typedef struct raptor_uri_detail_s raptor_uri_detail;
 
+
+/* raptor_option.c */
+typedef struct 
+{
+  int options[RAPTOR_OPTION_LAST+1];
+} raptor_object_options;
+
+
+#define RAPTOR_OPTIONS_GET_NUMERIC(object, option) \
+  ((object)->options.options[(int)option])
+
+#define RAPTOR_OPTIONS_SET_NUMERIC(object, option, value) do { \
+  (object)->options.options[(int)option] = value; \
+} while(0)
+
+
+
 /* raptor_concepts.c */
 
 /*
@@ -448,8 +465,8 @@ struct raptor_parser_s {
   /* static statement for use in passing to user code */
   raptor_statement statement;
 
-  /* Options */
-  int options[RAPTOR_OPTION_LAST+1];
+  /* Options (per-object) */
+  raptor_object_options options;
 
   /* stuff for our user */
   void *user_data;
