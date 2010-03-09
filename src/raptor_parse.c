@@ -1821,7 +1821,6 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
                               raptor_parser *from_parser)
 {
   int rc = 0;
-  int i;
   
   to_parser->user_data = from_parser->user_data;
   to_parser->statement_handler = from_parser->statement_handler;
@@ -1870,10 +1869,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   }
 
   /* copy options */
-  for(i = 0; i<= RAPTOR_OPTION_LAST; i++) {
-    int value = RAPTOR_OPTIONS_GET_NUMERIC(from_parser, i);
-    RAPTOR_OPTIONS_SET_NUMERIC(to_parser, i, value);
-  }
+  raptor_object_options_copy(&to_parser->options, &from_parser->options);
 
   return rc;
 }
