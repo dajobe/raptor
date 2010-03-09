@@ -283,95 +283,35 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
  *
+ * This function uses raptor_term_ntriples_write() to write to an
+ * #raptor_iostream which is the prefered way to write formatted
+ * output.
+ *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
  **/
 unsigned char*
 raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 {
-  size_t len = 0, term_len, uri_len;
-  size_t language_len = 0;
-  unsigned char *s, *buffer = NULL;
-  unsigned char *uri_string = NULL;
+  raptor_iostream *iostr;
+  unsigned char *string = NULL;
+  int rc;
   
-  switch(term->type) {
-    case RAPTOR_TERM_TYPE_LITERAL:
-      term_len = strlen((const char*)term->value.literal.string);
-      len = 2 + term_len;
-      if(term->value.literal.language) {
-        language_len = strlen((const char*)term->value.literal.language);
-        len += language_len + 1;
-      }
-      if(term->value.literal.datatype) {
-        uri_string = raptor_uri_as_counted_string(term->value.literal.datatype,
-                                                  &uri_len);
-        len += 4 + uri_len;
-      }
+  iostr = raptor_new_iostream_to_string(term->world, 
+                                        (void**)&string, len_p, NULL);
+  if(!iostr)
+    return NULL;
+  rc = raptor_term_ntriples_write(term, iostr);
+  raptor_free_iostream(iostr);
   
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-      if(!buffer)
-        return NULL;
-
-      s = buffer;
-      *s++ ='"';
-      /* raptor_print_ntriples_string((const char*)term, '"', stream); */
-      strcpy((char*)s, (const char*)term->value.literal.string);
-      s+= term_len;
-      *s++ ='"';
-      if(term->value.literal.language) {
-        *s++ ='@';
-        strcpy((char*)s, (const char*)term->value.literal.language);
-        s+= language_len;
-      }
-
-      if(term->value.literal.datatype) {
-        *s++ ='^';
-        *s++ ='^';
-        *s++ ='<';
-        strcpy((char*)s, (const char*)uri_string);
-        s+= uri_len;
-        *s++ ='>';
-      }
-      *s++ ='\0';
-      
-      break;
-      
-    case RAPTOR_TERM_TYPE_BLANK:
-      len = 2 + strlen((const char*)term->value.blank);
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-      if(!buffer)
-        return NULL;
-      s = buffer;
-      *s++ ='_';
-      *s++ =':';
-      strcpy((char*)s, (const char*)term);
-      break;
-      
-    case RAPTOR_TERM_TYPE_URI:
-      uri_string = raptor_uri_as_counted_string(term->value.uri, &uri_len);
-      len = 2+uri_len;
-      buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-      if(!buffer)
-        return NULL;
-
-      s = buffer;
-      *s++ ='<';
-      /* raptor_print_ntriples_string(raptor_uri_as_string(term->value.uri), '\0', stream); */
-      strcpy((char*)s, (const char*)uri_string);
-      s+= uri_len;
-      *s++ ='>';
-      *s++ ='\0';
-      break;
-      
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-    default:
-      RAPTOR_FATAL2("Unknown raptor_term type %d", term->type);
+  if(rc) {
+    if(string) {
+      RAPTOR_FREE(cstring, string);
+      string = NULL;
+    }
   }
 
-  if(len_p)
-    *len_p=len;
-  
- return buffer;
+  return string;
 }
 
 
