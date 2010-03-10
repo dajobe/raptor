@@ -317,60 +317,73 @@ static int
 raptor_dot_serializer_write_colors(raptor_serializer* serializer,
                                    raptor_term_type type)
 {
+  char* value;
+  
   switch(type) {
     case RAPTOR_TERM_TYPE_URI:
-      if(serializer->option_resource_border) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_RESOURCE_BORDER);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", color=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)serializer->option_resource_border,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
       else
         raptor_iostream_string_write((const unsigned char*)", color = blue",
                                      serializer->iostream);
 
-      if(serializer->option_resource_fill) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_RESOURCE_FILL);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)
-                                     serializer->option_resource_fill,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      if(serializer->option_bnode_border) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_BNODE_BORDER);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", color=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)serializer->option_bnode_border,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
       else
         raptor_iostream_string_write((const unsigned char*)", color = green",
                                      serializer->iostream);
 
-      if(serializer->option_bnode_fill) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_BNODE_FILL);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)serializer->option_bnode_fill,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
 
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
-      if(serializer->option_literal_border) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_LITERAL_BORDER);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", color=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)serializer->option_literal_border,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
 
-      if(serializer->option_literal_fill) {
+      value = RAPTOR_OPTIONS_GET_STRING(serializer,
+                                        RAPTOR_OPTION_LITERAL_FILL);
+      if(value) {
         raptor_iostream_string_write((const unsigned char*)", style = filled, fillcolor=",
                                      serializer->iostream);
-        raptor_iostream_string_write((const unsigned char*)serializer->option_literal_fill,
+        raptor_iostream_string_write((const unsigned char*)value,
                                      serializer->iostream);
       }
 

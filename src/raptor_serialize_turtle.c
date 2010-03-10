@@ -984,22 +984,24 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer* turtle_writer;
-
+  int flag;
+  
   if(context->turtle_writer)
     raptor_free_turtle_writer(context->turtle_writer);
 
+  flag = RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_WRITE_BASE_URI);
   turtle_writer = raptor_new_turtle_writer(serializer->world,
                                            serializer->base_uri,
-                                           serializer->option_write_base_uri,
+                                           flag,
                                            context->nstack,
                                            serializer->iostream);
   if(!turtle_writer)
     return 1;
 
   raptor_turtle_writer_set_option(turtle_writer,
-                                  RAPTOR_OPTION_WRITER_AUTO_INDENT,1);
+                                  RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
   raptor_turtle_writer_set_option(turtle_writer,
-                                  RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
+                                  RAPTOR_OPTION_WRITER_INDENT_WIDTH, 2);
   
   context->turtle_writer = turtle_writer;
 

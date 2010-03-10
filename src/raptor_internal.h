@@ -630,30 +630,6 @@ struct raptor_serializer_s {
   /* can be filled with error location information */
   raptor_locator locator;
   
-  /* OPTION:
-   * non 0 to write base URI to document header (@base)
-   */
-  int option_write_base_uri;
-
-  /* OPTION:
-   * non 0 to write relative URIs wherever possible
-   */
-  int option_relative_uris;
-
-  /* OPTIONS:
-   * non NULL to override default border color
-   */
-  unsigned char *option_resource_border;
-  unsigned char *option_literal_border;
-  unsigned char *option_bnode_border;
-
-  /* OPTIONS:
-   * non NULL to fill with value
-   */
-  unsigned char *option_resource_fill;
-  unsigned char *option_literal_fill;
-  unsigned char *option_bnode_fill;
-
   /* non 0 if serializer had fatal error and cannot continue */
   int failed;
 
@@ -671,38 +647,8 @@ struct raptor_serializer_s {
   
   struct raptor_serializer_factory_s* factory;
 
-  /* XML 1.0 (10) or XML 1.1 (11) */
-  int xml_version;
-
-  /* OPTION:
-   * non 0 to write XML 1.0 or 1.1 declaration (default 1)
-   */
-  int option_write_xml_declaration;
-
-  /* OPTION:
-   * JSON serializer callback function name
-   */
-  unsigned char *option_json_callback;
-
-  /* OPTION:
-   * JSON serializer extra data
-   */
-  unsigned char *option_json_extra_data;
-
-  /* OPTION:
-   * RSS serializer triples
-   */
-  unsigned char *option_rss_triples;
-
-  /* OPTION:
-   * Atom serializer entry URI string
-   */
-  unsigned char *option_atom_entry_uri;
-
-  /* OPTION:
-   * Namespace-prefix elements OR prefer unprefixed elements.
-   */
-  int option_prefix_elements;
+  /* Options (per-object) */
+  raptor_object_options options;
 };
 
 

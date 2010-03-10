@@ -169,7 +169,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
     
   attr_name = (unsigned char *)"resource";
 
-  if(serializer->option_relative_uris)
+  if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_RELATIVE_URIS))
     /* newly allocated string */
     attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri, uri);
   else
@@ -180,7 +180,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
                                                         attr_name, 
                                                         attr_value);
       
-  if(serializer->option_relative_uris)
+  if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_RELATIVE_URIS))
     RAPTOR_FREE(cstring, attr_value);
 
   if(!attrs[0]) {
@@ -718,7 +718,8 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
       /* XML rdf:about value is always "" */
       attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, 
                                                   sizeof(unsigned char));
-    } else if(serializer->option_relative_uris)
+    } else if(RAPTOR_OPTIONS_GET_NUMERIC(serializer,
+                                         RAPTOR_OPTION_RELATIVE_URIS))
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                      subject_term->value.uri);
     else
@@ -890,7 +891,8 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
 
   context->is_xmp=!strncmp(name, "rdfxml-xmp", 10);
   if(context->is_xmp)
-    serializer->option_write_xml_declaration = 0;
+    RAPTOR_OPTIONS_SET_NUMERIC(serializer,
+                               RAPTOR_OPTION_WRITER_XML_DECLARATION, 0);
 
   /* Note: item 0 in the list is rdf:RDF's namespace */
   if(raptor_sequence_push(context->namespaces, context->rdf_nspace)) {
@@ -1176,6 +1178,7 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
 
   if(!context->external_xml_writer) {
     raptor_xml_writer* xml_writer;
+    raptor_option option;
 
     if(context->xml_writer)
       raptor_free_xml_writer(context->xml_writer);
@@ -1191,12 +1194,12 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
                                  RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
     raptor_xml_writer_set_option(xml_writer,
                                  RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
-    raptor_xml_writer_set_option(xml_writer,
-                                 RAPTOR_OPTION_WRITER_XML_VERSION,
-                                 serializer->xml_version);
-    raptor_xml_writer_set_option(xml_writer, 
-                                 RAPTOR_OPTION_WRITER_XML_DECLARATION,
-                                 serializer->option_write_xml_declaration);
+    option = RAPTOR_OPTION_WRITER_XML_VERSION;
+    raptor_xml_writer_set_option(xml_writer, option,
+                                 RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
+    option = RAPTOR_OPTION_WRITER_XML_DECLARATION;
+    raptor_xml_writer_set_option(xml_writer, option,
+                                 RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
 
     context->xml_writer = xml_writer;
   }
@@ -1255,7 +1258,8 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
     raptor_xml_element_declare_namespace(context->rdf_RDF_element, ns);
   }
 
-  if(base_uri && serializer->option_write_base_uri) {
+  if(base_uri &&
+     RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_WRITE_BASE_URI)) {
     const unsigned char* base_uri_string;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));

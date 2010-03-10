@@ -887,13 +887,9 @@ raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer)
 RAPTOR_API
 int raptor_world_enumerate_serializer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
-int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, int value);
+int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, char* string, int integer);
 RAPTOR_API
-int raptor_serializer_set_option_string(raptor_serializer *serializer, raptor_option option, const unsigned char *value);
-RAPTOR_API
-int raptor_serializer_get_option(raptor_serializer *serializer, raptor_option option);
-RAPTOR_API
-const unsigned char *raptor_serializer_get_option_string(raptor_serializer *serializer, raptor_option option);
+int raptor_serializer_get_option(raptor_serializer *serializer, raptor_option option, char** string_p, int* integer_p);
 
 /* utility methods */
 RAPTOR_API

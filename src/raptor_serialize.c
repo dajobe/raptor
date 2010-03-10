@@ -382,41 +382,23 @@ raptor_new_serializer(raptor_world* world, const char *name)
   
   rdf_serializer->factory = factory;
 
-  /* Default options */
-  
+  raptor_object_options_init(&rdf_serializer->options,
+                             RAPTOR_OPTION_AREA_SERIALIZER);
+
+  /* Default options (that are not 0 or NULL) */
   /* Emit @base directive or equivalent */
-  rdf_serializer->option_write_base_uri = 1;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer, RAPTOR_OPTION_WRITE_BASE_URI, 1);
   
   /* Emit relative URIs where possible */
-  rdf_serializer->option_relative_uris = 1;
-
-  rdf_serializer->option_resource_border  =
-    rdf_serializer->option_literal_border =
-    rdf_serializer->option_bnode_border   =
-    rdf_serializer->option_resource_fill  =
-    rdf_serializer->option_literal_fill   =
-    rdf_serializer->option_bnode_fill     = NULL;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer, RAPTOR_OPTION_RELATIVE_URIS, 1);
 
   /* XML 1.0 output */
-  rdf_serializer->xml_version = 10;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer,
+                             RAPTOR_OPTION_WRITER_XML_VERSION, 10);
 
   /* Write XML declaration */
-  rdf_serializer->option_write_xml_declaration = 1;
-
-  /* JSON callback function name */
-  rdf_serializer->option_json_callback= NULL;
-
-  /* JSON extra data */
-  rdf_serializer->option_json_extra_data= NULL;
-
-  /* RSS triples */
-  rdf_serializer->option_rss_triples= NULL;
-
-  /* Atom entry URI */
-  rdf_serializer->option_atom_entry_uri= NULL;
-
-  /* Prefix elements with a namespace */
-  rdf_serializer->option_prefix_elements = 0;
+  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer,
+                             RAPTOR_OPTION_WRITER_XML_DECLARATION, 1);
 
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
@@ -706,35 +688,7 @@ raptor_free_serializer(raptor_serializer* rdf_serializer)
   if(rdf_serializer->base_uri)
     raptor_free_uri(rdf_serializer->base_uri);
 
-  if(rdf_serializer->option_resource_border)
-    RAPTOR_FREE(cstring, rdf_serializer->option_resource_border);
-  
-  if(rdf_serializer->option_literal_border)
-    RAPTOR_FREE(cstring, rdf_serializer->option_literal_border);
-  
-  if(rdf_serializer->option_bnode_border)
-    RAPTOR_FREE(cstring, rdf_serializer->option_bnode_border);
-  
-  if(rdf_serializer->option_resource_fill)
-    RAPTOR_FREE(cstring, rdf_serializer->option_resource_fill);
-  
-  if(rdf_serializer->option_literal_fill)
-    RAPTOR_FREE(cstring, rdf_serializer->option_literal_fill);
-  
-  if(rdf_serializer->option_bnode_fill)
-    RAPTOR_FREE(cstring, rdf_serializer->option_bnode_fill);
-  
-  if(rdf_serializer->option_json_callback)
-    RAPTOR_FREE(cstring, rdf_serializer->option_json_callback);
-
-  if(rdf_serializer->option_json_extra_data)
-    RAPTOR_FREE(cstring, rdf_serializer->option_json_extra_data);
-
-  if(rdf_serializer->option_rss_triples)
-    RAPTOR_FREE(cstring, rdf_serializer->option_rss_triples);
-
-  if(rdf_serializer->option_atom_entry_uri)
-    RAPTOR_FREE(cstring, rdf_serializer->option_atom_entry_uri);
+  raptor_object_options_clear(&rdf_serializer->options);
 
   RAPTOR_FREE(raptor_serializer, rdf_serializer);
 }
@@ -759,230 +713,31 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
  * raptor_serializer_set_option:
  * @serializer: #raptor_serializer serializer object
  * @option: option to set from enumerated #raptor_option values
- * @value: integer option value (0 or larger)
+ * @string: string option value (or NULL)
+ * @integer: integer option value
  *
- * Set serializer options with integer values.
+ * Set serializer option.
  * 
- * The allowed options are available via 
+ * If @string is not NULL and the option type is numeric, the string
+ * value is converted to an integer and used in preference to @integer.
+ *
+ * If @string is NULL and the option type is not numeric, an error is
+ * returned.
+ *
+ * The @string values used are copied.
+ *
+ * The allowed options are available via
  * raptor_world_enumerate_serializer_options().
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
 int
 raptor_serializer_set_option(raptor_serializer *serializer, 
-                             raptor_option option, int value)
+                             raptor_option option, 
+                             char* string, int integer)
 {
-  if(value < 0 ||
-     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SERIALIZER))
-    return -1;
-  
-  switch(option) {
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-      serializer->option_write_base_uri = value;
-      break;
-
-    case RAPTOR_OPTION_RELATIVE_URIS:
-      serializer->option_relative_uris = value;
-      break;
-
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-      if(value == 10 || value == 11)
-        serializer->xml_version = value;
-      break;
-
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-      serializer->option_write_xml_declaration = value;
-      break;
-
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-      serializer->option_prefix_elements = value;
-      break;
-
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-
-    /* String options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-
-    /* WWW options */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-
-    default:
-      return -1;
-      break;
-  }
-
-  return 0;
-}
-
-
-static int
-raptor_serializer_copy_string(unsigned char ** dest,
-			      const unsigned char * src)
-{
-  size_t src_len = strlen((const char *)src);
-
-  if(*dest) {
-    RAPTOR_FREE(cstring, *dest);
-    *dest=NULL;
-  }
-
-  if(!(*dest = (unsigned char*)RAPTOR_MALLOC(cstring, src_len+1)))
-    return -1;
-
-  strcpy((char *)(*dest), (const char *)src);
-
-  return 0;
-}
-
-
-/**
- * raptor_serializer_set_option_string:
- * @serializer: #raptor_serializer serializer object
- * @option: option to set from enumerated #raptor_option values
- * @value: option value
- *
- * Set serializer options with string values.
- * 
- * The allowed options are available via
- * raptor_world_enumerate_serializer_options().
- * If the option type is integer, the value is interpreted as an integer.
- *
- * Return value: non 0 on failure or if the option is unknown
- **/
-int
-raptor_serializer_set_option_string(raptor_serializer *serializer, 
-                                    raptor_option option, 
-                                    const unsigned char *value)
-{
-  if(!value ||
-     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SERIALIZER))
-    return -1;
-  
-  if(raptor_option_value_is_numeric(option))
-    return raptor_serializer_set_option(serializer, option, 
-                                         atoi((const char*)value));
-
-  switch(option) {
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-    case RAPTOR_OPTION_RELATIVE_URIS:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-      /* actually handled above because value is integral */
-      return -1;
-      break;
-
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-
-    /* GraphViz serializer options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_resource_border), value);
-      break;
-    case RAPTOR_OPTION_LITERAL_BORDER:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_literal_border), value);
-      break;
-    case RAPTOR_OPTION_BNODE_BORDER:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_bnode_border), value);
-      break;
-    case RAPTOR_OPTION_RESOURCE_FILL:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_resource_fill), value);
-      break;
-    case RAPTOR_OPTION_LITERAL_FILL:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_literal_fill), value);
-      break;
-    case RAPTOR_OPTION_BNODE_FILL:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_bnode_fill), value);
-      break;
-
-    /* JSON serializer options */
-    case RAPTOR_OPTION_JSON_CALLBACK:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_json_callback), value);
-      break;
-
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_json_extra_data), value);
-      break;
-
-    case RAPTOR_OPTION_RSS_TRIPLES:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_rss_triples), value);
-      break;
-
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-      return raptor_serializer_copy_string(
-        (unsigned char **)&(serializer->option_atom_entry_uri), value);
-      break;
-
-    /* WWW options */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-
-    default:
-      return -1;
-      break;
-  }
-
-  return 0;
+  return raptor_object_options_set_option(&serializer->options, option,
+                                          string, integer);
 }
 
 
@@ -990,197 +745,26 @@ raptor_serializer_set_option_string(raptor_serializer *serializer,
  * raptor_serializer_get_option:
  * @serializer: #raptor_serializer serializer object
  * @option: option to get value
+ * @string_p: pointer to where to store string value
+ * @integer_p: pointer to where to store integer value
  *
- * Get various serializer options.
+ * Get serializer option.
  * 
+ * Any string value returned in *@string_p is shared and must
+ * be copied by the caller.
+ *
  * The allowed options are available via
  * raptor_world_enumerate_serializer_options().
- *
- * Note: no option value is negative
  *
  * Return value: option value or < 0 for an illegal option
  **/
 int
 raptor_serializer_get_option(raptor_serializer *serializer, 
-                             raptor_option option)
+                             raptor_option option,
+                             char** string_p, int* integer_p)
 {
-  int result = -1;
-  
-  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SERIALIZER))
-    return -1;
-
-  if(!raptor_option_value_is_numeric(option))
-    return -1;
-
-  switch(option) {
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-      result = (serializer->option_write_base_uri != 0);
-      break;
-
-    case RAPTOR_OPTION_RELATIVE_URIS:
-      result = (serializer->option_relative_uris != 0);
-      break;
-
-    /* String options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-      result= -1;
-      break;
-
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-      result = serializer->option_prefix_elements;
-      break;
-      
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-      result = serializer->xml_version;
-      break;
-  
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-      result = serializer->option_write_xml_declaration;
-      break;
-      
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-
-    /* WWW options */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-
-    default:
-      break;
-  }
-  
-  return result;
-}
-
-
-/**
- * raptor_serializer_get_option_string:
- * @serializer: #raptor_serializer serializer object
- * @option: option to get value
- *
- * Get serializer options with string values.
- * 
- * The allowed options are available via
- * raptor_world_enumerate_serializer_options().
- *
- * Return value: option value or NULL for an illegal option or no value
- **/
-const unsigned char *
-raptor_serializer_get_option_string(raptor_serializer *serializer, 
-                                    raptor_option option)
-{
-  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SERIALIZER))
-    return NULL;
-
-  if(raptor_option_value_is_numeric(option))
-    return NULL;
-  
-  switch(option) {
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-    case RAPTOR_OPTION_RELATIVE_URIS:
-      /* actually handled above because value is integral */
-      return NULL;
-      break;
-      
-    /* GraphViz serializer options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-      return (unsigned char *)(serializer->option_resource_border);
-      break;
-    case RAPTOR_OPTION_LITERAL_BORDER:
-      return (unsigned char *)(serializer->option_literal_border);
-      break;
-    case RAPTOR_OPTION_BNODE_BORDER:
-      return (unsigned char *)(serializer->option_bnode_border);
-      break;
-    case RAPTOR_OPTION_RESOURCE_FILL:
-      return (unsigned char *)(serializer->option_resource_fill);
-      break;
-    case RAPTOR_OPTION_LITERAL_FILL:
-      return (unsigned char *)(serializer->option_literal_fill);
-      break;
-    case RAPTOR_OPTION_BNODE_FILL:
-      return (unsigned char *)(serializer->option_bnode_fill);
-      break;
-    case RAPTOR_OPTION_JSON_CALLBACK:
-      return (unsigned char *)(serializer->option_json_callback);
-      break;
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-      return (unsigned char *)(serializer->option_json_extra_data);
-      break;
-    case RAPTOR_OPTION_RSS_TRIPLES:
-      return (unsigned char *)(serializer->option_rss_triples);
-      break;
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-      return (unsigned char *)(serializer->option_atom_entry_uri);
-      break;
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-      return NULL;
-      break;
-        
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-
-    /* WWW options */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-
-    default:
-      return NULL;
-      break;
-  }
-
-  return NULL;
+  return raptor_object_options_get_option(&serializer->options, option,
+                                          string_p, integer_p);
 }
 
 
