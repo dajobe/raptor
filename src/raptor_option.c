@@ -584,7 +584,7 @@ raptor_object_options_copy_state(raptor_object_options* to,
   
   to->area = from->area;
   for(i = 0; !rc && i <= RAPTOR_OPTION_LAST; i++) {
-    if(raptor_option_value_is_numeric(i))
+    if(raptor_option_value_is_numeric((raptor_option)i))
       to->options[i].integer = from->options[i].integer;
     else {
       /* non-numeric values may need allocations */
@@ -613,7 +613,7 @@ raptor_object_options_init(raptor_object_options* options,
   options->area = area;
 
   for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
-    if(raptor_option_value_is_numeric(i))
+    if(raptor_option_value_is_numeric((raptor_option)i))
       options->options[i].integer = 0;
     else
       options->options[i].string = NULL;
@@ -627,7 +627,7 @@ raptor_object_options_clear(raptor_object_options* options)
   int i;
   
   for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
-    if(raptor_option_value_is_numeric(i))
+    if(raptor_option_value_is_numeric((raptor_option)i))
       continue;
 
     if(options->options[i].string)
