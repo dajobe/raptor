@@ -1024,10 +1024,6 @@ int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
 /* raptor_www */
 RAPTOR_API
-void raptor_world_set_www_flags(raptor_world* world, int flags);
-
-
-RAPTOR_API
 raptor_www *raptor_new_www(raptor_world* world);
 RAPTOR_API
 raptor_www *raptor_new_www_with_connection(raptor_world* world, void* connection);
