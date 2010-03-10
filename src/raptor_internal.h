@@ -241,19 +241,50 @@ typedef struct raptor_uri_detail_s raptor_uri_detail;
 
 
 /* raptor_option.c */
+
+/* These are bits and may be bit-ORed */
+/**
+ * raptor_option_area:
+ * @RAPTOR_OPTION_AREA_NONE: internal
+ * @RAPTOR_OPTION_AREA_PARSER: #raptor_parser (public)
+ * @RAPTOR_OPTION_AREA_SERIALIZER: #raptor_serializer (public)
+ * @RAPTOR_OPTION_AREA_XML_WRITER: #raptor_xml_writer (public)
+ * @RAPTOR_OPTION_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
+ * @RAPTOR_OPTION_AREA_SAX2: #raptor_sax2 (public)
+ *
+ * Internal - raptor option areas
+*/
+typedef enum {
+ RAPTOR_OPTION_AREA_NONE = 0,
+ RAPTOR_OPTION_AREA_PARSER = 1,
+ RAPTOR_OPTION_AREA_SERIALIZER = 2,
+ RAPTOR_OPTION_AREA_XML_WRITER = 4,
+ RAPTOR_OPTION_AREA_TURTLE_WRITER = 8,
+ RAPTOR_OPTION_AREA_SAX2 = 16
+} raptor_option_area;
+
+typedef union 
+{
+  char* string;
+  int integer;
+} raptor_str_int;
+    
 typedef struct 
 {
-  int options[RAPTOR_OPTION_LAST+1];
+  raptor_option_area area;
+  raptor_str_int options[RAPTOR_OPTION_LAST+1];
 } raptor_object_options;
 
 
 #define RAPTOR_OPTIONS_GET_NUMERIC(object, option) \
-  ((object)->options.options[(int)option])
+  ((object)->options.options[(int)option].integer)
 
 #define RAPTOR_OPTIONS_SET_NUMERIC(object, option, value) do { \
-  (object)->options.options[(int)option] = value; \
+  (object)->options.options[(int)option].integer = value; \
 } while(0)
 
+int raptor_option_value_is_numeric(const raptor_option option);
+int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 void raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
 
 
@@ -801,32 +832,6 @@ void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE
 #endif
 
 int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
-
-/* raptor_option.c */
-
-/* These are bits and may be bit-ORed */
-/**
- * raptor_option_area:
- * @RAPTOR_OPTION_AREA_NONE: internal
- * @RAPTOR_OPTION_AREA_PARSER: #raptor_parser (public)
- * @RAPTOR_OPTION_AREA_SERIALIZER: #raptor_serializer (public)
- * @RAPTOR_OPTION_AREA_XML_WRITER: #raptor_xml_writer (public)
- * @RAPTOR_OPTION_AREA_TURTLE_WRITER: #raptor_turtle_writer (internal)
- * @RAPTOR_OPTION_AREA_SAX2: #raptor_sax2 (public)
- *
- * Internal - raptor option areas
-*/
-typedef enum {
- RAPTOR_OPTION_AREA_NONE = 0,
- RAPTOR_OPTION_AREA_PARSER = 1,
- RAPTOR_OPTION_AREA_SERIALIZER = 2,
- RAPTOR_OPTION_AREA_XML_WRITER = 4,
- RAPTOR_OPTION_AREA_TURTLE_WRITER = 8,
- RAPTOR_OPTION_AREA_SAX2 = 16
-} raptor_option_area;
-
-int raptor_option_value_is_numeric(const raptor_option option);
-int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 
 /* raptor_general.c */
 extern int raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string);
