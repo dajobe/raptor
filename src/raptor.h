@@ -975,11 +975,11 @@ size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const uns
 
 /* URI String utility functions */
 RAPTOR_API
-unsigned char *raptor_uri_filename_to_uri_string(const char *filename);
+unsigned char* raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API
-char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
+char* raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
-char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
+char* raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
@@ -1024,9 +1024,9 @@ int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
 /* raptor_www */
 RAPTOR_API
-raptor_www *raptor_new_www(raptor_world* world);
+raptor_www* raptor_new_www(raptor_world* world);
 RAPTOR_API
-raptor_www *raptor_new_www_with_connection(raptor_world* world, void* connection);
+raptor_www* raptor_new_www_with_connection(raptor_world* world, void* connection);
 RAPTOR_API
 void raptor_free_www(raptor_www *www);
 RAPTOR_API
@@ -1111,7 +1111,7 @@ void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 RAPTOR_API
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 RAPTOR_API
-raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
+raptor_namespace* raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
 RAPTOR_API
 raptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, raptor_uri *ns_uri);
 RAPTOR_API
@@ -1134,7 +1134,7 @@ const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API
 const unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
-unsigned char *raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p);
+unsigned char* raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
 int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 
