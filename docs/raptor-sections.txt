@@ -8,7 +8,6 @@ raptor_world_flag
 raptor_world_set_flag
 raptor_world_set_libxslt_security_preferences
 raptor_world_set_log_handler
-raptor_world_set_www_flags
 raptor_world_enumerate_parsers
 raptor_world_is_parser_name
 raptor_world_guess_parser_name

@@ -647,6 +647,7 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
  * @RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE: if set (non-0 value) - save/restore the libxml generic error handler when raptor library initializes (default set)
  * @RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: if set (non-0 value) - save/restore the libxml structured error handler when raptor library terminates (default set)
  * @RAPTOR_WORLD_FLAG_URI_INTERNING: if set (non-0 value) - each URI is saved interned in-memory and reused (default set)
+ * @RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH: if set (non-0 value) the raptor will neither initialise or terminate the lower level WWW library.  Usually in raptor initialising either curl_global_init (for libcurl) are called and in raptor cleanup, curl_global_cleanup is called.   This flag allows the application finer control over these libraries such as setting other global options or potentially calling and terminating raptor several times.  It does mean that applications which use this call must do their own extra work in order to allocate and free all resources to the system.
  *
  * Raptor world flags
  *
@@ -666,7 +667,8 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 typedef enum {
   RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE = 1,
   RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE = 2,
-  RAPTOR_WORLD_FLAG_URI_INTERNING = 3
+  RAPTOR_WORLD_FLAG_URI_INTERNING = 3,
+  RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH = 4
 } raptor_world_flag;
 
 
