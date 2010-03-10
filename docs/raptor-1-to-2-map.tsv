@@ -376,4 +376,3 @@
 1.4.21	-	-	-	1.9.0	int	raptor_world_enumerate_sax2_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_is_parser_name	(raptor_world* world, const char* name)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)	-
-
