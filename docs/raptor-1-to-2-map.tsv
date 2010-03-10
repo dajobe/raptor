@@ -74,7 +74,7 @@
 1.4.21	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)	1.9.0	raptor_uri*	raptor_namespace_get_uri	(const raptor_namespace *ns)	-
 1.4.21	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)	1.9.0	void	raptor_namespaces_clear	(raptor_namespace_stack *nstack)	-
 1.4.21	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)	1.9.0	void	raptor_namespaces_end_for_depth	(raptor_namespace_stack *nstack, int depth)	-
-1.4.21	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	1.9.0	raptor_namespace *	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	-
+1.4.21	raptor_namespace*	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	1.9.0	raptor_namespace*	raptor_namespaces_find_namespace	(raptor_namespace_stack *nstack, const unsigned char* prefix, int prefix_length)	-
 1.4.21	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)	1.9.0	raptor_namespace*	raptor_namespaces_find_namespace_by_uri	(raptor_namespace_stack *nstack, raptor_uri *ns_uri)	-
 1.4.21	unsigned char*	raptor_namespaces_format	(const raptor_namespace *ns, size_t *length_p)	1.9.0	unsigned char*	raptor_namespace_format_as_xml	(const raptor_namespace *ns, size_t *length_p)	-
 1.4.21	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)	1.9.0	raptor_namespace*	raptor_namespaces_get_default_namespace	(raptor_namespace_stack *nstack)	-
@@ -297,10 +297,10 @@
 1.4.21	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	1.9.0	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	-
 1.4.21	void	raptor_www_init	(void)	1.9.0	-	-	-	-
 1.4.21	int	raptor_www_init_v2	(raptor_world* world)	1.9.0	-	-	-	-
-1.4.21	raptor_www *	raptor_www_new	(void)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)	-
-1.4.21	raptor_www *	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)	-
-1.4.21	raptor_www *	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
-1.4.21	raptor_www *	raptor_www_new_with_connection_v2	(raptor_world* world, void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
+1.4.21	raptor_www*	raptor_www_new	(void)	1.9.0	raptor_www*	raptor_new_www	(raptor_world* world)	-
+1.4.21	raptor_www*	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www*	raptor_new_www	(raptor_world* world)	-
+1.4.21	raptor_www*	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www*	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
+1.4.21	raptor_www*	raptor_www_new_with_connection_v2	(raptor_world* world, void* connection)	1.9.0	raptor_www*	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
 1.4.21	void	raptor_www_no_www_library_init_finish	(void)	1.9.0	-	-	-	Deprecated for raptor_world_set_flag().
 1.4.21	void	raptor_www_no_www_library_init_finish_v2	(raptor_world* world)	1.9.0	-	-	-	Deprecated for raptor_world_set_flag().
 1.4.21	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	1.9.0	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	-
