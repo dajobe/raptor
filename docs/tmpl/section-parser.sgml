@@ -261,18 +261,8 @@ adjust how parsing is performed.
 
 @parser: 
 @option: 
-@value: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_parser_set_option_string ##### -->
-<para>
-
-</para>
-
-@parser: 
-@option: 
-@value: 
+@string: 
+@integer: 
 @Returns: 
 
 
@@ -283,16 +273,8 @@ adjust how parsing is performed.
 
 @parser: 
 @option: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_parser_get_option_string ##### -->
-<para>
-
-</para>
-
-@parser: 
-@option: 
+@string_p: 
+@integer_p: 
 @Returns: 
 
 

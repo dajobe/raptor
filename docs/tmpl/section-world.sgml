@@ -57,6 +57,7 @@ library-wide configuration flags and options.
 @RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE: 
 @RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: 
 @RAPTOR_WORLD_FLAG_URI_INTERNING: 
+@RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH: 
 
 <!-- ##### FUNCTION raptor_world_set_flag ##### -->
 <para>
@@ -88,15 +89,6 @@ library-wide configuration flags and options.
 @user_data: 
 @handler: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_world_set_www_flags ##### -->
-<para>
-
-</para>
-
-@world: 
-@flags: 
 
 
 <!-- ##### FUNCTION raptor_world_enumerate_parsers ##### -->

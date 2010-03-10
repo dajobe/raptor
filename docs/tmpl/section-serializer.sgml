@@ -158,18 +158,8 @@ that can adjust how serializing is performed.
 
 @serializer: 
 @option: 
-@value: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_serializer_set_option_string ##### -->
-<para>
-
-</para>
-
-@serializer: 
-@option: 
-@value: 
+@string: 
+@integer: 
 @Returns: 
 
 
@@ -180,16 +170,8 @@ that can adjust how serializing is performed.
 
 @serializer: 
 @option: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_serializer_get_option_string ##### -->
-<para>
-
-</para>
-
-@serializer: 
-@option: 
+@string_p: 
+@integer_p: 
 @Returns: 
 
 
