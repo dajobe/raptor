@@ -208,8 +208,8 @@
 1.4.21	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	1.9.0	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	-
 1.4.21	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	1.9.0	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	-
 1.4.21	void	raptor_serializer_set_error_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	Replaced by raptor_world_set_log_handler() on the #raptor_world object.
-1.4.21	int	raptor_serializer_set_feature	(raptor_serializer *serializer, raptor_feature feature, int value)	1.9.0	int	raptor_serializer_set_option	(raptor_serializer *serializer, raptor_option option, int value)	-
-1.4.21	int	raptor_serializer_set_feature_string	(raptor_serializer *serializer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_serializer_set_option_string	(raptor_serializer *serializer, raptor_option option, const unsigned char* value)	-
+1.4.21	int	raptor_serializer_set_feature	(raptor_serializer *serializer, raptor_feature feature, int value)	1.9.0	int	raptor_serializer_set_option	(raptor_serializer *serializer, raptor_option option, char* string, int integer)	-
+1.4.21	int	raptor_serializer_set_feature_string	(raptor_serializer *serializer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_serializer_set_option	(raptor_serializer *serializer, raptor_option option, char* string, int integer)	-
 1.4.21	void	raptor_serializer_set_warning_handler	(raptor_serializer* serializer, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	Replaced by raptor_world_set_log_handler() on the #raptor_world object.
 1.4.21	int	raptor_serializer_syntax_name_check	(const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)	-
 1.4.21	int	raptor_serializer_syntax_name_check_v2	(raptor_world* world, const char* name)	1.9.0	int	raptor_world_is_serializer_name	(raptor_world* world, const char* name)	-
@@ -338,8 +338,8 @@
 1.4.21	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_xml_writer_newline	(raptor_xml_writer* xml_writer)	-
 1.4.21	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)	1.9.0	void	raptor_xml_writer_raw	(raptor_xml_writer* xml_writer, const unsigned char* s)	-
 1.4.21	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	1.9.0	void	raptor_xml_writer_raw_counted	(raptor_xml_writer* xml_writer, const unsigned char* s, unsigned int len)	-
-1.4.21	int	raptor_xml_writer_set_feature	(raptor_xml_writer *xml_writer, raptor_feature feature, int value)	1.9.0	int	raptor_xml_writer_set_option	(raptor_xml_writer *xml_writer, raptor_option option, int value)	-
-1.4.21	int	raptor_xml_writer_set_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_xml_writer_set_option_string	(raptor_xml_writer *xml_writer, raptor_option option, const unsigned char* value)	-
+1.4.21	int	raptor_xml_writer_set_feature	(raptor_xml_writer *xml_writer, raptor_feature feature, int value)	1.9.0	int	raptor_xml_writer_set_option	(raptor_xml_writer *xml_writer, raptor_option option, char* string, int integer)	-
+1.4.21	int	raptor_xml_writer_set_feature_string	(raptor_xml_writer *xml_writer, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_xml_writer_set_option	(raptor_xml_writer *xml_writer, raptor_option option, char* string, int integer)	-
 1.4.21	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	1.9.0	void	raptor_xml_writer_start_element	(raptor_xml_writer* xml_writer, raptor_xml_element *element)	-
 1.4.21	-	-	-	1.9.0	int	raptor_avltree_add	(raptor_avltree* tree, void* p_data)	-
 1.4.21	-	-	-	1.9.0	int	raptor_avltree_delete	(raptor_avltree* tree, void* p_data)	-
