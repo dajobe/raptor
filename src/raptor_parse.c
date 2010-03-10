@@ -637,11 +637,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
   if(rdf_parser->sb)
     raptor_free_stringbuffer(rdf_parser->sb);
 
-  if(rdf_parser->cache_control)
-    RAPTOR_FREE(cstring, rdf_parser->cache_control);
-
-  if(rdf_parser->user_agent)
-    RAPTOR_FREE(cstring, rdf_parser->user_agent);
+  raptor_object_options_clear(&rdf_parser->options);
 
   RAPTOR_FREE(raptor_parser, rdf_parser);
 }
@@ -868,6 +864,7 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *u
 {
   int ret = 0;
   raptor_parse_bytes_context rpbc;
+  char* ua = NULL;
   
   if(connection) {
     if(rdf_parser->www)
@@ -910,10 +907,13 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *u
                                       raptor_parser_parse_uri_content_type_handler,
                                       rdf_parser);
 
-  raptor_www_set_http_cache_control(rdf_parser->www, rdf_parser->cache_control);
+  raptor_www_set_http_cache_control(rdf_parser->www, 
+                                    RAPTOR_OPTIONS_GET_STRING(rdf_parser, 
+                                                              RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL));
 
-  if(rdf_parser->user_agent)
-    raptor_www_set_user_agent(rdf_parser->www, rdf_parser->user_agent);
+  ua = RAPTOR_OPTIONS_GET_STRING(rdf_parser, RAPTOR_OPTION_WWW_HTTP_USER_AGENT);
+  if(ua)
+    raptor_www_set_user_agent(rdf_parser->www, ua);
   
   ret = raptor_www_fetch(rdf_parser->www, uri);
   
@@ -1177,116 +1177,30 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  * raptor_parser_set_option:
  * @parser: #raptor_parser parser object
  * @option: option to set from enumerated #raptor_option values
- * @value: integer option value (0 or larger)
+ * @string: string option value (or NULL)
+ * @integer: integer option value
  *
- * Set various parser options.
+ * Set parser options.
  * 
+ * If @string is not NULL and the option type is numeric, the string
+ * value is converted to an integer and used in preference to @integer.
+ *
+ * If @string is NULL and the option type is not numeric, an error is
+ * returned.
+ *
+ * The @string values used are copied.
+ *
  * The allowed options are available via
  * raptor_world_enumerate_parser_options().
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
 int
-raptor_parser_set_option(raptor_parser *parser,
-                          raptor_option option, int value)
+raptor_parser_set_option(raptor_parser *parser, raptor_option option,
+                         char* string, int integer)
 {
-  if(value < 0)
-    return -1;
-  
-  switch(option) {
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_NO_NET:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-      RAPTOR_OPTIONS_SET_NUMERIC(parser, (int)option, value);
-      break;
-
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-    case RAPTOR_OPTION_RELATIVE_URIS:
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-      
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-    default:
-      return -1;
-      break;
-  }
-
-  return 0;
-}
-
-
-/**
- * raptor_parser_set_option_string:
- * @parser: #raptor_parser parser object
- * @option: option to set from enumerated #raptor_option values
- * @value: option value
- *
- * Set parser options with string values.
- * 
- * The allowed options are available via raptor_world_enumerate_parser_options().
- * If the option type is integer, the value is interpreted as an integer.
- *
- * Return value: non 0 on failure or if the option is unknown
- **/
-int
-raptor_parser_set_option_string(raptor_parser *parser, 
-                                 raptor_option option, 
-                                 const unsigned char *value)
-{
-  if(raptor_option_value_is_numeric(option))
-    return raptor_parser_set_option(parser, option, atoi((const char*)value));
-
-  if((option == RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL) ||
-     (option == RAPTOR_OPTION_WWW_HTTP_USER_AGENT)) {
-    char *value_copy;
-    size_t len = 0;
-    if(value)
-      len = strlen((const char*)value);
-    value_copy = (char*)RAPTOR_MALLOC(cstring, len+1);
-    if(!value_copy)
-      return 1;
-    
-    if(len)
-      strncpy(value_copy, (const char*)value, len);
-    value_copy[len]='\0';
-    
-    if(option == RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL)
-      parser->cache_control = value_copy;
-    else
-      parser->user_agent = value_copy;
-
-    return 0;
-  }
-
-  return -1;
+  return raptor_object_options_set_option(&parser->options, option,
+                                          string, integer);
 }
 
 
@@ -1295,91 +1209,22 @@ raptor_parser_set_option_string(raptor_parser *parser,
  * @parser: #raptor_parser parser object
  * @option: option to get value
  *
- * Get various parser options.
+ * Get parser option.
  * 
- * The allowed options are available via raptor_world_enumerate_parser_options().
+ * Any string value returned in *@string_p is shared and must
+ * be copied by the caller.
  *
- * Note: no option value is negative
+ * The allowed options are available via
+ * raptor_world_enumerate_parser_options().
  *
  * Return value: option value or < 0 for an illegal option
  **/
 int
-raptor_parser_get_option(raptor_parser *parser, raptor_option option)
+raptor_parser_get_option(raptor_parser *parser, raptor_option option,
+                         char** string_p, int* integer_p)
 {
-  int result= -1;
-  
-  switch(option) {
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_NO_NET:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-      result = RAPTOR_OPTIONS_GET_NUMERIC(parser, (int)option);
-      break;
-
-    /* serializing options */
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-    case RAPTOR_OPTION_RELATIVE_URIS:
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-
-    /* WWW options */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-      
-    default:
-      break;
-  }
-  
-  return result;
-}
-
-
-/**
- * raptor_parser_get_option_string:
- * @parser: #raptor_parser parser object
- * @option: option to get value
- *
- * Get parser options with string values.
- * 
- * The allowed options are available via raptor_world_enumerate_parser_options().
- * If a string is returned, it must be freed by the caller.
- *
- * Return value: option value or NULL for an illegal option or no value
- **/
-const unsigned char *
-raptor_parser_get_option_string(raptor_parser *parser, 
-                                 raptor_option option)
-{
-  if(raptor_option_value_is_numeric(option))
-    return NULL;
-  
-  return NULL;
+  return raptor_object_options_get_option(&parser->options, option,
+                                          string_p, integer_p);
 }
 
 
@@ -1846,32 +1691,10 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter = from_parser->uri_filter;
   to_parser->uri_filter_user_data = from_parser->uri_filter_user_data;
 
-  /* copy over Cache-Control: header */
-  if(!rc && from_parser->cache_control) {
-    size_t len = strlen(from_parser->cache_control);
-    to_parser->cache_control = (char*)RAPTOR_MALLOC(cstring, len+1);
-    if(to_parser->cache_control)
-      strncpy((char*)to_parser->cache_control, 
-              (const char*)from_parser->cache_control,
-              len+1);
-    else
-      rc = 1;
-  }
-
-  /* copy over User-Agent: header */
-  if(!rc && from_parser->user_agent) {
-    size_t len = strlen(from_parser->user_agent);
-    to_parser->user_agent = (char*)RAPTOR_MALLOC(cstring, len+1);
-    if(to_parser->user_agent)
-      strncpy((char*)to_parser->user_agent, 
-              (const char*)from_parser->user_agent,
-              len+1);
-    else
-      rc = 1;
-  }
-
   /* copy options */
-  raptor_object_options_copy_state(&to_parser->options, &from_parser->options);
+  if(!rc)
+    rc = raptor_object_options_copy_state(&to_parser->options, 
+                                          &from_parser->options);
 
   return rc;
 }

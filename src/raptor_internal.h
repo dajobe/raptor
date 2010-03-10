@@ -547,22 +547,6 @@ struct raptor_parser_s {
 
   /* internal data for lexers */
   void* lexer_user_data;
-
-  /* OPTION:
-   * HTTP Cache-Control: header value to send (default NULL)
-   * RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL
-   */
-  const char* cache_control;
-
-  /* OPTION:
-   * HTTP User-Agent: header value to send (default NULL)
-   * RAPTOR_OPTION_WWW_HTTP_USER_AGENT
-   */
-  const char* user_agent;
-
-  /* NOTE: if anything a user can set is added here check that
-   * raptor_parser_copy_user_state() is updated to copy it.
-   */
 };
 
 
