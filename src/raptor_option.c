@@ -586,3 +586,11 @@ raptor_object_options_copy_state(raptor_object_options* to,
   }
 }
 
+
+void
+raptor_object_options_init(raptor_object_options* options,
+                           raptor_option_area area)
+{
+  options->area = area;
+}
+

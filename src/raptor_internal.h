@@ -285,6 +285,8 @@ typedef struct
 
 int raptor_option_value_is_numeric(const raptor_option option);
 int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
+
+void raptor_object_options_init(raptor_object_options* options, raptor_option_area area);
 void raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
 
 
