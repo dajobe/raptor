@@ -1180,7 +1180,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  * @string: string option value (or NULL)
  * @integer: integer option value
  *
- * Set parser options.
+ * Set parser option.
  * 
  * If @string is not NULL and the option type is numeric, the string
  * value is converted to an integer and used in preference to @integer.
@@ -1208,6 +1208,8 @@ raptor_parser_set_option(raptor_parser *parser, raptor_option option,
  * raptor_parser_get_option:
  * @parser: #raptor_parser parser object
  * @option: option to get value
+ * @string_p: pointer to where to store string value
+ * @integer_p: pointer to where to store integer value
  *
  * Get parser option.
  * 
