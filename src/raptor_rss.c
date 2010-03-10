@@ -660,7 +660,8 @@ raptor_rss_start_element_handler(void *user_data,
                                                             NULL,
                                                             rss_element->iostream);
             raptor_xml_writer_set_option(rss_element->xml_writer, 
-                                         RAPTOR_OPTION_WRITER_XML_DECLARATION, 0);
+                                         RAPTOR_OPTION_WRITER_XML_DECLARATION,
+                                         NULL, 0);
 
             raptor_free_stringbuffer(rss_element->sb);
             rss_element->sb = NULL;

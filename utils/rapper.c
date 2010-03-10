@@ -293,7 +293,7 @@ typedef struct
 {
   raptor_option option;
   int i_value;
-  unsigned char* s_value;
+  char* s_value;
 } option_value;
 
 
@@ -461,9 +461,9 @@ main(int argc, char *argv[])
                     fv->i_value = 1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->s_value = (unsigned char*)&optarg[len+1];
+                    fv->s_value = &optarg[len+1];
                   else if(len == arg_len)
-                    fv->s_value = (unsigned char*)"";
+                    fv->s_value = (char*)"";
                 }
 
                 if(!parser_options)
@@ -500,9 +500,9 @@ main(int argc, char *argv[])
                     fv->i_value = 1;
                 } else {
                   if(len < arg_len && optarg[len] == '=')
-                    fv->s_value = (unsigned char*)&optarg[len+1];
+                    fv->s_value = &optarg[len+1];
                   else if(len == arg_len)
-                    fv->s_value = (unsigned char*)"";
+                    fv->s_value = (char*)"";
                 }
 
                 if(!serializer_options)
@@ -845,15 +845,13 @@ main(int argc, char *argv[])
   raptor_parser_set_strict(rdf_parser, strict_mode);
   
   if(scanning)
-    raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_SCANNING, 1);
+    raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_SCANNING, NULL, 1);
 
   if(parser_options) {
     option_value *fv;
     while((fv = (option_value*)raptor_sequence_pop(parser_options))) {
-      if(fv->s_value)
-        raptor_parser_set_option_string(rdf_parser, fv->option, fv->s_value);
-      else
-        raptor_parser_set_option(rdf_parser, fv->option, fv->i_value);
+      raptor_parser_set_option(rdf_parser, fv->option,
+                               fv->s_value, fv->i_value);
       raptor_free_memory(fv);
     }
     raptor_free_sequence(parser_options);
@@ -929,11 +927,8 @@ main(int argc, char *argv[])
     if(serializer_options) {
       option_value *fv;
       while((fv = (option_value*)raptor_sequence_pop(serializer_options))) {
-        if(fv->s_value)
-          raptor_serializer_set_option_string(serializer, fv->option,
-                                               fv->s_value);
-        else
-          raptor_serializer_set_option(serializer, fv->option, fv->i_value);
+        raptor_serializer_set_option(serializer, fv->option,
+                                     fv->s_value, fv->i_value);
         raptor_free_memory(fv);
       }
       raptor_free_sequence(serializer_options);

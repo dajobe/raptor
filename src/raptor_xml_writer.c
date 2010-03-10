@@ -2,7 +2,7 @@
  *
  * raptor_xml_writer.c - Raptor XML Writer for SAX2 events API
  *
- * Copyright (C) 2003-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -50,17 +50,14 @@
 #ifndef STANDALONE
 
 
-typedef enum {
-  XML_WRITER_AUTO_INDENT = 1,
-  XML_WRITER_AUTO_EMPTY  = 2
-} raptor_xml_writer_flags;
+#define XML_WRITER_AUTO_INDENT(xml_writer) RAPTOR_OPTIONS_GET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_AUTO_INDENT)
+#define XML_WRITER_AUTO_EMPTY(xml_writer) RAPTOR_OPTIONS_GET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_AUTO_EMPTY)
+#define XML_WRITER_INDENT(xml_writer) RAPTOR_OPTIONS_GET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_INDENT_WIDTH)
+#define XML_WRITER_XML_VERSION(xml_writer) RAPTOR_OPTIONS_GET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_XML_VERSION)
 
-
-#define XML_WRITER_AUTO_INDENT(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_INDENT) != 0)
-#define XML_WRITER_AUTO_EMPTY(xml_writer) ((xml_writer->flags & XML_WRITER_AUTO_EMPTY) != 0)
 
 #define XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer)              \
-  if((xml_writer->flags & XML_WRITER_AUTO_EMPTY) &&             \
+  if((XML_WRITER_AUTO_EMPTY(xml_writer)) && \
       xml_writer->current_element &&                            \
       !(xml_writer->current_element->content_cdata_seen ||      \
         xml_writer->current_element->content_element_seen)) {   \
@@ -88,23 +85,14 @@ struct raptor_xml_writer_s {
   /* outputting to this iostream */
   raptor_iostream *iostr;
 
-  /* XML Writer flags - bits defined in enum raptor_xml_writer_flags */
-  int flags;
-
-  /* indentation per level if formatting */
-  int indent;
-
-  /* XML 1.0 (10) or XML 1.1 (11) */
-  int xml_version;
-
-  /* Write XML 1.0 or 1.1 declaration (default 1) */
-  int xml_declaration;
-
   /* Has writing the XML declaration writing been checked? */
   int xml_declaration_checked;
 
   /* An extra newline is wanted */
   int pending_newline;
+
+  /* Options (per-object) */
+  raptor_object_options options;
 };
 
 
@@ -138,7 +126,7 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
     return 0;
   }
   
-  num_spaces = xml_writer->depth * xml_writer->indent;
+  num_spaces = xml_writer->depth * XML_WRITER_INDENT(xml_writer);
 
   /* Do not write an extra newline at the start of the document
    * (after the XML declaration or XMP processing instruction has
@@ -193,7 +181,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
   raptor_namespace_stack *nstack = xml_writer->nstack;
   int depth = xml_writer->depth;
   int auto_indent = XML_WRITER_AUTO_INDENT(xml_writer);
-  int xml_version = xml_writer->xml_version;
+  int xml_version = XML_WRITER_XML_VERSION(xml_writer);
   struct nsd *nspace_declarations = NULL;
   size_t nspace_declarations_count = 0;  
   unsigned int i;
@@ -439,13 +427,12 @@ raptor_new_xml_writer(raptor_world* world,
 
   xml_writer->iostr = iostr;
 
-  xml_writer->flags = 0;
-  xml_writer->indent = 2;
+  RAPTOR_OPTIONS_SET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_INDENT_WIDTH, 2);
   
-  xml_writer->xml_version = 10;
+  RAPTOR_OPTIONS_SET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_XML_VERSION, 10);
 
   /* Write XML declaration */
-  xml_writer->xml_declaration = 1;
+  RAPTOR_OPTIONS_SET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_XML_DECLARATION, 1);
   
   return xml_writer;
 }
@@ -466,6 +453,8 @@ raptor_free_xml_writer(raptor_xml_writer* xml_writer)
   if(xml_writer->nstack && xml_writer->my_nstack)
     raptor_free_namespaces(xml_writer->nstack);
 
+  raptor_object_options_clear(&xml_writer->options);
+  
   RAPTOR_FREE(raptor_xml_writer, xml_writer);
 }
 
@@ -477,10 +466,11 @@ raptor_xml_writer_write_xml_declaration(raptor_xml_writer* xml_writer)
     /* check that it should be written once only */
     xml_writer->xml_declaration_checked = 1;
 
-    if(xml_writer->xml_declaration) {
+    if(RAPTOR_OPTIONS_GET_NUMERIC(xml_writer,
+                                  RAPTOR_OPTION_WRITER_XML_DECLARATION)) {
       raptor_iostream_string_write((const unsigned char*)"<?xml version=\"",
                                    xml_writer->iostr);
-      raptor_iostream_counted_string_write((xml_writer->xml_version == 10) ?
+      raptor_iostream_counted_string_write((XML_WRITER_XML_VERSION(xml_writer) == 10) ?
                                            (const unsigned char*)"1.0" :
                                            (const unsigned char*)"1.1",
                                            3, xml_writer->iostr);
@@ -634,7 +624,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
   
   raptor_xml_escape_string_any_write(s, strlen((const char*)s),
                                       '\0',
-                                      xml_writer->xml_version,
+                                      XML_WRITER_XML_VERSION(xml_writer),
                                       xml_writer->iostr);
 
   if(xml_writer->current_element)
@@ -664,7 +654,7 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
   
   raptor_xml_escape_string_any_write(s, len,
                                       '\0',
-                                      xml_writer->xml_version,
+                                      XML_WRITER_XML_VERSION(xml_writer),
                                       xml_writer->iostr);
 
   if(xml_writer->current_element)
@@ -793,10 +783,19 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
  * raptor_xml_writer_set_option:
  * @xml_writer: #raptor_xml_writer xml_writer object
  * @option: option to set from enumerated #raptor_option values
- * @value: integer option value (0 or larger)
+ * @string: string option value (or NULL)
+ * @integer: integer option value
  *
- * Set xml_writer options with integer values.
+ * Set xml_writer option.
  * 
+ * If @string is not NULL and the option type is numeric, the string
+ * value is converted to an integer and used in preference to @integer.
+ *
+ * If @string is NULL and the option type is not numeric, an error is
+ * returned.
+ *
+ * The @string values used are copied.
+ *
  * The allowed options are available via
  * raptor_world_enumerate_xml_writer_options().
  *
@@ -804,238 +803,37 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
  **/
 int
 raptor_xml_writer_set_option(raptor_xml_writer *xml_writer, 
-                              raptor_option option, int value)
+                             raptor_option option, char* string, int integer)
 {
-  if(value < 0 ||
-     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
-    return -1;
-  
-  switch(option) {
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-      if(value)
-        xml_writer->flags |= XML_WRITER_AUTO_INDENT;
-      else
-        xml_writer->flags &= ~XML_WRITER_AUTO_INDENT;        
-      break;
-
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-      if(value)
-        xml_writer->flags |= XML_WRITER_AUTO_EMPTY;
-      else
-        xml_writer->flags &= ~XML_WRITER_AUTO_EMPTY;        
-      break;
-
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-      xml_writer->indent = value;
-      break;
-        
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-      if(value == 10 || value == 11)
-        xml_writer->xml_version = value;
-      break;
-        
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-      xml_writer->xml_declaration = value;
-      break;
-        
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_RELATIVE_URIS:
-
-    /* DOT serializer options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-
-    /* JSON serializer options */
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer option */
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-
-    /* WWW option */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-      
-    default:
-      return -1;
-      break;
-  }
-
-  return 0;
-}
-
-
-/**
- * raptor_xml_writer_set_option_string:
- * @xml_writer: #raptor_xml_writer xml_writer object
- * @option: option to set from enumerated #raptor_option values
- * @value: option value
- *
- * Set xml_writer options with string values.
- * 
- * The allowed options are available via
- * raptor_world_enumerate_xml_writer_options().  If the option type
- * is integer, the value is interpreted as an integer.
- *
- * Return value: non 0 on failure or if the option is unknown
- **/
-int
-raptor_xml_writer_set_option_string(raptor_xml_writer *xml_writer, 
-                                     raptor_option option, 
-                                     const unsigned char *value)
-{
-  if(!value ||
-     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
-    return -1;
-
-  if(raptor_option_value_is_numeric(option))
-    return raptor_xml_writer_set_option(xml_writer, option, 
-                                        atoi((const char*)value));
-
-  return -1;
+  return raptor_object_options_set_option(&xml_writer->options, option,
+                                          string, integer);
 }
 
 
 /**
  * raptor_xml_writer_get_option:
- * @xml_writer: #raptor_xml_writer xml writer object
+ * @xml_writer: #raptor_xml_writer xml_writer object
  * @option: option to get value
+ * @string_p: pointer to where to store string value
+ * @integer_p: pointer to where to store integer value
  *
- * Get various xml_writer options.
+ * Get xml_writer option.
  * 
+ * Any string value returned in *@string_p is shared and must
+ * be copied by the caller.
+ *
  * The allowed options are available via
  * raptor_world_enumerate_xml_writer_options().
- *
- * Note: no option value is negative
  *
  * Return value: option value or < 0 for an illegal option
  **/
 int
-raptor_xml_writer_get_option(raptor_xml_writer *xml_writer, 
-                              raptor_option option)
+raptor_xml_writer_get_option(raptor_xml_writer *xml_writer,
+                             raptor_option option,
+                             char** string_p, int* integer_p)
 {
-  int result = -1;
-  
-  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
-    return -1;
-
-  switch(option) {
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-      result = XML_WRITER_AUTO_INDENT(xml_writer);
-      break;
-
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-      result = XML_WRITER_AUTO_EMPTY(xml_writer);
-      break;
-
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-      result = xml_writer->indent;
-      break;
-
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-      result = xml_writer->xml_version;
-      break;
-
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-      result = xml_writer->xml_declaration;
-      break;
-      
-    /* parser options */
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-
-    /* Shared */
-    case RAPTOR_OPTION_NO_NET:
-
-    /* XML writer options */
-    case RAPTOR_OPTION_RELATIVE_URIS:
-
-    /* DOT serializer options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-
-    /* JSON serializer options */
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer option */
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-
-    /* WWW option */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-      
-    default:
-      break;
-  }
-  
-  return result;
-}
-
-
-/**
- * raptor_xml_writer_get_option_string:
- * @xml_writer: #raptor_xml_writer xml writer object
- * @option: option to get value
- *
- * Get xml_writer options with string values.
- * 
- * The allowed options are available via
- * raptor_world_enumerate_xml_writer_options().
- *
- * Return value: option value or NULL for an illegal option or no value
- **/
-const unsigned char *
-raptor_xml_writer_get_option_string(raptor_xml_writer *xml_writer, 
-                                     raptor_option option)
-{
-  if(!raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_XML_WRITER))
-    return NULL;
-
-  return NULL;
+  return raptor_object_options_get_option(&xml_writer->options, option,
+                                          string_p, integer_p);
 }
 
 

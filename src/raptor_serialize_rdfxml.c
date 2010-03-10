@@ -243,10 +243,10 @@ raptor_rdfxml_serialize_start(raptor_serializer* serializer)
     return 1;
 
   option = RAPTOR_OPTION_WRITER_XML_VERSION;
-  raptor_xml_writer_set_option(xml_writer, option,
+  raptor_xml_writer_set_option(xml_writer, option, NULL,
                                RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
   option = RAPTOR_OPTION_WRITER_XML_DECLARATION;
-  raptor_xml_writer_set_option(xml_writer, option,
+  raptor_xml_writer_set_option(xml_writer, option, NULL,
                                RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
 
   context->xml_writer = xml_writer;

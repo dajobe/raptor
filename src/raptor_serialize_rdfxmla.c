@@ -1189,16 +1189,16 @@ raptor_rdfxmla_serialize_start(raptor_serializer* serializer)
       return 1;
 
     raptor_xml_writer_set_option(xml_writer,
-                                 RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
+                                 RAPTOR_OPTION_WRITER_AUTO_INDENT, NULL,1);
     raptor_xml_writer_set_option(xml_writer,
-                                 RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
+                                 RAPTOR_OPTION_WRITER_AUTO_EMPTY, NULL, 1);
     raptor_xml_writer_set_option(xml_writer,
-                                 RAPTOR_OPTION_WRITER_INDENT_WIDTH,2);
+                                 RAPTOR_OPTION_WRITER_INDENT_WIDTH, NULL, 2);
     option = RAPTOR_OPTION_WRITER_XML_VERSION;
-    raptor_xml_writer_set_option(xml_writer, option,
+    raptor_xml_writer_set_option(xml_writer, option, NULL,
                                  RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
     option = RAPTOR_OPTION_WRITER_XML_DECLARATION;
-    raptor_xml_writer_set_option(xml_writer, option,
+    raptor_xml_writer_set_option(xml_writer, option, NULL,
                                  RAPTOR_OPTIONS_GET_NUMERIC(serializer, option));
 
     context->xml_writer = xml_writer;

@@ -2040,9 +2040,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer) {
                                      serializer->iostream);
   rss_serializer->xml_writer = xml_writer;
   raptor_xml_writer_set_option(xml_writer,
-                               RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
+                               RAPTOR_OPTION_WRITER_AUTO_INDENT, NULL, 1);
   raptor_xml_writer_set_option(xml_writer,
-                               RAPTOR_OPTION_WRITER_AUTO_EMPTY, 1);
+                               RAPTOR_OPTION_WRITER_AUTO_EMPTY, NULL, 1);
 
   raptor_rss10_build_xml_names(serializer, (is_atom && entry_uri));
 
