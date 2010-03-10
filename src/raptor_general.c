@@ -305,6 +305,10 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
       world->uri_interning = value;
       break;
 
+    case RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH:
+      world->www_skip_www_init_finish = value;
+      break;
+      
     default:
       rc = -1;
   }

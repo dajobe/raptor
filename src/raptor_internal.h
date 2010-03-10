@@ -1087,15 +1087,7 @@ struct raptor_sax2_s {
   /* New XML namespace callback */
   raptor_namespace_handler  namespace_handler;
 
-  /* OPTION: 
-   * non 0 if require normalizing xml:lang attribute values to lowercase.
-   */
-  int option_normalize_language;
-
-  /* OPTION: 
-   * non 0 if network access is denied
-   */
-  int option_no_net;
+  raptor_object_options options;
 
   /* stack of namespaces, most recently added at top */
   raptor_namespace_stack namespaces; /* static */
@@ -1117,7 +1109,7 @@ int raptor_sax2_get_depth(raptor_sax2* sax2);
 void raptor_sax2_inc_depth(raptor_sax2* sax2);
 void raptor_sax2_dec_depth(raptor_sax2* sax2);
 void raptor_sax2_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
-int raptor_sax2_set_option(raptor_sax2* sax2, raptor_option option, int value);
+int raptor_sax2_set_option(raptor_sax2 *sax2, raptor_option option, char* string, int integer);
   
 #ifdef RAPTOR_DEBUG
 void raptor_print_xml_element(raptor_xml_element *element, FILE* stream);

@@ -647,6 +647,7 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
  * @RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE: if set (non-0 value) - save/restore the libxml generic error handler when raptor library initializes (default set)
  * @RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: if set (non-0 value) - save/restore the libxml structured error handler when raptor library terminates (default set)
  * @RAPTOR_WORLD_FLAG_URI_INTERNING: if set (non-0 value) - each URI is saved interned in-memory and reused (default set)
+ * @RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH: if set (non-0 value) the raptor will neither initialise or terminate the lower level WWW library.  Usually in raptor initialising either curl_global_init (for libcurl) are called and in raptor cleanup, curl_global_cleanup is called.   This flag allows the application finer control over these libraries such as setting other global options or potentially calling and terminating raptor several times.  It does mean that applications which use this call must do their own extra work in order to allocate and free all resources to the system.
  *
  * Raptor world flags
  *
@@ -666,7 +667,8 @@ typedef int (*raptor_uri_filter_func)(void *user_data, raptor_uri* uri);
 typedef enum {
   RAPTOR_WORLD_FLAG_LIBXML_GENERIC_ERROR_SAVE = 1,
   RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE = 2,
-  RAPTOR_WORLD_FLAG_URI_INTERNING = 3
+  RAPTOR_WORLD_FLAG_URI_INTERNING = 3,
+  RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH = 4
 } raptor_world_flag;
 
 
@@ -973,11 +975,11 @@ size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const uns
 
 /* URI String utility functions */
 RAPTOR_API
-unsigned char *raptor_uri_filename_to_uri_string(const char *filename);
+unsigned char* raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API
-char *raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
+char* raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
-char *raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
+char* raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
@@ -1022,13 +1024,9 @@ int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 
 /* raptor_www */
 RAPTOR_API
-void raptor_world_set_www_flags(raptor_world* world, int flags);
-
-
+raptor_www* raptor_new_www(raptor_world* world);
 RAPTOR_API
-raptor_www *raptor_new_www(raptor_world* world);
-RAPTOR_API
-raptor_www *raptor_new_www_with_connection(raptor_world* world, void* connection);
+raptor_www* raptor_new_www_with_connection(raptor_world* world, void* connection);
 RAPTOR_API
 void raptor_free_www(raptor_www *www);
 RAPTOR_API
@@ -1113,7 +1111,7 @@ void raptor_namespaces_end_for_depth(raptor_namespace_stack *nstack, int depth);
 RAPTOR_API
 raptor_namespace* raptor_namespaces_get_default_namespace(raptor_namespace_stack *nstack);
 RAPTOR_API
-raptor_namespace *raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
+raptor_namespace* raptor_namespaces_find_namespace(raptor_namespace_stack *nstack, const unsigned char *prefix, int prefix_length);
 RAPTOR_API
 raptor_namespace* raptor_namespaces_find_namespace_by_uri(raptor_namespace_stack *nstack, raptor_uri *ns_uri);
 RAPTOR_API
@@ -1136,7 +1134,7 @@ const unsigned char* raptor_namespace_get_prefix(const raptor_namespace *ns);
 RAPTOR_API
 const unsigned char* raptor_namespace_get_counted_prefix(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
-unsigned char *raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p);
+unsigned char* raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p);
 RAPTOR_API
 int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 

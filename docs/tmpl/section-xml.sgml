@@ -276,18 +276,8 @@ a name is legal in some XML version.
 
 @xml_writer: 
 @option: 
-@value: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_xml_writer_set_option_string ##### -->
-<para>
-
-</para>
-
-@xml_writer: 
-@option: 
-@value: 
+@string: 
+@integer: 
 @Returns: 
 
 
@@ -298,16 +288,8 @@ a name is legal in some XML version.
 
 @xml_writer: 
 @option: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_xml_writer_get_option_string ##### -->
-<para>
-
-</para>
-
-@xml_writer: 
-@option: 
+@string_p: 
+@integer_p: 
 @Returns: 
 
 

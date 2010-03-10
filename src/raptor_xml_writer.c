@@ -427,6 +427,9 @@ raptor_new_xml_writer(raptor_world* world,
 
   xml_writer->iostr = iostr;
 
+  raptor_object_options_init(&xml_writer->options,
+                             RAPTOR_OPTION_AREA_XML_WRITER);
+  
   RAPTOR_OPTIONS_SET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_INDENT_WIDTH, 2);
   
   RAPTOR_OPTIONS_SET_NUMERIC(xml_writer, RAPTOR_OPTION_WRITER_XML_VERSION, 10);
