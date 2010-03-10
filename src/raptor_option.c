@@ -636,6 +636,22 @@ raptor_object_options_clear(raptor_object_options* options)
 }
 
 
+/*
+ * raptor_object_options_get_option:
+ * @options: options object
+ * @option: option to get value
+ * @string_p: pointer to where to store string value
+ * @integer_p: pointer to where to store integer value
+ *
+ * INTERNAL - get option value
+ * 
+ * Any string value returned in *@string_p is shared and must be
+ * copied by the caller.
+ *
+ * The allowed options vary by the area field of @options.
+ *
+ * Return value: option value or < 0 for an illegal option
+ **/
 int
 raptor_object_options_get_option(raptor_object_options* options,
                                  raptor_option option,
@@ -660,6 +676,27 @@ raptor_object_options_get_option(raptor_object_options* options,
 }
 
 
+/*
+ * raptor_object_options_set_option:
+ * @options: options object
+ * @option: option to set
+ * @string: string option value (or NULL)
+ * @integer: integer option value
+ *
+ * INTERNAL - set option
+ * 
+ * If @string is not NULL and the option type is numeric, the string
+ * value is converted to an integer and used in preference to @integer.
+ *
+ * If @string is NULL and the option type is not numeric, an error is
+ * returned.
+ *
+ * The @string values used are copied.
+ *
+ * The allowed options vary by the area field of @options.
+ *
+ * Return value: non 0 on failure or if the option is unknown
+ **/
 int
 raptor_object_options_set_option(raptor_object_options *options,
                                  raptor_option option,
