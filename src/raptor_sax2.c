@@ -92,6 +92,8 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
   sax2->locator = locator;
   sax2->user_data = user_data;
 
+  raptor_object_options_init(&sax2->options, RAPTOR_OPTION_AREA_SAX2);
+  
   return sax2;
 }
 
@@ -131,6 +133,8 @@ raptor_free_sax2(raptor_sax2 *sax2)
   if(sax2->base_uri)
     raptor_free_uri(sax2->base_uri);
 
+  raptor_object_options_clear(&sax2->options);
+  
   RAPTOR_FREE(raptor_sax2, sax2);
 }
 
@@ -502,7 +506,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
       goto handle_error;
 
 #ifdef RAPTOR_LIBXML_XML_PARSE_NONET
-    if(sax2->option_no_net)
+    if(RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_NET))
       libxml_options |= XML_PARSE_NONET;
 #endif
 #ifdef HAVE_XMLCTXTUSEOPTIONS
@@ -637,77 +641,30 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
  * raptor_sax2_set_option:
  * @sax2: #raptor_sax2 SAX2 object
  * @option: option to set from enumerated #raptor_option values
- * @value: integer option value (0 or larger)
+ * @string: string option value (or NULL)
+ * @integer: integer option value
  *
- * Set various SAX2 options.
+ * Set SAX2 option.
  * 
- * The allowed options are available via raptor_sax2_options_enumerate().
+ * If @string is not NULL and the option type is numeric, the string
+ * value is converted to an integer and used in preference to @integer.
+ *
+ * If @string is NULL and the option type is not numeric, an error is
+ * returned.
+ *
+ * The @string values used are copied.
+ *
+ * The allowed options are available via
+ * raptor_world_enumerate_sax2_options().
  *
  * Return value: non 0 on failure or if the option is unknown
  */
 int
-raptor_sax2_set_option(raptor_sax2 *sax2, raptor_option option, int value)
+raptor_sax2_set_option(raptor_sax2 *sax2, raptor_option option,
+                       char* string, int integer)
 {
-  if(value < 0 ||
-     !raptor_option_is_valid_for_area(option, RAPTOR_OPTION_AREA_SAX2))
-    return -1;
-  
-  switch(option) {
-    case RAPTOR_OPTION_NORMALIZE_LANGUAGE:
-      sax2->option_normalize_language = value;
-      break;
-
-    case RAPTOR_OPTION_NO_NET:
-      sax2->option_no_net = value;
-      break;
-
-    case RAPTOR_OPTION_SCANNING:
-    case RAPTOR_OPTION_ALLOW_NON_NS_ATTRIBUTES:
-    case RAPTOR_OPTION_ALLOW_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_ALLOW_BAGID:
-    case RAPTOR_OPTION_ALLOW_RDF_TYPE_RDF_LIST:
-    case RAPTOR_OPTION_NON_NFC_FATAL:
-    case RAPTOR_OPTION_WARN_OTHER_PARSETYPES:
-    case RAPTOR_OPTION_CHECK_RDF_ID:
-    case RAPTOR_OPTION_HTML_TAG_SOUP:
-    case RAPTOR_OPTION_MICROFORMATS:
-    case RAPTOR_OPTION_HTML_LINK:
-    case RAPTOR_OPTION_WWW_TIMEOUT:
-    case RAPTOR_OPTION_RELATIVE_URIS:
-    case RAPTOR_OPTION_WRITER_AUTO_INDENT:
-    case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
-    case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
-    case RAPTOR_OPTION_WRITER_XML_VERSION:
-    case RAPTOR_OPTION_WRITER_XML_DECLARATION:
-
-    /* DOT serializer options */
-    case RAPTOR_OPTION_RESOURCE_BORDER:
-    case RAPTOR_OPTION_LITERAL_BORDER:
-    case RAPTOR_OPTION_BNODE_BORDER:
-    case RAPTOR_OPTION_RESOURCE_FILL:
-    case RAPTOR_OPTION_LITERAL_FILL:
-    case RAPTOR_OPTION_BNODE_FILL:
-
-    /* JSON serializer options */
-    case RAPTOR_OPTION_JSON_CALLBACK:
-    case RAPTOR_OPTION_JSON_EXTRA_DATA:
-    case RAPTOR_OPTION_RSS_TRIPLES:
-    case RAPTOR_OPTION_ATOM_ENTRY_URI:
-    case RAPTOR_OPTION_PREFIX_ELEMENTS:
-    
-    /* Turtle serializer option */
-    case RAPTOR_OPTION_WRITE_BASE_URI:
-
-    /* WWW option */
-    case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
-    case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
-      
-    default:
-      return -1;
-      break;
-  }
-
-  return 0;
+  return raptor_object_options_set_option(&sax2->options, option,
+                                          string, integer);
 }
 
 
@@ -844,7 +801,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         }
 
         /* optionally normalize language to lowercase */
-        if(sax2->option_normalize_language) {
+        if(RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NORMALIZE_LANGUAGE)) {
           unsigned char *from = (unsigned char*)atts[i+1];
           unsigned char *to = xml_language;
           

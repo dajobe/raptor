@@ -245,7 +245,7 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
 
   /* Optionally forbid network requests in the XML parser */
   raptor_sax2_set_option(rss_parser->sax2, 
-                         RAPTOR_OPTION_NO_NET,
+                         RAPTOR_OPTION_NO_NET, NULL,
                          RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET));
   
   raptor_sax2_parse_start(rss_parser->sax2, uri);
