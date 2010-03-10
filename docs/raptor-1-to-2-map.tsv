@@ -301,8 +301,8 @@
 1.4.21	raptor_www *	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www *	raptor_new_www	(raptor_world* world)	-
 1.4.21	raptor_www *	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
 1.4.21	raptor_www *	raptor_www_new_with_connection_v2	(raptor_world* world, void* connection)	1.9.0	raptor_www *	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
-1.4.21	void	raptor_www_no_www_library_init_finish	(void)	1.9.0	-	-	-	Deprecated for raptor_world_set_www_flags().
-1.4.21	void	raptor_www_no_www_library_init_finish_v2	(raptor_world* world)	1.9.0	-	-	-	Deprecated for raptor_world_set_www_flags().
+1.4.21	void	raptor_www_no_www_library_init_finish	(void)	1.9.0	-	-	-	Deprecated for raptor_world_set_flag().
+1.4.21	void	raptor_www_no_www_library_init_finish_v2	(raptor_world* world)	1.9.0	-	-	-	Deprecated for raptor_world_set_flag().
 1.4.21	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	1.9.0	void	raptor_www_set_connection_timeout	(raptor_www* www, int timeout)	-
 1.4.21	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)	1.9.0	void	raptor_www_set_content_type_handler	(raptor_www *www, raptor_www_content_type_handler handler, void *user_data)	-
 1.4.21	void	raptor_www_set_error_handler	(raptor_www *www, raptor_message_handler error_handler, void *error_data)	1.9.0	-	-	-	Replaced by raptor_world_set_log_handler() on the #raptor_world object.
@@ -376,4 +376,4 @@
 1.4.21	-	-	-	1.9.0	int	raptor_world_enumerate_sax2_options	(raptor_world* world, const raptor_option option, const char* *name, raptor_uri **uri, const char* *label)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_is_parser_name	(raptor_world* world, const char* name)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)	-
-1.4.21	-	-	-	1.9.0	void	raptor_world_set_www_flags	(raptor_world* world, int flags)	-
+
