@@ -278,16 +278,24 @@ typedef struct
 
 #define RAPTOR_OPTIONS_GET_NUMERIC(object, option) \
   ((object)->options.options[(int)option].integer)
+#define RAPTOR_OPTIONS_GET_STRING(object, option) \
+  ((object)->options.options[(int)option].string)
 
 #define RAPTOR_OPTIONS_SET_NUMERIC(object, option, value) do { \
   (object)->options.options[(int)option].integer = value; \
+} while(0)
+#define RAPTOR_OPTIONS_SET_STRING(object, option, value) do { \
+  (object)->options.options[(int)option].string = value; \
 } while(0)
 
 int raptor_option_value_is_numeric(const raptor_option option);
 int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 
 void raptor_object_options_init(raptor_object_options* options, raptor_option_area area);
-void raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
+void raptor_object_options_clear(raptor_object_options* options);
+int raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
+int raptor_object_options_get_option(raptor_object_options *options, raptor_option option, char** string_p, int* integer_p);
+int raptor_object_options_set_option(raptor_object_options *options, raptor_option option, char* string, int integer);
 
 
 

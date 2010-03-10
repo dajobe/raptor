@@ -575,15 +575,32 @@ raptor_option_get_value_type_label(const raptor_option_value_type type)
 }
 
 
-void
+int
 raptor_object_options_copy_state(raptor_object_options* to,
                                  raptor_object_options* from)
 {
+  int rc = 0;
   int i;
   
-  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
-    to->options[i] = from->options[i];
+  to->area = from->area;
+  for(i = 0; !rc && i <= RAPTOR_OPTION_LAST; i++) {
+    if(raptor_option_value_is_numeric(i))
+      to->options[i].integer = from->options[i].integer;
+    else {
+      /* non-numeric values may need allocations */
+      char* string = from->options[i].string;
+      if(string) {
+        size_t len = strlen(string);
+        to->options[i].string = (char*)RAPTOR_MALLOC(cstring, len + 1);
+        if(to->options[i].string)
+          strncpy((char*)to->options[i].string, string, len + 1);
+        else
+          rc = 1;
+      }
+    }
   }
+  
+  return rc;
 }
 
 
@@ -591,6 +608,90 @@ void
 raptor_object_options_init(raptor_object_options* options,
                            raptor_option_area area)
 {
+  int i;
+  
   options->area = area;
+
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
+    if(raptor_option_value_is_numeric(i))
+      options->options[i].integer = 0;
+    else
+      options->options[i].string = NULL;
+  }
 }
 
+
+void
+raptor_object_options_clear(raptor_object_options* options)
+{
+  int i;
+  
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
+    if(raptor_option_value_is_numeric(i))
+      continue;
+
+    if(options->options[i].string)
+      RAPTOR_FREE(cstring, options->options[i].string);
+  }
+}
+
+
+int
+raptor_object_options_get_option(raptor_object_options* options,
+                                 raptor_option option,
+                                 char** string_p, int* integer_p)
+{
+  if(!raptor_option_is_valid_for_area(option, options->area))
+    return 1;
+  
+  if(raptor_option_value_is_numeric(option)) {
+    /* numeric options */
+    int value = options->options[(int)option].integer;
+    if(integer_p)
+      *integer_p = value;
+  } else {
+    /* non-numeric options */
+    char* string = options->options[(int)option].string;
+    if(string_p)
+      *string_p = string;
+  }
+  
+  return 0;
+}
+
+
+int
+raptor_object_options_set_option(raptor_object_options *options,
+                                 raptor_option option,
+                                 char* string, int integer)
+{
+  if(!raptor_option_is_valid_for_area(option, options->area))
+    return 1;
+  
+  if(raptor_option_value_is_numeric(option)) {
+    /* numeric options */
+    if(string)
+      integer = atoi((const char*)string);
+
+    options->options[(int)option].integer = integer;
+    return 0;
+  } else {
+    /* non-numeric options */
+    char *string_copy;
+    size_t len = 0;
+    
+    if(string)
+      len = strlen((const char*)string);
+    string_copy = (char*)RAPTOR_MALLOC(cstring, len + 1);
+    if(!string_copy)
+      return 1;
+  
+    if(len)
+      strncpy(string_copy, (const char*)string, len);
+    string_copy[len] = '\0';
+    
+    options->options[(int)option].string = string_copy;
+  }
+  
+  return 0;
+}
