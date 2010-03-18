@@ -700,7 +700,7 @@ raptor_object_options_get_option(raptor_object_options* options,
 int
 raptor_object_options_set_option(raptor_object_options *options,
                                  raptor_option option,
-                                 char* string, int integer)
+                                 const char* string, int integer)
 {
   if(!raptor_option_is_valid_for_area(option, options->area))
     return 1;

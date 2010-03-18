@@ -1197,7 +1197,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  **/
 int
 raptor_parser_set_option(raptor_parser *parser, raptor_option option,
-                         char* string, int integer)
+                         const char* string, int integer)
 {
   return raptor_object_options_set_option(&parser->options, option,
                                           string, integer);

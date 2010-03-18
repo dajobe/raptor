@@ -734,7 +734,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
 int
 raptor_serializer_set_option(raptor_serializer *serializer, 
                              raptor_option option, 
-                             char* string, int integer)
+                             const char* string, int integer)
 {
   return raptor_object_options_set_option(&serializer->options, option,
                                           string, integer);

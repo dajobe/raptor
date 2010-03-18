@@ -295,7 +295,7 @@ void raptor_object_options_init(raptor_object_options* options, raptor_option_ar
 void raptor_object_options_clear(raptor_object_options* options);
 int raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
 int raptor_object_options_get_option(raptor_object_options *options, raptor_option option, char** string_p, int* integer_p);
-int raptor_object_options_set_option(raptor_object_options *options, raptor_option option, char* string, int integer);
+int raptor_object_options_set_option(raptor_object_options *options, raptor_option option, const char* string, int integer);
 
 
 

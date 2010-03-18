@@ -822,7 +822,7 @@ int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
 
 /* parser option methods */
 RAPTOR_API
-int raptor_parser_set_option(raptor_parser *parser, raptor_option option, char* string, int integer);
+int raptor_parser_set_option(raptor_parser *parser, raptor_option option, const char* string, int integer);
 RAPTOR_API
 int raptor_parser_get_option(raptor_parser *parser, raptor_option option, char** string_p, int* integer_p);
 RAPTOR_API
@@ -889,7 +889,7 @@ raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer)
 RAPTOR_API
 int raptor_world_enumerate_serializer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
-int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, char* string, int integer);
+int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, const char* string, int integer);
 RAPTOR_API
 int raptor_serializer_get_option(raptor_serializer *serializer, raptor_option option, char** string_p, int* integer_p);
 
