@@ -418,7 +418,11 @@ raptor_option_value_is_numeric(const raptor_option option)
  *
  * Get a option ID from a URI
  * 
- * The allowed option URIs are available via raptor_options_enumerate().
+ * Option URIs are the concatenation of the string
+ * "http://feature.librdf.org/raptor-" plus the short name.
+ *
+ * They are automatically returned for any option described with
+ * raptor_world_get_option_description().
  *
  * Return value: < 0 if the option is unknown
  **/
