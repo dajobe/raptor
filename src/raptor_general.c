@@ -532,6 +532,7 @@ static const char* const raptor_domain_labels[RAPTOR_DOMAIN_LAST + 1] = {
   "XML SAX2",
   "RDF Serializer",
   "RDF Term",
+  "Turtle Writer",
   "URI",
   "World",
   "WWW",
