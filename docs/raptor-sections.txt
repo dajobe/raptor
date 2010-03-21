@@ -40,6 +40,7 @@ raptor_option_value_type
 raptor_option_get_value_type
 raptor_option_get_value_type_label
 raptor_world_get_option_description
+raptor_free_option_description
 raptor_world_get_option_from_uri
 </SECTION>
 
