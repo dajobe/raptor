@@ -489,6 +489,7 @@ typedef enum {
  * @RAPTOR_DOMAIN_SAX2:  XML SAX2
  * @RAPTOR_DOMAIN_SERIALIZER: RDF Serializer
  * @RAPTOR_DOMAIN_TERM: RDF Term
+ * @RAPTOR_DOMAIN_TURTLE_WRITER: Turtle Writer
  * @RAPTOR_DOMAIN_URI: RDF Uri
  * @RAPTOR_DOMAIN_WORLD: RDF world
  * @RAPTOR_DOMAIN_WWW: WWW
@@ -507,6 +508,7 @@ typedef enum {
   RAPTOR_DOMAIN_SAX2,
   RAPTOR_DOMAIN_SERIALIZER,
   RAPTOR_DOMAIN_TERM,
+  RAPTOR_DOMAIN_TURTLE_WRITER,
   RAPTOR_DOMAIN_URI,
   RAPTOR_DOMAIN_WORLD,
   RAPTOR_DOMAIN_WWW,
@@ -591,6 +593,7 @@ typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_gen
  * raptor_parser_set_namespace_handler().
  */
 typedef void (*raptor_namespace_handler)(void* user_data, raptor_namespace *nspace);
+
 
 /**
  * raptor_www_write_bytes_handler:
