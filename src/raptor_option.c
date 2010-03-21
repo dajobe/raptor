@@ -376,18 +376,9 @@ raptor_world_get_option_description(raptor_world* world,
 
 /**
  * raptor_option_get_value_type
- * @option: raptor serializer or parser option
+ * @option: raptor option ID
  *
  * Get the type of a options.
- *
- * Most options are boolean or integer values and use
- * raptor_parser_set_option() and raptor_parser_get_option()
- * (raptor_serializer_set_option() and raptor_serializer_get_option() )
- *
- * String and URI value options use raptor_parser_set_option_string() and
- * raptor_parser_get_option_string()
- * ( raptor_serializer_set_option_string()
- * and raptor_serializer_get_option_string() )
  *
  * Return value: the type of the option or < 0 if @option is unknown
  */
