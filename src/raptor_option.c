@@ -378,7 +378,7 @@ raptor_world_get_option_description(raptor_world* world,
  * raptor_option_get_value_type
  * @option: raptor option ID
  *
- * Get the type of a options.
+ * Get the type of an option.
  *
  * Return value: the type of the option or < 0 if @option is unknown
  */
@@ -416,7 +416,7 @@ raptor_option_value_is_numeric(const raptor_option option)
  * @world: raptor_world instance
  * @uri: option URI
  *
- * Get a option ID from a URI
+ * Get an option ID from a URI
  * 
  * Option URIs are the concatenation of the string
  * "http://feature.librdf.org/raptor-" plus the short name.
