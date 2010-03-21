@@ -383,26 +383,29 @@ main(int argc, char *argv[])
             
             fprintf(stderr, "%s: Valid parser options are:\n", program);
             for(i = 0; i < (int)raptor_option_get_count(); i++) {
-              const char *option_name;
-              const char *option_label;
-              if(!raptor_world_enumerate_parser_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
-                raptor_option_value_type value_type;
-                value_type = raptor_option_get_value_type((raptor_option)i);
+              raptor_option_description *od;
+              
+              od = raptor_world_get_option_description(world,
+                                                       RAPTOR_DOMAIN_PARSER,
+                                                       (raptor_option)i);
+              if(od) {
                 fprintf(stderr, "  %-21s  %s (%s)\n",
-                        option_name, option_label, 
-                        raptor_option_get_value_type_label(value_type));
+                        od->name, od->label, 
+                        raptor_option_get_value_type_label(od->value_type));
               }
             }
             fprintf(stderr, "%s: Valid serializer options are:\n", program);
             for(i = 0; i < (int)raptor_option_get_count(); i++) {
-              const char *option_name;
-              const char *option_label;
-              if(!raptor_world_enumerate_serializer_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
-                raptor_option_value_type value_type;
-                value_type = raptor_option_get_value_type((raptor_option)i);
+              raptor_option_description *od;
+              
+              od = raptor_world_get_option_description(world,
+                                                       RAPTOR_DOMAIN_SERIALIZER,
+                                                       (raptor_option)i);
+              if(od) {
                 fprintf(stderr, "  %-21s  %s (%s)\n",
-                        option_name, option_label, 
-                        raptor_option_get_value_type_label(value_type));
+                        od->name, od->label, 
+                        raptor_option_get_value_type_label(od->value_type));
+                raptor_free_option_description(od);
               }
             }
             fputs("Options are set with `" HELP_ARG(f, option) " OPTION = VALUE or `-f OPTION'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
@@ -436,82 +439,62 @@ main(int argc, char *argv[])
             
             /* parser options */
             for(i = 0; i < (int)raptor_option_get_count(); i++) {
-              const char *option_name;
-              size_t len;
-              
-              if(raptor_world_enumerate_parser_options(world,
-                                                        (raptor_option)i,
-                                                        &option_name,
-                                                        NULL, NULL))
-                continue;
+              raptor_domain domain;
+              raptor_option_description *od;
+              size_t name_len;
 
-              len = strlen(option_name);
-              if(!strncmp(optarg, option_name, len)) {
-                raptor_option_value_type value_type;
+              domain = RAPTOR_DOMAIN_PARSER;
+              od = raptor_world_get_option_description(world,
+                                                       domain,
+                                                       (raptor_option)i);
+              if(!od) {
+                domain = RAPTOR_DOMAIN_SERIALIZER;
+                od = raptor_world_get_option_description(world,
+                                                         domain,
+                                                         (raptor_option)i);
+                if(!od)
+                  /* Neither a parser or serializer option - skip */
+                  continue;
+              }
 
-                fv = (option_value*)raptor_calloc_memory(sizeof(option_value), 1);
+              name_len = od->name_len;
+              if(!strncmp(optarg, od->name, name_len)) {
+                fv = (option_value*)raptor_calloc_memory(sizeof(option_value),
+                                                         1);
 
                 fv->option = (raptor_option)i;
-                value_type = raptor_option_get_value_type(fv->option);
-                if(value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL ||
-                   value_type == RAPTOR_OPTION_VALUE_TYPE_INT) {
-                  if(len < arg_len && optarg[len] == '=')
-                    fv->i_value = atoi(&optarg[len+1]);
-                  else if(len == arg_len)
+                if(od->value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL ||
+                   od->value_type == RAPTOR_OPTION_VALUE_TYPE_INT) {
+                  if(name_len < arg_len && optarg[name_len] == '=')
+                    fv->i_value = atoi(&optarg[name_len + 1]);
+                  else if(name_len == arg_len)
                     fv->i_value = 1;
                 } else {
-                  if(len < arg_len && optarg[len] == '=')
-                    fv->s_value = &optarg[len+1];
-                  else if(len == arg_len)
+                  if(name_len < arg_len && optarg[name_len] == '=')
+                    fv->s_value = &optarg[name_len + 1];
+                  else if(name_len == arg_len)
                     fv->s_value = (char*)"";
                 }
 
-                if(!parser_options)
-                  parser_options = raptor_new_sequence(raptor_free_memory, NULL);
-                raptor_sequence_push(parser_options, fv);
+                if(domain == RAPTOR_DOMAIN_PARSER) {
+                  if(!parser_options)
+                    parser_options = raptor_new_sequence(raptor_free_memory, NULL);
+                  raptor_sequence_push(parser_options, fv);
+                } else {
+                  /* RAPTOR_DOMAIN_SERIALIZER */
+                  if(!serializer_options)
+                    serializer_options = raptor_new_sequence(raptor_free_memory, NULL);
+                  raptor_sequence_push(serializer_options, fv);
+                }
+                
                 ok = 1;
-                break;
               }
+              raptor_free_option_description(od);
+              
+              if(ok)
+                break;
             }
             
-            for(i = 0; i < (int)raptor_option_get_count(); i++) {
-              const char *option_name;
-              size_t len;
-              
-              if(raptor_world_enumerate_serializer_options(world,
-                                                            (raptor_option)i,
-                                                            &option_name,
-                                                            NULL, NULL))
-                continue;
-
-              len = strlen(option_name);
-              if(!strncmp(optarg, option_name, len)) {
-                raptor_option_value_type value_type;
-
-                fv = (option_value*)raptor_calloc_memory(sizeof(option_value), 1);
-
-                fv->option = (raptor_option)i;
-                value_type = raptor_option_get_value_type(fv->option);
-                if(value_type == RAPTOR_OPTION_VALUE_TYPE_BOOL ||
-                   value_type == RAPTOR_OPTION_VALUE_TYPE_INT) {
-                  if(len < arg_len && optarg[len] == '=')
-                    fv->i_value = atoi(&optarg[len+1]);
-                  else if(len == arg_len)
-                    fv->i_value = 1;
-                } else {
-                  if(len < arg_len && optarg[len] == '=')
-                    fv->s_value = &optarg[len+1];
-                  else if(len == arg_len)
-                    fv->s_value = (char*)"";
-                }
-
-                if(!serializer_options)
-                  serializer_options = raptor_new_sequence(raptor_free_memory, NULL);
-                raptor_sequence_push(serializer_options, fv);
-                ok = 1;
-                break;
-              }
-            }
             
             if(!ok) {
               fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, option) "'\nTry '%s " HELP_ARG(f, option) " help' for a list of valid options\n",

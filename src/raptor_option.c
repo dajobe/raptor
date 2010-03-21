@@ -262,6 +262,118 @@ static const char * const raptor_option_uri_prefix = "http://feature.librdf.org/
 static const int raptor_option_uri_prefix_len = 33;
 
 
+static raptor_option_area
+raptor_option_get_option_area_for_domain(raptor_domain domain)
+{
+  raptor_option_area area = RAPTOR_OPTION_AREA_NONE;
+
+  if(domain == RAPTOR_DOMAIN_PARSER) 
+    area = RAPTOR_OPTION_AREA_PARSER;
+  else if(domain == RAPTOR_DOMAIN_SERIALIZER)
+    area = RAPTOR_OPTION_AREA_SERIALIZER;
+  else if(domain == RAPTOR_DOMAIN_SAX2)
+    area = RAPTOR_OPTION_AREA_SAX2;
+  else if(domain == RAPTOR_DOMAIN_XML_WRITER)
+    area = RAPTOR_OPTION_AREA_XML_WRITER;
+  else if(domain == RAPTOR_DOMAIN_TURTLE_WRITER)
+    area = RAPTOR_OPTION_AREA_TURTLE_WRITER;
+
+  return area;
+}
+
+
+/**
+ * raptor_free_option_description:
+ * @option_description: option description
+ * 
+ * Destructor - free an option description object.
+ */
+void
+raptor_free_option_description(raptor_option_description* option_description)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(option_description,
+                                      raptor_option_description);
+
+  /* these are shared strings pointing to static data in raptor_options_list[] */
+  /* RAPTOR_FREE(cstring, option_description->name); */
+  /* RAPTOR_FREE(cstring, option_description->label); */
+
+  if(option_description->uri)
+    raptor_free_uri(option_description->uri);
+
+  RAPTOR_FREE(raptor_option_description, option_description);
+}
+
+
+/**
+ * raptor_world_get_option_description:
+ * @world: raptor world object
+ * @domain: domain
+ * @option: option enumeration (0+)
+ * 
+ * Get a description of an option for a domain.
+ *
+ * The returned description must be freed with
+ * raptor_free_option_description().
+ *
+ * Return value: option description or NULL on failure or if option is unknown
+ **/
+raptor_option_description*
+raptor_world_get_option_description(raptor_world* world,
+                                    const raptor_domain domain,
+                                    const raptor_option option)
+{
+  raptor_option_area area;
+  raptor_option_description *option_description = NULL;
+  raptor_uri *base_uri = NULL;
+  int i;
+
+  area = raptor_option_get_option_area_for_domain(domain);
+  if(area == RAPTOR_OPTION_AREA_NONE)
+    return NULL;
+  
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
+    if(raptor_options_list[i].option == option &&
+       (raptor_options_list[i].area & area))
+      break;
+  }
+
+  if(i > RAPTOR_OPTION_LAST)
+    return NULL;
+  
+  option_description = (raptor_option_description*)RAPTOR_CALLOC(raptor_option_description, 1, sizeof(*option_description));
+  if(!option_description)
+    return NULL;
+
+  option_description->domain = domain;
+  option_description->option = option;
+  option_description->value_type = raptor_options_list[i].value_type;
+  option_description->name = raptor_options_list[i].name;
+  option_description->name_len = strlen(option_description->name);
+  option_description->label = raptor_options_list[i].label;
+
+  base_uri = raptor_new_uri_from_counted_string(world,
+                                                (const unsigned char*)raptor_option_uri_prefix,
+                                                raptor_option_uri_prefix_len);
+  if(!base_uri) {
+    raptor_free_option_description(option_description);
+    return NULL;
+  }
+  
+  option_description->uri = raptor_new_uri_from_uri_local_name(world,
+                                                               base_uri,
+                                                               (const unsigned char*)raptor_options_list[i].name);
+  raptor_free_uri(base_uri);
+  if(!option_description->uri) {
+    raptor_free_option_description(option_description);
+    return NULL;
+  }
+  
+  return option_description;
+}
+
+
+
 /*
  * raptor_world_options_enumerate_common:
  * @world: raptor_world object

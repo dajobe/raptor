@@ -828,8 +828,6 @@ RAPTOR_API
 int raptor_parser_set_option(raptor_parser *parser, raptor_option option, const char* string, int integer);
 RAPTOR_API
 int raptor_parser_get_option(raptor_parser *parser, raptor_option option, char** string_p, int* integer_p);
-RAPTOR_API
-unsigned int raptor_option_get_count(void);
 
 /* parser utility methods */
 RAPTOR_API
@@ -1474,10 +1472,40 @@ typedef enum {
   RAPTOR_OPTION_VALUE_TYPE_LAST = RAPTOR_OPTION_VALUE_TYPE_URI
 } raptor_option_value_type;
 
+/**
+ * raptor_option_description:
+ * @domain: domain ID
+ * @option: option ID
+ * @value_type: data type of option value
+ * @name: short name for option
+ * @name_len: length of @name
+ * @label: description of option
+ * @uri: URI identifying option
+ *
+ * Description of an option for a domain.
+ */
+typedef struct
+{
+  raptor_domain domain;
+  raptor_option option;
+  raptor_option_value_type value_type;
+  const char* name;
+  size_t name_len;
+  const char* label;
+  raptor_uri* uri;
+} raptor_option_description;
+
+
+RAPTOR_API
+unsigned int raptor_option_get_count(void);
 RAPTOR_API
 raptor_option_value_type raptor_option_get_value_type(const raptor_option option);
 RAPTOR_API
 const char* raptor_option_get_value_type_label(const raptor_option_value_type type);
+RAPTOR_API
+void raptor_free_option_description(raptor_option_description* option_description);
+RAPTOR_API
+raptor_option_description* raptor_world_get_option_description(raptor_world* world, const raptor_domain domain, const raptor_option option);
 
 
 /* SAX2 element Class (raptor_xml_element) */
