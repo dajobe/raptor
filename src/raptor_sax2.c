@@ -655,7 +655,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
  * The @string values used are copied.
  *
  * The allowed options are available via
- * raptor_world_enumerate_sax2_options().
+ * raptor_world_get_option_description().
  *
  * Return value: non 0 on failure or if the option is unknown
  */

@@ -1260,7 +1260,6 @@ int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_nam
 void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-int raptor_world_enumerate_turtle_writer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_option option, int value);
 int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
 int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);

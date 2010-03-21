@@ -727,7 +727,7 @@ raptor_serializer_get_iostream(raptor_serializer *serializer)
  * The @string values used are copied.
  *
  * The allowed options are available via
- * raptor_world_enumerate_serializer_options().
+ * raptor_world_get_option_description().
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
@@ -754,7 +754,7 @@ raptor_serializer_set_option(raptor_serializer *serializer,
  * be copied by the caller.
  *
  * The allowed options are available via
- * raptor_world_enumerate_serializer_options().
+ * raptor_world_get_option_description().
  *
  * Return value: option value or < 0 for an illegal option
  **/

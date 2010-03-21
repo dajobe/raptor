@@ -800,7 +800,7 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
  * The @string values used are copied.
  *
  * The allowed options are available via
- * raptor_world_enumerate_xml_writer_options().
+ * raptor_world_get_option_description().
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
@@ -826,7 +826,7 @@ raptor_xml_writer_set_option(raptor_xml_writer *xml_writer,
  * be copied by the caller.
  *
  * The allowed options are available via
- * raptor_world_enumerate_xml_writer_options().
+ * raptor_world_get_option_description().
  *
  * Return value: option value or < 0 for an illegal option
  **/

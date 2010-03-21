@@ -728,11 +728,7 @@ int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 RAPTOR_API
-int raptor_world_enumerate_parser_options(raptor_world* world, const raptor_option option, const char **name, raptor_uri **uri, const char **label);
-RAPTOR_API
 int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
-RAPTOR_API
-int raptor_world_enumerate_sax2_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API
@@ -887,8 +883,6 @@ RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 
 /* serializer option methods */
-RAPTOR_API
-int raptor_world_enumerate_serializer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_serializer_set_option(raptor_serializer *serializer, raptor_option option, const char* string, int integer);
 RAPTOR_API
@@ -1564,8 +1558,6 @@ RAPTOR_API
 void raptor_xml_writer_comment_counted(raptor_xml_writer* xml_writer, const unsigned char *s, unsigned int len);
 RAPTOR_API
 void raptor_xml_writer_flush(raptor_xml_writer* xml_writer);
-RAPTOR_API
-int raptor_world_enumerate_xml_writer_options(raptor_world* world, const raptor_option option, const char **name,  raptor_uri **uri, const char **label);
 RAPTOR_API
 int raptor_xml_writer_set_option(raptor_xml_writer *xml_writer, raptor_option option, char* string, int integer);
 RAPTOR_API

@@ -642,7 +642,7 @@ raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer,
  * Set turtle_writer options with integer values.
  * 
  * The allowed options are available via 
- * raptor_world_enumerate_turtle_writer_options()
+ * raptor_world_get_option_description()
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
@@ -732,8 +732,9 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
  * Set turtle_writer options with string values.
  * 
  * The allowed options are available via
- * raptor_world_enumerate_turtle_writer_options().  If the option
- * type is integer, the value is interpreted as an integer.
+ * raptor_world_get_option_description().
+ * If the option type is integer, the value is interpreted as an
+ * integer.
  *
  * Return value: non 0 on failure or if the option is unknown
  **/

@@ -1191,7 +1191,7 @@ raptor_parser_set_uri_filter(raptor_parser* parser,
  * The @string values used are copied.
  *
  * The allowed options are available via
- * raptor_world_enumerate_parser_options().
+ * raptor_world_get_option_description().
  *
  * Return value: non 0 on failure or if the option is unknown
  **/
@@ -1217,7 +1217,7 @@ raptor_parser_set_option(raptor_parser *parser, raptor_option option,
  * be copied by the caller.
  *
  * The allowed options are available via
- * raptor_world_enumerate_parser_options().
+ * raptor_world_get_option_description().
  *
  * Return value: option value or < 0 for an illegal option
  **/
@@ -1951,29 +1951,28 @@ main(int argc, char *argv[])
   fprintf(stderr, "%s: Known options:\n", program);
 #endif
 
-  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
-    const char *option_name;
-    const char *option_label;
-    raptor_uri *option_uri;
+  for(i = 0; i <= (int)raptor_option_get_count(); i++) {
+    raptor_option_description *od;
     int fn;
     
-    if(raptor_world_enumerate_parser_options(world, (raptor_option)i,
-                                             &option_name, &option_uri, 
-                                             &option_label))
+    od = raptor_world_get_option_description(world,
+                                             RAPTOR_DOMAIN_PARSER,
+                                             (raptor_option)i);
+    if(!od)
       continue;
 
 #if RAPTOR_DEBUG > 1
-    fprintf(stderr, " %2d %-20s %s <%s>\n", i, option_name, option_label,
-            (option_uri ? (const char*)raptor_uri_as_string(option_uri) : ""));
+    fprintf(stderr, " %2d %-20s %s <%s>\n", i, od->name, od->label,
+            (od->uri ? (const char*)raptor_uri_as_string(od->uri) : ""));
 #endif
-    fn = raptor_world_get_option_from_uri(world, option_uri);
+    fn = raptor_world_get_option_from_uri(world, od->uri);
     if(fn != i) {
       fprintf(stderr,
               "%s: raptor_option_from_uri() returned %d expected %d\n",
               program, fn, i);
       return 1;
     }
-    raptor_free_uri(option_uri);
+    raptor_free_option_description(od);
   }
 
   s = raptor_parser_get_accept_header_all(world);
