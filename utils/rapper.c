@@ -382,7 +382,7 @@ main(int argc, char *argv[])
             int i;
             
             fprintf(stderr, "%s: Valid parser options are:\n", program);
-            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+            for(i = 0; i < (int)raptor_option_get_count(); i++) {
               const char *option_name;
               const char *option_label;
               if(!raptor_world_enumerate_parser_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
@@ -394,7 +394,7 @@ main(int argc, char *argv[])
               }
             }
             fprintf(stderr, "%s: Valid serializer options are:\n", program);
-            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+            for(i = 0; i < (int)raptor_option_get_count(); i++) {
               const char *option_name;
               const char *option_label;
               if(!raptor_world_enumerate_serializer_options(world, (raptor_option)i, &option_name, NULL, &option_label)) {
@@ -435,7 +435,7 @@ main(int argc, char *argv[])
             int ok = 0;
             
             /* parser options */
-            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+            for(i = 0; i < (int)raptor_option_get_count(); i++) {
               const char *option_name;
               size_t len;
               
@@ -474,7 +474,7 @@ main(int argc, char *argv[])
               }
             }
             
-            for(i = 0; i < (int)raptor_parser_get_option_count(); i++) {
+            for(i = 0; i < (int)raptor_option_get_count(); i++) {
               const char *option_name;
               size_t len;
               

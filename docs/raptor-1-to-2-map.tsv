@@ -30,7 +30,7 @@
 1.4.21	void	raptor_free_xml_element	(raptor_xml_element *element)	1.9.0	void	raptor_free_xml_element	(raptor_xml_element *element)	-
 1.4.21	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)	1.9.0	void	raptor_free_xml_writer	(raptor_xml_writer* xml_writer)	-
 1.4.21	int	raptor_get_feature	(raptor_parser *parser, raptor_feature feature)	1.9.0	int	raptor_parser_get_option	(raptor_parser *parser, raptor_option option, char** string_p, int* integer_p)	-
-1.4.21	unsigned int	raptor_get_feature_count	(void)	1.9.0	unsigned int	raptor_parser_get_option_count	(void)	-
+1.4.21	unsigned int	raptor_get_feature_count	(void)	1.9.0	unsigned int	raptor_option_get_count	(void)	-
 1.4.21	const char*	raptor_get_label	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_label	(raptor_parser *rdf_parser)	-
 1.4.21	raptor_locator*	raptor_get_locator	(raptor_parser* rdf_parser)	1.9.0	raptor_locator*	raptor_parser_get_locator	(raptor_parser* rdf_parser)	-
 1.4.21	const char*	raptor_get_mime_type	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_mime_type	(raptor_parser *rdf_parser)	-

@@ -829,7 +829,7 @@ int raptor_parser_set_option(raptor_parser *parser, raptor_option option, const 
 RAPTOR_API
 int raptor_parser_get_option(raptor_parser *parser, raptor_option option, char** string_p, int* integer_p);
 RAPTOR_API
-unsigned int raptor_parser_get_option_count(void);
+unsigned int raptor_option_get_count(void);
 
 /* parser utility methods */
 RAPTOR_API

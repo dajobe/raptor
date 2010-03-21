@@ -532,7 +532,7 @@ raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
 
 
 /**
- * raptor_parser_get_option_count:
+ * raptor_option_get_count:
  *
  * Get the count of options defined.
  *
@@ -543,7 +543,7 @@ raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
  * Return value: count of options in the #raptor_option enumeration
  **/
 unsigned int
-raptor_parser_get_option_count(void)
+raptor_option_get_count(void)
 {
   return RAPTOR_OPTION_LAST + 1;
 }
