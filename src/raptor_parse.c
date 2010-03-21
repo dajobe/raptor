@@ -495,10 +495,10 @@ raptor_new_parser(raptor_world* world, const char *name)
 
   rdf_parser->failed = 0;
 
+  raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
+
   /* Initialise default (lax) option values */
   raptor_parser_set_strict(rdf_parser, 0);
-
-  raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
