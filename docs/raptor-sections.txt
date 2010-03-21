@@ -35,6 +35,7 @@ raptor_data_free_function
 <SECTION>
 <FILE>section-option</FILE>
 raptor_option
+raptor_option_description
 raptor_option_get_count
 raptor_option_value_type
 raptor_option_get_value_type
