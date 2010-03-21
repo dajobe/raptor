@@ -1466,6 +1466,7 @@ typedef enum {
   RAPTOR_OPTION_VALUE_TYPE_LAST = RAPTOR_OPTION_VALUE_TYPE_URI
 } raptor_option_value_type;
 
+
 /**
  * raptor_option_description:
  * @domain: domain ID
@@ -1478,8 +1479,7 @@ typedef enum {
  *
  * Description of an option for a domain.
  */
-typedef struct
-{
+typedef struct {
   raptor_domain domain;
   raptor_option option;
   raptor_option_value_type value_type;
