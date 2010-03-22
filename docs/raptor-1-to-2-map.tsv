@@ -7,7 +7,7 @@
 1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	-
 1.4.21	raptor_feature	raptor_feature_from_uri	(raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
 1.4.21	raptor_feature	raptor_feature_from_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
-1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	raptor_option_value_type	raptor_option_get_value_type	(const raptor_option option)	-
+1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	-	-	-	Use raptor_world_get_option_description() for the option and access the value_type field.
 1.4.21	int	raptor_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	Call with domain = RAPTOR_DOMAIN_PARSER
 1.4.21	int	raptor_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	Call with domain = RAPTOR_DOMAIN_PARSER
 1.4.21	void	raptor_finish	(void)	1.9.0	-	-	-	Use raptor_free_world() with #raptor_world object.

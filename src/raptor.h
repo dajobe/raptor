@@ -1493,8 +1493,6 @@ typedef struct {
 RAPTOR_API
 unsigned int raptor_option_get_count(void);
 RAPTOR_API
-raptor_option_value_type raptor_option_get_value_type(const raptor_option option);
-RAPTOR_API
 const char* raptor_option_get_value_type_label(const raptor_option_value_type type);
 RAPTOR_API
 void raptor_free_option_description(raptor_option_description* option_description);

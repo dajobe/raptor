@@ -374,23 +374,6 @@ raptor_world_get_option_description(raptor_world* world,
 
 
 
-/**
- * raptor_option_get_value_type
- * @option: raptor option ID
- *
- * Get the type of an option.
- *
- * Return value: the type of the option or < 0 if @option is unknown
- */
-raptor_option_value_type
-raptor_option_get_value_type(const raptor_option option)
-{
-  if(option > RAPTOR_OPTION_LAST)
-    return (raptor_option_value_type)-1;
-  return raptor_options_list[option].value_type;
-}
-
-
 int
 raptor_option_is_valid_for_area(const raptor_option option,
                                 raptor_option_area area)
