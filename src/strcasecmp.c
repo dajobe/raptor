@@ -28,8 +28,8 @@ raptor_strcasecmp(const char* s1, const char* s2)
   register int c1, c2;
   
   while(*s1 && *s2) {
-    c1 = tolower(*s1);
-    c2 = tolower(*s2);
+    c1 = tolower((int)*s1);
+    c2 = tolower((int)*s2);
     if(c1 != c2)
       return (c1 - c2);
     s1++;
@@ -45,8 +45,8 @@ raptor_strncasecmp(const char* s1, const char* s2, size_t n)
   register int c1, c2;
   
   while(*s1 && *s2 && n) {
-    c1 = tolower(*s1);
-    c2 = tolower(*s2);
+    c1 = tolower((int)*s1);
+    c2 = tolower((int)*s2);
     if(c1 != c2)
       return (c1 - c2);
     s1++;

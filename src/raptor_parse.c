@@ -1577,7 +1577,7 @@ raptor_world_guess_parser_name(raptor_world* world,
           to = NULL;
           break;
         }
-        *to++ = isupper((char)c) ? (unsigned char)tolower((char)c): c;
+        *to++ = isupper(c) ? (unsigned char)tolower(c): c;
       }
       if(to)
         *to = '\0';

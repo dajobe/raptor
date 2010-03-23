@@ -139,7 +139,7 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   if(prefix_name) {
     /* prefixName: must have leading [A-Z][a-z][0-9] (nameStartChar - '_')  */
     /* prefixName: no . anywhere */
-    if(!(isalpha(*prefix_name) || isdigit(*prefix_name)) ||
+    if(!(isalpha((int)*prefix_name) || isdigit((int)*prefix_name)) ||
        strchr(prefix_name, '.'))
       return 0;
   }
@@ -148,7 +148,7 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   if(local_name) {
     /* nameStartChar: must have leading [A-Z][a-z][0-9]_  */
     /* nameChar: no . anywhere */
-    if(!(isalpha(*local_name) || isdigit(*local_name) || *local_name == '_') ||
+    if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_') ||
        strchr(local_name, '.'))
       return 0;
   }
