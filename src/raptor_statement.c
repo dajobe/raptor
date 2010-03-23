@@ -294,11 +294,11 @@ unsigned char*
 raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 {
   raptor_iostream *iostr;
-  unsigned char *string = NULL;
+  void *string = NULL;
   int rc;
   
   iostr = raptor_new_iostream_to_string(term->world, 
-                                        (void**)&string, len_p, NULL);
+                                        &string, len_p, NULL);
   if(!iostr)
     return NULL;
   rc = raptor_term_ntriples_write(term, iostr);
@@ -311,7 +311,7 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
     }
   }
 
-  return string;
+  return (unsigned char *)string;
 }
 
 
