@@ -165,10 +165,9 @@ raptor_parsers_finish(raptor_world *world)
  * @uri_string: URI string of the syntax (or NULL)
  * @factory: pointer to function to call to register the factory
  * 
- * Register a syntax handled by a parser factory.
+ * Internal - Register a syntax handled by a parser factory.
  *
- * INTERNAL
- *
+ * Return value: new factory object or NULL on failure
  **/
 RAPTOR_EXTERN_C
 raptor_parser_factory*
