@@ -559,24 +559,25 @@ struct raptor_type_q_s {
 typedef struct raptor_type_q_s raptor_type_q;
 
 
-/** A Parser Factory for a syntax */
+/** A Parser Factory */
 struct raptor_parser_factory_s {
   raptor_world* world;
 
   struct raptor_parser_factory_s* next;
 
-  /* syntax name */
+  /* parser name */
   const char* name;
-  /* alternate syntax name; not mentioned in enumerations */
+
+  /* alternate parser name; not mentioned in enumerations */
   const char* alias;
 
-  /* syntax readable label */
+  /* parser description */
   const char* label;
 
-  /* syntax MIME type (or NULL) */
+  /* MIME types accepted by the parser (or NULL): seq of #raptor_type_q */
   raptor_sequence* mime_types;
 
-  /* syntax URI (or NULL) */
+  /* URI identifying the parser (or NULL) */
   const unsigned char* uri_string;
   
   /* the rest of this structure is populated by the
