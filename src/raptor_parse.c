@@ -161,8 +161,6 @@ raptor_parsers_finish(raptor_world *world)
  * raptor_parser_register_factory:
  * @name: the short syntax name
  * @label: readable label for syntax
- * @mime_type: MIME type of the syntax handled by the parser (or NULL)
- * @uri_string: URI string of the syntax (or NULL)
  * @factory: pointer to function to call to register the factory
  * 
  * Internal - Register a syntax handled by a parser factory.
