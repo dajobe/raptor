@@ -159,6 +159,7 @@ raptor_parsers_finish(raptor_world *world)
 
 /*
  * raptor_parser_register_factory:
+ * @world: raptor world
  * @name: the short syntax name
  * @label: readable label for syntax
  * @factory: pointer to function to call to register the factory
