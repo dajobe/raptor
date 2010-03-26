@@ -296,6 +296,10 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
   int rc = 0;
 
   factory->names = rdfa_names;
+
+  factory->mime_types = NULL;
+  factory->mime_types_count = 0;
+  
   factory->label = "RDF/A via librdfa";
   factory->uri_string = "http://www.w3.org/TR/rdfa/";
   

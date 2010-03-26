@@ -219,6 +219,10 @@ static int
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 
 {
   factory->names = guess_names;
+
+  factory->mime_types = NULL;
+  factory->mime_types_count = 0;
+
   factory->label = "Pick the parser to use using content type and URI";
   factory->uri_string = NULL;
   

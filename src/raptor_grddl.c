@@ -1946,7 +1946,8 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
 
 static const char* grddl_names[2] = { "grddl", NULL };
 
-static const raptor_type_q grddl_types[3] = {
+#define GRDDL_TYPES_COUNT 2
+static const raptor_type_q grddl_types[GRDDL_TYPES_COUNT + 1] = {
   { "text/html", 9, 2},
   { "application/xhtml+xml", 21, 4},
   { NULL, 0, 0}
@@ -1958,7 +1959,10 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   int rc = 0;
 
   factory->names = grddl_names;
+
   factory->mime_types = grddl_types;
+  factory->mime_types_count = GRDDL_TYPES_COUNT;
+
   factory->label = "Gleaning Resource Descriptions from Dialects of Languages";
   factory->uri_string = NULL;
 

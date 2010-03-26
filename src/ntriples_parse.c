@@ -988,7 +988,8 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* ntriples_names[2] = { "ntriples", NULL };
 
-static const raptor_type_q ntriples_types[2] = {
+#define NTRIPLES_TYPES_COUNT 1
+static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {
   { "text/plain", 10, 1}, 
   { NULL, 0, 0}
 };
@@ -999,7 +1000,10 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   int rc = 0;
 
   factory->names = ntriples_names;
+
   factory->mime_types = ntriples_types;
+  factory->mime_types_count = NTRIPLES_TYPES_COUNT;
+
   factory->label = "N-Triples";
   factory->uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
 

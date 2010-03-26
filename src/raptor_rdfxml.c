@@ -3144,7 +3144,8 @@ raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
 
 static const char* rdfxml_names[3] = { "rdfxml", "raptor", NULL};
 
-static const raptor_type_q rdfxml_types[3] = {
+#define RDFXML_TYPES_COUNT 2
+static const raptor_type_q rdfxml_types[RDFXML_TYPES_COUNT + 1] = {
   { "application/rdf+xml", 19, 10}, 
   { "text/rdf", 8, 6},
   { NULL, 0, 0}
@@ -3156,7 +3157,10 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
   int rc = 0;
 
   factory->names = rdfxml_names;
+
   factory->mime_types = rdfxml_types;
+  factory->mime_types_count = RDFXML_TYPES_COUNT;
+
   factory->label = "RDF/XML";
   factory->uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
 
