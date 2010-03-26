@@ -1641,10 +1641,26 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+static const char* rss_tag_soup_names[2] = { "rss-tag-soup", NULL };
+
+static const raptor_type_q rss_tag_soup_types[6] = {
+  { "application/rss", 15, 10},
+  { "application/rss+xml", 19, 10},
+  { "text/rss", 8, 8},
+  { "application/xml", 15, 3},
+  { "text/xml", 8, 3},
+  { NULL, 0}
+};
+
 static int
 raptor_rss_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = rss_tag_soup_names;
+  factory->mime_types = rss_tag_soup_types;
+  factory->label = "RSS Tag Soup";
+  factory->uri_string = NULL;
 
   factory->context_length     = sizeof(raptor_rss_parser);
   
@@ -1656,13 +1672,6 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_rss_parse_chunk;
   factory->recognise_syntax = raptor_rss_parse_recognise_syntax;
 
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/rss", 10) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/rss+xml", 10) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/rss", 8) != 0;
-
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/xml", 3) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/xml", 3) != 0;
-
   return rc;
 }
 
@@ -1670,6 +1679,6 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_rss(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "rss-tag-soup",  "RSS Tag Soup",
-                                         &raptor_rss_parser_register_factory);
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_rss_parser_register_factory);
 }

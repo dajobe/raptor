@@ -288,11 +288,17 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+static const char* rdfa_names[2] = { "rdfa", NULL };
+
 static int
 raptor_librdfa_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
 
+  factory->names = rdfa_names;
+  factory->label = "RDF/A via librdfa";
+  factory->uri_string = "http://www.w3.org/TR/rdfa/";
+  
   factory->context_length     = sizeof(raptor_librdfa_parser_context);
 
   factory->need_base_uri = 0;
@@ -303,9 +309,6 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_librdfa_parse_chunk;
   factory->recognise_syntax = raptor_librdfa_parse_recognise_syntax;
 
-  rc = raptor_parser_factory_add_uri(factory, 
-                                (const unsigned char*)"http://www.w3.org/TR/rdfa/");
-
   return rc;
 }
 
@@ -313,6 +316,6 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_rdfa(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "rdfa",  "RDF/A via librdfa",
-                                         &raptor_librdfa_parser_register_factory);
+  return !raptor_world_register_parser_factory(world, 
+                                               &raptor_librdfa_parser_register_factory);
 }

@@ -57,7 +57,6 @@
 #ifndef STANDALONE
 
 /* prototypes for helper functions */
-static void raptor_free_type_q(raptor_type_q* type_q);
 
 
 /* helper methods */
@@ -69,17 +68,6 @@ raptor_free_parser_factory(raptor_parser_factory* factory)
   
   if(factory->finish_factory)
     factory->finish_factory(factory);
-  
-  if(factory->name)
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->name);
-  if(factory->label)
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->label);
-  if(factory->alias)
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->alias);
-  if(factory->mime_types)
-    raptor_free_sequence(factory->mime_types);
-  if(factory->uri_string)
-    RAPTOR_FREE(raptor_parser_factory, (void*)factory->uri_string);
   
   RAPTOR_FREE(raptor_parser_factory, factory);
 }
@@ -160,61 +148,31 @@ raptor_parsers_finish(raptor_world *world)
 /*
  * raptor_world_register_parser_factory:
  * @world: raptor world
- * @name: the short syntax name
- * @label: readable label for syntax
  * @factory: pointer to function to call to register the factory
  * 
- * Internal - Register a syntax handled by a parser factory.
+ * Internal - Register a parser via parser factory.
+ *
+ * All strings set in the @factory method are shared with the
+ * #raptor_parser_factory
  *
  * Return value: new factory object or NULL on failure
  **/
 RAPTOR_EXTERN_C
 raptor_parser_factory*
 raptor_world_register_parser_factory(raptor_world* world,
-                               const char *name, const char *label,
-                               int (*factory) (raptor_parser_factory*)) 
+                                     int (*factory) (raptor_parser_factory*)) 
 {
   raptor_parser_factory *parser = NULL;
-  raptor_parser_factory *h;
-  char *name_copy, *label_copy;
-  int i;
-  
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("Received registration for syntax %s '%s'\n", name, label);
-#endif
-  
-  for(i = 0;
-      (h = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
-      i++) {
-    if(!strcmp(h->name, name)) {
-      RAPTOR_DEBUG2("parser %s already registered\n", h->name);
-      return NULL;
-    }
-  }
   
   parser = (raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
-                                               sizeof(*parser));
+                                                 sizeof(*parser));
   if(!parser)
     return NULL;
 
   parser->world = world;
 
-  name_copy = (char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
-  if(!name_copy)
-    goto tidy;
-  strcpy(name_copy, name);
-  parser->name = name_copy;
-        
-  label_copy = (char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
-  if(!label_copy)
-    goto tidy;
-  strcpy(label_copy, label);
-  parser->label = label_copy;
-
-  parser->mime_types = raptor_new_sequence((raptor_data_free_handler*)raptor_free_type_q, NULL);
-  if(!parser->mime_types)
-    goto tidy;
-
+  parser->mime_types = NULL;
+  
   if(raptor_sequence_push(world->parsers, parser))
     return NULL; /* on error, parser is already freed by the sequence */
   
@@ -222,8 +180,33 @@ raptor_world_register_parser_factory(raptor_world* world,
   if(factory(parser))
     return NULL; /* parser is owned and freed by the parsers sequence */
   
+  if(!parser->names || !parser->names[0] || !parser->label) {
+    raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                     "Parser failed to register required names and label fields\n");
+    goto tidy;
+  }
+
+#ifdef RAPTOR_DEBUG
+  /* Maintainer only check of static data */
+  if(1) {
+    int i;
+    const raptor_type_q* type_q = NULL;
+
+    for(i = 0; 
+        (type_q = &parser->mime_types[i]) && type_q->mime_type;
+        i++) {
+      size_t len = strlen(type_q->mime_type);
+      if(len != type_q->mime_type_len) {
+        fprintf(stderr, "Parser %s  mime type %s  actual len %d  static len %d\n",
+                parser->names[0], type_q->mime_type,
+                (int)len, (int)type_q->mime_type_len);
+      }
+    }
+  }
+#endif
+
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("%s has context size %d\n", name, parser->context_length);
+  RAPTOR_DEBUG3("Registered parser %s with context size %d\n", parser->names[0], parser->context_length);
 #endif
 
   return parser;
@@ -232,118 +215,6 @@ raptor_world_register_parser_factory(raptor_world* world,
   tidy:
   raptor_free_parser_factory(parser);
   return NULL;
-}
-
-
-int
-raptor_parser_factory_add_alias(raptor_parser_factory* factory,
-                                const char *alias)
-{
-  raptor_parser_factory *p;
-  char *alias_copy;
-  int i;
-  
-  for(i = 0;
-      (p = (raptor_parser_factory*)raptor_sequence_get_at(factory->world->parsers, i));
-      i++) {
-    if(!strcmp(p->name, alias)) {
-      RAPTOR_DEBUG2("parser %s already registered\n", p->name);
-      return 1;
-    }
-  }
-  
-  alias_copy = (char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
-  if(!alias_copy)
-    return 1;
-  strcpy(alias_copy, alias);
-  /* FIXME: should probably support multiple aliases */
-  if(factory->alias)
-    RAPTOR_FREE(cstring, factory->alias);
-  factory->alias = alias_copy;
-
-  return 0;
-}
-
-
-static void
-raptor_free_type_q(raptor_type_q* type_q)
-{
-  RAPTOR_FREE(cstring, (void*)type_q->mime_type);
-  RAPTOR_FREE(raptor_type_q, (void*)type_q);
-}
-
-
-/**
- * raptor_parser_factory_add_mime_type:
- * @factory: Raptor parser factory
- * @mime_type: MIME Type string
- * @q: Accept 'Q' value 0 to 10 inclusive representing 0.0 to 1.0
- * 
- * Register a MIME type as handled by a factory.
- *
- * The FIRST added MIME type is the default or main one reported.
- *
- * Return value: non-0 on failure
- *
- **/
-int
-raptor_parser_factory_add_mime_type(raptor_parser_factory* factory,
-                                    const char* mime_type, int q)
-{
-  raptor_type_q* type_q;
-  char* mime_type_copy;
-  size_t len;
-  
-  type_q = (raptor_type_q*)RAPTOR_CALLOC(raptor_type_q, 1, sizeof(*type_q));
-  if(!type_q)
-    return 1;
-  len = strlen(mime_type);
-  mime_type_copy = (char*)RAPTOR_CALLOC(cstring, len+1, 1);
-  if(!mime_type_copy) {
-    raptor_free_type_q(type_q);
-    return 1;
-  }
-  strcpy(mime_type_copy, mime_type);
-
-  type_q->mime_type = mime_type_copy;
-  type_q->mime_type_len = len;
-
-  if(q < 0)
-    q = 0;
-  if(q > 10)
-    q = 10;
-  type_q->q = q;
-
-  return raptor_sequence_push(factory->mime_types, type_q);
-}
-
-
-/**
- * raptor_parser_factory_add_uri:
- * @factory: Raptor parser factory
- * @uri_string: URI string
- * 
- * Register an identifying URI as handled by a factory.
- *
- * Return value: non-0 on failure
- **/
-int
-raptor_parser_factory_add_uri(raptor_parser_factory* factory,
-                              const unsigned char *uri_string)
-{
-  unsigned char *uri_string_copy;
-
-  if(!uri_string)
-    return 1;
-  
-  uri_string_copy = (unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-  if(!uri_string_copy)
-    return 1;
-
-  strcpy((char*)uri_string_copy, (const char*)uri_string);
-  factory->uri_string = uri_string_copy;
-
-  return 0;
 }
 
 
@@ -359,7 +230,7 @@ raptor_parser_factory_add_uri(raptor_parser_factory* factory,
 raptor_parser_factory*
 raptor_world_get_parser_factory(raptor_world *world, const char *name) 
 {
-  raptor_parser_factory *factory;
+  raptor_parser_factory *factory = NULL;
 
   /* return 1st parser if no particular one wanted - why? */
   if(!name) {
@@ -374,14 +245,15 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
     for(i = 0;
         (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
         i++) {
-      if(!strcmp(factory->name, name) ||
-         (factory->alias && !strcmp(factory->alias, name)))
+      int namei;
+      const char* fname;
+      
+      for(namei = 0; (fname = factory->names[namei]); namei++) {
+        if(!strcmp(fname, name))
+          break;
+      }
+      if(fname)
         break;
-    }
-    /* else FACTORY name not found */
-    if(!factory) {
-      RAPTOR_DEBUG2("No parser with name %s found\n", name);
-      return NULL;
     }
   }
         
@@ -418,21 +290,17 @@ raptor_world_enumerate_parsers(raptor_world* world,
     return 1;
 
   if(name)
-    *name=factory->name;
+    *name = factory->names[0];
   if(label)
-    *label=factory->label;
+    *label = factory->label;
   if(mime_type) {
     const char *mime_type_t = NULL;
-    if(factory->mime_types) {
-      raptor_type_q* tq;
-      tq = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, 0);
-      if(tq)
-        mime_type_t = tq->mime_type;
-    }
-    *mime_type=mime_type_t;
+    if(factory->mime_types)
+      mime_type_t = factory->mime_types[0].mime_type;
+    *mime_type = mime_type_t;
   }
   if(uri_string)
-    *uri_string=factory->uri_string;
+    *uri_string = (const unsigned char*)factory->uri_string;
   return 0;
 }
 
@@ -555,7 +423,7 @@ raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri)
 {
   if(rdf_parser->factory->need_base_uri && !uri) {
     raptor_parser_error(rdf_parser, "Missing base URI for %s parser.",
-                        rdf_parser->factory->name);
+                        rdf_parser->factory->names[0]);
     return -1;
   }
 
@@ -1321,7 +1189,7 @@ raptor_parser_get_name(raptor_parser *rdf_parser)
   if(rdf_parser->factory->get_name)
     return rdf_parser->factory->get_name(rdf_parser);
   else
-    return rdf_parser->factory->name;
+    return rdf_parser->factory->names[0];
 }
 
 
@@ -1352,12 +1220,8 @@ const char*
 raptor_parser_get_mime_type(raptor_parser *rdf_parser) 
 {
   const char *mime_type = NULL;
-  if(rdf_parser->factory->mime_types) {
-    raptor_type_q* tq;
-    tq = (raptor_type_q*)raptor_sequence_get_at(rdf_parser->factory->mime_types, 0);
-    if(tq)
-      mime_type = tq->mime_type;
-  }
+  if(rdf_parser->factory->mime_types)
+    mime_type = rdf_parser->factory->mime_types[0].mime_type;
   
   return mime_type;
 }
@@ -1586,13 +1450,13 @@ raptor_world_guess_parser_name(raptor_world* world,
       (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
     int score = -1;
-    raptor_type_q* type_q = NULL;
+    const raptor_type_q* type_q = NULL;
     
     if(mime_type && factory->mime_types) {
       int j;
       type_q = NULL;
       for(j = 0; 
-          (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j)); 
+          (type_q = &factory->mime_types[j]) && type_q->mime_type;
           j++) {
         if(!strcmp(mime_type, type_q->mime_type))
           break;
@@ -1650,7 +1514,7 @@ raptor_world_guess_parser_name(raptor_world* world,
 
   RAPTOR_FREE(syntax_scores, scores);
   
-  return factory ? factory->name : NULL;
+  return factory ? factory->names[0] : NULL;
 }
 
 
@@ -1738,7 +1602,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   size_t len;
   char *p;
   int i;
-  raptor_type_q* type_q;
+  const raptor_type_q* type_q;
   
   if(factory->accept_header)
     return factory->accept_header(rdf_parser);
@@ -1748,13 +1612,11 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
 
   len = 0;
   for(i = 0; 
-      (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+      (type_q = &factory->mime_types[i]) && type_q->mime_type;
       i++) {
-    if(type_q->mime_type) {
-      len+= type_q->mime_type_len + 2; /* ", " */
-      if(type_q->q < 10)
-        len+= 6; /* ";q = X.Y" */
-    }
+    len += type_q->mime_type_len + 2; /* ", " */
+    if(type_q->q < 10)
+      len += 6; /* ";q = X.Y" */
   }
   
   /* 9 = strlen("\*\/\*;q=0.1") */
@@ -1765,19 +1627,17 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
 
   p = accept_header;
   for(i = 0; 
-      (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, i));
+      (type_q = &factory->mime_types[i]) && type_q->mime_type;
       i++) {
-    if(type_q->mime_type) {
-      strncpy(p, type_q->mime_type, type_q->mime_type_len);
-      p+= type_q->mime_type_len;
-      if(type_q->q < 10) {
-        *p++ = ';';
-        *p++ = 'q';
-        *p++ = '=';
-        *p++ = '0';
-        *p++ = '.';
-        *p++ = '0' + (type_q->q);
-      }
+    strncpy(p, type_q->mime_type, type_q->mime_type_len);
+    p += type_q->mime_type_len;
+    if(type_q->q < 10) {
+      *p++ = ';';
+      *p++ = 'q';
+      *p++ = '=';
+      *p++ = '0';
+      *p++ = '.';
+      *p++ = '0' + (type_q->q);
     }
     
     *p++ = ',';
@@ -1803,17 +1663,15 @@ raptor_parser_get_accept_header_all(raptor_world* world)
   for(i = 0;
       (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
-    raptor_type_q* type_q;
+    const raptor_type_q* type_q;
     int j;
     
     for(j = 0;
-        (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+        (type_q = &factory->mime_types[j]) && type_q->mime_type;
         j++) {
-      if(type_q->mime_type) {
-        len+= type_q->mime_type_len + 2; /* ", " */
-        if(type_q->q < 10)
-          len+= 6; /* ";q = X.Y" */
-      }
+      len += type_q->mime_type_len + 2; /* ", " */
+      if(type_q->q < 10)
+        len += 6; /* ";q = X.Y" */
     }
   }
   
@@ -1826,23 +1684,21 @@ raptor_parser_get_accept_header_all(raptor_world* world)
   for(i = 0;
       (factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers, i));
       i++) {
-    raptor_type_q* type_q;
+    const raptor_type_q* type_q;
     int j;
     
     for(j = 0; 
-        (type_q = (raptor_type_q*)raptor_sequence_get_at(factory->mime_types, j));
+        (type_q = &factory->mime_types[j]) && type_q->mime_type;
         j++) {
-      if(type_q->mime_type) {
-        strncpy(p, type_q->mime_type, type_q->mime_type_len);
-        p+= type_q->mime_type_len;
-        if(type_q->q < 10) {
-          *p++ = ';';
-          *p++ = 'q';
-          *p++ = '=';
-          *p++ = '0';
-          *p++ = '.';
-          *p++ = '0' + (type_q->q);
-        }
+      strncpy(p, type_q->mime_type, type_q->mime_type_len);
+      p+= type_q->mime_type_len;
+      if(type_q->q < 10) {
+        *p++ = ';';
+        *p++ = 'q';
+        *p++ = '=';
+        *p++ = '0';
+        *p++ = '.';
+        *p++ = '0' + (type_q->q);
       }
       
       *p++ = ',';

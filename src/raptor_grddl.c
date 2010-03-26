@@ -1944,10 +1944,23 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
 
 
 
+static const char* grddl_names[2] = { "grddl", NULL };
+
+static const raptor_type_q grddl_types[3] = {
+  { "text/html", 9, 2},
+  { "application/xhtml+xml", 21, 4},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_grddl_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = grddl_names;
+  factory->mime_types = grddl_types;
+  factory->label = "Gleaning Resource Descriptions from Dialects of Languages";
+  factory->uri_string = NULL;
 
   factory->context_length     = sizeof(raptor_grddl_parser_context);
   
@@ -1959,9 +1972,6 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_grddl_parse_chunk;
   factory->recognise_syntax = raptor_grddl_parse_recognise_syntax;
   factory->content_type_handler= raptor_grddl_parse_content_type_handler;
-
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/html", 2) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/xhtml+xml", 4) != 0;
 
   return rc;
 }
@@ -2011,9 +2021,7 @@ int
 raptor_init_parser_grddl(raptor_world* world)
 {
   return !raptor_world_register_parser_factory(world,
-                                         "grddl", 
-                                         "Gleaning Resource Descriptions from Dialects of Languages",
-                                         &raptor_grddl_parser_register_factory);
+                                               &raptor_grddl_parser_register_factory);
 }
 
 

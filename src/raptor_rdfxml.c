@@ -3142,10 +3142,23 @@ raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
 }
 
 
+static const char* rdfxml_names[3] = { "rdfxml", "raptor", NULL};
+
+static const raptor_type_q rdfxml_types[3] = {
+  { "application/rdf+xml", 19, 10}, 
+  { "text/rdf", 8, 6},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = rdfxml_names;
+  factory->mime_types = rdfxml_types;
+  factory->label = "RDF/XML";
+  factory->uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
 
   factory->context_length     = sizeof(raptor_rdfxml_parser);
   
@@ -3158,14 +3171,6 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
   factory->finish_factory = raptor_rdfxml_parse_finish_factory;
   factory->recognise_syntax = raptor_rdfxml_parse_recognise_syntax;
 
-  rc+= raptor_parser_factory_add_alias(factory, "raptor") != 0;
-
-  rc+= raptor_parser_factory_add_uri(factory,
-                                     (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar") != 0;
-
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+xml", 10) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/rdf", 6) != 0;
-
   return rc;
 }
 
@@ -3173,8 +3178,8 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_rdfxml(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "rdfxml", "RDF/XML",
-                                         &raptor_rdfxml_parser_register_factory);
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_rdfxml_parser_register_factory);
 }
 
 

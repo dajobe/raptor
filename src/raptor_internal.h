@@ -2,7 +2,7 @@
  *
  * raptor_internal.h - Redland Parser Toolkit for RDF (Raptor) internals
  *
- * Copyright (C) 2002-2009, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2002-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2002-2004, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -565,20 +565,17 @@ struct raptor_parser_factory_s {
 
   struct raptor_parser_factory_s* next;
 
-  /* parser name */
-  const char* name;
-
-  /* alternate parser name; not mentioned in enumerations */
-  const char* alias;
+  /* parser names: first name is public name, rest are aliases */
+  const char** names;
 
   /* parser description */
   const char* label;
 
-  /* MIME types accepted by the parser (or NULL): seq of #raptor_type_q */
-  raptor_sequence* mime_types;
+  /* Array of (MIME type, q) values accepted by the parser (or NULL): */
+  const raptor_type_q* mime_types;
 
   /* URI identifying the parser (or NULL) */
-  const unsigned char* uri_string;
+  const char* uri_string;
   
   /* the rest of this structure is populated by the
      parser-specific register function */
@@ -719,10 +716,8 @@ int raptor_serializer_register_factory(raptor_world* world, const char *name, co
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_world_register_parser_factory(raptor_world* world, const char *name, const char *label, int (*factory) (raptor_parser_factory*));
-int raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
+raptor_parser_factory* raptor_world_register_parser_factory(raptor_world* world, int (*factory) (raptor_parser_factory*));
 int raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
-int raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
 
 unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, raptor_genid_type type, unsigned char *user_bnodeid);
 

@@ -209,13 +209,19 @@ raptor_guess_guess_get_name(raptor_parser* rdf_parser)
   if(guess_parser)
     return raptor_parser_get_name(guess_parser->parser);
   else
-    return rdf_parser->factory->name;
+    return rdf_parser->factory->names[0];
 }
 
+
+static const char* guess_names[2] = { "guess", NULL };
 
 static int
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 
 {
+  factory->names = guess_names;
+  factory->label = "Pick the parser to use using content type and URI";
+  factory->uri_string = NULL;
+  
   factory->context_length     = sizeof(raptor_guess_parser_context);
   
   factory->need_base_uri = 1;
@@ -236,7 +242,5 @@ int
 raptor_init_parser_guess(raptor_world* world)
 {
   return !raptor_world_register_parser_factory(world,
-                                         "guess",  
-                                         "Pick the parser to use using content type and URI",
-                                         &raptor_guess_parser_register_factory);
+                                               &raptor_guess_parser_register_factory);
 }

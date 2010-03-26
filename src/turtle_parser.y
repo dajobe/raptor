@@ -1498,10 +1498,27 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 #ifdef RAPTOR_PARSER_TURTLE
+static const char* turtle_names[4] = { "turtle", "ntriples-plus", "n3", NULL };
+  
+static const raptor_type_q turtle_types[6] = {
+  /* first one is the default */
+  { "application/x-turtle", 20, 10},
+  { "application/turtle", 18, 10},
+  { "text/n3", 7, 3},
+  { "text/rdf+n3", 11, 3},
+  { "application/rdf+n3", 18, 3},
+  { NULL, 0}
+};
+
 static int
 raptor_turtle_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = turtle_names;
+  factory->mime_types = turtle_types;
+  factory->label = "Turtle Terse RDF Triple Language";
+  factory->uri_string = "http://www.dajobe.org/2004/01/turtle/";
 
   factory->context_length     = sizeof(raptor_turtle_parser);
   
@@ -1513,29 +1530,29 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_turtle_parse_recognise_syntax;
 
-  rc+= raptor_parser_factory_add_alias(factory, "ntriples-plus") != 0;
-  rc+= raptor_parser_factory_add_alias(factory, "n3") != 0;
-
-  rc+= raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.dajobe.org/2004/01/turtle/") != 0;
-
-  /* first one is the default */
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/x-turtle", 10) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/turtle", 10) != 0;
-
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/n3", 3) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "text/rdf+n3", 3) != 0;
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/rdf+n3", 3) != 0;
-
   return rc;
 }
 #endif
 
 
 #ifdef RAPTOR_PARSER_TRIG
+static const char* trig_names[2] = { "trig", NULL };
+  
+static const raptor_type_q trig_types[2] = {
+  /* first one is the default */
+  { "application/x-trig", 18, 10},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_trig_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = trig_names;
+  factory->mime_types = trig_types;
+  factory->label = "TriG - Turtle with Named Graphs";
+  factory->uri_string = "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/";
 
   factory->context_length     = sizeof(raptor_turtle_parser);
   
@@ -1547,10 +1564,6 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_trig_parse_recognise_syntax;
 
-  rc+= raptor_parser_factory_add_uri(factory, (const unsigned char*)"http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/") != 0;
-
-  rc+= raptor_parser_factory_add_mime_type(factory, "application/x-trig", 10) != 0;
-
   return rc;
 }
 #endif
@@ -1560,8 +1573,8 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_turtle(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "turtle", "Turtle Terse RDF Triple Language",
-                                         &raptor_turtle_parser_register_factory);
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_turtle_parser_register_factory);
 }
 #endif
 
@@ -1569,8 +1582,8 @@ raptor_init_parser_turtle(raptor_world* world)
 int
 raptor_init_parser_trig(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "trig", "TriG - Turtle with Named Graphs",
-                                         &raptor_trig_parser_register_factory);
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_trig_parser_register_factory);
 }
 #endif
 

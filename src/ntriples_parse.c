@@ -986,10 +986,22 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+static const char* ntriples_names[2] = { "ntriples", NULL };
+
+static const raptor_type_q ntriples_types[2] = {
+  { "text/plain", 10, 1}, 
+  { NULL, 0, 0}
+};
+
 static int
 raptor_ntriples_parser_register_factory(raptor_parser_factory *factory) 
 {
   int rc = 0;
+
+  factory->names = ntriples_names;
+  factory->mime_types = ntriples_types;
+  factory->label = "N-Triples";
+  factory->uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
 
   factory->context_length     = sizeof(raptor_ntriples_parser_context);
 
@@ -1001,12 +1013,6 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_ntriples_parse_chunk;
   factory->recognise_syntax = raptor_ntriples_parse_recognise_syntax;
 
-  rc = raptor_parser_factory_add_uri(factory, 
-                                (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples");
-
-  if(!rc)
-    rc = raptor_parser_factory_add_mime_type(factory, "text/plain", 1);
-
   return rc;
 }
 
@@ -1014,6 +1020,6 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_ntriples(raptor_world* world)
 {
-  return !raptor_world_register_parser_factory(world, "ntriples",  "N-Triples",
-                                         &raptor_ntriples_parser_register_factory);
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_ntriples_parser_register_factory);
 }
