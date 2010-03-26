@@ -1135,7 +1135,9 @@ int
 turtle_parser_error(void* ctx, const char *msg)
 {
   raptor_parser* rdf_parser = (raptor_parser *)ctx;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  raptor_turtle_parser* turtle_parser;
+
+  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   
   if(turtle_parser->error_count++)
     return 0;
@@ -1145,7 +1147,9 @@ turtle_parser_error(void* ctx, const char *msg)
   rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
-  raptor_parser_simple_error(rdf_parser, "%s", msg);
+  raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
+                   &rdf_parser->locator, msg);
+
   return yy_init_globals(NULL); /* 0 but a way to use yy_init_globals */
 }
 

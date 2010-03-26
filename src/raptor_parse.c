@@ -851,35 +851,6 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
 }
 
 
-/*
- * raptor_parser_simple_error - Error from a parser - Internal
- *
- * Matches the raptor_simple_message_handler API but same as
- * raptor_parser_error 
- */
-void
-raptor_parser_simple_error(void* user_data, const char *message, ...)
-{
-  raptor_parser* parser = (raptor_parser*)user_data;
-  va_list arguments;
-
-  va_start(arguments, message);
-
-  if(parser)
-    raptor_log_error_varargs(parser->world,
-                             RAPTOR_LOG_LEVEL_ERROR,
-                             &parser->locator,
-                             message, arguments);
-  else
-    raptor_log_error_varargs(NULL,
-                             RAPTOR_LOG_LEVEL_ERROR,
-                             NULL,
-                             message, arguments);
-  
-  va_end(arguments);
-}
-
-
 /**
  * raptor_parser_error_varargs:
  * @parser: parser
