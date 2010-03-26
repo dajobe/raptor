@@ -286,7 +286,7 @@ raptor_world_enumerate_parsers(raptor_world* world,
   raptor_parser_factory *factory;
 
   factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers,
-                                                         counter);
+                                                           counter);
 
   if(!factory)
     return 1;
@@ -350,7 +350,7 @@ raptor_new_parser(raptor_world* world, const char *name)
   raptor_statement_init(&rdf_parser->statement, world);
   
   rdf_parser->context = (char*)RAPTOR_CALLOC(raptor_parser_context, 1,
-                                           factory->context_length);
+                                             factory->context_length);
   if(!rdf_parser->context) {
     raptor_free_parser(rdf_parser);
     return NULL;
@@ -466,7 +466,7 @@ raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri)
  **/
 int
 raptor_parser_parse_chunk(raptor_parser* rdf_parser,
-                   const unsigned char *buffer, size_t len, int is_end) 
+                          const unsigned char *buffer, size_t len, int is_end) 
 {
   if(rdf_parser->sb)
     raptor_stringbuffer_append_counted_string(rdf_parser->sb, buffer, len, 1);
