@@ -188,7 +188,7 @@ raptor_world_register_parser_factory(raptor_world* world,
 
 #ifdef RAPTOR_DEBUG
   /* Maintainer only check of static data */
-  if(1) {
+  if(parser->mime_types) {
     int i;
     const raptor_type_q* type_q = NULL;
 
@@ -202,6 +202,12 @@ raptor_world_register_parser_factory(raptor_world* world,
                 parser->names[0], type_q->mime_type,
                 (int)len, (int)type_q->mime_type_len);
       }
+    }
+
+    if(i != parser->mime_types_count) {
+        fprintf(stderr,
+                "Parser %s  saw %d mime types  static count %d\n",
+                parser->names[0], i, parser->mime_types_count);
     }
   }
 #endif
@@ -297,7 +303,7 @@ raptor_world_enumerate_parsers(raptor_world* world,
     *label = factory->label;
   if(mime_type) {
     const char *mime_type_t = NULL;
-    if(factory->mime_types)
+    if(factory->mime_types_count > 0)
       mime_type_t = factory->mime_types[0].mime_type;
     *mime_type = mime_type_t;
   }
@@ -1197,7 +1203,7 @@ const char*
 raptor_parser_get_mime_type(raptor_parser *rdf_parser)
 {
   const char *mime_type = NULL;
-  if(rdf_parser->factory->mime_types)
+  if(rdf_parser->factory->mime_types_count > 0)
     mime_type = rdf_parser->factory->mime_types[0].mime_type;
   
   return mime_type;
