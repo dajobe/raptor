@@ -2010,7 +2010,7 @@ raptor_init_parser_grddl_common(raptor_world* world)
 int
 raptor_init_parser_grddl(raptor_world* world)
 {
-  return !raptor_parser_register_factory(world,
+  return !raptor_world_register_parser_factory(world,
                                          "grddl", 
                                          "Gleaning Resource Descriptions from Dialects of Languages",
                                          &raptor_grddl_parser_register_factory);

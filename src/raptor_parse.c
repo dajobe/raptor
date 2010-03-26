@@ -158,7 +158,7 @@ raptor_parsers_finish(raptor_world *world)
 
 
 /*
- * raptor_parser_register_factory:
+ * raptor_world_register_parser_factory:
  * @world: raptor world
  * @name: the short syntax name
  * @label: readable label for syntax
@@ -170,7 +170,7 @@ raptor_parsers_finish(raptor_world *world)
  **/
 RAPTOR_EXTERN_C
 raptor_parser_factory*
-raptor_parser_register_factory(raptor_world* world,
+raptor_world_register_parser_factory(raptor_world* world,
                                const char *name, const char *label,
                                int (*factory) (raptor_parser_factory*)) 
 {

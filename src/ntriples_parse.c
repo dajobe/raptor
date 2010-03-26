@@ -1014,6 +1014,6 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 int
 raptor_init_parser_ntriples(raptor_world* world)
 {
-  return !raptor_parser_register_factory(world, "ntriples",  "N-Triples",
+  return !raptor_world_register_parser_factory(world, "ntriples",  "N-Triples",
                                          &raptor_ntriples_parser_register_factory);
 }

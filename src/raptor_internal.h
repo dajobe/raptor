@@ -719,7 +719,7 @@ int raptor_serializer_register_factory(raptor_world* world, const char *name, co
 
 /* raptor_general.c */
 
-raptor_parser_factory* raptor_parser_register_factory(raptor_world* world, const char *name, const char *label, int (*factory) (raptor_parser_factory*));
+raptor_parser_factory* raptor_world_register_parser_factory(raptor_world* world, const char *name, const char *label, int (*factory) (raptor_parser_factory*));
 int raptor_parser_factory_add_alias(raptor_parser_factory* factory, const char *alias);
 int raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 int raptor_parser_factory_add_uri(raptor_parser_factory* factory, const unsigned char *uri_string);
