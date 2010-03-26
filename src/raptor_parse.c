@@ -2,7 +2,7 @@
  *
  * raptor_parse.c - Raptor Parser API
  *
- * Copyright (C) 2000-2009, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -197,7 +197,8 @@ raptor_world_register_parser_factory(raptor_world* world,
         i++) {
       size_t len = strlen(type_q->mime_type);
       if(len != type_q->mime_type_len) {
-        fprintf(stderr, "Parser %s  mime type %s  actual len %d  static len %d\n",
+        fprintf(stderr,
+                "Parser %s  mime type %s  actual len %d  static len %d\n",
                 parser->names[0], type_q->mime_type,
                 (int)len, (int)type_q->mime_type_len);
       }
@@ -206,7 +207,8 @@ raptor_world_register_parser_factory(raptor_world* world,
 #endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("Registered parser %s with context size %d\n", parser->names[0], parser->context_length);
+  RAPTOR_DEBUG3("Registered parser %s with context size %d\n",
+                parser->names[0], parser->context_length);
 #endif
 
   return parser;
@@ -528,8 +530,8 @@ raptor_free_parser(raptor_parser* rdf_parser)
  **/
 int
 raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
-                         FILE *stream, const char* filename,
-                         raptor_uri *base_uri)
+                                FILE *stream, const char* filename,
+                                raptor_uri *base_uri)
 {
   /* Read buffer */
   unsigned char buffer[RAPTOR_READ_BUFFER_SIZE+1];
@@ -572,7 +574,7 @@ raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
  **/
 int
 raptor_parser_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
-                  raptor_uri *base_uri) 
+                         raptor_uri *base_uri) 
 {
   int rc = 0;
   int free_base_uri = 0;
@@ -655,7 +657,7 @@ raptor_parser_parse_uri_write_bytes(raptor_www* www,
 
 static void
 raptor_parser_parse_uri_content_type_handler(raptor_www* www, void* userdata, 
-                                      const char* content_type)
+                                             const char* content_type)
 {
   raptor_parser* rdf_parser = (raptor_parser*)userdata;
   if(rdf_parser->factory->content_type_handler)
@@ -693,9 +695,10 @@ raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri)
  **/
 int
 raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
-                 raptor_uri *base_uri)
+                        raptor_uri *base_uri)
 {
-  return raptor_parser_parse_uri_with_connection(rdf_parser, uri, base_uri, NULL);
+  return raptor_parser_parse_uri_with_connection(rdf_parser, uri, base_uri,
+                                                 NULL);
 }
 
 
@@ -725,8 +728,9 @@ raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * Return value: non 0 on failure
  **/
 int
-raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri,
-                                 raptor_uri *base_uri, void *connection)
+raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
+                                        raptor_uri *uri,
+                                        raptor_uri *base_uri, void *connection)
 {
   int ret = 0;
   raptor_parse_bytes_context rpbc;
@@ -764,9 +768,11 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *u
     raptor_www_set_uri_filter(rdf_parser->www, rdf_parser->uri_filter,
                               rdf_parser->uri_filter_user_data);
   else if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET))
-    raptor_www_set_uri_filter(rdf_parser->www, raptor_parser_set_uri_filter_no_net, rdf_parser);
+    raptor_www_set_uri_filter(rdf_parser->www,
+                              raptor_parser_set_uri_filter_no_net, rdf_parser);
   
-  raptor_www_set_write_bytes_handler(rdf_parser->www, raptor_parser_parse_uri_write_bytes, 
+  raptor_www_set_write_bytes_handler(rdf_parser->www,
+                                     raptor_parser_parse_uri_write_bytes, 
                                      &rpbc);
 
   raptor_www_set_content_type_handler(rdf_parser->www,
@@ -938,8 +944,8 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
  **/
 void
 raptor_parser_set_statement_handler(raptor_parser* parser,
-                             void *user_data,
-                             raptor_statement_handler handler)
+                                    void *user_data,
+                                    raptor_statement_handler handler)
 {
   parser->user_data = user_data;
   parser->statement_handler = handler;
@@ -987,8 +993,8 @@ raptor_parser_set_graph_handler(raptor_parser* parser,
  **/
 void
 raptor_parser_set_generate_id_handler(raptor_parser* parser,
-                               void *user_data,
-                               raptor_generate_id_handler handler)
+                                      void *user_data,
+                                      raptor_generate_id_handler handler)
 {
   parser->generate_id_handler_user_data = user_data;
   parser->generate_id_handler = handler;
@@ -1013,8 +1019,8 @@ raptor_parser_set_generate_id_handler(raptor_parser* parser,
  **/
 void
 raptor_parser_set_namespace_handler(raptor_parser* parser,
-                             void *user_data,
-                             raptor_namespace_handler handler)
+                                    void *user_data,
+                                    raptor_namespace_handler handler)
 {
   parser->namespace_handler = handler;
   parser->namespace_handler_user_data = user_data;
@@ -1317,7 +1323,8 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
  * Return value: newly allocated generated ID or NULL on failure
  **/
 unsigned char*
-raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type)
+raptor_parser_get_new_generated_id(raptor_parser *rdf_parser,
+                                   raptor_genid_type type)
 {
   if(type != RAPTOR_GENID_TYPE_BNODEID || 
      type != RAPTOR_GENID_TYPE_BAGID)
