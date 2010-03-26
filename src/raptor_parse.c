@@ -483,7 +483,7 @@ raptor_parser_parse_chunk(raptor_parser* rdf_parser,
  * 
  **/
 void
-raptor_free_parser(raptor_parser* rdf_parser) 
+raptor_free_parser(raptor_parser* rdf_parser)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(rdf_parser, raptor_parser);
 
@@ -719,7 +719,7 @@ raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * If @base_uri is given, it overrides the process above.
  *
  * When @connection is NULL and a MIME Type exists for the parser
- * type - such as returned by raptor_parser_get_mime_type(parser) - this
+ * type - such as returned by raptor_parser_get_mime_type() - this
  * type is sent in an HTTP Accept: header in the form
  * Accept: MIME-TYPE along with a wildcard of 0.1 quality, so MIME-TYPE is
  * prefered rather than the sole answer.  The latter part may not be
@@ -1190,7 +1190,7 @@ raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser,
  * Return value: the short name for the parser.
  **/
 const char*
-raptor_parser_get_name(raptor_parser *rdf_parser) 
+raptor_parser_get_name(raptor_parser *rdf_parser)
 {
   if(rdf_parser->factory->get_name)
     return rdf_parser->factory->get_name(rdf_parser);
@@ -1208,7 +1208,7 @@ raptor_parser_get_name(raptor_parser *rdf_parser)
  * Return value: a readable label for the parser.
  **/
 const char*
-raptor_parser_get_label(raptor_parser *rdf_parser) 
+raptor_parser_get_label(raptor_parser *rdf_parser)
 {
   return rdf_parser->factory->label;
 }
@@ -1218,12 +1218,12 @@ raptor_parser_get_label(raptor_parser *rdf_parser)
  * raptor_parser_get_mime_type:
  * @rdf_parser: #raptor_parser parser object
  *
- * Return MIME type for the parser.
+ * Return MIME types handled by the parser.
  *
  * Return value: MIME type or NULL if none available
  **/
 const char*
-raptor_parser_get_mime_type(raptor_parser *rdf_parser) 
+raptor_parser_get_mime_type(raptor_parser *rdf_parser)
 {
   const char *mime_type = NULL;
   if(rdf_parser->factory->mime_types)
@@ -1356,7 +1356,7 @@ raptor_parser_internal_generate_id(raptor_parser *rdf_parser,
  * Return value: raptor locator
  **/
 raptor_locator*
-raptor_parser_get_locator(raptor_parser *rdf_parser) 
+raptor_parser_get_locator(raptor_parser *rdf_parser)
 {
   return &rdf_parser->locator;
 }
