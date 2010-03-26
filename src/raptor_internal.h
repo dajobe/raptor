@@ -573,6 +573,8 @@ struct raptor_parser_factory_s {
 
   /* Array of (MIME type, q) values accepted by the parser (or NULL): */
   const raptor_type_q* mime_types;
+  /* size of array above */
+  int mime_types_count;
 
   /* URI identifying the parser (or NULL) */
   const char* uri_string;
