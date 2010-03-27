@@ -58,6 +58,8 @@ raptor_calloc_memory
 raptor_genid_type
 raptor_term_type
 raptor_term
+raptor_term_literal
+raptor_term_value
 raptor_new_term_from_blank
 raptor_new_term_from_literal
 raptor_new_term_from_uri

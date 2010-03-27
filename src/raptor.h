@@ -438,6 +438,41 @@ typedef enum {
 
 
 /**
+ * raptor_term_literal_value:
+ * @string: literal string
+ * @datatype: datatype URI (or NULL)
+ * @language: literal language (or NULL(
+ * 
+ * Literal term value - this typedef exists solely for use in #raptor_term
+ *
+ * Either @datatype or @language may be non-NULL but not both.
+ */
+typedef struct {
+  unsigned char *string;
+  raptor_uri *datatype;
+  unsigned char *language;
+} raptor_term_literal_value;
+
+
+/**
+ * raptor_term_value:
+ * @uri: uri value when term type is #RAPTOR_TERM_TYPE_URI
+ * @literal: literal value when term type is #RAPTOR_TERM_TYPE_LITERAL
+ * @blank: blank value when term type is #RAPTOR_TERM_TYPE_BLANK
+ *
+ * Term value - this typedef exists solely for use in #raptor_term
+ *
+ **/
+typedef union {
+  raptor_uri *uri;
+
+  raptor_term_literal_value literal;
+
+  unsigned char *blank;
+} raptor_term_value;
+
+
+/**
  * raptor_term:
  * @world: world
  * @usage: usage reference count (if >0)
@@ -454,20 +489,7 @@ typedef struct {
 
   raptor_term_type type;
 
-  union {
-    /* RAPTOR_TERM_TYPE_URI */
-    raptor_uri *uri;
-
-    /* RAPTOR_TERM_TYPE_LITERAL */
-    struct {
-      unsigned char *string;
-      raptor_uri *datatype;
-      unsigned char *language;
-    } literal;
-
-    /* RAPTOR_TERM_TYPE_BLANK */
-    unsigned char *blank;
-  } value;
+  raptor_term_value value;
 
 } raptor_term;
 
