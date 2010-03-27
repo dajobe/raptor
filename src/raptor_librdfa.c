@@ -96,6 +96,11 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   raptor_uri *predicate_uri = NULL;
   raptor_term *object_term = NULL;
 
+  if(!parser->emitted_default_graph) {
+    raptor_parser_start_graph(parser, NULL, 0);
+    parser->emitted_default_graph++;
+  }
+
   if(!parser->statement_handler)
     goto cleanup;
 
@@ -259,6 +264,14 @@ raptor_librdfa_parse_chunk(raptor_parser* rdf_parser,
 {
   raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
   int rval = rdfa_parse_chunk(librdfa_parser->context, (char*)s, len, is_end);
+
+  if(is_end) {
+    if(rdf_parser->emitted_default_graph) {
+      raptor_parser_end_graph(rdf_parser, NULL, 0);
+      rdf_parser->emitted_default_graph--;
+    }
+  }
+
   return rval != RDFA_PARSE_SUCCESS;
 }
 
