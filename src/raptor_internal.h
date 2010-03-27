@@ -845,7 +845,6 @@ unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 int raptor_init_serializer_rdfxml(raptor_world* world);
 int raptor_init_serializer_ntriples(raptor_world* world);
 int raptor_init_serializer_dot(raptor_world* world);
-int raptor_init_serializer_simple(raptor_world* world);
 
 /* raptor_serializer.c */
 int raptor_serializers_init(raptor_world* world);

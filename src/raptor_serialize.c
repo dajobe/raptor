@@ -76,8 +76,6 @@ raptor_serializers_init(raptor_world* world)
   if(!world->serializers)
     return 1;
 
-  /* raptor_init_serializer_simple(); */
-
 #ifdef RAPTOR_SERIALIZER_NTRIPLES
   rc += raptor_init_serializer_ntriples(world) != 0;
 #endif

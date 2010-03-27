@@ -99,8 +99,6 @@ endif
 if RAPTOR_PARSER_RDFA
 libraptor_la_SOURCES += raptor_librdfa.c
 endif
-# Always available
-libraptor_la_SOURCES += raptor_serialize_simple.c
 if RAPTOR_SERIALIZER_RDFXML
 libraptor_la_SOURCES += raptor_serialize_rdfxml.c
 endif
