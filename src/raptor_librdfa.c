@@ -96,6 +96,9 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   raptor_uri *predicate_uri = NULL;
   raptor_term *object_term = NULL;
 
+  if(!parser->statement_handler)
+    goto cleanup;
+
   if(!triple->subject || !triple->predicate || !triple->object) {
     RAPTOR_FATAL1("Triple has NULL parts\n");
     rdfa_free_triple(triple);
@@ -185,10 +188,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   }
   s->object = object_term;
   
-  if(!parser->statement_handler)
-    goto cleanup;
-
-  /* Generate triple */
+  /* Generate statement */
   (*parser->statement_handler)(parser->user_data, s);
 
   cleanup:
