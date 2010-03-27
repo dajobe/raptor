@@ -1344,6 +1344,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
   raptor_rss_parser* rss_parser = (raptor_rss_parser*)rdf_parser->context;
   int i;
   raptor_rss_item* item;
+  int rc = 0;
 
   if(!rss_parser->model.common[RAPTOR_RSS_CHANNEL]) {
     raptor_parser_error(rdf_parser, "No RSS channel item present");
@@ -1355,6 +1356,12 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     return 1;
   }
 
+  /* Emit start default graph mark */
+  raptor_parser_start_graph(rdf_parser, NULL, 0);
+  rdf_parser->emitted_default_graph++;
+
+
+  /* Emit all the common type blocks (channel, author, ...) */
   for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
     for(item = rss_parser->model.common[i]; item; item = item->next) {
       if(!item->fields_count)
@@ -1363,24 +1370,32 @@ raptor_rss_emit(raptor_parser* rdf_parser)
       RAPTOR_DEBUG3("Emitting type %i - %s\n", i, raptor_rss_items_info[i].name);
       
       if(!item->term) {
-        raptor_parser_error(rdf_parser, "RSS %s has no identifier", raptor_rss_items_info[i].name);
-        return 1;
+        raptor_parser_error(rdf_parser, "RSS %s has no identifier",
+                            raptor_rss_items_info[i].name);
+        rc = 1;
+        goto tidy;
       }
     
-      if(raptor_rss_emit_item(rdf_parser, item))
-        return 1;
+      if(raptor_rss_emit_item(rdf_parser, item)) {
+        rc = 1;
+        goto tidy;
+      }
 
       /* Add connections to channel */
       if(i != RAPTOR_RSS_CHANNEL) {
         if(raptor_rss_emit_connection(rdf_parser,
                                       rss_parser->model.common[RAPTOR_RSS_CHANNEL]->term,
                                       rdf_parser->world->rss_types_info_uris[i], 0,
-                                      item->term))
-          return 1;
+                                      item->term)) {
+          rc = 1;
+          goto tidy;
+        }
       }
     }
   }
 
+
+  /* Emit the feed item blocks */
   if(rss_parser->model.items_count) {
     const unsigned char* id;
     raptor_term *items;
@@ -1397,7 +1412,8 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     if(raptor_rss_emit_type_triple(rdf_parser, items,
                                    RAPTOR_RDF_Seq_URI(rdf_parser->world))) {
       raptor_free_term(items);
-      return 1;
+      rc = 1;
+      goto tidy;
     }
     
     /* <channelURI> rss:items _:genid1 . */
@@ -1406,7 +1422,8 @@ raptor_rss_emit(raptor_parser* rdf_parser)
                                   rdf_parser->world->rss_fields_info_uris[RAPTOR_RSS_FIELD_ITEMS], 0,
                                   items)) {
       raptor_free_term(items);
-      return 1;
+      rc= 1;
+      goto tidy;
     }
     
     /* sequence of rss:item */
@@ -1415,13 +1432,21 @@ raptor_rss_emit(raptor_parser* rdf_parser)
       if(raptor_rss_emit_item(rdf_parser, item) ||
          raptor_rss_emit_connection(rdf_parser, items, NULL, i,item->term)) {
         raptor_free_term(items);
-        return 1;
+        rc = 1;
+        goto tidy;
       }
     }
 
     raptor_free_term(items);
   }
-  return 0;
+
+  tidy:
+  if(rdf_parser->emitted_default_graph) {
+    raptor_parser_end_graph(rdf_parser, NULL, 0);
+    rdf_parser->emitted_default_graph--;
+  }
+
+  return rc;
 }
 
 
