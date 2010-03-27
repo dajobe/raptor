@@ -1385,6 +1385,15 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   int buffer_is_libxml = 0;
   int loop;
 
+  if(!is_end && !rdf_parser->emitted_default_graph) {
+    /* Cannot tell if we have a statement yet but must ensure that
+     * the start default graph mark is done once and done before any
+     * statements.
+     */
+    raptor_parser_start_graph(rdf_parser, NULL, 0);
+    rdf_parser->emitted_default_graph++;
+  }
+
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   if(grddl_parser->content_type && !grddl_parser->content_type_check) {
@@ -1871,6 +1880,14 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     grddl_free_xml_context(rdf_parser->world, xml_context);
     if(ret)
       break;
+  }
+
+  if(rdf_parser->emitted_default_graph) {
+    /* May or may not have generated statements but we must close the
+     * start default graph mark above
+     */
+    raptor_parser_end_graph(rdf_parser, NULL, 0);
+    rdf_parser->emitted_default_graph--;
   }
 
 
