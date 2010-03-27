@@ -90,7 +90,7 @@ static void
 raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
 {
   raptor_parser* parser = (raptor_parser*)callback_data;
-  raptor_statement *s=&parser->statement;
+  raptor_statement *s = &parser->statement;
   raptor_term *subject_term = NULL;
   raptor_term *predicate_term = NULL;
   raptor_uri *predicate_uri = NULL;
