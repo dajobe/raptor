@@ -763,11 +763,12 @@ const char* raptor_domain_get_label(raptor_domain domain);
 
 /* Parser names */
 RAPTOR_API
-int raptor_world_enumerate_parsers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+const raptor_syntax_description* raptor_world_get_parser_description(raptor_world* world, const unsigned int counter);
 RAPTOR_API
 int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+
 RAPTOR_API
 int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
 RAPTOR_API
@@ -854,11 +855,7 @@ void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 RAPTOR_API
 const char* raptor_parser_get_name(raptor_parser *rdf_parser);
 RAPTOR_API
-const char* raptor_parser_get_label(raptor_parser *rdf_parser);
-RAPTOR_API
-const char* raptor_parser_get_mime_type(raptor_parser *rdf_parser);
-RAPTOR_API
-int raptor_parser_get_need_base_uri(raptor_parser *rdf_parser);
+const raptor_syntax_description* raptor_parser_get_description(raptor_parser *rdf_parser);
 
 /* parser option methods */
 RAPTOR_API

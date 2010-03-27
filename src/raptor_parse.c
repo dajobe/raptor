@@ -270,24 +270,17 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
 
 
 /**
- * raptor_world_enumerate_parsers:
+ * raptor_world_get_parser_description:
  * @world: raptor_world object
- * @counter: index into the list of syntaxes
- * @name: pointer to store the name of the syntax (or NULL)
- * @label: pointer to store syntax readable label (or NULL)
- * @mime_type: pointer to store syntax MIME Type (or NULL)
- * @uri_string: pointer to store syntax URI string (or NULL)
+ * @counter: index into the list of parsers
  *
- * Get information on syntaxes.
+ * Get parser syntax information
  * 
  * Return value: non 0 on failure of if counter is out of range
  **/
-int
-raptor_world_enumerate_parsers(raptor_world* world,
-                               const unsigned int counter,
-                               const char **name, const char **label,
-                               const char **mime_type,
-                               const unsigned char **uri_string)
+const raptor_syntax_description*
+raptor_world_get_parser_description(raptor_world* world, 
+                                    const unsigned int counter)
 {
   raptor_parser_factory *factory;
 
@@ -295,21 +288,9 @@ raptor_world_enumerate_parsers(raptor_world* world,
                                                            counter);
 
   if(!factory)
-    return 1;
+    return NULL;
 
-  if(name)
-    *name = factory->desc.names[0];
-  if(label)
-    *label = factory->desc.label;
-  if(mime_type) {
-    const char *mime_type_t = NULL;
-    if(factory->desc.mime_types_count > 0)
-      mime_type_t = factory->desc.mime_types[0].mime_type;
-    *mime_type = mime_type_t;
-  }
-  if(uri_string)
-    *uri_string = (const unsigned char*)factory->desc.uri_string;
-  return 0;
+  return &factory->desc;
 }
 
 
@@ -1164,6 +1145,9 @@ raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser,
  *
  * Get the name of a parser.
  *
+ * Use raptor_parser_get_description() to get the alternate names and
+ * aliases as well as other descriptive values.
+ *
  * Return value: the short name for the parser.
  **/
 const char*
@@ -1177,52 +1161,25 @@ raptor_parser_get_name(raptor_parser *rdf_parser)
 
 
 /**
- * raptor_parser_get_label:
+ * raptor_parser_get_description:
  * @rdf_parser: #raptor_parser parser object
  *
- * Get a descriptive label of a parser.
+ * Get description of the syntaxes of the parser.
  *
- * Return value: a readable label for the parser.
+ * The returned description is static and lives as long as the raptor
+ * library (raptor world).
+ *
+ * Return value: description of syntax
  **/
-const char*
-raptor_parser_get_label(raptor_parser *rdf_parser)
+const raptor_syntax_description*
+raptor_parser_get_description(raptor_parser *rdf_parser)
 {
-  return rdf_parser->factory->desc.label;
+  if(rdf_parser->factory->get_description)
+    return rdf_parser->factory->get_description(rdf_parser);
+  else
+    return &rdf_parser->factory->desc;
 }
 
-
-/**
- * raptor_parser_get_mime_type:
- * @rdf_parser: #raptor_parser parser object
- *
- * Return MIME types handled by the parser.
- *
- * Return value: MIME type or NULL if none available
- **/
-const char*
-raptor_parser_get_mime_type(raptor_parser *rdf_parser)
-{
-  const char *mime_type = NULL;
-  if(rdf_parser->factory->desc.mime_types_count > 0)
-    mime_type = rdf_parser->factory->desc.mime_types[0].mime_type;
-  
-  return mime_type;
-}
-
-
-/**
- * raptor_parser_get_need_base_uri:
- * @rdf_parser: #raptor_parser parser object
- *
- * Get a boolean whether this parser needs a base URI to start parsing.
- *
- * Return value: non-0 if this parser needs a base URI
- **/
-int
-raptor_parser_get_need_base_uri(raptor_parser *rdf_parser)
-{
-  return rdf_parser->factory->desc.need_base_uri;
-}
 
 
 /**

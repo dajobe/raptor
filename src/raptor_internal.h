@@ -596,6 +596,9 @@ struct raptor_parser_factory_s {
 
   /* get the name (OPTIONAL) */
   const char* (*get_name)(raptor_parser* rdf_parser);
+
+  /* get the description (OPTIONAL) */
+  const raptor_syntax_description* (*get_description)(raptor_parser* rdf_parser);
 };
 
 
