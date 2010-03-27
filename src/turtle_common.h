@@ -63,14 +63,17 @@ struct raptor_turtle_parser_s {
   /* for creating long literals */
   raptor_stringbuffer* sb;
 
-  /* Allow TRIG extensions */
-  int trig;
-
   /* count of errors in current parse */
   int error_count;
 
   /* TRIG graph name */
   raptor_term* graph_name;
+
+  /* Allow TRIG extensions */
+  int trig : 1;
+
+  /* Flag for non-TRIG: non-0 if have started default graph  */
+  int emitted_default_graph : 1;
 };
 
 

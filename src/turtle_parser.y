@@ -200,36 +200,57 @@ graph: graphName colonMinusOpt LEFT_CURLY
   {
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_parser* parser = (raptor_parser *)rdf_parser;
-    raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
+    raptor_turtle_parser* turtle_parser;
+
+    turtle_parser = (raptor_turtle_parser*)parser->context;
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
     else {
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
       turtle_parser->graph_name = $1; /* becomes owner of $1 */
-      raptor_parser_set_graph_name(parser, $1->value.uri);
+      raptor_parser_start_graph(parser, turtle_parser->graph_name->value.uri, 1);
     }
   }
   graphBody RIGHT_CURLY
 {
+  raptor_parser* parser = (raptor_parser *)rdf_parser;
+  raptor_turtle_parser* turtle_parser;
+
+  turtle_parser = (raptor_turtle_parser*)parser->context;
+
+  if(turtle_parser->trig) {
+    raptor_parser_end_graph(parser, turtle_parser->graph_name->value.uri, 1);
+    raptor_free_term(turtle_parser->graph_name);
+    turtle_parser->graph_name = NULL;
+  }
 }
 |
 LEFT_CURLY
   {
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_parser* parser = (raptor_parser *)rdf_parser;
-    raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
+    raptor_turtle_parser* turtle_parser;
+
+    turtle_parser = (raptor_turtle_parser*)parser->context;
     if(!turtle_parser->trig)
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
     else {
-      if(turtle_parser->graph_name) {
-        raptor_free_term(turtle_parser->graph_name);
-        turtle_parser->graph_name = NULL;
-      }
-      raptor_parser_set_graph_name(parser, NULL);
+      raptor_parser_start_graph(parser, NULL, 1);
+      turtle_parser->emitted_default_graph++;
     }
   }
   graphBody RIGHT_CURLY
+{
+  raptor_parser* parser = (raptor_parser *)rdf_parser;
+  raptor_turtle_parser* turtle_parser;
+
+  turtle_parser = (raptor_turtle_parser*)parser->context;
+  if(turtle_parser->trig) {
+    raptor_parser_end_graph(parser, NULL, 1);
+    turtle_parser->emitted_default_graph--;
+  }
+}
 ;
 
 graphName: resource
@@ -1277,8 +1298,14 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   if(!parser->statement_handler)
     return;
 
-  if(turtle_parser->trig)
+  if(turtle_parser->trig && turtle_parser->graph_name)
     statement->graph = raptor_term_copy(turtle_parser->graph_name);
+
+  if(!turtle_parser->emitted_default_graph && !turtle_parser->graph_name) {
+    /* for non-TRIG - start default graph at first triple */
+    raptor_parser_start_graph(parser, NULL, 0);
+    turtle_parser->emitted_default_graph++;
+  }
   
   /* Two choices for subject for Turtle */
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
@@ -1337,11 +1364,13 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
 
 static int
 raptor_turtle_parse_chunk(raptor_parser* rdf_parser, 
-                      const unsigned char *s, size_t len,
-                      int is_end)
+                          const unsigned char *s, size_t len,
+                          int is_end)
 {
   char *ptr;
-  raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  raptor_turtle_parser *turtle_parser;
+
+  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
@@ -1381,6 +1410,11 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   
   turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
   
+  if(turtle_parser->emitted_default_graph) {
+    /* for non-TRIG - end default graph after last triple */
+    raptor_parser_end_graph(rdf_parser, NULL, 0);
+    turtle_parser->emitted_default_graph--;
+  }
   return 0;
 }
 

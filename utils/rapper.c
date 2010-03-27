@@ -61,7 +61,7 @@ extern char *optarg;
 #endif
 
 static void print_triples(void *user_data, raptor_statement *statement);
-static void print_graph(void *user_data, raptor_uri *graph);
+static void print_graph(void *user_data, raptor_uri *graph, int flags);
 static void print_namespaces(void* user_data, raptor_namespace *nspace);
 static void relay_namespaces(void* user_data, raptor_namespace *nspace);
 int main(int argc, char *argv[]);
@@ -119,17 +119,19 @@ void print_triples(void *user_data, raptor_statement *triple)
 }
 
 static
-void print_graph(void *user_data, raptor_uri *graph)
+void print_graph(void *user_data, raptor_uri *graph, int flags)
 {
   /* raptor_parser *parser = (raptor_parser *)user_data; */
+  const char* label = (flags & RAPTOR_GRAPH_MARK_START) ? "start" : "end";
+
   if(!report_graph)
     return;
 
   if(graph)
-    fprintf(stderr, "%s: Named graph: URI %s\n", program,
-            raptor_uri_as_string(graph));
+    fprintf(stderr, "%s: Graph URI %s %s\n", program, 
+            raptor_uri_as_string(graph), label);
   else
-    fprintf(stderr, "%s: Named graph: default\n", program);
+    fprintf(stderr, "%s: Default graph %s\n", program, label);
 }
 
 static void
@@ -860,7 +862,7 @@ main(int argc, char *argv[])
   raptor_parser_set_statement_handler(rdf_parser, rdf_parser, print_triples);
 
   if(report_graph)
-    raptor_parser_set_graph_handler(rdf_parser, rdf_parser, print_graph);
+    raptor_parser_set_graph_mark_handler(rdf_parser, rdf_parser, print_graph);
 
   if(report_namespace)
     raptor_parser_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
