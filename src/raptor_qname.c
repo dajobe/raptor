@@ -290,10 +290,13 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
  * Return value: a new #raptor_qname object or NULL on failure
  **/
 raptor_qname*
-raptor_qname_copy(raptor_qname *qname) {
+raptor_qname_copy(raptor_qname *qname)
+{
   raptor_qname* new_qname;
   unsigned char* new_name;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(qname, raptor_qname, NULL);
+  
   new_qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
   if(!new_qname)
     return NULL;
