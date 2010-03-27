@@ -135,7 +135,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   raptor_uri *predicate_uri = NULL;
   raptor_uri *datatype_uri = NULL;
 
-  if(parser->graph_mark_handler && !parser->emitted_default_graph) {
+  if(!parser->emitted_default_graph) {
     raptor_parser_start_graph(parser, NULL, 0);
     parser->emitted_default_graph++;
   }
