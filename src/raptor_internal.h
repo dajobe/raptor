@@ -500,6 +500,12 @@ struct raptor_parser_s {
   /* non-0 if parser had fatal error and cannot continue */
   int failed : 1;
 
+  /* non-0 to enable emitting graph marks (default set).  Intended
+   * for use by GRDDL the parser on it's child parsers to prevent
+   * multiple start/end marks on the default graph.
+   */
+  int emit_graph_marks : 1;
+
   /* non-0 if have emitted start default graph mark */
   int emitted_default_graph : 1;
 

@@ -349,8 +349,11 @@ raptor_new_parser(raptor_world* world, const char *name)
 #endif  
   rdf_parser->factory = factory;
 
+  /* Bit flags */
   rdf_parser->failed = 0;
-
+  rdf_parser->emit_graph_marks = 1;
+  rdf_parser->emitted_default_graph = 0;
+  
   raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
   /* Initialise default (lax) option values */
@@ -1475,6 +1478,7 @@ raptor_parser_copy_flags_state(raptor_parser *to_parser,
                                raptor_parser *from_parser)
 {
   to_parser->failed = from_parser->failed;
+  to_parser->emit_graph_marks = from_parser->emit_graph_marks;
   to_parser->emitted_default_graph = from_parser->emitted_default_graph;
 }
 
