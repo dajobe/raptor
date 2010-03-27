@@ -1204,7 +1204,7 @@ raptor_namespace* raptor_new_namespace(raptor_namespace_stack *nstack, const uns
 RAPTOR_API
 void raptor_free_namespace(raptor_namespace *ns);
 RAPTOR_API
-int raptor_namespace_copy(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth);
+int raptor_namespace_stack_start_namespace(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth);
 RAPTOR_API
 raptor_uri* raptor_namespace_get_uri(const raptor_namespace *ns);
 RAPTOR_API

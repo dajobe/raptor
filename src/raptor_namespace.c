@@ -608,22 +608,26 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
 
 
 /**
- * raptor_namespace_copy:
+ * raptor_namespace_stack_start_namespace:
  * @nstack: namespace stack
  * @ns: namespace
  * @new_depth: new depth
  * 
- * Copy a namespace to a new namespace stack with a new depth.
+ * Copy an existing namespace to a namespace stack with a new depth
+ * and start it.
  * 
  * Return value: non-0 on failure
  **/
 int
-raptor_namespace_copy(raptor_namespace_stack *nstack,
-                      raptor_namespace *ns,
-                      int new_depth)
+raptor_namespace_stack_start_namespace(raptor_namespace_stack *nstack,
+                                       raptor_namespace *ns,
+                                       int new_depth)
 {
   raptor_namespace *new_ns;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(nstack, raptor_namespace_stack, 1);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(ns, raptor_namespace, 1);
+  
   new_ns = raptor_new_namespace_from_uri(nstack, ns->prefix, ns->uri, new_depth);
   if(!new_ns)
     return 1;

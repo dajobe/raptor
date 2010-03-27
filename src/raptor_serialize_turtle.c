@@ -1024,7 +1024,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
     raptor_namespace* ns;
     ns = (raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     raptor_turtle_writer_namespace_prefix(context->turtle_writer, ns);
-    raptor_namespace_copy(context->nstack, ns, 0);
+    raptor_namespace_stack_start_namespace(context->nstack, ns, 0);
   }
   
   raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)"\n");

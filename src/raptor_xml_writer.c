@@ -302,9 +302,9 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
 
-      if(raptor_namespace_copy(nstack,
-                               (raptor_namespace*)nspace_declarations[i].nspace,
-                               depth))
+      if(raptor_namespace_stack_start_namespace(nstack,
+                                                (raptor_namespace*)nspace_declarations[i].nspace,
+                                                depth))
         goto error;
     }
   }

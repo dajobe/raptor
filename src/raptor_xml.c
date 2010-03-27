@@ -461,9 +461,9 @@ raptor_xml_element_write(raptor_xml_element *element,
       RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
 
-      raptor_namespace_copy(nstack,
-                            (raptor_namespace*)nspace_declarations[i].nspace,
-                            depth);
+      raptor_namespace_stack_start_namespace(nstack,
+                                             (raptor_namespace*)nspace_declarations[i].nspace,
+                                             depth);
     }
   }
 
