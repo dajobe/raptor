@@ -228,7 +228,7 @@ raptor_world_register_parser_factory(raptor_world* world,
 
 /*
  * raptor_world_get_parser_factory:
- * @world: raptor_world object
+ * @world: world object
  * @name: the factory name or NULL for the default factory
  *
  * INTERNAL - Get a parser factory by name.
@@ -271,7 +271,7 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
 
 /**
  * raptor_world_get_parser_description:
- * @world: raptor_world object
+ * @world: world object
  * @counter: index into the list of parsers
  *
  * Get parser descriptive syntax information
@@ -296,7 +296,7 @@ raptor_world_get_parser_description(raptor_world* world,
 
 /**
  * raptor_world_is_parser_name:
- * @world: raptor_world object
+ * @world: world object
  * @name: the syntax name
  *
  * Check the name of a parser is known.
@@ -304,14 +304,15 @@ raptor_world_get_parser_description(raptor_world* world,
  * Return value: non 0 if name is a known syntax name
  */
 int
-raptor_world_is_parser_name(raptor_world* world, const char *name) {
+raptor_world_is_parser_name(raptor_world* world, const char *name)
+{
   return (raptor_world_get_parser_factory(world, name) != NULL);
 }
 
 
 /**
  * raptor_new_parser:
- * @world: raptor_world object
+ * @world: world object
  * @name: the parser name
  *
  * Constructor - create a new raptor_parser object.
@@ -366,7 +367,7 @@ raptor_new_parser(raptor_world* world, const char *name)
 
 /**
  * raptor_new_parser_for_content:
- * @world: raptor_world object
+ * @world: world object
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
  * @buffer: buffer of content to guess (or NULL)
@@ -1328,7 +1329,7 @@ compare_syntax_score(const void *a, const void *b) {
 
 /**
  * raptor_world_guess_parser_name:
- * @world: raptor_world object
+ * @world: world object
  * @uri: URI identifying the syntax (or NULL)
  * @mime_type: mime type identifying the content (or NULL)
  * @buffer: buffer of content to guess (or NULL)
