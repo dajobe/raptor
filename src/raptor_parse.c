@@ -403,7 +403,10 @@ raptor_new_parser_for_content(raptor_world* world,
  *
  * Start a parse of content with base URI.
  * 
- * Parsers that need a base URI can be tested with raptor_parser_get_need_base_uri().
+ * Parsers that need a base URI can be identified using a syntax
+ * description returned by raptor_world_get_parser_description()
+ * statically or raptor_parser_get_description() on a constructed
+ * parser.
  * 
  * Return value: non-0 on failure, <0 if a required base URI was missing
  **/
