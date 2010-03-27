@@ -237,7 +237,7 @@ LEFT_CURLY
       turtle_parser_error(rdf_parser, "{ ... } is not allowed in Turtle");
     else {
       raptor_parser_start_graph(parser, NULL, 1);
-      turtle_parser->emitted_default_graph++;
+      parser->emitted_default_graph++;
     }
   }
   graphBody RIGHT_CURLY
@@ -248,7 +248,7 @@ LEFT_CURLY
   turtle_parser = (raptor_turtle_parser*)parser->context;
   if(turtle_parser->trig) {
     raptor_parser_end_graph(parser, NULL, 1);
-    turtle_parser->emitted_default_graph--;
+    parser->emitted_default_graph--;
   }
 }
 ;
@@ -1301,10 +1301,10 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   if(turtle_parser->trig && turtle_parser->graph_name)
     statement->graph = raptor_term_copy(turtle_parser->graph_name);
 
-  if(!turtle_parser->emitted_default_graph && !turtle_parser->graph_name) {
+  if(!parser->emitted_default_graph && !turtle_parser->graph_name) {
     /* for non-TRIG - start default graph at first triple */
     raptor_parser_start_graph(parser, NULL, 0);
-    turtle_parser->emitted_default_graph++;
+    parser->emitted_default_graph++;
   }
   
   /* Two choices for subject for Turtle */
@@ -1410,10 +1410,10 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   
   turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
   
-  if(turtle_parser->emitted_default_graph) {
+  if(rdf_parser->emitted_default_graph) {
     /* for non-TRIG - end default graph after last triple */
     raptor_parser_end_graph(rdf_parser, NULL, 0);
-    turtle_parser->emitted_default_graph--;
+    rdf_parser->emitted_default_graph--;
   }
   return 0;
 }

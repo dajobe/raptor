@@ -71,9 +71,6 @@ struct raptor_turtle_parser_s {
 
   /* Allow TRIG extensions */
   int trig : 1;
-
-  /* Flag for non-TRIG: non-0 if have started default graph  */
-  int emitted_default_graph : 1;
 };
 
 
