@@ -1518,7 +1518,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter_user_data = from_parser->uri_filter_user_data;
 
   /* copy bit flags */
-  raptor
+  raptor_parser_copy_flags_state(to_parser, from_parser);
 
   /* copy options */
   if(!rc)
