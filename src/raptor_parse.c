@@ -1722,6 +1722,9 @@ raptor_parser_start_graph(raptor_parser* parser, raptor_uri* uri,
   int flags = RAPTOR_GRAPH_MARK_START;
   if(is_declared)
     flags |= RAPTOR_GRAPH_MARK_DECLARED;
+
+  if(!parser->emit_graph_marks)
+    return;
   
   if(parser->graph_mark_handler)
     (*parser->graph_mark_handler)(parser->user_data, uri, flags);
@@ -1734,6 +1737,9 @@ raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int is_declared)
   int flags = 0;
   if(is_declared)
     flags |= RAPTOR_GRAPH_MARK_DECLARED;
+  
+  if(!parser->emit_graph_marks)
+    return;
   
   if(parser->graph_mark_handler)
     (*parser->graph_mark_handler)(parser->user_data, uri, flags);
