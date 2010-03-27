@@ -914,21 +914,24 @@ raptor_parser_set_statement_handler(raptor_parser* parser,
 
 
 /**
- * raptor_parser_set_graph_handler:
+ * raptor_parser_set_graph_mark_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
  * @handler: new graph callback function
  *
- * Set the graph handler function for the parser.
+ * Set the graph mark handler function for the parser.
+ *
+ * See #raptor_graph_mark_handler and #raptor_graph_mark_flags for
+ * the marks that may be returned by the handler.
  * 
  **/
 void
-raptor_parser_set_graph_handler(raptor_parser* parser,
-			 void *user_data,
-			 raptor_graph_handler handler)
+raptor_parser_set_graph_mark_handler(raptor_parser* parser,
+                                     void *user_data,
+                                     raptor_graph_mark_handler handler)
 {
   parser->user_data = user_data;
-  parser->graph_handler = handler;
+  parser->graph_mark_handler = handler;
 }
 
 
@@ -1689,10 +1692,27 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
 
 
 void 
-raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri)
+raptor_parser_start_graph(raptor_parser* parser, raptor_uri* uri,
+                          int is_declared)
 {
-  if(parser->graph_handler)
-    (*parser->graph_handler)(parser->user_data, uri);
+  int flags = RAPTOR_GRAPH_MARK_START;
+  if(is_declared)
+    flags |= RAPTOR_GRAPH_MARK_DECLARED;
+  
+  if(parser->graph_mark_handler)
+    (*parser->graph_mark_handler)(parser->user_data, uri, flags);
+}
+
+
+void 
+raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int is_declared)
+{
+  int flags = 0;
+  if(is_declared)
+    flags |= RAPTOR_GRAPH_MARK_DECLARED;
+  
+  if(parser->graph_mark_handler)
+    (*parser->graph_mark_handler)(parser->user_data, uri, flags);
 }
 
 

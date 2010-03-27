@@ -625,15 +625,36 @@ typedef void (*raptor_log_handler)(void *user_data, raptor_log_message *message)
 typedef void (*raptor_statement_handler)(void *user_data, raptor_statement *statement);
 
 /**
- * raptor_graph_handler:
- * @user_data: user data
- * @graph: graph to report, 0 for the default graph
+ * raptor_graph_mark_flags:
+ * @RAPTOR_GRAPH_MARK_START: mark is start of graph (otherwise is end)
+ * @RAPTOR_GRAPH_MARK_DECLARED: mark was declared in syntax rather than implict
  *
- * Named graph reporting handler function. Due to historic reasons the named graph
- * API is separated from the statement handler. A graph is reported after all its 
- * statements.
+ * Graph mark handler bitmask flags
  */
-typedef void (*raptor_graph_handler)(void *user_data, raptor_uri *graph);
+typedef enum {
+  RAPTOR_GRAPH_MARK_START = 1,
+  RAPTOR_GRAPH_MARK_DECLARED = 2
+} raptor_graph_mark_flags;
+
+
+/**
+ * raptor_graph_mark_handler:
+ * @user_data: user data
+ * @graph: graph to report, NULL for the default graph
+ * @flags: bitmask of #raptor_graph_mark_flags flags
+ *
+ * Graph start/end mark handler function.
+ *
+ * Records start and end of graphs happening in a stream of generated
+ * #raptor_statement via the statement handler.  The callback starts a
+ * graph when @flags has #RAPTOR_GRAPH_MARK_START bit set.
+ *
+ * The start and ends may be either declared in the syntax via some
+ * keyword or mechanism such as TRiG {} syntax when @flags has bit
+ * #RAPTOR_GRAPH_MARK_DECLARED set, or be implied by the start/end of
+ * the data in other syntaxes, and the bit will be unset.
+ */
+typedef void (*raptor_graph_mark_handler)(void *user_data, raptor_uri *graph, int flags);
 
 /**
  * raptor_generate_id_handler:
@@ -846,7 +867,7 @@ void raptor_free_parser(raptor_parser* parser);
 RAPTOR_API
 void raptor_parser_set_statement_handler(raptor_parser* parser, void *user_data, raptor_statement_handler handler);
 RAPTOR_API
-void raptor_parser_set_graph_handler(raptor_parser* parser, void *user_data, raptor_graph_handler handler);
+void raptor_parser_set_graph_mark_handler(raptor_parser* parser, void *user_data, raptor_graph_mark_handler handler);
 RAPTOR_API
 void raptor_parser_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
 RAPTOR_API

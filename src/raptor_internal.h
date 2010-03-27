@@ -518,7 +518,7 @@ struct raptor_parser_s {
   /* parser callbacks */
   raptor_statement_handler statement_handler;
 
-  raptor_graph_handler graph_handler;
+  raptor_graph_mark_handler graph_mark_handler;
 
   void *generate_id_handler_user_data;
   raptor_generate_id_handler generate_id_handler;
@@ -827,7 +827,8 @@ void raptor_parsers_finish(raptor_world *world);
 
 void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
 const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
-void raptor_parser_set_graph_name(raptor_parser* parser, raptor_uri* uri);
+void raptor_parser_start_graph(raptor_parser* parser, raptor_uri* uri, int explicit);
+void raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int explicit);
 int raptor_parser_get_current_base_id(raptor_parser* parser);
 
 /* raptor_rss.c */
