@@ -697,9 +697,24 @@ raptor_rdfxml_serialize_finish_factory(raptor_serializer_factory* factory)
 
 }
 
+static const char* rdfxml_names[3] = { "rdfxml", NULL};
+
+#define RDFXML_TYPES_COUNT 1
+static const raptor_type_q rdfxml_types[RDFXML_TYPES_COUNT + 1] = {
+  { "application/rdf+xml", 19, 0},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = rdfxml_names;
+  factory->desc.mime_types = rdfxml_types;
+  factory->desc.mime_types_count = RDFXML_TYPES_COUNT;
+
+  factory->desc.label = "RDF/XML";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar",
+
   factory->context_length     = sizeof(raptor_rdfxml_serializer_context);
 
   factory->init                = raptor_rdfxml_serialize_init;
@@ -717,13 +732,10 @@ raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_rdfxml(raptor_world* world) {
-  return raptor_serializer_register_factory(world,
-                                            "rdfxml", "RDF/XML",
-                                            "application/rdf+xml",
-                                            NULL,
-                                            (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                            &raptor_rdfxml_serializer_register_factory);
+raptor_init_serializer_rdfxml(raptor_world* world)
+{
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_rdfxml_serializer_register_factory);
 }
 
 

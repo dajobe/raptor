@@ -770,7 +770,7 @@ RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 RAPTOR_API
-int raptor_world_enumerate_serializers(raptor_world* world, const unsigned int counter, const char **name, const char **label, const char **mime_type, const unsigned char **uri_string);
+const raptor_syntax_description* raptor_world_get_serializer_description(raptor_world* world, const unsigned int counter);
 RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API
@@ -919,6 +919,8 @@ RAPTOR_API
 raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
+RAPTOR_API
+const raptor_syntax_description* raptor_serializer_get_description(raptor_serializer *rdf_serializer);
 
 /* serializer option methods */
 RAPTOR_API

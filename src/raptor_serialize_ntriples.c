@@ -224,9 +224,24 @@ raptor_ntriples_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
+static const char* ntriples_names[3] = { "ntriples", NULL};
+
+#define NTRIPLES_TYPES_COUNT 1
+static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {
+  { "application/rdf+xml", 19, 0},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = ntriples_names;
+  factory->desc.mime_types = ntriples_types;
+  factory->desc.mime_types_count = NTRIPLES_TYPES_COUNT;
+
+  factory->desc.label =  "N-Triples";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
+
   factory->context_length     = sizeof(raptor_ntriples_serializer_context);
   
   factory->init                = raptor_ntriples_serialize_init;
@@ -242,13 +257,10 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_ntriples(raptor_world* world) {
-  return raptor_serializer_register_factory(world,
-                                            "ntriples", "N-Triples", 
-                                            "text/plain",
-                                            NULL,
-                                            (const unsigned char*)"http://www.w3.org/TR/rdf-testcases/#ntriples",
-                                            &raptor_ntriples_serializer_register_factory);
+raptor_init_serializer_ntriples(raptor_world* world)
+{
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_ntriples_serializer_register_factory);
 }
 
 

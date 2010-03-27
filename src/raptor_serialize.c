@@ -61,17 +61,6 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
   if(factory->finish_factory)
     factory->finish_factory(factory);
   
-  if(factory->name)
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->name);
-  if(factory->label)
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->label);
-  if(factory->alias)
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->alias);
-  if(factory->mime_type)
-    RAPTOR_FREE(cstring, factory->mime_type);
-  if(factory->uri_string)
-    RAPTOR_FREE(raptor_serializer_factory, (void*)factory->uri_string);
-  
   RAPTOR_FREE(raptor_serializer_factory, factory);
 }
 
@@ -90,35 +79,35 @@ raptor_serializers_init(raptor_world* world)
   /* raptor_init_serializer_simple(); */
 
 #ifdef RAPTOR_SERIALIZER_NTRIPLES
-  rc+= raptor_init_serializer_ntriples(world) != 0;
+  rc += raptor_init_serializer_ntriples(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_TURTLE
-  rc+= raptor_init_serializer_turtle(world) != 0;
+  rc += raptor_init_serializer_turtle(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
-  rc+= raptor_init_serializer_rdfxmla(world) != 0;
+  rc += raptor_init_serializer_rdfxmla(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RDFXML
-  rc+= raptor_init_serializer_rdfxml(world) != 0;
+  rc += raptor_init_serializer_rdfxml(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_RSS_1_0
-  rc+= raptor_init_serializer_rss10(world) != 0;
+  rc += raptor_init_serializer_rss10(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_ATOM
-  rc+= raptor_init_serializer_atom(world) != 0;
+  rc += raptor_init_serializer_atom(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_DOT
-  rc+= raptor_init_serializer_dot(world) != 0;
+  rc += raptor_init_serializer_dot(world) != 0;
 #endif
 
 #ifdef RAPTOR_SERIALIZER_JSON
-  rc+= raptor_init_serializer_json(world) != 0;
+  rc += raptor_init_serializer_json(world) != 0;
 #endif
 
   return rc;
@@ -152,97 +141,72 @@ raptor_serializers_finish(raptor_world* world)
  * Return value: non-0 on failure
  **/
 RAPTOR_EXTERN_C
-int
+raptor_serializer_factory*
 raptor_serializer_register_factory(raptor_world* world,
-                                   const char *name, const char *label,
-                                   const char *mime_type,
-                                   const char *alias,
-                                   const unsigned char *uri_string,
                                    int (*factory) (raptor_serializer_factory*)) 
 {
   raptor_serializer_factory *serializer;
-  char *name_copy, *label_copy, *mime_type_copy, *alias_copy;
-  unsigned char *uri_string_copy;
-  int i;
   
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG4("Received registration for syntax serializer %s '%s' with alias '%s'\n", 
-                name, label, (alias ? alias : "none"));
-  RAPTOR_DEBUG3("MIME type %s, URI %s\n", 
-                (mime_type ? mime_type : "none"),
-                (uri_string ? (const char *)uri_string : "none"));
-#endif
-  
-  for(i = 0;
-      (serializer = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
-      i++) {
-    if(!strcmp(serializer->name, name)) {
-      RAPTOR_FATAL2("serializer %s already registered\n", name);
-      return 1;
-    }
-  }
-  
-
   serializer = (raptor_serializer_factory*)RAPTOR_CALLOC(raptor_serializer_factory, 1,
                                                          sizeof(*serializer));
   if(!serializer)
-    return 1;
+    return NULL;
 
   serializer->world = world;
 
-  name_copy = (char*)RAPTOR_CALLOC(cstring, strlen(name)+1, 1);
-  if(!name_copy)
-    goto tidy;
-  strcpy(name_copy, name);
-  serializer->name = name_copy;
-        
-  label_copy = (char*)RAPTOR_CALLOC(cstring, strlen(label)+1, 1);
-  if(!label_copy)
-    goto tidy;
-  strcpy(label_copy, label);
-  serializer->label = label_copy;
-
-  if(mime_type) {
-    mime_type_copy = (char*)RAPTOR_CALLOC(cstring, strlen(mime_type)+1, 1);
-    if(!mime_type_copy)
-      goto tidy;
-    strcpy(mime_type_copy, mime_type);
-    serializer->mime_type = mime_type_copy;
-  }
-
-  if(uri_string) {
-    uri_string_copy = (unsigned char*)RAPTOR_CALLOC(cstring, strlen((const char*)uri_string)+1, 1);
-    if(!uri_string_copy)
-      goto tidy;
-    strcpy((char*)uri_string_copy, (const char*)uri_string);
-    serializer->uri_string = uri_string_copy;
-  }
-        
-  if(alias) {
-    alias_copy = (char*)RAPTOR_CALLOC(cstring, strlen(alias)+1, 1);
-    if(!alias_copy)
-      goto tidy;
-    strcpy(alias_copy, alias);
-    serializer->alias = alias_copy;
-  }
-
+  serializer->desc.mime_types = NULL;
+  
   if(raptor_sequence_push(world->serializers, serializer))
-    return 1; /* on error, serializer is already freed by the sequence */
+    return NULL; /* on error, serializer is already freed by the sequence */
 
   /* Call the serializer registration function on the new object */
   if(factory(serializer))
-    return 1; /* serializer is owned and freed by the serializers sequence */
+    return NULL; /* serializer is owned and freed by the serializers sequence */
   
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("%s has context size %d\n", name, serializer->context_length);
+  if(!serializer->desc.names || !serializer->desc.names[0] || 
+     !serializer->desc.label) {
+    raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                     "Serializer failed to register required names and label fields\n");
+    goto tidy;
+  }
+
+#ifdef RAPTOR_DEBUG
+  /* Maintainer only check of static data */
+  if(serializer->desc.mime_types) {
+    unsigned int i;
+    const raptor_type_q* type_q = NULL;
+
+    for(i = 0; 
+        (type_q = &serializer->desc.mime_types[i]) && type_q->mime_type;
+        i++) {
+      size_t len = strlen(type_q->mime_type);
+      if(len != type_q->mime_type_len) {
+        fprintf(stderr,
+                "Serializer %s  mime type %s  actual len %d  static len %d\n",
+                serializer->desc.names[0], type_q->mime_type,
+                (int)len, (int)type_q->mime_type_len);
+      }
+    }
+
+    if(i != serializer->desc.mime_types_count) {
+        fprintf(stderr,
+                "Serializer %s  saw %d mime types  static count %d\n",
+                serializer->desc.names[0], i, serializer->desc.mime_types_count);
+    }
+  }
 #endif
 
-  return 0;
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  RAPTOR_DEBUG3("Registered serializer %s with context size %d\n",
+                serializer->names[0], serializer->context_length);
+#endif
+
+  return serializer;
 
   /* Clean up on failure */
   tidy:
   raptor_free_serializer_factory(serializer);
-  return 1;
+  return NULL;
 }
 
 
@@ -258,7 +222,7 @@ raptor_serializer_register_factory(raptor_world* world,
 static raptor_serializer_factory*
 raptor_get_serializer_factory(raptor_world* world, const char *name) 
 {
-  raptor_serializer_factory *factory;
+  raptor_serializer_factory *factory = NULL;
 
   /* return 1st serializer if no particular one wanted - why? */
   if(!name) {
@@ -273,16 +237,15 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
     for(i = 0;
         (factory = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers, i));
         i++) {
-      if(!strcmp(factory->name, name) ||
-         (factory->alias && !strcmp(factory->alias, name)))
+      int namei;
+      const char* fname;
+      
+      for(namei = 0; (fname = factory->desc.names[namei]); namei++) {
+        if(!strcmp(fname, name))
+          break;
+      }
+      if(fname)
         break;
-
-    }
-
-    /* else FACTORY name not found */
-    if(!factory) {
-      RAPTOR_DEBUG2("No serializer with name %s found\n", name);
-      return NULL;
     }
   }
         
@@ -291,24 +254,17 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 
 
 /**
- * raptor_world_enumerate_serializers:
- * @world: raptor_world object
- * @counter: index into the list of syntaxes
- * @name: pointer to store the name of the syntax (or NULL)
- * @label: pointer to store syntax readable label (or NULL)
- * @mime_type: pointer to store syntax MIME Type (or NULL)
- * @uri_string: pointer to store syntax URI string (or NULL)
+ * raptor_world_get_serializer_description:
+ * @world: world object
+ * @counter: index into the list of serializers
  *
- * Get information on syntax serializers.
+ * Get serializer descriptive syntax information
  * 
- * Return value: non 0 on failure of if counter is out of range
+ * Return value: description or NULL if counter is out of range
  **/
-int
-raptor_world_enumerate_serializers(raptor_world* world,
-                                   const unsigned int counter,
-                                   const char **name, const char **label,
-                                   const char **mime_type,
-                                   const unsigned char **uri_string)
+const raptor_syntax_description*
+raptor_world_get_serializer_description(raptor_world* world, 
+                                        const unsigned int counter)
 {
   raptor_serializer_factory *factory;
 
@@ -316,18 +272,9 @@ raptor_world_enumerate_serializers(raptor_world* world,
                                                                counter);
 
   if(!factory)
-    return 1;
+    return NULL;
 
-  if(name)
-    *name=factory->name;
-  if(label)
-    *label=factory->label;
-  if(mime_type)
-    *mime_type=factory->mime_type;
-  if(uri_string)
-    *uri_string=factory->uri_string;
-
-  return 0;
+  return &factory->desc;
 }
 
 
@@ -796,3 +743,22 @@ raptor_serializer_get_world(raptor_serializer* rdf_serializer)
 {
   return rdf_serializer->world;
 }
+
+
+/**
+ * raptor_serializer_get_description:
+ * @rdf_serializer: #raptor_serializer serializer object
+ *
+ * Get description of the syntaxes of the serializer.
+ *
+ * The returned description is static and lives as long as the raptor
+ * library (raptor world).
+ *
+ * Return value: description of syntax
+ **/
+const raptor_syntax_description*
+raptor_serializer_get_description(raptor_serializer *rdf_serializer)
+{
+  return &rdf_serializer->factory->desc;
+}
+

@@ -461,9 +461,24 @@ raptor_json_serialize_finish_factory(raptor_serializer_factory* factory)
 
 
 
+static const char* json_triples_names[3] = { "json-triples", NULL};
+
+#define JSON_TRIPLES_TYPES_COUNT 1
+static const raptor_type_q json_triples_types[JSON_TRIPLES_TYPES_COUNT + 1] = {
+  { "application/json", 16, 0},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_json_triples_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = json_triples_names;
+  factory->desc.mime_types = json_triples_types;
+  factory->desc.mime_types_count = JSON_TRIPLES_TYPES_COUNT;
+
+  factory->desc.label = "RDF/JSON Triples";
+  factory->desc.uri_string = NULL;
+
   factory->context_length     = sizeof(raptor_json_context);
   
   factory->init                = raptor_json_serialize_init;
@@ -479,9 +494,24 @@ raptor_json_triples_serializer_register_factory(raptor_serializer_factory *facto
 }
 
 
+static const char* json_resource_names[3] = { "json", NULL};
+
+#define JSON_RESOURCE_TYPES_COUNT 1
+static const raptor_type_q json_resource_types[JSON_RESOURCE_TYPES_COUNT + 1] = {
+  { "application/json", 16, 0},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_json_resource_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = json_resource_names;
+  factory->desc.mime_types = json_resource_types;
+  factory->desc.mime_types_count = JSON_RESOURCE_TYPES_COUNT;
+
+  factory->desc.label = "RDF/JSON Resource-Centric";
+  factory->desc.uri_string = "http://n2.talis.com/wiki/RDF_JSON_Specification";
+  
   factory->context_length     = sizeof(raptor_json_context);
   
   factory->init                = raptor_json_serialize_init;
@@ -502,21 +532,13 @@ raptor_init_serializer_json(raptor_world* world)
 {
   int rc;
   
-  rc = raptor_serializer_register_factory(world,
-                                          "json-triples",
-                                          "RDF/JSON Triples",
-                                          "application/json",
-                                          NULL,
-                                          NULL,
-                                          &raptor_json_triples_serializer_register_factory);
+  rc = !raptor_serializer_register_factory(world,
+                                           &raptor_json_triples_serializer_register_factory);
   if(rc)
     return rc;
   
-  return raptor_serializer_register_factory(world,
-                                            "json",
-                                            "RDF/JSON Resource-Centric", 
-                                            "application/json",
-                                            NULL,
-                                            (const unsigned char *)"http://n2.talis.com/wiki/RDF_JSON_Specification",
-                                            &raptor_json_resource_serializer_register_factory);
+  rc = !raptor_serializer_register_factory(world,
+                                           &raptor_json_resource_serializer_register_factory);
+
+  return rc;
 }

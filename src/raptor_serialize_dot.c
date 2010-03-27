@@ -541,9 +541,24 @@ raptor_dot_serializer_statement(raptor_serializer* serializer,
 }
 
 
+static const char* dot_names[3] = { "dot", NULL};
+
+#define DOT_TYPES_COUNT 1
+static const raptor_type_q dot_types[DOT_TYPES_COUNT + 1] = {
+  { "text/x-graphviz", 15, 5},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = dot_names;
+  factory->desc.mime_types = dot_types;
+  factory->desc.mime_types_count = DOT_TYPES_COUNT;
+
+  factory->desc.label = "GraphViz DOT format";
+  factory->desc.uri_string = "http://www.graphviz.org/doc/info/lang.html";
+
   factory->context_length = sizeof(raptor_dot_context);
 
   factory->init = raptor_dot_serializer_init;
@@ -563,11 +578,6 @@ raptor_dot_serializer_register_factory(raptor_serializer_factory *factory)
 int
 raptor_init_serializer_dot(raptor_world* world)
 {
-  return raptor_serializer_register_factory(world,
-                                            "dot",
-                                            "GraphViz DOT format",
-                                            "text/x-graphviz",
-                                            NULL,
-                                            (const unsigned char*)"http://www.graphviz.org/doc/info/lang.html",
-                                            &raptor_dot_serializer_register_factory);
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_dot_serializer_register_factory);
 }

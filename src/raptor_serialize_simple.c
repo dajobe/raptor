@@ -138,9 +138,23 @@ raptor_simple_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
+static const char* simple_names[3] = { "simple", NULL};
+
+#define SIMPLE_TYPES_COUNT 0
+static const raptor_type_q simple_types[SIMPLE_TYPES_COUNT + 1] = {
+  { NULL, 0, 0}
+};
+
 static int
 raptor_simple_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = simple_names;
+  factory->desc.mime_types = simple_types;
+  factory->desc.mime_types_count = SIMPLE_TYPES_COUNT;
+
+  factory->desc.label = "A simple format";
+  factory->desc.uri_string = NULL;
+
   factory->context_length     = sizeof(raptor_simple_serializer_context);
   
   factory->init                = raptor_simple_serialize_init;
@@ -156,11 +170,8 @@ raptor_simple_serializer_register_factory(raptor_serializer_factory *factory)
 
 
 int
-raptor_init_serializer_simple(raptor_world* world) {
-  return raptor_serializer_register_factory(world,
-                                            "simple", "A simple format", 
-                                            NULL,
-                                            NULL,
-                                            NULL,
-                                            &raptor_simple_serializer_register_factory);
+raptor_init_serializer_simple(raptor_world* world)
+{
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_simple_serializer_register_factory);
 }

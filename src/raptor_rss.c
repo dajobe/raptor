@@ -1650,7 +1650,7 @@ static const raptor_type_q rss_tag_soup_types[RSS_TAG_SOUP_TYPES_COUNT + 1] = {
   { "text/rss", 8, 8},
   { "application/xml", 15, 3},
   { "text/xml", 8, 3},
-  { NULL, 0}
+  { NULL, 0, 0}
 };
 
 static int

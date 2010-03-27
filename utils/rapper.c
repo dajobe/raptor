@@ -559,13 +559,11 @@ main(int argc, char *argv[])
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n");
             for(i = 0; 1; i++) {
-              const char *help_name;
-              const char *help_label;
-              if(raptor_world_enumerate_serializers(world, i,
-                                                    &help_name, &help_label,
-                                                    NULL, NULL))
+              const raptor_syntax_description* sd;
+              sd = raptor_world_get_serializer_description(world, i);
+              if(!sd)
                 break;
-              fprintf(stderr, "  %-14s for %s\n", help_name, help_label);
+              fprintf(stderr, "  %-14s for %s\n", sd->names[0], sd->label);
             }
             usage = 1;
             break;
@@ -701,12 +699,11 @@ main(int argc, char *argv[])
 
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format/serializer to one of:"));
     for(i = 0; 1; i++) {
-      const char *help_name;
-      const char *help_label;
-      if(raptor_world_enumerate_serializers(world, i, &help_name, &help_label,
-                                            NULL, NULL))
+      const raptor_syntax_description* sd;
+      sd = raptor_world_get_parser_description(world, i);
+      if(!sd)
         break;
-      printf("    %-14s  %s", help_name, help_label);
+      printf("    %-14s  %s", sd->names[0], sd->label);
       if(!i)
         puts(" (default)");
       else

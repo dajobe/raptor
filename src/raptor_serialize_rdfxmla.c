@@ -1059,7 +1059,7 @@ raptor_rdfxmla_serialize_set_write_rdf_RDF(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context;
 
-  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+  if(strcmp(serializer->factory->desc.names[0], "rdfxml-abbrev"))
     return 1;
   
   context = (raptor_rdfxmla_context*)serializer->context;
@@ -1087,7 +1087,7 @@ raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context;
 
-  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+  if(strcmp(serializer->factory->desc.names[0], "rdfxml-abbrev"))
     return 1;
   
   context = (raptor_rdfxmla_context*)serializer->context;
@@ -1130,7 +1130,7 @@ raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context;
 
-  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+  if(strcmp(serializer->factory->desc.names[0], "rdfxml-abbrev"))
     return 1;
   
   context = (raptor_rdfxmla_context*)serializer->context;
@@ -1159,7 +1159,7 @@ raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer,
 {
   raptor_rdfxmla_context* context;
 
-  if(strcmp(serializer->factory->name, "rdfxml-abbrev"))
+  if(strcmp(serializer->factory->desc.names[0], "rdfxml-abbrev"))
     return 1;
   
   context = (raptor_rdfxmla_context*)serializer->context;
@@ -1484,9 +1484,57 @@ raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
+static const char* rdfxml_xmp_names[3] = { "rdfxml-xmp", NULL};
+
+#define RDFXML_XMP_TYPES_COUNT 1
+static const raptor_type_q rdfxml_xmp_types[RDFXML_XMP_TYPES_COUNT + 1] = {
+  { "application/rdf+xml", 19, 0},
+  { NULL, 0, 0}
+};
+
+static int
+raptor_rdfxml_xmp_serializer_register_factory(raptor_serializer_factory *factory)
+{
+  factory->desc.names = rdfxml_xmp_names;
+  factory->desc.mime_types = rdfxml_xmp_types;
+  factory->desc.mime_types_count = RDFXML_XMP_TYPES_COUNT;
+
+  factory->desc.label = "RDF/XML (XMP Profile)";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
+
+  factory->context_length     = sizeof(raptor_rdfxmla_context);
+  
+  factory->init                = raptor_rdfxmla_serialize_init;
+  factory->terminate           = raptor_rdfxmla_serialize_terminate;
+  factory->declare_namespace   = raptor_rdfxmla_serialize_declare_namespace;
+  factory->declare_namespace_from_namespace   = raptor_rdfxmla_serialize_declare_namespace_from_namespace;
+  factory->serialize_start     = raptor_rdfxmla_serialize_start;
+  factory->serialize_statement = raptor_rdfxmla_serialize_statement;
+  factory->serialize_end       = raptor_rdfxmla_serialize_end;
+  factory->finish_factory      = raptor_rdfxmla_serialize_finish_factory;
+
+  return 0;
+}
+
+
+static const char* rdfxmla_names[3] = { "rdfxml-abbrev", NULL};
+
+#define RDFXMLA_TYPES_COUNT 1
+static const raptor_type_q rdfxmla_types[RDFXMLA_TYPES_COUNT + 1] = {
+  { "application/rdf+xml", 19, 0},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = rdfxmla_names;
+  factory->desc.mime_types = rdfxmla_types;
+  factory->desc.mime_types_count = RDFXMLA_TYPES_COUNT;
+
+  factory->desc.label = "RDF/XML (Abbreviated)";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
+
   factory->context_length     = sizeof(raptor_rdfxmla_context);
   
   factory->init                = raptor_rdfxmla_serialize_init;
@@ -1505,19 +1553,16 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
 int
 raptor_init_serializer_rdfxmla(raptor_world* world)
 {
-  return 
-    raptor_serializer_register_factory(world,
-                                       "rdfxml-xmp", "RDF/XML (XMP Profile)", 
-                                       "application/rdf+xml",
-                                       NULL,
-                                       (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                       &raptor_rdfxmla_serializer_register_factory)
-    ||
-    raptor_serializer_register_factory(world,
-                                       "rdfxml-abbrev", "RDF/XML (Abbreviated)", 
-                                       "application/rdf+xml",
-                                       NULL,
-                                       (const unsigned char*)"http://www.w3.org/TR/rdf-syntax-grammar",
-                                       &raptor_rdfxmla_serializer_register_factory);
+  int rc;
+  
+  rc = !raptor_serializer_register_factory(world,
+                                           &raptor_rdfxml_xmp_serializer_register_factory);
+  if(rc)
+    return rc;
+  
+  rc = !raptor_serializer_register_factory(world,
+                                          &raptor_rdfxmla_serializer_register_factory);
+
+  return rc;
 }
 

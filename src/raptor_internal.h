@@ -639,21 +639,12 @@ struct raptor_serializer_factory_s {
 
   struct raptor_serializer_factory_s* next;
 
-  /* syntax name */
-  const char* name;
-  /* alternate syntax name; not mentioned in enumerations */
-  const char* alias;
-
-  /* syntax readable label */
-  const char* label;
-  /* syntax MIME type (or NULL) */
-  const char* mime_type;
-  /* syntax URI (or NULL) */
-  const unsigned char* uri_string;
-  
   /* the rest of this structure is populated by the
      serializer-specific register function */
   size_t context_length;
+  
+  /* static desc that the parser registration initialises */
+  raptor_syntax_description desc;
   
   /* create a new serializer */
   int (*init)(raptor_serializer* serializer, const char *name);
@@ -694,7 +685,7 @@ typedef struct
 
 
 /* raptor_serialize.c */
-int raptor_serializer_register_factory(raptor_world* world, const char *name, const char *label, const char *mime_type, const char *alias, const unsigned char *uri_string, int (*factory) (raptor_serializer_factory*));
+raptor_serializer_factory* raptor_serializer_register_factory(raptor_world* world, int (*factory) (raptor_serializer_factory*));
 
 
 /* raptor_general.c */

@@ -1136,9 +1136,24 @@ raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
+static const char* turtle_names[3] = { "turtle", NULL};
+
+#define TURTLE_TYPES_COUNT 1
+static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
+  { "application/x-turtle", 20, 10},
+  { NULL, 0, 0}
+};
+
 static int
 raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 {
+  factory->desc.names = turtle_names;
+  factory->desc.mime_types = turtle_types;
+  factory->desc.mime_types_count = TURTLE_TYPES_COUNT;
+
+  factory->desc.label = "Turtle";
+  factory->desc.uri_string = "http://www.dajobe.org/2004/01/turtle";
+  
   factory->context_length     = sizeof(raptor_turtle_context);
   
   factory->init                = raptor_turtle_serialize_init;
@@ -1157,11 +1172,7 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 int
 raptor_init_serializer_turtle(raptor_world* world)
 {
-  return raptor_serializer_register_factory(world,
-                                            "turtle", "Turtle", 
-                                            "application/x-turtle",
-                                            NULL,
-                                            (const unsigned char*)"http://www.dajobe.org/2004/01/turtle",
-                                            &raptor_turtle_serializer_register_factory);
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_turtle_serializer_register_factory);
 }
 
