@@ -1,3 +1,620 @@
+2010-03-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-triples.sgml: doc
+
+	* docs/raptor-sections.txt: fix name
+
+	* docs/raptor-sections.txt, src/raptor.h:
+	Add extra typedefs for
+	union to help gtkdoc
+
+	* src/raptor.h:
+	autodocs
+
+	* docs/raptor-sections.txt:
+	Update sections with renames
+
+	* docs/raptor-1-to-2-map.tsv: Update for serializer descriptions
+	raptor_serializers_enumerate* replaced by
+	raptor_world_get_serializer_description.
+
+	Added raptor_serializer_get_description
+
+	* src/Makefile.am, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_simple.c: Remove obsolete 'simple'
+	serializer' from sources that has not been enabled for a long time
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_rss.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, utils/rapper.c: Syntax description
+	replaces serializer enumeration and get desc methods.
+
+	(raptor_world_get_serializer_description): Renamed from
+	raptor_world_enumerate_serializers and now just takes single int
+	param.
+
+	(raptor_serializer_get_description): Added Updated all serializers
+	to register static descriptions of names, mime types, label, uris.
+
+	Updated rapper utility to use raptor_serializer_get_description()
+	for listing serializers.
+
+	* src/raptor_parse.c:
+	code style
+
+	* docs/raptor-1-to-2-map.tsv: Update changes for parser
+	descriptions raptor_get_label, raptor_get_mime_type,
+	raptor_get_need_base_uri are deleted and use result fields from
+	raptor_parser_get_description()
+
+	* docs/raptor-1-to-2-map.tsv: Use
+	raptor_world_get_parser_description to replace
+	raptor_parsers_enumerate*
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor.h, src/raptor_guess.c, src/raptor_internal.h,
+	src/raptor_parse.c, utils/rapper.c: Syntax description replaces
+	parser enumeration and get desc methods.
+
+	(raptor_world_get_parser_description): Renamed from
+	raptor_world_enumerate_parsers and now just takes single int param.
+
+	(raptor_parser_get_label, raptor_parser_get_mime_type,
+	raptor_parser_get_need_base_uri): Deleted; use
+	raptor_world_get_parser_description() result fields instead.
+
+	raptor_parser_factory gains an optional get_description factory
+	method.
+
+	(raptor_parser_get_name): Note this returns main name and point to
+	raptor_parser_get_description() to get other names and info.
+
+	(raptor_parser_get_description): Added to either use the factory
+	method or else return the factory desc.
+
+	(raptor_guess_guess_get_description): Updated guess parser to
+	return internal description rather than that of 'guess'.  Updated
+	rapper utility to use raptor_parser_get_description() for listing
+	parsers.
+
+	* src/raptor.h: group public typedefs (code style)
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Use
+	raptor_syntax_description inside raptor_parser_factory
+	raptor_parser_factory loses fields about description replaced by a
+	static raptor_syntax_description desc field.
+
+	Updated all users to use factory->desc.FIELD rather than
+	factory->FIELD for the descriptive fields.
+
+	* src/raptor.h: Added raptor_type_q and raptor_syntax_description
+	types to public API.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/turtle_parser.y: Update parsers to register mime types count
+
+	* src/raptor_parse.c: Check and use mime_types_count field.
+
+	(raptor_world_register_parser_factory): Add maintainer/debug check
+	of mime types count.
+
+	(raptor_world_enumerate_parsers, raptor_parser_get_mime_type): Do
+	not access mime types unless there is one.
+
+	* src/raptor_internal.h: raptor_parser_factory gains
+	mime_types_count field
+
+	* src/raptor_internal.h, src/raptor_parse.c, src/turtle_parser.y:
+	Remove raptor_parser_simple_error - only used once.
+
+	(turtle_parser_error): Call raptor_log_error() direct.
+
+	(raptor_parser_simple_error): Deleted.
+
+	* src/raptor_parse.c: ws, code style
+
+2010-03-25  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Alter
+	parser registration to be more static and declarative.
+
+	raptor_parser_factory: field name turns into C array of names.
+	field mime_types turns into a C array of #raptor_type_q
+
+	(raptor_free_parser_factory): Do not free data fields that are now
+	static and shared.
+
+	(raptor_world_register_parser_factory): Reduce args to just world
+	plus factory handler.
+
+	(raptor_parser_factory_add_alias,
+	raptor_parser_factory_add_mime_type):
+	Deleted
+
+	(raptor_world_get_parser_factory, raptor_world_enumerate_parsers,
+	raptor_parser_get_mime_type, raptor_world_guess_parser_name,
+	raptor_parser_get_accept_header_all): Update to handle mime_types
+	as array of #raptor_type_q
+
+	Alter all parser registrations to pass in static data for names,
+	mime_types, label and uri_string in factory registration function
+	handler.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y:
+	(raptor_world_register_parser_factory): Renamed from
+	raptor_parser_register_factory.
+
+2010-03-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: struct raptor_parser_factory_s: docs
+
+	* src/raptor_parse.c:
+	(raptor_parser_register_factory): autodocs
+
+2010-03-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_term_as_counted_string): Fixed warning about strict
+	aliasing.
+
+2010-03-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_parse.c, src/raptor_serialize_turtle.c,
+	src/strcasecmp.c: Fixed gcc4 warnings about using a char where an
+	int is required
+
+2010-03-21  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_option.c:
+	Remove raptor_option_get_value_type() - can use option description
+	to get this and more details.
+
+2010-03-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_new_parser): Set default options *after* initialising
+	options block.
+
+	* src/raptor_option.c: autodoc words
+
+	* src/raptor_option.c: raptor_world_get_option_from_uri - autodocs
+
+	* src/raptor_option.c: raptor_option_get_value_type - fix autodoc
+
+	* src/raptor_general.c: Added turtle writer label to
+	raptor_domain_labels
+
+	* docs/raptor-sections.txt: Add raptor_option_description
+
+	* src/raptor.h: raptor_option_description reformatting for
+	autodocs
+
+	* docs/raptor-1-to-2-map.tsv: add notes
+
+	* docs/raptor-1-to-2-map.tsv: Added new raptor_option_description
+	functions raptor_world_get_option_description and
+	raptor_free_option_description
+
+	* docs/raptor-sections.txt: Added raptor_free_option_description
+
+	* docs/raptor-sections.txt: raptor_parser_get_option_count renamed
+	to raptor_option_get_count
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Update
+	docs and API ref to remove options enumeration functions.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Remove all
+	raptor_world_enumerate_CLASS_options functions.
+
+	(raptor_world_options_enumerate_common): Remove internal function
+	no longer used.
+
+	Update parser test code to use option descriptions for testing
+	option URIs.
+
+	Update autodocs to refer to raptor_world_get_option_description()
+	for getting the valid option IDs.
+
+	* src/raptor.h, src/raptor_option.c, utils/rapper.c: Added option
+	description class to describe any domain option.
+
+	typedef raptor_option_description added
+
+	(raptor_world_get_option_description): Added, to create an option
+	description object for a domain and option ID.
+
+	(raptor_free_option_description): Added to free an option
+	description.
+
+	(raptor_option_get_option_area_for_domain): Added internal helper
+	to map option IDs to area bits.
+
+	Update rapper to use option description instead of options
+	enumeration calls.
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_option.c,
+	utils/rapper.c: Rename raptor_parser_get_option_count() to
+	raptor_option_get_count().
+
+	* src/raptor.h: Add RAPTOR_DOMAIN_TURTLE_WRITER
+
+2010-03-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_serialize.c: Changed
+	raptor_*_set_option() to take in a const char* instead of char*.
+
+2010-03-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: code style
+
+	* src/raptor.h: code style
+
+	* docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml.sgml: Update doc tmpls
+
+	* docs/raptor-1-to-2-map.tsv: Update
+	raptor_xml_writer_set_feature/string new names
+
+	* docs/raptor-1-to-2-map.tsv: Remove raptor_world_set_www_flags
+	which was added in raptor2
+
+	* docs/raptor-sections.txt, src/raptor.h, src/raptor_general.c,
+	src/raptor_www.c:
+	(raptor_world_set_flag): Replaces raptor_world_set_www_flags with
+	world flag RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH
+
+	* docs/raptor-sections.txt: Remove get/set option_string forms
+
+	* docs/raptor-1-to-2-map.tsv: Update serializer and xml_writer
+	get/set options to use just 1 function.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c: Update sax2 set options (there is no get) to
+	use generic code.
+
+	(raptor_new_sax2): Init options structure.
+
+	(raptor_free_sax2): Clear options structure.
+
+	(raptor_sax2_set_option): Alter signature to use new format.  This
+	API is not yet public.
+
+	Update code and callers to use the option access macros.
+
+	* src/raptor_xml_writer.c:
+	(raptor_new_xml_writer): Call raptor_object_options_init
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c,
+	utils/rapper.c:
+	
+	Update xml writer set/get option API to use generic code
+	raptor_xml_writer_s:
+
+	Add raptor_object_options field and delete flags, indent,
+	xml_version, xml_declaration fields that are now managed by it.
+
+	(raptor_new_xml_writer): Init options with
+	raptor_object_options_init.  Set defaults that are not 0 or NULL.
+
+	(raptor_free_xml_writer): Use raptor_object_options_clear() to
+	tidy up option strings.
+
+	(raptor_xml_writer_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_xml_writer_set_option_string): Deleted, merged into above.
+
+	(raptor_xml_writer_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_xml_writer_get_option_string): Deleted, merged into above.
+
+	Update many references in xml_writer code to numeric and string
+	options to use RAPTOR_OPTIONS_GET/SET_STRING/NUMERIC macros.
+
+	Update callers of raptor_xml_writer_set_option() inside
+	serializers to pass in NULL string arg.  Update rapper utility to
+	use new set_options style calls for parser and serializer.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c: Update
+	serializer set/get option API to use generic code
+
+	raptor_serializer_s: Add raptor_object_options field and delete
+	multiple option_* fields that are now managed by it.
+
+	(raptor_new_serializer): Init options with
+	raptor_object_options_init.  Set defaults that are not 0 or NULL.
+
+	(raptor_free_serializer): Use raptor_object_options_clear() to
+	tidy up option strings.
+
+	(raptor_serializer_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_serializer_set_option_string): Deleted, merged into above.
+
+	(raptor_serializer_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_serializer_get_option_string): Deleted, merged into above.
+
+	Update many references in serializers to numeric and string
+	options to use RAPTOR_OPTIONS_GET/SET_STRING/NUMERIC macros.  Some
+	code tidying to break long lines.
+
+	* docs/raptor-1-to-2-map.tsv: Update API docs for
+	raptor_parser_set_option: args changed
+	raptor_parser_set_option_string: deleted, use above
+	raptor_parser_get_option: args changed
+	raptor_parser_get_option_string: deleted, use above
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor_option.c: autodocs
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c: Update
+	parser set/get option API to use generic code
+
+	raptor_parser_s: loose cache_control and user_agent char* option
+	fields that are now managed by the raptor_object_options.
+
+	(raptor_free_parser): Use raptor_object_options_clear() to tidy up
+	option strings.
+
+	(raptor_parser_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_parser_set_option_string): Deleted, merged into above.
+
+	(raptor_parser_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_parser_get_option_string): Deleted, merged into above.
+	Update references to string options to use
+	RAPTOR_OPTIONS_GET/SET_STRING macros.
+
+	* src/raptor_internal.h, src/raptor_option.c: Move support for
+	option get/set into generic code and handle strings.
+
+	(raptor_object_options_copy_state): Copy strings when copying
+	state.
+
+	(raptor_object_options_init): Set integers / strings to 0 / NULL.
+
+	(raptor_object_options_clear_state): Added to free strings.
+
+	(raptor_object_options_get_option): Added to get any option for an
+	option area.
+
+	(raptor_object_options_set_option): Added to set any option for an
+	option area.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	
+	Added raptor_object_options_init to initialise options object.
+
+	(raptor_object_options_init): Added
+
+	(raptor_new_parser): Call above to init parser's options block.
+
+	* src/raptor_internal.h: Made raptor_object_options contain an
+	array of union str/int values and area.
+
+	raptor_object_options gains raptor_option_area area field and
+	options is now an array of raptor_str_int (union of char*/int)
+	
+	Adjusted RAPTOR_OPTIONS_GET/SET_NUMERIC macros to use integer part
+	of union.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	
+	Rename raptor_object_options_copy to
+	raptor_object_options_copy_state since it is not a copy
+	constructor
+
+	(raptor_object_options_copy_state): Renamed from
+	raptor_object_options_copy.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	Add raptor_object_options_copy() for copying options
+	state (raptor_object_options_copy): Added.
+
+	(raptor_parser_copy_user_state): Use above.
+
+	* src/raptor_grddl.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c: Move per-parser-project
+	options into a raptor_object_options type.
+
+	raptor_object_options typedef added.  raptor_parser_s: use above
+	rather than array of int.
+
+	(RAPTOR_OPTIONS_GET_NUMERIC, RAPTOR_OPTIONS_SET_NUMERIC): Added
+	and used by parsers.
+
+	* src/raptor_statement.c:
+	(raptor_term_as_counted_string): Use raptor_term_ntriples_write()
+	Intended to address Issue#0000357
+
+2010-03-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml, docs/tmpl/section-uri-factory.sgml: Remove
+	remaining uri-factory files
+
+	* src/raptor_general.c:
+	(raptor_world_set_log_handler): Allow setting after world is open.
+
+	* docs/tmpl/section-unused.sgml: Update doc tmpls
+
+	* docs/raptor-1-to-2-map.tsv: raptor_new_iostream_from_handler is
+	arg change. no notes
+
+	* docs/raptor-1-to-2-map.tsv: raptor_uri_is_file_uri is just a
+	rename
+
+	* docs/format-changes.pl: tweak format_notes regexes
+
+	* docs/raptor-1-to-2-map.tsv: more deprecation notes
+
+	* docs/raptor-1-to-2-map.tsv: update raptor_new_identifier/_v2
+	notes
+
+	* docs/raptor-1-to-2-map.tsv: raptor_syntax_name_check and
+	raptor_syntax_name_check_v2 replaced by
+	raptor_world_is_parser_name
+
+	* docs/format-changes.pl: Make format_notes() take is_inline param
+
+	* docs/format-changes.pl: remove # from formatted type name
+
+	* docs/format-changes.pl: format notes
+
+	* docs/format-changes.pl: format notes when present
+
+	* docs/raptor-1-to-2-map.tsv: Add change notes field
+
+	* docs/format-changes.pl: read notes field
+
+	* docs/format-changes.pl: ignore comments
+
+2010-03-08  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_general.c:
+	(raptor_world_set_flag): Set uri_interning to passed in value.
+
+2010-03-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/format-changes.pl: headers for changed
+
+	* docs/format-changes.pl: adjust headers
+
+	* docs/.gitignore, docs/Makefile.am, docs/format-changes.pl,
+	docs/raptor-docs.xml: Add raptor changes formatting script
+	format-changes.pl
+
+	* docs/raptor-1-to-2-map.tsv, raptor-1-to-2-map.tsv: Move
+	raptor-1-to-2-map.tsv to docs
+
+	* raptor-1-to-2-map.tsv: move to 1 line TSV
+
+	* raptor-1-to-2-map.tsv: raptor 1 to raptor 2 function API map
+
+	* docs/raptor-sections.txt: Add RAPTOR_V2_AVAILABLE to sections.
+
+	* docs/tmpl/section-unused.sgml, src/raptor_uri.c: fix docbook
+	escapes for % in comments
+
+	* src/raptor_uri.c: autodocs and docbook for uri-hex literals
+
+	* src/raptor.h: autodocs for raptor_data_compare_function and
+	raptor_data_free_function
+
+	* src/raptor.h: autodocs for raptor_avltree,
+	raptor_avltree_iterator and raptor_avltree_visit_function.
+
+	* src/raptor_avltree.c: autodocs for raptor_avltree_print
+
+	* src/raptor_unicode.c: autodocs and docbook for linking to urls
+	with #s
+
+	* src/raptor_xml.c: autodocs
+
+	* src/raptor_statement.c: autodocs
+
+	* docs/tmpl/section-avltree.sgml: Added avltree template
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-unicode.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Updated sgml templates
+
+	* docs/raptor-sections.txt: raptor_avltree_dump not
+	raptor_avltree_debug
+
+	* docs/raptor-sections.txt, src/raptor.h, src/raptor_avltree.c:
+	Added enum raptor_avltree_bitflags for raptor_new_avltree() flags
+	with docs.  raptor_avltree_bitflags added with docs on flags.
+
+	(raptor_new_avltree): Updated docs to point to above.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_libxml.c: Rename
+	raptor_world_flag enum values to remove plural FLAGS
+
+	* src/raptor.h: autodocs
+
+	* src/raptor_statement.c: autodocs
+
+	* docs/raptor-sections.txt: autodocs
+
+	* src/raptor_iostream.c: autodocs
+
+	* src/raptor_locator.c: autodocs
+
+	* src/raptor_avltree.c: autodocs
+
+	* src/raptor.h: autodocs
+
+	* src/raptor_namespace.c: autodocs
+
+	* docs/raptor-sections.txt: more new names
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_libxml.c, src/raptor_uri.c: Give raptor_world a flags
+	mechanism for pre-open configuration
+
+	raptor_world_flags: Replaces raptor_libxml_flags and is an enum
+	not a bitmask.
+
+	Add RAPTOR_WORLD_FLAGS_URI_INTERNING flag for disabling URI
+	interning using an AVL-Tree.
+
+	(raptor_world_set_libxslt_security_preferences,
+	raptor_world_set_log_handler): Gains an int return value to report
+	failure if world is already opened.
+
+	(raptor_world_set_flag): Replaces raptor_world_set_libxml_flags
+	and has both an enum flag, int value and int error return.  Update
+	libxml code looking for world->libxml_flags to use new enum names
+	as bitmasks.
+
+	* src/Makefile.am, src/raptor_general.c, src/raptor_log.c: Move
+	raptor logging code to new raptor_log.c
+
+2010-03-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_option.c: code style static int
+	raptor_option_uri_prefix_len replaces #define
+	RAPTOR_OPTION_URI_PREFIX_LEN
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor.h, src/raptor_general.c: Added raptor_domain and add
+	it to raptor_log_message structure
+
 2010-03-02  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c: Code style
