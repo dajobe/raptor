@@ -1500,6 +1500,10 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter = from_parser->uri_filter;
   to_parser->uri_filter_user_data = from_parser->uri_filter_user_data;
 
+  /* copy bit flags */
+  to_parser->failed = from_parser->failed;
+  to_parser->emitted_default_graph = from_parser->emitted_default_graph;
+
   /* copy options */
   if(!rc)
     rc = raptor_object_options_copy_state(&to_parser->options, 
