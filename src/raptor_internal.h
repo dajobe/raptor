@@ -550,38 +550,19 @@ struct raptor_parser_s {
 };
 
 
-/** A list of (MIME Type, Q) values */
-struct raptor_type_q_s {
-  const char* mime_type;
-  size_t mime_type_len;
-  int q; /* 0-10 standing for 0.0-1.0 */
-};
-typedef struct raptor_type_q_s raptor_type_q;
-
-
 /** A Parser Factory */
 struct raptor_parser_factory_s {
   raptor_world* world;
 
   struct raptor_parser_factory_s* next;
 
-  /* parser names: first name is public name, rest are aliases */
-  const char** names;
-
-  /* parser description */
-  const char* label;
-
-  /* Array of (MIME type, q) values accepted by the parser (or NULL): */
-  const raptor_type_q* mime_types;
-  /* size of array above */
-  int mime_types_count;
-
-  /* URI identifying the parser (or NULL) */
-  const char* uri_string;
-  
   /* the rest of this structure is populated by the
      parser-specific register function */
+
   size_t context_length;
+  
+  /* static desc that the parser registration initialises */
+  raptor_syntax_description desc;
   
   /* create a new parser */
   int (*init)(raptor_parser* parser, const char *name);
@@ -609,9 +590,6 @@ struct raptor_parser_factory_s {
 
   /* get the Accept header of a URI request (OPTIONAL) */
   const char* (*accept_header)(raptor_parser* rdf_parser);
-
-  /* non-0 if this parser needs a base URI */
-  int need_base_uri;
 
   /* get the current generated ID base (OPTIONAL) */
   int (*get_current_base_id)(raptor_parser* rdf_parser);

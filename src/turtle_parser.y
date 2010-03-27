@@ -1520,17 +1520,17 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = turtle_names;
+  factory->desc.names = turtle_names;
 
-  factory->mime_types = turtle_types;
-  factory->mime_types_count = TURTLE_TYPES_COUNT;
+  factory->desc.mime_types = turtle_types;
+  factory->desc.mime_types_count = TURTLE_TYPES_COUNT;
 
-  factory->label = "Turtle Terse RDF Triple Language";
-  factory->uri_string = "http://www.dajobe.org/2004/01/turtle/";
+  factory->desc.label = "Turtle Terse RDF Triple Language";
+  factory->desc.uri_string = "http://www.dajobe.org/2004/01/turtle/";
 
-  factory->context_length     = sizeof(raptor_turtle_parser);
+  factory->desc.need_base_uri = 1;
   
-  factory->need_base_uri = 1;
+  factory->context_length     = sizeof(raptor_turtle_parser);
   
   factory->init      = raptor_turtle_parse_init;
   factory->terminate = raptor_turtle_parse_terminate;
@@ -1558,17 +1558,17 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = trig_names;
+  factory->desc.names = trig_names;
 
-  factory->mime_types = trig_types;
-  factory->mime_types_count = TRIG_TYPES_COUNT;
+  factory->desc.mime_types = trig_types;
+  factory->desc.mime_types_count = TRIG_TYPES_COUNT;
 
-  factory->label = "TriG - Turtle with Named Graphs";
-  factory->uri_string = "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/";
+  factory->desc.label = "TriG - Turtle with Named Graphs";
+  factory->desc.uri_string = "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/";
 
-  factory->context_length     = sizeof(raptor_turtle_parser);
+  factory->desc.need_base_uri = 1;
   
-  factory->need_base_uri = 1;
+  factory->context_length     = sizeof(raptor_turtle_parser);
   
   factory->init      = raptor_turtle_parse_init;
   factory->terminate = raptor_turtle_parse_terminate;

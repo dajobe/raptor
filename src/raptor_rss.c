@@ -1658,17 +1658,17 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = rss_tag_soup_names;
+  factory->desc.names = rss_tag_soup_names;
 
-  factory->mime_types = rss_tag_soup_types;
-  factory->mime_types_count = RSS_TAG_SOUP_TYPES_COUNT;
+  factory->desc.mime_types = rss_tag_soup_types;
+  factory->desc.mime_types_count = RSS_TAG_SOUP_TYPES_COUNT;
 
-  factory->label = "RSS Tag Soup";
-  factory->uri_string = NULL;
+  factory->desc.label = "RSS Tag Soup";
+  factory->desc.uri_string = NULL;
 
-  factory->context_length     = sizeof(raptor_rss_parser);
+  factory->desc.need_base_uri = 1;
   
-  factory->need_base_uri = 1;
+  factory->context_length     = sizeof(raptor_rss_parser);
   
   factory->init      = raptor_rss_parse_init;
   factory->terminate = raptor_rss_parse_terminate;

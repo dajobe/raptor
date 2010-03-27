@@ -1958,17 +1958,17 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = grddl_names;
+  factory->desc.names = grddl_names;
 
-  factory->mime_types = grddl_types;
-  factory->mime_types_count = GRDDL_TYPES_COUNT;
+  factory->desc.mime_types = grddl_types;
+  factory->desc.mime_types_count = GRDDL_TYPES_COUNT;
 
-  factory->label = "Gleaning Resource Descriptions from Dialects of Languages";
-  factory->uri_string = NULL;
+  factory->desc.label = "Gleaning Resource Descriptions from Dialects of Languages";
+  factory->desc.uri_string = NULL;
 
-  factory->context_length     = sizeof(raptor_grddl_parser_context);
+  factory->desc.need_base_uri = 1;
   
-  factory->need_base_uri = 1;
+  factory->context_length     = sizeof(raptor_grddl_parser_context);
   
   factory->init      = raptor_grddl_parse_init;
   factory->terminate = raptor_grddl_parse_terminate;

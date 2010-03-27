@@ -209,7 +209,7 @@ raptor_guess_guess_get_name(raptor_parser* rdf_parser)
   if(guess_parser)
     return raptor_parser_get_name(guess_parser->parser);
   else
-    return rdf_parser->factory->names[0];
+    return rdf_parser->factory->desc.names[0];
 }
 
 
@@ -218,17 +218,17 @@ static const char* guess_names[2] = { "guess", NULL };
 static int
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 
 {
-  factory->names = guess_names;
+  factory->desc.names = guess_names;
 
-  factory->mime_types = NULL;
-  factory->mime_types_count = 0;
+  factory->desc.mime_types = NULL;
+  factory->desc.mime_types_count = 0;
 
-  factory->label = "Pick the parser to use using content type and URI";
-  factory->uri_string = NULL;
+  factory->desc.label = "Pick the parser to use using content type and URI";
+  factory->desc.uri_string = NULL;
+  
+  factory->desc.need_base_uri = 1;
   
   factory->context_length     = sizeof(raptor_guess_parser_context);
-  
-  factory->need_base_uri = 1;
   
   factory->init      = raptor_guess_parse_init;
   factory->terminate = raptor_guess_parse_terminate;

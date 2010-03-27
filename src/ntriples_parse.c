@@ -999,18 +999,18 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = ntriples_names;
+  factory->desc.names = ntriples_names;
 
-  factory->mime_types = ntriples_types;
-  factory->mime_types_count = NTRIPLES_TYPES_COUNT;
+  factory->desc.mime_types = ntriples_types;
+  factory->desc.mime_types_count = NTRIPLES_TYPES_COUNT;
 
-  factory->label = "N-Triples";
-  factory->uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
+  factory->desc.label = "N-Triples";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
 
+  factory->desc.need_base_uri = 0;
+  
   factory->context_length     = sizeof(raptor_ntriples_parser_context);
 
-  factory->need_base_uri = 0;
-  
   factory->init      = raptor_ntriples_parse_init;
   factory->terminate = raptor_ntriples_parse_terminate;
   factory->start     = raptor_ntriples_parse_start;

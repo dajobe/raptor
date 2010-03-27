@@ -3156,17 +3156,17 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = rdfxml_names;
+  factory->desc.names = rdfxml_names;
 
-  factory->mime_types = rdfxml_types;
-  factory->mime_types_count = RDFXML_TYPES_COUNT;
+  factory->desc.mime_types = rdfxml_types;
+  factory->desc.mime_types_count = RDFXML_TYPES_COUNT;
 
-  factory->label = "RDF/XML";
-  factory->uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
+  factory->desc.label = "RDF/XML";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
 
-  factory->context_length     = sizeof(raptor_rdfxml_parser);
+  factory->desc.need_base_uri = 1;
   
-  factory->need_base_uri = 1;
+  factory->context_length     = sizeof(raptor_rdfxml_parser);
   
   factory->init      = raptor_rdfxml_parse_init;
   factory->terminate = raptor_rdfxml_parse_terminate;

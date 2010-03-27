@@ -295,18 +295,18 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
 {
   int rc = 0;
 
-  factory->names = rdfa_names;
+  factory->desc.names = rdfa_names;
 
-  factory->mime_types = NULL;
-  factory->mime_types_count = 0;
+  factory->desc.mime_types = NULL;
+  factory->desc.mime_types_count = 0;
   
-  factory->label = "RDF/A via librdfa";
-  factory->uri_string = "http://www.w3.org/TR/rdfa/";
+  factory->desc.label = "RDF/A via librdfa";
+  factory->desc.uri_string = "http://www.w3.org/TR/rdfa/";
+  
+  factory->desc.need_base_uri = 0;
   
   factory->context_length     = sizeof(raptor_librdfa_parser_context);
 
-  factory->need_base_uri = 0;
-  
   factory->init      = raptor_librdfa_parse_init;
   factory->terminate = raptor_librdfa_parse_terminate;
   factory->start     = raptor_librdfa_parse_start;
