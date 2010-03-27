@@ -146,8 +146,8 @@
 1.4.21	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)	1.9.0	raptor_world*	raptor_parser_get_world	(raptor_parser* rdf_parser)	-
 1.4.21	int	raptor_parser_set_feature_string	(raptor_parser *parser, raptor_feature feature, const unsigned char* value)	1.9.0	int	raptor_parser_set_option	(raptor_parser *parser, raptor_option option, char* string, int integer)	-
 1.4.21	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	-
-1.4.21	int	raptor_parsers_enumerate	(const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
-1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	int	raptor_world_enumerate_parsers	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label, const char* *mime_type, const unsigned char* *uri_string)	-
+1.4.21	int	raptor_parsers_enumerate	(const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, const unsigned int counter)	-
+1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, const unsigned int counter)	-
 1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	-
