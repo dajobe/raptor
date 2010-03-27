@@ -131,9 +131,18 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                    const unsigned char *object_literal_datatype)
 {
   /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
-  raptor_statement *statement=&parser->statement;
+  raptor_statement *statement = &parser->statement;
   raptor_uri *predicate_uri = NULL;
   raptor_uri *datatype_uri = NULL;
+
+  if(parser->graph_mark_handler && !parser->emitted_default_graph) {
+    raptor_parser_start_graph(parser, NULL, 0);
+    parser->emitted_default_graph++;
+  }
+
+  /* If there is no statement handler - there is nothing else to do */
+  if(!parser->statement_handler)
+    goto cleanup;
 
   /* Two choices for subject from N-Triples */
   if(subject_type == RAPTOR_TERM_TYPE_BLANK) {
@@ -198,10 +207,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                                      object_literal_language);
   }
 
-  if(!parser->statement_handler)
-    goto cleanup;
-
-  /* Generate the statement; or is it fact? */
+  /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
 
   cleanup:
@@ -936,6 +942,11 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
        return 1;
     }
     
+    if(rdf_parser->emitted_default_graph) {
+      raptor_parser_end_graph(rdf_parser, NULL, 0);
+      rdf_parser->emitted_default_graph--;
+    }
+
     return 0;
   }
     
