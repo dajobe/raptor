@@ -1741,6 +1741,26 @@ raptor_parser_get_world(raptor_parser* rdf_parser)
 }
 
 
+/**
+ * raptor_parser_get_graph:
+ * @rdf_parser: parser
+ * 
+ * Get the current graph for the parser
+ *
+ * The returned URI is owned by the caller and must be freed with
+ * raptor_free_uri()
+ *
+ * Return value: raptor_uri* graph name or NULL for the default graph
+ **/
+raptor_uri*
+raptor_parser_get_graph(raptor_parser* rdf_parser)
+{
+  if(rdf_parser->factory->get_graph)
+    return rdf_parser->factory->get_graph(rdf_parser);
+  return NULL;
+}
+
+
 /* end not STANDALONE */
 #endif
 

@@ -1485,6 +1485,19 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
+static raptor_uri*
+raptor_turtle_get_graph(raptor_parser* rdf_parser)
+{
+  raptor_turtle_parser *turtle_parser;
+
+  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  if(turtle_parser->graph_name)
+    return raptor_uri_copy(turtle_parser->graph_name->value.uri);
+
+  return NULL;
+}
+
+
 #ifdef RAPTOR_PARSER_TRIG
 static int
 raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory, 
@@ -1571,6 +1584,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_turtle_parse_start;
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_turtle_parse_recognise_syntax;
+  factory->get_graph = raptor_turtle_get_graph;
 
   return rc;
 }
@@ -1609,6 +1623,7 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
   factory->start     = raptor_turtle_parse_start;
   factory->chunk     = raptor_turtle_parse_chunk;
   factory->recognise_syntax = raptor_trig_parse_recognise_syntax;
+  factory->get_graph = raptor_turtle_get_graph;
 
   return rc;
 }

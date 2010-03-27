@@ -915,6 +915,8 @@ RAPTOR_API
 unsigned char* raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type);
 RAPTOR_API
 raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
+RAPTOR_API
+raptor_uri* raptor_parser_get_graph(raptor_parser* rdf_parser);
 
 
 /* Locator Class */

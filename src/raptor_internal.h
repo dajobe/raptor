@@ -599,6 +599,9 @@ struct raptor_parser_factory_s {
 
   /* get the description (OPTIONAL) */
   const raptor_syntax_description* (*get_description)(raptor_parser* rdf_parser);
+
+  /* get the current graph (OPTIONAL) - if not implemented, the current graph is always the default (NULL) and start/end graph marks are synthesised */
+  raptor_uri* (*get_graph)(raptor_parser* rdf_parser);
 };
 
 
