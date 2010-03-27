@@ -603,6 +603,15 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
      strcmp(grddl_parser->internal_parser_name, parser_name)) {
     /* construct a new parser if none in use or not what is required */
     if(grddl_parser->internal_parser) {
+      int our_emit_flags = rdf_parser->emit_graph_marks;
+
+      /* copy back bit flags from parser about to be destroyed */
+      raptor_parser_copy_flags_state(rdf_parser,
+                                     grddl_parser->internal_parser);
+
+      /* restore whatever graph makrs state we had here */
+      rdf_parser->emit_graph_marks = our_emit_flags;
+
       RAPTOR_DEBUG3("Parser %p: Freeing internal %s parser.\n",
                     rdf_parser, grddl_parser->internal_parser_name);
       
@@ -626,6 +635,9 @@ raptor_grddl_ensure_internal_parser(raptor_parser* rdf_parser,
     if(raptor_parser_copy_user_state(grddl_parser->internal_parser, rdf_parser))
        return 1;
 
+    /* Disable graph marks in newly constructed internal parser */
+    grddl_parser->internal_parser->emit_graph_marks = 0;
+    
     grddl_parser->saved_user_data = rdf_parser->user_data;
     grddl_parser->saved_statement_handler = rdf_parser->statement_handler;
   }
