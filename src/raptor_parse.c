@@ -226,12 +226,12 @@ raptor_world_register_parser_factory(raptor_world* world,
 }
 
 
-/**
+/*
  * raptor_world_get_parser_factory:
  * @world: raptor_world object
  * @name: the factory name or NULL for the default factory
  *
- * Get a parser factory by name.
+ * INTERNAL - Get a parser factory by name.
  * 
  * Return value: the factory object or NULL if there is no such factory
  **/
@@ -274,9 +274,9 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
  * @world: raptor_world object
  * @counter: index into the list of parsers
  *
- * Get parser syntax information
+ * Get parser descriptive syntax information
  * 
- * Return value: non 0 on failure of if counter is out of range
+ * Return value: description or NULL if counter is out of range
  **/
 const raptor_syntax_description*
 raptor_world_get_parser_description(raptor_world* world, 
@@ -299,7 +299,7 @@ raptor_world_get_parser_description(raptor_world* world,
  * @world: raptor_world object
  * @name: the syntax name
  *
- * Check name of a parser.
+ * Check the name of a parser is known.
  *
  * Return value: non 0 if name is a known syntax name
  */
@@ -449,7 +449,7 @@ raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri)
  *
  * Parse a block of content into triples.
  * 
- * This method can only be called after raptor_parser_parse_start has
+ * This method can only be called after raptor_parser_parse_start() has
  * initialised the parser.
  * 
  * Return value: non-0 on failure.
@@ -514,7 +514,7 @@ raptor_free_parser(raptor_parser* rdf_parser)
  *
  * Parse RDF content from a FILE*.
  *
- * After draining the stream, fclose is not called on it internally.
+ * After draining the FILE* stream (EOF), fclose is not called on it.
  *
  * Return value: non 0 on failure
  **/
@@ -558,7 +558,7 @@ raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
  *
  * Parse RDF content at a file URI.
  *
- * If uri is NULL (source is stdin), then the base_uri is required.
+ * If @uri is NULL (source is stdin), then the @base_uri is required.
  * 
  * Return value: non 0 on failure
  **/
@@ -709,8 +709,7 @@ raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri,
  * If @base_uri is given, it overrides the process above.
  *
  * When @connection is NULL and a MIME Type exists for the parser
- * type - such as returned by raptor_parser_get_mime_type() - this
- * type is sent in an HTTP Accept: header in the form
+ * type, this type is sent in an HTTP Accept: header in the form
  * Accept: MIME-TYPE along with a wildcard of 0.1 quality, so MIME-TYPE is
  * prefered rather than the sole answer.  The latter part may not be
  * necessary but should ensure an HTTP 200 response.
@@ -942,7 +941,7 @@ raptor_parser_set_graph_handler(raptor_parser* parser,
  *
  * Sets the function to generate IDs for the parser.  The handler is
  * called with the @user_data parameter and an ID type of either
- * RAPTOR_GENID_TYPE_BNODEID or RAPTOR_GENID_TYPE_BAGID (latter is deprecated).
+ * #RAPTOR_GENID_TYPE_BNODEID
  *
  * The final argument of the callback method is user_bnodeid, the value of
  * the rdf:nodeID attribute that the user provided if any (or NULL).
@@ -1108,7 +1107,7 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
  * parts. The @prefix parameter is copied to generate an ID.
  *
  * For finer control of the generated identifiers, use
- * raptor_set_default_generate_id_handler().
+ * raptor_parser_set_default_generate_id_handler().
  *
  * If @prefix is NULL, the default prefix is used (currently "genid")
  * If @base is less than 1, it is initialised to 1.
@@ -1189,16 +1188,17 @@ raptor_parser_get_description(raptor_parser *rdf_parser)
  * raptor_parser_parse_abort:
  * @rdf_parser: #raptor_parser parser object
  *
- * Abort an ongoing parse.
+ * Abort an ongoing parsing.
  * 
  * Causes any ongoing generation of statements by a parser to be
  * terminated and the parser to return controlto the application
  * as soon as draining any existing buffers.
  *
- * Most useful inside raptor_parser_parse_file or raptor_parser_parse_uri when
- * the Raptor library is directing the parsing and when one of the
- * callback handlers such as as set by raptor_parser_set_statement_handler
- * requires to return to the main application code.
+ * Most useful inside raptor_parser_parse_file() or
+ * raptor_parser_parse_uri() when the Raptor library is directing the
+ * parsing and when one of the callback handlers such as as set by
+ * raptor_parser_set_statement_handler() requires to return to the main
+ * application code.
  **/
 void
 raptor_parser_parse_abort(raptor_parser *rdf_parser)
@@ -1220,7 +1220,7 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
   if(user_bnodeid)
     return user_bnodeid;
 
-  id=++rdf_parser->default_generate_id_handler_base;
+  id = ++rdf_parser->default_generate_id_handler_base;
 
   tmpid = id;
   length = 2; /* min length 1 + \0 */
@@ -1250,13 +1250,10 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
 /**
  * raptor_parser_get_new_generated_id:
  * @rdf_parser: #raptor_parser parser object
- * @type: Type of ID to generate
+ * @type: Type of ID to generate; either #RAPTOR_GENID_TYPE_BNODEID or #RAPTOR_GENID_TYPE_BAGID
  * 
  * Generate an ID for a parser
  *
- * Type can be either RAPTOR_GENID_TYPE_BNODEID or
- * RAPTOR_GENID_TYPE_BAGID
- * 
  * Return value: newly allocated generated ID or NULL on failure
  **/
 unsigned char*
