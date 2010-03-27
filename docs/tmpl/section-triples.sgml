@@ -11,7 +11,6 @@ of three #raptor_identifier which cover the RDF terms of
 URI (%RAPTOR_IDENTIFIER_TYPE_RESOURCE),
 Literal (%RAPTOR_IDENTIFIER_TYPE_LITERAL) and
 Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
-Some other #raptor_identifer_type forms exist but are deprecated.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
