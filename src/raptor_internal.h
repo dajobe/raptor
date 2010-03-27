@@ -497,8 +497,11 @@ struct raptor_parser_s {
   /* can be filled with error location information */
   raptor_locator locator;
 
-  /* non 0 if parser had fatal error and cannot continue */
-  int failed;
+  /* non-0 if parser had fatal error and cannot continue */
+  int failed : 1;
+
+  /* non-0 if have emitted start default graph mark */
+  int emitted_default_graph : 1;
 
   /* generated ID counter */
   int genid;
