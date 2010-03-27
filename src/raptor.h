@@ -172,49 +172,6 @@ typedef struct raptor_world_s raptor_world;
  * Raptor Parser class
  */
 typedef struct raptor_parser_s raptor_parser;
-
-
-/**
- * raptor_type_q:
- * @mime_type: MIME type string
- * @mime_type_len: length of @mime_type
- * @q: Q value 0-10 standing for decimal 0.0-1.0
- *
- * (MIME Type, Q) pair
- */
-typedef struct {
-  const char* mime_type;
-  size_t mime_type_len;
-  unsigned char q;
-} raptor_type_q;
-
-
-/**
- * raptor_syntax_description:
- * @names: syntax names - the first one (required) is the public name, the rest are aliases.
- * @label: long descriptive label for syntax
- * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL)
- * @mime_types_count: size of @mime_types array (or 0)
- * @uri: URI identifying the syntax (or NULL)
- * @need_base_uri: non-0 if this syntax needs a base URI
- *
- * Description of an RDF syntax
- * 
- */
-typedef struct {
-  const char** names;
-
-  const char* label;
-
-  const raptor_type_q* mime_types;
-  unsigned int mime_types_count;
-
-  const char* uri_string;
-
-  unsigned int need_base_uri : 1;
-} raptor_syntax_description;
-
-
 /**
  * raptor_serializer:
  *
@@ -271,6 +228,47 @@ typedef struct raptor_namespace_stack_s raptor_namespace_stack;
  * Raptor SAX2 class
  */
 typedef struct raptor_sax2_s raptor_sax2;
+
+
+/**
+ * raptor_type_q:
+ * @mime_type: MIME type string
+ * @mime_type_len: length of @mime_type
+ * @q: Q value 0-10 standing for decimal 0.0-1.0
+ *
+ * (MIME Type, Q) pair
+ */
+typedef struct {
+  const char* mime_type;
+  size_t mime_type_len;
+  unsigned char q;
+} raptor_type_q;
+
+
+/**
+ * raptor_syntax_description:
+ * @names: syntax names - the first one (required) is the public name, the rest are aliases.
+ * @label: long descriptive label for syntax
+ * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL)
+ * @mime_types_count: size of @mime_types array (or 0)
+ * @uri: URI identifying the syntax (or NULL)
+ * @need_base_uri: non-0 if this syntax needs a base URI
+ *
+ * Description of an RDF syntax
+ * 
+ */
+typedef struct {
+  const char** names;
+
+  const char* label;
+
+  const raptor_type_q* mime_types;
+  unsigned int mime_types_count;
+
+  const char* uri_string;
+
+  unsigned int need_base_uri : 1;
+} raptor_syntax_description;
 
 
 /**
