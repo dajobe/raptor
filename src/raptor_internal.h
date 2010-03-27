@@ -746,6 +746,7 @@ void raptor_xml_comment_handler(void *user_data, const unsigned char *s);
 void raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, FILE *stream);
 #endif
 
+void raptor_parser_copy_flags_state(raptor_parser *to_parser, raptor_parser *from_parser);
 int raptor_parser_copy_user_state(raptor_parser *to_parser, raptor_parser *from_parser);
 
 /* raptor_general.c */

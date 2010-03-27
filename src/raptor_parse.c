@@ -1464,6 +1464,23 @@ raptor_world_guess_parser_name(raptor_world* world,
 
 
 /*
+ * raptor_parser_copy_flags_state:
+ * @to_parser: destination parser
+ * @from_parser: source parser
+ * 
+ * Copy status flags between parsers - INTERNAL.
+ **/
+void
+raptor_parser_copy_flags_state(raptor_parser *to_parser, 
+                               raptor_parser *from_parser)
+{
+  to_parser->failed = from_parser->failed;
+  to_parser->emitted_default_graph = from_parser->emitted_default_graph;
+}
+
+
+
+/*
  * raptor_parser_copy_user_state:
  * @to_parser: destination parser
  * @from_parser: source parser
@@ -1501,8 +1518,7 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   to_parser->uri_filter_user_data = from_parser->uri_filter_user_data;
 
   /* copy bit flags */
-  to_parser->failed = from_parser->failed;
-  to_parser->emitted_default_graph = from_parser->emitted_default_graph;
+  raptor
 
   /* copy options */
   if(!rc)
