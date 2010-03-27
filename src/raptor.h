@@ -251,7 +251,7 @@ typedef struct {
  * @label: long descriptive label for syntax
  * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL)
  * @mime_types_count: size of @mime_types array (or 0)
- * @uri: URI identifying the syntax (or NULL)
+ * @uri_string: URI identifying the syntax (or NULL)
  * @need_base_uri: non-0 if this syntax needs a base URI
  *
  * Description of an RDF syntax
