@@ -894,6 +894,8 @@ int raptor_parser_parse_uri(raptor_parser* rdf_parser, raptor_uri *uri, raptor_u
 RAPTOR_API
 int raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser, raptor_uri *uri, raptor_uri *base_uri, void *connection);
 RAPTOR_API
+int raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr, raptor_uri *base_uri);
+RAPTOR_API
 void raptor_parser_parse_abort(raptor_parser* rdf_parser);
 RAPTOR_API
 const char* raptor_parser_get_name(raptor_parser *rdf_parser);

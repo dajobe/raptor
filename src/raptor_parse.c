@@ -1791,6 +1791,48 @@ raptor_parser_get_graph(raptor_parser* rdf_parser)
 }
 
 
+/**
+ * raptor_parser_parse_iostream:
+ * @rdf_parser: parser
+ * @iostr: iostream to read from
+ * @base_uri: the base URI to use (or NULL)
+ *
+ * Parse content from an iostream
+ *
+ * If the parser requires a base URI and @base_uri is NULL, an error
+ * will be generated and the function will fail.
+ * 
+ * Return value: non 0 on failure, <0 if a required base URI was missing
+ **/
+int
+raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr,
+                             raptor_uri *base_uri)
+{
+  /* Read buffer */
+  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE + 1];
+  int rc = 0;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(rdf_parser, raptor_parser, 1);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(iostr, raptor_iostr, 1);
+
+  rc = raptor_parser_parse_start(rdf_parser, base_uri);
+  if(rc)
+    return rc;
+  
+  while(!raptor_iostream_read_eof(iostr)) {
+    int len = raptor_iostream_read_bytes(buffer, 1, RAPTOR_READ_BUFFER_SIZE,
+                                         iostr);
+    int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
+
+    rc = raptor_parser_parse_chunk(rdf_parser, buffer, len, is_end);
+    if(rc || is_end)
+      break;
+  }
+  
+  return rc;
+}
+
+
 /* end not STANDALONE */
 #endif
 
