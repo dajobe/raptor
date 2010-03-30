@@ -45,13 +45,13 @@ rapper_SOURCES = rapper.c
 if GETOPT
 rapper_SOURCES += getopt.c raptor_getopt.h
 endif
-rapper_LDADD= $(top_builddir)/src/libraptor.la
+rapper_LDADD= $(top_builddir)/src/libraptor2.la
 
 rdfdiff_SOURCES = rdfdiff.c
 if GETOPT
 rdfdiff_SOURCES += getopt.c raptor_getopt.h
 endif
-rdfdiff_LDADD= $(top_builddir)/src/libraptor.la
+rdfdiff_LDADD= $(top_builddir)/src/libraptor2.la
 
 
 if MAINTAINER_MODE
@@ -59,5 +59,5 @@ rapper.html: $(srcdir)/rapper.1 $(srcdir)/../fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../fix-groff-xhtml $@
 endif
 
-$(top_builddir)/src/libraptor.la:
-	cd $(top_builddir)/src && $(MAKE) libraptor.la
+$(top_builddir)/src/libraptor2.la:
+	cd $(top_builddir)/src && $(MAKE) libraptor2.la

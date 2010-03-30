@@ -22,7 +22,7 @@
 # 
 
 
-lib_LTLIBRARIES = libraptor.la
+lib_LTLIBRARIES = libraptor2.la
 
 pkginclude_HEADERS = raptor.h
 
@@ -51,7 +51,7 @@ MEM_LIBS=@MEM_LIBS@
 AM_CPPFLAGS = $(MEM)
 
 
-libraptor_la_SOURCES = raptor_parse.c raptor_serialize.c \
+libraptor2_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_log.c raptor_locator.c \
 raptor_namespace.c raptor_qname.c \
 raptor_option.c raptor_general.c raptor_unicode.c \
@@ -63,82 +63,82 @@ raptor_turtle_writer.c raptor_avltree.c snprintf.c \
 raptor_json_writer.c raptor_memstr.c raptor_concepts.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
-libraptor_la_SOURCES += raptor_libxml.c
+libraptor2_la_SOURCES += raptor_libxml.c
 endif
 if RAPTOR_XML_EXPAT
-libraptor_la_SOURCES += raptor_expat.c
+libraptor2_la_SOURCES += raptor_expat.c
 endif
-libraptor_la_SOURCES += raptor_rdfxml.c raptor_sax2.c
+libraptor2_la_SOURCES += raptor_rdfxml.c raptor_sax2.c
 endif
 if RAPTOR_PARSER_TURTLE
-libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+libraptor2_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
 else
 if RAPTOR_PARSER_TRIG
-libraptor_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+libraptor2_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
 endif
 endif
 if RAPTOR_PARSER_NTRIPLES
-libraptor_la_SOURCES += ntriples_parse.c
+libraptor2_la_SOURCES += ntriples_parse.c
 endif
 if RAPTOR_RSS_COMMON
-libraptor_la_SOURCES += raptor_rss_common.c raptor_rss.h
+libraptor2_la_SOURCES += raptor_rss_common.c raptor_rss.h
 endif
 if RAPTOR_PARSER_RSS
-libraptor_la_SOURCES += raptor_rss.c
+libraptor2_la_SOURCES += raptor_rss.c
 endif
 if RAPTOR_PARSER_GRDDL
-libraptor_la_SOURCES += raptor_grddl.c
+libraptor2_la_SOURCES += raptor_grddl.c
 endif
 if RAPTOR_PARSER_GUESS
-libraptor_la_SOURCES += raptor_guess.c
+libraptor2_la_SOURCES += raptor_guess.c
 endif
 if RAPTOR_PARSER_RDFA
-libraptor_la_SOURCES += raptor_librdfa.c
+libraptor2_la_SOURCES += raptor_librdfa.c
 endif
 if RAPTOR_SERIALIZER_RDFXML
-libraptor_la_SOURCES += raptor_serialize_rdfxml.c
+libraptor2_la_SOURCES += raptor_serialize_rdfxml.c
 endif
 if RAPTOR_SERIALIZER_NTRIPLES
-libraptor_la_SOURCES += raptor_serialize_ntriples.c
+libraptor2_la_SOURCES += raptor_serialize_ntriples.c
 endif
 
 #raptor_abbrev.c required by both turtle and xml-abbrev
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
-libraptor_la_SOURCES += raptor_abbrev.c
+libraptor2_la_SOURCES += raptor_abbrev.c
 else
 if RAPTOR_SERIALIZER_TURTLE
-libraptor_la_SOURCES += raptor_abbrev.c
+libraptor2_la_SOURCES += raptor_abbrev.c
 endif
 endif
 
 if RAPTOR_SERIALIZER_RDFXML_ABBREV
-libraptor_la_SOURCES += raptor_serialize_rdfxmla.c
+libraptor2_la_SOURCES += raptor_serialize_rdfxmla.c
 endif
 if RAPTOR_SERIALIZER_TURTLE
-libraptor_la_SOURCES += raptor_serialize_turtle.c
+libraptor2_la_SOURCES += raptor_serialize_turtle.c
 endif
 if RAPTOR_SERIALIZER_RSS_1_0
-libraptor_la_SOURCES += raptor_serialize_rss.c
+libraptor2_la_SOURCES += raptor_serialize_rss.c
 endif
 if RAPTOR_SERIALIZER_DOT
-libraptor_la_SOURCES += raptor_serialize_dot.c
+libraptor2_la_SOURCES += raptor_serialize_dot.c
 endif
 if RAPTOR_SERIALIZER_JSON
-libraptor_la_SOURCES += raptor_serialize_json.c
+libraptor2_la_SOURCES += raptor_serialize_json.c
 endif
 if RAPTOR_NFC_CHECK
-libraptor_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
+libraptor2_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
 endif
 if STRCASECMP
-libraptor_la_SOURCES += strcasecmp.c
+libraptor2_la_SOURCES += strcasecmp.c
 endif
 if PARSEDATE
-libraptor_la_SOURCES += parsedate.c
+libraptor2_la_SOURCES += parsedate.c
 endif
 
 
 if LIBRDFA
-libraptor_la_SOURCES += \
+libraptor2_la_SOURCES += \
 $(top_srcdir)/librdfa/curie.c \
 $(top_srcdir)/librdfa/iri.c \
 $(top_srcdir)/librdfa/language.c\
@@ -152,9 +152,9 @@ $(top_srcdir)/librdfa/rdfa_utils.h
 AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 endif
 
-libraptor_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@ \
+libraptor2_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@ \
 @RAPTOR_LDFLAGS@ $(MEM_LIBS)
-libraptor_la_LIBADD = @LTLIBOBJS@
+libraptor2_la_LIBADD = @LTLIBOBJS@
 
 
 EXTRA_DIST=\
@@ -186,11 +186,11 @@ turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/fix-bison
 endif
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_lexer.c libraptor.la $(LIBS)
+turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_lexer.c libraptor2.la $(LIBS)
 
-turtle_parser_test: $(srcdir)/turtle_parser.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor.la $(LIBS)
+turtle_parser_test: $(srcdir)/turtle_parser.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor2.la $(LIBS)
 
 
 parsedate.c: $(srcdir)/parsedate.y
@@ -204,50 +204,50 @@ parsedate.c: $(srcdir)/parsedate.y
 # Some people need a little help ;-)
 test: check
 
-raptor_parse_test: $(srcdir)/raptor_general.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor.la $(LIBS)
+raptor_parse_test: $(srcdir)/raptor_general.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor2.la $(LIBS)
 
-raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_rfc2396.c libraptor.la $(LIBS)
+raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_rfc2396.c libraptor2.la $(LIBS)
 
-raptor_uri_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+raptor_uri_test: $(srcdir)/raptor_uri.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_uri.c libraptor2.la $(LIBS)
 
-raptor_uri_win32_test: $(srcdir)/raptor_uri.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c libraptor.la $(LIBS)
+raptor_uri_win32_test: $(srcdir)/raptor_uri.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE -DWIN32_URI_TEST $(srcdir)/raptor_uri.c libraptor2.la $(LIBS)
 
-raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor.la $(LIBS)
+raptor_namespace_test: $(srcdir)/raptor_namespace.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_namespace.c libraptor2.la $(LIBS)
 
-strcasecmp_test: $(srcdir)/strcasecmp.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/strcasecmp.c libraptor.la $(LIBS)
+strcasecmp_test: $(srcdir)/strcasecmp.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/strcasecmp.c libraptor2.la $(LIBS)
 
-raptor_www_test: $(srcdir)/raptor_www_test.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_www_test.c libraptor.la $(LIBS)
+raptor_www_test: $(srcdir)/raptor_www_test.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_www_test.c libraptor2.la $(LIBS)
 
-raptor_set_test: $(srcdir)/raptor_set.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_set.c libraptor.la $(LIBS)
+raptor_set_test: $(srcdir)/raptor_set.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_set.c libraptor2.la $(LIBS)
 
-raptor_xml_test: $(srcdir)/raptor_xml.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor.la $(LIBS)
+raptor_xml_test: $(srcdir)/raptor_xml.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml.c libraptor2.la $(LIBS)
 
-raptor_sequence_test: $(srcdir)/raptor_sequence.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c libraptor.la $(LIBS)
+raptor_sequence_test: $(srcdir)/raptor_sequence.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_sequence.c libraptor2.la $(LIBS)
 
-raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c libraptor.la $(LIBS)
+raptor_stringbuffer_test: $(srcdir)/raptor_stringbuffer.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_stringbuffer.c libraptor2.la $(LIBS)
 
-raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_nfc_test.c libraptor.la $(LIBS)
+raptor_nfc_test: $(srcdir)/raptor_nfc_test.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_nfc_test.c libraptor2.la $(LIBS)
 
-raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_iostream.c libraptor.la $(LIBS)
+raptor_iostream_test: $(srcdir)/raptor_iostream.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_iostream.c libraptor2.la $(LIBS)
 
-raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor.la $(LIBS)
+raptor_xml_writer_test: $(srcdir)/raptor_xml_writer.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_xml_writer.c libraptor2.la $(LIBS)
 
-raptor_turtle_writer_test: $(srcdir)/raptor_turtle_writer.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_turtle_writer.c libraptor.la $(LIBS)
+raptor_turtle_writer_test: $(srcdir)/raptor_turtle_writer.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_turtle_writer.c libraptor2.la $(LIBS)
 
-raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_avltree.c libraptor.la $(LIBS)
+raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_avltree.c libraptor2.la $(LIBS)
