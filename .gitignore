@@ -28,10 +28,9 @@ libtool
 mkinstalldirs
 not-used
 old
-raptor-src-config
-raptor.pc
-raptor.rdf
-raptor.spec
+raptor2.pc
+raptor2.rdf
+raptor2.spec
 releases
 run*
 setup.sh

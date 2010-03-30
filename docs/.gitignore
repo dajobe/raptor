@@ -1,7 +1,7 @@
 *.bak
 *.stamp
 html/
-libraptor.html
+libraptor2.html
 raptor-changes.xml
 raptor-decl-list.txt
 raptor-decl.txt
