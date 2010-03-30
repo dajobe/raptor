@@ -1,9 +1,9 @@
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 libdir=@libdir@
-includedir=@includedir@
+includedir=@includedir@/@PACKAGE@
 
-Name: Raptor
+Name: Raptor RDF Parsing Library
 Description: RDF Parser Toolkit Library
 Version: @VERSION@
 Libs: -L${libdir} -lraptor
