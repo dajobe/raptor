@@ -8,12 +8,14 @@ Name:      %{name}
 Version:   %{version}
 Release:   %{release}
 Prefix:    %{_prefix}
-License:   LGPL/Apache 2
+License:   LGPLv2+ or ASL 2.0
 Group:     Development/Libraries
-Source:    http://download.librdf.org/source/%{name}-%{version}.tar.gz
+Source:    http://download.librdf.org/source/%{name}2-%{version}.tar.gz
 URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
-BuildRequires: libxml2 libxml2-devel curl curl-devel libxslt libxslt-devel
+BuildRequires: libxml2 libxml2-devel >= 2.6.8
+BuildRequires: curl curl-devel
+BuildRequires: libxslt libxslt-devel
 Packager:  Dave Beckett <dave@dajobe.org>
 Docdir: %{_docdir}
 
@@ -69,9 +71,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 %doc *.html
 
 %doc %{_mandir}/man1/rapper.1*
-%doc %{_mandir}/man3/libraptor.3*
+%doc %{_mandir}/man3/libraptor2.3*
 
-%doc %{_datadir}/gtk-doc/html/raptor/*
+%doc %{_datadir}/gtk-doc/html/raptor2/*
 
 %{_libdir}/libraptor*.so.*
 %{prefix}/bin/rapper
@@ -82,18 +84,20 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc LICENSE-2.0.txt NOTICE
-%doc %{_mandir}/man1/raptor-config.1*
 
-%{prefix}/bin/raptor-config
 %{_libdir}/libraptor*.so
-%{_libdir}/libraptor*.a
-%{_libdir}/libraptor*.la
-%{_libdir}/pkgconfig/raptor.pc
+%{_libdir}/pkgconfig/raptor2.pc
 
-%{prefix}/include/*
+%{prefix}/include/raptor/*
 
 
 %changelog
+* Fri Jan 5 2007  Dave Beckett <dave@dajobe.org>
+- rename files for raptor 2.0.0
+- no more raptor-config
+- do not package libraptor*.la or libraptor*.a files
+- includes are in a subdir
+
 * Fri Jan 5 2007  Dave Beckett <dave@dajobe.org>
 - Document Turtle and DOT serializers
 
