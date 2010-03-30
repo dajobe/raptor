@@ -47,7 +47,7 @@
 #include <raptor.h>
 
 
-static void handle_statements(void *user_data, const raptor_statement *statement);
+static void handle_statements(void *user_data, raptor_statement *statement);
 int main(int argc, char *argv[]);
 
 
@@ -61,8 +61,8 @@ typedef struct
 } my_data;
 
 
-static
-void handle_statements(void *user_data, const raptor_statement *statement) 
+static void
+handle_statements(void *user_data, raptor_statement *statement) 
 {
   my_data* me=(my_data*)user_data;
   
@@ -81,6 +81,7 @@ void handle_statements(void *user_data, const raptor_statement *statement)
 int
 main (int argc, char *argv[]) 
 {
+  raptor_world* world;
   raptor_parser* rdf_parser;
   raptor_uri* uri;
   my_data* me;
@@ -94,7 +95,7 @@ main (int argc, char *argv[])
     exit(1);
   }
 
-  raptor_init();
+  world = raptor_new_world();
 
   me=(my_data*)malloc(sizeof(my_data));
   if(!me) {
@@ -103,18 +104,18 @@ main (int argc, char *argv[])
   }
 
   me->stream=stderr;
-  me->count=0;
+  me->count = 0;
   me->max=5;
 
-  uri=raptor_new_uri((const unsigned char*)argv[1]);
-  rdf_parser=raptor_new_parser("rdfxml");
+  uri = raptor_new_uri(world, (const unsigned char*)argv[1]);
+  rdf_parser = raptor_new_parser(world, "rdfxml");
 
-  me->parser=rdf_parser;
+  me->parser = rdf_parser;
 
   raptor_parser_set_statement_handler(rdf_parser, me, handle_statements);
 
-  me->stopped=0;
-  rc=raptor_parse_uri(rdf_parser, uri, NULL);
+  me->stopped = 0;
+  rc = raptor_parser_parse_uri(rdf_parser, uri, NULL);
 
   fprintf(stderr, "%s: Parser returned status %d, stopped? %s\n", program, rc,
           (me->stopped ? "yes" : "no"));
@@ -125,7 +126,7 @@ main (int argc, char *argv[])
 
   raptor_free_uri(uri);
 
-  raptor_finish();
+  raptor_free_world(world);
 
   return 0;
 }
