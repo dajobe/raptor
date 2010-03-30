@@ -25,7 +25,7 @@ TESTS=raptor_empty_test$(EXEEXT)
 
 AM_CPPFLAGS=-I$(top_srcdir)/src
 AM_CFLAGS= -I$(top_builddir)/src @CFLAGS@ $(MEM)
-AM_LDFLAGS=$(top_builddir)/src/libraptor.la $(MEM_LIBS)
+AM_LDFLAGS=$(top_builddir)/src/libraptor2.la $(MEM_LIBS)
 
 EXTRA_PROGRAMS=$(TESTS)
 
@@ -40,5 +40,5 @@ BASE_URI=http://librdf.org/raptor/tests/
 SUBDIRS = rdfxml ntriples turtle trig grddl rdfa feeds
 
 
-$(top_builddir)/src/libraptor.la:
-	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libraptor.la
+$(top_builddir)/src/libraptor2.la:
+	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libraptor2.la
