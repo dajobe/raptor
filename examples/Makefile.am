@@ -32,30 +32,30 @@ AM_LDFLAGS=$(MEM_LIBS)
 AM_CPPFLAGS=-I$(top_srcdir)/src
 
 raptor_abort_SOURCES = raptor_abort.c
-raptor_abort_LDADD=$(top_builddir)/src/libraptor.la
-raptor_abort_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+raptor_abort_LDADD=$(top_builddir)/src/libraptor2.la
+raptor_abort_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 grapper_SOURCES = grapper.c
-grapper_LDADD=$(top_builddir)/src/libraptor.la
+grapper_LDADD=$(top_builddir)/src/libraptor2.la
 grapper_CFLAGS=`pkg-config --cflags gtk+-2.0 gconf-2.0`
 grapper_LDFLAGS=`pkg-config --libs gtk+-2.0 gconf-2.0`
-grapper_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+grapper_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 rdfcat_SOURCES = rdfcat.c
-rdfcat_LDADD=$(top_builddir)/src/libraptor.la
-rdfcat_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+rdfcat_LDADD=$(top_builddir)/src/libraptor2.la
+rdfcat_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 rdfprint_SOURCES = rdfprint.c
-rdfprint_LDADD=$(top_builddir)/src/libraptor.la
-rdfprint_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+rdfprint_LDADD=$(top_builddir)/src/libraptor2.la
+rdfprint_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 rdfserialize_SOURCES = rdfserialize.c
-rdfserialize_LDADD=$(top_builddir)/src/libraptor.la
-rdfserialize_DEPENDENCIES = $(top_builddir)/src/libraptor.la
+rdfserialize_LDADD=$(top_builddir)/src/libraptor2.la
+rdfserialize_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 
-$(top_builddir)/src/libraptor.la:
-	cd $(top_builddir)/src && $(MAKE) libraptor.la
+$(top_builddir)/src/libraptor2.la:
+	cd $(top_builddir)/src && $(MAKE) libraptor2.la
 
 $(top_builddir)/../librdf/librdf.la:
 	cd $(top_builddir)/../librdf && $(MAKE) librdf.la
