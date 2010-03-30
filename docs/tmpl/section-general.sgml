@@ -106,6 +106,7 @@ and various other utility functions.
 @RAPTOR_DOMAIN_SAX2: 
 @RAPTOR_DOMAIN_SERIALIZER: 
 @RAPTOR_DOMAIN_TERM: 
+@RAPTOR_DOMAIN_TURTLE_WRITER: 
 @RAPTOR_DOMAIN_URI: 
 @RAPTOR_DOMAIN_WORLD: 
 @RAPTOR_DOMAIN_WWW: 
@@ -138,4 +139,25 @@ and various other utility functions.
 
 @data: 
 
+
+<!-- ##### STRUCT raptor_syntax_description ##### -->
+<para>
+
+</para>
+
+@names: 
+@label: 
+@mime_types: 
+@mime_types_count: 
+@uri_string: 
+@need_base_uri: 
+
+<!-- ##### STRUCT raptor_type_q ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@mime_type_len: 
+@q: 
 

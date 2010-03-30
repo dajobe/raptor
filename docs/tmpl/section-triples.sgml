@@ -39,6 +39,25 @@ Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
 @RAPTOR_TERM_TYPE_BLANK: 
 @RAPTOR_TERM_TYPE_LITERAL: 
 
+<!-- ##### STRUCT raptor_term ##### -->
+<para>
+
+</para>
+
+@world: 
+@usage: 
+@type: 
+@value: 
+
+<!-- ##### STRUCT raptor_term_literal_value ##### -->
+<para>
+
+</para>
+
+@string: 
+@datatype: 
+@language: 
+
 <!-- ##### FUNCTION raptor_new_term_from_blank ##### -->
 <para>
 

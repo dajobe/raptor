@@ -166,17 +166,6 @@ XML documents where inner namespaces can override outer ones.
 @ns: 
 
 
-<!-- ##### FUNCTION raptor_namespace_copy ##### -->
-<para>
-
-</para>
-
-@nstack: 
-@ns: 
-@new_depth: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_namespace_get_uri ##### -->
 <para>
 

@@ -133,6 +133,15 @@ that can adjust how serializing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_serializer_get_description ##### -->
+<para>
+
+</para>
+
+@rdf_serializer: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_serializer_get_iostream ##### -->
 <para>
 

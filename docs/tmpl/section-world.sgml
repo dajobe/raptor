@@ -91,17 +91,13 @@ library-wide configuration flags and options.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_world_enumerate_parsers ##### -->
+<!-- ##### FUNCTION raptor_world_get_parser_description ##### -->
 <para>
 
 </para>
 
 @world: 
 @counter: 
-@name: 
-@label: 
-@mime_type: 
-@uri_string: 
 @Returns: 
 
 
@@ -129,17 +125,13 @@ library-wide configuration flags and options.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_world_enumerate_serializers ##### -->
+<!-- ##### FUNCTION raptor_world_get_serializer_description ##### -->
 <para>
 
 </para>
 
 @world: 
 @counter: 
-@name: 
-@label: 
-@mime_type: 
-@uri_string: 
 @Returns: 
 
 
