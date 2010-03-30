@@ -22,15 +22,11 @@
 # 
 
 
-bin_SCRIPTS = raptor-config
-
 lib_LTLIBRARIES = libraptor.la
 
-include_HEADERS = raptor.h
+pkginclude_HEADERS = raptor.h
 
 noinst_HEADERS = raptor_internal.h win32_raptor_config.h
-
-man_MANS = raptor-config.1
 
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
@@ -162,7 +158,6 @@ libraptor_la_LIBADD = @LTLIBOBJS@
 
 
 EXTRA_DIST=\
-raptor-config.in \
 raptor_www_test.c \
 raptor_nfc_test.c \
 raptor_win32.c \

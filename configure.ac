@@ -1,9 +1,9 @@
 dnl -*- Mode: autoconf -*-
 dnl
-dnl configure.in - autoconf file for Raptor
+dnl configure.ac - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl Copyright (C) 2000-2009 David Beckett http://www.dajobe.org/
+dnl Copyright (C) 2000-2010 David Beckett http://www.dajobe.org/
 dnl Copyright (C) 2000-2005 University of Bristol, UK http://www.bristol.ac.uk/
 dnl 
 dnl This package is Free Software and part of Redland http://librdf.org/
@@ -24,7 +24,7 @@ dnl
 
 
 AC_PREREQ(2.62)
-AC_INIT(Raptor RDF Parser and Serializer library, 1.9.0, http://bugs.librdf.org/, raptor)
+AC_INIT(Raptor RDF Parser and Serializer library, 2.0.0, http://bugs.librdf.org/, raptor)
 AC_CONFIG_SRCDIR([src/raptor_general.c])
 AM_CONFIG_HEADER([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
@@ -1163,7 +1163,7 @@ if test $need_libxslt = 1; then
   CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
 fi
 
-RAPTOR_LIBTOOLLIBS=libraptor.la
+RAPTOR_LIBTOOLLIBS=libraptor2.la
 AC_SUBST(RAPTOR_LIBTOOLLIBS)
 
 
@@ -1266,8 +1266,8 @@ dnl automake 1.11
 AM_SILENT_RULES([no])
 
 AC_CONFIG_FILES([Makefile
-raptor.spec
-raptor.rdf
+raptor2.spec
+raptor2.rdf
 data/Makefile
 docs/Makefile
 docs/version.xml
@@ -1284,9 +1284,7 @@ tests/trig/Makefile
 utils/Makefile
 win32/Makefile
 librdfa/Makefile
-raptor.pc])
-AC_CONFIG_FILES([src/raptor-config], [chmod +x src/raptor-config])
-AC_CONFIG_FILES([raptor-src-config], [chmod +x raptor-src-config])
+raptor2.pc])
 
 dnl Check for gtk-doc and docbook
 GTK_DOC_CHECK([1.3])

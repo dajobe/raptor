@@ -22,13 +22,12 @@
 # 
 
 
-noinst_SCRIPTS = raptor-src-config
-
 SUBDIRS= src utils docs data tests win32 examples librdfa
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = raptor.pc
+pkgconfig_DATA = raptor2.pc
 
+DIST_ARCHIVES = $(PACKAGE)2-$(VERSION).tar.gz
 
 EXTRA_DIST=\
 ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
@@ -37,15 +36,14 @@ README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 RELEASE.html \
 LICENSE-2.0.txt NOTICE \
-raptor.rdf.in \
-raptor-src-config.in \
+raptor2.rdf.in \
 autogen.sh \
-raptor.spec.in \
+raptor2.spec.in \
 fix-groff-xhtml \
-raptor.pc.in
+raptor2.pc.in
 
 if RELEASE_VERSION
-EXTRA_DIST += raptor.spec
+EXTRA_DIST += raptor2.spec
 endif
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc

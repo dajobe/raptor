@@ -98,17 +98,17 @@ FIXXREF_OPTIONS=
 
 include $(top_srcdir)/gtk-doc.make
 
-man_MANS = libraptor.3
+man_MANS = libraptor2.3
 
 EXTRA_DIST+= \
-libraptor.html \
+libraptor2.html \
 $(man_MANS) \
 version.xml.in \
 format-changes.pl
 
 
 if MAINTAINER_MODE
-libraptor.html: $(srcdir)/libraptor.3 $(srcdir)/../fix-groff-xhtml
+libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../fix-groff-xhtml $@
 
 rdfcat.c: $(srcdir)/../examples/rdfcat.c

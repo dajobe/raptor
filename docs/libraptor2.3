@@ -1,26 +1,26 @@
 .\"
-.\" libraptor.3 - Raptor library manual page
+.\" libraptor2.3 - Raptor library manual page
 .\"
-.\" Copyright (C) 2002-2009 David Beckett - http://www.dajobe.org/
+.\" Copyright (C) 2002-2010 David Beckett - http://www.dajobe.org/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor 3 "2009-07-18"
+.TH libraptor2 3 "2010-03-29"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-libraptor \- Raptor RDF parser and serializer library
+libraptor2 \- Raptor RDF parser and serializer library 2.0
 .SH SYNOPSIS
 .nf
 .B #include <raptor.h>
 .br
 
 .br
-.BI raptor_init();
+.BI world = raptor_new_world( );
 .br
-.BI "raptor_parser *" p =raptor_new_parser("rdfxml");
+.BI "raptor_parser *" p =raptor_new_parser( world, "rdfxml");
 .br
 .BI raptor_set_statement_handler( p , NULL , print_triples );
 .br
-.BI "raptor_uri *" file_uri =raptor_new_uri("http://example.org/");
+.BI "raptor_uri *" file_uri = raptor_new_uri( world, "http://example.org/");
 .br
 .BI raptor_parse_file( p , file_uri , base_uri );
 .br
@@ -30,7 +30,7 @@ libraptor \- Raptor RDF parser and serializer library
 .br
 .BI raptor_free_uri( file_uri );
 .br
-.BI raptor_finish();
+.BI raptor_free_world( world );
 .br
 
 .B cc file.c -lraptor
