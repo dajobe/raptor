@@ -27,7 +27,8 @@ SUBDIRS= src utils docs data tests win32 examples librdfa
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor2.pc
 
-DIST_ARCHIVES = $(PACKAGE)2-$(VERSION).tar.gz
+# Just alter distdir for tarball
+distdir = $(PACKAGE)2-$(VERSION)
 
 EXTRA_DIST=\
 ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
