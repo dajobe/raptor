@@ -228,7 +228,7 @@ static const char* ntriples_names[3] = { "ntriples", NULL};
 
 #define NTRIPLES_TYPES_COUNT 1
 static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {
-  { "application/rdf+xml", 19, 0},
+  { "text/plain", 10, 1}, 
   { NULL, 0, 0}
 };
 
