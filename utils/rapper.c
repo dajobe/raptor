@@ -702,7 +702,7 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("o FORMAT", "output FORMAT", "Set the output format/serializer to one of:"));
     for(i = 0; 1; i++) {
       const raptor_syntax_description* sd;
-      sd = raptor_world_get_parser_description(world, i);
+      sd = raptor_world_get_serializer_description(world, i);
       if(!sd)
         break;
       printf("    %-14s  %s", sd->names[0], sd->label);
