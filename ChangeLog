@@ -1,3 +1,9 @@
+2010-04-01  Nicholas J Humfrey <njh@aelius.com>
+
+    * configure.ac, src/Makefile.am, src/raptor_internal.h, 
+    src/raptor_serialize.c, src/raptor_serialize_html.c: Added HTML Table
+    serializer.
+
 2010-03-26  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-triples.sgml: doc
