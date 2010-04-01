@@ -108,6 +108,10 @@ raptor_serializers_init(raptor_world* world)
   rc += raptor_init_serializer_json(world) != 0;
 #endif
 
+#ifdef RAPTOR_SERIALIZER_HTML
+  rc+= raptor_init_serializer_html(world) != 0;
+#endif
+
   return rc;
 }
 

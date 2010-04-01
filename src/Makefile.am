@@ -123,6 +123,9 @@ endif
 if RAPTOR_SERIALIZER_DOT
 libraptor2_la_SOURCES += raptor_serialize_dot.c
 endif
+if RAPTOR_SERIALIZER_HTML
+libraptor2_la_SOURCES += raptor_serialize_html.c
+endif
 if RAPTOR_SERIALIZER_JSON
 libraptor2_la_SOURCES += raptor_serialize_json.c
 endif
