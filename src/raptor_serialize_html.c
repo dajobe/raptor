@@ -2,7 +2,7 @@
  *
  * raptor_serialize_html.c - HTML Table serializer
  *
- * Copyright (C) 2007-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2010, David Beckett http://www.dajobe.org/
  *
  * This package is Free Software and part of Redland http://librdf.org/
  * 
@@ -79,7 +79,7 @@ raptor_html_serialize_start(raptor_serializer* serializer)
 
   context->count = 0;
 
-  // XML and HTML declarations
+  /* XML and HTML declarations */
   raptor_iostream_counted_string_write(
     "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n", 39, iostr);
   raptor_iostream_counted_string_write(
@@ -115,12 +115,14 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
 
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_iostream_counted_string_write("<span class=\"literal\">", 22, iostr);
+      raptor_iostream_counted_string_write("<span class=\"literal\">", 22,
+                                           iostr);
       raptor_iostream_counted_string_write("<span class=\"value\"", 19, iostr);
-      if (term->value.literal.language) {
+      if(term->value.literal.language) {
         len = strlen((const char*)term->value.literal.language);
         raptor_iostream_counted_string_write(" xml:lang=\"", 11, iostr);
-        raptor_xml_escape_string_write(term->value.literal.language, len, '"', iostr);
+        raptor_xml_escape_string_write(term->value.literal.language, len, '"',
+                                       iostr);
         raptor_iostream_write_byte('"', iostr);
       }
       raptor_iostream_write_byte('>', iostr);
@@ -128,7 +130,7 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
       raptor_xml_escape_string_write(term->value.literal.string, len, 0, iostr);
       raptor_iostream_counted_string_write("</span>", 7, iostr);
 
-      if (term->value.literal.datatype) {
+      if(term->value.literal.datatype) {
         str = raptor_uri_as_counted_string(term->value.literal.datatype, &len);
         raptor_iostream_counted_string_write("^^&lt;<span class=\"datatype\">", 29, iostr);
         raptor_xml_escape_string_write(str, len, 0, iostr);
@@ -173,19 +175,20 @@ raptor_html_serialize_statement(raptor_serializer* serializer,
   raptor_html_context * context = (raptor_html_context *)serializer->context;
   raptor_iostream *iostr = serializer->iostream;
 
-  raptor_iostream_counted_string_write("    <tr class=\"triple\">\n", 24, iostr);
+  raptor_iostream_counted_string_write("    <tr class=\"triple\">\n", 24,
+                                       iostr);
 
-  // Subject
+  /* Subject */
   raptor_iostream_counted_string_write("      <td>", 10, iostr);
   raptor_term_html_write(statement->subject, iostr);
   raptor_iostream_counted_string_write("</td>\n", 6, iostr);
 
-  // Predicate
+  /* Predicate */
   raptor_iostream_counted_string_write("      <td>", 10, iostr);
   raptor_term_html_write(statement->predicate, iostr);
   raptor_iostream_counted_string_write("</td>\n", 6, iostr);
 
-  // Object
+  /* Object */
   raptor_iostream_counted_string_write("      <td>", 10, iostr);
   raptor_term_html_write(statement->object, iostr);
   raptor_iostream_counted_string_write("</td>\n", 6, iostr);
@@ -267,5 +270,3 @@ raptor_init_serializer_html(raptor_world* world)
   return !raptor_serializer_register_factory(world,
                                              &raptor_html_serializer_register_factory);
 }
-
-
