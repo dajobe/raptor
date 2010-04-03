@@ -1,8 +1,169 @@
+2010-04-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_html.c: code style
+
 2010-04-01  Nicholas J Humfrey <njh@aelius.com>
 
-    * configure.ac, src/Makefile.am, src/raptor_internal.h, 
-    src/raptor_serialize.c, src/raptor_serialize_html.c: Added HTML Table
-    serializer.
+	* ChangeLog: Updated ChangeLog to include new HTML Table
+	serialiser.
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_serialize.c, src/raptor_serialize_html.c: Added HTML
+	Table serialiser.
+
+2010-03-31  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_ntriples.c: ntriples writes text/plain
+
+	* utils/rapper.c: Use raptor_world_get_serializer_description()
+	for serializer info.
+
+2010-03-29  Dave Beckett <dave@dajobe.org>
+
+	* examples/raptor_abort.c, examples/rdfcat.c, examples/rdfprint.c,
+	examples/rdfserialize.c: Update examples to raptor2 API
+
+	* examples/Makefile.am: 2010
+
+	* configure.ac: package name is raptor2 makes things a little
+	easier
+
+	* Makefile.am: Do not toy with distdir
+
+	* raptor2.spec.in: Update for raptor2
+
+	* raptor2.pc.in: link with -lraptor2
+
+	* tests/Makefile.am: Use libraptor2.la
+
+	* raptor2.pc.in: adjust includedir to be prefixed by package name
+
+	* utils/Makefile.am: Use libraptor2.la
+
+	* src/Makefile.am: libraptor2.la
+
+	* .gitignore, docs/.gitignore, src/.gitignore: Update git ignores
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-option.sgml,
+	docs/tmpl/section-parser.sgml, docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml-namespace.sgml: update doc tmpls
+
+	* Makefile.am, configure.ac, docs/Makefile.am, docs/libraptor.3,
+	docs/libraptor2.3, raptor-src-config.in, raptor.pc.in,
+	raptor.rdf.in, raptor.spec.in, raptor2.pc.in, raptor2.rdf.in,
+	raptor2.spec.in, src/Makefile.am, src/raptor-config.1,
+	src/raptor-config.in: Rename raptor to raptor2
+
+2010-03-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_parse.c: Added
+	raptor_parser_parse_iostream() to parse from an iostream
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit): Implement emit graph marks for rss-tag-soup
+	parser.
+
+	* src/raptor_rdfxml.c: Implement emit graph marks for rdfxml
+	parser.
+
+	* src/raptor_librdfa.c: Implement emit graph marks for librdfa
+	parser.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_generate_statement): Tidy emit graph mark
+	condition.
+
+	* src/raptor_librdfa.c: ws
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_generate_statement): Do nothing if there is no
+	statement handler.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_chunk): Implement graph marks for GRDDL
+	parser.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_ensure_internal_parser): Disable graph marks for
+	child parsers.
+
+	* src/raptor_parse.c:
+	(raptor_parser_start_graph, raptor_parser_end_graph): Use
+	emit_graph_marks flag.
+
+	* src/raptor_internal.h, src/raptor_parse.c: Add internal
+	raptor_parser flag emit_graph_marks default set.
+
+	* src/raptor_parse.c: save editor before commit!
+
+	* src/raptor_internal.h, src/raptor_parse.c:
+	(raptor_parser_copy_flags_state): Added to copy flags to/from
+	parsers.
+
+	* src/raptor_parse.c:
+	(raptor_parser_copy_user_state): Copy failed,
+	emitted_default_graph bit flags.
+
+	* src/ntriples_parse.c: Implement graph marks for ntriples parser
+
+	* src/turtle_common.h, src/turtle_parser.y: Switch to use
+	raptor_parser emitted_default_graph field
+
+	* src/raptor_internal.h: raptor_parser_s gains
+	emitted_default_graph flag.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c,
+	src/turtle_parser.y: Added raptor_parser_get_graph() and factory
+	method
+
+	(raptor_parser_get_graph): Added to get current graph for a
+	parser.
+
+	raptor_parser_factory: Added optional method get_graph.  If
+	missing this indicates that start/end graph marks need to be
+	synthesised.
+
+	(raptor_turtle_get_graph): Added to implement this for Turtle and
+	TRiG parsers.
+
+	* src/raptor.h, src/raptor_namespace.c,
+	src/raptor_serialize_turtle.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Rename raptor_namespace_copy to
+	raptor_namespace_stack_start_namespace
+
+	(raptor_namespace_stack_start_namespace): Renamed from
+	raptor_namespace_copy to follow conventions; this is not a copy
+	constructor for the raptor_namespace class, it's a method on the
+	raptor_namespace_stack class.  Update all callers
+
+	* src/raptor_qname.c:
+	(raptor_qname_copy): Handle NULL qname arg.
+
+	* src/turtle_common.h, src/turtle_parser.y, utils/rapper.c: Update
+	Turtle and TRiG parsers to emit new graph marks
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c: Updated
+	graph mark handler mechanism in a stream of triples
+
+	raptor_graph_mark_handler: Renamed from raptor_graph_handler since
+	it returns not just a URI (or NULL for default graph) but flags
+	that indicate if it was a start/end and whether the graph name was
+	declared in the syntax or implicit by the stream of statements.
+
+	raptor_graph_mark_flags: Added used above to record the start/end
+	marks and declared/not.
+
+	(raptor_parser_set_graph_mark_handler): Renamed from
+	raptor_parser_set_graph_handler.
+
+	raptor_parser: Renamed field to graph_mark_handler and changed
+	type to match above.
+
+	(raptor_parser_start_graph): Renamed from
+	raptor_parser_set_graph_name and added is_declared flag.
+
+	(raptor_parser_end_graph): Added.
 
 2010-03-26  Dave Beckett <dave@dajobe.org>
 
