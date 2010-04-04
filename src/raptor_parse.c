@@ -1585,7 +1585,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
       i++) {
     len += type_q->mime_type_len + 2; /* ", " */
     if(type_q->q < 10)
-      len += 6; /* ";q = X.Y" */
+      len += 6; /* ";q=X.Y" */
   }
   
   /* 9 = strlen("\*\/\*;q=0.1") */
@@ -1640,12 +1640,13 @@ raptor_parser_get_accept_header_all(raptor_world* world)
         j++) {
       len += type_q->mime_type_len + 2; /* ", " */
       if(type_q->q < 10)
-        len += 6; /* ";q = X.Y" */
+        len += 6; /* ";q=X.Y" */
     }
   }
   
-  /* 11 = strlen("\*\/\*;q = 0.1") */
-  accept_header = (char*)RAPTOR_MALLOC(cstring, len + 11 + 1);
+  /* 9 = strlen("\*\/\*;q=0.1") */
+#define ACCEPT_HEADER_LEN 9
+  accept_header = (char*)RAPTOR_MALLOC(cstring, len + ACCEPT_HEADER_LEN + 1);
   if(!accept_header)
     return NULL;
 
@@ -1676,7 +1677,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     
   }
   
-  strncpy(p, "*/*;q = 0.1", 11 + 1);
+  strncpy(p, "*/*;q=0.1", ACCEPT_HEADER_LEN + 1);
   
   return accept_header;
 }
