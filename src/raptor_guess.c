@@ -219,7 +219,7 @@ raptor_guess_guess_get_description(raptor_parser* rdf_parser)
   raptor_guess_parser_context *guess_parser;
   guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
-  if(guess_parser)
+  if(guess_parser && guess_parser->parser)
     return raptor_parser_get_description(guess_parser->parser);
   else
     return &rdf_parser->factory->desc;
