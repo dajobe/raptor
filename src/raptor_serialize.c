@@ -109,7 +109,7 @@ raptor_serializers_init(raptor_world* world)
 #endif
 
 #ifdef RAPTOR_SERIALIZER_HTML
-  rc+= raptor_init_serializer_html(world) != 0;
+  rc += raptor_init_serializer_html(world) != 0;
 #endif
 
   return rc;
