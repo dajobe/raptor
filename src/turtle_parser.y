@@ -1549,7 +1549,7 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 #ifdef RAPTOR_PARSER_TURTLE
-static const char* turtle_names[4] = { "turtle", "ntriples-plus", "n3", NULL };
+static const char* const turtle_names[4] = { "turtle", "ntriples-plus", "n3", NULL };
   
 #define TURTLE_TYPES_COUNT 5
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
@@ -1592,7 +1592,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 
 
 #ifdef RAPTOR_PARSER_TRIG
-static const char* trig_names[2] = { "trig", NULL };
+static const char* const trig_names[2] = { "trig", NULL };
   
 #define TRIG_TYPES_COUNT 1
 static const raptor_type_q trig_types[TRIG_TYPES_COUNT + 1] = {

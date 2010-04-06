@@ -226,7 +226,7 @@ raptor_guess_guess_get_description(raptor_parser* rdf_parser)
 }
 
 
-static const char* guess_names[2] = { "guess", NULL };
+static const char* const guess_names[2] = { "guess", NULL };
 
 static int
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 

@@ -258,7 +258,7 @@ typedef struct {
  * 
  */
 typedef struct {
-  const char** names;
+  const char* const* names;
 
   const char* label;
 

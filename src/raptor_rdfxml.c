@@ -125,7 +125,7 @@ typedef enum {
 } raptor_state;
 
 
-static const char * const raptor_state_names[RAPTOR_STATE_PARSETYPE_LAST+2]={
+static const char* const raptor_state_names[RAPTOR_STATE_PARSETYPE_LAST+2] = {
   "INVALID",
   "SKIPPING",
   "UNKNOWN",
@@ -3157,7 +3157,7 @@ raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
 }
 
 
-static const char* rdfxml_names[3] = { "rdfxml", "raptor", NULL};
+static const char* const rdfxml_names[3] = { "rdfxml", "raptor", NULL};
 
 #define RDFXML_TYPES_COUNT 2
 static const raptor_type_q rdfxml_types[RDFXML_TYPES_COUNT + 1] = {

@@ -301,7 +301,7 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static const char* rdfa_names[2] = { "rdfa", NULL };
+static const char* const rdfa_names[2] = { "rdfa", NULL };
 
 static int
 raptor_librdfa_parser_register_factory(raptor_parser_factory *factory) 

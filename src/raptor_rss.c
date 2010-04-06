@@ -1666,7 +1666,7 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static const char* rss_tag_soup_names[2] = { "rss-tag-soup", NULL };
+static const char* const rss_tag_soup_names[2] = { "rss-tag-soup", NULL };
 
 #define RSS_TAG_SOUP_TYPES_COUNT 5
 static const raptor_type_q rss_tag_soup_types[RSS_TAG_SOUP_TYPES_COUNT + 1] = {

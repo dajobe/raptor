@@ -1484,7 +1484,7 @@ raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static const char* rdfxml_xmp_names[3] = { "rdfxml-xmp", NULL};
+static const char* const rdfxml_xmp_names[2] = { "rdfxml-xmp", NULL};
 
 #define RDFXML_XMP_TYPES_COUNT 1
 static const raptor_type_q rdfxml_xmp_types[RDFXML_XMP_TYPES_COUNT + 1] = {
@@ -1517,7 +1517,7 @@ raptor_rdfxml_xmp_serializer_register_factory(raptor_serializer_factory *factory
 }
 
 
-static const char* rdfxmla_names[3] = { "rdfxml-abbrev", NULL};
+static const char* const rdfxmla_names[2] = { "rdfxml-abbrev", NULL};
 
 #define RDFXMLA_TYPES_COUNT 1
 static const raptor_type_q rdfxmla_types[RDFXMLA_TYPES_COUNT + 1] = {
