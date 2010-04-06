@@ -230,7 +230,7 @@ raptor_html_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static const char* html_names[3] = { "html", NULL};
+static const char* const html_names[2] = { "html", NULL};
 
 #define HTML_TYPES_COUNT 2
 static const raptor_type_q html_types[HTML_TYPES_COUNT + 1] = {

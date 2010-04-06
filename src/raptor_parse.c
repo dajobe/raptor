@@ -280,7 +280,7 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
  **/
 const raptor_syntax_description*
 raptor_world_get_parser_description(raptor_world* world, 
-                                    const unsigned int counter)
+                                    unsigned int counter)
 {
   raptor_parser_factory *factory;
 

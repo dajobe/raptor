@@ -219,14 +219,14 @@ raptor_guess_guess_get_description(raptor_parser* rdf_parser)
   raptor_guess_parser_context *guess_parser;
   guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
-  if(guess_parser)
+  if(guess_parser && guess_parser->parser)
     return raptor_parser_get_description(guess_parser->parser);
   else
     return &rdf_parser->factory->desc;
 }
 
 
-static const char* guess_names[2] = { "guess", NULL };
+static const char* const guess_names[2] = { "guess", NULL };
 
 static int
 raptor_guess_parser_register_factory(raptor_parser_factory *factory) 

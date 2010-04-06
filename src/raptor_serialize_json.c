@@ -461,7 +461,7 @@ raptor_json_serialize_finish_factory(raptor_serializer_factory* factory)
 
 
 
-static const char* json_triples_names[3] = { "json-triples", NULL};
+static const char* const json_triples_names[3] = { "json-triples", NULL};
 
 #define JSON_TRIPLES_TYPES_COUNT 1
 static const raptor_type_q json_triples_types[JSON_TRIPLES_TYPES_COUNT + 1] = {
@@ -494,7 +494,7 @@ raptor_json_triples_serializer_register_factory(raptor_serializer_factory *facto
 }
 
 
-static const char* json_resource_names[3] = { "json", NULL};
+static const char* const json_resource_names[2] = { "json", NULL};
 
 #define JSON_RESOURCE_TYPES_COUNT 1
 static const raptor_type_q json_resource_types[JSON_RESOURCE_TYPES_COUNT + 1] = {
