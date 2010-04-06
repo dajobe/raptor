@@ -806,14 +806,14 @@ const char* raptor_domain_get_label(raptor_domain domain);
 
 /* Parser names */
 RAPTOR_API
-const raptor_syntax_description* raptor_world_get_parser_description(raptor_world* world, const unsigned int counter);
+const raptor_syntax_description* raptor_world_get_parser_description(raptor_world* world, unsigned int counter);
 RAPTOR_API
 int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
 
 RAPTOR_API
-const raptor_syntax_description* raptor_world_get_serializer_description(raptor_world* world, const unsigned int counter);
+const raptor_syntax_description* raptor_world_get_serializer_description(raptor_world* world, unsigned int counter);
 RAPTOR_API
 int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 RAPTOR_API
