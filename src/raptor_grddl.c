@@ -473,7 +473,7 @@ static struct {
 };
 
 
-static const char* grddl_namespace_uris_ignore_list[] const = {
+static const char* const grddl_namespace_uris_ignore_list[] = {
   "http://www.w3.org/1999/xhtml",
   "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
   "http://www.w3.org/2001/XMLSchema",
