@@ -997,7 +997,7 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static const char* ntriples_names[2] = { "ntriples", NULL };
+static const char* const ntriples_names[2] = { "ntriples", NULL };
 
 #define NTRIPLES_TYPES_COUNT 1
 static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {

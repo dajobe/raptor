@@ -1136,7 +1136,7 @@ raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
-static const char* turtle_names[3] = { "turtle", NULL};
+static const char* const turtle_names[2] = { "turtle", NULL};
 
 #define TURTLE_TYPES_COUNT 1
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {

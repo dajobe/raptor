@@ -541,7 +541,7 @@ raptor_dot_serializer_statement(raptor_serializer* serializer,
 }
 
 
-static const char* dot_names[3] = { "dot", NULL};
+static const char* const dot_names[2] = { "dot", NULL};
 
 #define DOT_TYPES_COUNT 1
 static const raptor_type_q dot_types[DOT_TYPES_COUNT + 1] = {

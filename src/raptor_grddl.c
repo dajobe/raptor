@@ -473,7 +473,7 @@ static struct {
 };
 
 
-static const char* grddl_namespace_uris_ignore_list[]={
+static const char* const grddl_namespace_uris_ignore_list[] = {
   "http://www.w3.org/1999/xhtml",
   "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
   "http://www.w3.org/2001/XMLSchema",
@@ -1973,7 +1973,7 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
 
 
 
-static const char* grddl_names[2] = { "grddl", NULL };
+static const char* const grddl_names[2] = { "grddl", NULL };
 
 #define GRDDL_TYPES_COUNT 2
 static const raptor_type_q grddl_types[GRDDL_TYPES_COUNT + 1] = {
