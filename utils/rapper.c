@@ -179,7 +179,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #endif
 
 
-#define GETOPT_STRING "saf:ghrqo:O:wecm:i:I:vt"
+#define GETOPT_STRING "cef:ghi:I:m:o:O:qrstvw"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -204,8 +204,8 @@ static const struct option long_options[] =
   {"show-graphs", 0, 0, SHOW_GRAPHS_FLAG},
   {"show-namespaces", 0, 0, SHOW_NAMESPACES_FLAG},
   {"trace", 0, 0, 't'},
-  {"ignore-warnings", 0, 0, 'w'},
   {"version", 0, 0, 'v'},
+  {"ignore-warnings", 0, 0, 'w'},
   {NULL, 0, 0, 0}
 };
 #endif
@@ -368,9 +368,6 @@ main(int argc, char *argv[])
         usage = 1;
         break;
         
-      case 'a':
-        break;
-
       case 'c':
         count = 1;
         if(serializer_syntax_name)
