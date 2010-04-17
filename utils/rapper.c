@@ -89,6 +89,7 @@ static int report_namespace = 0;
 
 static int report_graph = 0;
 
+
 static
 void print_triples(void *user_data, raptor_statement *triple) 
 {
@@ -96,9 +97,9 @@ void print_triples(void *user_data, raptor_statement *triple)
   triple_count++;
 
   if(guess && !quiet && !reported_guess) {
-     fprintf(stderr, "%s: Guessed parser name '%s'\n", program,
-             raptor_parser_get_name(rdf_parser));
-     reported_guess = 1;
+    fprintf(stderr, "%s: Guessed parser name '%s'\n",
+            program, raptor_parser_get_name(rdf_parser));
+    reported_guess = 1;
   }
 
 
@@ -118,6 +119,7 @@ void print_triples(void *user_data, raptor_statement *triple)
   return;
 }
 
+
 static
 void print_graph(void *user_data, raptor_uri *graph, int flags)
 {
@@ -128,11 +130,13 @@ void print_graph(void *user_data, raptor_uri *graph, int flags)
     return;
 
   if(graph)
-    fprintf(stderr, "%s: Graph URI %s %s\n", program, 
-            raptor_uri_as_string(graph), label);
+    fprintf(stderr, "%s: Graph URI %s %s\n",
+            program, raptor_uri_as_string(graph), label);
   else
-    fprintf(stderr, "%s: Default graph %s\n", program, label);
+    fprintf(stderr, "%s: Default graph %s\n",
+            program, label);
 }
+
 
 static void
 print_namespaces(void* user_data, raptor_namespace *nspace)
@@ -144,7 +148,8 @@ print_namespaces(void* user_data, raptor_namespace *nspace)
     return;
 
   s = raptor_namespace_format_as_xml(nspace, NULL);
-  fprintf(stderr, "%s: Namespace declared: %s\n", program, s);
+  fprintf(stderr, "%s: Namespace declared: %s\n",
+          program, s);
   raptor_free_memory(s);
   
   return;
@@ -217,7 +222,8 @@ static int warning_count = 0;
 static int ignore_warnings = 0;
 static int ignore_errors = 0;
 
-static const char * const title_format_string="Raptor RDF syntax parsing and serializing utility %s\n";
+static const char * const title_format_string = 
+  "Raptor RDF syntax parsing and serializing utility %s\n";
 
 
 static void
@@ -284,8 +290,8 @@ rapper_free_namespace_decl(void* data) {
 static int 
 rapper_uri_trace(void *user_data, raptor_uri* uri)
 {
-  fprintf(stderr, "%s: Processing URI %s\n", program,
-          raptor_uri_as_string(uri));
+  fprintf(stderr, "%s: Processing URI %s\n",
+          program, raptor_uri_as_string(uri));
   return 0;
 }
 
@@ -323,8 +329,8 @@ main(int argc, char *argv[])
 
   /* output variables - serializer */
   /* 'serializer' object variable is a global */
-  const char *serializer_syntax_name="ntriples";
-  unsigned char *output_base_uri_string = NULL;
+  const char *serializer_syntax_name = "ntriples";
+  const unsigned char *output_base_uri_string = NULL;
   raptor_uri *output_base_uri = NULL;
   raptor_sequence* serializer_options = NULL;
   raptor_sequence *namespace_declarations = NULL;
@@ -337,9 +343,9 @@ main(int argc, char *argv[])
 
   program = argv[0];
   if((p = strrchr(program, '/')))
-    program = p+1;
+    program = p + 1;
   else if((p = strrchr(program, '\\')))
-    program = p+1;
+    program = p + 1;
   argv[0] = program;
 
   world = raptor_new_world();
@@ -379,7 +385,8 @@ main(int argc, char *argv[])
           if(!strcmp(optarg, "help")) {
             int i;
             
-            fprintf(stderr, "%s: Valid parser options are:\n", program);
+            fprintf(stderr, "%s: Valid parser options are:\n",
+                    program);
             for(i = 0; i < (int)raptor_option_get_count(); i++) {
               raptor_option_description *od;
               
@@ -392,7 +399,8 @@ main(int argc, char *argv[])
                         raptor_option_get_value_type_label(od->value_type));
               }
             }
-            fprintf(stderr, "%s: Valid serializer options are:\n", program);
+            fprintf(stderr, "%s: Valid serializer options are:\n",
+                    program);
             for(i = 0; i < (int)raptor_option_get_count(); i++) {
               raptor_option_description *od;
               
@@ -406,19 +414,24 @@ main(int argc, char *argv[])
                 raptor_free_option_description(od);
               }
             }
-            fputs("Options are set with `" HELP_ARG(f, option) " OPTION = VALUE or `-f OPTION'\nand take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
-            fputs("\nA option of the form xmlns:PREFIX=\"URI\" can be used to declare output\nnamespace prefixes and names for serializing using an XML-style syntax\nEither or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\nThis form can be repeated for multiple declarations.\n", stderr);
+            fputs("Options are set with `" HELP_ARG(f, option) " OPTION = VALUE or `-f OPTION'\n"
+                  "and take a decimal integer VALUE except where noted, defaulting to 1 if omitted.\n", stderr);
+            fputs("\nA option of the form xmlns:PREFIX=\"URI\" can be used to declare output\n"
+                  "namespace prefixes and names for serializing using an XML-style syntax\n"
+                  "Either or both of PREFIX or URI can be omitted such as -f xmlns=\"URI\"\n"
+                  "This form can be repeated for multiple declarations.\n",
+                  stderr);
 
             raptor_free_world(world);
             exit(0);
           } else if(!strncmp(optarg, "xmlns", 5)) {
             struct namespace_decl *nd;
-            nd = (struct namespace_decl *)raptor_alloc_memory(sizeof(struct namespace_decl));
+            nd = (struct namespace_decl *)raptor_alloc_memory(sizeof(*nd));
             if(raptor_xml_namespace_string_parse((unsigned char*)optarg,
                                                  &nd->prefix,
                                                  &nd->uri_string)) {
-              fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n", program, 
-                      optarg);
+              fprintf(stderr, "%s: Bad xmlns syntax in '%s'\n",
+                      program, optarg);
               rapper_free_namespace_decl(nd);
 
               raptor_free_world(world);
@@ -476,12 +489,14 @@ main(int argc, char *argv[])
 
                 if(domain == RAPTOR_DOMAIN_PARSER) {
                   if(!parser_options)
-                    parser_options = raptor_new_sequence(raptor_free_memory, NULL);
+                    parser_options = raptor_new_sequence(raptor_free_memory,
+                                                         NULL);
                   raptor_sequence_push(parser_options, fv);
                 } else {
                   /* RAPTOR_DOMAIN_SERIALIZER */
                   if(!serializer_options)
-                    serializer_options = raptor_new_sequence(raptor_free_memory, NULL);
+                    serializer_options = raptor_new_sequence(raptor_free_memory,
+                                                             NULL);
                   raptor_sequence_push(serializer_options, fv);
                 }
                 
@@ -495,7 +510,9 @@ main(int argc, char *argv[])
             
             
             if(!ok) {
-              fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(f, option) "'\nTry '%s " HELP_ARG(f, option) " help' for a list of valid options\n",
+              fprintf(stderr, 
+                      "%s: invalid argument `%s' for `" HELP_ARG(f, option) "'\n"
+                      "Try '%s " HELP_ARG(f, option) " help' for a list of valid options\n",
                       program, optarg, program);
               usage = 1;
             }
@@ -534,9 +551,13 @@ main(int argc, char *argv[])
           else if(!strcmp(optarg, "lax"))
             strict_mode = 0;
           else {
-            fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(m, mode) "'\n",
+            fprintf(stderr,
+                    "%s: invalid argument `%s' for `" HELP_ARG(m, mode) "'\n",
                     program, optarg);
-            fprintf(stderr, "Valid arguments are:\n  - `lax'\n  - `strict'\n");
+            fprintf(stderr,
+                    "Valid arguments are:\n"
+                    "  - `lax'\n"
+                    "  - `strict'\n");
             usage = 1;
           }
         }
@@ -549,7 +570,8 @@ main(int argc, char *argv[])
           else {
             int i;
             
-            fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(o, output) "'\n",
+            fprintf(stderr,
+                    "%s: invalid argument `%s' for `" HELP_ARG(o, output) "'\n",
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n");
             for(i = 0; 1; i++) {
@@ -568,7 +590,7 @@ main(int argc, char *argv[])
 
       case 'O':
         if(optarg)
-          output_base_uri_string = (unsigned char*)optarg;
+          output_base_uri_string = (const unsigned char*)optarg;
         break;
         
       case 'i':
@@ -578,7 +600,8 @@ main(int argc, char *argv[])
           else {
             int i;
             
-            fprintf(stderr, "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
+            fprintf(stderr,
+                    "%s: invalid argument `%s' for `" HELP_ARG(i, input) "'\n",
                     program, optarg);
             fprintf(stderr, "Valid arguments are:\n");
             for(i = 0; 1; i++) {
@@ -648,7 +671,7 @@ main(int argc, char *argv[])
       fputs("\n\n", stderr);
     }
     fprintf(stderr, "Try `%s " HELP_ARG(h, help) "' for more information.\n",
-                    program);
+            program);
 
     raptor_free_world(world);
     exit(1);
@@ -669,10 +692,8 @@ main(int argc, char *argv[])
 
     puts("\nArguments:");
     puts("  INPUT-URI       a filename, URI or '-' for standard input (stdin).");
-    puts("  INPUT-BASE-URI  the input/parser base URI or '-' for none."
-         "\n"
-         "    Default is INPUT-URI"
-         "\n"
+    puts("  INPUT-BASE-URI  the input/parser base URI or '-' for none.\n"
+         "    Default is INPUT-URI\n"
          "    Equivalent to" HELP_ARG_BOTH("I INPUT-BASE-URI", "input-uri INPUT-BASE-URI"));
 
     puts("\nMain options:");
@@ -742,7 +763,8 @@ main(int argc, char *argv[])
   /* If uri_string is "path-to-file", turn it into a file: URI */
   if(!strcmp((const char*)uri_string, "-")) {
     if(!base_uri_string) {
-      fprintf(stderr, "%s: A Base URI is required when reading from standard input.\n",
+      fprintf(stderr,
+              "%s: A Base URI is required when reading from standard input.\n",
               program);
       return(1);
     }
@@ -790,7 +812,7 @@ main(int argc, char *argv[])
       output_base_uri = raptor_uri_copy(base_uri);
   } else {
     if(strcmp((const char*)output_base_uri_string, "-")) {
-      output_base_uri = raptor_new_uri(world, (const unsigned char*)output_base_uri_string);
+      output_base_uri = raptor_new_uri(world, output_base_uri_string);
       if(!output_base_uri) {
         fprintf(stderr, "%s: Failed to create output base URI for %s\n",
                 program, output_base_uri_string);
@@ -806,8 +828,8 @@ main(int argc, char *argv[])
 
   rdf_parser = raptor_new_parser(world, syntax_name);
   if(!rdf_parser) {
-    fprintf(stderr, "%s: Failed to create raptor parser type %s\n", program,
-            syntax_name);
+    fprintf(stderr, "%s: Failed to create raptor parser type %s\n",
+            program, syntax_name);
     return(1);
   }
 
@@ -843,7 +865,8 @@ main(int argc, char *argv[])
                 uri_string, syntax_name);
     } else {
       if(base_uri_string)
-        fprintf(stderr, "%s: Parsing file %s with parser %s and base URI %s\n", program,
+        fprintf(stderr, 
+                "%s: Parsing file %s with parser %s and base URI %s\n", program,
                 FILENAME_LABEL(filename), syntax_name, base_uri_string);
       else
         fprintf(stderr, "%s: Parsing file %s with parser %s\n", program,
@@ -857,7 +880,8 @@ main(int argc, char *argv[])
     raptor_parser_set_graph_mark_handler(rdf_parser, rdf_parser, print_graph);
 
   if(report_namespace)
-    raptor_parser_set_namespace_handler(rdf_parser, rdf_parser, print_namespaces);
+    raptor_parser_set_namespace_handler(rdf_parser, rdf_parser,
+                                        print_namespaces);
 
 
   if(serializer_syntax_name) {    
@@ -882,8 +906,10 @@ main(int argc, char *argv[])
     if(namespace_declarations) {
       int i;
       for(i = 0; i< raptor_sequence_size(namespace_declarations); i++) {
-        struct namespace_decl *nd = (struct namespace_decl *)raptor_sequence_get_at(namespace_declarations, i);
+        struct namespace_decl *nd;
         raptor_uri *ns_uri = NULL;
+
+        nd = (struct namespace_decl*)raptor_sequence_get_at(namespace_declarations, i);
         if(nd->uri_string)
           ns_uri = raptor_new_uri(world, nd->uri_string);
         
@@ -910,7 +936,8 @@ main(int argc, char *argv[])
                                           output_base_uri, stdout);
 
     if(!report_namespace)
-      raptor_parser_set_namespace_handler(rdf_parser, serializer, relay_namespaces);
+      raptor_parser_set_namespace_handler(rdf_parser, serializer,
+                                          relay_namespaces);
   }
   
 
@@ -920,14 +947,14 @@ main(int argc, char *argv[])
   rc = 0;
   if(!uri || filename) {
     if(raptor_parser_parse_file(rdf_parser, uri, base_uri)) {
-      fprintf(stderr, "%s: Failed to parse file %s %s content\n", program, 
-              FILENAME_LABEL(filename), syntax_name);
+      fprintf(stderr, "%s: Failed to parse file %s %s content\n",
+              program, FILENAME_LABEL(filename), syntax_name);
       rc = 1;
     }
   } else {
     if(raptor_parser_parse_uri(rdf_parser, uri, base_uri)) {
-      fprintf(stderr, "%s: Failed to parse URI %s %s content\n", program, 
-              uri_string, syntax_name);
+      fprintf(stderr, "%s: Failed to parse URI %s %s content\n",
+              program, uri_string, syntax_name);
       rc = 1;
     }
   }
@@ -942,10 +969,11 @@ main(int argc, char *argv[])
 
   if(!quiet) {
     if(triple_count == 1)
-      fprintf(stderr, "%s: Parsing returned 1 triple\n", program);
+      fprintf(stderr, "%s: Parsing returned 1 triple\n",
+              program);
     else
-      fprintf(stderr, "%s: Parsing returned %d triples\n", program,
-              triple_count);
+      fprintf(stderr, "%s: Parsing returned %d triples\n",
+              program, triple_count);
   }
   
   if(output_base_uri)
