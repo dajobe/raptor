@@ -258,9 +258,9 @@ typedef enum {
 
 /**
  * raptor_syntax_description:
- * @names: syntax names - the first one (required) is the public name, the rest are aliases.
+ * @names: array of syntax names - the first one (required) is the public name, the rest are aliases.  The array is NULL terminated.
  * @label: long descriptive label for syntax
- * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL)
+ * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL).  If present the array is NULL terminated.
  * @mime_types_count: size of @mime_types array (or 0)
  * @uri_string: URI identifying the syntax (or NULL)
  * @flags: See #raptor_syntax_bitflags for the bits
