@@ -179,7 +179,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #endif
 
 
-#define GETOPT_STRING "nsaf:ghrqo:O:wecm:i:I:vt"
+#define GETOPT_STRING "saf:ghrqo:O:wecm:i:I:vt"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -196,7 +196,6 @@ static const struct option long_options[] =
   {"input", 1, 0, 'i'},
   {"input-uri", 1, 0, 'I'},
   {"mode", 1, 0, 'm'},
-  {"ntriples", 0, 0, 'n'},
   {"output", 1, 0, 'o'},
   {"output-uri", 1, 0, 'O'},
   {"quiet", 0, 0, 'q'},
@@ -513,10 +512,6 @@ main(int argc, char *argv[])
 
       case 'h':
         help = 1;
-        break;
-
-      case 'n':
-        syntax_name="ntriples";
         break;
 
       case 's':
