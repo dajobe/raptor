@@ -57,6 +57,10 @@ raptor_new_statement(raptor_world *world)
 {
   raptor_statement* statement;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   statement = (raptor_statement*)RAPTOR_CALLOC(raptor_statement,
                                                1, sizeof(*statement));
   if(!statement)
@@ -593,7 +597,14 @@ raptor_term*
 raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 {
   raptor_term *t;
+
+  if(!uri)
+    return NULL;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
   if(!t)
     return NULL;
@@ -610,7 +621,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 /**
  * raptor_new_term_from_literal:
  * @world: raptor world
- * @literal: literal data
+ * @literal: literal data (or NULL for empty literal)
  * @datatype: literal datatype URI (or NULL)
  * @language: literal language (or NULL)
  *
@@ -630,7 +641,11 @@ raptor_new_term_from_literal(raptor_world* world,
   unsigned char* new_literal = NULL;
   unsigned char* new_language = NULL;
   size_t literal_len = 0;
-  
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   if(literal)
     literal_len = strlen((const char*)literal);
 
@@ -703,7 +718,14 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   raptor_term *t;
   unsigned char* new_id;
   size_t len;
+
+  if(!blank)
+    return NULL;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   len = strlen((char*)blank);
   new_id = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
   if(!new_id)

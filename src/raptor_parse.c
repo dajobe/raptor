@@ -284,6 +284,10 @@ raptor_world_get_parser_description(raptor_world* world,
 {
   raptor_parser_factory *factory;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+  
   factory = (raptor_parser_factory*)raptor_sequence_get_at(world->parsers,
                                                            counter);
 
@@ -306,6 +310,13 @@ raptor_world_get_parser_description(raptor_world* world,
 int
 raptor_world_is_parser_name(raptor_world* world, const char *name)
 {
+  if(!name)
+    return 0;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, 0);
+
+  raptor_world_open(world);
+  
   return (raptor_world_get_parser_factory(world, name) != NULL);
 }
 
@@ -313,7 +324,7 @@ raptor_world_is_parser_name(raptor_world* world, const char *name)
 /**
  * raptor_new_parser:
  * @world: world object
- * @name: the parser name
+ * @name: the parser name or NULL for default parser
  *
  * Constructor - create a new raptor_parser object.
  *
@@ -325,6 +336,10 @@ raptor_new_parser(raptor_world* world, const char *name)
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+  
   factory = raptor_world_get_parser_factory(world, name);
   if(!factory)
     return NULL;
@@ -393,6 +408,10 @@ raptor_new_parser_for_content(raptor_world* world,
                               const unsigned char *identifier)
 {
   const char* name;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
 
   name = raptor_world_guess_parser_name(world, uri, mime_type,
                                         buffer, len, identifier);
@@ -1360,6 +1379,10 @@ raptor_world_guess_parser_name(raptor_world* world,
   raptor_parser_factory *factory;
   unsigned char *suffix = NULL;
   struct syntax_score* scores;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
 
   scores = (struct syntax_score*)RAPTOR_CALLOC(syntax_scores,
                                                raptor_sequence_size(world->parsers),

@@ -80,6 +80,14 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
                 void* user_data)
 {
   raptor_sax2* sax2;
+
+  if(!locator)
+    return NULL;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   sax2 = (raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(*sax2));
   if(!sax2)
     return NULL;

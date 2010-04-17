@@ -141,7 +141,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 /**
  * raptor_new_turtle_writer:
  * @world: raptor_world object
- * @base_uri: Base URI for the writer
+ * @base_uri: Base URI for the writer (or NULL)
  * @write_base_uri: non-0 to write '@base' directive to output
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @iostr: I/O stream to write to
@@ -157,6 +157,14 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_iostream* iostr)
 {
   raptor_turtle_writer* turtle_writer;
+
+  if(!nstack || !iostr)
+    return NULL;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1,
                                                        sizeof(*turtle_writer));
 

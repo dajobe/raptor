@@ -328,6 +328,10 @@ raptor_world_get_option_description(raptor_world* world,
   raptor_uri *base_uri = NULL;
   int i;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+  
   area = raptor_option_get_option_area_for_domain(domain);
   if(area == RAPTOR_OPTION_AREA_NONE)
     return NULL;
@@ -407,7 +411,7 @@ raptor_option_value_is_numeric(const raptor_option option)
  * They are automatically returned for any option described with
  * raptor_world_get_option_description().
  *
- * Return value: < 0 if the option is unknown
+ * Return value: < 0 if the option is unknown or on error
  **/
 raptor_option
 raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
@@ -418,6 +422,10 @@ raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri)
   
   if(!uri)
     return option;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, (raptor_option)-1);
+
+  raptor_world_open(world);
   
   uri_string = raptor_uri_as_string(uri);
   if(strncmp((const char*)uri_string, raptor_option_uri_prefix,

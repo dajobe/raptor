@@ -160,6 +160,8 @@ raptor_world_open(raptor_world* world)
   if(world->opened)
     return 0; /* not an error */
 
+  world->opened = 1;
+
   rc = raptor_uri_init(world);
   if(rc)
     return rc;
@@ -190,8 +192,6 @@ raptor_world_open(raptor_world* world)
     return rc;
 #endif
   
-  world->opened = 1;
-
   return 0;
 }
 

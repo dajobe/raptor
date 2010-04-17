@@ -554,7 +554,7 @@ raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
  * @world: raptor world
  * @string: string to XML escape (UTF-8)
  * @len: length of string
- * @buffer: the buffer to use for new string (UTF-8)
+ * @buffer: the buffer to use for new string (UTF-8) or NULL to just calculate expected length
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
  * @xml_version: XML 1.0 (10) or XML 1.1 (11)
@@ -607,6 +607,13 @@ raptor_xml_escape_string_any(raptor_world *world,
   unsigned char *q;
   int unichar_len;
   raptor_unichar unichar;
+
+  if(!string)
+    return -1;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
+
+  raptor_world_open(world);
 
   if(quote != '\"' && quote != '\'')
     quote='\0';
@@ -732,7 +739,7 @@ raptor_xml_escape_string_any(raptor_world *world,
  * @world: raptor world
  * @string: string to XML 1.0 escape (UTF-8)
  * @len: length of string
- * @buffer: the buffer to use for new string (UTF-8)
+ * @buffer: the buffer to use for new string (UTF-8) or NULL to just calculate expected length.
  * @length: buffer size
  * @quote: optional quote character to escape for attribute content, or 0
  *
@@ -748,6 +755,13 @@ raptor_xml_escape_string(raptor_world *world,
                          unsigned char *buffer, size_t length,
                          char quote)
 {
+  if(!string)
+    return -1;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
+
+  raptor_world_open(world);
+
   return raptor_xml_escape_string_any(world, string, len,
                                       buffer, length,
                                       quote,

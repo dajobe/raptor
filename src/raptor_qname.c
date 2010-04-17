@@ -242,6 +242,10 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
   if(!local_name)
     return NULL;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
   if(!qname)
     return NULL;
