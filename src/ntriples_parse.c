@@ -1018,7 +1018,7 @@ raptor_ntriples_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "N-Triples";
   factory->desc.uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
 
-  factory->desc.need_base_uri = 0;
+  factory->desc.flags = 0;
   
   factory->context_length     = sizeof(raptor_ntriples_parser_context);
 

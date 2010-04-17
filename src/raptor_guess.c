@@ -239,7 +239,7 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "Pick the parser to use using content type and URI";
   factory->desc.uri_string = NULL;
   
-  factory->desc.need_base_uri = 1;
+  factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
   factory->context_length     = sizeof(raptor_guess_parser_context);
   

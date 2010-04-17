@@ -417,7 +417,7 @@ raptor_new_parser_for_content(raptor_world* world,
 int
 raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri) 
 {
-  if(rdf_parser->factory->desc.need_base_uri && !uri) {
+  if((rdf_parser->factory->desc.flags & RAPTOR_SYNTAX_NEED_BASE_URI) && !uri) {
     raptor_parser_error(rdf_parser, "Missing base URI for %s parser.",
                         rdf_parser->factory->desc.names[0]);
     return -1;

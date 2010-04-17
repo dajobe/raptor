@@ -1575,7 +1575,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "Turtle Terse RDF Triple Language";
   factory->desc.uri_string = "http://www.dajobe.org/2004/01/turtle/";
 
-  factory->desc.need_base_uri = 1;
+  factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
   factory->context_length     = sizeof(raptor_turtle_parser);
   
@@ -1614,7 +1614,7 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "TriG - Turtle with Named Graphs";
   factory->desc.uri_string = "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/";
 
-  factory->desc.need_base_uri = 1;
+  factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
   factory->context_length     = sizeof(raptor_turtle_parser);
   
