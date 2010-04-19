@@ -246,15 +246,26 @@ typedef struct {
 
 
 /**
+ * raptor_syntax_bitflags:
+ * @RAPTOR_SYNTAX_NEED_BASE_URI: the syntax requires a base URI
+ *
+ * Bit flags for #raptor_syntax_description flags field
+ */
+typedef enum {
+  RAPTOR_SYNTAX_NEED_BASE_URI = 1
+} raptor_syntax_bitflags;
+
+
+/**
  * raptor_syntax_description:
- * @names: syntax names - the first one (required) is the public name, the rest are aliases.
+ * @names: array of syntax names - the first one (required) is the public name, the rest are aliases.  The array is NULL terminated.
  * @label: long descriptive label for syntax
- * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL)
+ * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL).  If present the array is NULL terminated.
  * @mime_types_count: size of @mime_types array (or 0)
  * @uri_string: URI identifying the syntax (or NULL)
- * @need_base_uri: non-0 if this syntax needs a base URI
+ * @flags: See #raptor_syntax_bitflags for the bits
  *
- * Description of an RDF syntax
+ * Description of a syntax or file format.
  * 
  */
 typedef struct {
@@ -267,7 +278,7 @@ typedef struct {
 
   const char* uri_string;
 
-  unsigned int need_base_uri : 1;
+  unsigned int flags;
 } raptor_syntax_description;
 
 

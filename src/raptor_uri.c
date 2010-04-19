@@ -98,6 +98,10 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   if(!uri_string || !*uri_string)
     return NULL;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
 #ifdef DEBUG
   RAPTOR_ASSERT(strlen((const char*)uri_string) != length,
                 "URI string is not declared length");
@@ -179,9 +183,13 @@ raptor_new_uri_from_counted_string(raptor_world* world,
 raptor_uri*
 raptor_new_uri(raptor_world* world, const unsigned char *uri_string) 
 {
-  if(!world || !uri_string)
+  if(!uri_string)
     return NULL;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   return raptor_new_uri_from_counted_string(world, uri_string,
                                             strlen((const char*)uri_string));
 }
@@ -210,11 +218,13 @@ raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
   raptor_uri* new_uri;
   size_t local_name_length;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(uri, raptor_uri, NULL);
-  
   if(!uri)
     return NULL;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   local_name_length = strlen((const char*)local_name);
   
   len = uri->length + local_name_length;
@@ -253,11 +263,13 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   raptor_uri* new_uri;
   size_t actual_length;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(base_uri, raptor_uri, NULL);
-
-  if(!uri_string)
+  if(!base_uri || !uri_string)
     return NULL;
-  
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   /* If URI string is empty, just copy base URI */
   if(!*uri_string)
     return raptor_uri_copy(base_uri);
@@ -301,6 +313,10 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
   if(!base_uri || !id)
     return NULL;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using ID %s\n", id);
 #endif
@@ -342,6 +358,10 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   if(!name)
     return NULL;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   new_uri_string_len = base_uri_string_len + strlen((const char*)name);
   new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring,
                                                  new_uri_string_len + 1);

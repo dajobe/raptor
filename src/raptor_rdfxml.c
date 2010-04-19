@@ -3179,7 +3179,7 @@ raptor_rdfxml_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "RDF/XML";
   factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
 
-  factory->desc.need_base_uri = 1;
+  factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
   factory->context_length     = sizeof(raptor_rdfxml_parser);
   

@@ -226,6 +226,10 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
 {
   raptor_serializer_factory *factory = NULL;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   /* return 1st serializer if no particular one wanted - why? */
   if(!name) {
     factory = (raptor_serializer_factory *)raptor_sequence_get_at(world->serializers, 0);
@@ -270,6 +274,10 @@ raptor_world_get_serializer_description(raptor_world* world,
 {
   raptor_serializer_factory *factory;
 
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   factory = (raptor_serializer_factory*)raptor_sequence_get_at(world->serializers,
                                                                counter);
 
@@ -292,6 +300,13 @@ raptor_world_get_serializer_description(raptor_world* world,
 int
 raptor_world_is_serializer_name(raptor_world* world, const char *name)
 {
+  if(!name)
+    return 0;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, 0);
+
+  raptor_world_open(world);
+
   return (raptor_get_serializer_factory(world, name) != NULL);
 }
 
@@ -299,7 +314,7 @@ raptor_world_is_serializer_name(raptor_world* world, const char *name)
 /**
  * raptor_new_serializer:
  * @world: raptor_world object
- * @name: the serializer name
+ * @name: the serializer name or NULL for default syntax
  *
  * Constructor - create a new raptor_serializer object.
  *
@@ -310,6 +325,10 @@ raptor_new_serializer(raptor_world* world, const char *name)
 {
   raptor_serializer_factory* factory;
   raptor_serializer* rdf_serializer;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
 
   factory = raptor_get_serializer_factory(world, name);
   if(!factory)

@@ -116,7 +116,13 @@ raptor_www_finish(raptor_world* world)
 raptor_www* 
 raptor_new_www_with_connection(raptor_world* world, void *connection)
 {
-  raptor_www* www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
+  raptor_www* www;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
+  www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
   if(!www)
     return NULL;
 
@@ -158,6 +164,10 @@ raptor_new_www_with_connection(raptor_world* world, void *connection)
 raptor_www*
 raptor_new_www(raptor_world* world)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   return raptor_new_www_with_connection(world, NULL);
 }
 

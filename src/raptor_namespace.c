@@ -205,6 +205,11 @@ raptor_namespace_stack *
 raptor_new_namespaces(raptor_world* world, int defaults) 
 {
   raptor_namespace_stack *nstack;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
   nstack = (raptor_namespace_stack *)RAPTOR_CALLOC(raptor_namespace_stack,
                                                    1, sizeof(*nstack));
   if(!nstack)
