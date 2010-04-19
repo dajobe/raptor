@@ -255,8 +255,8 @@ emit_format_description(const char* type_name,
   /* definition */
   emit_start_desc_list_defn(iostr);
   raptor_iostream_string_write("\n    ", iostr);
+
   emit_start_list(iostr);
-  
   for(i = 0; i < sd->mime_types_count; i++) {
     const raptor_type_q* mime_type = &sd->mime_types[i];
     if(!sd)
@@ -266,7 +266,6 @@ emit_format_description(const char* type_name,
     emit_mime_type(mime_type, iostr);
     emit_end_list_item(iostr);
   }
-
   raptor_iostream_string_write("    ", iostr);
   emit_end_list(iostr);
 
