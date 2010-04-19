@@ -219,7 +219,6 @@ emit_end_desc_list(raptor_iostream *iostr)
 static void
 emit_mime_type(const raptor_type_q* mt, raptor_iostream* iostr)
 {
-  raptor_iostream_string_write("type ", iostr);
   emit_literal(mt->mime_type, iostr);
   raptor_iostream_string_write(" with ", iostr);
   if(mt->q < 10) {
@@ -245,9 +244,11 @@ emit_format_description(const char* type_name,
   raptor_xml_escape_string_write((const unsigned char*)sd->label,
                                  strlen(sd->label),
                                  '\0', iostr);
-  raptor_iostream_write_byte(' ', iostr);
-  raptor_iostream_string_write(type_name, iostr);
-  raptor_iostream_string_write(" (name ", iostr);
+  if(type_name) {
+    raptor_iostream_write_byte(' ', iostr);
+    raptor_iostream_string_write(type_name, iostr);
+  }
+  raptor_iostream_string_write(" (", iostr);
   emit_literal(sd->names[0], iostr);
   raptor_iostream_write_byte(')', iostr);
 
@@ -360,7 +361,7 @@ main(int argc, char *argv[])
                      iostr);
   emit_start_desc_list(NULL, iostr);
   for(i = 0; i < parsers_count; i++) {
-    emit_format_description("Parser", parsers[i],
+    emit_format_description(NULL, parsers[i],
                             iostr);
   }
   emit_end_desc_list(iostr);
@@ -372,7 +373,7 @@ main(int argc, char *argv[])
                      iostr);
   emit_start_desc_list(NULL, iostr);
   for(i = 0; i < serializers_count; i++) {
-    emit_format_description("Serializer", serializers[i],
+    emit_format_description(NULL, serializers[i],
                             iostr);
   }
   emit_end_desc_list(iostr);
