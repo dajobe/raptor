@@ -358,7 +358,7 @@ main(int argc, char *argv[])
   emit_start_section("raptor-formats-types-by-parser",
                      "MIME Types by Parser",
                      iostr);
-  emit_start_desc_list("MIME Types by Parser", iostr);
+  emit_start_desc_list(NULL, iostr);
   for(i = 0; i < parsers_count; i++) {
     emit_format_description("Parser", parsers[i],
                             iostr);
@@ -370,7 +370,7 @@ main(int argc, char *argv[])
   emit_start_section("raptor-formats-types-by-serializer", 
                      "MIME Types by Serializer",
                      iostr);
-  emit_start_desc_list("MIME Types by Serializer", iostr);
+  emit_start_desc_list(NULL, iostr);
   for(i = 0; i < serializers_count; i++) {
     emit_format_description("Serializer", serializers[i],
                             iostr);
