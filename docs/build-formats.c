@@ -151,14 +151,14 @@ emit_start_list_item(raptor_iostream *iostr)
 static void
 emit_end_list_item(raptor_iostream *iostr) 
 {
-  raptor_iostream_string_write("</para></listitem>\n",  iostr);
+  raptor_iostream_string_write("</para></listitem>\n", iostr);
 }
 
 
 static void
 emit_end_list(raptor_iostream *iostr)
 {
-  raptor_iostream_string_write("  </itemizedlist>\n",  iostr);
+  raptor_iostream_string_write("  </itemizedlist>\n", iostr);
 }
 
 
@@ -166,11 +166,16 @@ static void
 emit_start_desc_list(const char* title, raptor_iostream *iostr)
 {
   raptor_iostream_string_write(
-"  <variablelist>\n"
+    "  <variablelist>\n",
+    iostr);
+  if(title) {
+    raptor_iostream_string_write(
 "  <title>",
     iostr);
-  raptor_iostream_string_write(title,  iostr);
-  raptor_iostream_string_write("</title>\n",  iostr);
+    raptor_iostream_string_write(title, iostr);
+    raptor_iostream_string_write("</title>\n", iostr);
+  }
+  raptor_iostream_write_byte('\n', iostr);
 }
 
 
@@ -207,7 +212,7 @@ emit_end_desc_list_item(raptor_iostream *iostr)
 static void
 emit_end_desc_list(raptor_iostream *iostr) 
 {
-  raptor_iostream_string_write("  </variablelist>\n",  iostr);
+  raptor_iostream_string_write("  </variablelist>\n", iostr);
 }
 
 
