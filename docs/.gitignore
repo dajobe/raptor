@@ -16,3 +16,6 @@ raptor.prerequisites
 raptor.signals
 version.xml
 xml/
+rdfcat.c
+rdfprint.c
+rdfserialize.c
