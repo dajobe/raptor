@@ -18,6 +18,9 @@ library-wide configuration flags and options.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_world ##### -->
 <para>
 
@@ -29,6 +32,7 @@ library-wide configuration flags and options.
 
 </para>
 
+@void: 
 @Returns: 
 
 

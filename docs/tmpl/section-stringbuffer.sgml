@@ -20,6 +20,9 @@ and #raptor_serializer classes.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_stringbuffer ##### -->
 <para>
 
@@ -31,6 +34,7 @@ and #raptor_serializer classes.
 
 </para>
 
+@void: 
 @Returns: 
 
 

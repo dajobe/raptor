@@ -25,6 +25,9 @@ a name is legal in some XML version.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_xml_element ##### -->
 <para>
 

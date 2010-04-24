@@ -21,6 +21,9 @@ chunks of byte content.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_www ##### -->
 <para>
 
@@ -210,7 +213,7 @@ chunks of byte content.
 @uri: 
 @string_p: 
 @length_p: 
-@malloc_handler: 
+@size_t size: 
 @Returns: 
 
 

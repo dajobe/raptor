@@ -19,6 +19,9 @@ to handle multiple-HEAPs and pass memory to and from the library.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### FUNCTION raptor_free_memory ##### -->
 <para>
 

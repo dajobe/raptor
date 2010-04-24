@@ -19,6 +19,9 @@ and various other utility functions.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### VARIABLE raptor_version_major ##### -->
 <para>
 
@@ -145,12 +148,11 @@ and various other utility functions.
 
 </para>
 
-@names: 
 @label: 
 @mime_types: 
 @mime_types_count: 
 @uri_string: 
-@need_base_uri: 
+@flags: 
 
 <!-- ##### STRUCT raptor_type_q ##### -->
 <para>

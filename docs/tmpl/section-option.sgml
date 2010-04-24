@@ -20,6 +20,9 @@ the parameter type taken.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM raptor_option ##### -->
 <para>
 
@@ -79,6 +82,7 @@ the parameter type taken.
 
 </para>
 
+@void: 
 @Returns: 
 
 
