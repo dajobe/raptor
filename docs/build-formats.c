@@ -288,8 +288,8 @@ main(int argc, char *argv[])
 {
   int rc = 1;
   int i;
-  int parsers_count;
-  int serializers_count;
+  int parsers_count = 0;
+  int serializers_count = 0;
   raptor_syntax_description** parsers = NULL;
   raptor_syntax_description** serializers = NULL;
   raptor_iostream* iostr = NULL;
