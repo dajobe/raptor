@@ -251,13 +251,13 @@ check-turtle-parse-ntriples: build-rapper
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  test_expected=$(srcdir)/$(NTRIPLES_DIR)/$$name.out; \
 	  if cmp $$test_expected $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \
 	    $(ECHO) "FAILED";  result=1; \
-	    $(ECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples -n file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(ECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    diff $$test_expected $$name.res; \
 	  fi; \
