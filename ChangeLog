@@ -1,3 +1,118 @@
+2010-04-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-avltree.sgml,
+	docs/tmpl/section-constants.sgml, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-memory.sgml, docs/tmpl/section-option.sgml,
+	docs/tmpl/section-parser.sgml, docs/tmpl/section-sax2.sgml,
+	docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-unicode.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml, docs/tmpl/section-www.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Update doc tmpls
+
+	* docs/build-formats.c: init parsers/serializers count to 0
+
+	* docs/.gitignore, docs/rdfcat.c, docs/rdfprint.c,
+	docs/rdfserialize.c: Remove rdf*.c example files from git; copied
+	in by maintainer rule
+
+	* examples/.gitignore: Update examples for raptor2 API
+
+	* .gitignore: Do not ignore examples dir
+
+2010-04-19  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c: ws
+
+	* docs/build-formats.c: tidy words
+
+	* docs/build-formats.c: do not put a title on variablelist
+
+	* docs/build-formats.c: optional desc list title
+
+	* docs/raptor-docs.xml: Added raptor-formats.xml
+
+	* docs/Makefile.am: Added raptor-formats.xml
+
+	* docs/build-formats.c: now using raptor_iostream
+
+2010-04-18  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c: Helper to print raptor syntaxes into
+	docbook xml
+
+2010-04-17  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: code style
+
+	* utils/rapper.c: Remove unused -a flag. sort options strings
+	alphabetically
+
+	* utils/rapper.1: 2.0.0
+
+	* utils/rapper.c: Remove long deprecated -n flag to set syntax to
+	ntriples
+
+	* src/raptor_general.c, src/raptor_iostream.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_statement.c, src/raptor_turtle_writer.c,
+	src/raptor_uri.c, src/raptor_www.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Make all constructors check for non-NULL
+	args/world and call raptor_world_open()
+
+	Adjusted some documentation to allow NULL args that weren't noted,
+	such as raptor_new_turtle_writer() can take a NULL base_uri.
+
+	* src/raptor.h: raptor_syntax_description docs
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y:
+	
+	raptor_syntax_description need_base_uri now raptor_syntax_bitflags
+	enum.
+
+	(raptor_syntax_description): Change need_base_uri filed to a
+	bitmask of bits defined in enum raptor_syntax_bitflags.  Enables
+	this structure to be used beyond parser and serializer formats.
+
+	(raptor_syntax_bitflags): Added with RAPTOR_SYNTAX_NEED_BASE_URI
+	flag.
+
+2010-04-06  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_guess.c:
+	(raptor_guess_guess_get_description): Do not call
+	raptor_parser_get_description() with NULL arg.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/turtle_parser.y: Removed writable static data.
+
+	Changed *_names arrays to be const. Also fixed dimensions of
+	*_names arrays to match number of elements.
+
+	(raptor_syntax_description): Changed syntax names array to const
+	to not lose const qualifiers in initialization/assignment.
+
+	* src/raptor.h, src/raptor_parse.c, src/raptor_serialize.c:
+	
+	(raptor_world_get_parser_description,
+	raptor_world_get_serializer_description): Removed const qualifier
+	from pass-by-value args.
+
+	* src/raptor_serialize.c: #ws
+
 2010-04-01  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_html.c: code style
