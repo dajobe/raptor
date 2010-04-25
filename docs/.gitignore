@@ -1,5 +1,9 @@
 *.bak
 *.stamp
+*.exe
+.deps
+.libs
+build-format
 html/
 libraptor2.html
 raptor-changes.xml
@@ -14,8 +18,8 @@ raptor.hierarchy
 raptor.interfaces
 raptor.prerequisites
 raptor.signals
-version.xml
-xml/
 rdfcat.c
 rdfprint.c
 rdfserialize.c
+version.xml
+xml/
