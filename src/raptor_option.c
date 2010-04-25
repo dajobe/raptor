@@ -291,8 +291,8 @@ raptor_option_get_option_area_for_domain(raptor_domain domain)
 void
 raptor_free_option_description(raptor_option_description* option_description)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(option_description,
-                                      raptor_option_description);
+  if(!option_description)
+    return;
 
   /* these are shared strings pointing to static data in raptor_options_list[] */
   /* RAPTOR_FREE(cstring, option_description->name); */

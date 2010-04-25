@@ -388,7 +388,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 void
 raptor_free_uri(raptor_uri *uri)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(uri, raptor_uri);
+  if(!uri)
+    return;
 
   uri->usage--;
   

@@ -651,7 +651,8 @@ raptor_namespace_stack_start_namespace(raptor_namespace_stack *nstack,
 void 
 raptor_free_namespace(raptor_namespace *ns)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ns, raptor_namespace);
+  if(!ns)
+    return;
 
   if(ns->uri)
     raptor_free_uri(ns->uri);

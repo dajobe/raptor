@@ -211,6 +211,9 @@ raptor_new_turtle_writer(raptor_world* world,
 void
 raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 {
+  if(!turtle_writer)
+    return;
+
   if(turtle_writer->nstack && turtle_writer->my_nstack)
     raptor_free_namespaces(turtle_writer->nstack);
 

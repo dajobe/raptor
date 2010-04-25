@@ -645,7 +645,8 @@ raptor_serializer_serialize_end(raptor_serializer *rdf_serializer)
 void
 raptor_free_serializer(raptor_serializer* rdf_serializer) 
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(rdf_serializer, raptor_serializer);
+  if(!rdf_serializer)
+    return;
 
   if(rdf_serializer->factory)
     rdf_serializer->factory->terminate(rdf_serializer);

@@ -117,7 +117,8 @@ raptor_free_sax2(raptor_sax2 *sax2)
 {
   raptor_xml_element *xml_element;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(sax2, raptor_sax2);
+  if(!sax2)
+    return;
 
 #ifdef RAPTOR_XML_EXPAT
   if(sax2->xp) {

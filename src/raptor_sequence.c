@@ -181,7 +181,8 @@ raptor_free_sequence(raptor_sequence* seq)
   int i;
   int j;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+  if(!seq)
+    return;
 
   if(seq->free_handler) {
     for(i = seq->start, j = seq->start + seq->size; i < j; i++)

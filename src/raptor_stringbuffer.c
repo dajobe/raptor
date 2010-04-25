@@ -104,7 +104,8 @@ raptor_new_stringbuffer(void)
 void
 raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer) 
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(stringbuffer, raptor_stringbuffer);
+  if(!stringbuffer)
+    return;
 
   if(stringbuffer->head) {
     raptor_stringbuffer_node *node = stringbuffer->head;

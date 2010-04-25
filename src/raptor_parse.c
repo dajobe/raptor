@@ -498,7 +498,8 @@ raptor_parser_parse_chunk(raptor_parser* rdf_parser,
 void
 raptor_free_parser(raptor_parser* rdf_parser)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(rdf_parser, raptor_parser);
+  if(!rdf_parser)
+    return;
 
   if(rdf_parser->factory)
     rdf_parser->factory->terminate(rdf_parser);

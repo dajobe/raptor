@@ -684,7 +684,8 @@ raptor_new_iostream_from_file_handle(raptor_world *world, FILE *handle)
 void
 raptor_free_iostream(raptor_iostream *iostr)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(iostr, raptor_iostream);
+  if(!iostr)
+    return;
   
   if(iostr->flags & RAPTOR_IOSTREAM_FLAGS_EOF)
     raptor_iostream_write_end(iostr);
