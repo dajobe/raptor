@@ -1668,13 +1668,14 @@ raptor_rss_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const rss_tag_soup_names[2] = { "rss-tag-soup", NULL };
 
-#define RSS_TAG_SOUP_TYPES_COUNT 5
+#define RSS_TAG_SOUP_TYPES_COUNT 6
 static const raptor_type_q rss_tag_soup_types[RSS_TAG_SOUP_TYPES_COUNT + 1] = {
   { "application/rss", 15, 10},
   { "application/rss+xml", 19, 10},
   { "text/rss", 8, 8},
   { "application/xml", 15, 3},
   { "text/xml", 8, 3},
+  { "application/atom+xml", 20, 3},
   { NULL, 0, 0}
 };
 
