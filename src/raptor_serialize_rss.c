@@ -2191,9 +2191,13 @@ raptor_rss10_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* rss10_names[3] = { "rss-1.0", NULL};
 
-#define RSS10_TYPES_COUNT 1
+#define RSS10_TYPES_COUNT 5
 static const raptor_type_q rss10_types[RSS10_TYPES_COUNT + 1] = {
   { "application/rss+xml", 19, 10},
+  { "application/rss", 15, 3},
+  { "text/rss", 8, 3},
+  { "application/xml", 15, 3},
+  { "text/xml", 8, 3},
   { NULL, 0, 0}
 };
 
