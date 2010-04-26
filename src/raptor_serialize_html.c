@@ -234,8 +234,8 @@ static const char* const html_names[2] = { "html", NULL};
 
 #define HTML_TYPES_COUNT 2
 static const raptor_type_q html_types[HTML_TYPES_COUNT + 1] = {
-  { "application/xhtml+xml", 21, 0},
-  { "text/html", 9, 0},
+  { "application/xhtml+xml", 21, 10},
+  { "text/html", 9, 10},
   { NULL, 0, 0}
 };
 
