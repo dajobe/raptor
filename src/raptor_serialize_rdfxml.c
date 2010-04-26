@@ -699,9 +699,10 @@ raptor_rdfxml_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* const rdfxml_names[2] = { "rdfxml", NULL};
 
-#define RDFXML_TYPES_COUNT 1
+#define RDFXML_TYPES_COUNT 2
 static const raptor_type_q rdfxml_types[RDFXML_TYPES_COUNT + 1] = {
-  { "application/rdf+xml", 19, 0},
+  { "application/rdf+xml", 19, 10},
+  { "text/rdf", 8, 6},
   { NULL, 0, 0}
 };
 
