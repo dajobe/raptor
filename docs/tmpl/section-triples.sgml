@@ -21,6 +21,9 @@ Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### ENUM raptor_genid_type ##### -->
 <para>
 
@@ -48,6 +51,12 @@ Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
 @usage: 
 @type: 
 @value: 
+
+<!-- ##### UNION raptor_term_value ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### STRUCT raptor_term_literal_value ##### -->
 <para>

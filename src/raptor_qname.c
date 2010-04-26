@@ -363,7 +363,8 @@ raptor_qname_print(FILE *stream, raptor_qname* name)
 void
 raptor_free_qname(raptor_qname* name) 
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(name, raptor_qname);
+  if(!name)
+    return;
 
   if(name->local_name)
     RAPTOR_FREE(cstring, (void*)name->local_name);

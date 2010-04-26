@@ -25,6 +25,9 @@ that can adjust how serializing is performed.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_serializer ##### -->
 <para>
 

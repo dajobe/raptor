@@ -498,7 +498,7 @@ static const char* const json_resource_names[2] = { "json", NULL};
 
 #define JSON_RESOURCE_TYPES_COUNT 1
 static const raptor_type_q json_resource_types[JSON_RESOURCE_TYPES_COUNT + 1] = {
-  { "application/json", 16, 0},
+  { "application/json", 16, 10},
   { NULL, 0, 0}
 };
 

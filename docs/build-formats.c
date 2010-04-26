@@ -74,18 +74,10 @@ emit_header(const char* id, raptor_iostream* iostr)
   raptor_iostream_string_write(id, iostr);
   raptor_iostream_string_write(
 "\">\n"
-"<title>Syntax Formats supported in Raptor ",
-    iostr);
-  raptor_iostream_string_write(raptor_version_string, iostr);
-  raptor_iostream_string_write(
-"</title>\n"
+"<title>Syntax Formats supported in Raptor</title>\n"
 "\n"
 "<para>This chapter describes the syntax formats supported\n"
-"by parsers and serializers in raptor ",
-    iostr);
-  raptor_iostream_string_write(raptor_version_string, iostr);
-  raptor_iostream_string_write(
-"\n"
+"by parsers and serializers in Raptor.\n"
 "</para>\n"
 "\n",
     iostr);
@@ -217,30 +209,35 @@ emit_end_desc_list(raptor_iostream *iostr)
 
 
 static void
-emit_mime_type(const raptor_type_q* mt, raptor_iostream* iostr)
+emit_mime_type_name(const char *name, raptor_iostream* iostr)
 {
-  emit_literal(mt->mime_type, iostr);
-  raptor_iostream_string_write(" with ", iostr);
-  if(mt->q < 10) {
+  emit_literal(name, iostr);
+}
+
+static void
+emit_mime_type_q(unsigned char q, raptor_iostream* iostr)
+{
+  if(q < 10) {
     raptor_iostream_string_write("q 0.", iostr);
-    raptor_iostream_decimal_write((int)mt->q, iostr);
+    raptor_iostream_decimal_write((int)q, iostr);
   } else
     raptor_iostream_string_write("q 1.0", iostr);
 }
 
+static void
+emit_mime_type(const raptor_type_q* mt, raptor_iostream* iostr)
+{
+  emit_mime_type_name(mt->mime_type, iostr);
+  raptor_iostream_string_write(" with ", iostr);
+  emit_mime_type_q(mt->q, iostr);
+}
+
 
 static void
-emit_format_description(const char* type_name, 
-                        const raptor_syntax_description* sd,
-                        raptor_iostream* iostr) 
+emit_format_description_name(const char* type_name,
+                             const raptor_syntax_description* sd,
+                             raptor_iostream* iostr)
 {
-  unsigned int i;
-  
-  if(!sd->mime_types_count)
-    return;
-
-  /* term */
-  emit_start_desc_list_term(iostr);
   raptor_xml_escape_string_write((const unsigned char*)sd->label,
                                  strlen(sd->label),
                                  '\0', iostr);
@@ -251,6 +248,22 @@ emit_format_description(const char* type_name,
   raptor_iostream_string_write(" (", iostr);
   emit_literal(sd->names[0], iostr);
   raptor_iostream_write_byte(')', iostr);
+}
+
+
+static void
+emit_format_description(const char* type_name,
+                        const raptor_syntax_description* sd,
+                        raptor_iostream* iostr)
+{
+  unsigned int i;
+  
+  if(!sd->mime_types_count)
+    return;
+
+  /* term */
+  emit_start_desc_list_term(iostr);
+  emit_format_description_name(type_name, sd, iostr);
 
   /* definition */
   emit_start_desc_list_defn(iostr);
@@ -283,16 +296,50 @@ sort_sd_by_name(const void *a, const void *b)
 }
 
 
+typedef struct 
+{
+  const char *mime_type;
+  unsigned char q;
+  raptor_syntax_description* parser_sd;
+  raptor_syntax_description* serializer_sd;
+} type_syntax;
+  
+
+static int
+sort_type_syntax_by_mime_type(const void *a, const void *b)
+{
+  int rc;
+  
+  const char* mime_type_a = ((type_syntax*)a)->mime_type;
+  const char* mime_type_b = ((type_syntax*)b)->mime_type;
+
+  if(!mime_type_a || !mime_type_b) {
+    if(!mime_type_a && !mime_type_b)
+      return mime_type_b - mime_type_a;
+    return (mime_type_a) ? 1 : -1;
+  }
+  
+  rc = strcmp(mime_type_a, mime_type_b);
+  if(rc)
+    return rc;
+  return ((type_syntax*)b)->q - ((type_syntax*)a)->q;
+}
+
+
+
 int
 main(int argc, char *argv[]) 
 {
   int rc = 1;
   int i;
-  int parsers_count;
-  int serializers_count;
+  int parsers_count = 0;
+  int serializers_count = 0;
+  int mime_types_count = 0;
   raptor_syntax_description** parsers = NULL;
   raptor_syntax_description** serializers = NULL;
   raptor_iostream* iostr = NULL;
+  type_syntax* type_syntaxes = NULL;
+  int type_syntaxes_count = 0;
   
   if(argc != 1) {
     fprintf(stderr, "%s: USAGE: %s\n", program, program);
@@ -305,14 +352,20 @@ main(int argc, char *argv[])
 
 
   for(i = 0; 1; i++) {
-    if(!raptor_world_get_parser_description(world, i))
+    raptor_syntax_description* sd;
+    sd = (raptor_syntax_description*)raptor_world_get_parser_description(world, i);
+    if(!sd)
       break;
     parsers_count++;
+    mime_types_count += sd->mime_types_count;
   }
   for(i = 0; 1; i++) {
-    if(!raptor_world_get_serializer_description(world, i))
+    raptor_syntax_description* sd;
+    sd = (raptor_syntax_description*)raptor_world_get_serializer_description(world, i);
+    if(!sd)
       break;
     serializers_count++;
+    mime_types_count += sd->mime_types_count;
   }
 
   parsers = (raptor_syntax_description**)calloc(parsers_count,
@@ -325,12 +378,28 @@ main(int argc, char *argv[])
   if(!serializers)
     goto tidy;
 
+  type_syntaxes = (type_syntax*)calloc(mime_types_count,
+    sizeof(type_syntax));
+  if(!type_syntaxes)
+    goto tidy;
+
+  type_syntaxes_count = 0;
+
   for(i = 0; 1; i++) {
     raptor_syntax_description* sd;
+    unsigned int m;
+    
     sd = (raptor_syntax_description*)raptor_world_get_parser_description(world, i);
     if(!sd)
       break;
     parsers[i] = sd;
+
+    for(m = 0; m < sd->mime_types_count; m++) {
+      type_syntaxes[type_syntaxes_count].mime_type = sd->mime_types[m].mime_type;
+      type_syntaxes[type_syntaxes_count].q = sd->mime_types[m].q;
+      type_syntaxes[type_syntaxes_count].parser_sd = sd;
+      type_syntaxes_count++;
+    }
   }
 
   qsort(parsers, parsers_count, sizeof(raptor_syntax_description*),
@@ -338,10 +407,19 @@ main(int argc, char *argv[])
   
   for(i = 0; 1; i++) {
     raptor_syntax_description* sd;
+    unsigned int m;
+    
     sd = (raptor_syntax_description*)raptor_world_get_serializer_description(world, i);
     if(!sd)
       break;
     serializers[i] = sd;
+
+    for(m = 0; m < sd->mime_types_count; m++) {
+      type_syntaxes[type_syntaxes_count].mime_type = sd->mime_types[m].mime_type;
+      type_syntaxes[type_syntaxes_count].q = sd->mime_types[m].q;
+      type_syntaxes[type_syntaxes_count].serializer_sd = sd;
+      type_syntaxes_count++;
+    }
   }
 
   qsort(serializers, serializers_count, sizeof(raptor_syntax_description*),
@@ -353,7 +431,19 @@ main(int argc, char *argv[])
     goto tidy;
   
 
+  /* MIME Types by parser */
   emit_header("raptor-formats", iostr);
+
+  emit_start_section("raptor-formats-intro",
+                     "Introduction",
+                     iostr);
+  raptor_iostream_string_write(
+"<para>\n"
+"The parsers and serializers in raptor can handle different MIME Types with different levels of quality (Q).  A Q of 1.0 indicates that the parser or serializer will be able to read or write the full format with high quality, and it should be the prefered parser or serializer for that mime type.  Lower Q values indicate either additional mime type support (for parsing) or less-preferred mime types (for serializing).  A serializer typically has just 1 mime type of Q 1.0; the preferred type."
+"</para>\n"
+,
+    iostr);
+  emit_end_section(iostr);
 
   emit_start_section("raptor-formats-types-by-parser",
                      "MIME Types by Parser",
@@ -367,6 +457,7 @@ main(int argc, char *argv[])
   emit_end_section(iostr);
 
 
+  /* MIME Types by serializer */
   emit_start_section("raptor-formats-types-by-serializer", 
                      "MIME Types by Serializer",
                      iostr);
@@ -377,6 +468,81 @@ main(int argc, char *argv[])
   }
   emit_end_desc_list(iostr);
   emit_end_section(iostr);
+
+
+  /* MIME Types index */
+  qsort(type_syntaxes, type_syntaxes_count, sizeof(type_syntax),
+        sort_type_syntax_by_mime_type);
+
+  emit_start_section("raptor-formats-types-index", 
+                     "MIME Types Index",
+                     iostr);
+  emit_start_desc_list(NULL, iostr);
+  if(1) {
+    const char* last_mime_type = NULL;
+    int last_start_index = -1;
+    for(i = 0; i < type_syntaxes_count; i++) {
+      int j;
+      int parser_seen = 0;
+      int serializer_seen = 0;
+      
+      if(last_start_index < 0) {
+        last_mime_type = type_syntaxes[i].mime_type;
+        last_start_index = i;
+        continue;
+      }
+      /* continue if same mime type */
+      if(!strcmp(last_mime_type, type_syntaxes[i].mime_type))
+        continue;
+
+      /* term */
+      emit_start_desc_list_term(iostr);
+      emit_mime_type_name(type_syntaxes[j].mime_type, iostr);
+
+      /* definition */
+      emit_start_desc_list_defn(iostr);
+      raptor_iostream_string_write("\n    ", iostr);
+      
+      emit_start_list(iostr);
+      for(j = last_start_index; j < i; j++) {
+        raptor_iostream_string_write("    ", iostr);
+        emit_start_list_item(iostr);
+        if(type_syntaxes[j].parser_sd) {
+          emit_format_description_name("Parser",
+                                       type_syntaxes[j].parser_sd,
+                                       iostr);
+          parser_seen++;
+        } else {
+          emit_format_description_name("Serializer",
+                                       type_syntaxes[j].serializer_sd,
+                                       iostr);
+          serializer_seen++;
+        }
+        raptor_iostream_string_write(" with ", iostr);
+        emit_mime_type_q(type_syntaxes[j].q, iostr);
+        emit_end_list_item(iostr);
+      }
+      if(!parser_seen || !serializer_seen) {
+        emit_start_list_item(iostr);
+        if(!parser_seen)
+          raptor_iostream_string_write("No parser.", iostr);
+        else
+          raptor_iostream_string_write("No serializer.", iostr);
+        emit_end_list_item(iostr);
+      }
+      raptor_iostream_string_write("    ", iostr);
+      emit_end_list(iostr);
+
+      emit_end_desc_list_item(iostr);
+
+      last_mime_type = type_syntaxes[i].mime_type;
+      last_start_index = i;
+    }
+  }
+  emit_end_desc_list(iostr);
+  emit_end_section(iostr);
+
+
 
   emit_footer(iostr);
 
@@ -395,6 +561,9 @@ main(int argc, char *argv[])
 
   if(serializers)
     free(serializers);
+  
+  if(type_syntaxes)
+    free(type_syntaxes);
   
   if(world)
     raptor_free_world(world);

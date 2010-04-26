@@ -20,6 +20,9 @@ current access to internals of URIs such as URI scheme, path, authority.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_uri ##### -->
 <para>
 

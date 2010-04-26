@@ -21,7 +21,6 @@ config.log
 config.status
 configure
 dmalloc*
-example?
 gtk-doc.make
 install-sh
 libtool

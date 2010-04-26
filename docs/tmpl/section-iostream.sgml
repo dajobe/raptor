@@ -20,6 +20,9 @@ file handles (<literal>FILE*</literal>) or to a user function.
 <!-- ##### SECTION Stability_Level ##### -->
 
 
+<!-- ##### SECTION Image ##### -->
+
+
 <!-- ##### TYPEDEF raptor_iostream ##### -->
 <para>
 
@@ -197,7 +200,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @world: 
 @string_p: 
 @length_p: 
-@malloc_handler: 
+@size_t size: 
 @Returns: 
 
 

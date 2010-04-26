@@ -458,7 +458,8 @@ raptor_new_xml_writer(raptor_world* world,
 void
 raptor_free_xml_writer(raptor_xml_writer* xml_writer)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(xml_writer, raptor_xml_writer);
+  if(!xml_writer)
+    return;
 
   if(xml_writer->nstack && xml_writer->my_nstack)
     raptor_free_namespaces(xml_writer->nstack);

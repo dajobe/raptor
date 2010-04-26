@@ -138,7 +138,8 @@ raptor_free_xml_element(raptor_xml_element *element)
 {
   unsigned int i;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(element, raptor_xml_element);
+  if(!element)
+    return;
 
   for(i = 0; i < element->attribute_count; i++)
     if(element->attributes[i])

@@ -207,7 +207,8 @@ raptor_world_open(raptor_world* world)
 void
 raptor_free_world(raptor_world* world)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+  if(!world)
+    return;
 
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_finish(world);
@@ -583,8 +584,9 @@ raptor_world_internal_set_ignore_errors(raptor_world* world, int flag)
 void
 raptor_free_memory(void *ptr)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(ptr, memory);
-  
+  if(!ptr)
+    return;
+
   RAPTOR_FREE(void, ptr);
 }
 
