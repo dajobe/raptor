@@ -74,18 +74,10 @@ emit_header(const char* id, raptor_iostream* iostr)
   raptor_iostream_string_write(id, iostr);
   raptor_iostream_string_write(
 "\">\n"
-"<title>Syntax Formats supported in Raptor ",
-    iostr);
-  raptor_iostream_string_write(raptor_version_string, iostr);
-  raptor_iostream_string_write(
-"</title>\n"
+"<title>Syntax Formats supported in Raptor</title>\n"
 "\n"
 "<para>This chapter describes the syntax formats supported\n"
-"by parsers and serializers in raptor ",
-    iostr);
-  raptor_iostream_string_write(raptor_version_string, iostr);
-  raptor_iostream_string_write(
-"\n"
+"by parsers and serializers in Raptor.\n"
 "</para>\n"
 "\n",
     iostr);
@@ -441,6 +433,17 @@ main(int argc, char *argv[])
 
   /* MIME Types by parser */
   emit_header("raptor-formats", iostr);
+
+  emit_start_section("raptor-formats-intro",
+                     "Introduction",
+                     iostr);
+  raptor_iostream_string_write(
+"<para>\n"
+"The parsers and serializers in raptor can handle different MIME Types with different levels of quality (Q).  A Q of 1.0 indicates that the parser or serializer will be able to read or write the full format with high quality, and it should be the prefered parser or serializer for that mime type.  Lower Q values indicate either additional mime type support (for parsing) or less-preferred mime types (for serializing).  A serializer typically has just 1 mime type of Q 1.0; the preferred type."
+"</para>\n"
+,
+    iostr);
+  emit_end_section(iostr);
 
   emit_start_section("raptor-formats-types-by-parser",
                      "MIME Types by Parser",
