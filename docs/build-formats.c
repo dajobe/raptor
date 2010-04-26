@@ -480,6 +480,8 @@ main(int argc, char *argv[])
     int last_start_index = -1;
     for(i = 0; i < type_syntaxes_count; i++) {
       int j;
+      int parser_seen = 0;
+      int serializer_seen = 0;
       
       if(last_start_index < 0) {
         last_mime_type = type_syntaxes[i].mime_type;
@@ -502,16 +504,27 @@ main(int argc, char *argv[])
       for(j = last_start_index; j < i; j++) {
         raptor_iostream_string_write("    ", iostr);
         emit_start_list_item(iostr);
-        if(type_syntaxes[j].parser_sd)
+        if(type_syntaxes[j].parser_sd) {
           emit_format_description_name("Parser",
                                        type_syntaxes[j].parser_sd,
                                        iostr);
-        else
+          parser_seen++;
+        } else {
           emit_format_description_name("Serializer",
                                        type_syntaxes[j].serializer_sd,
                                        iostr);
+          serializer_seen++;
+        }
         raptor_iostream_string_write(" with ", iostr);
         emit_mime_type_q(type_syntaxes[j].q, iostr);
+        emit_end_list_item(iostr);
+      }
+      if(!parser_seen || !serializer_seen) {
+        emit_start_list_item(iostr);
+        if(!parser_seen)
+          raptor_iostream_string_write("No parser.", iostr);
+        else
+          raptor_iostream_string_write("No serializer.", iostr);
         emit_end_list_item(iostr);
       }
       raptor_iostream_string_write("    ", iostr);
