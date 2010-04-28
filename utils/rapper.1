@@ -5,7 +5,7 @@
 .\" Copyright (C) 2002-2010 David Beckett - http://www.dajobe.org/
 .\" Copyright (C) 2002-2005 University of Bristol - http://www.bristol.ac.uk/
 .\"
-.TH rapper 1 "2010-04-17"
+.TH rapper 1 "2010-04-27"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
 rapper \- Raptor RDF parsing and serializing utility
@@ -105,9 +105,6 @@ No extra information messages.
 .B \-r, \-\-replace-newlines
 Replace newlines in multi-line literals with spaces.
 .TP
-.B \-s, \-\-scan
-Scan for <rdf:RDF> element in the RDF/XML source content.
-.TP
 .B \-\-show-graphs
 Print graph names (URIs) as they are seen in the input.  This only
 has a meaning for parsers that support graph names such as the TRiG parser.
@@ -162,7 +159,11 @@ http://purl.org/rss/1.0/spec
 .BR libraptor(3), raptor-config(1)
 .SH CHANGES
 .SS 2.0.0
+Removed -a option that did nothing.
+.LP
 Removed -n option that was long hidden.
+.LP
+Removed -s option that was equivalent to -f scanForRDF
 .SS 1.4.16
 Added -I/--input-uri and -O/--output-uri to set the input and output
 (parser and serializer) base URIs separately.

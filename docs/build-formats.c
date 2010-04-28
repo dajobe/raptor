@@ -485,19 +485,20 @@ main(int argc, char *argv[])
       int j;
       int parser_seen = 0;
       int serializer_seen = 0;
+      const char *this_mime_type = type_syntaxes[i].mime_type;
       
       if(last_start_index < 0) {
-        last_mime_type = type_syntaxes[i].mime_type;
+        last_mime_type = this_mime_type;
         last_start_index = i;
         continue;
       }
       /* continue if same mime type */
-      if(!strcmp(last_mime_type, type_syntaxes[i].mime_type))
+      if(!strcmp(last_mime_type, this_mime_type))
         continue;
 
       /* term */
       emit_start_desc_list_term(iostr);
-      emit_mime_type_name(type_syntaxes[j].mime_type, iostr);
+      emit_mime_type_name(this_mime_type, iostr);
 
       /* definition */
       emit_start_desc_list_defn(iostr);

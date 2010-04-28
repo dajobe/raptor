@@ -184,7 +184,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #endif
 
 
-#define GETOPT_STRING "cef:ghi:I:m:o:O:qrstvw"
+#define GETOPT_STRING "cef:ghi:I:m:o:O:qrtvw"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -205,7 +205,6 @@ static const struct option long_options[] =
   {"output-uri", 1, 0, 'O'},
   {"quiet", 0, 0, 'q'},
   {"replace-newlines", 0, 0, 'r'},
-  {"scan", 0, 0, 's'},
   {"show-graphs", 0, 0, SHOW_GRAPHS_FLAG},
   {"show-namespaces", 0, 0, SHOW_NAMESPACES_FLAG},
   {"trace", 0, 0, 't'},
@@ -323,7 +322,6 @@ main(int argc, char *argv[])
   raptor_uri *base_uri = NULL;
   const char *syntax_name="rdfxml";
   raptor_sequence* parser_options = NULL;
-  int scanning = 0;
   int strict_mode = 0;
   int trace = 0;
 
@@ -526,10 +524,6 @@ main(int argc, char *argv[])
 
       case 'h':
         help = 1;
-        break;
-
-      case 's':
-        scanning = 1;
         break;
 
       case 't':
@@ -736,7 +730,6 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
-    puts(HELP_TEXT("s", "scan            ", "Scan for <rdf:RDF> element in source"));
 #ifdef SHOW_GRAPHS_FLAG
     puts(HELP_TEXT_LONG("show-graphs     ", "Show named graphs as they are declared"));
 #endif
@@ -837,9 +830,6 @@ main(int argc, char *argv[])
   
   raptor_parser_set_strict(rdf_parser, strict_mode);
   
-  if(scanning)
-    raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_SCANNING, NULL, 1);
-
   if(parser_options) {
     option_value *fv;
     while((fv = (option_value*)raptor_sequence_pop(parser_options))) {
