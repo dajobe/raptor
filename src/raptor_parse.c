@@ -57,7 +57,7 @@
 #ifndef STANDALONE
 
 /* prototypes for helper functions */
-
+static void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
 
 /* helper methods */
 
@@ -372,7 +372,7 @@ raptor_new_parser(raptor_world* world, const char *name)
   raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
   /* Initialise default (lax) option values */
-  raptor_parser_set_strict(rdf_parser, 0);
+  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_STRICT, NULL, 0);
 
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
@@ -1058,8 +1058,16 @@ int
 raptor_parser_set_option(raptor_parser *parser, raptor_option option,
                          const char* string, int integer)
 {
-  return raptor_object_options_set_option(&parser->options, option,
-                                          string, integer);
+  int rc;
+  
+  rc = raptor_object_options_set_option(&parser->options, option,
+                                        string, integer);
+  if(option == RAPTOR_OPTION_STRICT && !rc) {
+    int is_strict = RAPTOR_OPTIONS_GET_NUMERIC(parser, RAPTOR_OPTION_STRICT);
+    raptor_parser_set_strict(parser, is_strict);
+  }
+
+  return rc;
 }
 
 
@@ -1094,10 +1102,10 @@ raptor_parser_get_option(raptor_parser *parser, raptor_option option,
  * @rdf_parser: #raptor_parser object
  * @is_strict: Non 0 for strict parsing
  *
- * Set parser to strict / lax mode.
+ * INTERNAL - Set parser to strict / lax mode.
  * 
  **/
-void
+static void
 raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
 {
   is_strict = (is_strict) ? 1 : 0;

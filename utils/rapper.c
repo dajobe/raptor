@@ -184,7 +184,7 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #endif
 
 
-#define GETOPT_STRING "cef:ghi:I:m:o:O:qrtvw"
+#define GETOPT_STRING "cef:ghi:I:o:O:qrtvw"
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -200,7 +200,6 @@ static const struct option long_options[] =
   {"help", 0, 0, 'h'},
   {"input", 1, 0, 'i'},
   {"input-uri", 1, 0, 'I'},
-  {"mode", 1, 0, 'm'},
   {"output", 1, 0, 'o'},
   {"output-uri", 1, 0, 'O'},
   {"quiet", 0, 0, 'q'},
@@ -322,7 +321,6 @@ main(int argc, char *argv[])
   raptor_uri *base_uri = NULL;
   const char *syntax_name="rdfxml";
   raptor_sequence* parser_options = NULL;
-  int strict_mode = 0;
   int trace = 0;
 
   /* output variables - serializer */
@@ -536,25 +534,6 @@ main(int argc, char *argv[])
 
       case 'r':
         replace_newlines = 1;
-        break;
-
-      case 'm':
-        if(optarg) {
-          if(!strcmp(optarg, "strict"))
-            strict_mode = 1;
-          else if(!strcmp(optarg, "lax"))
-            strict_mode = 0;
-          else {
-            fprintf(stderr,
-                    "%s: invalid argument `%s' for `" HELP_ARG(m, mode) "'\n",
-                    program, optarg);
-            fprintf(stderr,
-                    "Valid arguments are:\n"
-                    "  - `lax'\n"
-                    "  - `strict'\n");
-            usage = 1;
-          }
-        }
         break;
 
       case 'o':
@@ -827,8 +806,6 @@ main(int argc, char *argv[])
   }
 
   raptor_world_set_log_handler(world, rdf_parser, rapper_log_handler);
-  
-  raptor_parser_set_strict(rdf_parser, strict_mode);
   
   if(parser_options) {
     option_value *fv;
