@@ -253,6 +253,12 @@ static const struct
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "prefixElements",
     "Atom and RSS serializers write namespace-prefixed elements"
+  },
+  { RAPTOR_OPTION_STRICT,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_BOOL,
+    "strict",
+    "Operate in strict conformance mode (otherwise lax)"
   }
 };
 

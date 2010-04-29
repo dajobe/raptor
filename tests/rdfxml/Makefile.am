@@ -184,7 +184,7 @@ check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -s -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(top_builddir)/utils/rapper -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(ECHO) "ok"; \
 	  else \

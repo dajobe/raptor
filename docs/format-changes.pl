@@ -279,14 +279,28 @@ close(IN);
 
 # Write output
 
-our $intro_title = "Changes between $package $old_version and $new_version";
+our $intro_title = "API Changes";
 our $intro_para = <<"EOT";
-This chapter describes the changes between $package
+This chapter describes the API changes between $package
 $old_version and $new_version.
 EOT
 print_start_chapter_as_docbook_xml('raptor-changes',
 				   $intro_title,
 				   $intro_para);
+
+print_start_section_as_docbook_xml('raptor-changes-intro',
+				   "Introduction");
+print <<'EOT';
+<para>
+The following sections describe the function changes in the API:
+additions, deletions, renames (retaining the same number of
+parameters, types and return value type) and functions with more
+complex changes.  Changes to typedefs and structs are not described here.
+</para>
+EOT
+
+print_end_section_as_docbook_xml();
+
 
 print_start_section_as_docbook_xml('raptor-changes-new',
 				   "Functions added in $package $new_version");
