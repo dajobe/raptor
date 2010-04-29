@@ -391,6 +391,7 @@ typedef struct {
  * @RAPTOR_OPTION_RSS_TRIPLES: Atom/RSS serializer writes extra RDF triples it finds (none, rdf-xml, atom-triples)
  * @RAPTOR_OPTION_ATOM_ENTRY_URI: Atom entry URI.  If given, generate an Atom Entry Document with the item having the given URI, otherwise generate an Atom Feed Document with any items found.
  * @RAPTOR_OPTION_PREFIX_ELEMENTS: Integer. If set, generate Atom/RSS1.0 documents with prefixed elements, otherwise unprefixed.
+ * @RAPTOR_OPTION_STRICT: Boolean. If set, operate in strict conformance mode.
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.
@@ -430,7 +431,8 @@ typedef enum {
   RAPTOR_OPTION_RSS_TRIPLES,
   RAPTOR_OPTION_ATOM_ENTRY_URI,
   RAPTOR_OPTION_PREFIX_ELEMENTS,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_PREFIX_ELEMENTS
+  RAPTOR_OPTION_STRICT,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_STRICT
 } raptor_option;
 
 
@@ -920,8 +922,6 @@ RAPTOR_API
 int raptor_parser_get_option(raptor_parser *parser, raptor_option option, char** string_p, int* integer_p);
 
 /* parser utility methods */
-RAPTOR_API
-void raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict);
 RAPTOR_API
 const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
 RAPTOR_API
