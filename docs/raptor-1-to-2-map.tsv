@@ -55,7 +55,7 @@
 1.4.21	int	raptor_iostream_write_string	(raptor_iostream *iostr, const void *string)	1.9.0	int	raptor_iostream_string_write	(const void *string, raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_string_ntriples	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim)	1.9.0	int	raptor_string_ntriples_write	(const unsigned char* string, size_t len, const char delim, raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_string_python	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim, int flags)	1.9.0	int	raptor_string_python_write	(const unsigned char* string, size_t len, const char delim, int flags, raptor_iostream *iostr)	-
-1.4.21	void	raptor_iostream_write_string_turtle	(raptor_iostream *iostr, const unsigned char* string, size_t len)	1.9.0	-	-	-	Deprecated for raptor_iostream_write_string_python().
+1.4.21	void	raptor_iostream_write_string_turtle	(raptor_iostream *iostr, const unsigned char* string, size_t len)	1.9.0	-	-	-	Deprecated for raptor_string_python_write().
 1.4.21	int	raptor_iostream_write_stringbuffer	(raptor_iostream* iostr, raptor_stringbuffer *sb)	1.9.0	int	raptor_stringbuffer_write	(raptor_stringbuffer *sb, raptor_iostream* iostr)	-
 1.4.21	int	raptor_iostream_write_uri	(raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_uri_v2	(raptor_world* world, raptor_iostream *iostr, raptor_uri *uri)	1.9.0	int	raptor_uri_write	(raptor_uri *uri, raptor_iostream *iostr)	-
@@ -203,7 +203,7 @@
 1.4.21	int	raptor_serializer_features_enumerate	(const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	Call with domain = RAPTOR_DOMAIN_SERIALIZER
 1.4.21	int	raptor_serializer_features_enumerate_v2	(raptor_world* world, const raptor_feature feature, const char* *name, raptor_uri **uri, const char* *label)	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	Call with domain = RAPTOR_DOMAIN_SERIALIZER
 1.4.21	int	raptor_serializer_get_feature	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	int	raptor_serializer_get_option	(raptor_serializer *serializer, raptor_option option)	-
-1.4.21	const unsigned char*	raptor_serializer_get_feature_string	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	const unsigned char*	raptor_serializer_get_option_string	(raptor_serializer *serializer, raptor_option option)	-
+1.4.21	const unsigned char*	raptor_serializer_get_feature_string	(raptor_serializer *serializer, raptor_feature feature)	1.9.0	int	raptor_serializer_get_option	(raptor_serializer *serializer, raptor_option option, char** string_p, int* integer_p)	-
 1.4.21	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)	1.9.0	raptor_iostream*	raptor_serializer_get_iostream	(raptor_serializer *serializer)	-
 1.4.21	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	1.9.0	raptor_locator*	raptor_serializer_get_locator	(raptor_serializer *rdf_serializer)	-
 1.4.21	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	1.9.0	raptor_world*	raptor_serializer_get_world	(raptor_serializer* rdf_serializer)	-
