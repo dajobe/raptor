@@ -1,4 +1,98 @@
+2010-04-28  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: raptor_set_parser_strict removed
+
+	* utils/rapper.1: Note -m/--mode removed but wasn't in the raptor
+	V1 man page.
+
+	* src/raptor_parse.c, utils/rapper.c: Replaced
+	raptor_parser_set_strict() with RAPTOR_OPTION_STRICT
+
+	(raptor_parser_set_strict): Removed from public API and made
+	static, internal.
+
+	(raptor_parser_set_option): When RAPTOR_OPTION_STRICT is seen,
+	call above function to set the values.  Update rapper to remove
+	the -m/--mode lax/strict favouring the -f strict option with
+	boolean value.
+
+	* src/raptor.h, src/raptor_option.c: Add RAPTOR_OPTION_STRICT for
+	parser with bool value
+
+	* tests/rdfxml/Makefile.am:
+	(check-scan-rdf): Use -f scanForRDF instead of removed option -s
+
+2010-04-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c:
+	Fix use of wrong array index.  Rewrite for
+	clarity
+
+	* utils/rapper.1: changes
+
+	* utils/rapper.1: adjust date
+
+	* utils/rapper.1: Remove -s / --scan
+
+	* utils/rapper.c: Remove option --scan / -s since it's the same as
+	-f scanForRDF
+
+2010-04-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c: Set mime types for RDFA parser with higher
+	Q than GRDDL parser
+
+	* docs/build-formats.c: Add intro section and remove version from
+	top.
+
+	* docs/build-formats.c: Note when there is no parser or serializer
+	for a mime type
+
+	* src/raptor_serialize_html.c: Set html serializer Q 1.0
+
+	* src/raptor_serialize_json.c: Pick json resource serializer as
+	json Q 1.0 choice
+
+	* src/raptor_serialize_rdfxml.c: Make rdfxml serializer accept
+	text/rdf with lower q
+
+	* src/raptor_serialize_turtle.c: Make turtle serializer accept
+	other turtle mime types with q < 10
+
+	* src/raptor_serialize_rss.c: Make RSS tag soup serializer accept
+	other rss mime types with low q
+
+	* src/raptor_rss.c: Make RSS tag soup parser accept
+	application/atom+xml q=1.0 for atom.
+
+	* docs/build-formats.c: Emit mime types index section
+
 2010-04-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c, src/raptor_general.c,
+	src/raptor_iostream.c, src/raptor_namespace.c,
+	src/raptor_option.c, src/raptor_parse.c, src/raptor_qname.c,
+	src/raptor_sax2.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Make all raptor object destructors handle
+	NULL object pointer.
+
+	All raptor_free_CLASS() functions when given a NULL object now
+	just return rather than a) crash or b) abort()
+
+	* docs/.gitignore:
+	ignore more
+
+	* tests/turtle/Makefile.am:
+	remove deprecated rapper -n when testing
+	turtle parser with with ntriples test
+
+	* docs/.gitignore:
+	ignore more
+
+	* tests/rdfxml/Makefile.am:
+	check-assume-rdf does not need -a flag.
 
 	* docs/tmpl/section-avltree.sgml,
 	docs/tmpl/section-constants.sgml, docs/tmpl/section-general.sgml,
