@@ -74,7 +74,7 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
     return NULL;
 
   node = (raptor_abbrev_node*)RAPTOR_CALLOC(raptor_abbrev_node, 1,
-                                            sizeof(raptor_abbrev_node));
+                                            sizeof(*node));
   if(node) {
     node->world = world;
     node->ref_count = 1;
@@ -272,7 +272,7 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
   }  
   
   subject = (raptor_abbrev_subject*)RAPTOR_CALLOC(raptor_subject, 1,
-                                                  sizeof(raptor_abbrev_subject));
+                                                  sizeof(*subject));
 
   if(subject) {
     subject->node = node;
