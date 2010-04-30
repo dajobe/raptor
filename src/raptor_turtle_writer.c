@@ -696,7 +696,8 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
     case RAPTOR_OPTION_MICROFORMATS:
     case RAPTOR_OPTION_HTML_LINK:
     case RAPTOR_OPTION_WWW_TIMEOUT:
-
+    case RAPTOR_OPTION_STRICT:
+      
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
 
@@ -783,7 +784,7 @@ int
 raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, 
                                  raptor_option option)
 {
-  int result= -1;
+  int result = -1;
 
   switch(option) {
     case RAPTOR_OPTION_WRITER_AUTO_INDENT:
@@ -813,6 +814,7 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
     case RAPTOR_OPTION_MICROFORMATS:
     case RAPTOR_OPTION_HTML_LINK:
     case RAPTOR_OPTION_WWW_TIMEOUT:
+    case RAPTOR_OPTION_STRICT:
 
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
