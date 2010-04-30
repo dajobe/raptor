@@ -193,7 +193,8 @@ raptor_serializer_register_factory(raptor_world* world,
     if(i != serializer->desc.mime_types_count) {
         fprintf(stderr,
                 "Serializer %s  saw %d mime types  static count %d\n",
-                serializer->desc.names[0], i, serializer->desc.mime_types_count);
+                serializer->desc.names[0], i,
+                serializer->desc.mime_types_count);
     }
   }
 #endif
@@ -342,7 +343,7 @@ raptor_new_serializer(raptor_world* world, const char *name)
   rdf_serializer->world = world;
   
   rdf_serializer->context = (char*)RAPTOR_CALLOC(raptor_serializer_context, 1,
-                                               factory->context_length);
+                                                 factory->context_length);
   if(!rdf_serializer->context) {
     raptor_free_serializer(rdf_serializer);
     return NULL;
@@ -600,7 +601,9 @@ raptor_serializer_serialize_statement(raptor_serializer* rdf_serializer,
 {
   if(!rdf_serializer->iostream)
     return 1;
-  return rdf_serializer->factory->serialize_statement(rdf_serializer, statement);
+
+  return rdf_serializer->factory->serialize_statement(rdf_serializer,
+                                                      statement);
 }
 
 

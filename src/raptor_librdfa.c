@@ -68,7 +68,11 @@ typedef struct raptor_librdfa_parser_context_s raptor_librdfa_parser_context;
 static int
 raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  /*raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context; */
+/*
+  raptor_librdfa_parser_context *librdfa_parser;
+
+  librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+*/
   return 0;
 }
 
@@ -76,7 +80,9 @@ raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 static void
 raptor_librdfa_parse_terminate(raptor_parser* rdf_parser)
 {
-  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+  raptor_librdfa_parser_context *librdfa_parser;
+
+  librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
 
   if(librdfa_parser->context) {
     rdfa_parse_end(librdfa_parser->context);
@@ -135,11 +141,13 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
                                  (const unsigned char*)triple->predicate);
   if(!predicate_uri)
     goto cleanup;
+
   predicate_term = raptor_new_term_from_uri(parser->world, predicate_uri);
   raptor_free_uri(predicate_uri);
   predicate_uri = NULL;
   s->predicate = predicate_term;
  
+
   if(triple->object_type == RDF_TYPE_IRI) {
     if((triple->object[0] == '_') && (triple->object[1] == ':')) {
       object_term = raptor_new_term_from_blank(parser->world,
@@ -150,6 +158,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
                                   (const unsigned char*)triple->object);
       if(!object_uri)
         goto cleanup;
+
       object_term = raptor_new_term_from_uri(parser->world, object_uri);
       raptor_free_uri(object_uri);
     }
@@ -222,11 +231,13 @@ raptor_librdfa_sax2_new_namespace_handler(void *user_data,
 static int
 raptor_librdfa_parse_start(raptor_parser* rdf_parser) 
 {
-  raptor_locator *locator=&rdf_parser->locator;
-  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+  raptor_locator *locator = &rdf_parser->locator;
+  raptor_librdfa_parser_context *librdfa_parser;
   int rc;
   char* base_uri_string = NULL;
   
+  librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+
   locator->line = 1;
   locator->column = 0;
   locator->byte = 0;
@@ -262,8 +273,11 @@ raptor_librdfa_parse_chunk(raptor_parser* rdf_parser,
                            const unsigned char *s, size_t len,
                            int is_end)
 {
-  raptor_librdfa_parser_context *librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
-  int rval = rdfa_parse_chunk(librdfa_parser->context, (char*)s, len, is_end);
+  raptor_librdfa_parser_context *librdfa_parser;
+  int rval;
+
+  librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
+  rval = rdfa_parse_chunk(librdfa_parser->context, (char*)s, len, is_end);
 
   if(is_end) {
     if(rdf_parser->emitted_default_graph) {
