@@ -213,6 +213,17 @@ XML documents where inner namespaces can override outer ones.
 </para>
 
 
+<!-- ##### FUNCTION raptor_namespace_stack_start_namespace ##### -->
+<para>
+
+</para>
+
+@nstack: 
+@ns: 
+@new_depth: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_namespace_format_as_xml ##### -->
 <para>
 

@@ -68,6 +68,16 @@ adjust how parsing is performed.
 @parser: 
 
 
+<!-- ##### USER_FUNCTION raptor_graph_mark_handler ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@graph: 
+@flags: 
+
+
 <!-- ##### USER_FUNCTION raptor_namespace_handler ##### -->
 <para>
 
@@ -88,6 +98,16 @@ adjust how parsing is performed.
 
 
 <!-- ##### FUNCTION raptor_parser_set_generate_id_handler ##### -->
+<para>
+
+</para>
+
+@parser: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_parser_set_graph_mark_handler ##### -->
 <para>
 
 </para>
@@ -211,6 +231,15 @@ adjust how parsing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_parser_get_graph ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_parser_get_name ##### -->
 <para>
 
@@ -242,15 +271,6 @@ adjust how parsing is performed.
 @string_p: 
 @integer_p: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_parser_set_strict ##### -->
-<para>
-
-</para>
-
-@rdf_parser: 
-@is_strict: 
 
 
 <!-- ##### FUNCTION raptor_parser_get_accept_header ##### -->

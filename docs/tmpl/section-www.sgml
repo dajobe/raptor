@@ -213,6 +213,9 @@ chunks of byte content.
 @uri: 
 @string_p: 
 @length_p: 
+@size_t size:
+@size_t size:
+@size_t size:
 @size_t size: 
 @Returns: 
 
