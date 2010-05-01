@@ -1837,11 +1837,6 @@ void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_ha
 RAPTOR_API
 void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
 
-#ifdef RAPTOR_DEBUG
-int raptor_avltree_dump(raptor_avltree* tree, FILE* stream);
-void raptor_avltree_check(raptor_avltree* tree);
-#endif
-
 RAPTOR_API
 raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_function range_free_fn, int direction);
 RAPTOR_API
