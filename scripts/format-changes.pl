@@ -3,7 +3,7 @@
 # Format changes TSV file
 #
 # USAGE:
-#   format-changes.pl --to-docbook.xml raptor-changes.tsv > ...
+#   format-changes.pl --to-docbook-xml raptor-changes.tsv > ...
 #
 # Copyright (C) 2010, David Beckett http://www.dajobe.org/
 #
