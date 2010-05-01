@@ -52,21 +52,3 @@ With some versions of gcc this may give a compilation warning.
 
 
 
-<!-- ##### FUNCTION raptor_avltree_check ##### -->
-<para>
-
-</para>
-
-@tree: 
-
-
-<!-- ##### FUNCTION raptor_avltree_dump ##### -->
-<para>
-
-</para>
-
-@tree: 
-@stream: 
-@Returns: 
-
-

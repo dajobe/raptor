@@ -786,11 +786,24 @@ typedef enum {
  */
 typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
 
+
+/**
+ * raptor_data_malloc_function:
+ * @size: data size
+ *
+ * Typedef for a function to allocate memory - signature like malloc()
+ *
+ * Designed to be passed into constructors
+ * like raptor_www_fetch_to_string
+ */
+typedef void* (*raptor_data_malloc_function)(size_t size);
+
+
 /**
  * raptor_data_free_function:
  * @data: data object
  *
- * Function to free a data object - signature like free()
+ * Typedef for function to free a data object - signature like free()
  *
  * Designed to be passed into generic data structure constructors
  * like raptor_new_avltree().
@@ -1143,7 +1156,7 @@ int raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control
 RAPTOR_API
 int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API
-int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
+int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, raptor_data_malloc_function const malloc_function);
 RAPTOR_API
 void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API
@@ -1497,7 +1510,7 @@ raptor_iostream* raptor_new_iostream_to_filename(raptor_world* world, const char
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_file_handle(raptor_world* world, FILE *handle);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_string(raptor_world* world, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size));
+raptor_iostream* raptor_new_iostream_to_string(raptor_world* world, void **string_p, size_t *length_p, raptor_data_malloc_function const malloc_handler);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_from_sink(raptor_world* world);
 RAPTOR_API

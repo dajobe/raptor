@@ -29,6 +29,7 @@ raptor_log_level_get_label
 raptor_domain
 raptor_domain_get_label
 raptor_data_compare_function
+raptor_data_malloc_function
 raptor_data_free_function
 raptor_syntax_bitflags
 raptor_syntax_description

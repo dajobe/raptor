@@ -661,7 +661,7 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
  * @uri: raptor_uri to retrieve
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
- * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ * @malloc_function: pointer to malloc() to use to make string (or NULL)
  *
  * Start a WWW content retrieval for the given URI, returning the data in a new string.
  *
@@ -675,7 +675,7 @@ RAPTOR_EXTERN_C
 int
 raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
                            void **string_p, size_t *length_p,
-                           void *(*malloc_handler)(size_t size))
+                           raptor_data_malloc_function const malloc_function)
 {
   raptor_stringbuffer *sb = NULL;
   void *str = NULL;
@@ -698,7 +698,7 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
   else {
     size_t len = raptor_stringbuffer_length(sb);
     if(len) {
-      str = (void*)malloc_handler(len+1);
+      str = (void*)malloc_function(len+1);
       if(str) {
         raptor_stringbuffer_copy_to_string(sb, (unsigned char*)str, len+1);
         *string_p=str;
