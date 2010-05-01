@@ -107,6 +107,14 @@ adjust how parsing is performed.
 @handler: 
 
 
+<!-- ##### ENUM raptor_graph_mark_flags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_GRAPH_MARK_START: 
+@RAPTOR_GRAPH_MARK_DECLARED: 
+
 <!-- ##### FUNCTION raptor_parser_set_graph_mark_handler ##### -->
 <para>
 
@@ -194,6 +202,17 @@ adjust how parsing is performed.
 @rdf_parser: 
 @stream: 
 @filename: 
+@base_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_parser_parse_iostream ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@iostr: 
 @base_uri: 
 @Returns: 
 

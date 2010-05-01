@@ -143,6 +143,13 @@ and various other utility functions.
 @data: 
 
 
+<!-- ##### ENUM raptor_syntax_bitflags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_SYNTAX_NEED_BASE_URI: 
+
 <!-- ##### STRUCT raptor_syntax_description ##### -->
 <para>
 
