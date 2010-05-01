@@ -681,6 +681,9 @@ struct raptor_serializer_factory_s {
 
   /* add a namespace using an existing namespace */
   int (*declare_namespace_from_namespace)(raptor_serializer* serializer, raptor_namespace *nspace);
+
+  /* flush current serialization state */
+  int (*serialize_flush)(raptor_serializer* serializer);
 };
 
 
