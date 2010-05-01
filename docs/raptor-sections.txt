@@ -30,6 +30,7 @@ raptor_domain
 raptor_domain_get_label
 raptor_data_compare_function
 raptor_data_free_function
+raptor_syntax_bitflags
 raptor_syntax_description
 raptor_type_q
 </SECTION>
@@ -120,6 +121,7 @@ raptor_graph_mark_handler
 raptor_namespace_handler
 raptor_parser_set_statement_handler
 raptor_parser_set_generate_id_handler
+raptor_graph_mark_flags
 raptor_parser_set_graph_mark_handler
 raptor_parser_set_namespace_handler
 raptor_parser_get_description
@@ -129,6 +131,7 @@ raptor_parser_parse_abort
 raptor_parser_parse_chunk
 raptor_parser_parse_file
 raptor_parser_parse_file_stream
+raptor_parser_parse_iostream
 raptor_parser_parse_start
 raptor_parser_parse_uri
 raptor_parser_parse_uri_with_connection
