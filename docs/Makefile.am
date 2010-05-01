@@ -104,22 +104,12 @@ man_MANS = libraptor2.3
 EXTRA_DIST+= \
 libraptor2.html \
 $(man_MANS) \
-version.xml.in \
-format-changes.pl
+version.xml.in
 
 
 if MAINTAINER_MODE
-EXTRA_PROGRAMS = build-formats
-
-CLEANFILES += build-formats
-
-build_formats_SOURCES = build-formats.c
-build_formats_LDADD= $(top_builddir)/src/libraptor2.la
-endif
-
-if MAINTAINER_MODE
-libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../fix-groff-xhtml $@
+libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../scripts/fix-groff-xhtml $@
 
 rdfcat.c: $(srcdir)/../examples/rdfcat.c
 	$(install_sh_DATA) $? $@
@@ -134,13 +124,13 @@ raptor-tutorial-parsing.xml: rdfcat.c
 
 raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
-raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(srcdir)/format-changes.pl
-	$(PERL) $(srcdir)/format-changes.pl --to-docbook-xml $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv > $@
+raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(srcdir)/../scripts/format-changes.pl
+	$(PERL) $(srcdir)/../scripts/format-changes.pl --to-docbook-xml $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv > $@
 
-raptor-formats.xml: build-formats
-	./build-formats > $@
+raptor-formats.xml: $(top_builddir)/scripts/build-formats
+	$(top_builddir)/scripts/build-formats > $@
+
+$(top_builddir)/scripts/build-formats:
+	cd $(top_builddir)/scripts && $(MAKE) build-formats
 
 endif
-
-$(top_builddir)/src/libraptor2.la:
-	cd $(top_builddir)/src && $(MAKE) libraptor2.la

@@ -166,8 +166,7 @@ raptor_nfc_test.c \
 raptor_win32.c \
 $(man_MANS) \
 turtle_lexer.l turtle_parser.y \
-parsedate.y \
-fix-flex fix-bison
+parsedate.y
 
 
 LEX=@LEX@
@@ -175,14 +174,14 @@ YACC=@YACC@
 
 if MAINTAINER_MODE
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/fix-flex
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/../scripts/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
-	$(PERL) $(srcdir)/fix-flex $@ > turtle_lexer.t
+	$(PERL) $(srcdir)/../scripts/fix-flex $@ > turtle_lexer.t
 	mv turtle_lexer.t $@
 
-turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/fix-bison
+turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/../scripts/fix-bison
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
-	$(PERL) $(srcdir)/fix-bison turtle_parser.tab.c > $@
+	$(PERL) $(srcdir)/../scripts/fix-bison turtle_parser.tab.c > $@
 	mv turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 

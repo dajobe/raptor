@@ -22,7 +22,7 @@
 # 
 
 
-SUBDIRS= src utils docs data tests win32 examples librdfa
+SUBDIRS= src utils docs data tests win32 examples librdfa scripts
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor2.pc
@@ -37,7 +37,6 @@ LICENSE-2.0.txt NOTICE \
 raptor2.rdf.in \
 autogen.sh \
 raptor2.spec.in \
-fix-groff-xhtml \
 raptor2.pc.in
 
 if RELEASE_VERSION
