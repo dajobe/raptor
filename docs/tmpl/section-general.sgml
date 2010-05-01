@@ -135,6 +135,15 @@ and various other utility functions.
 @Returns: 
 
 
+<!-- ##### USER_FUNCTION raptor_data_malloc_function ##### -->
+<para>
+
+</para>
+
+@size: 
+@Returns: 
+
+
 <!-- ##### USER_FUNCTION raptor_data_free_function ##### -->
 <para>
 

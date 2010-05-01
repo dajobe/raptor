@@ -200,8 +200,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @world: 
 @string_p: 
 @length_p: 
-@size_t size:
-@size_t size: 
+@malloc_handler: 
 @Returns: 
 
 
