@@ -787,3 +787,28 @@ raptor_serializer_get_description(raptor_serializer *rdf_serializer)
   return &rdf_serializer->factory->desc;
 }
 
+
+/**
+ * raptor_serializer_flush:
+ * @rdf_serializer: raptor serializer
+ *
+ * Flush the current serializer output and free any pending state
+ *
+ * In serializers that can generate blocks of content, this causes
+ * the writing of any current pending block.  For example in Turtle
+ * this may write all pending triples.
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_serializer_flush(raptor_serializer *rdf_serializer)
+{
+  int rc;
+  
+  if(rdf_serializer->factory->serialize_flush)
+    rc = rdf_serializer->factory->serialize_flush(rdf_serializer);
+  else
+    rc = 0;
+
+  return rc;
+}

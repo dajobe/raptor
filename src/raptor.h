@@ -991,6 +991,8 @@ raptor_iostream* raptor_serializer_get_iostream(raptor_serializer *serializer);
 RAPTOR_API
 raptor_locator* raptor_serializer_get_locator(raptor_serializer *rdf_serializer);
 RAPTOR_API
+int raptor_serializer_flush(raptor_serializer *rdf_serializer);
+RAPTOR_API
 const raptor_syntax_description* raptor_serializer_get_description(raptor_serializer *rdf_serializer);
 
 /* serializer option methods */
