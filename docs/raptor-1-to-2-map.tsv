@@ -1,4 +1,8 @@
 # OLD VERSION<tab>OLD RETURN<tab>OLD NAME<tab>OLD ARGS<tab>NEW VERSION<tab>NEW RETURN<tab>NEW NAME<tab>NEW ARGS<tab>NOTES
+# OLD VERSION<tab>type<tab>OLD NAME<tab>-<tab>NEW VERSION<tab>type<tab>NEW NAME<tab>-<tab>NOTES
+#
+# Functions
+#
 1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)	-
 1.4.21	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	1.9.0	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	-
 1.4.21	int	raptor_compare_strings	(const void *a, const void *b)	1.9.0	-	-	-	Trivial utility function removed.
@@ -379,3 +383,57 @@
 1.4.21	-	-	-	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_is_parser_name	(raptor_world* world, const char* name)	-
 1.4.21	-	-	-	1.9.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)	-
+#
+# Types
+#
+1.4.21	type	raptor_avltree	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_avltree_bitflags	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_avltree_iterator	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_avltree_visit_function	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_data_compare_function	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_data_context_free_handler	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_data_malloc_function	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_domain	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_error_handlers	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism
+1.4.21	type	raptor_feature	-	1.9.0	type	raptor_option	-	And new option RAPTOR_OPTION_STRICT added.
+1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_graph_handler	-	1.9.0	type	raptor_graph_mark_handler	-	-
+1.4.21	type	raptor_identifier	-	1.9.0	type	raptor_term	-	-
+1.4.21	type	raptor_identifier_type	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_iostream_handler2	-	1.9.0	type	raptor_iostream_handler	-	-
+1.4.21	type	raptor_iostream_write_end_func	-	1.9.0	type	raptor_iostream_write_end_func	-	handler returns an int
+1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with raptor_world_flags
+1.4.21	type	raptor_log_level	-	1.9.0	type	raptor_log_level	-	Added RAPTOR_LOG_LEVEL_TRACE, RAPTOR_LOG_LEVEL_DEBUG, RAPTOR_LOG_LEVEL_INFO. RAPTOR_LOG_LEVEL_WARNING renamed RAPTOR_LOG_LEVEL_WARN
+1.4.21	type	raptor_log_message	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_message_handler	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_message_handler_closure	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_new_uri_for_rdf_concept_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_new_uri_from_uri_local_name_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_new_uri_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_new_uri_relative_to_base_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_ntriples_parser	-	1.9.0	type	-	-	replaced by raptor_parser
+1.4.21	type	raptor_ntriples_term_type	-	1.9.0	type	-	-	replaced by raptor_term_type
+1.4.21	type	raptor_option_description	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_option_value_type	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_sequence_free_function	-	1.9.0	type	raptor_data_free_function	-	-
+1.4.21	type	raptor_sequence_free_handler_v2	-	1.9.0	type	raptor_data_context_free_function	-	-
+1.4.21	type	raptor_sequence_print_handler	-	1.9.0	type	raptor_data_print_handler	-	-
+1.4.21	type	raptor_sequence_print_handler_v2	-	1.9.0	type	raptor_data_context_print_handler	-	-
+1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	-
+1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use raptor_term
+1.4.21	type	raptor_statement_handler	-	1.9.0	type	raptor_statement_handler	-	added const
+1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	-
+1.4.21	type	raptor_uri_as_counted_string_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_as_string_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_compare_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_copy_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_handler	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	-	-	1.9.0	type	raptor_graph_mark_flags	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_syntax_bitflags	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_syntax_description	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_term_literal_value	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_term_type	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_term_value	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_type_q	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_uri_source	-	-
