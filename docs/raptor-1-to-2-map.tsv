@@ -405,8 +405,6 @@
 1.4.21	type	raptor_new_uri_relative_to_base_func	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_ntriples_parser	-	1.9.0	type	-	-	replaced by raptor_parser
 1.4.21	type	raptor_ntriples_term_type	-	1.9.0	type	-	-	replaced by raptor_term_type
-1.4.21	type	raptor_option_description	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_option_value_type	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_sequence_free_function	-	1.9.0	type	raptor_data_free_function	-	-
 1.4.21	type	raptor_sequence_free_handler_v2	-	1.9.0	type	raptor_data_context_free_function	-	-
 1.4.21	type	raptor_sequence_print_handler	-	1.9.0	type	raptor_data_print_handler	-	-
@@ -431,6 +429,8 @@
 1.4.21	type	-	-	1.9.0	type	raptor_data_malloc_function	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_domain	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_graph_mark_flags	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_option_description	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_option_value_type	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_description	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_term_literal_value	-	-
