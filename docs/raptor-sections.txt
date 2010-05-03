@@ -31,6 +31,8 @@ raptor_domain_get_label
 raptor_data_compare_function
 raptor_data_malloc_function
 raptor_data_free_function
+raptor_data_free_handler
+raptor_data_context_free_handler
 raptor_syntax_bitflags
 raptor_syntax_description
 raptor_type_q
@@ -171,6 +173,7 @@ raptor_serializer_set_namespace
 raptor_serializer_set_namespace_from_namespace
 raptor_serializer_serialize_statement
 raptor_serializer_serialize_end
+raptor_serializer_flush
 raptor_serializer_get_description
 raptor_serializer_get_iostream
 raptor_serializer_get_locator
