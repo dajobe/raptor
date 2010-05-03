@@ -419,11 +419,11 @@ print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-changed',
 				   "Changed functions and types in $package $new_version");
-print_changed_functions_as_docbook_xml(undef, 
+print_changed_functions_as_docbook_xml('Functions', 
 				       "$old_version function",
 				       "$new_version function",
 				       @changed_functions);
-print_changed_types_as_docbook_xml(undef, 
+print_changed_types_as_docbook_xml('Types', 
 				   "$old_version type",
 				   "$new_version type",
 				   @changed_types);
