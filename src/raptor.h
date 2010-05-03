@@ -1266,7 +1266,7 @@ typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 typedef struct raptor_sequence_s raptor_sequence;
 
 /**
- * raptor_sequence_free_handler:
+ * raptor_data_free_handler:
  * @object: object to free
  *
  * Handler function for freeing a sequence item.
