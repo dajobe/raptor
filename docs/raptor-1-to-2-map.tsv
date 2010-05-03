@@ -391,8 +391,8 @@
 1.4.21	type	raptor_feature	-	1.9.0	type	raptor_option	-	And new option RAPTOR_OPTION_STRICT added.
 1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_graph_handler	-	1.9.0	type	raptor_graph_mark_handler	-	-
-1.4.21	type	raptor_identifier	-	1.9.0	type	raptor_term	-	-
-1.4.21	type	raptor_identifier_type	-	1.9.0	type	raptor_term_type	-	-
+1.4.21	type	raptor_identifier	-	1.9.0	type	raptor_term	-	Fields changed to be simpler raptor_term_type and raptor_term_value.
+1.4.21	type	raptor_identifier_type	-	1.9.0	type	raptor_term_type	-	Removed several enum values to leave just uri, blank and literal.
 1.4.21	type	raptor_iostream_handler2	-	1.9.0	type	raptor_iostream_handler	-	-
 1.4.21	type	raptor_iostream_write_end_func	-	1.9.0	type	raptor_iostream_write_end_func	-	handler returns an int
 1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with raptor_world_flag
