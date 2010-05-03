@@ -389,7 +389,7 @@
 #
 1.4.21	type	raptor_error_handlers	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism
 1.4.21	type	raptor_feature	-	1.9.0	type	raptor_option	-	And new option RAPTOR_OPTION_STRICT added.
-1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_graph_handler	-	1.9.0	type	raptor_graph_mark_handler	-	-
 1.4.21	type	raptor_identifier	-	1.9.0	type	raptor_term	-	-
 1.4.21	type	raptor_identifier_type	-	1.9.0	type	-	-	-
@@ -399,10 +399,10 @@
 1.4.21	type	raptor_log_level	-	1.9.0	type	raptor_log_level	-	Added RAPTOR_LOG_LEVEL_TRACE, RAPTOR_LOG_LEVEL_DEBUG, RAPTOR_LOG_LEVEL_INFO. RAPTOR_LOG_LEVEL_WARNING renamed RAPTOR_LOG_LEVEL_WARN
 1.4.21	type	raptor_message_handler	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_message_handler_closure	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_new_uri_for_rdf_concept_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_new_uri_from_uri_local_name_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_new_uri_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_new_uri_relative_to_base_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_new_uri_for_rdf_concept_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_new_uri_from_uri_local_name_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_new_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_new_uri_relative_to_base_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_ntriples_parser	-	1.9.0	type	-	-	replaced by raptor_parser
 1.4.21	type	raptor_ntriples_term_type	-	1.9.0	type	-	-	replaced by raptor_term_type
 1.4.21	type	raptor_sequence_free_function	-	1.9.0	type	raptor_data_free_handler	-	-
@@ -413,13 +413,13 @@
 1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use raptor_term
 1.4.21	type	raptor_statement_handler	-	1.9.0	type	raptor_statement_handler	-	added const
 1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	-
-1.4.21	type	raptor_uri_as_counted_string_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_uri_as_string_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_uri_compare_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_uri_copy_func	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_as_counted_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_uri_as_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_uri_compare_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_uri_copy_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_handler	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
-1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	-
+1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	URI source was of no use.
 1.4.21	type	-	-	1.9.0	type	raptor_avltree	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_iterator	-	-
