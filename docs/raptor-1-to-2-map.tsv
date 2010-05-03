@@ -185,7 +185,7 @@
 1.4.21	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)	1.9.0	int	raptor_sequence_join	(raptor_sequence* dest, raptor_sequence *src)	-
 1.4.21	void*	raptor_sequence_pop	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_pop	(raptor_sequence* seq)	-
 1.4.21	void	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)	1.9.0	int	raptor_sequence_print	(raptor_sequence* seq, FILE* fh)	-
-1.4.21	void	raptor_sequence_print_string	(char* data, FILE *fh)	1.9.0	-	-	-	-
+1.4.21	void	raptor_sequence_print_string	(char* data, FILE *fh)	1.9.0	-	-	-	Trivial utility function removed.
 1.4.21	void	raptor_sequence_print_uri	(char* data, FILE *fh)	1.9.0	-	-	-	Deprecated for raptor_uri_print()
 1.4.21	int	raptor_sequence_push	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_push	(raptor_sequence* seq, void *data)	-
 1.4.21	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)	1.9.0	int	raptor_sequence_set_at	(raptor_sequence* seq, int idx, void *data)	-
@@ -294,13 +294,13 @@
 1.4.21	void	raptor_www_abort	(raptor_www *www, const char* reason)	1.9.0	void	raptor_www_abort	(raptor_www *www, const char* reason)	-
 1.4.21	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	1.9.0	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	-
 1.4.21	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, raptor_data_malloc_handler const malloc_handler)	-
-1.4.21	void	raptor_www_finish	(void)	1.9.0	-	-	-	-
-1.4.21	void	raptor_www_finish_v2	(raptor_world* world)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_finish	(void)	1.9.0	-	-	-	No need for this to be public.
+1.4.21	void	raptor_www_finish_v2	(raptor_world* world)	1.9.0	-	-	-	No need for this to be public.
 1.4.21	void	raptor_www_free	(raptor_www *www)	1.9.0	void	raptor_free_www	(raptor_www *www)	-
 1.4.21	void*	raptor_www_get_connection	(raptor_www *www)	1.9.0	void*	raptor_www_get_connection	(raptor_www *www)	-
 1.4.21	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	1.9.0	raptor_uri*	raptor_www_get_final_uri	(raptor_www* www)	-
-1.4.21	void	raptor_www_init	(void)	1.9.0	-	-	-	-
-1.4.21	int	raptor_www_init_v2	(raptor_world* world)	1.9.0	-	-	-	-
+1.4.21	void	raptor_www_init	(void)	1.9.0	-	-	-	No need for this to be public.
+1.4.21	int	raptor_www_init_v2	(raptor_world* world)	1.9.0	-	-	-	No need for this to be public.
 1.4.21	raptor_www*	raptor_www_new	(void)	1.9.0	raptor_www*	raptor_new_www	(raptor_world* world)	-
 1.4.21	raptor_www*	raptor_www_new_v2	(raptor_world* world)	1.9.0	raptor_www*	raptor_new_www	(raptor_world* world)	-
 1.4.21	raptor_www*	raptor_www_new_with_connection	(void* connection)	1.9.0	raptor_www*	raptor_new_www_with_connection	(raptor_world* world, void* connection)	-
