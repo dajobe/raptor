@@ -386,14 +386,6 @@
 #
 # Types
 #
-1.4.21	type	raptor_avltree	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_avltree_bitflags	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_avltree_iterator	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_avltree_visit_function	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_data_compare_function	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_data_context_free_handler	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_data_malloc_function	-	1.9.0	type	-	-	-
-1.4.21	type	raptor_domain	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_error_handlers	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism
 1.4.21	type	raptor_feature	-	1.9.0	type	raptor_option	-	And new option RAPTOR_OPTION_STRICT added.
 1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	-
@@ -430,6 +422,14 @@
 1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_uri_handler	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_avltree	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_avltree_bitflags	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_avltree_iterator	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_avltree_visit_function	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_data_compare_function	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_data_context_free_handler	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_data_malloc_function	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_domain	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_graph_mark_flags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_description	-	-
