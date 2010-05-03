@@ -213,7 +213,7 @@ chunks of byte content.
 @uri: 
 @string_p: 
 @length_p: 
-@malloc_function: 
+@malloc_handler: 
 @Returns: 
 
 

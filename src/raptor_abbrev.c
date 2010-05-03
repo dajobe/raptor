@@ -284,16 +284,16 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     subject->valid = 1;
 
     subject->properties =
-      raptor_new_avltree((raptor_data_compare_function)raptor_compare_abbrev_po,
-                         (raptor_data_free_function)raptor_free_abbrev_po,
+      raptor_new_avltree((raptor_data_compare_handler)raptor_compare_abbrev_po,
+                         (raptor_data_free_handler)raptor_free_abbrev_po,
                          0);
 #ifdef RAPTOR_DEBUG
     raptor_avltree_set_print_handler(subject->properties,
-                                     (raptor_data_print_handler*)raptor_print_abbrev_po);
+                                     (raptor_data_print_handler)raptor_print_abbrev_po);
 #endif
 
     subject->list_items =
-      raptor_new_sequence((raptor_data_free_handler *)raptor_free_abbrev_node, NULL);
+      raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node, NULL);
 
     if(!subject->node || !subject->properties || !subject->list_items) {
       raptor_free_abbrev_subject(subject);

@@ -773,7 +773,7 @@ typedef enum {
 
 
 /**
- * raptor_data_compare_function:
+ * raptor_data_compare_handler:
  * @data1: first data object
  * @data2: second data object
  *
@@ -782,13 +782,13 @@ typedef enum {
  * Designed to be passed into generic data structure constructors
  * like raptor_new_avltree().
  *
- * Return value: compare value - <0 if @data1 is before @data2, =0 if equal, >0 if @data1 is after @data2
+ * Return value: compare value <0 if @data1 is before @data2, =0 if equal, >0 if @data1 is after @data2
  */
-typedef int (*raptor_data_compare_function)(const void* data1, const void* data2);
+typedef int (*raptor_data_compare_handler)(const void* data1, const void* data2);
 
 
 /**
- * raptor_data_malloc_function:
+ * raptor_data_malloc_handler:
  * @size: data size
  *
  * Typedef for a function to allocate memory - signature like malloc()
@@ -798,11 +798,11 @@ typedef int (*raptor_data_compare_function)(const void* data1, const void* data2
  *
  * Return value: pointer to newly allocated memory or NULL on failure
  */
-typedef void* (*raptor_data_malloc_function)(size_t size);
+typedef void* (*raptor_data_malloc_handler)(size_t size);
 
 
 /**
- * raptor_data_free_function:
+ * raptor_data_free_handler:
  * @data: data object or NULL
  *
  * Typedef for function to free a data object - signature like free()
@@ -810,7 +810,46 @@ typedef void* (*raptor_data_malloc_function)(size_t size);
  * Designed to be passed into generic data structure constructors
  * like raptor_new_avltree().  If @data is NULL, nothing should be done.
  */
-typedef void (*raptor_data_free_function)(void* data);
+typedef void (*raptor_data_free_handler)(void* data);
+
+
+/**
+ * raptor_data_context_free_handler:
+ * @context: context data for the free function
+ * @object: object to free
+ *
+ * Handler function for freeing a sequence item with a contextual pointer.
+ *
+ * Set by raptor_new_sequence_with_context().
+*/
+typedef void (*raptor_data_context_free_handler)(void* context, void* object);
+
+/**
+ * raptor_data_print_handler:
+ * @object: object to print
+ * @fh: FILE* to print to
+ *
+ * Handler function for printing an object to a stream.
+ *
+ * Set by raptor_new_sequence()
+ *
+ * Return value: non-0 on failure
+ */
+typedef int (*raptor_data_print_handler)(void *object, FILE *fh);
+
+/**
+ * raptor_data_context_print_handler:
+ * @context: context data for the print function
+ * @object: object to print
+ * @fh: FILE* to print to
+ *
+ * Function function for printing an object with data context to a stream.
+ *
+ * Set by raptor_new_sequence_with_context()
+ *
+ * Return value: non-0 on failure
+ */
+typedef int (*raptor_data_context_print_handler)(void *context, void *object, FILE *fh);
 
 
 /* Public functions */
@@ -1160,7 +1199,7 @@ int raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control
 RAPTOR_API
 int raptor_www_fetch(raptor_www *www, raptor_uri *uri);
 RAPTOR_API
-int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, raptor_data_malloc_function const malloc_function);
+int raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, raptor_data_malloc_handler const malloc_handler);
 RAPTOR_API
 void* raptor_www_get_connection(raptor_www *www);
 RAPTOR_API
@@ -1267,56 +1306,11 @@ typedef struct raptor_stringbuffer_s raptor_stringbuffer;
  */
 typedef struct raptor_sequence_s raptor_sequence;
 
-/**
- * raptor_data_free_handler:
- * @object: object to free
- *
- * Handler function for freeing a sequence item.
- *
- * Set by raptor_new_sequence().
-*/
-typedef void (raptor_data_free_handler)(void* object);
-
-/**
- * raptor_data_context_free_handler:
- * @context: context data for the free handler
- * @object: object to free
- *
- * Handler function for freeing a sequence item with a contextual pointer.
- *
- * Set by raptor_new_sequence_with_context().
-*/
-typedef void (raptor_data_context_free_handler)(void* context, void* object);
-
-/**
- * raptor_data_print_handler:
- * @object: object to print
- * @fh: FILE* to print to
- *
- * Handler function for printing an object to a stream.
- *
- * Set by raptor_new_sequence()
- */
-typedef int (raptor_data_print_handler)(void *object, FILE *fh);
-
-/**
- * raptor_data_context_print_handler:
- * @context: context data for the print handler
- * @object: object to print
- * @fh: FILE* to print to
- *
- * Handler function for printing an object with data context to a stream.
- *
- * Set by raptor_new_sequence_with_context()
- */
-typedef int (raptor_data_context_print_handler)(void *context, void *object, FILE *fh);
-
-
-/* Sequence Clsas */
+/* Sequence Class */
 RAPTOR_API
-raptor_sequence* raptor_new_sequence(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler);
+raptor_sequence* raptor_new_sequence(raptor_data_free_handler free_handler, raptor_data_print_handler print_handler);
 RAPTOR_API
-raptor_sequence* raptor_new_sequence_with_context(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context);
+raptor_sequence* raptor_new_sequence_with_context(raptor_data_context_free_handler free_handler, raptor_data_context_print_handler print_handler, void* handler_context);
 RAPTOR_API
 void raptor_free_sequence(raptor_sequence* seq);
 
@@ -1339,7 +1333,7 @@ RAPTOR_API
 void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 
 RAPTOR_API
-void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_function compare);
+void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare);
 
 /* helper for printing sequences of strings */ 
 RAPTOR_API
@@ -1514,7 +1508,7 @@ raptor_iostream* raptor_new_iostream_to_filename(raptor_world* world, const char
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_to_file_handle(raptor_world* world, FILE *handle);
 RAPTOR_API
-raptor_iostream* raptor_new_iostream_to_string(raptor_world* world, void **string_p, size_t *length_p, raptor_data_malloc_function const malloc_handler);
+raptor_iostream* raptor_new_iostream_to_string(raptor_world* world, void **string_p, size_t *length_p, raptor_data_malloc_handler const malloc_handler);
 RAPTOR_API
 raptor_iostream* raptor_new_iostream_from_sink(raptor_world* world);
 RAPTOR_API
@@ -1808,7 +1802,7 @@ typedef struct raptor_avltree_s raptor_avltree;
 typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
 
 /**
- * raptor_avltree_visit_function:
+ * raptor_avltree_visit_handler:
  * @depth: depth of object in tree
  * @data: data object being visited
  * @user_data: user data arg to raptor_avltree_visit()
@@ -1817,7 +1811,7 @@ typedef struct raptor_avltree_iterator_s raptor_avltree_iterator;
  *
  * Return value: non-0 to terminate visit early.
  */
-typedef int (*raptor_avltree_visit_function)(int depth, void* data, void *user_data);
+typedef int (*raptor_avltree_visit_handler)(int depth, void* data, void *user_data);
 
 
 /**
@@ -1832,7 +1826,7 @@ typedef enum {
 
 
 RAPTOR_API
-raptor_avltree* raptor_new_avltree(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags);
+raptor_avltree* raptor_new_avltree(raptor_data_compare_handler compare_handler, raptor_data_free_handler free_handler, unsigned int flags);
 RAPTOR_API
 void raptor_free_avltree(raptor_avltree* tree);
 
@@ -1846,16 +1840,16 @@ int raptor_avltree_delete(raptor_avltree* tree, void* p_data);
 RAPTOR_API
 void* raptor_avltree_search(raptor_avltree* tree, const void* p_data);
 RAPTOR_API
-int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data);
+int raptor_avltree_visit(raptor_avltree* tree, raptor_avltree_visit_handler visit_handler, void* user_data);
 RAPTOR_API
 int raptor_avltree_size(raptor_avltree* tree);
 RAPTOR_API
-void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_handler print_fn);
+void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_handler print_handler);
 RAPTOR_API
 void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
 
 RAPTOR_API
-raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_function range_free_fn, int direction);
+raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_handler range_free_handler, int direction);
 RAPTOR_API
 void raptor_free_avltree_iterator(raptor_avltree_iterator* iterator);
 

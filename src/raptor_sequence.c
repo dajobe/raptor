@@ -83,10 +83,10 @@ struct raptor_sequence_s {
 
 
   /* handler to call to free a data item (or NULL) */
-  raptor_data_free_handler *free_handler;
+  raptor_data_free_handler free_handler;
 
   /* handler to call to print a data item (or NULL) */
-  raptor_data_print_handler *print_handler;
+  raptor_data_print_handler print_handler;
 
 
   /* context pointer for @context_free_handler and @context_print_handler */
@@ -94,12 +94,12 @@ struct raptor_sequence_s {
 
   /* handler to call to free a data item (or NULL) also passing in
    * as first arg the @handler_context */
-  raptor_data_context_free_handler *context_free_handler;
+  raptor_data_context_free_handler context_free_handler;
 
   /* handler to call to print a data item (or NULL) also passing in
    * as first arg the @handler_context
    */
-  raptor_data_context_print_handler *context_print_handler;
+  raptor_data_context_print_handler context_print_handler;
 };
 
 
@@ -123,8 +123,8 @@ static int raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_a
  * Return value: a new #raptor_sequence or NULL on failure 
  **/
 raptor_sequence*
-raptor_new_sequence(raptor_data_free_handler *free_handler,
-                    raptor_data_print_handler *print_handler)
+raptor_new_sequence(raptor_data_free_handler free_handler,
+                    raptor_data_print_handler print_handler)
 {
   raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
                                                          sizeof(*seq));
@@ -152,8 +152,8 @@ raptor_new_sequence(raptor_data_free_handler *free_handler,
  * Return value: a new #raptor_sequence or NULL on failure 
  **/
 raptor_sequence*
-raptor_new_sequence_with_context(raptor_data_context_free_handler *free_handler,
-                                 raptor_data_context_print_handler *print_handler,
+raptor_new_sequence_with_context(raptor_data_context_free_handler free_handler,
+                                 raptor_data_context_print_handler print_handler,
                                  void *handler_context)
 {
   raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
@@ -534,7 +534,7 @@ raptor_sequence_unshift(raptor_sequence* seq)
  **/
 RAPTOR_EXTERN_C
 void
-raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_function compare)
+raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
 

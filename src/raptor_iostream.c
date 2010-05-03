@@ -471,7 +471,7 @@ RAPTOR_EXTERN_C
 raptor_iostream*
 raptor_new_iostream_to_string(raptor_world *world,
                               void **string_p, size_t *length_p,
-                              raptor_data_malloc_function const malloc_function)
+                              raptor_data_malloc_handler const malloc_function)
 {
   raptor_iostream* iostr;
   struct raptor_write_string_iostream_context* con;

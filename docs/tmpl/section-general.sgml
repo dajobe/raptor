@@ -125,7 +125,7 @@ and various other utility functions.
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION raptor_data_compare_function ##### -->
+<!-- ##### USER_FUNCTION raptor_data_compare_handler ##### -->
 <para>
 
 </para>
@@ -135,7 +135,35 @@ and various other utility functions.
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION raptor_data_malloc_function ##### -->
+<!-- ##### USER_FUNCTION raptor_data_context_free_handler ##### -->
+<para>
+
+</para>
+
+@context: 
+@object: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_context_print_handler ##### -->
+<para>
+
+</para>
+
+@context: 
+@object: 
+@fh: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_free_handler ##### -->
+<para>
+
+</para>
+
+@data: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_malloc_handler ##### -->
 <para>
 
 </para>
@@ -144,12 +172,14 @@ and various other utility functions.
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION raptor_data_free_function ##### -->
+<!-- ##### USER_FUNCTION raptor_data_print_handler ##### -->
 <para>
 
 </para>
 
-@data: 
+@object: 
+@fh: 
+@Returns: 
 
 
 <!-- ##### ENUM raptor_syntax_bitflags ##### -->

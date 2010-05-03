@@ -113,8 +113,8 @@
 1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	-
 1.4.21	raptor_qname*	raptor_new_qname_from_namespace_local_name_v2	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	1.9.0	raptor_qname*	raptor_new_qname_from_namespace_local_name	(raptor_world* world, raptor_namespace *ns, const unsigned char* local_name, const unsigned char* value)	-
 1.4.21	raptor_sax2*	raptor_new_sax2	(void *user_data, raptor_error_handlers* error_handlers)	1.9.0	raptor_sax2*	raptor_new_sax2	(raptor_world *world, raptor_locator *locator, void* user_data)	-
-1.4.21	raptor_sequence*	raptor_new_sequence	(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)	-
-1.4.21	raptor_sequence*	raptor_new_sequence_v2	(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler* free_handler, raptor_data_print_handler* print_handler)	-
+1.4.21	raptor_sequence*	raptor_new_sequence	(raptor_sequence_free_handler* free_handler, raptor_sequence_print_handler* print_handler)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler free_handler, raptor_data_print_handler print_handler)	-
+1.4.21	raptor_sequence*	raptor_new_sequence_v2	(raptor_sequence_free_handler_v2* free_handler, raptor_sequence_print_handler_v2* print_handler, void* handler_context)	1.9.0	raptor_sequence*	raptor_new_sequence	(raptor_data_free_handler free_handler, raptor_data_print_handler print_handler)	-
 1.4.21	raptor_serializer*	raptor_new_serializer	(const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)	-
 1.4.21	raptor_serializer*	raptor_new_serializer_v2	(raptor_world* world, const char* name)	1.9.0	raptor_serializer*	raptor_new_serializer	(raptor_world* world, const char* name)	-
 1.4.21	raptor_stringbuffer*	raptor_new_stringbuffer	(void)	1.9.0	raptor_stringbuffer*	raptor_new_stringbuffer	(void)	-
@@ -193,7 +193,7 @@
 1.4.21	void	raptor_sequence_set_print_handler_v2	(raptor_sequence *seq, raptor_sequence_print_handler_v2 *print_handler)	1.9.0	-	-	-	Use the argument in the raptor_new_sequence() constructor instead.
 1.4.21	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)	1.9.0	int	raptor_sequence_shift	(raptor_sequence* seq, void *data)	-
 1.4.21	int	raptor_sequence_size	(raptor_sequence* seq)	1.9.0	int	raptor_sequence_size	(raptor_sequence* seq)	-
-1.4.21	void	raptor_sequence_sort	(raptor_sequence* seq, int(*compare)(const void *, const void *))	1.9.0	void	raptor_sequence_sort	(raptor_sequence* seq, raptor_data_compare_function compare)	-
+1.4.21	void	raptor_sequence_sort	(raptor_sequence* seq, int(*compare)(const void *, const void *))	1.9.0	void	raptor_sequence_sort	(raptor_sequence* seq, raptor_data_compare_handler compare)	-
 1.4.21	void*	raptor_sequence_unshift	(raptor_sequence* seq)	1.9.0	void*	raptor_sequence_unshift	(raptor_sequence* seq)	-
 1.4.21	int	raptor_serialize_end	(raptor_serializer *rdf_serializer)	1.9.0	int	raptor_serializer_serialize_end	(raptor_serializer *rdf_serializer)	-
 1.4.21	int	raptor_serialize_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)	1.9.0	int	raptor_serializer_set_namespace	(raptor_serializer* rdf_serializer, raptor_uri *uri, const unsigned char* prefix)	-
@@ -293,7 +293,7 @@
 1.4.21	void	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	-
 1.4.21	void	raptor_www_abort	(raptor_www *www, const char* reason)	1.9.0	void	raptor_www_abort	(raptor_www *www, const char* reason)	-
 1.4.21	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	1.9.0	int	raptor_www_fetch	(raptor_www *www, raptor_uri *uri)	-
-1.4.21	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	-
+1.4.21	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, void *(*malloc_handler)(size_t size))	1.9.0	int	raptor_www_fetch_to_string	(raptor_www *www, raptor_uri *uri, void **string_p, size_t *length_p, raptor_data_malloc_handler const malloc_handler)	-
 1.4.21	void	raptor_www_finish	(void)	1.9.0	-	-	-	-
 1.4.21	void	raptor_www_finish_v2	(raptor_world* world)	1.9.0	-	-	-	-
 1.4.21	void	raptor_www_free	(raptor_www *www)	1.9.0	void	raptor_free_www	(raptor_www *www)	-
@@ -353,9 +353,9 @@
 1.4.21	-	-	-	1.9.0	void	raptor_avltree_print	(raptor_avltree* tree, FILE* stream)	-
 1.4.21	-	-	-	1.9.0	void*	raptor_avltree_remove	(raptor_avltree* tree, void* p_data)	-
 1.4.21	-	-	-	1.9.0	void*	raptor_avltree_search	(raptor_avltree* tree, const void* p_data)	-
-1.4.21	-	-	-	1.9.0	void	raptor_avltree_set_print_handler	(raptor_avltree* tree, raptor_data_print_handler print_fn)	-
+1.4.21	-	-	-	1.9.0	void	raptor_avltree_set_print_handler	(raptor_avltree* tree, raptor_data_print_handler print_handler)	-
 1.4.21	-	-	-	1.9.0	int	raptor_avltree_size	(raptor_avltree* tree)	-
-1.4.21	-	-	-	1.9.0	int	raptor_avltree_visit	(raptor_avltree* tree, raptor_avltree_visit_function visit_fn, void* user_data)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_visit	(raptor_avltree* tree, raptor_avltree_visit_handler visit_handler, void* user_data)	-
 1.4.21	-	-	-	1.9.0	const char*	raptor_domain_get_label	(raptor_domain domain)	-
 1.4.21	-	-	-	1.9.0	void	raptor_free_avltree	(raptor_avltree* tree)	-
 1.4.21	-	-	-	1.9.0	void	raptor_free_avltree_iterator	(raptor_avltree_iterator* iterator)	-
@@ -363,8 +363,8 @@
 1.4.21	-	-	-	1.9.0	void	raptor_free_statement	(raptor_statement *statement)	-
 1.4.21	-	-	-	1.9.0	void	raptor_free_term	(raptor_term *term)	-
 1.4.21	-	-	-	1.9.0	const char*	raptor_log_level_get_label	(raptor_log_level level)	-
-1.4.21	-	-	-	1.9.0	raptor_avltree*	raptor_new_avltree	(raptor_data_compare_function compare_fn, raptor_data_free_function free_fn, unsigned int flags)	-
-1.4.21	-	-	-	1.9.0	raptor_avltree_iterator*	raptor_new_avltree_iterator	(raptor_avltree* tree, void* range, raptor_data_free_function range_free_fn, int direction)	-
+1.4.21	-	-	-	1.9.0	raptor_avltree*	raptor_new_avltree	(raptor_data_compare_handler compare_handler, raptor_data_free_handler free_handler, unsigned int flags)	-
+1.4.21	-	-	-	1.9.0	raptor_avltree_iterator*	raptor_new_avltree_iterator	(raptor_avltree* tree, void* range, raptor_data_free_handler range_free_handler, int direction)	-
 1.4.21	-	-	-	1.9.0	raptor_sequence*	raptor_new_sequence_with_context	(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_blank	(raptor_world* world, const unsigned char* blank)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_literal	(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language)	-
@@ -406,8 +406,8 @@
 1.4.21	type	raptor_new_uri_relative_to_base_func	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_ntriples_parser	-	1.9.0	type	-	-	replaced by raptor_parser
 1.4.21	type	raptor_ntriples_term_type	-	1.9.0	type	-	-	replaced by raptor_term_type
-1.4.21	type	raptor_sequence_free_function	-	1.9.0	type	raptor_data_free_function	-	-
-1.4.21	type	raptor_sequence_free_handler_v2	-	1.9.0	type	raptor_data_context_free_function	-	-
+1.4.21	type	raptor_sequence_free_function	-	1.9.0	type	raptor_data_free_handler	-	-
+1.4.21	type	raptor_sequence_free_handler_v2	-	1.9.0	type	raptor_data_context_free_handler	-	-
 1.4.21	type	raptor_sequence_print_handler	-	1.9.0	type	raptor_data_print_handler	-	-
 1.4.21	type	raptor_sequence_print_handler_v2	-	1.9.0	type	raptor_data_context_print_handler	-	-
 1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	-
@@ -424,10 +424,10 @@
 1.4.21	type	-	-	1.9.0	type	raptor_avltree	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_iterator	-	-
-1.4.21	type	-	-	1.9.0	type	raptor_avltree_visit_function	-	-
-1.4.21	type	-	-	1.9.0	type	raptor_data_compare_function	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_avltree_visit_handler	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_data_compare_handler	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_data_context_free_handler	-	-
-1.4.21	type	-	-	1.9.0	type	raptor_data_malloc_function	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_data_malloc_handler	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_domain	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_graph_mark_flags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_option_description	-	-

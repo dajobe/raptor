@@ -72,7 +72,7 @@ raptor_serializers_init(raptor_world* world)
 {
   int rc = 0;
 
-  world->serializers = raptor_new_sequence((raptor_data_free_handler*)raptor_free_serializer_factory, NULL);
+  world->serializers = raptor_new_sequence((raptor_data_free_handler)raptor_free_serializer_factory, NULL);
   if(!world->serializers)
     return 1;
 
