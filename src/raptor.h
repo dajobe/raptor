@@ -795,18 +795,20 @@ typedef int (*raptor_data_compare_function)(const void* data1, const void* data2
  *
  * Designed to be passed into constructors
  * like raptor_www_fetch_to_string
+ *
+ * Return value: pointer to newly allocated memory or NULL on failure
  */
 typedef void* (*raptor_data_malloc_function)(size_t size);
 
 
 /**
  * raptor_data_free_function:
- * @data: data object
+ * @data: data object or NULL
  *
  * Typedef for function to free a data object - signature like free()
  *
  * Designed to be passed into generic data structure constructors
- * like raptor_new_avltree().
+ * like raptor_new_avltree().  If @data is NULL, nothing should be done.
  */
 typedef void (*raptor_data_free_function)(void* data);
 
