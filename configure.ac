@@ -1275,6 +1275,7 @@ data/Makefile
 docs/Makefile
 docs/version.xml
 examples/Makefile
+scripts/Makefile
 src/Makefile
 tests/Makefile
 tests/feeds/Makefile

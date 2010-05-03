@@ -68,6 +68,16 @@ adjust how parsing is performed.
 @parser: 
 
 
+<!-- ##### USER_FUNCTION raptor_graph_mark_handler ##### -->
+<para>
+
+</para>
+
+@user_data: 
+@graph: 
+@flags: 
+
+
 <!-- ##### USER_FUNCTION raptor_namespace_handler ##### -->
 <para>
 
@@ -88,6 +98,24 @@ adjust how parsing is performed.
 
 
 <!-- ##### FUNCTION raptor_parser_set_generate_id_handler ##### -->
+<para>
+
+</para>
+
+@parser: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### ENUM raptor_graph_mark_flags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_GRAPH_MARK_START: 
+@RAPTOR_GRAPH_MARK_DECLARED: 
+
+<!-- ##### FUNCTION raptor_parser_set_graph_mark_handler ##### -->
 <para>
 
 </para>
@@ -178,6 +206,17 @@ adjust how parsing is performed.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_parser_parse_iostream ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
+@iostr: 
+@base_uri: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_parser_parse_start ##### -->
 <para>
 
@@ -208,6 +247,15 @@ adjust how parsing is performed.
 @uri: 
 @base_uri: 
 @connection: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_parser_get_graph ##### -->
+<para>
+
+</para>
+
+@rdf_parser: 
 @Returns: 
 
 
@@ -242,15 +290,6 @@ adjust how parsing is performed.
 @string_p: 
 @integer_p: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_parser_set_strict ##### -->
-<para>
-
-</para>
-
-@rdf_parser: 
-@is_strict: 
 
 
 <!-- ##### FUNCTION raptor_parser_get_accept_header ##### -->

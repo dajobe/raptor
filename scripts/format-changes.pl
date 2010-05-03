@@ -3,7 +3,7 @@
 # Format changes TSV file
 #
 # USAGE:
-#   format-changes.pl --to-docbook.xml raptor-changes.tsv > ...
+#   format-changes.pl --to-docbook-xml raptor-changes.tsv > ...
 #
 # Copyright (C) 2010, David Beckett http://www.dajobe.org/
 #
@@ -117,6 +117,7 @@ sub print_functions_list_as_docbook_xml($$$@) {
 
   print <<"EOT";
   <itemizedlist>
+    <title>Functions</title>
 EOT
 
   print  "  <caption>$title</caption>\n"
@@ -133,6 +134,36 @@ EOT
   </itemizedlist>
 EOT
 }
+
+
+sub format_type_sig($$) {
+  my($format_name, $type_name)=@_;
+  return $format_name ? format_type_name_as_docbook_xml($type_name) : $type_name;
+}
+
+
+sub print_types_list_as_docbook_xml($$$@) {
+  my($title, $format_name, $show_sig, @list)=@_;
+
+  print <<"EOT";
+  <itemizedlist>
+    <title>Types</title>
+EOT
+
+  print  "  <caption>$title</caption>\n"
+    if defined $title;
+
+  for my $item (@list) {
+    my($type_name, $notes) = @$item;
+    my $formatted_fn = format_type_sig($format_name, $type_name);
+    $notes = format_notes(1, $notes);
+    print "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
+  }
+  print <<"EOT";
+  </itemizedlist>
+EOT
+}
+
 
 sub print_renamed_functions_as_docbook_xml($$$@) {
   my($title, $old_function_header, $new_function_header, @list)=@_;
@@ -217,6 +248,43 @@ EOT
 }
 
 
+sub print_changed_types_as_docbook_xml($$$@) {
+  my($title, $old_type_header, $new_type_header, @list)=@_;
+
+  print <<"EOT";
+<table border='1'>
+EOT
+
+  print  "  <caption>$title</caption>\n"
+    if defined $title;
+
+  print <<"EOT";
+  <thead>
+  </thead>
+  <tbody>
+    <tr>
+      <th>$old_type_header</th>
+      <th>$new_type_header</th>
+      <th>Notes</th>
+    </tr>
+EOT
+  for my $item (@list) {
+    my($old_type_name, $new_type_name,  $notes) = @$item;
+
+    my $old_formatted_type = format_type_sig(0, $old_type_name);
+    my $new_formatted_type = format_type_sig(1, $new_type_name);
+
+    $notes = format_notes(0, $notes);
+    print "    <tr valign='top'>\n      <td>$old_formatted_type</td> <td>$new_formatted_type</td> <td>$notes</td>\n    </tr>\n";
+  }
+  print <<"EOT";
+  </tbody>
+</table>
+EOT
+
+}
+
+
 
 # main
 
@@ -238,6 +306,10 @@ my(@deleted_functions);
 my(@renamed_functions);
 my(@changed_functions);
 
+my(@new_types);
+my(@deleted_types);
+my(@changed_types);
+
 our $old_version;
 our $new_version;
 
@@ -251,27 +323,50 @@ while(<IN>) {
   die "$program: Bad line $.: $_\n"
     unless scalar(@fields) == $expected_n_fields;
 
-  my($old_ver, $old_return, $old_name, $old_args, $new_ver, $new_return, $new_name, $new_args,$notes)=@fields;
+  if($fields[1] eq 'type') {
+    # Do not handle types yet.
 
-  $old_version = $old_ver unless defined $old_version;
-  $new_version = $new_ver unless defined $new_version;
+    my($old_ver, $dummy1, $old_name, $old_args, $new_ver, $dummy2, $new_name, $new_args,$notes)=@fields;
 
-  $notes = '' if $notes eq '-';
+    $old_version = $old_ver unless defined $old_version;
+    $new_version = $new_ver unless defined $new_version;
 
-  if($old_name eq '-') {
-    push(@new_functions, [$new_return, $new_name, $new_args, $notes]);
-  } elsif($new_name eq '-') {
-    push(@deleted_functions, [$old_return, $old_name, $old_args, $notes]);
-  } elsif($old_return eq $new_return && $old_name eq $new_name &&
-	  $old_args eq $new_args) {
-    # same
-  } elsif($old_return eq $new_return && $old_name ne $new_name &&
-	  $old_args eq $new_args) {
-    # renamed but nothing else changed
-    push(@renamed_functions, [$old_name, $new_name, $notes]);
+    $notes = '' if $notes eq '-';
+
+    if($old_name eq '-') {
+      push(@new_types, [$new_name, $notes]);
+    } elsif($new_name eq '-') {
+      push(@deleted_types, [$old_name, $notes]);
+    } elsif($old_name eq $new_name) {
+      # same
+    } else {
+      # renamed and maybe something else changed - in the notes
+      push(@changed_types, [$old_name, $new_name, $notes]);
+    }
+
   } else {
-    # something changed - args and/or return
-    push(@changed_functions, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args, $notes]);
+    my($old_ver, $old_return, $old_name, $old_args, $new_ver, $new_return, $new_name, $new_args,$notes)=@fields;
+
+    $old_version = $old_ver unless defined $old_version;
+    $new_version = $new_ver unless defined $new_version;
+
+    $notes = '' if $notes eq '-';
+
+    if($old_name eq '-') {
+      push(@new_functions, [$new_return, $new_name, $new_args, $notes]);
+    } elsif($new_name eq '-') {
+      push(@deleted_functions, [$old_return, $old_name, $old_args, $notes]);
+    } elsif($old_return eq $new_return && $old_name eq $new_name &&
+	    $old_args eq $new_args) {
+      # same
+    } elsif($old_return eq $new_return && $old_name ne $new_name &&
+	    $old_args eq $new_args) {
+      # renamed but nothing else changed
+      push(@renamed_functions, [$old_name, $new_name, $notes]);
+    } else {
+      # something changed - args and/or return
+      push(@changed_functions, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args, $notes]);
+    }
   }
 }
 close(IN);
@@ -303,17 +398,19 @@ print_end_section_as_docbook_xml();
 
 
 print_start_section_as_docbook_xml('raptor-changes-new',
-				   "Functions added in $package $new_version");
+				   "New functions and types in $package $new_version");
 print_functions_list_as_docbook_xml(undef, 1, 1, @new_functions);
+print_types_list_as_docbook_xml(undef, 1, 1, @new_types);
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-deleted',
-				   "Functions deleted in $package $new_version");
+				   "Deleted functions and types in $package $new_version");
 print_functions_list_as_docbook_xml(undef, 0, 0, @deleted_functions);
+print_types_list_as_docbook_xml(undef, 1, 1, @deleted_types);
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-renamed',
-				   "Functions renamed in $package $new_version");
+				   "Renamed functions in $package $new_version");
 print_renamed_functions_as_docbook_xml(undef,
 				       "$old_version function",
 				       "$new_version function",
@@ -321,11 +418,15 @@ print_renamed_functions_as_docbook_xml(undef,
 print_end_section_as_docbook_xml();
 
 print_start_section_as_docbook_xml('raptor-changes-changed',
-				   "Functions changed signature in $package $new_version");
-print_changed_functions_as_docbook_xml(undef, 
+				   "Changed functions and types in $package $new_version");
+print_changed_functions_as_docbook_xml('Functions', 
 				       "$old_version function",
 				       "$new_version function",
 				       @changed_functions);
+print_changed_types_as_docbook_xml('Types', 
+				   "$old_version type",
+				   "$new_version type",
+				   @changed_types);
 print_end_section_as_docbook_xml();
 
 print_end_chapter_as_docbook_xml();

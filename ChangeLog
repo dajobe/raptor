@@ -1,4 +1,176 @@
+2010-05-02  Dave Beckett <dave@dajobe.org>
+
+	* utils/Makefile.am: fix rapper.html rule for scripts
+
+	* docs/raptor-1-to-2-map.tsv: annotations for raptor_identifier to
+	raptor_term renamings
+
+	* docs/raptor-1-to-2-map.tsv: Add annotations for old raptor_www_
+	functions
+
+	* docs/raptor-1-to-2-map.tsv: Add more annotations for old
+	functions and types
+
+	* src/raptor_iostream.c:
+	(raptor_new_iostream_to_string): Rename arg to malloc_handler
+
+	* docs/raptor-1-to-2-map.tsv: typo
+
+	* docs/raptor-1-to-2-map.tsv: annotate former message handler
+	typedefs
+
+	* docs/raptor-1-to-2-map.tsv: annotate former URI handler _func
+	typedefs
+
+	* docs/raptor-1-to-2-map.tsv: raptor_log_message is new
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	docs/tmpl/section-avltree.sgml, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-www.sgml, src/raptor.h, src/raptor_abbrev.c,
+	src/raptor_avltree.c, src/raptor_grddl.c, src/raptor_iostream.c,
+	src/raptor_parse.c, src/raptor_rss_common.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c, src/raptor_uri.c,
+	src/raptor_www.c, src/turtle_parser.y: Renamed typedefs ending in
+	_function to _handler.
+
+	Also changed parameter names and internal field names from foo_fn to
+	foo_handler to match.
+
+	(raptor_data_free_handler, raptor_data_context_free_handler,
+	raptor_data_context_print_handler and
+	raptor_data_context_print_handler): Signature of these typedefs
+	were changed to match the other handlers to became *pointers* to
+	functions so
+	e.g. a call with e.g.(raptor_data_context_free_handler*)blah
+	becomes (raptor_data_context_free_handler)blah.
+	
+	raptor_data_compare_handler renamed from
+	raptor_data_compare_function
+
+	raptor_data_malloc_handler renamed from
+	raptor_data_malloc_function
+
+	raptor_data_free_handler renamed from raptor_data_free_function
+
+	raptor_avltree_visit_handler renamed from
+	raptor_avltree_visit_function
+
+	Updated all definitions, fields and arguments to match.
+
+	* scripts/.gitignore: ignore more
+
+	* scripts/format-changes.pl: add change table titles
+
+	* scripts/format-changes.pl: format types
+
+	* src/raptor.h: autodocs
+
+	* docs/tmpl/section-serializer.sgml: update tmpls
+
+	* docs/raptor-1-to-2-map.tsv: Added raptor_serializer_flush
+
+	* docs/raptor-sections.txt: add new functions
+
+	* src/raptor.h: raptor_data_free_handler autodocs
+
+	* docs/raptor-1-to-2-map.tsv: more things were added not removed
+
+	* docs/raptor-1-to-2-map.tsv: more things were added not removed
+
+	* docs/raptor-1-to-2-map.tsv: raptor_uri_source type was deleted
+	not added.
+
+	* docs/raptor-1-to-2-map.tsv: Add type changes
+
+	* scripts/format-changes.pl: Ignore types for now
+
+2010-04-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_serialize.c:
+	(raptor_serializer_flush): Added
+
+	* src/raptor_internal.h: raptor_serializer_factory_s gains
+	serialize_flush factory method.
+
+	* Makefile.am, configure.ac, docs/Makefile.am,
+	docs/build-formats.c, docs/format-changes.pl, fix-groff-xhtml,
+	scripts/Makefile.am, scripts/build-formats.c, scripts/fix-bison,
+	scripts/fix-flex, scripts/fix-groff-xhtml,
+	scripts/format-changes.pl, src/Makefile.am, src/fix-bison,
+	src/fix-flex: Move scripts and utility programs into new scripts
+	dir
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-www.sgml: Update tmpls
+
+	* docs/raptor-sections.txt, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-www.sgml,
+	src/raptor.h, src/raptor_iostream.c, src/raptor_www.c: Add typedef
+	raptor_data_malloc_function
+
+	raptor_data_malloc_function: added for a malloc() signature
+	function.
+
+	(raptor_www_fetch_to_string, raptor_new_iostream_to_string): Use
+	for argument malloc_handler.
+
+	* docs/raptor-sections.txt: Remove internal raptor_avltree_check
+	and raptor_avltree_dump
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-parser.sgml:
+	Update tmpls
+
+	* src/raptor.h, src/raptor_internal.h: Move raptor_avltree_dump
+	and raptor_avltree_check debug prototypes to internal header
+
+	* docs/raptor-sections.txt: Add raptor_graph_mark_flags,
+	raptor_parser_parse_iostream, raptor_syntax_bitflags
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-www.sgml, docs/tmpl/section-xml-namespace.sgml:
+	
+	Update tmpls
+
+2010-04-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: code style
+
+	* src/raptor_serialize.c: code style
+
+	* src/raptor_abbrev.c: code style
+
+	* src/raptor_librdfa.c: code style
+
+	* src/raptor_turtle_writer.c: Update to add RAPTOR_OPTION_STRICT
+	to cases.
+
 2010-04-28  Dave Beckett <dave@dajobe.org>
+
+	* docs/format-changes.pl: intro section
+
+	* docs/raptor-1-to-2-map.tsv: More replacements Replace
+	raptor_serializer_get_option_string with
+	raptor_serializer_get_option Note replace
+	raptor_iostream_write_string_turtle with
+	raptor_string_python_write
+
+	* docs/raptor-1-to-2-map.tsv: Add replacement note for delete
+	raptor_set_parser_strict
+
+	* docs/raptor-1-to-2-map.tsv: Remove
+	raptor_world_enumerate_parsers with
+	raptor_world_get_parser_description.
+
+	* docs/raptor-sections.txt: update for
+	graph_handler->graph_mark_handler renames
+
+	* docs/raptor-sections.txt: Update functions for changes
+
+	* docs/raptor-1-to-2-map.tsv: Update functions for 2010-03-26 to
+	2010-03-28 changes missed
 
 	* docs/raptor-1-to-2-map.tsv: raptor_set_parser_strict removed
 

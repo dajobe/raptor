@@ -681,6 +681,9 @@ struct raptor_serializer_factory_s {
 
   /* add a namespace using an existing namespace */
   int (*declare_namespace_from_namespace)(raptor_serializer* serializer, raptor_namespace *nspace);
+
+  /* flush current serialization state */
+  int (*serialize_flush)(raptor_serializer* serializer);
 };
 
 
@@ -1219,6 +1222,13 @@ int raptor_abbrev_subject_valid(raptor_abbrev_subject *subject);
 int raptor_abbrev_subject_invalidate(raptor_abbrev_subject *subject);
 
 unsigned char *raptor_unique_id(unsigned char *base);
+
+/* avltree */
+#ifdef RAPTOR_DEBUG
+int raptor_avltree_dump(raptor_avltree* tree, FILE* stream);
+void raptor_avltree_check(raptor_avltree* tree);
+#endif
+
 
 raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor_namespace_stack* nstack, int* namespace_count, raptor_abbrev_node* node);
 

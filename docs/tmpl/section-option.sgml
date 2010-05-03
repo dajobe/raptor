@@ -62,6 +62,7 @@ the parameter type taken.
 @RAPTOR_OPTION_RSS_TRIPLES: 
 @RAPTOR_OPTION_ATOM_ENTRY_URI: 
 @RAPTOR_OPTION_PREFIX_ELEMENTS: 
+@RAPTOR_OPTION_STRICT: 
 @RAPTOR_OPTION_LAST: 
 
 <!-- ##### STRUCT raptor_option_description ##### -->

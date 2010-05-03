@@ -38,8 +38,8 @@ AVL Trees
 
 </para>
 
-@compare_fn: 
-@free_fn: 
+@compare_handler: 
+@free_handler: 
 @flags: 
 @Returns: 
 
@@ -107,7 +107,7 @@ AVL Trees
 </para>
 
 @tree: 
-@print_fn: 
+@print_handler: 
 
 
 <!-- ##### FUNCTION raptor_avltree_size ##### -->
@@ -125,7 +125,7 @@ AVL Trees
 </para>
 
 @tree: 
-@visit_fn: 
+@visit_handler: 
 @user_data: 
 @Returns: 
 
@@ -143,7 +143,7 @@ AVL Trees
 
 @tree: 
 @range: 
-@range_free_fn: 
+@range_free_handler: 
 @direction: 
 @Returns: 
 
@@ -183,7 +183,7 @@ AVL Trees
 @Returns: 
 
 
-<!-- ##### USER_FUNCTION raptor_avltree_visit_function ##### -->
+<!-- ##### USER_FUNCTION raptor_avltree_visit_handler ##### -->
 <para>
 
 </para>

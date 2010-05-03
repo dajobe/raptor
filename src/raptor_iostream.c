@@ -457,7 +457,7 @@ static const raptor_iostream_handler raptor_iostream_write_string_handler = {
  * @world: raptor world
  * @string_p: pointer to location to hold string
  * @length_p: pointer to location to hold length of string (or NULL)
- * @malloc_handler: pointer to malloc to use to make string (or NULL)
+ * @malloc_handler: pointer to malloc() to use to make string (or NULL)
  *
  * Constructor - create a new iostream writing to a string.
  *
@@ -471,7 +471,7 @@ RAPTOR_EXTERN_C
 raptor_iostream*
 raptor_new_iostream_to_string(raptor_world *world,
                               void **string_p, size_t *length_p,
-                              void *(*malloc_handler)(size_t size))
+                              raptor_data_malloc_handler const malloc_handler)
 {
   raptor_iostream* iostr;
   struct raptor_write_string_iostream_context* con;

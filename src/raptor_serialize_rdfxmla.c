@@ -868,16 +868,16 @@ raptor_rdfxmla_serialize_init(raptor_serializer* serializer, const char *name)
   context->namespaces = raptor_new_sequence(NULL, NULL);
 
   context->subjects =
-    raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_subject_compare,
-		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
+    raptor_new_avltree((raptor_data_compare_handler)raptor_abbrev_subject_compare,
+		       (raptor_data_free_handler)raptor_free_abbrev_subject, 0);
 
   context->blanks =
-    raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_subject_compare,
-		       (raptor_data_free_function)raptor_free_abbrev_subject, 0);
+    raptor_new_avltree((raptor_data_compare_handler)raptor_abbrev_subject_compare,
+		       (raptor_data_free_handler)raptor_free_abbrev_subject, 0);
   
   context->nodes =
-    raptor_new_avltree((raptor_data_compare_function)raptor_abbrev_node_compare,
-                       (raptor_data_free_function)raptor_free_abbrev_node, 0);
+    raptor_new_avltree((raptor_data_compare_handler)raptor_abbrev_node_compare,
+                       (raptor_data_free_handler)raptor_free_abbrev_node, 0);
 
   type_term = raptor_term_copy(RAPTOR_RDF_type_term(serializer->world));
   context->rdf_type = raptor_new_abbrev_node(serializer->world, type_term);

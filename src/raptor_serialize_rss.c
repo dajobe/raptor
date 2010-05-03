@@ -195,16 +195,16 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_rss_common_init(serializer->world);
   raptor_rss_model_init(serializer->world, &rss_serializer->model);
 
-  rss_serializer->triples = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement, (raptor_data_print_handler*)raptor_statement_print);
+  rss_serializer->triples = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, (raptor_data_print_handler)raptor_statement_print);
 
-  rss_serializer->items = raptor_new_sequence((raptor_data_free_handler*)raptor_free_rss_item, (raptor_data_print_handler*)NULL);
+  rss_serializer->items = raptor_new_sequence((raptor_data_free_handler)raptor_free_rss_item, (raptor_data_print_handler)NULL);
 
-  rss_serializer->enclosures = raptor_new_sequence((raptor_data_free_handler*)raptor_free_rss_item, (raptor_data_print_handler*)NULL);
+  rss_serializer->enclosures = raptor_new_sequence((raptor_data_free_handler)raptor_free_rss_item, (raptor_data_print_handler)NULL);
 
-  rss_serializer->group_map = raptor_new_avltree((raptor_data_compare_function)raptor_rss_group_map_compare,
-                                                 (raptor_data_free_function)raptor_free_group_map, 0);
+  rss_serializer->group_map = raptor_new_avltree((raptor_data_compare_handler)raptor_rss_group_map_compare,
+                                                 (raptor_data_free_handler)raptor_free_group_map, 0);
 
-  rss_serializer->user_namespaces = raptor_new_sequence((raptor_data_free_handler*)raptor_free_namespace, NULL);
+  rss_serializer->user_namespaces = raptor_new_sequence((raptor_data_free_handler)raptor_free_namespace, NULL);
 
   rss_serializer->is_atom = !(strcmp(name,"atom"));
 
