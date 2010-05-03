@@ -962,7 +962,7 @@ void
 raptor_bad_string_print(const unsigned char *input, FILE *stream)
 {
   while(*input) {
-    char c=*input;
+    char c=(char)*input;
     if(isprint(c))
       fputc(c, stream);
     else
