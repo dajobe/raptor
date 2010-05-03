@@ -395,7 +395,7 @@
 1.4.21	type	raptor_identifier_type	-	1.9.0	type	raptor_term_type	-	-
 1.4.21	type	raptor_iostream_handler2	-	1.9.0	type	raptor_iostream_handler	-	-
 1.4.21	type	raptor_iostream_write_end_func	-	1.9.0	type	raptor_iostream_write_end_func	-	handler returns an int
-1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with raptor_world_flags
+1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with raptor_world_flag
 1.4.21	type	raptor_log_level	-	1.9.0	type	raptor_log_level	-	Added RAPTOR_LOG_LEVEL_TRACE, RAPTOR_LOG_LEVEL_DEBUG, RAPTOR_LOG_LEVEL_INFO. RAPTOR_LOG_LEVEL_WARNING renamed RAPTOR_LOG_LEVEL_WARN
 1.4.21	type	raptor_message_handler	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism.
 1.4.21	type	raptor_message_handler_closure	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism.
