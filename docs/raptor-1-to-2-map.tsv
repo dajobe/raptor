@@ -429,6 +429,7 @@
 1.4.21	type	raptor_uri_copy_func	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	-
 1.4.21	type	raptor_uri_handler	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_graph_mark_flags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_description	-	-
@@ -436,4 +437,3 @@
 1.4.21	type	-	-	1.9.0	type	raptor_term_type	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_term_value	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_type_q	-	-
-1.4.21	type	-	-	1.9.0	type	raptor_uri_source	-	-
