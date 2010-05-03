@@ -7,8 +7,8 @@
 1.4.21	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	1.9.0	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	-
 1.4.21	int	raptor_compare_strings	(const void *a, const void *b)	1.9.0	-	-	-	Trivial utility function removed.
 1.4.21	int	raptor_copy_identifier	(raptor_identifier *dest, raptor_identifier *src)	1.9.0	-	-	-	Use raptor_term_copy() with #raptor_term objects.
-1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-	-
-1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	-
+1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic raptor log mechanism.
+1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic raptor log mechanism.
 1.4.21	raptor_feature	raptor_feature_from_uri	(raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
 1.4.21	raptor_feature	raptor_feature_from_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
 1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	-	-	-	Use raptor_world_get_option_description() for the option and access the value_type field.
@@ -154,7 +154,7 @@
 1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, const unsigned int counter)	-
 1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
-1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	-
+1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	Use raptor_string_ntriples_write() with a raptor_iostream.
 1.4.21	void	raptor_print_statement	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)	-
 1.4.21	void	raptor_print_statement_as_ntriples	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
 1.4.21	void	raptor_print_statement_as_ntriples_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
@@ -266,14 +266,14 @@
 1.4.21	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	-
 1.4.21	int	raptor_uri_equals_v2	(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)	1.9.0	int	raptor_uri_equals	(raptor_uri* uri1, raptor_uri* uri2)	-
 1.4.21	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	1.9.0	unsigned char*	raptor_uri_filename_to_uri_string	(const char* filename)	-
-1.4.21	void	raptor_uri_get_handler	(const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
-1.4.21	void	raptor_uri_get_handler_v2	(raptor_world* world, const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	-
+1.4.21	void	raptor_uri_get_handler	(const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	void	raptor_uri_get_handler_v2	(raptor_world* world, const raptor_uri_handler **handler, void **context)	1.9.0	-	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	int	raptor_uri_is_file_uri	(const unsigned char* uri_string)	1.9.0	int	raptor_uri_uri_string_is_file_uri	(const unsigned char* uri_string)	-
 1.4.21	void	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
 1.4.21	void	raptor_uri_print_v2	(raptor_world* world, const raptor_uri* uri, FILE *stream)	1.9.0	int	raptor_uri_print	(const raptor_uri* uri, FILE *stream)	-
 1.4.21	void	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	1.9.0	size_t	raptor_uri_resolve_uri_reference	(const unsigned char* base_uri, const unsigned char* reference_uri, unsigned char* buffer, size_t length)	-
-1.4.21	void	raptor_uri_set_handler	(const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	-
-1.4.21	void	raptor_uri_set_handler_v2	(raptor_world* world, const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	-
+1.4.21	void	raptor_uri_set_handler	(const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	Entire URI implementation is internal and not replaceable.
+1.4.21	void	raptor_uri_set_handler_v2	(raptor_world* world, const raptor_uri_handler *handler, void *context)	1.9.0	-	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	-
 1.4.21	unsigned char*	raptor_uri_to_counted_string_v2	(raptor_world* world, raptor_uri *uri, size_t *len_p)	1.9.0	unsigned char*	raptor_uri_to_counted_string	(raptor_uri *uri, size_t *len_p)	-
 1.4.21	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	1.9.0	unsigned char*	raptor_uri_to_relative_counted_uri_string	(raptor_uri *base_uri, raptor_uri *reference_uri, size_t *length_p)	-
