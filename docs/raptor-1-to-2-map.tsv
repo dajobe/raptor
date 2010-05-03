@@ -373,6 +373,7 @@
 1.4.21	-	-	-	1.9.0	const char*	raptor_option_get_value_type_label	(const raptor_option_value_type type)	-
 1.4.21	-	-	-	1.9.0	raptor_uri*	raptor_parser_get_graph	(raptor_parser* rdf_parser)	-
 1.4.21	-	-	-	1.9.0	unsigned char*	raptor_parser_get_new_generated_id	(raptor_parser *rdf_parser, raptor_genid_type type)	-
+1.4.21	-	-	-	1.9.0	int	raptor_serializer_flush	(raptor_serializer *rdf_serializer)	-
 1.4.21	-	-	-	1.9.0	raptor_syntax_description*	raptor_serializer_get_description	(raptor_serializer* rdf_serializer)	-
 1.4.21	-	-	-	1.9.0	void	raptor_statement_init	(raptor_statement *statement, raptor_world *world)	-
 1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_counted_string	(raptor_term *term, size_t* len_p)	-
