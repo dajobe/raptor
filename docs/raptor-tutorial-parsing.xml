@@ -26,7 +26,7 @@ process.
 <programlisting>
   raptor_parser* rdf_parser;
 
-   rdf_parser = raptor_new_parser(world, "rdfxml");
+  rdf_parser = raptor_new_parser(world, "rdfxml");
 </programlisting>
 or the name can be discovered from an <emphasis>enumeration</emphasis>
 as discussed in <link linkend="tutorial-querying-functionality">Querying Functionality</link>
@@ -87,31 +87,43 @@ parser could be found, or the construction failed in another way.
 
 <para>There are several
 <emphasis> options</emphasis> that can be set on parsers.
-The exact list of options can be found via
+The exact list of options can be found at run time via the
 <link linkend="tutorial-querying-functionality">Querying Functionality</link>
 or in the API reference for 
-<link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>.
+<link linkend="raptor-option"><literal>raptor_option</literal></link>.
 </para>
 
 <para>Features are integer enumerations of the
  <link linkend="raptor-option"><type>raptor_option</type></link> enum and have
 typed values that are either integers, booleans or strings.
-The function that sets options is:
+The function that sets options is
+<link linkend="raptor-parser-set-option">raptor_parser_set_option()</link>
+used as follows:
 <programlisting>
-  /* Set a boolean or integer valued option */
+  /* Set a boolean or integer valued option to value 1 */
   raptor_parser_set_option(rdf_parser, option, NULL, 1);
 
-  /* Set a string valued option */
+  /* Set a string valued option to value "abc" */
   raptor_parser_set_option(rdf_parser, option, "abc", -1);
 </programlisting>
 </para>
 
 <para>
-There are also two corresponding functions for reading the values of parser
-options:
+There is a corresponding function for reading the values of parser
+option
 <link linkend="raptor-parser-get-option"><function>raptor_parser_get_option()</function></link>
-taken the option enumeration parameter and returning the boolean /
-integer or string value correspondingly.
+which takes the option enumeration parameter and returns the boolean /
+integer or string value correspondingly into the appropriate pointer
+argument.
+<programlisting>
+  /* Get a boolean or integer option value */
+  int int_var;
+  raptor_parser_get_option(rdf_parser, option, NULL, &amp;int_var);
+
+  /* Get a string option value */
+  char* string_var;
+  raptor_parser_get_option(rdf_parser, option, &amp;string_var, NULL);
+</programlisting>
 </para>
 
 </section>
@@ -144,14 +156,15 @@ have some uses if just counting triples or validating a syntax.
 
 
 <section id="tutorial-parser-set-error-warning-handlers">
-<title>Set log message handlers</title>
+<title>Set parsing log message handlers</title>
 
-<para>There are several other callback handlers that can be set
-on worlds.  These can be set any time before parsing is called.
-Errors and warnings from parsing can be returned with functions
-that all take a callback of type
+<para>Any time before parsing is called, a log handler can be set
+on the world object via the
+<link linkend="raptor-world-set-log-handler"><function>raptor_world_set_log_handler()</function></link>
+method to report errors and warnings from parsing.
+The method takes a user data argument plus a handler callback of type
 <link linkend="raptor-log-handler"><type>raptor_log_handler</type></link>
-and signature:
+with a signature that looks like this:
 <programlisting>
 void
 message_handler(void *user_data, raptor_log_message* message)
@@ -159,18 +172,14 @@ message_handler(void *user_data, raptor_log_message* message)
   /* do something with the message */
 }
 </programlisting>
-returning the user data given, associated location information,
-as a <link linkend="raptor-locator"><type>raptor_locator</type></link>,
-log level and the log message itself.  The <emphasis>locator</emphasis>
+The handler gets the user data pointer as well as a
+<link linkend="raptor-log-message"><type>raptor_log_handler</type></link>
+pointer that includes associated location information, such as the
+log level, 
+<link linkend="raptor-locator"><type>raptor_locator</type></link>,
+and the log message itself.  The <emphasis>locator</emphasis>
 structure contains full information on the details of where in the
 file or URI the message occurred.
-</para>
-
-<para>The log message handlers are all set with
-a single function that takes a handler as follows:
-<programlisting>
-  raptor_world_set_log_handler(world, user_data, log_handler);
-</programlisting>
 </para>
 
 </section>
@@ -202,7 +211,8 @@ to adjust the default algorithm for generated identifiers.
 <programlisting>
 unsigned char*
 generate_id_handler(void* user_data, raptor_genid_type type,
-                    unsigned char* user_id) {
+                    unsigned char* user_id)
+{
    /* return a new generated ID based on user_id (optional) */
 }
 </programlisting>
@@ -233,7 +243,8 @@ the namespace handler method.
 <para>The <emphasis>namespaces_handler</emphasis> takes the following signature:
 <programlisting>
 void
-namespaces_handler(void* user_data, raptor_namespace *nspace) {
+namespaces_handler(void* user_data, raptor_namespace *nspace)
+{
   /*  */
 }
 </programlisting>
@@ -317,7 +328,7 @@ The <emphasis>base_uri</emphasis> is optional (can be
 
 <para>Parsing can read from a C STDIO file handle:
 <programlisting>
-  stream=fopen(filename, "rb");
+  stream = fopen(filename, "rb");
   raptor_parser_parse_file_stream(rdf_parser, stream, filename, base_uri);
   fclose(stream);
 </programlisting>
@@ -435,7 +446,7 @@ parsing when operated by hand.
 void write_bytes_handler(raptor_www* www, void *user_data, 
                          const void *ptr, size_t size, size_t nmemb) {
 {
-  raptor_parser* rdf_parser=(raptor_parser*)user_data;
+  raptor_parser* rdf_parser = (raptor_parser*)user_data;
   raptor_parser_parse_chunk(rdf_parser, (unsigned char*)ptr, size*nmemb, 0);
 }
 
