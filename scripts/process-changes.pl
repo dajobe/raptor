@@ -25,6 +25,8 @@
 use strict;
 use File::Basename;
 use IO::File;
+use Getopt::Long;
+use Pod::Usage;
 
 our $program = basename $0;
 
@@ -301,15 +303,22 @@ EOT
 
 # main
 
-# Arguments
-die "USAGE: $program --docbook-xml DOCBOOK-XML PACKAGE API-TSV-FILE"
-  unless @ARGV == 4 && $ARGV[0] eq '--docbook-xml';
 my $docbook_xml_file = undef;
-if($ARGV[0] eq '--docbook-xml') {
-  shift(@ARGV);
-  $docbook_xml_file = shift(@ARGV);
-}
-our($package, $file)=@ARGV;
+my $usage = undef;
+
+GetOptions(
+  'docbook-xml=s' => \$docbook_xml_file,
+  'help|h|?'      => \$usage
+) || pod2usage(2);
+
+pod2usage("$program: No docbook XML output file given")
+  if !defined $docbook_xml_file;  
+
+pod2usage(-verbose => 2) 
+  if $usage;
+
+# Arguments
+our($package, $file) = @ARGV;
 
 
 # Read in data
@@ -468,3 +477,34 @@ print_end_chapter_as_docbook_xml($out_fh);
 $out_fh->close;
 
 exit 0;
+
+
+__END__
+
+=head1 NAME
+
+process-changes - turn changes TSV into files
+
+=head1 SYNOPSIS
+
+process-changes [options] PACKAGE-NAME TSV-FILE
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Give command help summary.
+
+=item B<--docbook-xml> DOCBOOK-XML
+
+Set the output docbook XML file
+
+=back
+
+=head1 DESCRIPTION
+
+Turn a package's changes TSV file into docbook XML.
+
+=cut
