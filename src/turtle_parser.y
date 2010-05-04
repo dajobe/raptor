@@ -389,7 +389,7 @@ objectList: objectList COMMA object
     $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement,
                              (raptor_data_print_handler)raptor_statement_print);
 #else
-    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);
@@ -473,7 +473,7 @@ itemList: itemList object
     $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement,
                              (raptor_data_print_handler)raptor_statement_print);
 #else
-    $$ = raptor_new_sequence((raptor_data_free_handler*)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);
