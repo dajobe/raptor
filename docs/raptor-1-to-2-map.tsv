@@ -152,7 +152,7 @@
 1.4.21	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	1.9.0	void	raptor_parser_set_uri_filter	(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data)	-
 1.4.21	int	raptor_parsers_enumerate	(const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, unsigned int counter)	-
 1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, const unsigned int counter)	-
-1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
+1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	int	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	Use raptor_string_ntriples_write() with a raptor_iostream.
 1.4.21	void	raptor_print_statement	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)	-
@@ -350,7 +350,7 @@
 1.4.21	-	-	-	1.9.0	void*	raptor_avltree_iterator_get	(raptor_avltree_iterator* iterator)	-
 1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_is_end	(raptor_avltree_iterator* iterator)	-
 1.4.21	-	-	-	1.9.0	int	raptor_avltree_iterator_next	(raptor_avltree_iterator* iterator)	-
-1.4.21	-	-	-	1.9.0	void	raptor_avltree_print	(raptor_avltree* tree, FILE* stream)	-
+1.4.21	-	-	-	1.9.0	int	raptor_avltree_print	(raptor_avltree* tree, FILE* stream)	-
 1.4.21	-	-	-	1.9.0	void*	raptor_avltree_remove	(raptor_avltree* tree, void* p_data)	-
 1.4.21	-	-	-	1.9.0	void*	raptor_avltree_search	(raptor_avltree* tree, const void* p_data)	-
 1.4.21	-	-	-	1.9.0	void	raptor_avltree_set_print_handler	(raptor_avltree* tree, raptor_data_print_handler print_handler)	-
