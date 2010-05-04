@@ -5,15 +5,13 @@
 
 <para>
 Raptor can be configured and compiled with support for different
-parsers and serializers.  Lists of the functionality built into the
-library can be interrogated by means of
-<emphasis>enumerate</emphasis> functions.  These take as input an
-<literal>int</literal> counter and return descriptions of the feature
-at that offset in the list.  The descriptions are returned stored in
-the variables pointed to by the reference arguments of the
-<literal>**</literal><emphasis>var</emphasis> form.
-The return value of the function is non-zero when the counter has
-gone too far.
+lists of parsers and serializers.  The list built into the
+library can be found by means of
+<emphasis>description</emphasis> functions.  These take as input an
+<literal>int</literal> counter and return descriptions of the object
+at that offset in the list.  The return value is a pointer to a
+shared, read-only description of the object, or NULL if the counter
+has gone too far into the list.
 </para>
 
 <variablelist>
@@ -43,7 +41,9 @@ gone too far.
 Call with the appropriate domains for the class such as
 <link linkend="RAPTOR-DOMAIN-PARSER:CAPS"><literal>RAPTOR_DOMAIN_PARSER</literal></link>,
 <link linkend="RAPTOR-DOMAIN-SERIALIZER:CAPS"><literal>RAPTOR_DOMAIN_SERIALIZER</literal></link>
- etc.
+ etc.  See the
+<link linkend="raptor-domain"><literal>raptor_domain</literal></link>
+description for the full list.
 </para>
 </listitem>
 </varlistentry>
@@ -66,6 +66,7 @@ is to use the mime_type parameter of the
 
     if(!sd)
       continue;
+
     /* do something with sd fields such as sd->names, sd->label */
   }
 </programlisting>
