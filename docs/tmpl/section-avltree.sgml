@@ -79,6 +79,7 @@ AVL Trees
 
 @tree: 
 @stream: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_avltree_remove ##### -->
