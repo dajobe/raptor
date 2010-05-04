@@ -412,7 +412,7 @@
 1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	Replaced by generic raptor log mechanism.
 1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use raptor_term
 1.4.21	type	raptor_statement_handler	-	1.9.0	type	raptor_statement_handler	-	added const
-1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	-
+1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	Fields changed to be a 4-tuple of raptor_term
 1.4.21	type	raptor_uri_as_counted_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_as_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_compare_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
