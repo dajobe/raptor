@@ -300,19 +300,57 @@ EOT
 }
 
 
+sub print_deletes_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($name,$note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|^(.*$name.*)\$|/\\* WARNING: $name - deleted. $note \\*/ \$1|g;\n};
+  }
+}
+
+
+sub print_renames_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($from, $to, $note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|$from\\(|$to\\(|g;\n};
+  }
+}
+
+
+sub print_changes_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($from, $to, $note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|^(.*)($from)(.*)\$|/\\* WARNING: $from. $note \\*/ \$\{1\}$to\$\{2\}|g;\n};
+  }
+}
+
+
 
 # main
 
 my $docbook_xml_file = undef;
+my $upgrade_script_file = undef;
 my $usage = undef;
 
 GetOptions(
   'docbook-xml=s'    => \$docbook_xml_file,
+  'upgrade-script=s' => \$upgrade_script_file,
   'help|h|?'         => \$usage
 ) || pod2usage(2);
-
-pod2usage("$program: No docbook XML output file given")
-  if !defined $docbook_xml_file;  
 
 pod2usage(-verbose => 2) 
   if $usage;
@@ -399,7 +437,9 @@ while(<IN>) {
 close(IN);
 
 
-# Write output
+
+
+# Write Docbook XML output
 
 if(defined $docbook_xml_file) {
   my $out_fh = new IO::File;
@@ -478,6 +518,34 @@ EOT
   $out_fh->close;
 }
 
+
+# Write Upgrade script output
+
+if(defined $upgrade_script_file) {
+  my $out_fh = new IO::File;
+  $out_fh->open(">$upgrade_script_file");
+
+  print $out_fh "#!/usr/bin/perl -pi~\n";
+
+  print $out_fh "# Perl script to upgrade $package $old_version to $new_version\n\n";
+
+  print_deletes_as_perl_script($out_fh, 'Deleted functions',
+			       (map { [ $_->[1], $_->[3] ] } @deleted_functions));
+
+  print_deletes_as_perl_script($out_fh, 'Deleted types',
+			       @deleted_types);
+
+  print_renames_as_perl_script($out_fh, 'Renamed functions',
+			       @renamed_functions);
+
+  print_changes_as_perl_script($out_fh, 'Changed functions',
+			       (map { [ $_->[1], $_->[4], $_->[6] ] } @changed_functions));
+
+  print_changes_as_perl_script($out_fh, 'Changed types',
+			       @changed_types);
+
+  $out_fh->close;
+}
 
 
 exit 0;
