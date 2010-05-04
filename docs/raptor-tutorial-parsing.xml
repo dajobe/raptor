@@ -93,10 +93,10 @@ or in the API reference for
 <link linkend="raptor-option"><literal>raptor_option</literal></link>.
 </para>
 
-<para>Features are integer enumerations of the
+<para>Options are integer enumerations of the
  <link linkend="raptor-option"><type>raptor_option</type></link> enum and have
-typed values that are either integers, booleans or strings.
-The function that sets options is
+typed values that are either booleans, integers or strings.
+The function that sets options for parsers is
 <link linkend="raptor-parser-set-option">raptor_parser_set_option()</link>
 used as follows:
 <programlisting>
@@ -411,9 +411,9 @@ three ways.
 </para>
 
 <section id="tutorial-filter-network-with-feature">
-<title>Filtering parser network requests with feature <link linkend="RAPTOR-OPTION-NO-NET:CAPS"><literal>RAPTOR_OPTION_NO_NET</literal></link></title>
+<title>Filtering parser network requests with option <link linkend="RAPTOR-OPTION-NO-NET:CAPS"><literal>RAPTOR_OPTION_NO_NET</literal></link></title>
 <para>
-The parser feature 
+The parser option
 <link linkend="RAPTOR-OPTION-NO-NET:CAPS"><literal>RAPTOR_OPTION_NO_NET</literal></link>
 can be set with
 <link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>
@@ -510,9 +510,9 @@ the <link linkend="tutorial-filter-network-www-uri-filter">previous section</lin
 
 
 <section id="tutorial-filter-network-parser-timeout">
-<title>Setting timeout for parser network requests with feature <link linkend="RAPTOR-OPTION-WWW-TIMEOUT:CAPS"><literal>RAPTOR_OPTION_WWW_TIMEOUT</literal></link></title>
+<title>Setting timeout for parser network requests with option <link linkend="RAPTOR-OPTION-WWW-TIMEOUT:CAPS"><literal>RAPTOR_OPTION_WWW_TIMEOUT</literal></link></title>
 
-<para>If the value of feature
+<para>If the value of option
 <link linkend="RAPTOR-OPTION-WWW-TIMEOUT:CAPS"><literal>RAPTOR_OPTION_WWW_TIMEOUT</literal></link>
 if set to a number &gt;0, it is used as the timeout in seconds
 for retrieving of URIs during parsing (primarily for GRDDL).
