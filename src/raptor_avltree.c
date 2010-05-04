@@ -1347,9 +1347,9 @@ raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
 /**
  * raptor_avltree_print:
  * @tree: AVL Tree
- * @stream: FILE to print out avltree 
+ * @stream: stream to print to
  *
- * Print the items in the tree in order (for debugging)
+ * Print the items in the tree in order to a stream (for debugging)
  */
 void
 raptor_avltree_print(raptor_avltree* tree, FILE* stream)
