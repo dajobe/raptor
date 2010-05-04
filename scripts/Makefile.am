@@ -23,7 +23,7 @@ EXTRA_DIST= \
 fix-bison \
 fix-flex \
 fix-groff-xhtml \
-format-changes.pl
+process-changes.pl
 
 CLEANFILES =
 
