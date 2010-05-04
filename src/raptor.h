@@ -993,7 +993,7 @@ raptor_uri* raptor_parser_get_graph(raptor_parser* rdf_parser);
 /* Locator Class */
 /* methods */
 RAPTOR_API
-void raptor_locator_print(raptor_locator* locator, FILE *stream);
+int raptor_locator_print(raptor_locator* locator, FILE *stream);
 RAPTOR_API
 int raptor_locator_format(char *buffer, size_t length, raptor_locator* locator);
 RAPTOR_API
