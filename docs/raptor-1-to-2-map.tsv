@@ -7,8 +7,8 @@
 1.4.21	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	1.9.0	void*	raptor_calloc_memory	(size_t nmemb, size_t size)	-
 1.4.21	int	raptor_compare_strings	(const void *a, const void *b)	1.9.0	-	-	-	Trivial utility function removed.
 1.4.21	int	raptor_copy_identifier	(raptor_identifier *dest, raptor_identifier *src)	1.9.0	-	-	-	Use raptor_term_copy() with #raptor_term objects.
-1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic #raptor_log mechanism.
-1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic #raptor_log mechanism.
+1.4.21	void	raptor_error_handlers_init	(raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic raptor log mechanism.
+1.4.21	void	raptor_error_handlers_init_v2	(raptor_world* world, raptor_error_handlers* error_handlers)	1.9.0	-	-	-	Replaced by generic raptor log mechanism.
 1.4.21	raptor_feature	raptor_feature_from_uri	(raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
 1.4.21	raptor_feature	raptor_feature_from_uri_v2	(raptor_world* world, raptor_uri *uri)	1.9.0	raptor_option	raptor_world_get_option_from_uri	(raptor_world* world, raptor_uri *uri)	-
 1.4.21	int	raptor_feature_value_type	(const raptor_feature feature)	1.9.0	-	-	-	Use raptor_world_get_option_description() for the option and access the value_type field.
@@ -387,7 +387,7 @@
 #
 # Types
 #
-1.4.21	type	raptor_error_handlers	-	1.9.0	type	-	-	Replaced by generic #raptor_log mechanism.
+1.4.21	type	raptor_error_handlers	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism.
 1.4.21	type	raptor_feature	-	1.9.0	type	raptor_option	-	And new option RAPTOR_OPTION_STRICT added.
 1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_graph_handler	-	1.9.0	type	raptor_graph_mark_handler	-	-
@@ -397,8 +397,8 @@
 1.4.21	type	raptor_iostream_write_end_func	-	1.9.0	type	raptor_iostream_write_end_func	-	handler returns an int
 1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with #raptor_world_flag
 1.4.21	type	raptor_log_level	-	1.9.0	type	raptor_log_level	-	Added RAPTOR_LOG_LEVEL_TRACE, RAPTOR_LOG_LEVEL_DEBUG, RAPTOR_LOG_LEVEL_INFO. RAPTOR_LOG_LEVEL_WARNING renamed RAPTOR_LOG_LEVEL_WARN
-1.4.21	type	raptor_message_handler	-	1.9.0	type	-	-	Replaced by generic #raptor_log mechanism.
-1.4.21	type	raptor_message_handler_closure	-	1.9.0	type	-	-	Replaced by generic #raptor_log mechanism.
+1.4.21	type	raptor_message_handler	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism.
+1.4.21	type	raptor_message_handler_closure	-	1.9.0	type	-	-	Replaced by generic raptor log mechanism.
 1.4.21	type	raptor_new_uri_for_rdf_concept_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_new_uri_from_uri_local_name_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_new_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
@@ -409,7 +409,7 @@
 1.4.21	type	raptor_sequence_free_handler_v2	-	1.9.0	type	raptor_data_context_free_handler	-	-
 1.4.21	type	raptor_sequence_print_handler	-	1.9.0	type	raptor_data_print_handler	-	-
 1.4.21	type	raptor_sequence_print_handler_v2	-	1.9.0	type	raptor_data_context_print_handler	-	-
-1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	Replaced by generic #raptor_log mechanism.
+1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	Replaced by generic raptor log mechanism.
 1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use raptor_term
 1.4.21	type	raptor_statement_handler	-	1.9.0	type	raptor_statement_handler	-	added const
 1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	-
