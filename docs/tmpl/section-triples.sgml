@@ -108,6 +108,26 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_term_compare ##### -->
+<para>
+
+</para>
+
+@t1: 
+@t2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_equals ##### -->
+<para>
+
+</para>
+
+@t1: 
+@t2: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_free_term ##### -->
 <para>
 
