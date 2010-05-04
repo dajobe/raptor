@@ -897,6 +897,10 @@ raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char
 RAPTOR_API
 raptor_term* raptor_term_copy(raptor_term* term);
 RAPTOR_API
+int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
+RAPTOR_API
+int raptor_term_equals(raptor_term* term1, raptor_term* term2);
+RAPTOR_API
 void raptor_free_term(raptor_term *term);
 
 RAPTOR_API
