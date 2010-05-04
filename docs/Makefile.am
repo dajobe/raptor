@@ -124,8 +124,8 @@ raptor-tutorial-parsing.xml: rdfcat.c
 
 raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
-raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(srcdir)/../scripts/format-changes.pl
-	$(PERL) $(srcdir)/../scripts/format-changes.pl --to-docbook-xml $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv > $@
+raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(srcdir)/../scripts/process-changes.pl
+	$(PERL) $(srcdir)/../scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
 raptor-formats.xml: $(top_builddir)/scripts/build-formats
 	$(top_builddir)/scripts/build-formats > $@
