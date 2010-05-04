@@ -104,7 +104,8 @@ man_MANS = libraptor2.3
 EXTRA_DIST+= \
 libraptor2.html \
 $(man_MANS) \
-version.xml.in
+version.xml.in \
+upgrade-script.pl
 
 
 if MAINTAINER_MODE
@@ -132,5 +133,8 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats
 
 $(top_builddir)/scripts/build-formats:
 	cd $(top_builddir)/scripts && $(MAKE) build-formats
+
+upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl
+	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
 endif
