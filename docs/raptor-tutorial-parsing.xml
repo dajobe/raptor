@@ -109,7 +109,7 @@ The function that sets options is:
 <para>
 There are also two corresponding functions for reading the values of parser
 options:
-<link linkend="raptor-parser-get-feature"><function>raptor_parser_get_option()</function></link>
+<link linkend="raptor-parser-get-option"><function>raptor_parser_get_option()</function></link>
 taken the option enumeration parameter and returning the boolean /
 integer or string value correspondingly.
 </para>
@@ -124,7 +124,7 @@ integer or string value correspondingly.
 returned and this is done by a callback function which is called
 with parameters of a user data pointer and the triple itself.
 The handler is set with
-<link linkend="raptor-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link>
+<link linkend="raptor-parser-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link>
 as follows:
 <programlisting>
   void
@@ -248,7 +248,7 @@ if the namespace is declared inside different XML sub-trees.
 <section id="tutorial-parse-strictness">
 <title>Set the parsing strictness</title>
 <para>
-<link linkend="raptor-set-parser-option"><function>raptor_set_parser_option()</function></link>
+<link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>
 with option
 <link linkend="RAPTOR-OPTION-STRICT:CAPS"><literal>RAPTOR_OPTION_STRICT</literal></link>
 allows setting of the parser strictness flag.  The default is lax parsing,
@@ -279,7 +279,7 @@ for a full discussion of the inputs to the guessing.
 
 
 <section id="parse-from-uri">
-<title>Parse the content from a URI (<link linkend="raptor-parse-uri"><function>raptor_parser_parse_uri()</function></link>)</title>
+<title>Parse the content from a URI (<link linkend="raptor-parser-parse-uri"><function>raptor_parser_parse_uri()</function></link>)</title>
 
 <para>The URI is resolved and the content read from it and passed to
 the parser:
@@ -294,7 +294,7 @@ The <emphasis>base_uri</emphasis> is optional (can be
 
 
 <section id="parse-from-www">
-<title>Parse the content of a URI using an existing WWW connection (<link linkend="raptor-parse-uri-with-connection"><function>raptor_parser_parse_uri_with_connection()</function></link>)</title>
+<title>Parse the content of a URI using an existing WWW connection (<link linkend="raptor-parser-parse-uri-with-connection"><function>raptor_parser_parse_uri_with_connection()</function></link>)</title>
 
 <para>The URI is resolved using an existing WWW connection (for
 example a libcurl CURL handle) to allow for any existing
@@ -313,7 +313,7 @@ The <emphasis>base_uri</emphasis> is optional (can be
 
 
 <section id="parse-from-filehandle">
-<title>Parse the content of a C <literal>FILE*</literal> (<link linkend="raptor-parse-file-stream"><function>raptor_parser_parse_file_stream()</function></link>)</title>
+<title>Parse the content of a C <literal>FILE*</literal> (<link linkend="raptor-parser-parse-file-stream"><function>raptor_parser_parse_file_stream()</function></link>)</title>
 
 <para>Parsing can read from a C STDIO file handle:
 <programlisting>
@@ -330,7 +330,7 @@ and if <literal>NULL</literal> will cause the parsing to fail.
 
 
 <section id="parse-from-file-uri">
-<title>Parse the content of a file URI (<link linkend="raptor-parse-file"><function>raptor_parser_parse_file()</function></link>)</title>
+<title>Parse the content of a file URI (<link linkend="raptor-parser-parse-file"><function>raptor_parser_parse_file()</function></link>)</title>
 
 <para>Parsing can read from a URI known to be a <literal>file:</literal> URI:
 <programlisting>
@@ -347,7 +347,7 @@ and if <literal>NULL</literal> will cause the parsing to fail.
 
 
 <section id="parse-from-chunks">
-<title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-start-parse"><function>raptor_parser_parse_start()</function></link> and <link linkend="raptor-parse-chunk"><function>raptor_parser_parse_chunk()</function></link>)</title>
+<title>Parse chunks of syntax content provided by the application  (<link linkend="raptor-parser-parse-start"><function>raptor_parser_parse_start()</function></link> and <link linkend="raptor-parser-parse-chunk"><function>raptor_parser_parse_chunk()</function></link>)</title>
 
 <para>
 <programlisting>
@@ -361,13 +361,13 @@ and if <literal>NULL</literal> will cause the parsing to fail.
   raptor_parser_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
 </programlisting>
 The <emphasis>base_uri</emphasis> argument to 
-<link linkend="raptor-start-parse"><function>raptor_parser_parse_start()</function></link>
+<link linkend="raptor-parser-parse-start"><function>raptor_parser_parse_start()</function></link>
 may be required by some parsers
 and if <literal>NULL</literal> will cause the parsing to fail.
 </para>
 
 <para>On the last
-<link linkend="raptor-parse-chunk"><function>raptor_parser_parse_chunk()</function></link>
+<link linkend="raptor-parser-parse-chunk"><function>raptor_parser_parse_chunk()</function></link>
 call, or after the loop is ended, the <literal>is_end</literal>
 parameter must be set to non-0.  Content can be passed with the
 final call.  If no content is present at the end (such as in
@@ -391,7 +391,7 @@ buffer_len or NULL buffer can be used.</para>
 <para>
 Parsing can cause network requests to be performed, especially
 if a URI is given as an argument such as with
-<link linkend="raptor-parse-uri"><function>raptor_parser_parse_uri()</function></link>
+<link linkend="raptor-parser-parse-uri"><function>raptor_parser_parse_uri()</function></link>
 however there may also be indirect requests such as with the
 GRDDL parser that retrieves URIs depending on the results of
 initial parse requests.  The URIs requested may not be wanted
@@ -533,7 +533,7 @@ via <link linkend="raptor-world-get-parser-description"><function>raptor_world_g
 for all parsers.
 </para>
 
-<para><link linkend="raptor-get-name"><function>raptor_parser_get_name()</function></link> returns the parser syntax name,
+<para><link linkend="raptor-parser-get-name"><function>raptor_parser_get_name()</function></link> returns the parser syntax name,
 <link linkend="raptor-parser-get-description"><function>raptor_parser_get_description()</function></link>
 returns more detailed description fields including the long label and
 mime_types for the parser with quality levels.
@@ -552,7 +552,7 @@ parser only.
 <title>Querying parser run-time information</title>
 
 <para>
-<link linkend="raptor-get-locator"><function>raptor_parser_get_locator()</function></link>
+<link linkend="raptor-parser-get-locator"><function>raptor_parser_get_locator()</function></link>
 returns the <link linkend="raptor-locator"><type>raptor_locator</type></link>
 for the current position in the input stream.  The <emphasis>locator</emphasis>
 structure contains full information on the details of where in the
@@ -565,7 +565,7 @@ file or URI the current parser has reached.
 <title>Aborting parsing</title>
 
 <para>
-<link linkend="raptor-parse-abort"><function>raptor_parser_parse_abort()</function></link>
+<link linkend="raptor-parser-parse-abort"><function>raptor_parser_parse_abort()</function></link>
 allows the current parsing to be aborted, at which point no further
 triples will be passed to callbacks and the parser will attempt to
 return control to the application.  This is most useful when called
