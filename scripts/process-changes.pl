@@ -334,7 +334,7 @@ sub print_changes_as_perl_script($$@) {
   for my $entry (@names) {
     my($from, $to, $note)=@$entry;
     $note ||= '';
-    print $out_fh qq{s|^(.*)($from)(.*)\$|/\\* WARNING: $from. $note \\*/ \$\{1\}$to\$\{2\}|g;\n};
+    print $out_fh qq{s|^(.*)($from)(.*)\$|/\\* WARNING: $from. $note \\*/ \$\{1\}$to\$\{3\}|g;\n};
   }
 }
 
