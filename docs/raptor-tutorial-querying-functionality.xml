@@ -17,82 +17,56 @@ gone too far.
 </para>
 
 <variablelist>
-<title>Listing Functionality with Enumeration</title>
-<varlistentry><term>List the parse syntaxes (parser names)</term>
+<title>Listing Functionality with Descriptions</title>
+<varlistentry><term>Get descriptons of the parser syntaxes</term>
 <listitem><programlisting>
-int
-raptor_parsers_enumerate(const unsigned int counter,
-                         const char **name, const char **label);
+  const raptor_syntax_description*
+  raptor_world_get_parser_description(raptor_world* world,
+                                      unsigned int counter);
 </programlisting></listitem>
 </varlistentry>
-<varlistentry><term>List the parse syntaxes
-(same as above but with more information)</term>
+<varlistentry><term>Get descriptions of the serializer syntaxes</term>
 <listitem><programlisting>
-int
-raptor_syntaxes_enumerate(const unsigned int counter,
-                          const char **name,
-                          const char **label, 
-                          const char **mime_type,
-                          const unsigned char **uri_string);
+  const raptor_syntax_description*
+  raptor_world_get_serializer_description(raptor_world* world,
+                                          unsigned int counter);
 </programlisting></listitem>
 </varlistentry>
-<varlistentry><term>List the serializer syntaxes (serializer names)</term>
+<varlistentry><term>Get descriptions of options</term>
 <listitem><programlisting>
-int
-raptor_serializers_enumerate(const unsigned int counter,
-                             const char **name,
-                             const char **label,
-                             const char **mime_type,
-                             const unsigned char **uri_string);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the Parser features</term>
-<listitem><programlisting>
-int
-raptor_features_enumerate(const raptor_feature feature,
-                          const char **name, raptor_uri **uri,
-                          const char **label);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the Serializer features</term>
-<listitem><programlisting>
-int
-raptor_serializer_features_enumerate(const raptor_feature feature,
-                                     const char **name,
-                                     raptor_uri **uri,
-                                     const char **label);
-</programlisting></listitem>
-</varlistentry>
-<varlistentry><term>List the XML Writer features</term>
-<listitem><programlisting>
-int
-raptor_xml_writer_features_enumerate(const raptor_feature feature,
-                                     const char **name,
-                                     raptor_uri **uri,
-                                     const char **label);
-</programlisting></listitem>
+  raptor_option_description*
+  raptor_world_get_option_description(raptor_world* world,
+                                      const raptor_domain domain,
+                                      const raptor_option option);
+</programlisting>
+<para>
+Call with the appropriate domains for the class such as
+<link linkend="RAPTOR-DOMAIN-PARSER:CAPS"><literal>RAPTOR_DOMAIN_PARSER</literal></link>,
+<link linkend="RAPTOR-DOMAIN-SERIALIZER:CAPS"><literal>RAPTOR_DOMAIN_SERIALIZER</literal></link>
+ etc.
+</para>
+</listitem>
 </varlistentry>
 </variablelist>
 
-<para>These functions can be called directly after
-<link linkend="raptor-init"><function>raptor_init()</function></link>
-has been called so can be used to find name parameters for creating
-parser and serializer instances.  This is one way to find a parser
-(name) by it's MIME Type, the other is to use the mime_type parameter
-of the
+<para>These functions can be called directly after creating a
+raptor world object with
+<link linkend="raptor-new-world"><function>raptor_new_world()</function></link>.
+This is one way to find a parser (name) by it's MIME Type, the other
+is to use the mime_type parameter of the
 <link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>.</para>
 
-<example id="raptor-example-list-all-parser-features">
-<title>List all features of parsers with an enumerate function</title>
+<example id="raptor-example-list-all-parser-options">
+<title>List all options of parsers using descriptions</title>
 <programlisting>
-  int i;
-  for(i=0; i &lt; RAPTOR_FEATURE_LAST; i++) {
-    const char *name;
-    raptor_uri *uri;
-    const char *label;
-    if(raptor_features_enumerate((raptor_feature)i, &amp;name, &amp;uri, &amp;label))
+  unsigned int i;
+  for(i = 0; i &lt; RAPTOR_FEATURE_LAST; i++) {
+    const raptor_syntax_description*
+    sd = raptor_world_get_parser_description(world, i);
+
+    if(!sd)
       continue;
-    /* do something with name, uri and label */
+    /* do something with sd fields such as sd->names, sd->label */
   }
 </programlisting>
 <para>There are more examples of this usage in the source for the

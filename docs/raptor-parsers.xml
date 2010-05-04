@@ -7,17 +7,15 @@
 <title>Introduction</title>
 
 <para>This section describes the parsers that can be compiled into
-Raptor and their features.  The exact parsers supported may vary
+Raptor and their options.  The exact parsers supported may vary
 by different builds of raptor and can be queried at run-time by
 use of the 
-<link linkend="raptor-parsers-enumerate"><function>raptor_parsers_enumerate</function></link>
-and
-<link linkend="raptor-syntaxes-enumerate"><function>raptor_syntaxes_enumerate</function></link>
-functions</para>
+<link linkend="raptor-world-get-parser-description"><function>raptor_world_get_parser_description</function></link>
+function</para>
 
-<para>The optional features that may be set on parsers can also
-be queried at run-time iwth the 
-<link linkend="raptor-features-enumerate"><function>raptor_features_enumerate</function></link>
+<para>The options that may be set on parsers can also
+be queried at run-time with the 
+<link linkend="raptor-world-get-option-description"><function>raptor_world_get_option_description</function></link>
 function.</para>
 
 </section>
@@ -63,8 +61,8 @@ This uses
 internally.
 </para>
 
-<para>If the value of feature
-<link linkend="RAPTOR-FEATURE-WWW-TIMEOUT:CAPS"><literal>RAPTOR_FEATURE_WWW_TIMEOUT</literal></link>
+<para>If the value of option
+<link linkend="RAPTOR-OPTION-WWW-TIMEOUT:CAPS"><literal>RAPTOR_OPTION_WWW_TIMEOUT</literal></link>
 if set to a number &gt;0, it is used as the timeout in seconds
 for retrieving of URIs during GRDDL processing.
 This uses
@@ -73,32 +71,38 @@ internally.
 </para>
 
 <para>The hardcoded support for hcard and hcalendar
-microformats can be disabled by setting parser feature
-<link linkend="RAPTOR-FEATURE-MICROFORMATS:CAPS"><literal>RAPTOR_FEATURE_MICROFORMATS</literal></link>
+microformats can be disabled by setting parser option
+<link linkend="RAPTOR-OPTION-MICROFORMATS:CAPS"><literal>RAPTOR_OPTION_MICROFORMATS</literal></link>
 to 0
 or using
-<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
-with a value of 1.
+<link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>
+with option
+<link linkend="RAPTOR-OPTION-STRICT:CAPS"><literal>RAPTOR_OPTION_STRICT</literal></link>
+and a boolean value of 1.
 </para>
 
 <para>The GRDDL parser by default will try an XML parser on the
 content followed by a lax HTML parser.  This can be disabled by
-setting parser feature
-<link linkend="RAPTOR-FEATURE-HTML-TAG-SOUP:CAPS"><literal>RAPTOR_FEATURE_HTML_TAG_SOUP</literal></link>
+setting parser option
+<link linkend="RAPTOR-OPTION-HTML-TAG-SOUP:CAPS"><literal>RAPTOR_OPTION_HTML_TAG_SOUP</literal></link>
 to 0
 or using 
-<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
-with a value of 1.
+<link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>
+with option
+<link linkend="RAPTOR-OPTION-STRICT:CAPS"><literal>RAPTOR_OPTION_STRICT</literal></link>
+and a boolean value of 1.
 </para>
 
 <para>The GRDDL parser by default will try to look for an HTML
 &lt;link&gt; tag that points to RDF/XML.  This can be disabled by
-setting parser feature
-<link linkend="RAPTOR-FEATURE-HTML-LINK:CAPS"><literal>RAPTOR_FEATURE_HTML_LINK</literal></link>
+setting parser option
+<link linkend="RAPTOR-OPTION-HTML-LINK:CAPS"><literal>RAPTOR_OPTION_HTML_LINK</literal></link>
 to 0
-or using 
-<link linkend="raptor-set-parser-strict"><function>raptor_set_parser_strict()</function></link>
-with a value of 1.
+or using
+<link linkend="raptor-parser-set-option"><function>raptor_parser_set_option()</function></link>
+with option
+<link linkend="RAPTOR-OPTION-STRICT:CAPS"><literal>RAPTOR_OPTION_STRICT</literal></link>
+and a boolean value of 1.
 </para>
 
 </section>
