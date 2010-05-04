@@ -378,7 +378,9 @@
 1.4.21	-	-	-	1.9.0	void	raptor_statement_init	(raptor_statement *statement, raptor_world *world)	-
 1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_counted_string	(raptor_term *term, size_t* len_p)	-
 1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_string	(raptor_term *term)	-
+1.4.21	-	-	-	1.9.0	int	raptor_term_compare	(const raptor_term *t1, const raptor_term *t2)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_term_copy	(raptor_term* term)	-
+1.4.21	-	-	-	1.9.0	int	raptor_term_equals	(raptor_term* term1, raptor_term* term2)	-
 1.4.21	-	-	-	1.9.0	int	raptor_term_ntriples_write	(const raptor_term *term, raptor_iostream* iostr)	-
 1.4.21	-	-	-	1.9.0	raptor_world*	raptor_uri_get_world	(raptor_uri *uri)	-
 1.4.21	-	-	-	1.9.0	raptor_option_description*	raptor_world_get_option_description	(raptor_world* world, const raptor_domain domain, const raptor_option option)	-
