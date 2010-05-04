@@ -307,8 +307,8 @@ my $docbook_xml_file = undef;
 my $usage = undef;
 
 GetOptions(
-  'docbook-xml=s' => \$docbook_xml_file,
-  'help|h|?'      => \$usage
+  'docbook-xml=s'    => \$docbook_xml_file,
+  'help|h|?'         => \$usage
 ) || pod2usage(2);
 
 pod2usage("$program: No docbook XML output file given")
@@ -401,23 +401,24 @@ close(IN);
 
 # Write output
 
-my $out_fh = new IO::File;
-$out_fh->open(">$docbook_xml_file");
+if(defined $docbook_xml_file) {
+  my $out_fh = new IO::File;
+  $out_fh->open(">$docbook_xml_file");
 
-our $intro_title = "API Changes";
-our $intro_para = <<"EOT";
+  our $intro_title = "API Changes";
+  our $intro_para = <<"EOT";
 This chapter describes the API changes between $package
 $old_version and $new_version.
 EOT
-print_start_chapter_as_docbook_xml($out_fh,
-				   'raptor-changes',
-				   $intro_title,
-				   $intro_para);
+  print_start_chapter_as_docbook_xml($out_fh,
+				     'raptor-changes',
+				     $intro_title,
+				     $intro_para);
 
-print_start_section_as_docbook_xml($out_fh,
-				   'raptor-changes-intro',
-				   "Introduction");
-print $out_fh <<'EOT';
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-intro',
+				     "Introduction");
+  print $out_fh <<'EOT';
 <para>
 The following sections describe the function changes in the API:
 additions, deletions, renames (retaining the same number of
@@ -426,55 +427,58 @@ complex changes.  Changes to typedefs and structs are not described here.
 </para>
 EOT
 
-print_end_section_as_docbook_xml($out_fh);
+  print_end_section_as_docbook_xml($out_fh);
 
 
-print_start_section_as_docbook_xml($out_fh,
-				   'raptor-changes-new',
-				   "New functions and types in $package $new_version");
-print_functions_list_as_docbook_xml($out_fh,
-				   undef, 1, 1, @new_functions);
-print_types_list_as_docbook_xml($out_fh,
-				   undef, 1, 1, @new_types);
-print_end_section_as_docbook_xml($out_fh);
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-new',
+				     "New functions and types in $package $new_version");
+  print_functions_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @new_functions);
+  print_types_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @new_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml($out_fh,
-				   'raptor-changes-deleted',
-				   "Deleted functions and types in $package $new_version");
-print_functions_list_as_docbook_xml($out_fh,
-				   undef, 0, 0, @deleted_functions);
-print_types_list_as_docbook_xml($out_fh,
-				   undef, 1, 1, @deleted_types);
-print_end_section_as_docbook_xml($out_fh);
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-deleted',
+				     "Deleted functions and types in $package $new_version");
+  print_functions_list_as_docbook_xml($out_fh,
+				     undef, 0, 0, @deleted_functions);
+  print_types_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @deleted_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml($out_fh,
-				   'raptor-changes-renamed',
-				   "Renamed functions in $package $new_version");
-print_renamed_functions_as_docbook_xml($out_fh,
-				       undef,
-				       "$old_version function",
-				       "$new_version function",
-				       @renamed_functions);
-print_end_section_as_docbook_xml($out_fh);
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-renamed',
+				     "Renamed functions in $package $new_version");
+  print_renamed_functions_as_docbook_xml($out_fh,
+					 undef,
+					 "$old_version function",
+					 "$new_version function",
+					 @renamed_functions);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml($out_fh,
-				   'raptor-changes-changed',
-				   "Changed functions and types in $package $new_version");
-print_changed_functions_as_docbook_xml($out_fh,
-				       'Functions', 
-				       "$old_version function",
-				       "$new_version function",
-				       @changed_functions);
-print_changed_types_as_docbook_xml($out_fh,
-				   'Types', 
-				   "$old_version type",
-				   "$new_version type",
-				   @changed_types);
-print_end_section_as_docbook_xml($out_fh);
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-changed',
+				     "Changed functions and types in $package $new_version");
+  print_changed_functions_as_docbook_xml($out_fh,
+					 'Functions', 
+					 "$old_version function",
+					 "$new_version function",
+					 @changed_functions);
+  print_changed_types_as_docbook_xml($out_fh,
+				     'Types', 
+				     "$old_version type",
+				     "$new_version type",
+				     @changed_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_end_chapter_as_docbook_xml($out_fh);
+  print_end_chapter_as_docbook_xml($out_fh);
 
-$out_fh->close;
+  $out_fh->close;
+}
+
+
 
 exit 0;
 
