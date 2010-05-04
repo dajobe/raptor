@@ -750,6 +750,16 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   return t;
 }
 
+
+/**
+ * raptor_term_equals:
+ * @t1: first term
+ * @t2: second term
+ *
+ * Compare a pair of #raptor_term for equality
+ *
+ * Return value: non-0 if the terms are equal
+ */
 int
 raptor_term_equals(raptor_term* t1, raptor_term* t2) 
 {
