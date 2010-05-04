@@ -761,7 +761,7 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
  * Return value: non-0 if the terms are equal
  */
 int
-raptor_term_equals(raptor_term* t1, raptor_term* t2) 
+raptor_term_equals(raptor_term* t1, raptor_term* t2)
 {
   int d = 0;
   
