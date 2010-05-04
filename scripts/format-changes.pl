@@ -91,6 +91,15 @@ sub format_type_name_as_docbook_xml($) {
   return qq{<link linkend="$escaped_name"><type>$name</type></link>};
 }
 
+
+sub format_enum_name_as_docbook_xml($) {
+  my($name)=@_;
+  
+  my $escaped_name = $name; $escaped_name =~ s/_/-/g;
+  return qq{<link linkend="$escaped_name:CAPS"><literal>$name</literal></link>};
+}
+
+
 sub format_fn_sig($$$$$) {
   my($format_name, $show_sig, $fn_return, $fn_name, $fn_args)=@_;
   my $formatted_name = $format_name ? format_function_name_as_docbook_xml($fn_name) : $fn_name;
@@ -107,6 +116,7 @@ sub format_notes($$) {
   }
 
   $notes =~ s{#((?:raptor|librdf|rasqal)\w+)}{format_type_name_as_docbook_xml($1)}ge;
+  $notes =~ s{#?((?:RAPTOR|LIBRDF|RASQAL)_\w+)}{format_enum_name_as_docbook_xml($1)}ge;
   $notes =~ s{((?:raptor|librdf|rasqal)_\w+?)\(}{format_function_name_as_docbook_xml($1)."("}ge;
 
   return $is_inline ? "- " . $notes : $notes;
