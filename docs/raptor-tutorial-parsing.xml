@@ -130,27 +130,29 @@ argument.
 
 
 <section id="tutorial-parser-set-triple-handler">
-<title>Set RDF triple callback handler</title>
+<title>Set RDF statement callback handler</title>
 
 <para>The main reason to parse a syntax is to get RDF triples
-returned and this is done by a callback function which is called
-with parameters of a user data pointer and the triple itself.
-The handler is set with
+returned and these are return by a user-defined handler function
+which is called with parameters of a user data pointer and a
+raptor statement, which includes the triple terms plus the
+optional named graph term.  The handler is set with
 <link linkend="raptor-parser-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link>
 as follows:
 <programlisting>
   void
-  triples_handler(void* user_data, const raptor_statement* triple) 
+  statement_handler(void* user_data, const raptor_statement* statement)
   {
-    /* do something with the triple */
+    /* do something with the statement */
   }
 
-  raptor_parser_set_statement_handler(rdf_parser, user_data, triples_handler);
+  raptor_parser_set_statement_handler(rdf_parser, user_data, statements_handler);
 </programlisting>
 </para>
 
-<para>It is optional to set a handler function for triples, which does
-have some uses if just counting triples or validating a syntax.
+<para>Setting a stateemnt handler function is optional since parsing
+without returning statements is a valid use, such as when parsing in
+order to validate a syntax.
 </para>
 </section>
 
