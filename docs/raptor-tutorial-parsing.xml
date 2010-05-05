@@ -614,7 +614,7 @@ To tidy up, delete the parser object as follows:
 
 <para>Compile it like this:
 <screen>
-$ gcc -o rdfprint rdfprint.c `raptor-config --cflags` `raptor-config --libs`
+$ gcc -o rdfprint rdfprint.c `pkg-config raptor2 --cflags --libs`
 </screen>
 and run it on an RDF file as:
 <screen>
