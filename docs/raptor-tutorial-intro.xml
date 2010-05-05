@@ -3,18 +3,16 @@
 <chapter id="tutorial-initialising-finishing">
 <title>Initialising and Finishing using the Library</title>
 
-<para>Raptor has a single initialising function and a single
-terminating function.  The initialising function must be called
-before any other Raptor API functions are called:
+<para>Raptor requires initialising a raptor_world object
+before using any of the classes.  The constructor to make the object
+is raptor_new_world(), the destructor raptor_free_world().
 <programlisting>
-  raptor_init();
+  raptor_world* world;
+  world = raptor_new_world();
   ...
-  raptor_finish();
+  raptor_free_world(world);
 </programlisting>
 </para>
-
-<para>It is safe to call these functions more than once.  But don't
-do that!</para>
 
 </chapter>
 

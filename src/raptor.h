@@ -897,6 +897,10 @@ raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char
 RAPTOR_API
 raptor_term* raptor_term_copy(raptor_term* term);
 RAPTOR_API
+int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
+RAPTOR_API
+int raptor_term_equals(raptor_term* t1, raptor_term* t2);
+RAPTOR_API
 void raptor_free_term(raptor_term *term);
 
 RAPTOR_API
@@ -989,7 +993,7 @@ raptor_uri* raptor_parser_get_graph(raptor_parser* rdf_parser);
 /* Locator Class */
 /* methods */
 RAPTOR_API
-void raptor_locator_print(raptor_locator* locator, FILE *stream);
+int raptor_locator_print(raptor_locator* locator, FILE *stream);
 RAPTOR_API
 int raptor_locator_format(char *buffer, size_t length, raptor_locator* locator);
 RAPTOR_API
@@ -1846,7 +1850,7 @@ int raptor_avltree_size(raptor_avltree* tree);
 RAPTOR_API
 void raptor_avltree_set_print_handler(raptor_avltree* tree, raptor_data_print_handler print_handler);
 RAPTOR_API
-void raptor_avltree_print(raptor_avltree* tree, FILE* stream);
+int raptor_avltree_print(raptor_avltree* tree, FILE* stream);
 
 RAPTOR_API
 raptor_avltree_iterator* raptor_new_avltree_iterator(raptor_avltree* tree, void* range,  raptor_data_free_handler range_free_handler, int direction);

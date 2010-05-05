@@ -55,24 +55,27 @@
  *
  * Print a raptor locator to a stream.
  * 
+ * Return value: non-0 on failure
  **/
-void
+int
 raptor_locator_print(raptor_locator* locator, FILE *stream)
 {
   if(!locator)
-    return;
+    return 1;
 
   if(locator->uri)
     fprintf(stream, "URI %s", raptor_uri_as_string(locator->uri));
   else if(locator->file)
     fprintf(stream, "file %s", locator->file);
   else
-    return;
+    return 0;
   if(locator->line >= 0) {
     fprintf(stream, ":%d", locator->line);
     if(locator->column >= 0)
       fprintf(stream, " column %d", locator->column);
   }
+
+  return 0;
 }
 
 

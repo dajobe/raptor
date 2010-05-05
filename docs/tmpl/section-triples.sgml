@@ -6,11 +6,11 @@ RDF Triples
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-Representation of RDF triples inside Raptor.  They are a sequence
-of three #raptor_identifier which cover the RDF terms of
-URI (%RAPTOR_IDENTIFIER_TYPE_RESOURCE),
-Literal (%RAPTOR_IDENTIFIER_TYPE_LITERAL) and
-Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
+Representation of RDF statements inside Raptor.  They are
+a 3 or 4-tuple of #raptor_term which cover the RDF terms of
+URI (%RAPTOR_TERM_TYPE_URI),
+Literal (%RAPTOR_TERM_TYPE_LITERAL) and
+Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -105,6 +105,26 @@ Blank Node (%RAPTOR_IDENTIFIER_TYPE_ANONYMOUS).
 </para>
 
 @term: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_compare ##### -->
+<para>
+
+</para>
+
+@t1: 
+@t2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_equals ##### -->
+<para>
+
+</para>
+
+@t1: 
+@t2: 
 @Returns: 
 
 

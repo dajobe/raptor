@@ -3,7 +3,7 @@
 # Format changes TSV file
 #
 # USAGE:
-#   format-changes.pl --to-docbook-xml raptor-changes.tsv > ...
+#   format-changes.pl --docbook-xml DOCBOOK-XML raptor-changes.tsv
 #
 # Copyright (C) 2010, David Beckett http://www.dajobe.org/
 #
@@ -24,15 +24,18 @@
 
 use strict;
 use File::Basename;
+use IO::File;
+use Getopt::Long;
+use Pod::Usage;
 
 our $program = basename $0;
 
 our $nbsp = '&#160;';
 
-sub print_start_chapter_as_docbook_xml($$$) {
-  my($id, $title, $intro_para)=@_;
+sub print_start_chapter_as_docbook_xml($$$$) {
+  my($fh, $id, $title, $intro_para)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN" 
                "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
 <chapter id="$id">
@@ -43,9 +46,10 @@ EOT
 
 }
 
-sub print_end_chapter_as_docbook_xml()
+sub print_end_chapter_as_docbook_xml($)
 {
-  print <<"EOT";
+  my($fh)=@_;
+  print $fh <<"EOT";
 
 </chapter>
 EOT
@@ -53,23 +57,23 @@ EOT
 
 
 
-sub print_docbook_xml($$@) {
-  my($id, $title, @list)=@_;
+sub print_docbook_xml($$$@) {
+  my($fh, $id, $title, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <section id="$id">
 <title>$title</title>
 EOT
 
-  print <<"EOT";
+  print $fh <<"EOT";
 </section>
 EOT
 }
 
-sub print_start_section_as_docbook_xml($$) {
-  my($id, $title)=@_;
+sub print_start_section_as_docbook_xml($$$) {
+  my($fh, $id, $title)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <section id="$id">
 <title>$title</title>
 
@@ -122,15 +126,15 @@ sub format_notes($$) {
   return $is_inline ? "- " . $notes : $notes;
 }
 
-sub print_functions_list_as_docbook_xml($$$@) {
-  my($title, $format_name, $show_sig, @list)=@_;
+sub print_functions_list_as_docbook_xml($$$$@) {
+  my($fh, $title, $format_name, $show_sig, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
   <itemizedlist>
     <title>Functions</title>
 EOT
 
-  print  "  <caption>$title</caption>\n"
+  print $fh "  <caption>$title</caption>\n"
     if defined $title;
 
   for my $item (@list) {
@@ -138,9 +142,9 @@ EOT
     my $formatted_fn = format_fn_sig($format_name, $show_sig, 
 				     $fn_return, $fn_name, $fn_args);
     $notes = format_notes(1, $notes);
-    print "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
+    print $fh "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
   }
-  print <<"EOT";
+  print $fh <<"EOT";
   </itemizedlist>
 EOT
 }
@@ -152,40 +156,40 @@ sub format_type_sig($$) {
 }
 
 
-sub print_types_list_as_docbook_xml($$$@) {
-  my($title, $format_name, $show_sig, @list)=@_;
+sub print_types_list_as_docbook_xml($$$$@) {
+  my($fh, $title, $format_name, $show_sig, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
   <itemizedlist>
     <title>Types</title>
 EOT
 
-  print  "  <caption>$title</caption>\n"
+  print $fh "  <caption>$title</caption>\n"
     if defined $title;
 
   for my $item (@list) {
     my($type_name, $notes) = @$item;
     my $formatted_fn = format_type_sig($format_name, $type_name);
     $notes = format_notes(1, $notes);
-    print "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
+    print $fh "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
   }
-  print <<"EOT";
+  print $fh <<"EOT";
   </itemizedlist>
 EOT
 }
 
 
-sub print_renamed_functions_as_docbook_xml($$$@) {
-  my($title, $old_function_header, $new_function_header, @list)=@_;
+sub print_renamed_functions_as_docbook_xml($$$$@) {
+  my($fh, $title, $old_function_header, $new_function_header, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <table border='1'>
 EOT
 
-  print  "  <caption>$title</caption>\n"
+  print $fh  "  <caption>$title</caption>\n"
     if defined $title;
 
-  print <<"EOT";
+  print $fh <<"EOT";
   <thead>
   </thead>
   <tbody>
@@ -200,26 +204,26 @@ EOT
     my $formatted_name = format_function_name_as_docbook_xml($to);
 
     $notes = format_notes(0, $notes);
-    print "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
+    print $fh "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
   }
-  print <<"EOT";
+  print $fh <<"EOT";
   </tbody>
 </table>
 EOT
 
 }
 
-sub print_changed_functions_as_docbook_xml($$$@) {
-  my($title, $old_function_header, $new_function_header, @list)=@_;
+sub print_changed_functions_as_docbook_xml($$$$@) {
+  my($fh, $title, $old_function_header, $new_function_header, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <table border='1'>
 EOT
 
-  print  "  <caption>$title</caption>\n"
+  print $fh "  <caption>$title</caption>\n"
     if defined $title;
 
-  print <<"EOT";
+  print $fh <<"EOT";
   <thead>
   </thead>
   <tbody>
@@ -240,35 +244,36 @@ EOT
 					 $new_fn_return, $new_fn_name, $new_fn_args);
 
     $notes = format_notes(0, $notes);
-    print "    <tr valign='top'>\n      <td>$old_formatted_fn</td> <td>$new_formatted_fn</td> <td>$notes</td>\n    </tr>\n";
+    print $fh "    <tr valign='top'>\n      <td>$old_formatted_fn</td> <td>$new_formatted_fn</td> <td>$notes</td>\n    </tr>\n";
   }
-  print <<"EOT";
+  print $fh <<"EOT";
   </tbody>
 </table>
 EOT
 
 }
 
-sub print_end_section_as_docbook_xml()
+sub print_end_section_as_docbook_xml($)
 {
-  print <<"EOT";
+  my($fh)=@_;
+  print $fh <<"EOT";
 
 </section>
 EOT
 }
 
 
-sub print_changed_types_as_docbook_xml($$$@) {
-  my($title, $old_type_header, $new_type_header, @list)=@_;
+sub print_changed_types_as_docbook_xml($$$$@) {
+  my($fh, $title, $old_type_header, $new_type_header, @list)=@_;
 
-  print <<"EOT";
+  print $fh <<"EOT";
 <table border='1'>
 EOT
 
-  print  "  <caption>$title</caption>\n"
+  print $fh "  <caption>$title</caption>\n"
     if defined $title;
 
-  print <<"EOT";
+  print $fh <<"EOT";
   <thead>
   </thead>
   <tbody>
@@ -285,9 +290,9 @@ EOT
     my $new_formatted_type = format_type_sig(1, $new_type_name);
 
     $notes = format_notes(0, $notes);
-    print "    <tr valign='top'>\n      <td>$old_formatted_type</td> <td>$new_formatted_type</td> <td>$notes</td>\n    </tr>\n";
+    print $fh "    <tr valign='top'>\n      <td>$old_formatted_type</td> <td>$new_formatted_type</td> <td>$notes</td>\n    </tr>\n";
   }
-  print <<"EOT";
+  print $fh <<"EOT";
   </tbody>
 </table>
 EOT
@@ -295,13 +300,63 @@ EOT
 }
 
 
+sub print_deletes_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($name,$note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|^(.*$name.*)\$|/\\* WARNING: $name - deleted. $note \\*/ \$1|g;\n};
+  }
+}
+
+
+sub print_renames_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($from, $to, $note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|$from\\(|$to\\(|g;\n};
+  }
+}
+
+
+sub print_changes_as_perl_script($$@) {
+  my($out_fh, $title, @names) = @_;
+
+  print $out_fh "\n# $title\n";
+
+  for my $entry (@names) {
+    my($from, $to, $note)=@$entry;
+    $note ||= '';
+    print $out_fh qq{s|^(.*)($from)(.*)\$|/\\* WARNING: $from. $note \\*/ \$\{1\}$to\$\{3\}|g;\n};
+  }
+}
+
+
 
 # main
 
+my $docbook_xml_file = undef;
+my $upgrade_script_file = undef;
+my $usage = undef;
+
+GetOptions(
+  'docbook-xml=s'    => \$docbook_xml_file,
+  'upgrade-script=s' => \$upgrade_script_file,
+  'help|h|?'         => \$usage
+) || pod2usage(2);
+
+pod2usage(-verbose => 2) 
+  if $usage;
+
 # Arguments
-die "USAGE: $program --to-docbook-xml PACKAGE API-TSV-FILE"
-  unless @ARGV == 3 && $ARGV[0] eq '--to-docbook-xml';
-our($dummy, $package, $file)=@ARGV;
+our($package, $file) = @ARGV;
 
 
 # Read in data
@@ -382,20 +437,28 @@ while(<IN>) {
 close(IN);
 
 
-# Write output
 
-our $intro_title = "API Changes";
-our $intro_para = <<"EOT";
+
+# Write Docbook XML output
+
+if(defined $docbook_xml_file) {
+  my $out_fh = new IO::File;
+  $out_fh->open(">$docbook_xml_file");
+
+  our $intro_title = "API Changes";
+  our $intro_para = <<"EOT";
 This chapter describes the API changes between $package
 $old_version and $new_version.
 EOT
-print_start_chapter_as_docbook_xml('raptor-changes',
-				   $intro_title,
-				   $intro_para);
+  print_start_chapter_as_docbook_xml($out_fh,
+				     'raptor-changes',
+				     $intro_title,
+				     $intro_para);
 
-print_start_section_as_docbook_xml('raptor-changes-intro',
-				   "Introduction");
-print <<'EOT';
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-intro',
+				     "Introduction");
+  print $out_fh <<'EOT';
 <para>
 The following sections describe the function changes in the API:
 additions, deletions, renames (retaining the same number of
@@ -404,41 +467,116 @@ complex changes.  Changes to typedefs and structs are not described here.
 </para>
 EOT
 
-print_end_section_as_docbook_xml();
+  print_end_section_as_docbook_xml($out_fh);
 
 
-print_start_section_as_docbook_xml('raptor-changes-new',
-				   "New functions and types in $package $new_version");
-print_functions_list_as_docbook_xml(undef, 1, 1, @new_functions);
-print_types_list_as_docbook_xml(undef, 1, 1, @new_types);
-print_end_section_as_docbook_xml();
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-new',
+				     "New functions and types in $package $new_version");
+  print_functions_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @new_functions);
+  print_types_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @new_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml('raptor-changes-deleted',
-				   "Deleted functions and types in $package $new_version");
-print_functions_list_as_docbook_xml(undef, 0, 0, @deleted_functions);
-print_types_list_as_docbook_xml(undef, 1, 1, @deleted_types);
-print_end_section_as_docbook_xml();
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-deleted',
+				     "Deleted functions and types in $package $new_version");
+  print_functions_list_as_docbook_xml($out_fh,
+				     undef, 0, 0, @deleted_functions);
+  print_types_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @deleted_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml('raptor-changes-renamed',
-				   "Renamed functions in $package $new_version");
-print_renamed_functions_as_docbook_xml(undef,
-				       "$old_version function",
-				       "$new_version function",
-				       @renamed_functions);
-print_end_section_as_docbook_xml();
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-renamed',
+				     "Renamed functions in $package $new_version");
+  print_renamed_functions_as_docbook_xml($out_fh,
+					 undef,
+					 "$old_version function",
+					 "$new_version function",
+					 @renamed_functions);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_start_section_as_docbook_xml('raptor-changes-changed',
-				   "Changed functions and types in $package $new_version");
-print_changed_functions_as_docbook_xml('Functions', 
-				       "$old_version function",
-				       "$new_version function",
-				       @changed_functions);
-print_changed_types_as_docbook_xml('Types', 
-				   "$old_version type",
-				   "$new_version type",
-				   @changed_types);
-print_end_section_as_docbook_xml();
+  print_start_section_as_docbook_xml($out_fh,
+				     'raptor-changes-changed',
+				     "Changed functions and types in $package $new_version");
+  print_changed_functions_as_docbook_xml($out_fh,
+					 'Functions', 
+					 "$old_version function",
+					 "$new_version function",
+					 @changed_functions);
+  print_changed_types_as_docbook_xml($out_fh,
+				     'Types', 
+				     "$old_version type",
+				     "$new_version type",
+				     @changed_types);
+  print_end_section_as_docbook_xml($out_fh);
 
-print_end_chapter_as_docbook_xml();
+  print_end_chapter_as_docbook_xml($out_fh);
+
+  $out_fh->close;
+}
+
+
+# Write Upgrade script output
+
+if(defined $upgrade_script_file) {
+  my $out_fh = new IO::File;
+  $out_fh->open(">$upgrade_script_file");
+
+  print $out_fh "#!/usr/bin/perl -pi~\n";
+
+  print $out_fh "# Perl script to upgrade $package $old_version to $new_version\n\n";
+
+  print_deletes_as_perl_script($out_fh, 'Deleted functions',
+			       (map { [ $_->[1], $_->[3] ] } @deleted_functions));
+
+  print_deletes_as_perl_script($out_fh, 'Deleted types',
+			       @deleted_types);
+
+  print_renames_as_perl_script($out_fh, 'Renamed functions',
+			       @renamed_functions);
+
+  print_changes_as_perl_script($out_fh, 'Changed functions',
+			       (map { [ $_->[1], $_->[4], $_->[6] ] } @changed_functions));
+
+  print_changes_as_perl_script($out_fh, 'Changed types',
+			       @changed_types);
+
+  $out_fh->close;
+}
+
 
 exit 0;
+
+
+__END__
+
+=head1 NAME
+
+process-changes - turn changes TSV into files
+
+=head1 SYNOPSIS
+
+process-changes [options] PACKAGE-NAME TSV-FILE
+
+=head1 OPTIONS
+
+=over 8
+
+=item B<--help>
+
+Give command help summary.
+
+=item B<--docbook-xml> DOCBOOK-XML
+
+Set the output docbook XML file
+
+=back
+
+=head1 DESCRIPTION
+
+Turn a package's changes TSV file into docbook XML.
+
+=cut

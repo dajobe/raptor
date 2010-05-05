@@ -1347,11 +1347,13 @@ raptor_avltree_iterator_get(raptor_avltree_iterator* iterator)
 /**
  * raptor_avltree_print:
  * @tree: AVL Tree
- * @stream: FILE to print out avltree 
+ * @stream: stream to print to
  *
- * Print the items in the tree in order (for debugging)
+ * Print the items in the tree in order to a stream (for debugging)
+ * 
+ * Return value: non-0 on failure
  */
-void
+int
 raptor_avltree_print(raptor_avltree* tree, FILE* stream)
 {
   int i;
@@ -1372,6 +1374,8 @@ raptor_avltree_print(raptor_avltree* tree, FILE* stream)
       fprintf(stream, "Data Node %p\n", data);
   }
   /*assert(i == tree->size);*/
+
+  return 0;
 }
 
 

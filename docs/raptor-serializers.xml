@@ -7,14 +7,14 @@
 <title>Introduction</title>
 
 <para>This section describes the serializers that can be compiled into
-Raptor and their features.  The exact serializers supported may vary
+Raptor and their options.  The exact serializers supported may vary
 by different builds of raptor and can be queried at run-time by use of the
-<link linkend="raptor-serializers-enumerate"><function>raptor_serializers_enumerate</function></link>
+<link linkend="raptor-world-get-serializer-description"><function>raptor_world_get_serializer_description</function></link>
 function</para>
 
-<para>The optional features that may be set on parsers can also
-be queried at run-time iwth the 
-<link linkend="raptor-serializer-features-enumerate"><function>raptor_serializer_features_enumerate</function></link>
+<para>The optional options that may be set on parsers can also
+be queried at run-time with the 
+<link linkend="raptor-world-get-option-description"><function>raptor_world_get_option_description</function></link>
 function.</para>
 
 </section>
@@ -32,7 +32,7 @@ to Atom 1.0 plus optionally writes extra RDF triples.
 The extra RDF triples are written into an at:md metadata block, along
 with at:feedmap and at:entrymap elements to describe the RSS 1.0
 predicate to Atom 1.0 elements mappings for the feed and entry blocks
-respecively.  The extra triples are enabled when serializer feature
+respecively.  The extra triples are enabled when serializer option
 'rssTriples' is set to string value 'atom-triples'.
 </para>
 
@@ -128,7 +128,7 @@ format for describing a syndication feed of items.
 </para>
 
 <para>By default this only serializes the RDF triples that describe
-the RSS channel and items found.  If serialiser feature 'rssTriples'
+the RSS channel and items found.  If serialiser option 'rssTriples'
 is set to value 'rdf-xml' then any additional triples found will
 be included in the channel or item output.
 </para>
@@ -142,19 +142,19 @@ be included in the channel or item output.
 <ulink url="http://www.graphviz.org/">GraphViz</ulink> DOT format.
 </para>
 
-<para>This serializer has a set of associated serializer features
+<para>This serializer has a set of associated serializer options
 that may be set to customise the output colors using
-<link linkend="raptor-serializer-set-feature"><function>raptor_serializer_set_feature()</function></link>
-with the appropriate feature name and value as given below.
+<link linkend="raptor-serializer-set-option"><function>raptor_serializer_set_option()</function></link>
+with the appropriate option name and value as given below.
 </para>
 
 <programlisting>
-RAPTOR_FEATURE_RESOURCE_BORDER 	Border color of resource nodes
-RAPTOR_FEATURE_LITERAL_BORDER 	Border color of literal nodes
-RAPTOR_FEATURE_BNODE_BORDER 	Border color of blank nodes
-RAPTOR_FEATURE_RESOURCE_FILL 	Fill color of resource nodes
-RAPTOR_FEATURE_LITERAL_FILL 	Fill color of literal nodes
-RAPTOR_FEATURE_BNODE_FILL 	Fill color of blank nodes
+RAPTOR_OPTION_RESOURCE_BORDER 	Border color of resource nodes
+RAPTOR_OPTION_LITERAL_BORDER 	Border color of literal nodes
+RAPTOR_OPTION_BNODE_BORDER 	Border color of blank nodes
+RAPTOR_OPTION_RESOURCE_FILL 	Fill color of resource nodes
+RAPTOR_OPTION_LITERAL_FILL 	Fill color of literal nodes
+RAPTOR_OPTION_BNODE_FILL 	Fill color of blank nodes
 </programlisting>
 
 

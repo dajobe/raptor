@@ -1142,7 +1142,7 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
  * parts. The @prefix parameter is copied to generate an ID.
  *
  * For finer control of the generated identifiers, use
- * raptor_parser_set_default_generate_id_handler().
+ * raptor_parser_set_generate_id_handler().
  *
  * If @prefix is NULL, the default prefix is used (currently "genid")
  * If @base is less than 1, it is initialised to 1.
@@ -1150,7 +1150,7 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
  **/
 void
 raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
-                                          char *prefix, int base)
+                                                 char *prefix, int base)
 {
   char *prefix_copy = NULL;
   size_t length = 0;
