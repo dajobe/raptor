@@ -57,17 +57,17 @@ is to use the mime_type parameter of the
 <link linkend="raptor-new-parser-for-content"><function>raptor_new_parser_for_content()</function></link>.</para>
 
 <example id="raptor-example-list-all-parser-options">
-<title>List all options of parsers using descriptions</title>
+<title>List all parser options using option description</title>
 <programlisting>
   unsigned int i;
-  for(i = 0; i &lt; RAPTOR_OPTION_LAST; i++) {
-    const raptor_syntax_description*
-    sd = raptor_world_get_parser_description(world, i);
+  for(i = 0; i &lt; raptor_option_get_count(); i++) {
+    raptor_option_description* od;
 
-    if(!sd)
-      continue;
+    od = raptor_world_get_option_description(world, RAPTOR_DOMAIN_PARSER, i);
 
-    /* do something with sd fields such as sd->names, sd->label */
+    if(od) {
+      /* do something with od fields such as od->name, od->label */
+    }
   }
 </programlisting>
 <para>There are more examples of this usage in the source for the
