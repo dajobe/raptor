@@ -8,7 +8,7 @@
 
 <para>
 The typical sequence of operations to parse is to create a parser
-object, set various callback and features, start the parsing, send
+object, set various handlers and options, start the parsing, send
 some syntax content to the parser object, finish the parsing and
 destroy the parser object.</para>
 
@@ -368,7 +368,9 @@ and if <literal>NULL</literal> will cause the parsing to fail.
   while(/* not finished getting content */) {
     unsigned char *buffer;
     size_t buffer_len;
-    /* obtain some syntax content in buffer of size buffer_len bytes */
+
+    /* ... obtain some syntax content in buffer of size buffer_len bytes ... */
+
     raptor_parser_parse_chunk(rdf_parser, buffer, buffer_len, 0);
   }
   raptor_parser_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
