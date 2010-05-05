@@ -60,7 +60,7 @@ is to use the mime_type parameter of the
 <title>List all options of parsers using descriptions</title>
 <programlisting>
   unsigned int i;
-  for(i = 0; i &lt; RAPTOR_FEATURE_LAST; i++) {
+  for(i = 0; i &lt; RAPTOR_OPTION_LAST; i++) {
     const raptor_syntax_description*
     sd = raptor_world_get_parser_description(world, i);
 
