@@ -8,7 +8,7 @@
 
 <para>
 The typical sequence of operations to parse is to create a parser
-object, set various callback and features, start the parsing, send
+object, set various handlers and options, start the parsing, send
 some syntax content to the parser object, finish the parsing and
 destroy the parser object.</para>
 
@@ -130,27 +130,29 @@ argument.
 
 
 <section id="tutorial-parser-set-triple-handler">
-<title>Set RDF triple callback handler</title>
+<title>Set RDF statement callback handler</title>
 
 <para>The main reason to parse a syntax is to get RDF triples
-returned and this is done by a callback function which is called
-with parameters of a user data pointer and the triple itself.
-The handler is set with
+returned and these are return by a user-defined handler function
+which is called with parameters of a user data pointer and a
+raptor statement, which includes the triple terms plus the
+optional named graph term.  The handler is set with
 <link linkend="raptor-parser-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link>
 as follows:
 <programlisting>
   void
-  triples_handler(void* user_data, const raptor_statement* triple) 
+  statement_handler(void* user_data, const raptor_statement* statement)
   {
-    /* do something with the triple */
+    /* do something with the statement */
   }
 
-  raptor_parser_set_statement_handler(rdf_parser, user_data, triples_handler);
+  raptor_parser_set_statement_handler(rdf_parser, user_data, statements_handler);
 </programlisting>
 </para>
 
-<para>It is optional to set a handler function for triples, which does
-have some uses if just counting triples or validating a syntax.
+<para>Setting a stateemnt handler function is optional since parsing
+without returning statements is a valid use, such as when parsing in
+order to validate a syntax.
 </para>
 </section>
 
@@ -366,7 +368,9 @@ and if <literal>NULL</literal> will cause the parsing to fail.
   while(/* not finished getting content */) {
     unsigned char *buffer;
     size_t buffer_len;
-    /* obtain some syntax content in buffer of size buffer_len bytes */
+
+    /* ... obtain some syntax content in buffer of size buffer_len bytes ... */
+
     raptor_parser_parse_chunk(rdf_parser, buffer, buffer_len, 0);
   }
   raptor_parser_parse_chunk(rdf_parser, NULL, 0, 1); /* no data and is_end = 1 */
@@ -610,7 +614,7 @@ To tidy up, delete the parser object as follows:
 
 <para>Compile it like this:
 <screen>
-$ gcc -o rdfprint rdfprint.c `raptor-config --cflags` `raptor-config --libs`
+$ gcc -o rdfprint rdfprint.c `pkg-config raptor2 --cflags --libs`
 </screen>
 and run it on an RDF file as:
 <screen>

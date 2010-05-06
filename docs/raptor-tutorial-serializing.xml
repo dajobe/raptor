@@ -111,6 +111,8 @@ like this:
     raptor_serializer_set_namespace_from_namespace(rdf_serializer, nspace);
   }
 
+  ...
+
   rdf_parser = raptor_new_parser(world, syntax_name);
   raptor_parser_set_namespace_handler(rdf_parser, rdf_serializer, relay_namespaces);
 </programlisting>
@@ -164,7 +166,7 @@ which can be entirely user-constructed.</para>
 (using <link linkend="raptor-new-iostream-to-filename"><function>raptor_new_iostream_to_filename()</function></link> internally)
 and uses asf base URI, the file's URI.
 <programlisting>
-  const char *filename="raptor.rdf";
+  const char *filename = "raptor.rdf";
   raptor_serializer_start_to_filename(rdf_serializer, filename);
 </programlisting>
 </para>
@@ -183,6 +185,7 @@ takes an optional base URI but may be required by some serializers.
   raptor_uri* uri = raptor_new_uri(world, "http://example.org/base");
   void *string;  /* destination for string */
   size_t length; /* length of constructed string */
+  raptor_serializer* rdf_serializer = /* serializer created by some means */ ;
 
   raptor_serializer_start_to_string(rdf_serializer, uri,
                                     &amp;string, &amp;length);
@@ -201,6 +204,8 @@ takes an optional base URI but may be required by some serializers.
 <programlisting>
   raptor_uri* uri = raptor_new_uri(world, "http://example.org/base");
   FILE* fh = fopen("raptor.rdf", "wb");
+  raptor_serializer* rdf_serializer = /* serializer created by some means */ ;
+
   raptor_serializer_start_to_file_handle(rdf_serializer, uri, fh);
 </programlisting>
 </para>
@@ -219,6 +224,7 @@ to write to it after the serializing is finished (after
 <programlisting>
   raptor_uri* uri = raptor_new_uri(world, "http://example.org/base");
   raptor_iostream* iostream = /* iostream initialized by some means */ ;
+  raptor_serializer* rdf_serializer = /* serializer created by some means */ ;
 
   raptor_serializer_start_to_iostream(rdf_serializer, uri, iostream);
 
@@ -242,9 +248,10 @@ to write to it after the serializing is finished (after
 
 
 <section id="tutorial-serializer-get-triples">
-<title>Get or construct RDF Triples</title>
+<title>Get or construct RDF Statements (Triples)</title>
 <para>
 An <link linkend="raptor-statement"><type>raptor_statement</type></link>
+containing the triple terms and optional graph term
 can be made either by receiving them from a
 <link linkend="raptor-parser"><type>raptor_parser</type></link>
 via parsing or can be constructed by hand.</para>
@@ -274,7 +281,7 @@ of the statement is typically a URI or blank node.
 
 <para>Compile it like this:
 <screen>
-$ gcc -o rdfserialize rdfserialize.c `raptor-config --cflags` `raptor-config --libs`
+$ gcc -o rdfserialize rdfserialize.c `pkg-config raptor2 --cflags --libs`
 </screen>
 and run it with an optional base URI argument
 <screen>
@@ -365,7 +372,7 @@ To tidy up, delete the serializer object as follows:
 
 <para>Compile it like this:
 <screen>
-$ gcc -o rdfcat rdfcat.c `raptor-config --cflags` `raptor-config --libs`
+$ gcc -o rdfcat rdfcat.c `pkg-config raptor2 --cflags --libs`
 </screen>
 and run it on an RDF file as:
 <screen>
