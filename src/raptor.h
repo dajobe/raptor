@@ -285,18 +285,21 @@ typedef struct {
 /**
  * raptor_term_type:
  * @RAPTOR_TERM_TYPE_URI: RDF URI
- * @RAPTOR_TERM_TYPE_BLANK: RDF blank node
  * @RAPTOR_TERM_TYPE_LITERAL: RDF literal
+ * @RAPTOR_TERM_TYPE_BLANK: RDF blank node
  * @RAPTOR_TERM_TYPE_UNKNOWN: Internal
  *
  * Type of term in a #raptor_statement
  *
+ * Node type 3 is unused but exists to preserve numeric compatibility
+ * with librdf_node_type values.
  */
 typedef enum {
-  RAPTOR_TERM_TYPE_UNKNOWN,
-  RAPTOR_TERM_TYPE_URI,
-  RAPTOR_TERM_TYPE_BLANK,
-  RAPTOR_TERM_TYPE_LITERAL
+  RAPTOR_TERM_TYPE_UNKNOWN = 0,
+  RAPTOR_TERM_TYPE_URI     = 1,
+  RAPTOR_TERM_TYPE_LITERAL = 2,
+  /* unused type 3 */
+  RAPTOR_TERM_TYPE_BLANK   = 4
 } raptor_term_type;
 
 
