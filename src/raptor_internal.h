@@ -1219,7 +1219,6 @@ raptor_abbrev_subject* raptor_abbrev_subject_lookup(raptor_avltree* nodes, rapto
 int raptor_abbrev_subject_valid(raptor_abbrev_subject *subject);
 int raptor_abbrev_subject_invalidate(raptor_abbrev_subject *subject);
 
-unsigned char *raptor_unique_id(unsigned char *base);
 
 /* avltree */
 #ifdef RAPTOR_DEBUG
