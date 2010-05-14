@@ -530,38 +530,6 @@ raptor_print_subject(raptor_abbrev_subject* subject)
 /* helper functions */
 
 /**
- * raptor_unique_id:
- * @base: base ID
- * 
- * INTERNAL - Generate a node ID for serializing
- *
- * Raptor doesn't check that blank IDs it generates are unique from
- * any specified by rdf:nodeID. Here, we need to emit IDs that are
- * different from the ones the parser generates so that there is no
- * collision. For now, just prefix a '_' to the parser generated
- * name.
- * 
- * Return value: new node ID
- **/
-unsigned char*
-raptor_unique_id(unsigned char *base) 
-{
-  const char *prefix = "_";
-  int prefix_len = strlen(prefix);
-  int base_len = strlen((const char*)base);
-  int len = prefix_len + base_len + 1;
-  unsigned char *unique_id;
-
-  unique_id= (unsigned char *)RAPTOR_MALLOC(cstring, len);
-  strncpy((char*)unique_id, prefix, prefix_len);
-  strncpy((char*)unique_id+prefix_len, (char *)base, base_len);
-  unique_id[len-1]='\0';
-    
-  return unique_id;
-}
-
-
-/**
  * raptor_new_qname_from_resource:
  * @namespaces: sequence of namespaces (corresponding to nstack)
  * @nstack: #raptor_namespace_stack to use/update

@@ -82,8 +82,6 @@
 
 static void raptor_grddl_filter_triples(void *user_data, raptor_statement *statement);
 
-static void raptor_libxslt_error_common(raptor_parser* rdf_parser, const char *msg, va_list args, const char *prefix) RAPTOR_PRINTF_FORMAT(2, 0);
-
 static void raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 0);
 
 
@@ -176,42 +174,36 @@ typedef struct raptor_grddl_parser_context_s raptor_grddl_parser_context;
 
 
 static void
-raptor_libxslt_error_common(raptor_parser* rdf_parser,
-                            const char *msg, va_list args, 
-                            const char *prefix)
-{
-  int prefix_length = strlen(prefix);
-  int length;
-  char *nmsg;
-
-  length = prefix_length + strlen(msg) + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
-  if(nmsg) {
-    strcpy(nmsg, prefix);
-    strcpy(nmsg + prefix_length, msg);
-    if(nmsg[length-1] == '\n')
-      nmsg[length-1] = '\0';
-  }
-
-  raptor_parser_error_varargs(rdf_parser, 
-                              nmsg ? nmsg : msg,
-                              args);
-  if(nmsg)
-    RAPTOR_FREE(cstring,nmsg);
-}
-
-
-static void
 raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
 {
   raptor_parser* rdf_parser = (raptor_parser*)user_data;
   va_list arguments;
+  size_t msg_len;
+  int length;
+  char *nmsg;
 
   if(!msg || *msg == '\n')
     return;
 
   va_start(arguments, msg);
-  raptor_libxslt_error_common(rdf_parser, msg, arguments, "libxslt error: ");
+
+  msg_len = strlen(msg);
+
+#define PREFIX "libxslt error: "
+#define PREFIX_LENGTH 15
+  length = PREFIX_LENGTH + msg_len + 1;
+  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  if(nmsg) {
+    strncpy(nmsg, PREFIX, PREFIX_LENGTH);
+    strncpy(nmsg + PREFIX_LENGTH, msg, msg_len + 1);
+    if(nmsg[length-1] == '\n')
+      nmsg[length-1] = '\0';
+  }
+
+  raptor_parser_error_varargs(rdf_parser, nmsg ? nmsg : msg, arguments);
+  if(nmsg)
+    RAPTOR_FREE(cstring, nmsg);
+
   va_end(arguments);
 }
 
