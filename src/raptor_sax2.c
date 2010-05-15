@@ -630,8 +630,8 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     error_buffer = (char*)RAPTOR_MALLOC(cstring, 
                                       ERROR_PREFIX_LEN + error_length+1);
     if(error_buffer) {
-      strncpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
-      strncpy(error_buffer+ERROR_PREFIX_LEN, error_message, error_length+1);
+      memcpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
+      memcpy(error_buffer + ERROR_PREFIX_LEN, error_message, error_length + 1);
 
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
                        sax2->locator, error_buffer);

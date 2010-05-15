@@ -512,7 +512,7 @@ raptor_object_options_copy_state(raptor_object_options* to,
         size_t len = strlen(string);
         to->options[i].string = (char*)RAPTOR_MALLOC(cstring, len + 1);
         if(to->options[i].string)
-          strncpy((char*)to->options[i].string, string, len + 1);
+          memcpy(to->options[i].string, string, len + 1);
         else
           rc = 1;
       }
@@ -643,7 +643,7 @@ raptor_object_options_set_option(raptor_object_options *options,
       return 1;
   
     if(len)
-      strncpy(string_copy, (const char*)string, len);
+      memcpy(string_copy, string, len);
     string_copy[len] = '\0';
     
     options->options[(int)option].string = string_copy;

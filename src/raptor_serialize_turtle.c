@@ -670,7 +670,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
       subject_str[0]='_';
       subject_str[1]=':';
-      strncpy((char*)&subject_str[2], (const char*)genid, len+1);
+      memcpy(&subject_str[2], genid, len + 1);
       raptor_turtle_writer_raw(turtle_writer, subject_str);
       RAPTOR_FREE(cstring, subject_str);
     }

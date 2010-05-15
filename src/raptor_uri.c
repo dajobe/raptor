@@ -825,7 +825,7 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
       len = ud->fragment_len;
       *fragment_p = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
       if(*fragment_p)
-        strncpy((char*)*fragment_p, (const char*)ud->fragment, len + 1);
+        memcpy(*fragment_p, ud->fragment, len + 1);
     } else
       *fragment_p = NULL;
   }
@@ -1424,8 +1424,7 @@ raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
 {
   /* 55 = strlen(rdf namespace URI) + _ + 10-digit number + \0 */
   unsigned char uri_string[55];
-  strncpy((char*)uri_string, (const char*)raptor_rdf_namespace_uri, 
-          raptor_rdf_namespace_uri_len);
+  memcpy(uri_string, raptor_rdf_namespace_uri, raptor_rdf_namespace_uri_len);
   sprintf((char*)uri_string+raptor_rdf_namespace_uri_len, "_%d",
           ordinal);
   return raptor_new_uri(world, uri_string);

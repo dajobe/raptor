@@ -366,7 +366,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
     if(!block->strings[offset])
       return 1;
 
-    strncpy(block->strings[offset], string, len+1);
+    memcpy(block->strings[offset], string, len+1);
   } else {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
@@ -626,7 +626,7 @@ raptor_rss_start_element_handler(void *user_data,
                 rdf_parser->failed = 1;
                 return;
               }
-              strncpy((char*)field->value, (char*)attrValue, len+1);
+              memcpy(field->value, attrValue, len + 1);
             }
           }
         }
@@ -797,7 +797,7 @@ raptor_rss_end_element_handler(void *user_data,
           return;
         }
         
-        strncpy((char*)field->value, (const char*)cdata, cdata_len);
+        memcpy(field->value, cdata, cdata_len);
         field->value[cdata_len] = '\0';
       }
 
@@ -950,7 +950,7 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
     if(!field->value)
       return 1;
     
-    strncpy((char*)field->value, (const char*)value, len + 1);
+    memcpy(field->value, value, len + 1);
     raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
 
     return 0;
@@ -1489,8 +1489,7 @@ raptor_rss_copy_field(raptor_rss_parser* rss_parser,
       if(!field->value)
         return 1;
       
-      strncpy((char*)field->value,
-              (const char*)item->fields[from_field]->value, len + 1);
+      memcpy(field->value, item->fields[from_field]->value, len + 1);
     }
   }
 

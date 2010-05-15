@@ -236,7 +236,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
   if(!item)
     return 1;
 
-  strncpy(item, (const char*)id, id_len+1);
+  memcpy(item, id, id_len + 1);
 
   return raptor_avltree_add(base->tree, item);
 }

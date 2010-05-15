@@ -194,8 +194,8 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
   length = PREFIX_LENGTH + msg_len + 1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
-    strncpy(nmsg, PREFIX, PREFIX_LENGTH);
-    strncpy(nmsg + PREFIX_LENGTH, msg, msg_len + 1);
+    memcpy(nmsg, PREFIX, PREFIX_LENGTH);
+    memcpy(nmsg + PREFIX_LENGTH, msg, msg_len + 1);
     if(nmsg[length-1] == '\n')
       nmsg[length-1] = '\0';
   }
@@ -713,7 +713,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    */
   quoted_base_uri = (char*)RAPTOR_MALLOC(cstring, base_uri_len + 3);
   quoted_base_uri[0] = '\'';
-  strncpy(quoted_base_uri + 1, (const char*)base_uri_string, base_uri_len);
+  memcpy(quoted_base_uri + 1, (const char*)base_uri_string, base_uri_len);
   quoted_base_uri[base_uri_len + 1] = '\'';
   quoted_base_uri[base_uri_len + 2] = '\0';
   
@@ -738,7 +738,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     if(sheet->method != NULL)
       xmlFree(sheet->method);
     sheet->method = (xmlChar*)xmlMalloc(5);
-    strncpy((char*)sheet->method, "html", 5);
+    memcpy(sheet->method, "html", 5);
   }
 
   /* write the resulting XML to a string */
@@ -758,13 +758,13 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   if(sheet->mediaType == NULL && sheet->method) {
     if(!(strcmp((const char*)sheet->method, "text"))) {
       sheet->mediaType = (xmlChar*)xmlMalloc(11);
-      strncpy((char*)sheet->mediaType, "text/plain",11);
+      memcpy(sheet->mediaType, "text/plain",11);
     } else if(!(strcmp((const char*)sheet->method, "xml"))) {
       sheet->mediaType = (xmlChar*)xmlMalloc(16);
-      strncpy((char*)sheet->mediaType, "application/xml",16);
+      memcpy(sheet->mediaType, "application/xml",16);
     } else if(!(strcmp((const char*)sheet->method, "html"))) {
       sheet->mediaType = (xmlChar*)xmlMalloc(10);
-      strncpy((char*)sheet->mediaType, "text/html",10);
+      memcpy(sheet->mediaType, "text/html",10);
     }
   }
 
@@ -777,7 +777,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     if(sheet->mediaType)
       xmlFree(sheet->mediaType);
     sheet->mediaType = (xmlChar*)xmlMalloc(20);
-    strncpy((char*)sheet->mediaType, "application/rdf+xml",20);
+    memcpy(sheet->mediaType, "application/rdf+xml",20);
   }
   
   parser_name = raptor_world_guess_parser_name(rdf_parser->world, NULL,
@@ -1151,7 +1151,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       size_t list_len = strlen((const char*)uri_string);
       
       buffer = (char*)RAPTOR_MALLOC(cstring, list_len+1);
-      strncpy(buffer, (const char*)uri_string, list_len+1);
+      memcpy(buffer, uri_string, list_len + 1);
       
       for(start = end = buffer; end; start = end+1) {
         grddl_xml_context* xml_context;
@@ -1230,7 +1230,7 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
   if(grddl_parser->content_type)
     RAPTOR_FREE(cstring,grddl_parser->content_type);
   grddl_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
-  strncpy(grddl_parser->content_type, content_type, len+1);
+  memcpy(grddl_parser->content_type, content_type, len + 1);
 
   if(!strncmp(content_type, "application/rdf+xml", 19)) {
     grddl_parser->process_this_as_rdfxml = 1;
@@ -1959,7 +1959,7 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
       RAPTOR_FREE(cstring,grddl_parser->content_type);
     
     grddl_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
-    strncpy(grddl_parser->content_type, content_type, len+1);
+    memcpy(grddl_parser->content_type, content_type, len + 1);
   }
 }
 

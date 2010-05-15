@@ -679,19 +679,19 @@ raptor_xml_escape_string_any(raptor_world *world,
     }
 
     if(unichar == '&') {
-      strncpy((char*)q, "&amp;", 5);
+      memcpy(q, "&amp;", 5);
       q+= 5;
     } else if(unichar == '<') {
-      strncpy((char*)q, "&lt;", 4);
+      memcpy(q, "&lt;", 4);
       q+= 4;
     } else if(!quote && unichar == '>') {
-      strncpy((char*)q, "&gt;", 4);
+      memcpy(q, "&gt;", 4);
       q+= 4;
     } else if(quote && unichar == (unsigned long)quote) {
       if(quote == '\'')  
-        strncpy((char*)q, "&apos;", 6);
+        memcpy(q, "&apos;", 6);
       else
-        strncpy((char*)q, "&quot;", 6);
+        memcpy(q, "&quot;", 6);
       q+= 6;
     } else if(unichar == 0x0d ||
                (quote && (unichar == 0x09 || unichar == 0x0a))) {
@@ -720,7 +720,7 @@ raptor_xml_escape_string_any(raptor_world *world,
         *q++=';';
       }
     } else {
-      strncpy((char*)q, (const char*)p, unichar_len);
+      memcpy(q, p, unichar_len);
       q+= unichar_len;
     }
 

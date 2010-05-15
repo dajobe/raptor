@@ -1390,7 +1390,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     turtle_parser->buffer_length += len;
 
     /* now write new stuff at end of cdata buffer */
-    strncpy(ptr, (char*)s, len);
+    memcpy(ptr, s, len);
     ptr += len;
     *ptr = '\0';
 

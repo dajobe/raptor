@@ -310,7 +310,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
   /* reference has a scheme - is an absolute URI */
   if(ref->scheme) {
-    strncpy((char*)buffer, (const char*)reference_uri, ref->uri_len+1);
+    memcpy(buffer, reference_uri, ref->uri_len + 1);
 
     result_len = ref->uri_len;
     goto resolve_tidy;
@@ -387,12 +387,12 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.path_len = p-base->path+1;
 
     /* Found a /, copy everything before that to path_buffer */
-    strncpy((char*)path_buffer, (char*)base->path, result.path_len);
+    memcpy(path_buffer, base->path, result.path_len);
     path_buffer[result.path_len]='\0';
   }
 
   if(ref->path) {
-    strncpy((char*)path_buffer+result.path_len, (const char*)ref->path, ref->path_len+1);
+    memcpy(path_buffer + result.path_len, ref->path, ref->path_len + 1);
     result.path_len += ref->path_len;
     path_buffer[result.path_len]='\0';
   }
@@ -566,7 +566,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
   p = buffer;
   if(result.scheme) {
-    strncpy((char*)p, (const char*)result.scheme, result.scheme_len);
+    memcpy(p, result.scheme, result.scheme_len);
     p += result.scheme_len;
     *p++ = ':';
   }
@@ -574,24 +574,24 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   if(result.authority) {
     *p++ = '/';
     *p++ = '/';
-    strncpy((char*)p, (const char*)result.authority, result.authority_len);
+    memcpy(p, result.authority, result.authority_len);
     p+= result.authority_len;
   }
   
   if(result.path) {
-    strncpy((char*)p, (const char*)result.path, result.path_len);
+    memcpy(p, result.path, result.path_len);
     p+= result.path_len;
   }
   
   if(result.query) {
     *p++ = '?';
-    strncpy((char*)p, (const char*)result.query, result.query_len);
+    memcpy(p, result.query, result.query_len);
     p+= result.query_len;
   }
   
   if(result.fragment) {
     *p++ = '#';
-    strncpy((char*)p, (const char*)result.fragment, result.fragment_len);
+    memcpy(p, result.fragment, result.fragment_len);
     p+= result.fragment_len;
   }
   *p = '\0';

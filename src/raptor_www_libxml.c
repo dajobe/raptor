@@ -90,21 +90,21 @@ raptor_www_libxml_fetch(raptor_www *www)
     
     p = headers;
     if(www->http_accept) {
-      strncpy(p, www->http_accept, accept_len);
+      memcpy(p, www->http_accept, accept_len);
       p+= accept_len;
       *p++='\r';
       *p++='\n';
     }
     if(www->user_agent) {
-      strncpy(p, "User-Agent: ", 12);
+      memcpy(p, "User-Agent: ", 12);
       p += 12;
-      strncpy(p, www->user_agent, ua_len);
+      memcpy(p, www->user_agent, ua_len);
       p+= ua_len;
       *p++='\r';
       *p++='\n';
     }
     if(www->cache_control) {
-      strncpy(p, www->cache_control, cc_len);
+      memcpy(p, www->cache_control, cc_len);
       p+= cc_len;
       *p++='\r';
       *p++='\n';

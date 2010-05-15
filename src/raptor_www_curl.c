@@ -104,7 +104,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
   if(!strncmp((char*)ptr, "Content-Type: ", 14)) {
     int len = bytes-16;
     char *type_buffer = (char*)RAPTOR_MALLOC(cstring, len+1);
-    strncpy(type_buffer, (char*)ptr+14, len);
+    memcpy(type_buffer, (char*)ptr + 14, len);
     type_buffer[len]='\0';
     if(www->type)
       RAPTOR_FREE(cstring, www->type);

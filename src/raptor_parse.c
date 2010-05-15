@@ -1271,8 +1271,8 @@ raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
   if(!buffer)
     return NULL;
   if(rdf_parser->default_generate_id_handler_prefix) {
-    strncpy((char*)buffer, rdf_parser->default_generate_id_handler_prefix,
-            rdf_parser->default_generate_id_handler_prefix_length);
+    memcpy(buffer, rdf_parser->default_generate_id_handler_prefix,
+           rdf_parser->default_generate_id_handler_prefix_length);
     sprintf((char*)buffer+rdf_parser->default_generate_id_handler_prefix_length,
             "%d", id);
   } else 
@@ -1541,9 +1541,9 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
     size_t len = from_parser->default_generate_id_handler_prefix_length;
     to_parser->default_generate_id_handler_prefix = (char*)RAPTOR_MALLOC(cstring, len+1);
     if(to_parser->default_generate_id_handler_prefix)
-      strncpy((char*)to_parser->default_generate_id_handler_prefix, 
-              (const char*)from_parser->default_generate_id_handler_prefix,
-              len+1);
+      memcpy(to_parser->default_generate_id_handler_prefix, 
+             from_parser->default_generate_id_handler_prefix,
+             len + 1);
     else
       rc = 1;
   }
@@ -1630,7 +1630,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   for(i = 0; 
       (type_q = &factory->desc.mime_types[i]) && type_q->mime_type;
       i++) {
-    strncpy(p, type_q->mime_type, type_q->mime_type_len);
+    memcpy(p, type_q->mime_type, type_q->mime_type_len);
     p += type_q->mime_type_len;
     if(type_q->q < 10) {
       *p++ = ';';
@@ -1645,7 +1645,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
     *p++ = ' ';
   }
 
-  strncpy(p, "*/*;q=0.1", ACCEPT_HEADER_LEN + 1);
+  memcpy(p, "*/*;q=0.1", ACCEPT_HEADER_LEN + 1);
 
   return accept_header;
 }
@@ -1692,7 +1692,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     for(j = 0; 
         (type_q = &factory->desc.mime_types[j]) && type_q->mime_type;
         j++) {
-      strncpy(p, type_q->mime_type, type_q->mime_type_len);
+      memcpy(p, type_q->mime_type, type_q->mime_type_len);
       p+= type_q->mime_type_len;
       if(type_q->q < 10) {
         *p++ = ';';
@@ -1709,7 +1709,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
     
   }
   
-  strncpy(p, "*/*;q=0.1", ACCEPT_HEADER_LEN + 1);
+  memcpy(p, "*/*;q=0.1", ACCEPT_HEADER_LEN + 1);
   
   return accept_header;
 }
