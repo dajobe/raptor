@@ -58,14 +58,24 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 </para>
 
 
+<!-- ##### STRUCT raptor_term_blank_value ##### -->
+<para>
+
+</para>
+
+@string: 
+@string_len: 
+
 <!-- ##### STRUCT raptor_term_literal_value ##### -->
 <para>
 
 </para>
 
 @string: 
+@string_len: 
 @datatype: 
 @language: 
+@language_len: 
 
 <!-- ##### FUNCTION raptor_new_term_from_blank ##### -->
 <para>
