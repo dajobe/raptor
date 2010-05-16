@@ -456,8 +456,10 @@ typedef enum {
 /**
  * raptor_term_literal_value:
  * @string: literal string
+ * @string_len: length of string
  * @datatype: datatype URI (or NULL)
- * @language: literal language (or NULL(
+ * @language: literal language (or NULL)
+ * @language_len: length of language
  * 
  * Literal term value - this typedef exists solely for use in #raptor_term
  *
@@ -465,8 +467,12 @@ typedef enum {
  */
 typedef struct {
   unsigned char *string;
+  unsigned int string_len;
+
   raptor_uri *datatype;
+
   unsigned char *language;
+  unsigned char language_len;
 } raptor_term_literal_value;
 
 
