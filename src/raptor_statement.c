@@ -220,7 +220,7 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
   fputc('[', stream);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    fputs((const char*)statement->subject->value.blank, stream);
+    fputs((const char*)statement->subject->value.blank.string, stream);
   } else {
 #ifdef RAPTOR_DEBUG
     if(!statement->subject->value.uri)
@@ -252,7 +252,7 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
     fputs((const char*)statement->object->value.literal.string, stream);
     fputc('"', stream);
   } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK)
-    fputs((const char*)statement->object->value.blank, stream);
+    fputs((const char*)statement->object->value.blank.string, stream);
   else {
 #ifdef RAPTOR_DEBUG
     if(!statement->object->value.uri)
@@ -264,10 +264,10 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
 
   if(statement->graph) {
     if(statement->graph->type == RAPTOR_TERM_TYPE_BLANK &&
-       statement->graph->value.blank) {
+       statement->graph->value.blank.string) {
       fputs(", ", stream);
 
-      fputs((const char*)statement->graph->value.blank, stream);
+      fputs((const char*)statement->graph->value.blank.string, stream);
     } else if(statement->graph->type == RAPTOR_TERM_TYPE_URI &&
               statement->graph->value.uri) {
       fputs(", ", stream);
@@ -434,7 +434,8 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      d = strcmp((const char*)t1->value.blank, (const char*)t2->value.blank);
+      d = strcmp((const char*)t1->value.blank.string,
+                 (const char*)t2->value.blank.string);
       break;
       
     case RAPTOR_TERM_TYPE_LITERAL:
@@ -536,9 +537,9 @@ raptor_free_term(raptor_term *term)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      if(term->value.blank) {
-        RAPTOR_FREE(cstring, (void*)term->value.blank);
-        term->value.blank = NULL;
+      if(term->value.blank.string) {
+        RAPTOR_FREE(cstring, (void*)term->value.blank.string);
+        term->value.blank.string = NULL;
       }
       break;
       
@@ -745,7 +746,7 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   t->usage = 1;
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_BLANK;
-  t->value.blank = new_id;
+  t->value.blank.string = new_id;
 
   return t;
 }
@@ -777,7 +778,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      d = !strcmp((const char*)t1->value.blank, (const char*)t2->value.blank);
+      d = !strcmp((const char*)t1->value.blank.string, 
+                  (const char*)t2->value.blank.string);
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:

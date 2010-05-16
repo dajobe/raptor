@@ -196,7 +196,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
           
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer,
-                                      statement->subject->value.blank);
+                                      statement->subject->value.blank.string);
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
@@ -235,7 +235,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer,
-                                      statement->object->value.blank);
+                                      statement->object->value.blank.string);
       break;
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
@@ -304,7 +304,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         
       case RAPTOR_TERM_TYPE_BLANK:
         raptor_iostream_counted_string_write("\"_:", 3, serializer->iostream);
-        raptor_string_python_write(s1->subject->value.blank, 0,
+        raptor_string_python_write(s1->subject->value.blank.string, 0,
                                    '"', 2,
                                    serializer->iostream);
         raptor_iostream_write_byte('"', serializer->iostream);
@@ -378,7 +378,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_json_writer_blank_object(context->json_writer, 
-                                      s1->object->value.blank);
+                                      s1->object->value.blank.string);
       raptor_json_writer_newline(context->json_writer);
       break;
 

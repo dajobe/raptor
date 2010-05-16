@@ -1243,7 +1243,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
     
     statement->predicate = bag_predicate_term;
 
-    if(!reified_term || !reified_term->value.blank) {
+    if(!reified_term || !reified_term->value.blank.string) {
       unsigned char *reified_id = NULL;
 
       /* reified_term is NULL so generate a bag ID */
@@ -1270,7 +1270,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
 
 
   /* return if is there no reified ID (that is valid) */
-  if(!reified_term || !reified_term->value.blank)
+  if(!reified_term || !reified_term->value.blank.string)
     goto generate_tidy;
 
 
@@ -1794,9 +1794,9 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           if(!element->subject)
             goto oom;
 
-          if(!raptor_valid_xml_ID(rdf_parser, element->subject->value.blank)) {
+          if(!raptor_valid_xml_ID(rdf_parser, element->subject->value.blank.string)) {
             raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", 
-                                (const char*)element->subject->value.blank);
+                                (const char*)element->subject->value.blank.string);
             state = RAPTOR_STATE_SKIPPING;
             element->child_state = RAPTOR_STATE_SKIPPING;
             finished = 1;
@@ -2636,8 +2636,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
                 if(!raptor_valid_xml_ID(rdf_parser,
-                                        element->object->value.blank)) {
-                  raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", (const char*)element->object->value.blank);
+                                        element->object->value.blank.string)) {
+                  raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", (const char*)element->object->value.blank.string);
                   state = RAPTOR_STATE_SKIPPING;
                   element->child_state = RAPTOR_STATE_SKIPPING;
                   finished = 1;

@@ -281,7 +281,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
           
   } else {
     /* Blank node that needs an explicit name */
-    const unsigned char *node_id = node->term->value.blank;
+    const unsigned char *node_id = node->term->value.blank.string;
 
     raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)"_:");
     raptor_turtle_writer_raw(context->turtle_writer, node_id);
@@ -661,7 +661,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       blank = 0;
     } else if(!collection && subject->node->count_as_object > 1) {
       /* Referred to (used as an object), so needs a nodeID */
-      const unsigned char* genid = subject->node->term->value.blank;
+      const unsigned char* genid = subject->node->term->value.blank.string;
       size_t len = strlen((const char*)genid);
       unsigned char* subject_str;
       subject_str= (unsigned char *)RAPTOR_MALLOC(cstring, len+3);

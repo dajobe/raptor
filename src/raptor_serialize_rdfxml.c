@@ -435,7 +435,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   switch(statement->subject->type) {
     case RAPTOR_TERM_TYPE_BLANK:
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID",
-                                                                      statement->subject->value.blank);
+                                                                      statement->subject->value.blank.string);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;
@@ -564,7 +564,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", statement->object->value.blank);
+      attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"nodeID", statement->object->value.blank.string);
       if(!attrs[attrs_count])
         goto oom;
       attrs_count++;

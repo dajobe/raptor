@@ -477,6 +477,20 @@ typedef struct {
 
 
 /**
+ * raptor_term_blank_value:
+ * @string: literal string
+ * @string_len: length of string
+ * 
+ * Blank term value - this typedef exists solely for use in #raptor_term
+ *
+ */
+typedef struct {
+  unsigned char *string;
+  unsigned int string_len;
+} raptor_term_blank_value;
+
+
+/**
  * raptor_term_value:
  * @uri: uri value when term type is #RAPTOR_TERM_TYPE_URI
  * @literal: literal value when term type is #RAPTOR_TERM_TYPE_LITERAL
@@ -490,7 +504,7 @@ typedef union {
 
   raptor_term_literal_value literal;
 
-  unsigned char *blank;
+  raptor_term_blank_value blank;
 } raptor_term_value;
 
 
