@@ -395,9 +395,9 @@ rdfdiff_blank_equals(const rdfdiff_blank *b1, const rdfdiff_blank *b2,
     fprintf(stderr, "\n");
 #endif    
     p1 = rdfdiff_find_blank(b1_file->first_blank, 
-                            (char *)b1->owner->subject->value.blank);
+                            (char *)b1->owner->subject->value.blank.string);
     p2 = rdfdiff_find_blank(b2_file->first_blank,
-                            (char *)b2->owner->subject->value.blank);
+                            (char *)b2->owner->subject->value.blank.string);
     equal = rdfdiff_blank_equals(p1, p2, b1_file, b2_file);
   } else {
     equal = 0;
@@ -533,7 +533,7 @@ rdfdiff_add_blank_statement(rdfdiff_file* file,
   rdfdiff_blank *blank;
   rdfdiff_link *dlink;
 
-  blank = rdfdiff_lookup_blank(file, (char *)statement->subject->value.blank);
+  blank = rdfdiff_lookup_blank(file, (char *)statement->subject->value.blank.string);
   if(!blank)
     goto failed;
 
@@ -570,7 +570,8 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file* file,
 {
   rdfdiff_blank *blank;
 
-  blank = rdfdiff_lookup_blank(file, (char *)statement->object->value.blank);
+  blank = rdfdiff_lookup_blank(file,
+                               (char*)statement->object->value.blank.string);
   if(!blank)
     goto failed;
   
