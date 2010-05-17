@@ -1636,7 +1636,7 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
     if(!item->fields[RAPTOR_RSS_FIELD_ATOM_TITLE]) {
       raptor_rss_field* field = raptor_rss_new_field(rss_serializer->world);
       field->value = (unsigned char*)RAPTOR_MALLOC(cstring, 9);
-      strncpy((char*)field->value, "untitled", 9);
+      memcpy(field->value, "untitled", 9);
       raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_ATOM_TITLE, field);
     }
     
@@ -1806,7 +1806,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
         } else {
           field = raptor_rss_new_field(serializer->world);
           field->value = (unsigned char*)RAPTOR_MALLOC(cstring, 8);
-          strncpy((char*)field->value, "unknown", 8);
+          memcpy(field->value, "unknown", 8);
         }
         raptor_rss_item_add_field(author_item, RAPTOR_RSS_FIELD_ATOM_NAME,
                                   field);

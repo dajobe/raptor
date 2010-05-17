@@ -139,10 +139,10 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      len = strlen((const char*)term->value.blank);
+      len = strlen((const char*)term->value.blank.string);
       raptor_iostream_counted_string_write("<span class=\"blank\">", 20, iostr);
       raptor_iostream_counted_string_write("_:", 2, iostr);
-      raptor_xml_escape_string_write(term->value.blank, len, 0, iostr);
+      raptor_xml_escape_string_write(term->value.blank.string, len, 0, iostr);
       break;
 
     case RAPTOR_TERM_TYPE_URI:

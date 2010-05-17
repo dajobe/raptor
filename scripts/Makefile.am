@@ -36,3 +36,6 @@ build_formats_SOURCES = build-formats.c
 build_formats_LDADD= $(top_builddir)/src/libraptor2.la
 
 endif
+
+$(top_builddir)/src/libraptor2.la:
+	cd $(top_builddir)/src && $(MAKE) libraptor2.la

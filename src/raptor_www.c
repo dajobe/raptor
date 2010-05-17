@@ -411,7 +411,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   
   www->cache_control = cache_control_copy;
 
-  strncpy(cache_control_copy, header, header_len);
+  memcpy(cache_control_copy, header, header_len);
   cache_control_copy+= header_len;
   if(*cache_control) {
     *cache_control_copy++=' ';

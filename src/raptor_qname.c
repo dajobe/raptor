@@ -547,13 +547,12 @@ raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
 
   p = s;
   if(qname->nspace && qname->nspace->prefix_length > 0) {
-    strncpy((char*)p, (const char*)qname->nspace->prefix,
-            qname->nspace->prefix_length);
+    memcpy(p, qname->nspace->prefix, qname->nspace->prefix_length);
     p+= qname->nspace->prefix_length;
     *p++ = ':';
   }
   
-  strncpy((char*)p, (const char*)qname->local_name, qname->local_name_length+1);
+  memcpy(p, qname->local_name, qname->local_name_length + 1);
 
   return s;
 }

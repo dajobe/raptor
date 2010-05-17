@@ -760,12 +760,12 @@ raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
   
   p = buffer;
   
-  strncpy((char*)p, "xmlns", 5);
+  memcpy(p, "xmlns", 5);
   p += 5;
   
   if(ns->prefix) {
     *p++ = ':';
-    strncpy((char*)p, (char*)ns->prefix, ns->prefix_length);
+    memcpy(p, ns->prefix, ns->prefix_length);
     p += ns->prefix_length;
   }
   *p++ = '=';
@@ -882,7 +882,7 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
     *prefix = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
     if(!*prefix)
       return 1;
-    strncpy((char*)*prefix, (const char*)t, string-t);
+    memcpy(*prefix, t, string - t);
     (*prefix)[string-t] = '\0';
   }
 
@@ -907,7 +907,7 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
     *uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
     if(!*uri_string)
       return 1;
-    strncpy((char*)*uri_string, (const char*)t, string - t);
+    memcpy(*uri_string, t, string - t);
     (*uri_string)[string - t] = '\0';
   }
   

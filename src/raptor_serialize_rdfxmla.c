@@ -369,7 +369,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
           
   } else {
     unsigned char *attr_name = (unsigned char*)"nodeID";
-    unsigned char *attr_value = node->term->value.blank;
+    unsigned char *attr_value = node->term->value.blank.string;
     raptor_qname **attrs;
 
     attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
@@ -734,7 +734,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
        * or object OR if it is used exactly once as subject and object.
        */
       attr_name = (unsigned char*)"nodeID";
-      attr_value = subject_term->value.blank;
+      attr_value = subject_term->value.blank.string;
     }
   } 
     

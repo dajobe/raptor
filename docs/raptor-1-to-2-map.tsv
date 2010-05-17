@@ -436,6 +436,7 @@
 1.4.21	type	-	-	1.9.0	type	raptor_option_value_type	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_syntax_description	-	-
+1.4.21	type	-	-	1.9.0	type	raptor_term_blank_value	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_term_literal_value	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_term_value	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_type_q	-	-

@@ -105,9 +105,9 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   if(locator->uri) {
     size_t uri_len;
     (void)raptor_uri_as_counted_string(locator->uri, &uri_len);
-    bufsize = 4 + uri_len; /* "URI " */
+    bufsize = 4 + uri_len; /* 4 = "URI " */
   } else if(locator->file)
-    bufsize = 5 + strlen(locator->file); /* "file " */
+    bufsize = 5 + strlen(locator->file); /* 5 = "file " */
   else
     return -1;
 

@@ -1310,7 +1310,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   /* Two choices for subject for Turtle */
   if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->subject = raptor_new_term_from_blank(parser->world,
-                                                    t->subject->value.blank);
+                                                    t->subject->value.blank.string);
   } else {
     /* RAPTOR_TERM_TYPE_URI */
     RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
@@ -1338,7 +1338,7 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
                                                  t->object->value.uri);
   } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
     statement->object = raptor_new_term_from_blank(parser->world,
-                                                   t->object->value.blank);
+                                                   t->object->value.blank.string);
   } else {
     /* RAPTOR_TERM_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
@@ -1390,7 +1390,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     turtle_parser->buffer_length += len;
 
     /* now write new stuff at end of cdata buffer */
-    strncpy(ptr, (char*)s, len);
+    memcpy(ptr, s, len);
     ptr += len;
     *ptr = '\0';
 

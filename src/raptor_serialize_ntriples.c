@@ -153,7 +153,7 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
       
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_counted_string_write("_:", 2, iostr);
-      raptor_iostream_string_write(term->value.blank, iostr);
+      raptor_iostream_string_write(term->value.blank.string, iostr);
       break;
       
     case RAPTOR_TERM_TYPE_URI:

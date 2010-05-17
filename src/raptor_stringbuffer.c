@@ -173,7 +173,7 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
     }
-    strncpy((char*)node->string, (const char*)string, length);
+    memcpy(node->string, string, length);
   } else
     node->string = (unsigned char*)string;
   node->length = length;
@@ -382,7 +382,7 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
     }
-    strncpy((char*)node->string, (const char*)string, length);
+    memcpy(node->string, string, length);
   } else
     node->string = (unsigned char*)string;
   node->length = length;
@@ -498,7 +498,7 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   node = stringbuffer->head;
   p = stringbuffer->string;
   while(node) {
-    strncpy((char*)p, (const char*)node->string, node->length);
+    memcpy(p, node->string, node->length);
     p+= node->length;
     node = node->next;
   }
@@ -539,7 +539,7 @@ raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
       p[-1]='\0';
       return 1;
     }
-    strncpy((char*)p, (const char*)node->string, node->length);
+    memcpy(p, node->string, node->length);
     p+= node->length;
     length-= node->length;
   }

@@ -829,7 +829,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   }
 
   if(ntriples_parser->line_length) {
-    strncpy((char*)buffer, (const char*)ntriples_parser->line, ntriples_parser->line_length);
+    memcpy(buffer, ntriples_parser->line, ntriples_parser->line_length);
     RAPTOR_FREE(cstring, ntriples_parser->line);
   }
 
@@ -842,7 +842,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   ntriples_parser->line_length += len;
 
   /* now write new stuff at end of cdata buffer */
-  strncpy((char*)ptr, (const char*)s, len);
+  memcpy(ptr, s, len);
   ptr += len;
   *ptr = '\0';
 
@@ -919,9 +919,9 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
       return 1;
     }
 
-    strncpy((char*)buffer, 
-            (const char*)ntriples_parser->line+ntriples_parser->line_length-len,
-            len);
+    memcpy(buffer, 
+           ntriples_parser->line + ntriples_parser->line_length - len,
+           len);
     buffer[len]='\0';
 
     RAPTOR_FREE(cstring, ntriples_parser->line);

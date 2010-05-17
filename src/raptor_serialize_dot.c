@@ -248,7 +248,7 @@ raptor_dot_serializer_write_term(raptor_serializer * serializer,
       
     case RAPTOR_TERM_TYPE_BLANK:
       raptor_iostream_counted_string_write("_:", 2, serializer->iostream);
-      raptor_iostream_string_write(term->value.blank, serializer->iostream);
+      raptor_iostream_string_write(term->value.blank.string, serializer->iostream);
       break;
   
     case RAPTOR_TERM_TYPE_URI:

@@ -392,7 +392,7 @@ turtle_copy_token(unsigned char *text, size_t len)
     len = strlen((const char*)text);
   s = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
   if(s) {
-    strncpy((char*)s, (const char*)text, len);
+    memcpy(s, text, len);
     s[len] = '\0';
   }
   return s;
