@@ -460,12 +460,12 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
       return 0;
     else
       return strcmp((const char*)uri1->string, (const char*)uri2->string);
-  } else if(uri1)
-    /* uri1 > uri2 (NULL) */
-    return 1;
-  else
-    /* uri1 (NULL) < uri2 */
+  } else if(!uri1)
+    /* uri1 (NULL) < uri2 or both NULL */
     return -1;
+  else
+    /* uri2 (NULL) < uri1 */
+    return 1;
 }
 
 
