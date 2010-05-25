@@ -119,14 +119,14 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
                                            iostr);
       raptor_iostream_counted_string_write("<span class=\"value\"", 19, iostr);
       if(term->value.literal.language) {
-        len = strlen((const char*)term->value.literal.language);
+        len = (size_t)term->value.literal.language_len;
         raptor_iostream_counted_string_write(" xml:lang=\"", 11, iostr);
         raptor_xml_escape_string_write(term->value.literal.language, len, '"',
                                        iostr);
         raptor_iostream_write_byte('"', iostr);
       }
       raptor_iostream_write_byte('>', iostr);
-      len = strlen((const char*)term->value.literal.string);
+      len = term->value.literal.string_len;
       raptor_xml_escape_string_write(term->value.literal.string, len, 0, iostr);
       raptor_iostream_counted_string_write("</span>", 7, iostr);
 
@@ -139,7 +139,7 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      len = strlen((const char*)term->value.blank.string);
+      len = term->value.blank.string_len;
       raptor_iostream_counted_string_write("<span class=\"blank\">", 20, iostr);
       raptor_iostream_counted_string_write("_:", 2, iostr);
       raptor_xml_escape_string_write(term->value.blank.string, len, 0, iostr);
