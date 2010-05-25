@@ -375,6 +375,10 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   int d = 0;
 
+  if(!s1 || !s2)
+    /* If one or both are NULL, return a stable comparison order */
+    return (s2 - s1);
+
   d = raptor_term_compare(s1->subject, s2->subject);
   if(d)
     return d;
