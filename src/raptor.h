@@ -938,13 +938,24 @@ int raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr);
 RAPTOR_API
 void raptor_statement_init(raptor_statement *statement, raptor_world *world);
 RAPTOR_API
+void raptor_statement_clear(raptor_statement *statement);
+RAPTOR_API
+raptor_statement* raptor_new_statement(raptor_world *world);
+RAPTOR_API
+raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object, raptor_term *graph);
+RAPTOR_API
+raptor_statement* raptor_statement_copy(raptor_statement *statement);
+RAPTOR_API
 void raptor_free_statement(raptor_statement *statement);
+
 RAPTOR_API
 int raptor_statement_print(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
+RAPTOR_API
+int raptor_statement_equals(const raptor_statement* s1, const raptor_statement* s2);
 
 
 /* Parser Class */

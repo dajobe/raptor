@@ -515,7 +515,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
           goto oom;
         attrs_count++;
       }
-      len = strlen((const char*)statement->object->value.literal.string);
+      len = statement->object->value.literal.string_len;
 
       if(object_is_parseTypeLiteral) {
         attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"parseType", (const unsigned char*)"Literal");

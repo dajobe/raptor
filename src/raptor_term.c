@@ -309,6 +309,8 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
   raptor_iostream *iostr;
   void *string = NULL;
   int rc;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(term, raptor_term, NULL);
   
   iostr = raptor_new_iostream_to_string(term->world, 
                                         &string, len_p, NULL);
@@ -342,6 +344,8 @@ raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
 unsigned char*
 raptor_term_as_string(raptor_term *term)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(term, raptor_term, NULL);
+  
   return raptor_term_as_counted_string(term, NULL);
 }
 
@@ -352,8 +356,8 @@ raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream)
   int rc = 0;
   raptor_iostream* iostr;
 
-  if(!stream || !term)
-    return 1;
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(term, raptor_term, 1);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(stream, FILE*, 1);
   
   iostr = raptor_new_iostream_to_file_handle(term->world, stream);
   if(!iostr)
@@ -380,6 +384,9 @@ int
 raptor_term_equals(raptor_term* t1, raptor_term* t2)
 {
   int d = 0;
+
+  if(!t1 || !t2)
+    return 0;
   
   if(t1->type != t2->type)
     return 0;

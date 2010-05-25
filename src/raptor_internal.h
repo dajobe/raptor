@@ -714,9 +714,6 @@ unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, rap
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 const char* raptor_basename(const char *name);
-raptor_statement* raptor_new_statement(raptor_world *world);
-raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object, raptor_term *graph);
-raptor_statement* raptor_statement_copy(raptor_statement *statement);
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
 /* raptor_parse.c */

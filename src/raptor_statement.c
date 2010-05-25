@@ -51,6 +51,7 @@
  *
  * Constructor - create a new #raptor_statement.
  *
+ * Return value: new raptor statement or NULL on failure
  */
 raptor_statement*
 raptor_new_statement(raptor_world *world)
@@ -74,6 +75,20 @@ raptor_new_statement(raptor_world *world)
 }
 
 
+/**
+ * raptor_new_statement_from_nodes:
+ * @world: raptor world
+ * @subject: subject term (or NULL)
+ * @predicate: predicate term (or NULL)
+ * @object: object term (or NULL)
+ * @graph: graph name term (or NULL)
+ *
+ * Constructor - create a new #raptor_statement from a set of terms
+ *
+ * The @subject, @predicate, @object and @graph become owned by the statement.
+ *
+ * Return value: new raptor statement or NULL on failure
+ */
 raptor_statement*
 raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
                                 raptor_term *predicate, raptor_term *object,
@@ -81,6 +96,8 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
 {
   raptor_statement* t;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
   t = raptor_new_statement(world);
   if(!t) {
     if(subject)
@@ -90,7 +107,7 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
     if(object)
       raptor_free_term(object);
     if(graph)
-	  raptor_free_term(graph);
+      raptor_free_term(graph);
     return NULL;
   }
   
@@ -114,6 +131,9 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
 void
 raptor_statement_init(raptor_statement *statement, raptor_world *world)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
+
   statement->world = world;
 
   /* static - not usage counted */
@@ -132,6 +152,8 @@ raptor_statement_init(raptor_statement *statement, raptor_world *world)
 raptor_statement*
 raptor_statement_copy(raptor_statement *statement)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, NULL);
+
   /* static - not usage counted */
   if(statement->usage < 0) {
     raptor_statement* s2;
@@ -160,6 +182,35 @@ raptor_statement_copy(raptor_statement *statement)
 
 
 /**
+ * raptor_statement_clear:
+ * @statement: #raptor_statement object
+ *
+ * Empty a raptor_statement of terms.
+ * 
+ **/
+void
+raptor_statement_clear(raptor_statement *statement)
+{
+  if(!statement)
+    return;
+
+  /* raptor_free_term() does a NULL check */
+
+  raptor_free_term(statement->subject);
+  statement->subject = NULL;
+
+  raptor_free_term(statement->predicate);
+  statement->predicate = NULL;
+
+  raptor_free_term(statement->object);
+  statement->object = NULL;
+
+  raptor_free_term(statement->graph);
+  statement->graph = NULL;
+}
+
+
+/**
  * raptor_free_statement:
  * @statement: statement
  *
@@ -180,26 +231,9 @@ raptor_free_statement(raptor_statement *statement)
   /* dynamically allocated and still in use? */
   if(is_dynamic && --statement->usage)
     return;
+
+  raptor_statement_clear(statement);
   
-  /* free contained terms for both statically and dynamically
-   * allocated statements 
-   */
-  if(statement->subject) {
-    raptor_free_term(statement->subject);
-    statement->subject = NULL;
-  }
-  if(statement->predicate) {
-    raptor_free_term(statement->predicate);
-    statement->predicate = NULL;
-  }
-  if(statement->object) {
-    raptor_free_term(statement->object);
-    statement->object = NULL;
-  }
-  if(statement->graph) {
-    raptor_free_term(statement->graph);
-    statement->graph = NULL;
-  }
   if(is_dynamic)
     RAPTOR_FREE(raptor_statement, statement);
 }
@@ -219,6 +253,8 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
 {
   int rc = 0;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
+
   fputc('[', stream);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
@@ -297,14 +333,19 @@ int
 raptor_statement_print_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
+
   if(raptor_term_print_as_ntriples(statement->subject, stream))
     return 1;
+
   fputc(' ', stream);
   if(raptor_term_print_as_ntriples(statement->predicate, stream))
     return 1;
+
   fputc(' ', stream);
   if(raptor_term_print_as_ntriples(statement->object, stream))
     return 1;
+
   if(statement->graph) {
     fputc(' ', stream);
     if(raptor_term_print_as_ntriples(statement->graph, stream))
@@ -334,6 +375,10 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   int d = 0;
 
+  if(!s1 || !s2)
+    /* If one or both are NULL, return a stable comparison order */
+    return (s2 - s1);
+
   d = raptor_term_compare(s1->subject, s2->subject);
   if(d)
     return d;
@@ -352,4 +397,32 @@ raptor_statement_compare(const raptor_statement *s1,
   d = raptor_term_compare(s1->graph, s2->graph);
 
   return d;
+}
+
+
+/**
+ * raptor_statement_equals:
+ * @s1: first statement
+ * @s2: second statement
+ *
+ * Compare a pair of #raptor_statement for equality
+ *
+ * Return value: non-0 if statements are equal
+ */
+int
+raptor_statement_equals(const raptor_statement* s1, const raptor_statement* s2)
+{
+  if(!s1 || !s2)
+    return 0;
+  
+  if(!raptor_term_equals(s1->subject, s2->subject))
+    return 0;
+  
+  if(!raptor_term_equals(s1->predicate, s2->predicate))
+    return 0;
+  
+  if(!raptor_term_equals(s1->object, s2->object))
+    return 0;
+
+  return 1;
 }
