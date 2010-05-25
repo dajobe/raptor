@@ -157,7 +157,7 @@ raptor_new_term_from_literal(raptor_world* world,
   t->value.literal.string = new_literal;
   t->value.literal.string_len = literal_len;
   t->value.literal.language = new_language;
-  t->value.literal.string_len = language_len;
+  t->value.literal.language_len = language_len;
   t->value.literal.datatype = datatype;
 
   return t;
