@@ -944,6 +944,8 @@ raptor_statement* raptor_new_statement(raptor_world *world);
 RAPTOR_API
 raptor_statement* raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject, raptor_term *predicate, raptor_term *object, raptor_term *graph);
 RAPTOR_API
+raptor_statement* raptor_statement_copy(raptor_statement *statement);
+RAPTOR_API
 void raptor_free_statement(raptor_statement *statement);
 
 RAPTOR_API
