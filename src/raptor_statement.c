@@ -51,6 +51,7 @@
  *
  * Constructor - create a new #raptor_statement.
  *
+ * Return value: new raptor statement or NULL on failure
  */
 raptor_statement*
 raptor_new_statement(raptor_world *world)
@@ -74,6 +75,20 @@ raptor_new_statement(raptor_world *world)
 }
 
 
+/**
+ * raptor_new_statement_from_nodes:
+ * @world: raptor world
+ * @subject: subject term (or NULL)
+ * @predicate: predicate term (or NULL)
+ * @object: object term (or NULL)
+ * @graph: graph name term (or NULL)
+ *
+ * Constructor - create a new #raptor_statement from a set of terms
+ *
+ * The @subject, @predicate, @object and @graph become owned by the statement.
+ *
+ * Return value: new raptor statement or NULL on failure
+ */
 raptor_statement*
 raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
                                 raptor_term *predicate, raptor_term *object,
@@ -81,6 +96,8 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
 {
   raptor_statement* t;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
   t = raptor_new_statement(world);
   if(!t) {
     if(subject)
@@ -90,7 +107,7 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
     if(object)
       raptor_free_term(object);
     if(graph)
-	  raptor_free_term(graph);
+      raptor_free_term(graph);
     return NULL;
   }
   
@@ -114,6 +131,9 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
 void
 raptor_statement_init(raptor_statement *statement, raptor_world *world)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
+
   statement->world = world;
 
   /* static - not usage counted */
@@ -132,6 +152,8 @@ raptor_statement_init(raptor_statement *statement, raptor_world *world)
 raptor_statement*
 raptor_statement_copy(raptor_statement *statement)
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, NULL);
+
   /* static - not usage counted */
   if(statement->usage < 0) {
     raptor_statement* s2;
