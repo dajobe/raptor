@@ -387,3 +387,31 @@ raptor_statement_compare(const raptor_statement *s1,
 
   return d;
 }
+
+
+/**
+ * raptor_statement_equals:
+ * @s1: first statement
+ * @s2: second statement
+ *
+ * Compare a pair of #raptor_statement for equality
+ *
+ * Return value: non-0 if statements are equal
+ */
+int
+raptor_statement_equals(const raptor_statement* s1, const raptor_statement* s2)
+{
+  if(!s1 || !s2)
+    return 0;
+  
+  if(!raptor_term_equals(s1->subject, s2->subject))
+    return 0;
+  
+  if(!raptor_term_equals(s1->predicate, s2->predicate))
+    return 0;
+  
+  if(!raptor_term_equals(s1->object, s2->object))
+    return 0;
+
+  return 1;
+}

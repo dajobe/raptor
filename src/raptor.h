@@ -954,6 +954,8 @@ RAPTOR_API
 int raptor_statement_print_as_ntriples(const raptor_statement * statement, FILE *stream);
 RAPTOR_API
 int raptor_statement_compare(const raptor_statement *s1, const raptor_statement *s2);
+RAPTOR_API
+int raptor_statement_equals(const raptor_statement* s1, const raptor_statement* s2);
 
 
 /* Parser Class */
