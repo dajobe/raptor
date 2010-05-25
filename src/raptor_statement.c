@@ -253,6 +253,8 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
 {
   int rc = 0;
   
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
+
   fputc('[', stream);
 
   if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
@@ -331,14 +333,19 @@ int
 raptor_statement_print_as_ntriples(const raptor_statement * statement,
                                    FILE *stream) 
 {
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
+
   if(raptor_term_print_as_ntriples(statement->subject, stream))
     return 1;
+
   fputc(' ', stream);
   if(raptor_term_print_as_ntriples(statement->predicate, stream))
     return 1;
+
   fputc(' ', stream);
   if(raptor_term_print_as_ntriples(statement->object, stream))
     return 1;
+
   if(statement->graph) {
     fputc(' ', stream);
     if(raptor_term_print_as_ntriples(statement->graph, stream))
