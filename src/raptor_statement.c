@@ -182,6 +182,35 @@ raptor_statement_copy(raptor_statement *statement)
 
 
 /**
+ * raptor_statement_clear:
+ * @statement: #raptor_statement object
+ *
+ * Empty a raptor_statement of terms.
+ * 
+ **/
+void
+raptor_statement_clear(raptor_statement *statement)
+{
+  if(!statement)
+    return;
+
+  /* raptor_free_term() does a NULL check */
+
+  raptor_free_term(statement->subject);
+  statement->subject = NULL;
+
+  raptor_free_term(statement->predicate);
+  statement->predicate = NULL;
+
+  raptor_free_term(statement->object);
+  statement->object = NULL;
+
+  raptor_free_term(statement->graph);
+  statement->graph = NULL;
+}
+
+
+/**
  * raptor_free_statement:
  * @statement: statement
  *
@@ -202,26 +231,9 @@ raptor_free_statement(raptor_statement *statement)
   /* dynamically allocated and still in use? */
   if(is_dynamic && --statement->usage)
     return;
+
+  raptor_statement_clear(statement);
   
-  /* free contained terms for both statically and dynamically
-   * allocated statements 
-   */
-  if(statement->subject) {
-    raptor_free_term(statement->subject);
-    statement->subject = NULL;
-  }
-  if(statement->predicate) {
-    raptor_free_term(statement->predicate);
-    statement->predicate = NULL;
-  }
-  if(statement->object) {
-    raptor_free_term(statement->object);
-    statement->object = NULL;
-  }
-  if(statement->graph) {
-    raptor_free_term(statement->graph);
-    statement->graph = NULL;
-  }
   if(is_dynamic)
     RAPTOR_FREE(raptor_statement, statement);
 }
