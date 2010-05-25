@@ -130,11 +130,14 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
   unsigned char *term_str;
   size_t len;
 
+  if(!term)
+    return 1;
+  
   switch(term->type) {
     case RAPTOR_TERM_TYPE_LITERAL:
       raptor_iostream_write_byte('"', iostr);
       raptor_string_ntriples_write(term->value.literal.string,
-                                   strlen((const char*)term->value.literal.string),
+                                   term->value.literal.string_len,
                                    '"',
                                    iostr);
       raptor_iostream_write_byte('"', iostr);
@@ -180,17 +183,34 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
  * 
  * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
  * 
+ * If the graph field is present, a fourth term is printed and the
+ * result is not legal N-Triples.
+ *
  * Return value: non-0 on failure
  **/
 int
 raptor_statement_ntriples_write(const raptor_statement *statement,
                                 raptor_iostream* iostr)
 {
-  raptor_term_ntriples_write(statement->subject, iostr);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
+
+  if(raptor_term_ntriples_write(statement->subject, iostr))
+    return 1;
+  
   raptor_iostream_write_byte(' ', iostr);
-  raptor_term_ntriples_write(statement->predicate, iostr);
+  if(raptor_term_ntriples_write(statement->predicate, iostr))
+    return 1;
+  
   raptor_iostream_write_byte(' ', iostr);
-  raptor_term_ntriples_write(statement->object, iostr);
+  if(raptor_term_ntriples_write(statement->object, iostr))
+    return 1;
+  
+  if(statement->graph) {
+    raptor_iostream_write_byte(' ', iostr);
+    if(raptor_term_ntriples_write(statement->graph, iostr))
+      return 1;
+  }
+
   raptor_iostream_counted_string_write(" .\n", 3, iostr);
 
   return 0;
