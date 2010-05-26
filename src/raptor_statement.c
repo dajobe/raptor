@@ -346,11 +346,6 @@ raptor_statement_print_as_ntriples(const raptor_statement * statement,
   if(raptor_term_print_as_ntriples(statement->object, stream))
     return 1;
 
-  if(statement->graph) {
-    fputc(' ', stream);
-    if(raptor_term_print_as_ntriples(statement->graph, stream))
-      return 1;
-  }
   fputs(" .", stream);
 
   return 0;

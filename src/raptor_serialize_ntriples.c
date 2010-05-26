@@ -183,9 +183,6 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
  * 
  * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
  * 
- * If the graph field is present, a fourth term is printed and the
- * result is not legal N-Triples.
- *
  * Return value: non-0 on failure
  **/
 int
@@ -205,12 +202,6 @@ raptor_statement_ntriples_write(const raptor_statement *statement,
   if(raptor_term_ntriples_write(statement->object, iostr))
     return 1;
   
-  if(statement->graph) {
-    raptor_iostream_write_byte(' ', iostr);
-    if(raptor_term_ntriples_write(statement->graph, iostr))
-      return 1;
-  }
-
   raptor_iostream_counted_string_write(" .\n", 3, iostr);
 
   return 0;
