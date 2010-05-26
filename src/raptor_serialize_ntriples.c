@@ -180,14 +180,17 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
  * raptor_statement_ntriples_write:
  * @statement: statement to write
  * @iostr: raptor iostream
+ * @write_graph_term: flag to write graph term if present
  * 
- * Write a #raptor_statement formatted in N-Triples format to a #raptor_iostream
+ * Write a #raptor_statement formatted in N-Triples or N-Quads format
+ * to a #raptor_iostream
  * 
  * Return value: non-0 on failure
  **/
 int
 raptor_statement_ntriples_write(const raptor_statement *statement,
-                                raptor_iostream* iostr)
+                                raptor_iostream* iostr,
+                                int write_graph_term)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
 
@@ -201,6 +204,12 @@ raptor_statement_ntriples_write(const raptor_statement *statement,
   raptor_iostream_write_byte(' ', iostr);
   if(raptor_term_ntriples_write(statement->object, iostr))
     return 1;
+
+  if(statement->graph && write_graph_term) {
+    raptor_iostream_write_byte(' ', iostr);
+    if(raptor_term_ntriples_write(statement->object, iostr))
+      return 1;
+  }
   
   raptor_iostream_counted_string_write(" .\n", 3, iostr);
 
@@ -213,7 +222,7 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     raptor_statement *statement)
 {
-  raptor_statement_ntriples_write(statement, serializer->iostream);
+  raptor_statement_ntriples_write(statement, serializer->iostream, 0);
   return 0;
 }
 

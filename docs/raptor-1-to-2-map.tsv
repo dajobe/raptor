@@ -55,7 +55,7 @@
 1.4.21	void	raptor_iostream_write_end	(raptor_iostream *iostr)	1.9.0	int	raptor_iostream_write_end	(raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_namespace	(raptor_iostream* iostr, raptor_namespace *ns)	1.9.0	int	raptor_namespace_write	(raptor_namespace *ns, raptor_iostream* iostr)	-
 1.4.21	int	raptor_iostream_write_qname	(raptor_iostream* iostr, raptor_qname *qname)	1.9.0	int	raptor_qname_write	(raptor_qname *qname, raptor_iostream* iostr)	-
-1.4.21	void	raptor_iostream_write_statement_ntriples	(raptor_iostream* iostr, const raptor_statement *statement)	1.9.0	int	raptor_statement_ntriples_write	(const raptor_statement *statement, raptor_iostream* iostr)	-
+1.4.21	void	raptor_iostream_write_statement_ntriples	(raptor_iostream* iostr, const raptor_statement *statement)	1.9.0	int	raptor_statement_ntriples_write	(const raptor_statement *statement, raptor_iostream* iostr, int write_graph_term)	Gains extra flag arg to decide whether to write any graph term.
 1.4.21	int	raptor_iostream_write_string	(raptor_iostream *iostr, const void *string)	1.9.0	int	raptor_iostream_string_write	(const void *string, raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_string_ntriples	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim)	1.9.0	int	raptor_string_ntriples_write	(const unsigned char* string, size_t len, const char delim, raptor_iostream *iostr)	-
 1.4.21	int	raptor_iostream_write_string_python	(raptor_iostream *iostr, const unsigned char* string, size_t len, const char delim, int flags)	1.9.0	int	raptor_string_python_write	(const unsigned char* string, size_t len, const char delim, int flags, raptor_iostream *iostr)	-

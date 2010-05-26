@@ -1589,7 +1589,7 @@ int raptor_string_ntriples_write(const unsigned char *string, size_t len, const 
 RAPTOR_API
 int raptor_string_python_write(const unsigned char *string, size_t len, const char delim, int flags, raptor_iostream *iostr);
 RAPTOR_API
-int raptor_statement_ntriples_write(const raptor_statement *statement, raptor_iostream* iostr);
+int raptor_statement_ntriples_write(const raptor_statement *statement, raptor_iostream* iostr, int write_graph_term);
 
 
 
