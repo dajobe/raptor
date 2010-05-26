@@ -89,6 +89,10 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
  *
  * Takes copies of the passed in @literal, @datatype, @language
  *
+ * Only one of @language or @datatype may be given.  If both are
+ * given, NULL is returned.  If @language is the empty string, it is
+ * the equivalent to NULL.
+ *
  * Return value: new term or NULL on failure
 */
 raptor_term*
@@ -107,6 +111,12 @@ raptor_new_term_from_literal(raptor_world* world,
 
   raptor_world_open(world);
 
+  if(language && !*language)
+    language = NULL;
+
+  if(language && datatype)
+    return NULL;
+  
   if(literal)
     literal_len = strlen((const char*)literal);
 
