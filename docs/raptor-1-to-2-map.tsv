@@ -368,6 +368,7 @@
 1.4.21	-	-	-	1.9.0	raptor_sequence*	raptor_new_sequence_with_context	(raptor_data_context_free_handler* free_handler, raptor_data_context_print_handler* print_handler, void* handler_context)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_blank	(raptor_world* world, const unsigned char* blank)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_literal	(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language)	-
+1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_counted_literal	(raptor_world* world, const unsigned char* literal, size_t literal_len, raptor_uri* datatype, const unsigned char* language, unsigned char language_len)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_new_term_from_uri	(raptor_world* world, raptor_uri* uri)	-
 1.4.21	-	-	-	1.9.0	raptor_uri*	raptor_new_uri_from_counted_string	(raptor_world* world, const unsigned char* uri_string, size_t length)	-
 1.4.21	-	-	-	1.9.0	const char*	raptor_option_get_value_type_label	(const raptor_option_value_type type)	-

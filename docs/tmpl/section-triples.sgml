@@ -99,6 +99,20 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_term_from_counted_literal ##### -->
+<para>
+
+</para>
+
+@world: 
+@literal: 
+@literal_len: 
+@datatype: 
+@language: 
+@language_len: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_term_from_uri ##### -->
 <para>
 
@@ -187,7 +201,56 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @object: 
 @graph: 
 
+<!-- ##### FUNCTION raptor_new_statement ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_statement_from_nodes ##### -->
+<para>
+
+</para>
+
+@world: 
+@subject: 
+@predicate: 
+@object: 
+@graph: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_free_statement ##### -->
+<para>
+
+</para>
+
+@statement: 
+
+
+<!-- ##### FUNCTION raptor_statement_copy ##### -->
+<para>
+
+</para>
+
+@statement: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_statement_compare ##### -->
+<para>
+
+</para>
+
+@s1: 
+@s2: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_statement_equals ##### -->
 <para>
 
 </para>
@@ -206,7 +269,7 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @world: 
 
 
-<!-- ##### FUNCTION raptor_free_statement ##### -->
+<!-- ##### FUNCTION raptor_statement_clear ##### -->
 <para>
 
 </para>
@@ -241,6 +304,7 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 
 @statement: 
 @iostr: 
+@write_graph_term: 
 @Returns: 
 
 

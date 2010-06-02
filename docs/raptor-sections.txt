@@ -68,6 +68,7 @@ raptor_term_blank_value
 raptor_term_literal_value
 raptor_new_term_from_blank
 raptor_new_term_from_literal
+raptor_new_term_from_counted_literal
 raptor_new_term_from_uri
 raptor_term_copy
 raptor_term_compare
