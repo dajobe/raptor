@@ -916,6 +916,8 @@ raptor_term* raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri);
 RAPTOR_API
 raptor_term* raptor_new_term_from_literal(raptor_world* world, const unsigned char* literal, raptor_uri* datatype, const unsigned char* language);
 RAPTOR_API
+raptor_term* raptor_new_term_from_counted_literal(raptor_world* world, const unsigned char* literal, size_t literal_len, raptor_uri* datatype, const unsigned char* language, unsigned char language_len);
+RAPTOR_API
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 RAPTOR_API
 raptor_term* raptor_term_copy(raptor_term* term);

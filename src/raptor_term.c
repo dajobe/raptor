@@ -79,6 +79,97 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 
 
 /**
+ * raptor_new_term_from_counted_literal:
+ * @world: raptor world
+ * @literal: literal data (or NULL for empty literal)
+ * @literal_len: length of literal
+ * @datatype: literal datatype URI (or NULL)
+ * @language: literal language (or NULL for no language)
+ * @language_len: literal language length
+ *
+ * Constructor - create a new literal statement term
+ *
+ * Takes copies of the passed in @literal, @datatype, @language
+ *
+ * Only one of @language or @datatype may be given.  If both are
+ * given, NULL is returned.  If @language is the empty string, it is
+ * the equivalent to NULL.
+ *
+ * Return value: new term or NULL on failure
+*/
+raptor_term*
+raptor_new_term_from_counted_literal(raptor_world* world,
+                                     const unsigned char* literal,
+                                     size_t literal_len,
+                                     raptor_uri* datatype,
+                                     const unsigned char* language,
+                                     unsigned char language_len)
+{
+  raptor_term *t;
+  unsigned char* new_literal = NULL;
+  unsigned char* new_language = NULL;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
+  if(language && !*language)
+    language = NULL;
+
+  if(language && datatype)
+    return NULL;
+  
+
+  new_literal = (unsigned char*)RAPTOR_MALLOC(cstring, literal_len + 1);
+  if(!new_literal)
+    return NULL;
+
+  if(!literal || !*literal)
+    literal_len = 0;
+
+  if(literal_len)
+    memcpy(new_literal, literal, literal_len + 1);
+  else
+    *new_literal = '\0';
+
+  if(language) {
+    new_language = (unsigned char*)RAPTOR_MALLOC(cstring, language_len + 1);
+    if(!new_language) {
+      RAPTOR_FREE(cstring, new_literal);
+      return NULL;
+    }
+    memcpy(new_language, language, language_len + 1);
+  } else
+    language_len = 0;
+
+  if(datatype)
+    datatype = raptor_uri_copy(datatype);
+  
+
+  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
+  if(!t) {
+    if(new_literal)
+      RAPTOR_FREE(cstring, new_literal);
+    if(new_language)
+      RAPTOR_FREE(cstring, new_language);
+    if(datatype)
+      raptor_free_uri(datatype);
+    return NULL;
+  }
+  t->usage = 1;
+  t->world = world;
+  t->type = RAPTOR_TERM_TYPE_LITERAL;
+  t->value.literal.string = new_literal;
+  t->value.literal.string_len = literal_len;
+  t->value.literal.language = new_language;
+  t->value.literal.language_len = language_len;
+  t->value.literal.datatype = datatype;
+
+  return t;
+}
+
+
+/**
  * raptor_new_term_from_literal:
  * @world: raptor world
  * @literal: literal data (or NULL for empty literal)
@@ -101,75 +192,21 @@ raptor_new_term_from_literal(raptor_world* world,
                              raptor_uri* datatype,
                              const unsigned char* language)
 {
-  raptor_term *t;
-  unsigned char* new_literal = NULL;
-  unsigned char* new_language = NULL;
-  unsigned int literal_len = 0;
+  size_t literal_len = 0;
   unsigned char language_len = 0;
-
+  
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
-  if(language && !*language)
-    language = NULL;
-
-  if(language && datatype)
-    return NULL;
-  
   if(literal)
     literal_len = strlen((const char*)literal);
 
-  new_literal = (unsigned char*)RAPTOR_MALLOC(cstring, literal_len + 1);
-  if(!new_literal)
-    return NULL;
-
-  if(literal_len)
-    memcpy(new_literal, literal, literal_len + 1);
-  else
-    *new_literal = '\0';
-
-  if(language && datatype) {
-    raptor_log_error(world, RAPTOR_LOG_LEVEL_WARN, NULL,
-                     "Ignoring language used with datatyped literal");
-    language = NULL;
-  }
-  
-
-  if(language) {
+  if(language)
     language_len = strlen((const char*)language);
-
-    new_language = (unsigned char*)RAPTOR_MALLOC(cstring, language_len + 1);
-    if(!new_language) {
-      RAPTOR_FREE(cstring, new_literal);
-      return NULL;
-    }
-    memcpy(new_language, language, language_len + 1);
-  }
-
-  if(datatype)
-    datatype = raptor_uri_copy(datatype);
   
-  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
-  if(!t) {
-    if(new_literal)
-      RAPTOR_FREE(cstring, new_literal);
-    if(new_language)
-      RAPTOR_FREE(cstring, new_language);
-    if(datatype)
-      raptor_free_uri(datatype);
-    return NULL;
-  }
-  t->usage = 1;
-  t->world = world;
-  t->type = RAPTOR_TERM_TYPE_LITERAL;
-  t->value.literal.string = new_literal;
-  t->value.literal.string_len = literal_len;
-  t->value.literal.language = new_language;
-  t->value.literal.language_len = language_len;
-  t->value.literal.datatype = datatype;
-
-  return t;
+  return raptor_new_term_from_counted_literal(world, literal, literal_len,
+                                              datatype, language, language_len);
 }
 
 
