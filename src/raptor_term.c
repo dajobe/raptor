@@ -272,10 +272,8 @@ raptor_new_term_from_counted_blank(raptor_world* world,
 raptor_term*
 raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 {
-  raptor_term *t;
-  unsigned char* new_id;
-  size_t len;
-
+  size_t length;
+  
   if(!blank)
     return NULL;
   
@@ -283,9 +281,9 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 
   raptor_world_open(world);
 
-  len = strlen((char*)blank);
+  length = strlen((const char*)blank);
 
-  return raptor_new_term_from_counted_blank(world, blank, len);
+  return raptor_new_term_from_counted_blank(world, blank, length);
 }
 
 
