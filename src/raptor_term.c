@@ -211,6 +211,54 @@ raptor_new_term_from_literal(raptor_world* world,
 
 
 /**
+ * raptor_new_term_from_counted_blank:
+ * @world: raptor world
+ * @blank: blank node identifier
+ * @length: length of idnetifier
+ *
+ * Constructor - create a new blank node statement term from counted string ID
+ *
+ * Takes a copy of the passed in @blank
+ *
+ * Return value: new term or NULL on failure
+*/
+raptor_term*
+raptor_new_term_from_counted_blank(raptor_world* world,
+                                   const unsigned char* blank, size_t length)
+{
+  raptor_term *t;
+  unsigned char* new_id;
+
+  if(!blank)
+    return NULL;
+  
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
+  new_id = (unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
+  if(!new_id)
+    return NULL;
+
+  memcpy(new_id, blank, length + 1);
+
+  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
+  if(!t) {
+    RAPTOR_FREE(cstring, new_id);
+    return NULL;
+  }
+
+  t->usage = 1;
+  t->world = world;
+  t->type = RAPTOR_TERM_TYPE_BLANK;
+  t->value.blank.string = new_id;
+  t->value.blank.string_len = length;
+
+  return t;
+}
+
+
+/**
  * raptor_new_term_from_blank:
  * @world: raptor world
  * @blank: blank node identifier
@@ -236,23 +284,8 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
   raptor_world_open(world);
 
   len = strlen((char*)blank);
-  new_id = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
-  if(!new_id)
-    return NULL;
-  memcpy(new_id, blank, len + 1);
 
-  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
-  if(!t) {
-    RAPTOR_FREE(cstring, new_id);
-    return NULL;
-  }
-  t->usage = 1;
-  t->world = world;
-  t->type = RAPTOR_TERM_TYPE_BLANK;
-  t->value.blank.string = new_id;
-  t->value.blank.string_len = len;
-
-  return t;
+  return raptor_new_term_from_counted_blank(world, blank, len);
 }
 
 

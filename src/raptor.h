@@ -920,6 +920,8 @@ raptor_term* raptor_new_term_from_counted_literal(raptor_world* world, const uns
 RAPTOR_API
 raptor_term* raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank);
 RAPTOR_API
+raptor_term* raptor_new_term_from_counted_blank(raptor_world* world, const unsigned char* blank, size_t length);
+RAPTOR_API
 raptor_term* raptor_term_copy(raptor_term* term);
 RAPTOR_API
 int raptor_term_compare(const raptor_term *t1, const raptor_term *t2);
