@@ -2,7 +2,7 @@
  *
  * grapper.c - Raptor GTK GUI example code
  *
- * Copyright (C) 2003-2007, David Beckett http://purl.org/net/dajobe/
+ * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -58,9 +58,9 @@
 #undef GRAPPER_QNAMES
 
 
-static const char *application_name="Grapper";
-static const char *application_title="Grapper GUI RDF Parser Utility";
-static const char *application_description="GUI RDF parser utility based on the Raptor RDF parsing library";
+static const char *application_name = "Grapper";
+static const char *application_title = "Grapper GUI RDF Parser Utility";
+static const char *application_description = "GUI RDF parser utility based on the Raptor RDF parsing library";
 
 
 /* Top level window */
@@ -68,7 +68,7 @@ static GtkWidget *grapper_window;
 
 
 /* GConf */
-static GConfClient *gconf_client=NULL;
+static GConfClient *gconf_client = NULL;
 
 #define GCONF_GRAPPER_NAMESPACE "/apps/grapper"
 
@@ -76,9 +76,9 @@ static GConfClient *gconf_client=NULL;
 static const gchar* gconf_namespace= GCONF_GRAPPER_NAMESPACE;
 
 /* window width key */
-static const gchar* width_gconf_key=(const gchar*) GCONF_GRAPPER_NAMESPACE "/width";
+static const gchar* width_gconf_key = (const gchar*) GCONF_GRAPPER_NAMESPACE "/width";
 /* window height key */
-static const gchar* height_gconf_key=(const gchar*) GCONF_GRAPPER_NAMESPACE "/height";
+static const gchar* height_gconf_key = (const gchar*) GCONF_GRAPPER_NAMESPACE "/height";
 
 #define MIN_WINDOW_WIDTH 400
 #define MIN_WINDOW_HEIGHT 300
@@ -210,13 +210,17 @@ grapper_view_empty_triples(grapper_state *state)
   gtk_list_store_clear(state->errors_store);
 }
 
+
 static void
-grapper_view_reset_status(grapper_state *state) {
+grapper_view_reset_status(grapper_state *state)
+{
   gtk_list_store_clear(state->errors_store);
 }
 
+
 static void
-grapper_view_update_error_count(grapper_state *state) {
+grapper_view_update_error_count(grapper_state *state) 
+{
 #define EC_BUF_LEN 18
   char buf[EC_BUF_LEN+1];
   int count=state->errors_count;
@@ -229,13 +233,15 @@ grapper_view_update_error_count(grapper_state *state) {
   gtk_frame_set_label(GTK_FRAME(state->errors_frame), buf);
 }
 
+
 static void
 grapper_view_add_error_message(grapper_state *state, gchar *error,
-                               raptor_locator *locator, int is_error) {
+                               raptor_locator *locator, int is_error)
+{
   if(error) {
-    GtkListStore *store=state->errors_store;
+    GtkListStore *store = state->errors_store;
     GtkTreeIter iter;
-    int line=(locator && locator->line >=0) ? locator->line : 0;
+    int line = (locator && locator->line >= 0) ? locator->line : 0;
 
     gtk_list_store_append(store, &iter);
     gtk_list_store_set(store, &iter, 
@@ -274,18 +280,21 @@ grapper_model_set_url(grapper_state *state, const unsigned char *url)
   if(state->url) {
     if(!strcmp((const char*)state->url, (const char*)url))
       return;
+
     g_free(state->url);
   }
   
-  state->url=(unsigned char*)g_strdup((const char*)url);
+  state->url = (unsigned char*)g_strdup((const char*)url);
   strcpy((char*)state->url, (const char*)url);
 
   grapper_view_url_changed(state);
 }
 
+
 #ifdef GRAPPER_QNAMES
 static void
-grapper_model_set_qnames (grapper_state *state, int qnames) {
+grapper_model_set_qnames (grapper_state *state, int qnames)
+{
   if(state->qnames == qnames)
     return;
   
@@ -294,8 +303,10 @@ grapper_model_set_qnames (grapper_state *state, int qnames) {
 }
 #endif
 
+
 static void
-grapper_model_set_guess (grapper_state *state, int guess) {
+grapper_model_set_guess (grapper_state *state, int guess)
+{
   if(state->guess == guess)
     return;
   
@@ -304,7 +315,8 @@ grapper_model_set_guess (grapper_state *state, int guess) {
 }
 
 static void
-grapper_model_set_option(grapper_state *state, int option, int value) {
+grapper_model_set_option(grapper_state *state, int option, int value)
+{
   if(state->options[option] == value)
     return;
   
@@ -313,8 +325,10 @@ grapper_model_set_option(grapper_state *state, int option, int value) {
   grapper_view_option_changed(state, option);
 }
 
+
 static void
-grapper_model_set_syntax (grapper_state *state, unsigned int syntax) {
+grapper_model_set_syntax (grapper_state *state, unsigned int syntax)
+{
   if(state->syntax == syntax)
     return;
   
@@ -322,12 +336,13 @@ grapper_model_set_syntax (grapper_state *state, unsigned int syntax) {
   grapper_view_syntax_changed(state);
 }
 
+
 static void
 grapper_model_reset_counts(grapper_state *state) 
 {
-  state->triples_count=0;
-  state->warnings_count=0;
-  state->errors_count=0;
+  state->triples_count = 0;
+  state->warnings_count = 0;
+  state->errors_count = 0;
   grapper_view_update_error_count(state);
 }
 
@@ -337,7 +352,7 @@ grapper_model_reset_error(grapper_state *state)
 {
   if(state->error) {
     g_free(state->error);
-    state->error=NULL;
+    state->error = NULL;
   }
   grapper_view_reset_status(state);
 }
@@ -374,10 +389,9 @@ grapper_model_log_handler(void *data, raptor_log_message *message)
 
 
 static void
-grapper_model_statements_handler(void *data,
-                                 raptor_statement *statement)
+grapper_model_statements_handler(void *data, raptor_statement *statement)
 {
-  grapper_state* state=(grapper_state*)data;
+  grapper_state* state = (grapper_state*)data;
   unsigned char* nodes[3];
   
   nodes[0] = raptor_term_as_string(statement->subject);
@@ -414,12 +428,14 @@ grapper_model_parse(grapper_state *state)
   
 
   if(state->guess) {
-    rdf_parser = raptor_new_parser_for_content(state->world, NULL, NULL, NULL, 0, state->url);
+    rdf_parser = raptor_new_parser_for_content(state->world, NULL, NULL, NULL,
+                                               0, state->url);
     if(!rdf_parser) {
       fprintf(stderr, "Failed to create guessed raptor parser from uri %s\n",
               state->url);
       exit(1);
     }
+
     fprintf(stdout, "Guessed parser name '%s' from uri %s\n",
             raptor_parser_get_name(rdf_parser), state->url);
   } else {
@@ -427,13 +443,14 @@ grapper_model_parse(grapper_state *state)
   }
   
 
-  for(i=0; i <= RAPTOR_OPTION_LAST; i++) {
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
     if(state->options_set[i])
       raptor_parser_set_option(rdf_parser, i, NULL, state->options[i]);
   }
 
   raptor_world_set_log_handler(state->world, state, grapper_model_log_handler);
-  raptor_parser_set_statement_handler(rdf_parser, state, grapper_model_statements_handler);
+  raptor_parser_set_statement_handler(rdf_parser, state,
+                                      grapper_model_statements_handler);
 
   raptor_parser_parse_uri(rdf_parser, uri, NULL);
 
@@ -447,11 +464,15 @@ grapper_model_parse(grapper_state *state)
 static void
 url_entry_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
-  GtkWidget *url_entry=state->url_entry;
-  grapper_model_set_url(state, (const unsigned char*)gtk_entry_get_text(GTK_ENTRY(url_entry)));
+  grapper_state* state = (grapper_state*)data;
+  GtkWidget *url_entry = state->url_entry;
+  const unsigned char* url;
+
+  url = (const unsigned char*)gtk_entry_get_text(GTK_ENTRY(url_entry));
+  grapper_model_set_url(state, url);
   grapper_model_parse(state);
 }
+
 
 #if GTK_CHECK_VERSION(2,4,0)
 #else
@@ -459,16 +480,16 @@ url_entry_callback(GtkWidget *widget, gpointer data)
 static void
 fs_ok_button_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
-  GtkWidget *files=state->file_selection;
+  grapper_state* state = (grapper_state*)data;
+  GtkWidget *files = state->file_selection;
   unsigned char *uri_string;
   
-  state->filename=(gchar*)gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
+  state->filename = (gchar*)gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
   
   uri_string = raptor_uri_filename_to_uri_string(state->filename);
   
   gtk_widget_destroy(files);
-  state->file_selection=NULL;
+  state->file_selection = NULL;
 
   grapper_model_set_url(state, uri_string);
   free(uri_string);
@@ -477,27 +498,28 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
 }
 #endif
 
+
 /* open button clicked callback */
 static void
 open_button_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
+  grapper_state* state = (grapper_state*)data;
 
 #if GTK_CHECK_VERSION(2,4,0)
   unsigned char *uri_string;
-  GtkWidget *files=gtk_file_chooser_dialog_new("Open",
-                                               GTK_WINDOW(state->window),
-                                               GTK_FILE_CHOOSER_ACTION_OPEN,
-                                               GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                               GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                                               NULL);
+  GtkWidget *files = gtk_file_chooser_dialog_new("Open",
+                                                 GTK_WINDOW(state->window),
+                                                 GTK_FILE_CHOOSER_ACTION_OPEN,
+                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+                                                 NULL);
 
   if(state->filename)
     gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(files), state->filename);
 
   if (gtk_dialog_run(GTK_DIALOG (files)) == GTK_RESPONSE_ACCEPT) {
-    state->filename=gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(files));
-    uri_string=(unsigned char*)gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(files));
+    state->filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(files));
+    uri_string = (unsigned char*)gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(files));
     grapper_model_set_url(state, uri_string);
     g_free(uri_string);
 
@@ -506,12 +528,12 @@ open_button_callback(GtkWidget *widget, gpointer data)
   gtk_widget_destroy(files);
 
 #else  
-  GtkWidget *files=gtk_file_selection_new("Open");
+  GtkWidget *files = gtk_file_selection_new("Open");
 
   if(state->filename)
     gtk_file_selection_set_filename(GTK_FILE_SELECTION(files), state->filename);
   
-  state->file_selection=files;
+  state->file_selection = files;
   
   /* Connect the ok_button to fs_ok_button_callback */
   g_signal_connect (G_OBJECT (GTK_FILE_SELECTION (files)->ok_button),
@@ -538,8 +560,8 @@ quit_callback(GtkWidget *widget, gpointer data)
 static void
 option_menu_toggled(GtkCheckMenuItem *checkmenuitem, gpointer data)
 {
-  grapper_widget_data* sbdata=(grapper_widget_data*)data;
-  int active=gtk_check_menu_item_get_active(checkmenuitem);
+  grapper_widget_data* sbdata = (grapper_widget_data*)data;
+  int active = gtk_check_menu_item_get_active(checkmenuitem);
 
   grapper_model_set_option(sbdata->state, sbdata->option, active);
 }
@@ -550,19 +572,20 @@ option_menu_toggled(GtkCheckMenuItem *checkmenuitem, gpointer data)
 static void
 qnames_button_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
-  int active=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
+  grapper_state* state = (grapper_state*)data;
+  int active = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
   
   grapper_model_set_qnames(state, active);
 }
 #endif
 
+
 /* guess button clicked callback */
 static void
 guess_button_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
-  int active=(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
+  grapper_state* state = (grapper_state*)data;
+  int active = (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (widget)) != 0);
   
   grapper_model_set_guess(state, active);
 }
@@ -572,9 +595,9 @@ guess_button_callback(GtkWidget *widget, gpointer data)
 static void
 syntax_menu_callback(GtkWidget *widget, gpointer data)
 {
-  grapper_state* state=(grapper_state*)data;
+  grapper_state* state = (grapper_state*)data;
  
-  unsigned int syntax=(unsigned int)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
+  unsigned int syntax = (unsigned int)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
   
   grapper_model_set_syntax(state, syntax);
 }
@@ -586,6 +609,7 @@ delete_event_callback(GtkWidget *widget, GdkEvent  *event, gpointer data)
 {
   return FALSE; /* continue normal event handing */
 }
+
 
 /* destroy callback */
 static void
@@ -612,11 +636,11 @@ quit_menu_callback(gpointer data, guint action, GtkWidget *widget)
 static void
 about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 {
-  grapper_state* state=(grapper_state*)data;
+  grapper_state* state = (grapper_state*)data;
 
 #if GTK_CHECK_VERSION(2,5,0)
   /* 2.5.x about widget */
-  const gchar* authors[2]= { "Dave Beckett http://purl.org/net/dajobe/", NULL };
+  const gchar* authors[2]= { "Dave Beckett http://www.dajobe.org/", NULL };
 
 #if 1
   /* using 2.5.x stock about */
@@ -634,11 +658,13 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
   /* using 2.5.x by hand about */
   GtkWidget *about;
 
-  about=gtk_about_dialog_new();
+  about = gtk_about_dialog_new();
   gtk_about_dialog_set_name(GTK_ABOUT_DIALOG(about), application_name);
   gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(about), raptor_version_string);
-  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about), raptor_short_copyright_string);
-  gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about), application_description);
+  gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(about),
+                                 raptor_short_copyright_string);
+  gtk_about_dialog_set_comments(GTK_ABOUT_DIALOG(about),
+                                application_description);
   gtk_about_dialog_set_license(GTK_ABOUT_DIALOG(about), raptor_license_string);
   gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(about), raptor_home_url_string);
   gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), "Raptor");
@@ -651,16 +677,16 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
   GtkWidget *about;
   GtkWidget *label;
 
-  label=(GtkWidget*)application_description; /* mention it for gcc -Wannoy */
+  label = (GtkWidget*)application_description; /* mention it for gcc -Wannoy */
   
   /* GTK < 2.6.0 */
-  about=gtk_dialog_new_with_buttons("About Grapper", 
-                                    GTK_WINDOW(state->window), 
-                                    GTK_DIALOG_DESTROY_WITH_PARENT,
-                                    GTK_STOCK_OK,
-                                    GTK_RESPONSE_NONE,
-                                    NULL);
-  label = gtk_label_new ("Grapper\nGUI RDF parser utility\n (C) 2003-2004 Dave Beckett");
+  about = gtk_dialog_new_with_buttons("About Grapper", 
+                                      GTK_WINDOW(state->window), 
+                                      GTK_DIALOG_DESTROY_WITH_PARENT,
+                                      GTK_STOCK_OK,
+                                      GTK_RESPONSE_NONE,
+                                      NULL);
+  label = gtk_label_new ("Grapper\nGUI RDF parser utility\n (C) 2003-2010 Dave Beckett");
   /* Connect the dialog response to about_response_callback */
   g_signal_connect_swapped (G_OBJECT (about), "response",
                     G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(about));
@@ -739,23 +765,23 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   /* gtk_container_set_border_width (GTK_CONTAINER (v_box), 10); */
 
-  state->v_box=v_box;
+  state->v_box = v_box;
   
 
   /* acceleration group for menu bar*/
-  accel_group=gtk_accel_group_new();
+  accel_group = gtk_accel_group_new();
 
 
   /* Menu bar */
-  menu_item_factory=gtk_item_factory_new(GTK_TYPE_MENU_BAR, 
-                                         "<Main>", accel_group);
+  menu_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, 
+                                           "<Main>", accel_group);
   gtk_item_factory_create_items(menu_item_factory,
                                 menu_item_factory_nentries,
                                 menu_item_factory_entries,
                                 state);
   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
   
-  menu_bar=gtk_item_factory_get_widget (menu_item_factory, "<Main>");
+  menu_bar = gtk_item_factory_get_widget (menu_item_factory, "<Main>");
   gtk_widget_show(menu_bar);
   
 
@@ -767,7 +793,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* url text entry in horizontal box */
-  url_entry=gtk_entry_new();
+  url_entry = gtk_entry_new();
   gtk_entry_set_max_length(GTK_ENTRY(url_entry), 200);
   /* connect text entry activate (enter key) callback */
   g_signal_connect (G_OBJECT(url_entry), "activate",
@@ -778,7 +804,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_box_pack_start(GTK_BOX(box), url_entry, TRUE, TRUE, 0);
 
   gtk_widget_show(url_entry);
-  state->url_entry=url_entry;
+  state->url_entry = url_entry;
 
   /* go button in horizontal box */
   go_button = gtk_button_new_from_stock(GTK_STOCK_OK);
@@ -812,8 +838,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   qnames_button = gtk_check_button_new_with_label("QNames");
 
   qnames_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (qnames_tooltips, qnames_button, "Display URIs as XML QNames", NULL);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button), (state->qnames));
+  gtk_tooltips_set_tip (qnames_tooltips, qnames_button,
+                        "Display URIs as XML QNames", NULL);
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button),
+                               (state->qnames));
 
   /* connect button clicked event to callback */
   g_signal_connect (G_OBJECT (qnames_button), "clicked",
@@ -829,7 +857,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   guess_button = gtk_check_button_new_with_label("Guess Syntax");
 
   guess_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (guess_tooltips, guess_button, "Try to guess the syntax from the URI", NULL);
+  gtk_tooltips_set_tip (guess_tooltips, guess_button,
+                        "Try to guess the syntax from the URI", NULL);
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(guess_button), (state->guess));
 
   /* connect button clicked event to callback */
@@ -858,15 +887,15 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* triples frame in vertical paned */
-  triples_frame=gtk_frame_new("Triples");
-  state->triples_frame=triples_frame;
+  triples_frame = gtk_frame_new("Triples");
+  state->triples_frame = triples_frame;
   
   gtk_paned_pack1(GTK_PANED (v_paned), triples_frame, TRUE, FALSE);
   gtk_widget_show(triples_frame);
 
 
   /* scroll window in triples frame */
-  triples_scrolled_window=gtk_scrolled_window_new(NULL, NULL);
+  triples_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
   gtk_container_set_border_width(GTK_CONTAINER(triples_scrolled_window), 10);
     
@@ -880,17 +909,17 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                               G_TYPE_STRING,
                               G_TYPE_STRING,
                               G_TYPE_STRING);
-  state->triples_store=store;
+  state->triples_store = store;
 
   triples_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(triples_treeview), TRUE);
   
   /* set columns renderer for treeview */
-  renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("Subject",
-                                                    renderer,
-                                                    "text", SUBJECT_COLUMN,
-                                                    NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Subject",
+                                                     renderer,
+                                                     "text", SUBJECT_COLUMN,
+                                                     NULL);
   gtk_tree_view_column_set_sort_column_id(column, SUBJECT_COLUMN);
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
@@ -904,11 +933,11 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
 
-  renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("Object",
-                                                    renderer,
-                                                    "text", OBJECT_COLUMN,
-                                                    NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Object",
+                                                     renderer,
+                                                     "text", OBJECT_COLUMN,
+                                                     NULL);
   gtk_tree_view_column_set_sort_column_id(column, OBJECT_COLUMN);
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
@@ -921,7 +950,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   /* errors frame in vertical paned */
   errors_frame = gtk_frame_new ("Errors");
-  state->errors_frame=errors_frame;
+  state->errors_frame = errors_frame;
 
   gtk_paned_pack2(GTK_PANED (v_paned), errors_frame, TRUE, FALSE);
   gtk_widget_show(errors_frame);
@@ -932,7 +961,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* scroll window in errors frame */
-  errors_scrolled_window=gtk_scrolled_window_new(NULL, NULL);
+  errors_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
   gtk_container_set_border_width(GTK_CONTAINER(errors_scrolled_window), 10);
     
@@ -942,33 +971,34 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_container_add(GTK_CONTAINER(errors_frame), errors_scrolled_window);
   gtk_widget_show(errors_scrolled_window);
 
-  errors_store = gtk_list_store_new (3, G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING);
+  errors_store = gtk_list_store_new (3, 
+                                     G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING);
   state->errors_store = errors_store;
   
   errors_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(errors_store));
   gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(errors_treeview), TRUE);
   
-  renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("Line",
-                                                    renderer,
-                                                    "text", 0,
-                                                    NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Line",
+                                                     renderer,
+                                                     "text", 0,
+                                                     NULL);
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
-  renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("Type",
-                                                    renderer,
-                                                    "text", 1,
-                                                    NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Type",
+                                                     renderer,
+                                                     "text", 1,
+                                                     NULL);
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
-  renderer= gtk_cell_renderer_text_new ();
-  column= gtk_tree_view_column_new_with_attributes ("Message",
-                                                    renderer,
-                                                    "text", 2,
-                                                    NULL);
+  renderer = gtk_cell_renderer_text_new ();
+  column = gtk_tree_view_column_new_with_attributes ("Message",
+                                                     renderer,
+                                                     "text", 2,
+                                                     NULL);
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
@@ -983,10 +1013,11 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 
-  prefs_menu=GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, "/Preferences"));
+  prefs_menu = GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, 
+                                                    "/Preferences"));
 
   /* options in the preferences menu */
-  for(i=0; i <= RAPTOR_OPTION_LAST; i++) {
+  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
     grapper_widget_data* sbdata;
     raptor_option_description* od;
 
@@ -1014,8 +1045,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* syntax button in horizontal box */
   syntax_optionmenu = gtk_option_menu_new();
 
-  syntax_menu=gtk_menu_new();
-  for(i=0; 1; i++) {
+  syntax_menu = gtk_menu_new();
+  for(i = 0; 1; i++) {
     GtkWidget *syntax_menu_item;
     const raptor_syntax_description* sd;
 
@@ -1058,8 +1089,8 @@ static void
 grapper_gconfclient_notify(GConfClient* client, guint cnxn_id,
                            GConfEntry *entry, gpointer user_data)
 {
-  /* grapper_state* state=(grapper_state*)user_data; */
-  GError* err=NULL;
+  /* grapper_state* state = (grapper_state*)user_data; */
+  GError* err = NULL;
   int width, height;
 
   gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
@@ -1068,16 +1099,16 @@ grapper_gconfclient_notify(GConfClient* client, guint cnxn_id,
   width=gconf_client_get_int(gconf_client, width_gconf_key, &err);
   if(err) {
     g_error_free(err);
-    err=NULL;
-    width= -1;
+    err = NULL;
+    width = -1;
   } else
     fprintf(stderr, "gconf width changed to %d\n", width);
   
-  height=gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  height = gconf_client_get_int(gconf_client, height_gconf_key, &err);
   if(err) {
     g_error_free(err);
-    err=NULL;
-    height= -1;
+    err = NULL;
+    height = -1;
   } else
     fprintf(stderr, "gconf height changed to %d\n", width);
 
@@ -1102,20 +1133,20 @@ static gint
 configure_callback(GtkWidget *widget, GdkEventConfigure *event)
 {
   gint width, height;
-  GError* err=NULL;
+  GError* err = NULL;
 
   gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
 
   if(!gconf_client_set_int(gconf_client, width_gconf_key, width, &err)) {
     fprintf(stderr, "gconf error writing width: %s\n", err->message);
     g_error_free(err);
-    err=NULL;
+    err = NULL;
   }
 
   if(!gconf_client_set_int(gconf_client, height_gconf_key, height, &err)) {
     fprintf(stderr, "gconf error writing width: %s\n", err->message);
     g_error_free(err);
-    err=NULL;
+    err = NULL;
   }
 
   return FALSE;
@@ -1127,7 +1158,7 @@ int
 main(int argc, char *argv[])
 {
   grapper_state state;
-  GError* err=NULL;
+  GError* err = NULL;
   guint cnxn;
   int width, height;
   
@@ -1139,34 +1170,34 @@ main(int argc, char *argv[])
 
   state.world = raptor_new_world();
   
-  gconf_client=gconf_client_get_default();
+  gconf_client = gconf_client_get_default();
 
-  cnxn=gconf_client_notify_add(gconf_client, gconf_namespace,
-                               grapper_gconfclient_notify,
-                               (gpointer)&state, /* user data */
-                               grapper_gconflient_free,
-                               &err);
+  cnxn = gconf_client_notify_add(gconf_client, gconf_namespace,
+                                 grapper_gconfclient_notify,
+                                 (gpointer)&state, /* user data */
+                                 grapper_gconflient_free,
+                                 &err);
 
   /* create the main window */
   grapper_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-  gtk_window_set_title (GTK_WINDOW(grapper_window), application_title);
+  gtk_window_set_title(GTK_WINDOW(grapper_window), application_title);
 
   init_grapper_window(grapper_window, &state);
 
-  width=gconf_client_get_int(gconf_client, width_gconf_key, &err);
+  width = gconf_client_get_int(gconf_client, width_gconf_key, &err);
   if(err) {
     fprintf(stderr, "gconf error reading width: %s\n", err->message);
     g_error_free(err);
-    err=NULL;
+    err = NULL;
     width= -1;
   }
 
-  height=gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  height = gconf_client_get_int(gconf_client, height_gconf_key, &err);
   if(err) {
     fprintf(stderr, "gconf error reading height: %s\n", err->message);
     g_error_free(err);
-    err=NULL;
+    err = NULL;
     height= -1;
   }
 
