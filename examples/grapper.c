@@ -660,7 +660,7 @@ static GtkActionEntry menu_actions[] = {
   { "OpenAction", GTK_STOCK_OPEN, "_Open", (gchar*)"<control>O",  "Open a file", G_CALLBACK ( open_menu_callback ) },
   { "QuitAction", GTK_STOCK_QUIT, "_Quit", (gchar*)"<control>Q",  "Quit", G_CALLBACK ( quit_menu_callback ) },
 
-  { "AboutAction", NULL, NULL, NULL, "About", G_CALLBACK ( about_menu_callback ) } 
+  { "AboutAction", GTK_STOCK_ABOUT, NULL, NULL, "About", G_CALLBACK ( about_menu_callback ) } 
 };
 
 static gint menu_actions_nentries = G_N_ELEMENTS (menu_actions);
@@ -753,8 +753,9 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_widget_show(menu_bar);
 #else
   action_group = gtk_action_group_new("Actions");
-  gtk_action_group_add_actions (action_group, menu_actions,
-                                menu_actions_nentries, NULL);
+  gtk_action_group_add_actions (action_group,
+                                menu_actions, menu_actions_nentries,
+                                state);
   menu_manager = gtk_ui_manager_new ();
   gtk_ui_manager_insert_action_group (menu_manager, action_group, 0);
   error = NULL;
