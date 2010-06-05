@@ -558,8 +558,9 @@ static void
 syntax_menu_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state = (grapper_state*)data;
- 
-  unsigned int syntax = (unsigned int)gtk_option_menu_get_history(GTK_OPTION_MENU(widget));
+  unsigned int syntax;
+
+  syntax = (unsigned int)gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
   
   grapper_model_set_syntax(state, syntax);
 }
@@ -665,8 +666,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *qnames_button;
 #endif
   GtkWidget *guess_button;
-  GtkWidget *syntax_optionmenu;
-  GtkWidget *syntax_menu;
+  GtkWidget *syntax_combo_box;
   GtkWidget *url_entry;
   GtkWidget *triples_frame, *prefs_frame;
   GtkWidget *triples_scrolled_window;
@@ -684,6 +684,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *errors_frame, *errors_scrolled_window;
   GtkWidget *errors_treeview;
   GtkListStore *errors_store;
+#ifdef SYNTAX_LIST_STORE
+  GtkListStore *syntax_list_store;
+  GtkTreeIter iter;
+#endif
 
   state->window=window;
   
@@ -980,37 +984,55 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* syntax button in horizontal box */
-  syntax_optionmenu = gtk_option_menu_new();
+#ifdef SYNTAX_LIST_STORE
+  /* Create combo box with data model behind */
+  syntax_combo_box = gtk_combo_box_new();
 
-  syntax_menu = gtk_menu_new();
+  syntax_list_store = gtk_list_store_new(/* N columns */ 1, G_TYPE_STRING);
   for(i = 0; 1; i++) {
-    GtkWidget *syntax_menu_item;
     const raptor_syntax_description* sd;
 
     sd = raptor_world_get_parser_description(state->world, i);
     if(!sd)
       break;
 
-    syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)sd->label);
-    gtk_widget_show (syntax_menu_item);
-    gtk_menu_shell_append(GTK_MENU_SHELL(syntax_menu), syntax_menu_item);
+    gtk_list_store_append(syntax_list_store, &iter);
+    gtk_list_store_set(syntax_list_store, &iter, 
+                       /* column */ 0, (const gchar*)sd->label,
+                       -1);
   }
+  gtk_combo_box_set_model(GTK_COMBO_BOX(syntax_combo_box), 
+                          GTK_TREE_MODEL(syntax_list_store));
+#else
+  /* Create combo box using text API */
+  syntax_combo_box = gtk_combo_box_new_text();
 
-  g_signal_connect (GTK_OBJECT(syntax_optionmenu), "changed",
-                    G_CALLBACK (syntax_menu_callback), state);
+  for(i = 0; 1; i++) {
+    const raptor_syntax_description* sd;
 
-  gtk_option_menu_set_menu(GTK_OPTION_MENU(syntax_optionmenu), syntax_menu);
+    sd = raptor_world_get_parser_description(state->world, i);
+    if(!sd)
+      break;
+
+    gtk_combo_box_append_text(GTK_COMBO_BOX (syntax_combo_box),
+                              (const gchar*)sd->label);
+  }
+#endif
+
+  g_signal_connect(GTK_OBJECT(syntax_combo_box), "changed",
+                   G_CALLBACK(syntax_menu_callback), state);
 
   /* Default is item 0 (should be RDF/XML) */
-  gtk_option_menu_set_history(GTK_OPTION_MENU(syntax_optionmenu), 0);
+  gtk_combo_box_set_active(GTK_COMBO_BOX(syntax_combo_box), 0);
 
   syntax_tooltips = gtk_tooltips_new ();
-  gtk_tooltips_set_tip (syntax_tooltips, syntax_optionmenu, "Chose the Syntax to parse", NULL);
+  gtk_tooltips_set_tip (syntax_tooltips, syntax_combo_box,
+                        "Chose the Syntax to parse", NULL);
 
   /* pack into the invisible box */
-  gtk_box_pack_start (GTK_BOX(prefs_box), syntax_optionmenu, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX(prefs_box), syntax_combo_box, TRUE, TRUE, 0);
 
-  gtk_widget_show (syntax_optionmenu);
+  gtk_widget_show (syntax_combo_box);
 
 
   /* add vbox to window */
