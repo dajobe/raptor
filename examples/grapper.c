@@ -1013,9 +1013,11 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* Pack it to the combo box */
   gtk_cell_layout_pack_start( GTK_CELL_LAYOUT ( syntax_combo_box ), cell, TRUE);
 
-  /* Connect renderer to data source */
+  /* Connect renderer to data source: attr "text" is column 0 in data model */
   gtk_cell_layout_set_attributes ( GTK_CELL_LAYOUT ( syntax_combo_box ),
-                                   cell, "text", 0, NULL);
+                                   cell,
+                                   /* attribute */ "text", /* column */ 0,
+                                   NULL);
 
 #else
   /* Create combo box using text API */
