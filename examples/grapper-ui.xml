@@ -4,9 +4,11 @@
       <menuitem name="Open" action="OpenAction" />
       <menuitem name="Quit" action="QuitAction" />
     </menu>
+
     <menu name="PreferencesMenu" action="PreferencesMenuAction">
       <placeholder name="PreferencesMenuAdditions" />
     </menu>
+
     <menu name="HelpMenu" action="HelpMenuAction">
       <menuitem name="About" action="AboutAction"/>
     </menu>

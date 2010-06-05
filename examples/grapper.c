@@ -64,6 +64,8 @@
 /* Qnames button does nothing */
 #undef GRAPPER_QNAMES
 
+/* GtkUIManager and external XML file is too damn complex to make work */
+#define ITEM_FACTORY 1
 
 static const char *application_name = "Grapper";
 static const char *application_title = "Grapper GUI RDF Parser Utility";
@@ -634,7 +636,7 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 #endif
 }
 
-
+#ifdef ITEM_FACTORY
 static GtkItemFactoryEntry menu_item_factory_entries[] = {
   /* path,     accelerator,  callback, callback_action, item_type, extra_data */
   { (gchar*)"/_File",         NULL,      NULL,         0, (gchar*)"<Branch>" },
@@ -647,6 +649,22 @@ static GtkItemFactoryEntry menu_item_factory_entries[] = {
 };
 
 static gint menu_item_factory_nentries = sizeof(menu_item_factory_entries) / sizeof(menu_item_factory_entries[0]);
+#else
+static GtkActionEntry menu_actions[] = {
+  /* name, stock id, label */
+  { "FileMenuAction", NULL, "_File" },
+  { "PreferencesMenuAction", NULL, "_Preferences" },
+  { "HelpMenuAction", NULL, "_Help" },
+
+  /* name, stock id, label, accelerator, tooltip, callback */
+  { "OpenAction", GTK_STOCK_OPEN, "_Open", (gchar*)"<control>O",  "Open a file", G_CALLBACK ( open_menu_callback ) },
+  { "QuitAction", GTK_STOCK_QUIT, "_Quit", (gchar*)"<control>Q",  "Quit", G_CALLBACK ( quit_menu_callback ) },
+
+  { "AboutAction", NULL, NULL, NULL, "About", G_CALLBACK ( about_menu_callback ) } 
+};
+
+static gint menu_actions_nentries = G_N_ELEMENTS (menu_actions);
+#endif
 
 
 static void
@@ -654,7 +672,6 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 {
 
   GtkAccelGroup *accel_group;
-  GtkItemFactory* menu_item_factory;
   GtkWidget *menu_bar;
   GtkMenu *prefs_menu;
   GtkWidget *v_paned;
@@ -689,6 +706,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkTreeIter iter;
   GtkCellRenderer* cell;
 #endif
+#ifdef ITEM_FACTORY
+  GtkItemFactory* menu_item_factory;
+#else
+  GtkActionGroup *action_group;
+  GtkUIManager *menu_manager;
+  GError *error;
+#endif
+
 
   state->window=window;
   
@@ -715,6 +740,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* Menu bar */
+#ifdef ITEM_FACTORY
   menu_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, 
                                            "<Main>", accel_group);
   gtk_item_factory_create_items(menu_item_factory,
@@ -725,10 +751,33 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   
   menu_bar = gtk_item_factory_get_widget (menu_item_factory, "<Main>");
   gtk_widget_show(menu_bar);
+#else
+  action_group = gtk_action_group_new("Actions");
+  gtk_action_group_add_actions (action_group, menu_actions,
+                                menu_actions_nentries, NULL);
+  menu_manager = gtk_ui_manager_new ();
+  gtk_ui_manager_insert_action_group (menu_manager, action_group, 0);
+  error = NULL;
+  gtk_ui_manager_add_ui_from_file(menu_manager, "grapper-ui.xml", &error);
+  if (error) {
+    g_message ("Building menus failed: %s", error->message);
+    g_error_free (error);
+  }
+
+  /* get the menu bar widget */
+  menu_bar = gtk_ui_manager_get_widget(menu_manager, "/MainMenu");
+#endif
   
 
   gtk_box_pack_start (GTK_BOX (v_box), menu_bar, FALSE, FALSE, 0);
 
+
+#ifdef ITEM_FACTORY
+#else
+  /* enable keyboard shortcuts */
+  gtk_window_add_accel_group (GTK_WINDOW(window),
+                              gtk_ui_manager_get_accel_group (menu_manager));
+#endif
 
   /* horizontal box for url entry, OK, Open buttons in vertical box (v_box) */
   box = gtk_hbox_new (FALSE, 0);
@@ -955,8 +1004,13 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 
+#ifdef ITEM_FACTORY
   prefs_menu = GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, 
                                                     "/Preferences"));
+#else
+  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget(menu_manager, 
+                                                    "/PreferencesMenu"));
+#endif
 
   /* options in the preferences menu */
   for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
