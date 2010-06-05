@@ -66,6 +66,7 @@
 
 /* GtkUIManager and external XML file is too damn complex to make work */
 #define ITEM_FACTORY 1
+/* #undef ITEM_FACTORY */
 
 static const char *application_name = "Grapper";
 static const char *application_title = "Grapper GUI RDF Parser Utility";
@@ -483,12 +484,10 @@ url_entry_callback(GtkWidget *widget, gpointer data)
 }
 
 
-/* open button clicked callback */
+/* open action wanted */
 static void
-open_button_callback(GtkWidget *widget, gpointer data)
+do_open_action(grapper_state* state)
 {
-  grapper_state* state = (grapper_state*)data;
-
   unsigned char *uri_string;
   GtkWidget *files = gtk_file_chooser_dialog_new("Open",
                                                  GTK_WINDOW(state->window),
@@ -514,7 +513,7 @@ open_button_callback(GtkWidget *widget, gpointer data)
 
 /* quit callback */
 static void
-quit_callback(GtkWidget *widget, gpointer data)
+do_quit_action(grapper_state* state)
 {
   gtk_main_quit();
 }
@@ -584,24 +583,38 @@ destroy_callback(GtkWidget *widget, gpointer data)
 }
 
 
+#ifdef ITEM_FACTORY
 static void
-open_menu_callback(gpointer data, guint action, GtkWidget *widget) 
+open_menu_callback(gpointer user_data, guint action, GtkWidget *widget) 
 {
-  open_button_callback(widget, data);
+  do_open_action((grapper_state*)user_data);
 }
-
-
+#else
 static void
-quit_menu_callback(gpointer data, guint action, GtkWidget *widget)
+on_open_menu_callback(GtkAction *action, gpointer user_data)
 {
-  quit_callback(widget, data);
+  do_open_action((grapper_state*)user_data);
 }
+#endif
+
+
+#ifdef ITEM_FACTORY
+static void
+quit_menu_callback(gpointer user_data, guint action, GtkWidget *widget)
+{
+  do_quit_action((grapper_state*)user_data);
+}
+#else
+static void
+on_quit_menu_callback(GtkAction *action, gpointer user_data)
+{
+  do_quit_action((grapper_state*)user_data);
+}
+#endif
 
 
 static void
-about_menu_callback(gpointer data, guint action, GtkWidget *widget)
-{
-  grapper_state* state = (grapper_state*)data;
+do_about_action(grapper_state* state) {
   const gchar* authors[2]= { "Dave Beckett http://www.dajobe.org/", NULL };
 
 #if 1
@@ -636,6 +649,22 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 #endif
 }
 
+
+#ifdef ITEM_FACTORY
+static void
+about_menu_callback(gpointer user_data, guint action, GtkWidget *widget)
+{
+  do_about_action((grapper_state*)user_data);
+}
+#else
+static void
+on_about_menu_callback(GtkAction* action, gpointer user_data)
+{
+  do_about_action((grapper_state*)user_data);
+}
+#endif
+
+
 #ifdef ITEM_FACTORY
 static GtkItemFactoryEntry menu_item_factory_entries[] = {
   /* path,     accelerator,  callback, callback_action, item_type, extra_data */
@@ -657,10 +686,10 @@ static GtkActionEntry menu_actions[] = {
   { "HelpMenuAction", NULL, "_Help" },
 
   /* name, stock id, label, accelerator, tooltip, callback */
-  { "OpenAction", GTK_STOCK_OPEN, "_Open", (gchar*)"<control>O",  "Open a file", G_CALLBACK ( open_menu_callback ) },
-  { "QuitAction", GTK_STOCK_QUIT, "_Quit", (gchar*)"<control>Q",  "Quit", G_CALLBACK ( quit_menu_callback ) },
+  { "OpenAction", GTK_STOCK_OPEN, "_Open", (gchar*)"<control>O",  "Open a file", G_CALLBACK ( on_open_menu_callback ) },
+  { "QuitAction", GTK_STOCK_QUIT, "_Quit", (gchar*)"<control>Q",  "Quit", G_CALLBACK ( on_quit_menu_callback ) },
 
-  { "AboutAction", GTK_STOCK_ABOUT, NULL, NULL, "About", G_CALLBACK ( about_menu_callback ) } 
+  { "AboutAction", GTK_STOCK_ABOUT, NULL, NULL, "About", G_CALLBACK ( on_about_menu_callback ) } 
 };
 
 static gint menu_actions_nentries = G_N_ELEMENTS (menu_actions);
