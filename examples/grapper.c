@@ -86,6 +86,7 @@ static const gchar* height_gconf_key=(const gchar*) GCONF_GRAPPER_NAMESPACE "/he
 
 typedef struct
 {
+  raptor_world* world;
   /* model data */
 #ifdef GRAPPER_QNAMES
   int qnames;
@@ -93,8 +94,8 @@ typedef struct
   int guess;
   unsigned int syntax;
 
-  int features[RAPTOR_FEATURE_LAST];
-  int features_set[RAPTOR_FEATURE_LAST];
+  int options[RAPTOR_OPTION_LAST];
+  int options_set[RAPTOR_OPTION_LAST];
   int ignore_warnings;
 
   unsigned char *url;
@@ -125,7 +126,7 @@ typedef struct
 typedef struct 
 {
   grapper_state* state;
-  int feature;
+  int option;
 } grapper_widget_data;
 
 
@@ -164,7 +165,7 @@ grapper_view_guess_changed(grapper_state *state)
 }
 
 static void
-grapper_view_feature_changed(grapper_state *state, int feature) 
+grapper_view_option_changed(grapper_state *state, int option) 
 {
 
 }
@@ -303,13 +304,13 @@ grapper_model_set_guess (grapper_state *state, int guess) {
 }
 
 static void
-grapper_model_set_feature(grapper_state *state, int feature, int value) {
-  if(state->features[feature] == value)
+grapper_model_set_option(grapper_state *state, int option, int value) {
+  if(state->options[option] == value)
     return;
   
-  state->features[feature]=value;
-  state->features_set[feature]=1;
-  grapper_view_feature_changed(state, feature);
+  state->options[option] = value;
+  state->options_set[option] = 1;
+  grapper_view_option_changed(state, option);
 }
 
 static void
@@ -343,55 +344,45 @@ grapper_model_reset_error(grapper_state *state)
 
 
 static void
-grapper_model_error_handler(void *data, raptor_locator *locator,
-                            const char *message)
+grapper_model_log_handler(void *data, raptor_log_message *message)
 {
-  grapper_state* state=(grapper_state*)data;
+  grapper_state* state = (grapper_state*)data;
+
+  if(message->level >= RAPTOR_LOG_LEVEL_ERROR) {
+    state->errors_count++;
+
+    if(state->error)
+      g_free(state->error);
+
+    state->error = g_strdup(message->text);
   
-  state->errors_count++;
-  if(state->error)
-    g_free(state->error);
-  state->error=g_strdup(message);
-  
-  grapper_view_add_error_message(state, state->error, locator, 1);
-}
+    grapper_view_add_error_message(state, state->error, message->locator, 1);
+  } else {
+    state->warnings_count++;
+    
+    if(state->ignore_warnings)
+      return;
+    
+    if(state->error)
+      g_free(state->error);
 
-
-static void
-grapper_model_warning_handler(void *data, raptor_locator *locator,
-                              const char *message) 
-{
-  grapper_state* state=(grapper_state*)data;
-
-  state->warnings_count++;
-
-  if(state->ignore_warnings)
-    return;
-  
-  if(state->error)
-    g_free(state->error);
-  state->error=g_strdup(message);
-
-  grapper_view_add_error_message(state, state->error, locator, 0);
+    state->error = g_strdup(message->text);
+    
+    grapper_view_add_error_message(state, state->error, message->locator, 0);
+  }
 }
 
 
 static void
 grapper_model_statements_handler(void *data,
-                                 const raptor_statement *statement) {
+                                 raptor_statement *statement)
+{
   grapper_state* state=(grapper_state*)data;
   unsigned char* nodes[3];
   
-  nodes[0]=raptor_statement_part_as_string(statement->subject,
-                                           statement->subject_type,
-                                           NULL, NULL);
-  nodes[1]=raptor_statement_part_as_string(statement->predicate,
-                                           statement->predicate_type,
-                                           NULL, NULL);
-  nodes[2]=raptor_statement_part_as_string(statement->object,
-                                           statement->object_type,
-                                           statement->object_literal_datatype,
-                                           statement->object_literal_language);
+  nodes[0] = raptor_term_as_string(statement->subject);
+  nodes[1] = raptor_term_as_string(statement->predicate);
+  nodes[2] = raptor_term_as_string(statement->object);
   
   grapper_model_add_triple(state, nodes);
   free(nodes[0]);
@@ -407,6 +398,7 @@ grapper_model_parse(grapper_state *state)
   raptor_parser* rdf_parser;
   const char *syntax_name;
   int i;
+  const raptor_syntax_description* sd;
   
   if(!state->url)
     return;
@@ -416,11 +408,13 @@ grapper_model_parse(grapper_state *state)
   grapper_model_reset_counts(state);
   grapper_model_reset_error(state);
 
-  uri=raptor_new_uri(state->url);
-  raptor_parsers_enumerate(state->syntax, &syntax_name, NULL);
+  uri = raptor_new_uri(state->world, state->url);
+  sd = raptor_world_get_parser_description(state->world, state->syntax);
+  syntax_name = sd->names[0];
+  
 
   if(state->guess) {
-    rdf_parser=raptor_new_parser_for_content(NULL, NULL, NULL, 0, state->url);
+    rdf_parser = raptor_new_parser_for_content(state->world, NULL, NULL, NULL, 0, state->url);
     if(!rdf_parser) {
       fprintf(stderr, "Failed to create guessed raptor parser from uri %s\n",
               state->url);
@@ -429,20 +423,19 @@ grapper_model_parse(grapper_state *state)
     fprintf(stdout, "Guessed parser name '%s' from uri %s\n",
             raptor_parser_get_name(rdf_parser), state->url);
   } else {
-    rdf_parser=raptor_new_parser(syntax_name);
+    rdf_parser = raptor_new_parser(state->world, syntax_name);
   }
   
 
-  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
-    if(state->features_set[i])
-      raptor_set_feature(rdf_parser, i, state->features[i]);
+  for(i=0; i <= RAPTOR_OPTION_LAST; i++) {
+    if(state->options_set[i])
+      raptor_parser_set_option(rdf_parser, i, NULL, state->options[i]);
   }
 
-  raptor_set_error_handler(rdf_parser, state, grapper_model_error_handler);
-  raptor_set_warning_handler(rdf_parser, state, grapper_model_warning_handler);
+  raptor_world_set_log_handler(state->world, state, grapper_model_log_handler);
   raptor_parser_set_statement_handler(rdf_parser, state, grapper_model_statements_handler);
 
-  raptor_parse_uri(rdf_parser, uri, NULL);
+  raptor_parser_parse_uri(rdf_parser, uri, NULL);
 
   raptor_free_parser(rdf_parser);
   raptor_free_uri(uri);
@@ -472,7 +465,7 @@ fs_ok_button_callback(GtkWidget *widget, gpointer data)
   
   state->filename=(gchar*)gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
   
-  uri_string=raptor_uri_filename_to_uri_string(state->filename);
+  uri_string = raptor_uri_filename_to_uri_string(state->filename);
   
   gtk_widget_destroy(files);
   state->file_selection=NULL;
@@ -541,14 +534,14 @@ quit_callback(GtkWidget *widget, gpointer data)
 }
 
 
-/* preferences feature menu item toggled callback */
+/* preferences option menu item toggled callback */
 static void
-feature_menu_toggled(GtkCheckMenuItem *checkmenuitem, gpointer data)
+option_menu_toggled(GtkCheckMenuItem *checkmenuitem, gpointer data)
 {
   grapper_widget_data* sbdata=(grapper_widget_data*)data;
   int active=gtk_check_menu_item_get_active(checkmenuitem);
 
-  grapper_model_set_feature(sbdata->state, sbdata->feature, active);
+  grapper_model_set_option(sbdata->state, sbdata->option, active);
 }
 
 
@@ -704,7 +697,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *v_box;
   GtkWidget *box;
   GtkWidget *go_button;
-  GtkWidget* feature_items[RAPTOR_FEATURE_LAST];
+  GtkWidget* option_items[RAPTOR_OPTION_LAST];
 #ifdef GRAPPER_QNAMES
   GtkWidget *qnames_button;
 #endif
@@ -992,29 +985,29 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   prefs_menu=GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, "/Preferences"));
 
-  /* features in the preferences menu */
-  for(i=0; i <= RAPTOR_FEATURE_LAST; i++) {
-    const char *feature_name;
-    const char *feature_label;
+  /* options in the preferences menu */
+  for(i=0; i <= RAPTOR_OPTION_LAST; i++) {
     grapper_widget_data* sbdata;
+    raptor_option_description* od;
 
-    if(raptor_features_enumerate((raptor_feature)i, 
-                                 &feature_name, NULL, &feature_label))
+    od = raptor_world_get_option_description(state->world, RAPTOR_DOMAIN_PARSER,
+                                             (raptor_option)i);
+    if(!od)
       break;
 
-    sbdata=(grapper_widget_data*)malloc(sizeof(grapper_widget_data));
-    sbdata->state=state;
-    sbdata->feature=i;
+    sbdata = (grapper_widget_data*)malloc(sizeof(grapper_widget_data));
+    sbdata->state = state;
+    sbdata->option = i;
 
     /* add to the preferences menu */
-    feature_items[i] = gtk_check_menu_item_new_with_label(feature_label);
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(feature_items[i]), 
-                                   state->features[i]);
-    gtk_menu_shell_append(GTK_MENU_SHELL(prefs_menu), feature_items[i]);
+    option_items[i] = gtk_check_menu_item_new_with_label(od->label);
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(option_items[i]), 
+                                   state->options[i]);
+    gtk_menu_shell_append(GTK_MENU_SHELL(prefs_menu), option_items[i]);
 
-    g_signal_connect(G_OBJECT(feature_items[i]), "toggled",
-                     G_CALLBACK(feature_menu_toggled), (gpointer)sbdata);
-    gtk_widget_show (feature_items[i]);
+    g_signal_connect(G_OBJECT(option_items[i]), "toggled",
+                     G_CALLBACK(option_menu_toggled), (gpointer)sbdata);
+    gtk_widget_show (option_items[i]);
   }
 
 
@@ -1023,13 +1016,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   syntax_menu=gtk_menu_new();
   for(i=0; 1; i++) {
-    const char *syntax_label;
     GtkWidget *syntax_menu_item;
-    
-    if(raptor_parsers_enumerate(i, NULL, &syntax_label))
+    const raptor_syntax_description* sd;
+
+    sd = raptor_world_get_parser_description(state->world, i);
+    if(!sd)
       break;
 
-    syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)syntax_label);
+    syntax_menu_item = gtk_menu_item_new_with_label((const gchar*)sd->label);
     gtk_widget_show (syntax_menu_item);
     gtk_menu_shell_append(GTK_MENU_SHELL(syntax_menu), syntax_menu_item);
   }
@@ -1141,9 +1135,9 @@ main(int argc, char *argv[])
 
   g_set_application_name(application_name);
   
-  raptor_init();
-  
   memset(&state, 0, sizeof(grapper_state));
+
+  state.world = raptor_new_world();
   
   gconf_client=gconf_client_get_default();
 
@@ -1195,7 +1189,7 @@ main(int argc, char *argv[])
   if(argc>1) {
     if(!access(argv[1], R_OK)) {
       /* it's a file - make a URL out of it */
-      unsigned char *uri_string=raptor_uri_filename_to_uri_string(argv[1]);
+      unsigned char *uri_string = raptor_uri_filename_to_uri_string(argv[1]);
       grapper_model_set_url(&state, uri_string);
       free(uri_string);
     } else
@@ -1207,7 +1201,7 @@ main(int argc, char *argv[])
   /* main loop, exited when gtk_main_quit() is called */
   gtk_main ();
 
-  raptor_finish();
+  raptor_free_world(state.world);
 
   gconf_client_notify_remove(gconf_client, cnxn);
   
