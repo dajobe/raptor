@@ -20,6 +20,8 @@
  * the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
  * 
  * 
+ * Requires GTK 2.5.0+
+ *
  */
 
 
@@ -53,6 +55,11 @@
 /* Gconf */
 #include <gconf/gconf.h>
 #include <gconf/gconf-client.h>
+
+#if GTK_CHECK_VERSION(2,5,0)
+#else
+#error "Requires GTK 2.5.0+"
+#endif
 
 /* Qnames button does nothing */
 #undef GRAPPER_QNAMES
@@ -474,38 +481,12 @@ url_entry_callback(GtkWidget *widget, gpointer data)
 }
 
 
-#if GTK_CHECK_VERSION(2,4,0)
-#else
-/* file selection OK button clicked callback */
-static void
-fs_ok_button_callback(GtkWidget *widget, gpointer data)
-{
-  grapper_state* state = (grapper_state*)data;
-  GtkWidget *files = state->file_selection;
-  unsigned char *uri_string;
-  
-  state->filename = (gchar*)gtk_file_selection_get_filename(GTK_FILE_SELECTION (files));
-  
-  uri_string = raptor_uri_filename_to_uri_string(state->filename);
-  
-  gtk_widget_destroy(files);
-  state->file_selection = NULL;
-
-  grapper_model_set_url(state, uri_string);
-  free(uri_string);
-
-  grapper_model_parse(state);
-}
-#endif
-
-
 /* open button clicked callback */
 static void
 open_button_callback(GtkWidget *widget, gpointer data)
 {
   grapper_state* state = (grapper_state*)data;
 
-#if GTK_CHECK_VERSION(2,4,0)
   unsigned char *uri_string;
   GtkWidget *files = gtk_file_chooser_dialog_new("Open",
                                                  GTK_WINDOW(state->window),
@@ -526,25 +507,6 @@ open_button_callback(GtkWidget *widget, gpointer data)
     grapper_model_parse(state);
   }
   gtk_widget_destroy(files);
-
-#else  
-  GtkWidget *files = gtk_file_selection_new("Open");
-
-  if(state->filename)
-    gtk_file_selection_set_filename(GTK_FILE_SELECTION(files), state->filename);
-  
-  state->file_selection = files;
-  
-  /* Connect the ok_button to fs_ok_button_callback */
-  g_signal_connect (G_OBJECT (GTK_FILE_SELECTION (files)->ok_button),
-                    "clicked", G_CALLBACK(fs_ok_button_callback), state);
-  /* Connect the cancel_button to destroy the widget */
-  g_signal_connect_swapped (G_OBJECT(GTK_FILE_SELECTION(files)->cancel_button),
-                            "clicked", G_CALLBACK(gtk_widget_destroy),
-                            G_OBJECT(files));
-
-  gtk_widget_show(files);
-#endif
 }
 
 
