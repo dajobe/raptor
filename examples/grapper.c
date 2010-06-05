@@ -687,6 +687,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 #ifdef SYNTAX_LIST_STORE
   GtkListStore *syntax_list_store;
   GtkTreeIter iter;
+  GtkCellRenderer* cell;
 #endif
 
   state->window=window;
@@ -986,7 +987,6 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* syntax button in horizontal box */
 #ifdef SYNTAX_LIST_STORE
   /* Create combo box with data model behind */
-  syntax_combo_box = gtk_combo_box_new();
 
   syntax_list_store = gtk_list_store_new(/* N columns */ 1, G_TYPE_STRING);
   for(i = 0; 1; i++) {
@@ -1001,8 +1001,22 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                        /* column */ 0, (const gchar*)sd->label,
                        -1);
   }
-  gtk_combo_box_set_model(GTK_COMBO_BOX(syntax_combo_box), 
-                          GTK_TREE_MODEL(syntax_list_store));
+
+  syntax_combo_box = gtk_combo_box_new_with_model(GTK_TREE_MODEL(syntax_list_store));
+
+  /* Remove our reference to the store to avoid memory leak */
+  g_object_unref ( G_OBJECT (syntax_list_store ) );
+  
+  /* Create text cell renderer */
+  cell = gtk_cell_renderer_text_new();
+
+  /* Pack it to the combo box */
+  gtk_cell_layout_pack_start( GTK_CELL_LAYOUT ( syntax_combo_box ), cell, TRUE);
+
+  /* Connect renderer to data source */
+  gtk_cell_layout_set_attributes ( GTK_CELL_LAYOUT ( syntax_combo_box ),
+                                   cell, "text", 0, NULL);
+
 #else
   /* Create combo box using text API */
   syntax_combo_box = gtk_combo_box_new_text();
