@@ -599,13 +599,10 @@ static void
 about_menu_callback(gpointer data, guint action, GtkWidget *widget)
 {
   grapper_state* state = (grapper_state*)data;
-
-#if GTK_CHECK_VERSION(2,5,0)
-  /* 2.5.x about widget */
   const gchar* authors[2]= { "Dave Beckett http://www.dajobe.org/", NULL };
 
 #if 1
-  /* using 2.5.x stock about */
+  /* using 2.5.x+ stock about dialog */
   gtk_show_about_dialog(GTK_WINDOW(state->window), 
                         "authors",   authors,
                         "comments",  application_description,
@@ -617,7 +614,7 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
                         "website-label", "Raptor",
                         NULL);
 #else
-  /* using 2.5.x by hand about */
+  /* using 2.5.x+ by hand about */
   GtkWidget *about;
 
   about = gtk_about_dialog_new();
@@ -632,28 +629,6 @@ about_menu_callback(gpointer data, guint action, GtkWidget *widget)
   gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(about), "Raptor");
   gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(about), authors);
 
-  gtk_widget_show_all(about);
-#endif
-
-#else  
-  GtkWidget *about;
-  GtkWidget *label;
-
-  label = (GtkWidget*)application_description; /* mention it for gcc -Wannoy */
-  
-  /* GTK < 2.6.0 */
-  about = gtk_dialog_new_with_buttons("About Grapper", 
-                                      GTK_WINDOW(state->window), 
-                                      GTK_DIALOG_DESTROY_WITH_PARENT,
-                                      GTK_STOCK_OK,
-                                      GTK_RESPONSE_NONE,
-                                      NULL);
-  label = gtk_label_new ("Grapper\nGUI RDF parser utility\n (C) 2003-2010 Dave Beckett");
-  /* Connect the dialog response to about_response_callback */
-  g_signal_connect_swapped (G_OBJECT (about), "response",
-                    G_CALLBACK(gtk_widget_destroy), GTK_OBJECT(about));
-
-  gtk_container_add (GTK_CONTAINER (GTK_DIALOG(about)->vbox), label);
   gtk_widget_show_all(about);
 #endif
 }
