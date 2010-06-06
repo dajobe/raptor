@@ -1058,7 +1058,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                     "/Preferences"));
 #else
   prefs_menu = GTK_MENU(gtk_ui_manager_get_widget(menu_manager, 
-                                                    "/PreferencesMenu"));
+                                                    "/MainMenu/PreferencesMenu"));
 #endif
 
   /* options in the preferences menu */
