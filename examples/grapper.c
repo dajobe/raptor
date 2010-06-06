@@ -862,17 +862,17 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   prefs_box = gtk_hbutton_box_new();
 
-  gtk_button_box_set_layout(GTK_BUTTON_BOX(prefs_box),GTK_BUTTONBOX_START);
+  gtk_button_box_set_layout (GTK_BUTTON_BOX(prefs_box), GTK_BUTTONBOX_START);
 
 #ifdef GRAPPER_QNAMES
   /* qnames button in horizontal box */
-  qnames_button = gtk_check_button_new_with_label("QNames");
+  qnames_button = gtk_check_button_new_with_label ("QNames");
 
   qnames_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (qnames_tooltips, qnames_button,
                         "Display URIs as XML QNames", NULL);
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(qnames_button),
-                               (state->qnames));
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(qnames_button),
+                                (state->qnames));
 
   /* connect button clicked event to callback */
   g_signal_connect (G_OBJECT (qnames_button), "clicked",
@@ -885,17 +885,18 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 #endif  
 
   /* guess button in horizontal box */
-  guess_button = gtk_check_button_new_with_label("Guess Syntax");
+  guess_button = gtk_check_button_new_with_label ("Guess Syntax");
 
 #ifdef TOOL_TIPS
   guess_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (guess_tooltips, guess_button,
                         "Try to guess the syntax from the URI", NULL);
 #else
-  gtk_widget_set_tooltip_text(GTK_WIDGET(guess_button),
-                              "Try to guess the syntax from the URI");
+  gtk_widget_set_tooltip_text (GTK_WIDGET(guess_button),
+                               "Try to guess the syntax from the URI");
 #endif
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(guess_button), (state->guess));
+  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(guess_button),
+                                (state->guess));
 
   /* connect button clicked event to callback */
   g_signal_connect (G_OBJECT (guess_button), "clicked",
@@ -907,7 +908,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_widget_show (guess_button);
 
   /* add prefs frame to vbox */
-  gtk_container_add(GTK_CONTAINER(prefs_frame), prefs_box);
+  gtk_container_add (GTK_CONTAINER(prefs_frame), prefs_box);
 
   gtk_widget_show (prefs_box);
 
@@ -926,20 +927,20 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   triples_frame = gtk_frame_new("Triples");
   state->triples_frame = triples_frame;
   
-  gtk_paned_pack1(GTK_PANED (v_paned), triples_frame, TRUE, FALSE);
-  gtk_widget_show(triples_frame);
+  gtk_paned_pack1 (GTK_PANED (v_paned), triples_frame, TRUE, FALSE);
+  gtk_widget_show (triples_frame);
 
 
   /* scroll window in triples frame */
   triples_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
-  gtk_container_set_border_width(GTK_CONTAINER(triples_scrolled_window), 10);
+  gtk_container_set_border_width (GTK_CONTAINER(triples_scrolled_window), 10);
     
-  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(triples_scrolled_window),
-                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(triples_scrolled_window),
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  gtk_container_add(GTK_CONTAINER(triples_frame), triples_scrolled_window);
-  gtk_widget_show(triples_scrolled_window);
+  gtk_container_add (GTK_CONTAINER(triples_frame), triples_scrolled_window);
+  gtk_widget_show (triples_scrolled_window);
 
   store = gtk_list_store_new (N_COLUMNS,
                               G_TYPE_STRING,
@@ -947,8 +948,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                               G_TYPE_STRING);
   state->triples_store = store;
 
-  triples_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(store));
-  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(triples_treeview), TRUE);
+  triples_treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL(store));
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW(triples_treeview), TRUE);
   
   /* set columns renderer for treeview */
   renderer = gtk_cell_renderer_text_new ();
@@ -956,8 +957,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                      renderer,
                                                      "text", SUBJECT_COLUMN,
                                                      NULL);
-  gtk_tree_view_column_set_sort_column_id(column, SUBJECT_COLUMN);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_sort_column_id (column, SUBJECT_COLUMN);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
 
   renderer= gtk_cell_renderer_text_new ();
@@ -965,8 +966,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                     renderer,
                                                     "text", PREDICATE_COLUMN,
                                                     NULL);
-  gtk_tree_view_column_set_sort_column_id(column, PREDICATE_COLUMN);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_sort_column_id (column, PREDICATE_COLUMN);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
 
   renderer = gtk_cell_renderer_text_new ();
@@ -974,13 +975,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                      renderer,
                                                      "text", OBJECT_COLUMN,
                                                      NULL);
-  gtk_tree_view_column_set_sort_column_id(column, OBJECT_COLUMN);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_sort_column_id (column, OBJECT_COLUMN);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (triples_treeview), column);
 
 
   /* pack the store into the scrolled window */
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(triples_scrolled_window), triples_treeview);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(triples_scrolled_window),
+                                         triples_treeview);
   gtk_widget_show(triples_treeview);
 
 
@@ -988,38 +990,38 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   errors_frame = gtk_frame_new ("Errors");
   state->errors_frame = errors_frame;
 
-  gtk_paned_pack2(GTK_PANED (v_paned), errors_frame, TRUE, FALSE);
-  gtk_widget_show(errors_frame);
+  gtk_paned_pack2 (GTK_PANED (v_paned), errors_frame, TRUE, FALSE);
+  gtk_widget_show (errors_frame);
 
 
   gtk_box_pack_start (GTK_BOX (v_box), v_paned, TRUE, TRUE, 0);
-  gtk_widget_show(v_paned);
+  gtk_widget_show (v_paned);
 
 
   /* scroll window in errors frame */
   errors_scrolled_window = gtk_scrolled_window_new(NULL, NULL);
 
-  gtk_container_set_border_width(GTK_CONTAINER(errors_scrolled_window), 10);
+  gtk_container_set_border_width (GTK_CONTAINER(errors_scrolled_window), 10);
     
-  gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(errors_scrolled_window),
-                                 GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW(errors_scrolled_window),
+                                  GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  gtk_container_add(GTK_CONTAINER(errors_frame), errors_scrolled_window);
-  gtk_widget_show(errors_scrolled_window);
+  gtk_container_add (GTK_CONTAINER(errors_frame), errors_scrolled_window);
+  gtk_widget_show (errors_scrolled_window);
 
   errors_store = gtk_list_store_new (3,
                                      G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING);
   state->errors_store = errors_store;
   
-  errors_treeview = gtk_tree_view_new_with_model(GTK_TREE_MODEL(errors_store));
-  gtk_tree_view_set_headers_visible(GTK_TREE_VIEW(errors_treeview), TRUE);
+  errors_treeview = gtk_tree_view_new_with_model (GTK_TREE_MODEL(errors_store));
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW(errors_treeview), TRUE);
   
   renderer = gtk_cell_renderer_text_new ();
   column = gtk_tree_view_column_new_with_attributes ("Line",
                                                      renderer,
                                                      "text", 0,
                                                      NULL);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
   renderer = gtk_cell_renderer_text_new ();
@@ -1027,7 +1029,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                      renderer,
                                                      "text", 1,
                                                      NULL);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
   renderer = gtk_cell_renderer_text_new ();
@@ -1035,30 +1037,31 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
                                                      renderer,
                                                      "text", 2,
                                                      NULL);
-  gtk_tree_view_column_set_resizable(column, 1);
+  gtk_tree_view_column_set_resizable (column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
 #ifdef TOOL_TIPS
   gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview,
                         "Errors and warnings from parsing the content.", NULL);
 #else
-  gtk_widget_set_tooltip_text(GTK_WIDGET(errors_treeview),
-                              "Errors and warnings from parsing the content.");
+  gtk_widget_set_tooltip_text (GTK_WIDGET(errors_treeview),
+                               "Errors and warnings from parsing the content.");
 #endif
 
   /* pack the errors store into the errors scrolled window */
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(errors_scrolled_window), errors_treeview);
-  gtk_widget_show(errors_treeview);
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(errors_scrolled_window),
+                                         errors_treeview);
+  gtk_widget_show (errors_treeview);
 
 
 
 
 #ifdef ITEM_FACTORY
-  prefs_menu = GTK_MENU(gtk_item_factory_get_widget(menu_item_factory,
-                                                    "/Preferences"));
+  prefs_menu = GTK_MENU(gtk_item_factory_get_widget (menu_item_factory,
+                                                     "/Preferences"));
 #else
-  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget(menu_manager,
-                                                    "/MainMenu/PreferencesMenu"));
+  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget (menu_manager,
+                                                   "/MainMenu/PreferencesMenu"));
 #endif
 
   /* options in the preferences menu */
@@ -1066,7 +1069,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
     grapper_widget_data* sbdata;
     raptor_option_description* od;
 
-    od = raptor_world_get_option_description(state->world, RAPTOR_DOMAIN_PARSER,
+    od = raptor_world_get_option_description(state->world,
+                                             RAPTOR_DOMAIN_PARSER,
                                              (raptor_option)i);
     if(!od)
       break;
@@ -1076,13 +1080,13 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
     sbdata->option = i;
 
     /* add to the preferences menu */
-    option_items[i] = gtk_check_menu_item_new_with_label(od->label);
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(option_items[i]),
-                                   state->options[i]);
-    gtk_menu_shell_append(GTK_MENU_SHELL(prefs_menu), option_items[i]);
+    option_items[i] = gtk_check_menu_item_new_with_label (od->label);
+    gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(option_items[i]),
+                                    state->options[i]);
+    gtk_menu_shell_append (GTK_MENU_SHELL(prefs_menu), option_items[i]);
 
-    g_signal_connect(G_OBJECT(option_items[i]), "toggled",
-                     G_CALLBACK(option_menu_toggled), (gpointer)sbdata);
+    g_signal_connect (G_OBJECT(option_items[i]), "toggled",
+                      G_CALLBACK(option_menu_toggled), (gpointer)sbdata);
     gtk_widget_show (option_items[i]);
   }
 
@@ -1091,7 +1095,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 #ifdef SYNTAX_LIST_STORE
   /* Create combo box with data model behind */
 
-  syntax_list_store = gtk_list_store_new(/* N columns */ 1, G_TYPE_STRING);
+  syntax_list_store = gtk_list_store_new (/* N columns */ 1, G_TYPE_STRING);
   for(i = 0; 1; i++) {
     const raptor_syntax_description* sd;
 
@@ -1099,10 +1103,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
     if(!sd)
       break;
 
-    gtk_list_store_append(syntax_list_store, &iter);
-    gtk_list_store_set(syntax_list_store, &iter,
-                       /* column */ 0, (const gchar*)sd->label,
-                       -1);
+    gtk_list_store_append (syntax_list_store, &iter);
+    gtk_list_store_set (syntax_list_store, &iter,
+                        /* column */ 0, (const gchar*)sd->label,
+                        -1);
   }
 
   syntax_combo_box = gtk_combo_box_new_with_model(GTK_TREE_MODEL(syntax_list_store));
@@ -1111,10 +1115,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   g_object_unref ( G_OBJECT (syntax_list_store ) );
   
   /* Create text cell renderer */
-  cell = gtk_cell_renderer_text_new();
+  cell = gtk_cell_renderer_text_new ();
 
   /* Pack it to the combo box */
-  gtk_cell_layout_pack_start( GTK_CELL_LAYOUT ( syntax_combo_box ), cell, TRUE);
+  gtk_cell_layout_pack_start (GTK_CELL_LAYOUT ( syntax_combo_box ), cell, TRUE);
 
   /* Connect renderer to data source: attr "text" is column 0 in data model */
   gtk_cell_layout_set_attributes ( GTK_CELL_LAYOUT ( syntax_combo_box ),
@@ -1124,7 +1128,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 #else
   /* Create combo box using text API */
-  syntax_combo_box = gtk_combo_box_new_text();
+  syntax_combo_box = gtk_combo_box_new_text ();
 
   for(i = 0; 1; i++) {
     const raptor_syntax_description* sd;
@@ -1133,23 +1137,23 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
     if(!sd)
       break;
 
-    gtk_combo_box_append_text(GTK_COMBO_BOX (syntax_combo_box),
-                              (const gchar*)sd->label);
+    gtk_combo_box_append_text (GTK_COMBO_BOX (syntax_combo_box),
+                               (const gchar*)sd->label);
   }
 #endif
 
-  g_signal_connect(GTK_OBJECT(syntax_combo_box), "changed",
-                   G_CALLBACK(syntax_menu_callback), state);
+  g_signal_connect (GTK_OBJECT(syntax_combo_box), "changed",
+                    G_CALLBACK(syntax_menu_callback), state);
 
   /* Default is item 0 (should be RDF/XML) */
-  gtk_combo_box_set_active(GTK_COMBO_BOX(syntax_combo_box), 0);
+  gtk_combo_box_set_active (GTK_COMBO_BOX(syntax_combo_box), 0);
 
 #ifdef TOOL_TIPS
   syntax_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (syntax_tooltips, syntax_combo_box,
                         "Choose the Syntax to parse", NULL);
 #else
-  gtk_widget_set_tooltip_text(GTK_WIDGET(syntax_combo_box),
+  gtk_widget_set_tooltip_text (GTK_WIDGET(syntax_combo_box),
                               "Choose the Syntax to parse");
 #endif
 
@@ -1176,20 +1180,20 @@ grapper_gconfclient_notify(GConfClient* client, guint cnxn_id,
   GError* err = NULL;
   int width, height;
 
-  gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
+  gtk_window_get_size (GTK_WINDOW(grapper_window), &width, &height);
 
 
-  width=gconf_client_get_int(gconf_client, width_gconf_key, &err);
+  width = gconf_client_get_int (gconf_client, width_gconf_key, &err);
   if(err) {
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
     width = -1;
   } else
     fprintf(stderr, "gconf width changed to %d\n", width);
   
-  height = gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  height = gconf_client_get_int (gconf_client, height_gconf_key, &err);
   if(err) {
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
     height = -1;
   } else
@@ -1201,7 +1205,7 @@ grapper_gconfclient_notify(GConfClient* client, guint cnxn_id,
   if(height < MIN_WINDOW_HEIGHT)
     height = MIN_WINDOW_HEIGHT;
 
-  gtk_window_resize(GTK_WINDOW(grapper_window), width, height);
+  gtk_window_resize (GTK_WINDOW(grapper_window), width, height);
 }
 
 
@@ -1218,17 +1222,17 @@ configure_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
   gint width, height;
   GError* err = NULL;
 
-  gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
+  gtk_window_get_size (GTK_WINDOW(grapper_window), &width, &height);
 
-  if(!gconf_client_set_int(gconf_client, width_gconf_key, width, &err)) {
+  if(!gconf_client_set_int (gconf_client, width_gconf_key, width, &err)) {
     fprintf(stderr, "gconf error writing width: %s\n", err->message);
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
   }
 
-  if(!gconf_client_set_int(gconf_client, height_gconf_key, height, &err)) {
+  if(!gconf_client_set_int (gconf_client, height_gconf_key, height, &err)) {
     fprintf(stderr, "gconf error writing width: %s\n", err->message);
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
   }
 
@@ -1247,7 +1251,7 @@ main(int argc, char *argv[])
   
   gtk_init (&argc, &argv);
 
-  g_set_application_name(application_name);
+  g_set_application_name (application_name);
   
   memset(&state, 0, sizeof(grapper_state));
 
@@ -1255,31 +1259,31 @@ main(int argc, char *argv[])
   
   gconf_client = gconf_client_get_default();
 
-  cnxn = gconf_client_notify_add(gconf_client, gconf_namespace,
-                                 grapper_gconfclient_notify,
-                                 (gpointer)&state, /* user data */
-                                 grapper_gconflient_free,
-                                 &err);
+  cnxn = gconf_client_notify_add (gconf_client, gconf_namespace,
+                                  grapper_gconfclient_notify,
+                                  (gpointer)&state, /* user data */
+                                  grapper_gconflient_free,
+                                  &err);
 
   /* create the main window */
   grapper_window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 
-  gtk_window_set_title(GTK_WINDOW(grapper_window), application_title);
+  gtk_window_set_title (GTK_WINDOW(grapper_window), application_title);
 
   init_grapper_window(grapper_window, &state);
 
-  width = gconf_client_get_int(gconf_client, width_gconf_key, &err);
+  width = gconf_client_get_int (gconf_client, width_gconf_key, &err);
   if(err) {
     fprintf(stderr, "gconf error reading width: %s\n", err->message);
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
     width= -1;
   }
 
-  height = gconf_client_get_int(gconf_client, height_gconf_key, &err);
+  height = gconf_client_get_int (gconf_client, height_gconf_key, &err);
   if(err) {
     fprintf(stderr, "gconf error reading height: %s\n", err->message);
-    g_error_free(err);
+    g_error_free (err);
     err = NULL;
     height= -1;
   }
@@ -1290,7 +1294,7 @@ main(int argc, char *argv[])
   if(height < MIN_WINDOW_HEIGHT)
     height = MIN_WINDOW_HEIGHT;
   
-  gtk_window_set_default_size(GTK_WINDOW(grapper_window), width, height);
+  gtk_window_set_default_size (GTK_WINDOW(grapper_window), width, height);
 
   /* Connect the window resize event to configure_callback */
   g_signal_connect (G_OBJECT (grapper_window), "configure_event",
@@ -1316,7 +1320,7 @@ main(int argc, char *argv[])
 
   raptor_free_world(state.world);
 
-  gconf_client_notify_remove(gconf_client, cnxn);
+  gconf_client_notify_remove (gconf_client, cnxn);
   
   return 0;
 }
