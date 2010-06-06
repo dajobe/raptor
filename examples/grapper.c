@@ -261,7 +261,7 @@ grapper_view_add_error_message(grapper_state *state, gchar *error,
     int line = (locator && locator->line >= 0) ? locator->line : 0;
 
     gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter, 
+    gtk_list_store_set(store, &iter,
                        0, line,
                        1, (is_error ? "Error" : "Warning"),
                        2, error,
@@ -626,7 +626,7 @@ do_about_action(grapper_state* state) {
 
 #if 1
   /* using 2.5.x+ stock about dialog */
-  gtk_show_about_dialog(GTK_WINDOW(state->window), 
+  gtk_show_about_dialog(GTK_WINDOW(state->window),
                         "authors",   authors,
                         "comments",  application_description,
                         "copyright", raptor_short_copyright_string,
@@ -780,7 +780,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   /* Menu bar */
 #ifdef ITEM_FACTORY
-  menu_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR, 
+  menu_item_factory = gtk_item_factory_new(GTK_TYPE_MENU_BAR,
                                            "<Main>", accel_group);
   gtk_item_factory_create_items(menu_item_factory,
                                 menu_item_factory_nentries,
@@ -892,7 +892,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_tooltips_set_tip (guess_tooltips, guess_button,
                         "Try to guess the syntax from the URI", NULL);
 #else
-  gtk_widget_set_tooltip_text(GTK_WIDGET(guess_button), 
+  gtk_widget_set_tooltip_text(GTK_WIDGET(guess_button),
                               "Try to guess the syntax from the URI");
 #endif
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(guess_button), (state->guess));
@@ -1007,7 +1007,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_container_add(GTK_CONTAINER(errors_frame), errors_scrolled_window);
   gtk_widget_show(errors_scrolled_window);
 
-  errors_store = gtk_list_store_new (3, 
+  errors_store = gtk_list_store_new (3,
                                      G_TYPE_INT, G_TYPE_STRING, G_TYPE_STRING);
   state->errors_store = errors_store;
   
@@ -1054,10 +1054,10 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 #ifdef ITEM_FACTORY
-  prefs_menu = GTK_MENU(gtk_item_factory_get_widget(menu_item_factory, 
+  prefs_menu = GTK_MENU(gtk_item_factory_get_widget(menu_item_factory,
                                                     "/Preferences"));
 #else
-  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget(menu_manager, 
+  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget(menu_manager,
                                                     "/MainMenu/PreferencesMenu"));
 #endif
 
@@ -1077,7 +1077,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
     /* add to the preferences menu */
     option_items[i] = gtk_check_menu_item_new_with_label(od->label);
-    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(option_items[i]), 
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(option_items[i]),
                                    state->options[i]);
     gtk_menu_shell_append(GTK_MENU_SHELL(prefs_menu), option_items[i]);
 
@@ -1100,7 +1100,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
       break;
 
     gtk_list_store_append(syntax_list_store, &iter);
-    gtk_list_store_set(syntax_list_store, &iter, 
+    gtk_list_store_set(syntax_list_store, &iter,
                        /* column */ 0, (const gchar*)sd->label,
                        -1);
   }
@@ -1149,7 +1149,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_tooltips_set_tip (syntax_tooltips, syntax_combo_box,
                         "Choose the Syntax to parse", NULL);
 #else
-  gtk_widget_set_tooltip_text(GTK_WIDGET(syntax_combo_box), 
+  gtk_widget_set_tooltip_text(GTK_WIDGET(syntax_combo_box),
                               "Choose the Syntax to parse");
 #endif
 
