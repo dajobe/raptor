@@ -1038,7 +1038,7 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
-#ifdef TOOLT_IPS
+#ifdef TOOL_TIPS
   gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview,
                         "Errors and warnings from parsing the content.", NULL);
 #else
