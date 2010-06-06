@@ -59,3 +59,7 @@ $(top_builddir)/src/libraptor2.la:
 
 $(top_builddir)/../librdf/librdf.la:
 	cd $(top_builddir)/../librdf && $(MAKE) librdf.la
+
+grapper-future:
+	$(MAKE) clean
+	$(MAKE) grapper CC="$(CC) -DGTK_DISABLE_DEPRECATED" V=1
