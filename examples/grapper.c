@@ -65,8 +65,15 @@
 #undef GRAPPER_QNAMES
 
 /* GtkUIManager and external XML file is too damn complex to make work */
+#ifdef GTK_DISABLE_DEPRECATED
+/* GtkItemFactory was deprecated in GTK+ ? */
+#undef ITEM_FACTORY
+/* GtkToolTips was deprecated in GTK+ 2.12 */
+#undef TOOL_TIPS
+#else
 #define ITEM_FACTORY 1
-/* #undef ITEM_FACTORY */
+#define TOOL_TIPS 1
+#endif
 
 static const char *application_name = "Grapper";
 static const char *application_title = "Grapper GUI RDF Parser Utility";
@@ -722,8 +729,11 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 #ifdef GRAPPER_QNAMES
   GtkTooltips *qnames_tooltips;
 #endif
+#ifdef TOOL_TIPS
   GtkTooltips *guess_tooltips;
   GtkTooltips *syntax_tooltips;
+#else
+#endif  
   GtkWidget *prefs_box;
   GtkListStore *store;
   int i;
@@ -877,9 +887,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* guess button in horizontal box */
   guess_button = gtk_check_button_new_with_label("Guess Syntax");
 
+#ifdef TOOL_TIPS
   guess_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (guess_tooltips, guess_button,
                         "Try to guess the syntax from the URI", NULL);
+#else
+  gtk_widget_set_tooltip_text(GTK_WIDGET(guess_button), 
+                              "Try to guess the syntax from the URI");
+#endif
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(guess_button), (state->guess));
 
   /* connect button clicked event to callback */
@@ -1023,9 +1038,13 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   gtk_tree_view_column_set_resizable(column, 1);
   gtk_tree_view_append_column (GTK_TREE_VIEW (errors_treeview), column);
 
-  gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview, 
+#ifdef TOOLT_IPS
+  gtk_tooltips_set_tip (gtk_tooltips_new (), errors_treeview,
                         "Errors and warnings from parsing the content.", NULL);
-
+#else
+  gtk_widget_set_tooltip_text(GTK_WIDGET(errors_treeview),
+                              "Errors and warnings from parsing the content.");
+#endif
 
   /* pack the errors store into the errors scrolled window */
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(errors_scrolled_window), errors_treeview);
@@ -1125,9 +1144,14 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   /* Default is item 0 (should be RDF/XML) */
   gtk_combo_box_set_active(GTK_COMBO_BOX(syntax_combo_box), 0);
 
+#ifdef TOOL_TIPS
   syntax_tooltips = gtk_tooltips_new ();
   gtk_tooltips_set_tip (syntax_tooltips, syntax_combo_box,
-                        "Chose the Syntax to parse", NULL);
+                        "Choose the Syntax to parse", NULL);
+#else
+  gtk_widget_set_tooltip_text(GTK_WIDGET(syntax_combo_box), 
+                              "Choose the Syntax to parse");
+#endif
 
   /* pack into the invisible box */
   gtk_box_pack_start (GTK_BOX(prefs_box), syntax_combo_box, TRUE, TRUE, 0);
@@ -1189,7 +1213,7 @@ grapper_gconflient_free(gpointer user_data)
 
 
 static gint
-configure_callback(GtkWidget *widget, GdkEventConfigure *event)
+configure_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
   gint width, height;
   GError* err = NULL;
@@ -1269,9 +1293,8 @@ main(int argc, char *argv[])
   gtk_window_set_default_size(GTK_WINDOW(grapper_window), width, height);
 
   /* Connect the window resize event to configure_callback */
-  gtk_signal_connect (GTK_OBJECT(grapper_window),
-                      "configure_event",
-                      (GtkSignalFunc)configure_callback, &state);
+  g_signal_connect (G_OBJECT (grapper_window), "configure_event",
+                    G_CALLBACK (configure_callback), &state);
 
   /* finally make it all visible */
   gtk_widget_show (grapper_window);
