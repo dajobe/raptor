@@ -66,7 +66,7 @@
 
 /* GtkUIManager and external XML file is too damn complex to make work */
 #ifdef GTK_DISABLE_DEPRECATED
-/* GtkItemFactory was deprecated in GTK+ ? */
+/* GtkItemFactory was deprecated in GTK+ 2.4 */
 #undef ITEM_FACTORY
 /* GtkToolTips was deprecated in GTK+ 2.12 */
 #undef TOOL_TIPS
