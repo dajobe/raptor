@@ -96,6 +96,9 @@ endif
 if RAPTOR_PARSER_RDFA
 libraptor2_la_SOURCES += raptor_librdfa.c
 endif
+if RAPTOR_PARSER_JSON
+libraptor2_la_SOURCES += raptor_json.c
+endif
 if RAPTOR_SERIALIZER_RDFXML
 libraptor2_la_SOURCES += raptor_serialize_rdfxml.c
 endif

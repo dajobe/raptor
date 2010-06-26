@@ -125,6 +125,10 @@ raptor_parsers_init(raptor_world *world)
   rc+= raptor_init_parser_rdfa(world) != 0;
 #endif
 
+#ifdef RAPTOR_PARSER_JSON
+  rc+= raptor_init_parser_json(world) != 0;
+#endif
+
   return rc;
 }
 

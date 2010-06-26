@@ -752,6 +752,13 @@ fi
 AC_MSG_RESULT($result)
 
 
+dnl Check for JSON library
+
+LIBS="$oLIBS"
+AC_CHECK_LIB(yajl, yajl_parse, libyajl=1, libyajl=0)
+AC_CHECK_HEADERS(yajl/yajl_parse.h)
+
+
 dnl RDF Parsers
 rdfxml_parser=no
 ntriples_parser=no
@@ -761,6 +768,7 @@ rss_parser=no
 grddl_parser=no
 guess_parser=yes
 rdfa_parser=yes
+json_parser=no
 
 rdf_parsers_available="rdfxml ntriples turtle trig guess rss-tag-soup rdfa"
 rdf_parsers_enabled=
@@ -776,6 +784,17 @@ else
   AC_MSG_RESULT(no - libxml2 and libxslt are both not available)
 fi
 
+json_parser_ok=no
+AC_MSG_CHECKING(JSON parser requirements)
+if test $ac_cv_header_yajl_yajl_parse_h = yes -a $ac_cv_lib_yajl_yajl_parse = yes; then
+  AC_MSG_RESULT(yes)
+  json_parser_ok=yes
+  rdf_parsers_available="$rdf_parsers_available json"
+else
+  AC_MSG_RESULT(no - libyajl is not available)
+fi
+
+
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
@@ -788,6 +807,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_GRDDL, 1, [Building GRDDL parser])
   AC_DEFINE(RAPTOR_PARSER_GUESS, 1, [Building guess parser])
   AC_DEFINE(RAPTOR_PARSER_RDFA, 1, [Building RDFA parser])
+  AC_DEFINE(RAPTOR_PARSER_JSON, 1, [Building JSON parser])
 fi
 
 AC_MSG_CHECKING(RDF parsers required)
@@ -815,6 +835,13 @@ for parser in $parsers; do
     fi
   fi
 
+  if test $p = json; then
+    if test $json_parser_ok != yes; then
+      AC_MSG_WARN(YAJL is not available)
+      continue
+    fi
+  fi
+
   eval $p'_parser=yes'
   NAME=`echo $p | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
   n=RAPTOR_PARSER_${NAME}
@@ -837,6 +864,11 @@ if test $rdfa_parser = yes; then
   need_librdfa=yes
 fi
 
+need_libyajl=0
+if test $json_parser = yes; then
+  need_libyajl=1
+fi
+
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
@@ -845,6 +877,7 @@ AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GUESS, test $guess_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RDFA, test $rdfa_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_JSON, test $json_parser = yes)
 
 AM_CONDITIONAL(LIBRDFA, test $need_librdfa = yes)
 
@@ -1164,6 +1197,10 @@ fi
 if test $need_libxslt = 1; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XSLT_CONFIG --libs`"
   CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
+fi
+
+if test $need_libyajl = 1; then
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lyajl"
 fi
 
 RAPTOR_LIBTOOLLIBS=libraptor2.la

@@ -829,6 +829,7 @@ int raptor_init_parser_grddl(raptor_world* world);
 int raptor_init_parser_guess(raptor_world* world);
 int raptor_init_parser_rss(raptor_world* world);
 int raptor_init_parser_rdfa(raptor_world* world);
+int raptor_init_parser_json(raptor_world* world);
 
 void raptor_terminate_parser_grddl_common(raptor_world *world);
 
