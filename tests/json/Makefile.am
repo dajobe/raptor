@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor JSON tests
 #
-# Copyright (C) 2007, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2010, David Beckett http://purl.org/net/dajobe/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
 # 
@@ -21,10 +21,10 @@
 # 
 
 TEST_FILES=\
-example2.json
+example1.json example2.json
 
 TEST_OUT_FILES=\
-example2.nt
+example1.nt example2.nt
 
 # Used to make N-triples output consistent
 BASE_URI=http://example.librdf.org/

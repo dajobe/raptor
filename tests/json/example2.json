@@ -47,7 +47,7 @@
     },{
       "subject"   : { "type" : "bnode", "value" : "_:person" },
       "predicate" : { "type" : "uri", "value" : "http://xmlns.com/foaf/0.1/age" },
-      "object"    : { "type" : "literal", "value" : "46", "datatype" : "http://www.w3.org/2001/XMLSchema#integer" }
+      "object"    : { "type" : "literal", "value" : "48", "datatype" : "http://www.w3.org/2001/XMLSchema#integer" }
     },{
       "subject"   : { "type" : "bnode", "value" : "_:person" },
       "predicate" : { "type" : "uri", "value" : "http://xmlns.com/foaf/0.1/mbox_sha1sum" },
