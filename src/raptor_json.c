@@ -124,8 +124,22 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
       break;
     }
     case RAPTOR_TERM_TYPE_LITERAL: {
-      // FIXME: generate datatype URI
-      term = raptor_new_term_from_literal(rdf_parser->world, context->term_value, NULL, context->term_lang);
+      raptor_uri *datatype_uri = NULL;
+      if (context->term_datatype) {
+        datatype_uri = raptor_new_uri(rdf_parser->world, context->term_datatype);
+      }
+      term = raptor_new_term_from_literal(rdf_parser->world, context->term_value, datatype_uri, context->term_lang);
+      if (datatype_uri) {
+        raptor_free_uri(datatype_uri);
+      }
+      break;
+    }
+    case RAPTOR_TERM_TYPE_BLANK: {
+      unsigned char *node_id = context->term_value;
+      if (strlen((const char*)node_id) > 2 && node_id[0] == '_' && node_id[1] == ':') {
+          node_id = &node_id[2];
+      }
+      term = raptor_new_term_from_blank(rdf_parser->world, node_id);
       break;
     }
     // FIXME: support blank nodes
@@ -162,6 +176,7 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
 
   if (context->state == TRIPLES_TERM) {
     // FIXME: do we really have to allocate new memory?
+    // FIXME: use counted strings instead?
     unsigned char *str = malloc(stringLen+1);
     memcpy(str, stringVal, stringLen);
     str[stringLen] = '\0';
@@ -292,7 +307,9 @@ static int raptor_json_end_map(void * ctx)
 
   if (context->state == TRIPLES_TERM) {
     raptor_json_generate_term(rdf_parser);
-    // FIXME: free temporary used for constructing term
+    if (context->term_value)    free(context->term_value);
+    if (context->term_lang)     free(context->term_lang);
+    if (context->term_datatype) free(context->term_datatype);
     context->state = TRIPLES_TRIPLE;
     fprintf(stderr,"new state: TRIPLES_TRIPLE\n");
     return 1;
@@ -416,7 +433,7 @@ raptor_json_parse_terminate(raptor_parser* rdf_parser)
   if (context->handle) {
     yajl_free(context->handle);
   }
-  
+
   // FIXME: clean up any remaining allocated memory
 }
 
@@ -436,19 +453,23 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
 
   fprintf(stderr,"raptor_json_parse_chunk(len=%d,is_end=%d)\n",(int)len,is_end);
 
+  if (len) {
+    status = yajl_parse(context->handle, s, len);
+
+    if (status != yajl_status_ok &&
+        status != yajl_status_insufficient_data)
+    {
+      unsigned char * str = yajl_get_error(context->handle, 1, s, len);
+      fprintf(stderr, "%s", (const char *) str);
+      yajl_free_error(context->handle, str);
+    }
+  }
+
   if (is_end) {
     /* parse any remaining buffered data */
     status = yajl_parse_complete(context->handle);
-  } else {
-    status = yajl_parse(context->handle, s, len);
-  }
 
-  if (status != yajl_status_ok &&
-      status != yajl_status_insufficient_data)
-  {
-    unsigned char * str = yajl_get_error(context->handle, 1, s, len);
-    fprintf(stderr, "%s", (const char *) str);
-    yajl_free_error(context->handle, str);
+    // FIXME: check for errors
   }
 
   return 0;
