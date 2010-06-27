@@ -57,32 +57,32 @@
 */
 
 typedef enum {
-  ROOT,
-  MAP_ROOT,
-  TRIPLES_KEY,
-  TRIPLES_ARRAY,
-  TRIPLES_TRIPLE,
-  TRIPLES_TERM,
-  RESOURCES_SUBJECT_KEY,
-  RESOURCES_PREDICATE,
-  RESOURCES_OBJECT_ARRAY,
-  RESOURCES_OBJECT
+  RATOR_JSON_STATE_ROOT,
+  RATOR_JSON_STATE_MAP_ROOT,
+  RATOR_JSON_STATE_TRIPLES_KEY,
+  RATOR_JSON_STATE_TRIPLES_ARRAY,
+  RATOR_JSON_STATE_TRIPLES_TRIPLE,
+  RATOR_JSON_STATE_TRIPLES_TERM,
+  RATOR_JSON_STATE_RESOURCES_SUBJECT_KEY,
+  RATOR_JSON_STATE_RESOURCES_PREDICATE,
+  RATOR_JSON_STATE_RESOURCES_OBJECT_ARRAY,
+  RATOR_JSON_STATE_RESOURCES_OBJECT
 } raptor_json_parse_state;
 
-enum {
-  ATTRIB_UNKNOWN,
-  ATTRIB_VALUE,
-  ATTRIB_LANG,
-  ATTRIB_TYPE,
-  ATTRIB_DATATYPE
-};
+typedef enum {
+  RATOR_JSON_TERM_UNKNOWN,
+  RATOR_JSON_TERM_SUBJECT,
+  RATOR_JSON_TERM_PREDICATE,
+  RATOR_JSON_TERM_OBJECT
+} raptor_json_term;
 
-enum {
-  TERM_UNKNOWN,
-  TERM_SUBJECT,
-  TERM_PREDICATE,
-  TERM_OBJECT
-};
+typedef enum {
+  RATOR_JSON_ATTRIB_UNKNOWN,
+  RATOR_JSON_ATTRIB_VALUE,
+  RATOR_JSON_ATTRIB_LANG,
+  RATOR_JSON_ATTRIB_TYPE,
+  RATOR_JSON_ATTRIB_DATATYPE
+} raptor_json_term_attrib;
 
 
 /*
@@ -94,12 +94,8 @@ struct raptor_json_parser_context_s {
 
   /* Parser state */
   raptor_json_parse_state state;
-  int term;
-  int attrib;
-  
-  /* Temporary storage for resource parsing */
-  raptor_term *resource_subject;
-  raptor_term *resource_predicate;
+  raptor_json_term term;
+  raptor_json_term_attrib attrib;
 
   /* Temporary storage, while creating terms */
   raptor_term_type term_type;
@@ -136,7 +132,6 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
 
   return term;
 }
-
 
 
 static raptor_term*
@@ -194,8 +189,8 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == TRIPLES_TERM ||
-      context->state == RESOURCES_OBJECT) {
+  if (context->state == RATOR_JSON_STATE_TRIPLES_TERM ||
+      context->state == RATOR_JSON_STATE_RESOURCES_OBJECT) {
     // FIXME: do we really have to allocate new memory?
     // FIXME: use counted strings instead?
     unsigned char *str = malloc(stringLen+1);
@@ -203,13 +198,13 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
     str[stringLen] = '\0';
 
     switch (context->attrib) {
-      case ATTRIB_VALUE:
+      case RATOR_JSON_ATTRIB_VALUE:
         context->term_value = str;
       break;
-      case ATTRIB_LANG:
+      case RATOR_JSON_ATTRIB_LANG:
         context->term_lang = str;
       break;
-      case ATTRIB_TYPE:
+      case RATOR_JSON_ATTRIB_TYPE:
         if (!strcmp((const char*)str,"uri")) {
           context->term_type = RAPTOR_TERM_TYPE_URI;
         } else if (!strcmp((const char*)str,"literal")) {
@@ -222,16 +217,17 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
         }
         free(str);
       break;
-      case ATTRIB_DATATYPE:
+      case RATOR_JSON_ATTRIB_DATATYPE:
         context->term_datatype = str;
       break;
+      case RATOR_JSON_ATTRIB_UNKNOWN:
       default:
-        fprintf(stderr,"unknown term attribute: %d\n", context->attrib);
+        fprintf(stderr,"Unknown term attribute: %d\n", context->attrib);
         free(str);
       break;
     }
   } else {
-    fprintf(stderr,"unexpected string\n");
+    fprintf(stderr,"Unexpected JSON string.\n");
     return 0;
   }
   return 1;
@@ -244,54 +240,54 @@ static int raptor_json_map_key(void * ctx, const unsigned char * stringVal,
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == MAP_ROOT) {
+  if (context->state == RATOR_JSON_STATE_MAP_ROOT) {
     if (!strncmp((const char*)stringVal,"triples",stringLen)) {
-      context->state = TRIPLES_KEY;
+      context->state = RATOR_JSON_STATE_TRIPLES_KEY;
       return 1;
     } else {
-      context->resource_subject = raptor_json_new_term_from_counted_string(rdf_parser, stringVal, stringLen);
-      context->state = RESOURCES_SUBJECT_KEY;
+      context->statement.subject = raptor_json_new_term_from_counted_string(rdf_parser, stringVal, stringLen);
+      context->state = RATOR_JSON_STATE_RESOURCES_SUBJECT_KEY;
       return 1;
     }
-  } else if (context->state == RESOURCES_PREDICATE) {
-    context->resource_predicate = raptor_json_new_term_from_counted_string(rdf_parser, stringVal, stringLen);
+  } else if (context->state == RATOR_JSON_STATE_RESOURCES_PREDICATE) {
+    context->statement.predicate = raptor_json_new_term_from_counted_string(rdf_parser, stringVal, stringLen);
     return 1;
-  } else if (context->state == TRIPLES_TRIPLE) {
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_TRIPLE) {
     if (!strncmp((const char*)stringVal,"subject",stringLen)) {
-      context->term = TERM_SUBJECT;
+      context->term = RATOR_JSON_TERM_SUBJECT;
       return 1;
     } else if (!strncmp((const char*)stringVal,"predicate",stringLen)) {
-      context->term = TERM_PREDICATE;
+      context->term = RATOR_JSON_TERM_PREDICATE;
       return 1;
     } else if (!strncmp((const char*)stringVal,"object",stringLen)) {
-      context->term = TERM_OBJECT;
+      context->term = RATOR_JSON_TERM_OBJECT;
       return 1;
     } else {
-      fprintf(stderr,"unexpected key name in triple definition.\n");
+      fprintf(stderr,"Unexpected JSON key name in triple definition.\n");
       return 0;
     }
-  } else if (context->state == TRIPLES_TERM ||
-             context->state == RESOURCES_OBJECT) {
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_TERM ||
+             context->state == RATOR_JSON_STATE_RESOURCES_OBJECT) {
     if (!strncmp((const char*)stringVal,"value",stringLen)) {
-      context->attrib = ATTRIB_VALUE;
+      context->attrib = RATOR_JSON_ATTRIB_VALUE;
       return 1;
     } else if (!strncmp((const char*)stringVal,"type",stringLen)) {
-      context->attrib = ATTRIB_TYPE;
+      context->attrib = RATOR_JSON_ATTRIB_TYPE;
       return 1;
     } else if (!strncmp((const char*)stringVal,"datatype",stringLen)) {
-      context->attrib = ATTRIB_DATATYPE;
+      context->attrib = RATOR_JSON_ATTRIB_DATATYPE;
       return 1;
     } else if (!strncmp((const char*)stringVal,"lang",stringLen)) {
-      context->attrib = ATTRIB_LANG;
+      context->attrib = RATOR_JSON_ATTRIB_LANG;
       return 1;
     } else {
-      context->attrib = ATTRIB_UNKNOWN;
+      context->attrib = RATOR_JSON_ATTRIB_UNKNOWN;
       fprintf(stderr,"unexpected key name in triple definition.\n");
       return 0;
     }
     return 1;
   } else {
-    fprintf(stderr,"unexpected map key\n");
+    fprintf(stderr,"Unexpected JSON map key.\n");
     return 0;
   }
 }
@@ -302,35 +298,35 @@ static int raptor_json_start_map(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == ROOT) {
-    context->state = MAP_ROOT;
+  if (context->state == RATOR_JSON_STATE_ROOT) {
+    context->state = RATOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == RESOURCES_SUBJECT_KEY) {
-    context->state = RESOURCES_PREDICATE;
+  } else if (context->state == RATOR_JSON_STATE_RESOURCES_SUBJECT_KEY) {
+    context->state = RATOR_JSON_STATE_RESOURCES_PREDICATE;
     return 1;
-  } else if (context->state == RESOURCES_OBJECT_ARRAY) {
-    context->state = RESOURCES_OBJECT;
-    context->attrib = ATTRIB_UNKNOWN;
+  } else if (context->state == RATOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
+    context->state = RATOR_JSON_STATE_RESOURCES_OBJECT;
+    context->attrib = RATOR_JSON_ATTRIB_UNKNOWN;
     context->term_value = NULL;
     context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
     context->term_datatype = NULL;
     context->term_lang = NULL;
     return 1;
-  } else if (context->state == TRIPLES_ARRAY) {
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_ARRAY) {
     raptor_statement_init(&context->statement, rdf_parser->world);
-    context->term = TERM_UNKNOWN;
-    context->state = TRIPLES_TRIPLE;
+    context->term = RATOR_JSON_TERM_UNKNOWN;
+    context->state = RATOR_JSON_STATE_TRIPLES_TRIPLE;
     return 1;
-  } else if (context->state == TRIPLES_TRIPLE) {
-    context->state = TRIPLES_TERM;
-    context->attrib = ATTRIB_UNKNOWN;
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_TRIPLE) {
+    context->state = RATOR_JSON_STATE_TRIPLES_TERM;
+    context->attrib = RATOR_JSON_ATTRIB_UNKNOWN;
     context->term_value = NULL;
     context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
     context->term_datatype = NULL;
     context->term_lang = NULL;
     return 1;
   } else {
-    fprintf(stderr,"unexpected start of map\n");
+    fprintf(stderr,"Unexpected start of JSON map.\n");
     return 0;
   }
 }
@@ -342,34 +338,36 @@ static int raptor_json_end_map(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
   
-  if (context->state == RESOURCES_OBJECT) {
+  if (context->state == RATOR_JSON_STATE_RESOURCES_OBJECT) {
     raptor_term *term = raptor_json_generate_term(rdf_parser);
-    context->statement.subject = context->resource_subject;
-    context->statement.predicate = context->resource_predicate;
     context->statement.object = term;
 
     /* Generate the statement */
     (*rdf_parser->statement_handler)(rdf_parser->user_data, &context->statement);
     
-    context->state = RESOURCES_OBJECT_ARRAY;
+    context->state = RATOR_JSON_STATE_RESOURCES_OBJECT_ARRAY;
     return 1;
-  } else if (context->state == RESOURCES_PREDICATE) {
-    context->state = MAP_ROOT;
+  } else if (context->state == RATOR_JSON_STATE_RESOURCES_PREDICATE) {
+    context->state = RATOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == TRIPLES_TERM) {
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_TERM) {
     raptor_term *term = raptor_json_generate_term(rdf_parser);
     
-    // Store it in the statement
+    // Store the term in the statement
     if (term) {
       switch(context->term) {
-        case TERM_SUBJECT:
+        case RATOR_JSON_TERM_SUBJECT:
           context->statement.subject = term;
         break;
-        case TERM_PREDICATE:
+        case RATOR_JSON_TERM_PREDICATE:
           context->statement.predicate = term;
         break;
-        case TERM_OBJECT:
+        case RATOR_JSON_TERM_OBJECT:
           context->statement.object = term;
+        break;
+        case RATOR_JSON_TERM_UNKNOWN:
+        default:
+          fprintf(stderr, "Unknwon term: %d\n", context->term);
         break;
       }
     }
@@ -377,22 +375,22 @@ static int raptor_json_end_map(void * ctx)
     if (context->term_value)    free(context->term_value);
     if (context->term_lang)     free(context->term_lang);
     if (context->term_datatype) free(context->term_datatype);
-    context->state = TRIPLES_TRIPLE;
+    context->state = RATOR_JSON_STATE_TRIPLES_TRIPLE;
     return 1;
-  } else if (context->state == TRIPLES_TRIPLE) {
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_TRIPLE) {
     /* Generate the statement */
     (*rdf_parser->statement_handler)(rdf_parser->user_data, &context->statement);
     // FIXME: free the statement
-    context->state = TRIPLES_ARRAY;
+    context->state = RATOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
-  } else if (context->state == TRIPLES_KEY) {
-    context->state = MAP_ROOT;
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_KEY) {
+    context->state = RATOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == MAP_ROOT) {
-    context->state = ROOT;
+  } else if (context->state == RATOR_JSON_STATE_MAP_ROOT) {
+    context->state = RATOR_JSON_STATE_ROOT;
     return 1;
   } else {
-    fprintf(stderr,"unexpected end of map\n");
+    fprintf(stderr,"Unexpected end of JSON map.\n");
     return 0;
   }
 }
@@ -403,14 +401,14 @@ static int raptor_json_start_array(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RESOURCES_PREDICATE) {
-    context->state = RESOURCES_OBJECT_ARRAY;
+  if (context->state == RATOR_JSON_STATE_RESOURCES_PREDICATE) {
+    context->state = RATOR_JSON_STATE_RESOURCES_OBJECT_ARRAY;
     return 1;
-  } else if (context->state == TRIPLES_KEY) {
-    context->state = TRIPLES_ARRAY;
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_KEY) {
+    context->state = RATOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
   } else {
-    fprintf(stderr,"unexpected start of array\n");
+    fprintf(stderr,"Unexpected start of array.\n");
     return 0;
   }
 }
@@ -421,11 +419,11 @@ static int raptor_json_end_array(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RESOURCES_OBJECT_ARRAY) {
-    context->state = RESOURCES_PREDICATE;
+  if (context->state == RATOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
+    context->state = RATOR_JSON_STATE_RESOURCES_PREDICATE;
     return 1;
-  } else if (context->state == TRIPLES_ARRAY) {
-    context->state = MAP_ROOT;
+  } else if (context->state == RATOR_JSON_STATE_TRIPLES_ARRAY) {
+    context->state = RATOR_JSON_STATE_MAP_ROOT;
     return 1;
   } else {
     fprintf(stderr,"unexpected end of array\n");
@@ -478,9 +476,6 @@ raptor_json_parse_init(raptor_parser* rdf_parser, const char *name)
     return 1;
   }
   
-  // FIXME: initialise to known state
-  context->resource_subject = NULL;
-  context->resource_predicate = NULL;
 
   return 0;
 }
