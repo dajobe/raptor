@@ -1319,6 +1319,7 @@ tests/feeds/Makefile
 tests/grddl/Makefile
 tests/ntriples/Makefile
 tests/rdfa/Makefile
+tests/json/Makefile
 tests/rdfxml/Makefile
 tests/turtle/Makefile
 tests/trig/Makefile
