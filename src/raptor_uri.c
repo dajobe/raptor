@@ -151,7 +151,8 @@ raptor_new_uri_from_counted_string(raptor_world* world,
     goto unlock;
   }
   
-  memcpy((char*)new_string, (const char*)uri_string, length + 1);
+  memcpy((char*)new_string, (const char*)uri_string, length);
+  new_string[length] = '\0';
   new_uri->string = new_string;
 
   new_uri->usage = 1; /* for user */
@@ -1377,7 +1378,7 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!string)
     return NULL;
   
-  new_string = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1); /* +1 for NUL termination */
+  new_string = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1); /* +1 for NULL termination */
   if(!new_string)
     return NULL;
   

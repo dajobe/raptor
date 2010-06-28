@@ -127,9 +127,10 @@ raptor_new_term_from_counted_literal(raptor_world* world,
   if(!literal || !*literal)
     literal_len = 0;
 
-  if(literal_len)
-    memcpy(new_literal, literal, literal_len + 1);
-  else
+  if(literal_len) {
+    memcpy(new_literal, literal, literal_len);
+    new_literal[literal_len] = '\0';
+  } else
     *new_literal = '\0';
 
   if(language) {
@@ -138,7 +139,8 @@ raptor_new_term_from_counted_literal(raptor_world* world,
       RAPTOR_FREE(cstring, new_literal);
       return NULL;
     }
-    memcpy(new_language, language, language_len + 1);
+    memcpy(new_language, language, language_len);
+    new_language[language_len] = '\0';
   } else
     language_len = 0;
 
@@ -240,7 +242,8 @@ raptor_new_term_from_counted_blank(raptor_world* world,
   if(!new_id)
     return NULL;
 
-  memcpy(new_id, blank, length + 1);
+  memcpy(new_id, blank, length);
+  new_id[length] = '\0';
 
   t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
   if(!t) {
