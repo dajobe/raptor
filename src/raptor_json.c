@@ -643,18 +643,33 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
                                        const char *mime_type)
 {
   int score = 0;
+  int pos = 0;
 
-  if(suffix) {
-    if(!strcmp((const char*)suffix, "json"))
+  if (suffix) {
+    if (!strcmp((const char*)suffix, "json"))
       score = 8;
+    if (!strcmp((const char*)suffix, "js"))
+      score = 3;
+  } else if (identifier) {
+    if (strstr((const char*)identifier, "json"))
+      score = 4;
   }
 
-  if(mime_type) {
-    if(strstr((const char*)mime_type, "json"))
+  if (mime_type) {
+    if (strstr((const char*)mime_type, "json"))
       score += 6;
   }
 
-  // FIXME: check for a curly brace in the buffer?
+  // Is the first non-whitespace character a curly brace?
+  while (pos<len) {
+    if (isspace(buffer[pos])) {
+      pos++;
+    } else {
+      if (buffer[pos] == '{')
+        score += 2;
+      break;
+    }
+  }
 
   return score;
 }
