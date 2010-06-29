@@ -174,7 +174,7 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
     }
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
-      fprintf(stderr,"unsupported term type: %d\n", context->term_type);
+      raptor_parser_error(rdf_parser, "Unsupported term type in raptor_json_generate_term.");
       break;
   }
   
@@ -213,7 +213,7 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
           context->term_type = RAPTOR_TERM_TYPE_BLANK;
         } else {
           context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
-          fprintf(stderr,"unknown term type: %s\n", str);
+          raptor_parser_error(rdf_parser,"Unknown term type: %s", str);
         }
         free(str);
       break;
@@ -222,12 +222,12 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
       break;
       case RATOR_JSON_ATTRIB_UNKNOWN:
       default:
-        fprintf(stderr,"Unknown term attribute: %d\n", context->attrib);
+        raptor_parser_error(rdf_parser,"Unsupported term attribute in raptor_json_string");
         free(str);
       break;
     }
   } else {
-    fprintf(stderr,"Unexpected JSON string.\n");
+    raptor_parser_error(rdf_parser,"Unexpected JSON string.");
     return 0;
   }
   return 1;
@@ -263,7 +263,7 @@ static int raptor_json_map_key(void * ctx, const unsigned char * stringVal,
       context->term = RATOR_JSON_TERM_OBJECT;
       return 1;
     } else {
-      fprintf(stderr,"Unexpected JSON key name in triple definition.\n");
+      raptor_parser_error(rdf_parser,"Unexpected JSON key name in triple definition.");
       return 0;
     }
   } else if (context->state == RATOR_JSON_STATE_TRIPLES_TERM ||
@@ -282,12 +282,12 @@ static int raptor_json_map_key(void * ctx, const unsigned char * stringVal,
       return 1;
     } else {
       context->attrib = RATOR_JSON_ATTRIB_UNKNOWN;
-      fprintf(stderr,"unexpected key name in triple definition.\n");
+      raptor_parser_error(rdf_parser,"Unexpected key name in triple definition.");
       return 0;
     }
     return 1;
   } else {
-    fprintf(stderr,"Unexpected JSON map key.\n");
+    raptor_parser_error(rdf_parser,"Unexpected JSON map key.");
     return 0;
   }
 }
@@ -326,7 +326,7 @@ static int raptor_json_start_map(void * ctx)
     context->term_lang = NULL;
     return 1;
   } else {
-    fprintf(stderr,"Unexpected start of JSON map.\n");
+    raptor_parser_error(rdf_parser,"Unexpected start of JSON map.");
     return 0;
   }
 }
@@ -367,7 +367,7 @@ static int raptor_json_end_map(void * ctx)
         break;
         case RATOR_JSON_TERM_UNKNOWN:
         default:
-          fprintf(stderr, "Unknwon term: %d\n", context->term);
+          raptor_parser_error(rdf_parser, "Unknown term in raptor_json_end_map");
         break;
       }
     }
@@ -390,7 +390,7 @@ static int raptor_json_end_map(void * ctx)
     context->state = RATOR_JSON_STATE_ROOT;
     return 1;
   } else {
-    fprintf(stderr,"Unexpected end of JSON map.\n");
+    raptor_parser_error(rdf_parser,"Unexpected end of JSON map");
     return 0;
   }
 }
@@ -408,7 +408,7 @@ static int raptor_json_start_array(void * ctx)
     context->state = RATOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
   } else {
-    fprintf(stderr,"Unexpected start of array.\n");
+    raptor_parser_error(rdf_parser,"Unexpected start of array");
     return 0;
   }
 }
@@ -426,7 +426,7 @@ static int raptor_json_end_array(void * ctx)
     context->state = RATOR_JSON_STATE_MAP_ROOT;
     return 1;
   } else {
-    fprintf(stderr,"unexpected end of array\n");
+    raptor_parser_error(rdf_parser,"Unexpected end of array");
     return 0;
   }
 }
@@ -472,10 +472,9 @@ raptor_json_parse_init(raptor_parser* rdf_parser, const char *name)
                                (void *)rdf_parser);
 
   if (!context->handle) {
-    fprintf(stderr,"Failed to initialise YAJL parser.\n");
+    raptor_parser_fatal_error(rdf_parser,"Failed to initialise YAJL parser");
     return 1;
   }
-  
 
   return 0;
 }
@@ -522,6 +521,7 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
       unsigned char * str = yajl_get_error(context->handle, 1, s, len);
       fprintf(stderr, "%s", (const char *) str);
       yajl_free_error(context->handle, str);
+      //raptor_parser_fatal_error
     }
   }
 
