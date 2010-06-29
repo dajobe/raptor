@@ -87,7 +87,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
  * @language: literal language (or NULL for no language)
  * @language_len: literal language length
  *
- * Constructor - create a new literal statement term
+ * Constructor - create a new literal statement term from a counted length literal.
  *
  * Takes copies of the passed in @literal, @datatype, @language
  *
@@ -95,8 +95,11 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
  * given, NULL is returned.  If @language is the empty string, it is
  * the equivalent to NULL.
  *
+ * Note: The @literal need not be NULL terminated - a NULL will be
+ * added to the copied string used.
+ *
  * Return value: new term or NULL on failure
-*/
+ */
 raptor_term*
 raptor_new_term_from_counted_literal(raptor_world* world,
                                      const unsigned char* literal,
@@ -221,6 +224,9 @@ raptor_new_term_from_literal(raptor_world* world,
  * Constructor - create a new blank node statement term from counted string ID
  *
  * Takes a copy of the passed in @blank
+ *
+ * Note: The @blank need not be NULL terminated - a NULL will be
+ * added to the copied string used.
  *
  * Return value: new term or NULL on failure
 */
