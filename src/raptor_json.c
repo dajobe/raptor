@@ -191,9 +191,7 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
 
   if (context->state == RATOR_JSON_STATE_TRIPLES_TERM ||
       context->state == RATOR_JSON_STATE_RESOURCES_OBJECT) {
-    // FIXME: do we really have to allocate new memory?
-    // FIXME: use counted strings instead?
-    unsigned char *str = malloc(stringLen+1);
+    unsigned char *str = (unsigned char*)RAPTOR_MALLOC(cstring, stringLen+1);
     memcpy(str, stringVal, stringLen);
     str[stringLen] = '\0';
 
@@ -215,7 +213,7 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
           context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
           raptor_parser_error(rdf_parser,"Unknown term type: %s", str);
         }
-        free(str);
+        RAPTOR_FREE(cstring,str);
       break;
       case RATOR_JSON_ATTRIB_DATATYPE:
         context->term_datatype = str;
@@ -223,7 +221,7 @@ static int raptor_json_string(void * ctx, const unsigned char * stringVal,
       case RATOR_JSON_ATTRIB_UNKNOWN:
       default:
         raptor_parser_error(rdf_parser,"Unsupported term attribute in raptor_json_string");
-        free(str);
+        RAPTOR_FREE(cstring,str);
       break;
     }
   } else {
@@ -372,9 +370,9 @@ static int raptor_json_end_map(void * ctx)
       }
     }
 
-    if (context->term_value)    free(context->term_value);
-    if (context->term_lang)     free(context->term_lang);
-    if (context->term_datatype) free(context->term_datatype);
+    if (context->term_value)    RAPTOR_FREE(cstring,context->term_value);
+    if (context->term_lang)     RAPTOR_FREE(cstring,context->term_lang);
+    if (context->term_datatype) RAPTOR_FREE(cstring,context->term_datatype);
     context->state = RATOR_JSON_STATE_TRIPLES_TRIPLE;
     return 1;
   } else if (context->state == RATOR_JSON_STATE_TRIPLES_TRIPLE) {
