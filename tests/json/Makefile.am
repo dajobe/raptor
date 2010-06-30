@@ -21,10 +21,10 @@
 # 
 
 TEST_FILES=\
-example1.json example2.json
+example1.json example2.json example3.json
 
 TEST_OUT_FILES=\
-example1.nt example2.nt
+example1.nt example2.nt example3.nt
 
 # Used to make N-triples output consistent
 BASE_URI=http://example.librdf.org/

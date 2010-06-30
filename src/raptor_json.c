@@ -528,7 +528,7 @@ raptor_json_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_statement_init(&context->statement, rdf_parser->world);
 
   /* Configure the parser */
-  context->config.allowComments = 0;
+  context->config.allowComments = 1;
   context->config.checkUTF8 = 0;
 
   return 0;
