@@ -642,8 +642,8 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
                                        const unsigned char *suffix,
                                        const char *mime_type)
 {
+  unsigned int pos = 0;
   int score = 0;
-  int pos = 0;
 
   if (suffix) {
     if (!strcmp((const char*)suffix, "json"))
