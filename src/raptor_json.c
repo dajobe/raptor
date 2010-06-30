@@ -216,6 +216,34 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
 }
 
 
+static int raptor_json_yajl_null(void * ctx)
+{
+  raptor_parser* rdf_parser = (raptor_parser*)ctx;
+  raptor_parser_error(rdf_parser,"Nulls are not valid in RDF/JSON");
+  return 0;
+}
+
+static int raptor_json_yajl_boolean(void * ctx, int b)
+{
+  raptor_parser* rdf_parser = (raptor_parser*)ctx;
+  raptor_parser_error(rdf_parser,"Booleans are not valid in RDF/JSON");
+  return 0;
+}
+
+static int raptor_json_yajl_integer(void * ctx, long l)
+{
+  raptor_parser* rdf_parser = (raptor_parser*)ctx;
+  raptor_parser_error(rdf_parser,"Integers are not valid in RDF/JSON");
+  return 0;
+}
+
+static int raptor_json_yajl_double(void * ctx, double d)
+{
+  raptor_parser* rdf_parser = (raptor_parser*)ctx;
+  raptor_parser_error(rdf_parser,"Floats are not valid in RDF/JSON");
+  return 0;
+}
+
 static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
                            unsigned int len)
 {
@@ -255,7 +283,7 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
       break;
     }
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected JSON string.");
+    raptor_parser_error(rdf_parser,"Unexpected JSON string");
     return 0;
   }
   return 1;
@@ -366,17 +394,14 @@ static int raptor_json_yajl_end_map(void * ctx)
   context = (raptor_json_parser_context*)rdf_parser->context;
 
   if (context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
-    raptor_term *term = raptor_json_generate_term(rdf_parser);
-    context->statement.object = term;
+    context->statement.object = raptor_json_generate_term(rdf_parser);
+    if (!context->statement.object) return 0;
 
     /* Generate the statement */
     (*rdf_parser->statement_handler)(rdf_parser->user_data, &context->statement);
 
-    if (context->statement.object) {
-      raptor_free_term(context->statement.object);
-      context->statement.object = NULL;
-    }
-
+    raptor_free_term(context->statement.object);
+    context->statement.object = NULL;
     raptor_json_reset_term(context);
 
     context->state = RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY;
@@ -386,37 +411,48 @@ static int raptor_json_yajl_end_map(void * ctx)
     return 1;
   } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TERM) {
     raptor_term *term = raptor_json_generate_term(rdf_parser);
+    if (!term) return 0;
 
     // Store the term in the statement
-    if (term) {
-      switch(context->term) {
-        case RAPTOR_JSON_TERM_SUBJECT:
-          if (context->statement.subject)
-            raptor_free_term(context->statement.subject);
-          context->statement.subject = term;
-        break;
-        case RAPTOR_JSON_TERM_PREDICATE:
-          if (context->statement.predicate)
-            raptor_free_term(context->statement.predicate);
-          context->statement.predicate = term;
-        break;
-        case RAPTOR_JSON_TERM_OBJECT:
-          if (context->statement.object)
-            raptor_free_term(context->statement.object);
-          context->statement.object = term;
-        break;
-        case RAPTOR_JSON_TERM_UNKNOWN:
-        default:
-          raptor_parser_error(rdf_parser, "Unknown term in raptor_json_end_map");
-        break;
-      }
+    switch(context->term) {
+      case RAPTOR_JSON_TERM_SUBJECT:
+        if (context->statement.subject)
+          raptor_free_term(context->statement.subject);
+        context->statement.subject = term;
+      break;
+      case RAPTOR_JSON_TERM_PREDICATE:
+        if (context->statement.predicate)
+          raptor_free_term(context->statement.predicate);
+        context->statement.predicate = term;
+      break;
+      case RAPTOR_JSON_TERM_OBJECT:
+        if (context->statement.object)
+          raptor_free_term(context->statement.object);
+        context->statement.object = term;
+      break;
+      case RAPTOR_JSON_TERM_UNKNOWN:
+      default:
+        raptor_parser_error(rdf_parser, "Unknown term in raptor_json_end_map");
+      break;
     }
+
     context->state = RAPTOR_JSON_STATE_TRIPLES_TRIPLE;
     raptor_json_reset_term(context);
     return 1;
   } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
-    /* Generate the statement */
-    (*rdf_parser->statement_handler)(rdf_parser->user_data, &context->statement);
+    if (!context->statement.subject) {
+      raptor_parser_error(rdf_parser, "Triple is missing a subject term");
+      return 0;
+    } else if (!context->statement.predicate) {
+      raptor_parser_error(rdf_parser, "Triple is missing a predicate term");
+      return 0;
+    } else if (!context->statement.object) {
+      raptor_parser_error(rdf_parser, "Triple is missing a object term");
+      return 0;
+    } else {
+      /* Generate the statement */
+      (*rdf_parser->statement_handler)(rdf_parser->user_data, &context->statement);
+    }
     raptor_statement_clear(&context->statement);
     context->state = RAPTOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
@@ -495,11 +531,11 @@ static yajl_alloc_funcs raptor_json_yajl_alloc_funcs = {
 };
 
 static yajl_callbacks raptor_json_yajl_callbacks = {
-  NULL,      /* null is not valid */
-  NULL,      /* boolean is not valid */
-  NULL,      /* integer is not valid */
-  NULL,      /* double is not valid */
-  NULL,      /* number is not valid */
+  raptor_json_yajl_null,
+  raptor_json_yajl_boolean,
+  raptor_json_yajl_integer,
+  raptor_json_yajl_double,
+  NULL,
   raptor_json_yajl_string,
   raptor_json_yajl_start_map,
   raptor_json_yajl_map_key,
