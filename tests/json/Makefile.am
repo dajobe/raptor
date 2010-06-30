@@ -26,17 +26,22 @@ example1.json example2.json example3.json
 TEST_OUT_FILES=\
 example1.nt example2.nt example3.nt
 
+JSON_BAD_TEST_FILES=bad-00.json bad-01.json bad-02.json bad-03.json \
+bad-04.json bad-05.json bad-06.json bad-07.json bad-08.json bad-09.json \
+bad-10.json bad-11.json bad-12.json
+
 # Used to make N-triples output consistent
 BASE_URI=http://example.librdf.org/
 
 EXTRA_DIST = \
 	$(TEST_FILES) \
-	$(TEST_OUT_FILES)
+	$(TEST_OUT_FILES) \
+	$(JSON_BAD_TEST_FILES)
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
 
-check-local: check-json
+check-local: build-rapper check-json check-bad-json
 
 check-json: build-rapper $(TEST_FILES)
 	@result=0; \
@@ -63,3 +68,29 @@ check-json: build-rapper $(TEST_FILES)
 	  rm -f $$name.res $$name.err; \
 	done; \
 	exit $$result
+
+check-bad-json: build-rapper $(JSON_BAD_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing that bad JSON fails"; \
+	for test in $(JSON_BAD_TEST_FILES); do \
+	  name=`basename $$test .json` ; \
+	  baseuri=$(BASE_URI)$$name.json; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -i json -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status -eq 1 ; then \
+	    $(ECHO) "ok"; \
+	  elif test $$status -eq 2 ; then \
+	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
+	    cat $$name.res; grep Warning $$name.err; result=1; \
+	  elif test $$status -eq 0 ; then \
+	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
+	    cat $$name.res; result=1; \
+	  else \
+	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    cat $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
