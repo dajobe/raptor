@@ -50,11 +50,6 @@
 #include "raptor.h"
 #include "raptor_internal.h"
 
-/* Set RAPTOR_DEBUG to > 1 to get lots of buffer related debugging */
-/*
-#undef RAPTOR_DEBUG
-#define RAPTOR_DEBUG 2
-*/
 
 typedef enum {
   RAPTOR_JSON_STATE_ROOT,
@@ -598,12 +593,8 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
                             int is_end)
 {
   raptor_json_parser_context *context = (raptor_json_parser_context*)rdf_parser->context;
-  int result = 0;
   yajl_status status;
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("adding %d bytes to buffer\n", (unsigned int)len);
-#endif
+  int result = 0;
 
   if (len) {
     /* Parse the chunk passed to us */
