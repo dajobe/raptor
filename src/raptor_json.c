@@ -656,7 +656,6 @@ raptor_json_parse_start(raptor_parser* rdf_parser)
 
   /* Initialise the parse state */
   context->state = RAPTOR_JSON_STATE_ROOT;
-  context->state = RAPTOR_JSON_TERM_UNKNOWN;
   raptor_json_reset_term(context);
   raptor_statement_clear(&context->statement);
 
