@@ -108,11 +108,11 @@ typedef struct raptor_json_parser_context_s raptor_json_parser_context;
 static void
 raptor_json_reset_term(raptor_json_parser_context *context)
 {
-  if (context->term_value)
+  if(context->term_value)
     RAPTOR_FREE(cstring,context->term_value);
-  if (context->term_lang)
+  if(context->term_lang)
     RAPTOR_FREE(cstring,context->term_lang);
-  if (context->term_datatype)
+  if(context->term_datatype)
     RAPTOR_FREE(cstring,context->term_datatype);
 
   context->term_value = NULL;
@@ -125,8 +125,8 @@ raptor_json_reset_term(raptor_json_parser_context *context)
 static unsigned char*
 raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, unsigned int len)
 {
-  unsigned char *cstr = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
-  if (!cstr) {
+  unsigned char *cstr = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  if(!cstr) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return NULL;
   }
@@ -142,13 +142,13 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
 {
   raptor_term *term = NULL;
 
-  if (len > 2 && str[0] == '_' && str[1] == ':') {
+  if(len > 2 && str[0] == '_' && str[1] == ':') {
     const unsigned char *node_id = &str[2];
-    term = raptor_new_term_from_counted_blank(rdf_parser->world, node_id, len-2);
+    term = raptor_new_term_from_counted_blank(rdf_parser->world, node_id, len - 2);
 
   } else {
     raptor_uri *uri = raptor_new_uri_from_counted_string(rdf_parser->world, str, len);
-    if (!uri) {
+    if(!uri) {
       unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
       raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
       RAPTOR_FREE(cstring,cstr);
@@ -169,7 +169,7 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
   raptor_json_parser_context *context = (raptor_json_parser_context*)rdf_parser->context;
   raptor_term *term = NULL;
 
-  if (!context->term_value) {
+  if(!context->term_value) {
     raptor_parser_error(rdf_parser, "No value for term defined");
     return NULL;
   }
@@ -187,17 +187,17 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
     }
     case RAPTOR_TERM_TYPE_LITERAL: {
       raptor_uri *datatype_uri = NULL;
-      if (context->term_datatype) {
+      if(context->term_datatype) {
         datatype_uri = raptor_new_uri(rdf_parser->world, context->term_datatype);
       }
       term = raptor_new_term_from_literal(rdf_parser->world, context->term_value, datatype_uri, context->term_lang);
-      if (datatype_uri)
+      if(datatype_uri)
         raptor_free_uri(datatype_uri);
       break;
     }
     case RAPTOR_TERM_TYPE_BLANK: {
       unsigned char *node_id = context->term_value;
-      if (strlen((const char*)node_id) > 2 && node_id[0] == '_' && node_id[1] == ':') {
+      if(strlen((const char*)node_id) > 2 && node_id[0] == '_' && node_id[1] == ':') {
           node_id = &node_id[2];
       }
       term = raptor_new_term_from_blank(rdf_parser->world, node_id);
@@ -247,9 +247,9 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
+  if(context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
       context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
-    switch (context->attrib) {
+    switch(context->attrib) {
       case RAPTOR_JSON_ATTRIB_VALUE:
         context->term_value = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
       break;
@@ -257,11 +257,11 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
         context->term_lang = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
       break;
       case RAPTOR_JSON_ATTRIB_TYPE:
-        if (!strncmp((const char*)str,"uri",len)) {
+        if(!strncmp((const char*)str,"uri",len)) {
           context->term_type = RAPTOR_TERM_TYPE_URI;
-        } else if (!strncmp((const char*)str,"literal",len)) {
+        } else if(!strncmp((const char*)str,"literal",len)) {
           context->term_type = RAPTOR_TERM_TYPE_LITERAL;
-        } else if (!strncmp((const char*)str,"bnode",len)) {
+        } else if(!strncmp((const char*)str,"bnode",len)) {
           context->term_type = RAPTOR_TERM_TYPE_BLANK;
         } else {
           unsigned char * cstr = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
@@ -292,52 +292,52 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_MAP_ROOT) {
-    if (!strncmp((const char*)str,"triples",len)) {
+  if(context->state == RAPTOR_JSON_STATE_MAP_ROOT) {
+    if(!strncmp((const char*)str,"triples",len)) {
       context->state = RAPTOR_JSON_STATE_TRIPLES_KEY;
       return 1;
     } else {
-      if (context->statement.subject)
+      if(context->statement.subject)
         raptor_free_term(context->statement.subject);
       context->statement.subject = raptor_json_new_term_from_counted_string(rdf_parser, str, len);
-      if (!context->statement.subject)
+      if(!context->statement.subject)
         return 0;
       context->state = RAPTOR_JSON_STATE_RESOURCES_SUBJECT_KEY;
       return 1;
     }
-  } else if (context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
-    if (context->statement.predicate)
+  } else if(context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
+    if(context->statement.predicate)
       raptor_free_term(context->statement.predicate);
     context->statement.predicate = raptor_json_new_term_from_counted_string(rdf_parser, str, len);
-    if (!context->statement.predicate)
+    if(!context->statement.predicate)
       return 0;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
-    if (!strncmp((const char*)str,"subject",len)) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
+    if(!strncmp((const char*)str,"subject",len)) {
       context->term = RAPTOR_JSON_TERM_SUBJECT;
       return 1;
-    } else if (!strncmp((const char*)str,"predicate",len)) {
+    } else if(!strncmp((const char*)str,"predicate",len)) {
       context->term = RAPTOR_JSON_TERM_PREDICATE;
       return 1;
-    } else if (!strncmp((const char*)str,"object",len)) {
+    } else if(!strncmp((const char*)str,"object",len)) {
       context->term = RAPTOR_JSON_TERM_OBJECT;
       return 1;
     } else {
       raptor_parser_error(rdf_parser,"Unexpected JSON key name in triple definition");
       return 0;
     }
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
              context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
-    if (!strncmp((const char*)str,"value",len)) {
+    if(!strncmp((const char*)str,"value",len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_VALUE;
       return 1;
-    } else if (!strncmp((const char*)str,"type",len)) {
+    } else if(!strncmp((const char*)str,"type",len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_TYPE;
       return 1;
-    } else if (!strncmp((const char*)str,"datatype",len)) {
+    } else if(!strncmp((const char*)str,"datatype",len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_DATATYPE;
       return 1;
-    } else if (!strncmp((const char*)str,"lang",len)) {
+    } else if(!strncmp((const char*)str,"lang",len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_LANG;
       return 1;
     } else {
@@ -358,21 +358,21 @@ static int raptor_json_yajl_start_map(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_ROOT) {
+  if(context->state == RAPTOR_JSON_STATE_ROOT) {
     context->state = RAPTOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_RESOURCES_SUBJECT_KEY) {
+  } else if(context->state == RAPTOR_JSON_STATE_RESOURCES_SUBJECT_KEY) {
     context->state = RAPTOR_JSON_STATE_RESOURCES_PREDICATE;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
+  } else if(context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
     context->state = RAPTOR_JSON_STATE_RESOURCES_OBJECT;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_ARRAY) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_ARRAY) {
     raptor_statement_clear(&context->statement);
     context->term = RAPTOR_JSON_TERM_UNKNOWN;
     context->state = RAPTOR_JSON_STATE_TRIPLES_TRIPLE;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
     context->state = RAPTOR_JSON_STATE_TRIPLES_TERM;
     raptor_json_reset_term(context);
     return 1;
@@ -389,9 +389,9 @@ static int raptor_json_yajl_end_map(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
+  if(context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
     context->statement.object = raptor_json_generate_term(rdf_parser);
-    if (!context->statement.object)
+    if(!context->statement.object)
       return 0;
 
     /* Generate the statement */
@@ -403,28 +403,28 @@ static int raptor_json_yajl_end_map(void * ctx)
 
     context->state = RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
+  } else if(context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
     context->state = RAPTOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TERM) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TERM) {
     raptor_term *term = raptor_json_generate_term(rdf_parser);
-    if (!term)
+    if(!term)
       return 0;
 
     /* Store the term in the statement */
     switch(context->term) {
       case RAPTOR_JSON_TERM_SUBJECT:
-        if (context->statement.subject)
+        if(context->statement.subject)
           raptor_free_term(context->statement.subject);
         context->statement.subject = term;
       break;
       case RAPTOR_JSON_TERM_PREDICATE:
-        if (context->statement.predicate)
+        if(context->statement.predicate)
           raptor_free_term(context->statement.predicate);
         context->statement.predicate = term;
       break;
       case RAPTOR_JSON_TERM_OBJECT:
-        if (context->statement.object)
+        if(context->statement.object)
           raptor_free_term(context->statement.object);
         context->statement.object = term;
       break;
@@ -437,14 +437,14 @@ static int raptor_json_yajl_end_map(void * ctx)
     context->state = RAPTOR_JSON_STATE_TRIPLES_TRIPLE;
     raptor_json_reset_term(context);
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
-    if (!context->statement.subject) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
+    if(!context->statement.subject) {
       raptor_parser_error(rdf_parser, "Triple is missing a subject term");
       return 0;
-    } else if (!context->statement.predicate) {
+    } else if(!context->statement.predicate) {
       raptor_parser_error(rdf_parser, "Triple is missing a predicate term");
       return 0;
-    } else if (!context->statement.object) {
+    } else if(!context->statement.object) {
       raptor_parser_error(rdf_parser, "Triple is missing a object term");
       return 0;
     } else {
@@ -454,10 +454,10 @@ static int raptor_json_yajl_end_map(void * ctx)
     raptor_statement_clear(&context->statement);
     context->state = RAPTOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_KEY) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_KEY) {
     context->state = RAPTOR_JSON_STATE_MAP_ROOT;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_MAP_ROOT) {
+  } else if(context->state == RAPTOR_JSON_STATE_MAP_ROOT) {
     context->state = RAPTOR_JSON_STATE_ROOT;
     return 1;
   } else {
@@ -472,10 +472,10 @@ static int raptor_json_yajl_start_array(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
+  if(context->state == RAPTOR_JSON_STATE_RESOURCES_PREDICATE) {
     context->state = RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_KEY) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_KEY) {
     context->state = RAPTOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
   } else {
@@ -490,10 +490,10 @@ static int raptor_json_yajl_end_array(void * ctx)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
+  if(context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT_ARRAY) {
     context->state = RAPTOR_JSON_STATE_RESOURCES_PREDICATE;
     return 1;
-  } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_ARRAY) {
+  } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_ARRAY) {
     context->state = RAPTOR_JSON_STATE_MAP_ROOT;
     return 1;
   } else {
@@ -580,7 +580,7 @@ raptor_json_parse_terminate(raptor_parser* rdf_parser)
   raptor_json_parser_context *context;
   context = (raptor_json_parser_context*)rdf_parser->context;
 
-  if (context->handle)
+  if(context->handle)
     yajl_free(context->handle);
 
   raptor_json_reset_term(context);
@@ -598,11 +598,11 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
   yajl_status status;
   int result = 0;
 
-  if (len) {
+  if(len) {
     /* Parse the chunk passed to us */
     status = yajl_parse(context->handle, s, len);
 
-    if (status != yajl_status_ok &&
+    if(status != yajl_status_ok &&
         status != yajl_status_insufficient_data)
     {
       unsigned char * str = yajl_get_error(context->handle, 1, s, len);
@@ -612,11 +612,11 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
     }
   }
 
-  if (is_end) {
+  if(is_end) {
     /* parse any remaining buffered data */
     status = yajl_parse_complete(context->handle);
 
-    if (status != yajl_status_ok)
+    if(status != yajl_status_ok)
     {
       unsigned char * str = yajl_get_error(context->handle, 0, NULL, 0);
       raptor_parser_error(rdf_parser, "YAJL error: %s", (const char *) str);
@@ -638,7 +638,7 @@ raptor_json_parse_start(raptor_parser* rdf_parser)
   raptor_json_parser_context *context = (raptor_json_parser_context*)rdf_parser->context;
 
   /* Destroy the old parser */
-  if (context->handle)
+  if(context->handle)
     yajl_free(context->handle);
 
   /* Initialise a new parser */
@@ -649,7 +649,7 @@ raptor_json_parse_start(raptor_parser* rdf_parser)
     (void *)rdf_parser
   );
 
-  if (!context->handle) {
+  if(!context->handle) {
     raptor_parser_fatal_error(rdf_parser, "Failed to initialise YAJL parser");
     return 1;
   }
@@ -674,25 +674,25 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
   unsigned int pos = 0;
   int score = 0;
 
-  if (suffix) {
-    if (!strcmp((const char*)suffix, "json"))
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "json"))
       score = 8;
-    if (!strcmp((const char*)suffix, "js"))
+    if(!strcmp((const char*)suffix, "js"))
       score = 3;
-  } else if (identifier) {
-    if (strstr((const char*)identifier, "json"))
+  } else if(identifier) {
+    if(strstr((const char*)identifier, "json"))
       score = 4;
   }
 
-  if (mime_type && strstr((const char*)mime_type, "json"))
+  if(mime_type && strstr((const char*)mime_type, "json"))
       score += 6;
 
   /* Is the first non-whitespace character a curly brace? */
-  while (pos<len) {
-    if (isspace(buffer[pos])) {
+  while(pos<len) {
+    if(isspace(buffer[pos])) {
       pos++;
     } else {
-      if (buffer[pos] == '{')
+      if(buffer[pos] == '{')
         score += 2;
       break;
     }
