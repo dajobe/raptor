@@ -109,11 +109,11 @@ static void
 raptor_json_reset_term(raptor_json_parser_context *context)
 {
   if(context->term_value)
-    RAPTOR_FREE(cstring,context->term_value);
+    RAPTOR_FREE(cstring, context->term_value);
   if(context->term_lang)
-    RAPTOR_FREE(cstring,context->term_lang);
+    RAPTOR_FREE(cstring, context->term_lang);
   if(context->term_datatype)
-    RAPTOR_FREE(cstring,context->term_datatype);
+    RAPTOR_FREE(cstring, context->term_datatype);
 
   context->term_value = NULL;
   context->term_lang = NULL;
@@ -149,9 +149,9 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
   } else {
     raptor_uri *uri = raptor_new_uri_from_counted_string(rdf_parser->world, str, len);
     if(!uri) {
-      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
+      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
       raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
-      RAPTOR_FREE(cstring,cstr);
+      RAPTOR_FREE(cstring, cstr);
       return NULL;
     }
 
@@ -215,28 +215,28 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
 static int raptor_json_yajl_null(void * ctx)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
-  raptor_parser_error(rdf_parser,"Nulls are not valid in RDF/JSON");
+  raptor_parser_error(rdf_parser, "Nulls are not valid in RDF/JSON");
   return 0;
 }
 
 static int raptor_json_yajl_boolean(void * ctx, int b)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
-  raptor_parser_error(rdf_parser,"Booleans are not valid in RDF/JSON");
+  raptor_parser_error(rdf_parser, "Booleans are not valid in RDF/JSON");
   return 0;
 }
 
 static int raptor_json_yajl_integer(void * ctx, long l)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
-  raptor_parser_error(rdf_parser,"Integers are not valid in RDF/JSON");
+  raptor_parser_error(rdf_parser, "Integers are not valid in RDF/JSON");
   return 0;
 }
 
 static int raptor_json_yajl_double(void * ctx, double d)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
-  raptor_parser_error(rdf_parser,"Floats are not valid in RDF/JSON");
+  raptor_parser_error(rdf_parser, "Floats are not valid in RDF/JSON");
   return 0;
 }
 
@@ -251,35 +251,35 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
       context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
     switch(context->attrib) {
       case RAPTOR_JSON_ATTRIB_VALUE:
-        context->term_value = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
+        context->term_value = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
       break;
       case RAPTOR_JSON_ATTRIB_LANG:
-        context->term_lang = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
+        context->term_lang = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
       break;
       case RAPTOR_JSON_ATTRIB_TYPE:
-        if(!strncmp((const char*)str,"uri",len)) {
+        if(!strncmp((const char*)str, "uri", len)) {
           context->term_type = RAPTOR_TERM_TYPE_URI;
-        } else if(!strncmp((const char*)str,"literal",len)) {
+        } else if(!strncmp((const char*)str, "literal", len)) {
           context->term_type = RAPTOR_TERM_TYPE_LITERAL;
-        } else if(!strncmp((const char*)str,"bnode",len)) {
+        } else if(!strncmp((const char*)str, "bnode", len)) {
           context->term_type = RAPTOR_TERM_TYPE_BLANK;
         } else {
-          unsigned char * cstr = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
+          unsigned char * cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
           context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
-          raptor_parser_error(rdf_parser,"Unknown term type: %s", cstr);
-          RAPTOR_FREE(cstring,cstr);
+          raptor_parser_error(rdf_parser, "Unknown term type: %s", cstr);
+          RAPTOR_FREE(cstring, cstr);
         }
       break;
       case RAPTOR_JSON_ATTRIB_DATATYPE:
-        context->term_datatype = raptor_json_cstring_from_counted_string(rdf_parser,str,len);
+        context->term_datatype = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
       break;
       case RAPTOR_JSON_ATTRIB_UNKNOWN:
       default:
-        raptor_parser_error(rdf_parser,"Unsupported term attribute in raptor_json_string");
+        raptor_parser_error(rdf_parser, "Unsupported term attribute in raptor_json_string");
       break;
     }
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected JSON string");
+    raptor_parser_error(rdf_parser, "Unexpected JSON string");
     return 0;
   }
   return 1;
@@ -293,7 +293,7 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
   context = (raptor_json_parser_context*)rdf_parser->context;
 
   if(context->state == RAPTOR_JSON_STATE_MAP_ROOT) {
-    if(!strncmp((const char*)str,"triples",len)) {
+    if(!strncmp((const char*)str, "triples", len)) {
       context->state = RAPTOR_JSON_STATE_TRIPLES_KEY;
       return 1;
     } else {
@@ -313,41 +313,41 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
       return 0;
     return 1;
   } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TRIPLE) {
-    if(!strncmp((const char*)str,"subject",len)) {
+    if(!strncmp((const char*)str, "subject", len)) {
       context->term = RAPTOR_JSON_TERM_SUBJECT;
       return 1;
-    } else if(!strncmp((const char*)str,"predicate",len)) {
+    } else if(!strncmp((const char*)str, "predicate", len)) {
       context->term = RAPTOR_JSON_TERM_PREDICATE;
       return 1;
-    } else if(!strncmp((const char*)str,"object",len)) {
+    } else if(!strncmp((const char*)str, "object", len)) {
       context->term = RAPTOR_JSON_TERM_OBJECT;
       return 1;
     } else {
-      raptor_parser_error(rdf_parser,"Unexpected JSON key name in triple definition");
+      raptor_parser_error(rdf_parser, "Unexpected JSON key name in triple definition");
       return 0;
     }
   } else if(context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
              context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
-    if(!strncmp((const char*)str,"value",len)) {
+    if(!strncmp((const char*)str, "value", len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_VALUE;
       return 1;
-    } else if(!strncmp((const char*)str,"type",len)) {
+    } else if(!strncmp((const char*)str, "type", len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_TYPE;
       return 1;
-    } else if(!strncmp((const char*)str,"datatype",len)) {
+    } else if(!strncmp((const char*)str, "datatype", len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_DATATYPE;
       return 1;
-    } else if(!strncmp((const char*)str,"lang",len)) {
+    } else if(!strncmp((const char*)str, "lang", len)) {
       context->attrib = RAPTOR_JSON_ATTRIB_LANG;
       return 1;
     } else {
       context->attrib = RAPTOR_JSON_ATTRIB_UNKNOWN;
-      raptor_parser_error(rdf_parser,"Unexpected key name in triple definition");
+      raptor_parser_error(rdf_parser, "Unexpected key name in triple definition");
       return 0;
     }
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected JSON map key");
+    raptor_parser_error(rdf_parser, "Unexpected JSON map key");
     return 0;
   }
 }
@@ -377,7 +377,7 @@ static int raptor_json_yajl_start_map(void * ctx)
     raptor_json_reset_term(context);
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected start of JSON map");
+    raptor_parser_error(rdf_parser, "Unexpected start of JSON map");
     return 0;
   }
 }
@@ -461,7 +461,7 @@ static int raptor_json_yajl_end_map(void * ctx)
     context->state = RAPTOR_JSON_STATE_ROOT;
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected end of JSON map");
+    raptor_parser_error(rdf_parser, "Unexpected end of JSON map");
     return 0;
   }
 }
@@ -479,7 +479,7 @@ static int raptor_json_yajl_start_array(void * ctx)
     context->state = RAPTOR_JSON_STATE_TRIPLES_ARRAY;
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected start of array");
+    raptor_parser_error(rdf_parser, "Unexpected start of array");
     return 0;
   }
 }
@@ -497,7 +497,7 @@ static int raptor_json_yajl_end_array(void * ctx)
     context->state = RAPTOR_JSON_STATE_MAP_ROOT;
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected end of array");
+    raptor_parser_error(rdf_parser, "Unexpected end of array");
     return 0;
   }
 }
