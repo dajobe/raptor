@@ -407,7 +407,7 @@ static int raptor_json_yajl_end_map(void * ctx)
     raptor_term *term = raptor_json_generate_term(rdf_parser);
     if (!term) return 0;
 
-    // Store the term in the statement
+    /* Store the term in the statement */
     switch(context->term) {
       case RAPTOR_JSON_TERM_SUBJECT:
         if (context->statement.subject)
@@ -686,7 +686,7 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
       score += 6;
   }
 
-  // Is the first non-whitespace character a curly brace?
+  /* Is the first non-whitespace character a curly brace? */
   while (pos<len) {
     if (isspace(buffer[pos])) {
       pos++;
@@ -721,7 +721,7 @@ raptor_json_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.mime_types_count = JSON_TYPES_COUNT;
 
   factory->desc.label = "JSON";
-  factory->desc.uri_string = NULL; // "http://n2.talis.com/wiki/RDF_JSON_Specification";
+  factory->desc.uri_string = NULL; /* "http://n2.talis.com/wiki/RDF_JSON_Specification"; */
 
   factory->desc.flags = 0;
 
