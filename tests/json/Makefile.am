@@ -28,7 +28,7 @@ example1.nt example2.nt example3.nt
 
 JSON_BAD_TEST_FILES=bad-00.json bad-01.json bad-02.json bad-03.json \
 bad-04.json bad-05.json bad-06.json bad-07.json bad-08.json bad-09.json \
-bad-10.json bad-11.json bad-12.json
+bad-10.json bad-11.json bad-12.json bad-13.json
 
 # Used to make N-triples output consistent
 BASE_URI=http://example.librdf.org/
