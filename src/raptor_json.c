@@ -167,7 +167,7 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
   raptor_term *term = NULL;
 
   if (!context->term_value) {
-    raptor_parser_error(rdf_parser, "No value for term defined.");
+    raptor_parser_error(rdf_parser, "No value for term defined");
     return NULL;
   }
 
@@ -202,8 +202,7 @@ raptor_json_generate_term(raptor_parser *rdf_parser)
       break;
     }
     case RAPTOR_TERM_TYPE_UNKNOWN:
-    default:
-      raptor_parser_error(rdf_parser, "Unsupported term type in raptor_json_generate_term.");
+      raptor_parser_error(rdf_parser, "No type for term defined");
       break;
   }
 
@@ -322,7 +321,7 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
       context->term = RAPTOR_JSON_TERM_OBJECT;
       return 1;
     } else {
-      raptor_parser_error(rdf_parser,"Unexpected JSON key name in triple definition.");
+      raptor_parser_error(rdf_parser,"Unexpected JSON key name in triple definition");
       return 0;
     }
   } else if (context->state == RAPTOR_JSON_STATE_TRIPLES_TERM ||
@@ -341,12 +340,12 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
       return 1;
     } else {
       context->attrib = RAPTOR_JSON_ATTRIB_UNKNOWN;
-      raptor_parser_error(rdf_parser,"Unexpected key name in triple definition.");
+      raptor_parser_error(rdf_parser,"Unexpected key name in triple definition");
       return 0;
     }
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected JSON map key.");
+    raptor_parser_error(rdf_parser,"Unexpected JSON map key");
     return 0;
   }
 }
@@ -376,7 +375,7 @@ static int raptor_json_yajl_start_map(void * ctx)
     raptor_json_reset_term(context);
     return 1;
   } else {
-    raptor_parser_error(rdf_parser,"Unexpected start of JSON map.");
+    raptor_parser_error(rdf_parser,"Unexpected start of JSON map");
     return 0;
   }
 }
