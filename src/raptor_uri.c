@@ -85,6 +85,9 @@ struct raptor_uri_s {
  * 
  * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
  * 
+ * Note: The @uri_string need not be NULL terminated - a NULL will be
+ * added to the copied string used.
+ *
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
