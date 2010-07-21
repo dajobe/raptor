@@ -774,7 +774,7 @@ if test "x$yajl_prefix" != "xno" ; then
   fi
 
   if test "X$yajl_prefix" = "Xnone" ; then
-    AC_MSG_RESULT(not found. Use --with-yajl=DIR to configure)
+    AC_MSG_RESULT(not found. Get it from http://lloyd.github.com/yajl/ and use --with-yajl=DIR if necessary to configure the installation directory.)
   else
     AC_MSG_RESULT($yajl_prefix)
     CPPFLAGS="$oCPPFLAGS"
