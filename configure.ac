@@ -754,9 +754,45 @@ AC_MSG_RESULT($result)
 
 dnl Check for JSON library
 
-LIBS="$oLIBS"
-AC_CHECK_LIB(yajl, yajl_parse, libyajl=1, libyajl=0)
-AC_CHECK_HEADERS(yajl/yajl_parse.h)
+AC_ARG_WITH(yajl, [  --with-yajl=DIR  YAJL installation directory or 'no' to disable (default=auto)], yajl_prefix="$withval", yajl_prefix="none")
+
+if test "x$yajl_prefix" != "xno" ; then
+  AC_MSG_CHECKING(for yajl installation)
+
+  if test "x$yajl_prefix" = "xyes" ; then
+    yajl_prefix="none"
+  fi
+
+  # Nothing given - search
+  if test "X$yajl_prefix" = "Xnone" ; then
+    for dir in /opt/local /usr/local /usr; do
+      if test -r $dir/include/yajl/yajl_parse.h; then
+        yajl_prefix=$dir
+        break
+      fi
+    done
+  fi
+
+  if test "X$yajl_prefix" = "Xnone" ; then
+    AC_MSG_RESULT(not found. Use --with-yajl=DIR to configure)
+  else
+    AC_MSG_RESULT($yajl_prefix)
+    CPPFLAGS="$oCPPFLAGS"
+    LIBS="$oLIBS"
+
+    if test "$yajl_prefix" = "/usr"; then
+      yajl_prefix=
+    else
+      LDFLAGS="-L$yajl_prefix/lib $LDFLAGS"
+      CPPFLAGS="-I$yajl_prefix/include $CPPFLAGS"
+    fi
+
+    AC_CHECK_LIB(yajl, yajl_parse, libyajl=1, libyajl=0)
+    AC_CHECK_HEADERS(yajl/yajl_parse.h)
+    CPPFLAGS="$oCPPFLAGS"
+    LIBS="$oLIBS"
+  fi
+fi
 
 
 dnl RDF Parsers
@@ -1200,6 +1236,10 @@ if test $need_libxslt = 1; then
 fi
 
 if test $need_libyajl = 1; then
+  if test "x$yajl_prefix" != "x"; then
+    CPPFLAGS="-I$yajl_prefix/include $CPPFLAGS"
+    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -L$yajl_prefix/lib"
+  fi
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lyajl"
 fi
 
