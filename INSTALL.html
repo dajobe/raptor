@@ -15,8 +15,8 @@
 tested versions are the sources shipped with each release and these
 are recommended as the first place to start.  If you want to get a
 newer set, then there are nightly snapshots made of the development
-sources, which may not yet be committed to Subversion.  For the
-latest developent sources, anonymous Subversion access is available
+sources, which may not yet be committed to GIT.  For the
+latest developent sources, anonymous GIT access is available
 but this may require some configuring of developer tools that are not
 needed for the snapshot releases.</p>
 
@@ -30,14 +30,14 @@ documentation provided on the web site.</p>
 <a href="http://sourceforge.net/projects/librdf/">SourceForge site</a>.</p>
 
 
-<h2>1.2 Getting the sources from Subversion</h2>
+<h2>1.2 Getting the sources from GIT</h2>
 
 <pre>
-  svn checkout http://svn.librdf.org/repository/raptor/trunk/ raptor
+  git clone git://git.librdf.org/repositories/raptor.git
   cd raptor
 </pre>
 
-<p>At this stage, or after a <tt>svn update</tt> you will
+<p>At this stage, or after a <tt>git pull</tt> you will
 need to create the automake and autoconf derived files, as described
 below in <a href="#sec-create-configure">Create the configure program</a>
 by using the <code>autogen.sh</code> script.</p>
@@ -99,14 +99,14 @@ path to the utility should be given:</p>
 at present development is being done with automake 1.10.2 (minimum
 version 1.7), autoconf 2.63 (minimum version 2.54) and libtool 2.2.6
 (minimum version 2.2.0).  These are only needed when compiling from
-Subversion sources.  autogen.sh enforces the requirements.</p>
+GIT sources.  autogen.sh enforces the requirements.</p>
 
 <p>Raptor also requires
 <a href="http://lex.sourceforge.net/">flex</a> version 2.5.31 or newer
 (2.5.4 will not work) and
 <a href="http://www.gnu.org/software/bison/bison.html">GNU Bison</a>
 to build lexers and parsers.
-These are only required when building from Subversion.</p>
+These are only required when building from GIT.</p>
 
 
 <h3>2.2 Options for <tt>configure</tt></h3>
