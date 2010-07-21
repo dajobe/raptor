@@ -60,7 +60,9 @@ and x86 OSX but is also tested on other systems occasionally.
 (2.6.8 or newer) or expat.  It will optionally use libcurl, libxml2
 for retrieving URIs.  It will optionally use libxslt (requiring
 libxml2 also) to provide the XSLT functionality for the GRDDL and
-microformats parser.</p>
+microformats parser.  It will also optionally use
+<a href="http://lloyd.github.com/yajl/">YAJL</a> to provide JSON
+parsers if it is available.</p>
 
 <h3><a id="sec-create-configure" name="sec-create-configure"></a>2.1. Create <code>configure</code> program</h3>
 
@@ -200,6 +202,13 @@ coherent.</p>
 
 <dt><tt>--with-libwww-config=NAME</tt><br /></dt>
 <dd><p>Legacy option that used to support the libwww library.</p></dd>
+
+<dt><tt>--with-yajl=DIR|no</tt><br /></dt>
+<dd><p>Build against <a href="http://lloyd.github.com/yajl/">YAJL</a>
+installed into directory <em>DIR</em> or with 'no', disable looking
+for YAJL.  The default is to search a set of common installaiton directories
+such /opt/local, /usr/local and /usr.
+</p></dd>
 
 </dl>
 
