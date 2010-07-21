@@ -87,8 +87,11 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
+if RAPTOR_PARSER_RDFA
+check-local: check-rdfa check-unapproved-rdf
+else
 check-local:
-@RAPTOR_PARSER_RDFA_TRUE@check-local: check-rdfa check-unapproved-rdfa
+endif
 
 check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	@set +e; result=0; failures=; failure_count=0; \
