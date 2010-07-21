@@ -170,14 +170,7 @@ either will be used, with libxml preferred if both are present.
 These can either be installed system libraries or source
 trees in subdirectories of these sources named libxml, expat.</p>
 <p>Raptor has been tested with various combinations of these libraries
-including 
-expat 1.95.1 (on RedHat 7.2),
-expat 1.95.2-2 (on RedHat 7.3),
-expat 1.95.2-6 (on Debian 3.0),
-expat 1.95.7 (on Redhat Fedora Core 2),
-expat 1.95.8 (on Debian unstable),
-libxml 2.6.8 (Redhat Fedora Core 2),
-libxml 2.6.9 (FreeBSD 4.10-STABLE)
+including expat 1.95.1, 1.95.2, 1.95.7, 1.95.8 and libxml 2.6.8 onwards.
 </p>
 <p>libxml1 is not supported.</p>
 
@@ -257,11 +250,11 @@ be tried with RDF/XML content like this:</p>
 </pre>
 
 <p>Raptor can also extract RDF content inside general XML when the
-<tt>-s</tt> (<tt>--scan</tt>) option is user.  For example if some
+<tt>-f scanForRDF</tt> feature is enabled.  For example if some
 RDF/XML is embedded inside some SVG, it could be extracted with:</p>
 
 <pre>
-  rapper -s /path/to/test/pic.svg
+  rapper -f scanForRDF /path/to/test/pic.svg
 </pre>
 
 <p>You can also run it on <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> files like this:</p>
