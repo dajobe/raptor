@@ -3,7 +3,7 @@
 # Format changes TSV file
 #
 # USAGE:
-#   format-changes.pl --docbook-xml DOCBOOK-XML raptor-changes.tsv
+#   process-changes.pl [OPTIONS] raptor-changes.tsv
 #
 # Copyright (C) 2010, David Beckett http://www.dajobe.org/
 #
@@ -572,6 +572,11 @@ Give command help summary.
 =item B<--docbook-xml> DOCBOOK-XML
 
 Set the output docbook XML file
+
+=item B<--upgrade-script> UPGRADE-SCRIPT-PL
+
+Set the output perl script to upgrade the function and type names
+where possible.
 
 =back
 
