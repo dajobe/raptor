@@ -129,6 +129,16 @@ which is the least reliable.
 </section>
 
 
+<section id="parser-json">
+<title>JSON parser (name <literal>json</literal>)</title>
+
+<para>A parser for the resource-centric RDF/JSON syntax as defined by Talis at
+<ulink url="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON Specification</ulink>.
+</para>
+
+</section>
+
+
 <section id="parser-ntriples">
 <title>N-Triples parser (name <literal>ntriples</literal>)</title>
 
