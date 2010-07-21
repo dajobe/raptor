@@ -1,3 +1,422 @@
+2010-07-20 Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html: words
+
+	* INSTALL.html: correct autotools min versions
+
+	* INSTALL.html: GIT
+
+	* INSTALL.html: add YAJL pointers
+
+	* configure.ac: add yajl pointer
+
+	* configure.ac: Added --with-yajl=DIR (or 'no') to configure where
+	yajl is installed.
+
+	* scripts/process-changes.pl: docs
+
+2010-07-02  Lauri Aalto <laalto@iki.fi>
+
+	* tests/json/Makefile.am: Run JSON parser tests only if the parser
+	is enabled
+
+2010-07-01  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Added space after commas in parameter lists
+
+	* src/raptor_json.c: Removed spaces after if
+
+	* src/raptor_json.c: Changed single line if-statments to two line
+	if statements
+
+	* src/raptor_json.c: Changed C++ style comments to C style
+
+	* tests/json/Makefile.am, tests/json/bad-13.json: Added a Test
+	Case for missing out the term type
+
+	* src/raptor_json.c: Textual changes to error messages.
+
+2010-06-30  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Removed unused debugging code.
+
+	* tests/json/Makefile.am, tests/json/bad-00.json,
+	tests/json/bad-01.json, tests/json/bad-02.json,
+	tests/json/bad-03.json, tests/json/bad-04.json,
+	tests/json/bad-05.json, tests/json/bad-06.json,
+	tests/json/bad-07.json, tests/json/bad-08.json,
+	tests/json/bad-09.json, tests/json/bad-10.json,
+	tests/json/bad-11.json, tests/json/bad-12.json: Added example of
+	bad RDF/JSON to check for parse errors.
+
+	* src/raptor_json.c: Slightly stricter parsing of JSON.  Better
+	error messages then things go wrong.
+
+	* src/raptor_json.c, tests/json/Makefile.am,
+	tests/json/example3.json, tests/json/example3.nt: Enabled allowing
+	comments in JSON
+
+	* src/raptor_json.c: Fixed comparision between signed and unsigned
+	integers.
+
+2010-06-29  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Improved JSON syntax detection to look at the
+	content.
+
+	* src/raptor_json.c: Lots of code re-factoring.
+	- Improved error handling
+	- Using Raptor memory allocation
+	- Improved memory management
+
+	* src/raptor_json.c: Changed malloc() to RAPTOR_MALLOC, free() to
+	RAPTOR_FREE().
+
+	* src/raptor_json.c: Rewrote fprintf(stderr, ...) to
+	raptor_parser_fatal_error(...)
+
+2010-06-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_counted_string): autodoc to note counted
+	string need not be NULL-terminated.
+
+	* src/raptor_term.c: autodocs to note counted string constructors
+	need not be given NULL-terminated strings.
+
+2010-06-27  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Added RATOR_JSON_ prefix to symbols.  Code
+	cleanup.
+
+	* src/raptor_json.c, tests/json/Makefile.am,
+	tests/json/example1.json, tests/json/example1.nt,
+	tests/json/example2.json, tests/json/example2.nt: Added support
+	for parsing resource-centric JSON
+
+	* configure.ac, tests/Makefile.am, tests/json/Makefile.am,
+	tests/json/example1.json, tests/json/example1.nt,
+	tests/json/example2.json, tests/json/example2.nt: Created some
+	tests for RDF/JSON.
+
+	* src/raptor_json.c: Added support for Bnodes and Datatyped
+	literals.  Fix for parsing small files.
+
+	* src/raptor_json.c: Commiting initial work on writing an JSON
+	parser.
+
+	Currently only handles json-triples.
+
+	Lots of tidying up required: - symbol names - remove debugging
+	messages - sort out memory management
+
+2010-06-26  Nicholas J Humfrey <njh@aelius.com>
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_parse.c: Added libyajl library checking and json parser
+	building to automake
+
+2010-06-06  Dave Beckett <dave@dajobe.org>
+
+	* examples/grapper.c: code style
+
+	* examples/Makefile.am: Add grapper-future rule
+
+	* examples/grapper.c: fix menu preferences link
+
+	* examples/grapper.c: Remove more deprecated GTK - GtkToolTips and
+	trigger based on macro
+
+2010-06-05  Dave Beckett <dave@dajobe.org>
+
+	* examples/grapper.c: Better but preferences menu still broken
+
+	* examples/grapper.c: Another attempt, still crashes.  GTK docs
+	also suck
+
+	* examples/grapper-ui.xml, examples/grapper.c: GtkUIManager and
+	external XML file is too damn complex to make work - disable.
+
+	* examples/grapper-ui.xml: Add GTK UI xml
+
+	* examples/grapper.c: more code explanation
+
+	* examples/grapper.c: Make both combo box alternatives work
+
+	* examples/grapper.c: Replace deprecated (in 2.4.x)
+	gtk_option_menu with gtk_combo_box
+
+	* examples/grapper.c: more 2.5.0+ code pruning
+
+	* examples/grapper.c: Require GTK 2.5.0+ (that's still quite old!)
+
+	* examples/grapper.c: code style
+
+	* examples/grapper.c: Update to Raptor 2 API
+
+2010-06-02  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: added
+	raptor_new_term_from_counted_blank
+
+	* src/raptor_term.c: fix raptor_new_term_from_counted_blank
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_term.c:
+	Added raptor_new_term_from_counted_blank for term with counted
+	length ID.
+
+	(raptor_new_term_from_counted_blank): Added
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	docs/tmpl/section-triples.sgml: Update docs for
+	raptor_new_term_from_counted_literal
+
+	* src/raptor.h, src/raptor_term.c: Added
+	raptor_new_term_from_counted_literal for constructing from strings
+	with known lengths.
+
+	(raptor_new_term_from_counted_literal): Added
+
+	(raptor_new_term_from_literal): Now calls
+	raptor_new_term_from_counted_literal.
+
+2010-05-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Fail if language and datatype are
+	given like librdf_new_node_from_typed_literal
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h,
+	src/raptor_serialize_ntriples.c:
+	(raptor_statement_ntriples_write): Add flag to decide whether to
+	write graph term.
+
+	* src/raptor_serialize_ntriples.c, src/raptor_statement.c:
+	(raptor_statement_print_as_ntriples,
+	raptor_statement_ntriples_write): Write N-Triples not N-Quads
+
+2010-05-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Ownership of language should not
+	be taken.
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Do not overwrite literal length
+	with language length.
+
+2010-05-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Add new
+	statement methods to sections and functions map
+
+	* src/raptor_serialize_html.c, src/raptor_serialize_rdfxml.c:
+	(raptor_term_html_write, raptor_rdfxml_serialize_statement): Use
+	literal and language length fields direct, remove strlen()s
+
+	* src/raptor_serialize_ntriples.c:
+	(raptor_term_ntriples_write, raptor_statement_ntriples_write):
+	Check for NULL args and early write failures
+
+	* src/raptor_term.c:
+	(raptor_term_as_counted_string, raptor_term_as_string,
+	raptor_term_print_as_ntriples, raptor_term_equals): Check for NULL
+	term args
+
+	* src/raptor_statement.c:
+	(raptor_statement_compare): Return stable order if both statements
+	are NULL
+
+	* src/raptor_statement.c:
+	(raptor_statement_print, raptor_statement_print_as_ntriples):
+	Check statement arg is not NULL
+
+	* src/raptor.h, src/raptor_statement.c:
+	(raptor_statement_equals): Added to public API
+
+	* src/raptor.h: Add raptor_statement_copy to public API
+
+	* src/raptor.h, src/raptor_statement.c: Add new public function
+	raptor_statement_clear
+	(raptor_statement_clear): Added based on core of
+	raptor_statement_free.
+	(raptor_statement_free): Simplified.
+
+	* src/raptor_statement.c:
+	(raptor_new_statement,raptor_new_statement_from_nodes,
+	raptor_statement_copy): Validate args are not NULL
+
+	* src/raptor.h, src/raptor_internal.h: Export
+	raptor_new_statement, raptor_new_statement_from_nodes and
+	raptor_statement_copy to public API
+
+2010-05-18  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_statement.c, src/raptor_term.c: Move
+	raptor_term class code to new raptor_term.c
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): code tidier
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): Make both NULL be equal.
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): Update to match librdf_uri_compare when both
+	NULL.
+
+2010-05-16  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Added raptor_term_blank_value
+
+	* scripts/Makefile.am: add rule for building libraptor2.la
+
+	* src/raptor_locator.c: #docs
+
+	* docs/raptor-sections.txt: Add raptor_term_blank_value
+
+	* utils/rdfdiff.c: Update to new raptor_term blank fields
+
+	* src/raptor_statement.c: Initialize raptor_term length fields
+	(raptor_new_term_from_literal, raptor_new_term_from_blank):
+	init the fields.
+	(raptor_term_equals): Use lengths as short cut for difference.
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y: raptor_term blank is
+	now a new typedef raptor_term_blank_value with length field.
+	Update all callers
+
+	* src/raptor.h: raptor_term_literal_value gains string_len and
+	language_len fields
+
+2010-05-14  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rfc2396.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_stringbuffer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libxml.c, src/raptor_xml.c,
+	src/turtle_lexer.l, src/turtle_parser.y: code style: 
+	Replace strncpy with memcpy - never need strncpy
+	zero-checking/filling semantics.
+
+2010-05-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Deleted raptor_unique_id prototype
+
+	* src/raptor_abbrev.c:
+	(raptor_unique_id): Deleted - never used.
+
+2010-05-07  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h: Adjust raptor_term_type so enum values match
+	librdf_node_type raptor_term_type: Made enum values match
+	librdf_node_type usage and introduce unused type '3'.
+
+2010-05-05  Dave Beckett <dave@dajobe.org>
+
+	* LICENSE.html: Link to specific GPL 2.1 version doc.  Wording and
+	formatting
+
+2010-05-04  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-tutorial-parsing.xml: pkg-config
+
+	* docs/raptor-tutorial-parsing.xml: statement not triples
+
+	* docs/raptor-tutorial-querying-functionality.xml: Fix exampel of
+	listing parser options to use correct description.
+
+	* docs/raptor-tutorial-querying-functionality.xml: RAPTOR_OPTION_LAST
+
+	* docs/raptor-1-to-2-map.tsv: Update raptor_locator_print and
+	raptor_avltree_print signatures
+
+	* docs/raptor-tutorial-parsing.xml,
+	docs/raptor-tutorial-serializing.xml: Update tutorial references
+
+	* docs/tmpl/section-avltree.sgml, docs/tmpl/section-locator.sgml:
+	Update tmpls
+
+	* src/raptor.h, src/raptor_avltree.c:
+	(raptor_avltree_print): Gains an int return status like other
+	print functions
+
+	* src/raptor.h, src/raptor_locator.c:
+	(raptor_locator_print): Gains an int return status like other
+	print functions
+
+	* src/raptor_avltree.c: autodocs
+
+	* docs/tmpl/section-triples.sgml: Update tmpls for
+	raptor_term_compare and raptor_term_equals
+
+	* src/raptor.h: fix prototype for raptor_term_equals to match code
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Add
+	raptor_term_compare and raptor_term_equals to public API
+
+	* src/raptor.h, src/raptor_internal.h: Move raptor_term_compare
+	and raptor_term_equals to public API
+
+	* src/raptor_statement.c:
+	(raptor_term_equals): autodocs
+
+	* src/raptor_parse.c: autodocs
+
+	* docs/tmpl/section-triples.sgml: Remove RAPTOR_IDENTIFIER docs
+
+	* docs/raptor-parsers.xml, docs/raptor-serializers.xml,
+	docs/raptor-tutorial-intro.xml, docs/raptor-tutorial-parsing.xml,
+	docs/raptor-tutorial-querying-functionality.xml,
+	docs/raptor-tutorial-serializing.xml: Start to update tutorial -
+	still working through WARNING
+
+	* scripts/format-changes.pl, scripts/process-changes.pl: Update
+	scripts
+
+2010-05-03  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl: Generate a perl script to rename
+	names
+
+	* scripts/process-changes.pl: put docbook xml format generation
+	optional
+
+	* scripts/process-changes.pl: Use Getopt::Long and Pod::Usage for
+	proper option handling
+
+	* docs/Makefile.am: Rename format-changes.pl to process-changes.pl
+
+	* scripts/Makefile.am: Rename format-changes.pl to
+	process-changes.pl
+
+	* scripts/process-changes.pl: switch to file handle arg on print
+	functions Rename option to --docbook-xml DOCBOOK-XML file rather
+	than print to stdout
+
+	* docs/raptor-1-to-2-map.tsv: add note for raptor_statement_v2
+
+	* docs/raptor-1-to-2-map.tsv: raptor_log is not a type
+
+	* docs/raptor-1-to-2-map.tsv: # before names in notes
+
+	* scripts/format-changes.pl: Make links to enum values
+
+2010-05-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_xml.c: fixed compiler warning
+
+	* src/raptor_serialize_rdfxmla.c: #ws
+
+	* src/turtle_parser.y: fixed casts for !RAPTOR_DEBUG
+
 2010-05-02  Dave Beckett <dave@dajobe.org>
 
 	* utils/Makefile.am: fix rapper.html rule for scripts
