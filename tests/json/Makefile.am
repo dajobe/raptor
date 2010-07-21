@@ -41,7 +41,11 @@ EXTRA_DIST = \
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
 
-@RAPTOR_PARSER_JSON_TRUE@check-local: build-rapper check-json check-bad-json
+if RAPTOR_PARSER_JSON
+check-local: build-rapper check-json check-bad-json
+else
+check-local:
+endif
 
 check-json: build-rapper $(TEST_FILES)
 	@result=0; \
