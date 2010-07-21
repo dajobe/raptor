@@ -2,7 +2,7 @@
  *
  * raptor_json.c - Raptor JSON Parser
  *
- * JSON
+ * RDF/JSON
  * http://n2.talis.com/wiki/RDF_JSON_Specification
  *
  * Copyright (C) 2001-2010, David Beckett http://www.dajobe.org/
@@ -720,7 +720,7 @@ raptor_json_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.mime_types = json_types;
   factory->desc.mime_types_count = JSON_TYPES_COUNT;
 
-  factory->desc.label = "JSON";
+  factory->desc.label = "RDF/JSON Resource-Centric";
   factory->desc.uri_string = NULL; /* "http://n2.talis.com/wiki/RDF_JSON_Specification"; */
 
   factory->desc.flags = 0;
