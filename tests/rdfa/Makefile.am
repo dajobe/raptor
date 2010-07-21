@@ -88,7 +88,7 @@ build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
 if RAPTOR_PARSER_RDFA
-check-local: check-rdfa check-unapproved-rdf
+check-local: check-rdfa check-unapproved-rdfa
 else
 check-local:
 endif
