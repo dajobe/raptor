@@ -37,8 +37,11 @@ EXTRA_DIST = $(ALL_TEST_FILES)
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
+if RAPTOR_PARSER_GRDDL
+check-local: check-grddl
+else
 check-local:
-@RAPTOR_PARSER_GRDDL_TRUE@check-local: check-grddl
+endif
 
 check-grddl: build-rapper $(TEST_FILES)
 	@result=0; \
