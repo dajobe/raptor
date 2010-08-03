@@ -486,8 +486,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
-      d = (t1->value.blank.string_len != t2->value.blank.string_len);
-      if(d)
+      if(t1->value.blank.string_len != t2->value.blank.string_len)
+        /* different lengths */
         break;
 
       d = !strcmp((const char*)t1->value.blank.string, 
@@ -495,8 +495,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
       break;
 
     case RAPTOR_TERM_TYPE_LITERAL:
-      d = (t1->value.literal.string_len != t2->value.literal.string_len);
-      if(d)
+      if(t1->value.literal.string_len != t2->value.literal.string_len)
+        /* different lengths */
         break;
 
       d = !strcmp((const char*)t1->value.literal.string,
