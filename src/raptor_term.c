@@ -42,6 +42,8 @@
 #include "raptor_internal.h"
 
 
+#ifndef STANDALONE
+
 /**
  * raptor_new_term_from_uri:
  * @world: raptor world
@@ -609,4 +611,213 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
   }
 
   return d;
+}
+#endif
+
+
+
+#ifdef STANDALONE
+#endif
+
+/* one more prototype */
+int main(int argc, char *argv[]);
+
+static const unsigned char *uri_string1 = (const unsigned char *)"http://http://www.dajobe.org/";
+static unsigned int uri_string1_len = 29; /* strlen(uri_string1) */
+static raptor_term_type uri_string1_type = RAPTOR_TERM_TYPE_URI;
+static const unsigned char *uri_string2 = (const unsigned char *)"http://www.example.org/";
+static unsigned int uri_string2_len = 23; /* strlen(uri_string2) */
+static raptor_term_type uri_string2_type = RAPTOR_TERM_TYPE_URI;
+static const unsigned char *literal_string1 = (const unsigned char *)"Dave Beckett";
+static unsigned int literal_string1_len = 12; /* strlen(literal_string1) */
+static raptor_term_type literal_string1_type = RAPTOR_TERM_TYPE_LITERAL;
+static const unsigned char *bnodeid1 = (const unsigned char *)"abc123";
+static unsigned int bnodeid1_len = 6; /* strlen(bnode_id1) */
+static raptor_term_type bnodeid1_type = RAPTOR_TERM_TYPE_BLANK;
+
+int
+main(int argc, char *argv[])
+{
+  raptor_world *world;
+  const char *program = raptor_basename(argv[0]);
+  int rc = 0;
+  raptor_term* term1 = NULL; /* URI string 1 */
+  raptor_term* term2 = NULL; /* literal string1 */
+  raptor_term* term3 = NULL; /* blank node 1 */
+  raptor_term* term4 = NULL; /* URI string 2 */
+  raptor_term* term5 = NULL; /* URI string 1 again */
+  raptor_uri* uri1;
+  unsigned char* uri_str;
+  size_t uri_len;
+  
+  
+  world = raptor_new_world();
+  if(!world || raptor_world_open(world))
+    exit(1);
+
+  uri1 = raptor_new_uri(world, uri_string1);
+  if(!uri1) {
+    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+  term1 = raptor_new_term_from_uri(world, uri1);
+  if(!term1) {
+    fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
+            program, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+  if(term1->type != uri_string1_type) {
+    fprintf(stderr, "%s: raptor term 1 is of type %d expected %d\n",
+            program, term1->type, uri_string1_type);
+    rc = 1;
+    goto tidy;
+  }
+
+
+  /* Return pointer to shared string */
+  uri_str = raptor_uri_as_counted_string(term1->value.uri, &uri_len);
+  if(!uri_str) {
+    fprintf(stderr, "%s: raptor_uri_as_counted_string term 1 failed\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  if(uri_len != uri_string1_len) {
+    fprintf(stderr, "%s: raptor term 1 URI is of length %d expected %d\n",
+            program, (int)uri_len, (int)uri_string1_len);
+    rc = 1;
+    goto tidy;
+  }
+
+  
+
+  term2 = raptor_new_term_from_counted_literal(world, literal_string1,
+                                               literal_string1_len, NULL, NULL, 0);
+  if(!term2) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_literal(%s) failed\n",
+            program, literal_string1);
+    rc = 1;
+    goto tidy;
+  }
+  if(term2->type != literal_string1_type) {
+    fprintf(stderr, "%s: raptor term 2 is of type %d expected %d\n",
+            program, term2->type, literal_string1_type);
+    rc = 1;
+    goto tidy;
+  }
+  
+
+  term3 = raptor_new_term_from_counted_blank(world, bnodeid1, bnodeid1_len);
+  if(!term3) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_blank(%s) failed\n",
+            program, bnodeid1);
+    rc = 1;
+    goto tidy;
+  }
+  if(term3->type != bnodeid1_type) {
+    fprintf(stderr, "%s: raptor term 3 is of type %d expected %d\n",
+            program, term2->type, bnodeid1_type);
+    rc = 1;
+    goto tidy;
+  }
+
+
+  uri1 = raptor_new_uri(world, uri_string2);
+  if(!uri1) {
+    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string2);
+    rc = 1;
+    goto tidy;
+  }
+  term4 = raptor_new_term_from_uri(world, uri1);
+  if(!term4) {
+    fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
+            program, uri_string2);
+    rc = 1;
+    goto tidy;
+  }
+  if(term4->type != uri_string2_type) {
+    fprintf(stderr, "%s: raptor term 4 is of type %d expected %d\n",
+            program, term4->type, uri_string2_type);
+    rc = 1;
+    goto tidy;
+  }
+  /* Return pointer to shared string */
+  uri_str = raptor_uri_as_counted_string(term4->value.uri, &uri_len);
+  if(!uri_str) {
+    fprintf(stderr, "%s: raptor_uri_as_counted_string term 4 failed\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  if(uri_len != uri_string2_len) {
+    fprintf(stderr, "%s: raptor term 4 URI is of length %d expected %d\n",
+            program, (int)uri_len, (int)uri_string2_len);
+    rc = 1;
+    goto tidy;
+  }
+
+
+  uri1 = raptor_new_uri(world, uri_string1);
+  if(!uri1) {
+    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+  term5 = raptor_new_term_from_uri(world, uri1);
+  if(!term4) {
+    fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
+            program, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+
+
+  if(raptor_term_equals(term1, term2)) {
+    fprintf(stderr, "%s: raptor_term_equals (URI %s, literal %s) returned equal, expected not-equal\n",
+            program, uri_string1, literal_string1);
+    rc = 1;
+    goto tidy;
+  }
+
+  if(raptor_term_equals(term1, term3)) {
+    fprintf(stderr, "%s: raptor_term_equals (URI %s, bnode %s) returned equal, expected not-equal\n",
+            program, uri_string1, bnodeid1);
+    rc = 1;
+    goto tidy;
+  }
+  
+  if(raptor_term_equals(term1, term4)) {
+    fprintf(stderr, "%s: raptor_term_equals (URI %s, URI %s) returned equal, expected not-equal\n",
+            program, uri_string1, uri_string2);
+    rc = 1;
+    goto tidy;
+  }
+  
+  if(!raptor_term_equals(term1, term5)) {
+    fprintf(stderr, "%s: raptor_term_equals (URI %s, URI %s) returned not-equal, expected equal\n",
+            program, uri_string1, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+  
+
+  tidy:
+  if(term1)
+    raptor_free_term(term1);
+  if(term2)
+    raptor_free_term(term2);
+  if(term3)
+    raptor_free_term(term3);
+  if(term4)
+    raptor_free_term(term4);
+  if(term5)
+    raptor_free_term(term5);
+  
+  raptor_free_world(world);
+
+  return rc;
 }

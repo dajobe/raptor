@@ -32,7 +32,7 @@ TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
-raptor_turtle_writer_test raptor_avltree_test
+raptor_turtle_writer_test raptor_avltree_test raptor_term_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -257,3 +257,6 @@ raptor_turtle_writer_test: $(srcdir)/raptor_turtle_writer.c libraptor2.la
 
 raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_avltree.c libraptor2.la $(LIBS)
+
+raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c libraptor2.la $(LIBS)
