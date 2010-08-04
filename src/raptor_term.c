@@ -634,6 +634,7 @@ static raptor_term_type literal_string1_type = RAPTOR_TERM_TYPE_LITERAL;
 static const unsigned char *bnodeid1 = (const unsigned char *)"abc123";
 static unsigned int bnodeid1_len = 6; /* strlen(bnode_id1) */
 static raptor_term_type bnodeid1_type = RAPTOR_TERM_TYPE_BLANK;
+static const unsigned char* language1 = (const unsigned char*)"en";
 
 int
 main(int argc, char *argv[])
@@ -655,6 +656,16 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
 
+
+  /* check a term for NULL URI fails */
+  term1 = raptor_new_term_from_uri(world, NULL);
+  if(term1) {
+    fprintf(stderr, "%s: raptor_new_uri(NULL) returned object rather than failing\n", program);
+    rc = 1;
+    goto tidy;
+  }
+
+  /* check a term for non-NULL URI succeeds */
   uri1 = raptor_new_uri(world, uri_string1);
   if(!uri1) {
     fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
@@ -676,7 +687,7 @@ main(int argc, char *argv[])
   }
 
 
-  /* Return pointer to shared string */
+  /* returns a pointer to shared string */
   uri_str = raptor_uri_as_counted_string(term1->value.uri, &uri_len);
   if(!uri_str) {
     fprintf(stderr, "%s: raptor_uri_as_counted_string term 1 failed\n",
@@ -693,7 +704,37 @@ main(int argc, char *argv[])
   }
 
   
+  /* check an empty literal is created from a NULL literal pointer succeeds */
+  term2 = raptor_new_term_from_counted_literal(world, NULL, 0, NULL, NULL, 0);
+  if(!term2) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_literal() with all NULLs failed\n", program);
+    rc = 1;
+    goto tidy;
+  }
+  raptor_free_term(term2);
 
+
+  /* check an empty literal from an empty language literal pointer succeeds */
+  term2 = raptor_new_term_from_counted_literal(world, NULL, 0, NULL,
+                                               (const unsigned char*)"", 0);
+  if(!term2) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_literal() with empty language failed\n", program);
+    rc = 1;
+    goto tidy;
+  }
+  raptor_free_term(term2);
+
+  /* check a literal with language and datatype fails */
+  term2 = raptor_new_term_from_counted_literal(world, literal_string1,
+                                               literal_string1_len, 
+                                               uri1, language1, 0);
+  if(term2) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_literal() with language and datatype returned object rather than failing\n", program);
+    rc = 1;
+    goto tidy;
+  }
+  
+  /* check a literal with no language and no datatype succeeds */
   term2 = raptor_new_term_from_counted_literal(world, literal_string1,
                                                literal_string1_len, NULL, NULL, 0);
   if(!term2) {
@@ -710,6 +751,16 @@ main(int argc, char *argv[])
   }
   
 
+  /* check a blank node term with NULL id fails */
+  term3 = raptor_new_term_from_counted_blank(world, NULL, 0);
+  if(term3) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_blank() with NULL id returned object rather than failing\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  /* check a blank node term succeeds */
   term3 = raptor_new_term_from_counted_blank(world, bnodeid1, bnodeid1_len);
   if(!term3) {
     fprintf(stderr, "%s: raptor_new_term_from_counted_blank(%s) failed\n",
@@ -725,6 +776,7 @@ main(int argc, char *argv[])
   }
 
 
+  /* check a different URI term succeeds */
   uri1 = raptor_new_uri(world, uri_string2);
   if(!uri1) {
     fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string2);
@@ -744,7 +796,7 @@ main(int argc, char *argv[])
     rc = 1;
     goto tidy;
   }
-  /* Return pointer to shared string */
+  /* returns a pointer to shared string */
   uri_str = raptor_uri_as_counted_string(term4->value.uri, &uri_len);
   if(!uri_str) {
     fprintf(stderr, "%s: raptor_uri_as_counted_string term 4 failed\n",
@@ -761,6 +813,7 @@ main(int argc, char *argv[])
   }
 
 
+  /* check the same URI term as term1 succeeds */
   uri1 = raptor_new_uri(world, uri_string1);
   if(!uri1) {
     fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
@@ -768,7 +821,7 @@ main(int argc, char *argv[])
     goto tidy;
   }
   term5 = raptor_new_term_from_uri(world, uri1);
-  if(!term4) {
+  if(!term5) {
     fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
             program, uri_string1);
     rc = 1;
@@ -800,6 +853,18 @@ main(int argc, char *argv[])
   if(!raptor_term_equals(term1, term5)) {
     fprintf(stderr, "%s: raptor_term_equals (URI %s, URI %s) returned not-equal, expected equal\n",
             program, uri_string1, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
+
+  if(term1->value.uri != term5->value.uri) {
+    fprintf(stderr, "%s: term1 and term5 URI objects returned not-equal pointers, expected equal\n",
+            program);
+    /* This is not necessarily a failure if the raptor_uri module has had
+     * the URI interning disabled with
+     *   raptor_world_set_flag(world, RAPTOR_WORLD_FLAG_URI_INTERNING, 0) 
+     * however this test suite does not do that, so it is a failure here.
+     */
     rc = 1;
     goto tidy;
   }
