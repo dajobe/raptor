@@ -220,12 +220,14 @@ raptor_new_term_from_literal(raptor_world* world,
 /**
  * raptor_new_term_from_counted_blank:
  * @world: raptor world
- * @blank: blank node identifier
- * @length: length of idnetifier
+ * @blank: blank node identifier (or NULL)
+ * @length: length of identifier (or 0)
  *
  * Constructor - create a new blank node statement term from counted string ID
  *
  * Takes a copy of the passed in @blank
+ *
+ * If @blank is NULL, creates a new internal identifier and assigns it.
  *
  * Note: The @blank need not be NULL terminated - a NULL will be
  * added to the copied string used.
@@ -239,19 +241,20 @@ raptor_new_term_from_counted_blank(raptor_world* world,
   raptor_term *t;
   unsigned char* new_id;
 
-  if(!blank)
-    return NULL;
-  
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
-  new_id = (unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
-  if(!new_id)
-    return NULL;
-
-  memcpy(new_id, blank, length);
-  new_id[length] = '\0';
+  if (blank) {
+    new_id = (unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
+    if(!new_id)
+      return NULL;
+    memcpy(new_id, blank, length);
+    new_id[length] = '\0';
+  } else {
+    new_id = raptor_world_generate_bnodeid(world);
+    length = strlen((const char*)new_id);
+  }
 
   t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
   if(!t) {
@@ -272,27 +275,27 @@ raptor_new_term_from_counted_blank(raptor_world* world,
 /**
  * raptor_new_term_from_blank:
  * @world: raptor world
- * @blank: blank node identifier
+ * @blank: blank node identifier (or NULL)
  *
  * Constructor - create a new blank node statement term
  *
  * Takes a copy of the passed in @blank
+ *
+ * If @blank is NULL, creates a new internal identifier and assigns it.
  *
  * Return value: new term or NULL on failure
 */
 raptor_term*
 raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 {
-  size_t length;
-  
-  if(!blank)
-    return NULL;
+  size_t length = 0;
   
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
-  length = strlen((const char*)blank);
+  if (blank)
+    length = strlen((const char*)blank);
 
   return raptor_new_term_from_counted_blank(world, blank, length);
 }
@@ -751,16 +754,23 @@ main(int argc, char *argv[])
   }
   
 
-  /* check a blank node term with NULL id fails */
+  /* check a blank node term with NULL id generates a new identifier */
   term3 = raptor_new_term_from_counted_blank(world, NULL, 0);
-  if(term3) {
-    fprintf(stderr, "%s: raptor_new_term_from_counted_blank() with NULL id returned object rather than failing\n",
+  if(!term3) {
+    fprintf(stderr, "%s: raptor_new_term_from_counted_blank(NULL) failed\n",
             program);
     rc = 1;
     goto tidy;
   }
+  if(term3->type != bnodeid1_type) {
+    fprintf(stderr, "%s: raptor term 3 is of type %d expected %d\n",
+            program, term3->type, bnodeid1_type);
+    rc = 1;
+    goto tidy;
+  }
+  raptor_free_term(term3);
 
-  /* check a blank node term succeeds */
+  /* check a blank node term with an identifier succeeds */
   term3 = raptor_new_term_from_counted_blank(world, bnodeid1, bnodeid1_len);
   if(!term3) {
     fprintf(stderr, "%s: raptor_new_term_from_counted_blank(%s) failed\n",
@@ -770,7 +780,7 @@ main(int argc, char *argv[])
   }
   if(term3->type != bnodeid1_type) {
     fprintf(stderr, "%s: raptor term 3 is of type %d expected %d\n",
-            program, term2->type, bnodeid1_type);
+            program, term3->type, bnodeid1_type);
     rc = 1;
     goto tidy;
   }
