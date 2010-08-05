@@ -529,13 +529,6 @@ struct raptor_parser_s {
 
   raptor_graph_mark_handler graph_mark_handler;
 
-  void *generate_id_handler_user_data;
-  raptor_generate_id_handler generate_id_handler;
-
-  int default_generate_id_handler_base;
-  char *default_generate_id_handler_prefix;
-  size_t default_generate_id_handler_prefix_length;
-
   void* uri_filter_user_data;
   raptor_uri_filter_func uri_filter;
 
@@ -708,7 +701,7 @@ raptor_serializer_factory* raptor_serializer_register_factory(raptor_world* worl
 raptor_parser_factory* raptor_world_register_parser_factory(raptor_world* world, int (*factory) (raptor_parser_factory*));
 int raptor_parser_factory_add_mime_type(raptor_parser_factory* factory, const char* mime_type, int q);
 
-unsigned char* raptor_parser_internal_generate_id(raptor_parser *rdf_parser, raptor_genid_type type, unsigned char *user_bnodeid);
+unsigned char* raptor_world_internal_generate_id(raptor_world *world, unsigned char *user_bnodeid);
 
 #ifdef RAPTOR_DEBUG
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
@@ -1357,6 +1350,14 @@ struct raptor_world_s {
 
   /* should */
   int uri_interning;
+
+  /* generate blank node ID policy */
+  void *generate_bnodeid_handler_user_data;
+  raptor_generate_bnodeid_handler generate_bnodeid_handler;
+
+  int default_generate_bnodeid_handler_base;
+  char *default_generate_bnodeid_handler_prefix;
+  size_t default_generate_bnodeid_handler_prefix_length;
 };
 
 /* raptor_www.c */

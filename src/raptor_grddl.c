@@ -803,16 +803,10 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   
   if(grddl_parser->internal_parser) {
-    grddl_parser->internal_parser->default_generate_id_handler_base=
-      raptor_parser_get_current_base_id(rdf_parser);
-
     /* generate the triples */
     raptor_parser_parse_start(grddl_parser->internal_parser, base_uri);
     raptor_parser_parse_chunk(grddl_parser->internal_parser,
                               doc_txt, doc_txt_len, 1);
-
-    rdf_parser->default_generate_id_handler_base=
-      raptor_parser_get_current_base_id(grddl_parser->internal_parser);
   }
   
   cleanup_xslt:
@@ -1280,9 +1274,6 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
   RAPTOR_DEBUG3("Running recursive %s operation on URI '%s'\n",
                 parser_name, raptor_uri_as_string(uri));
   
-  grddl_parser->internal_parser->default_generate_id_handler_base= 
-    raptor_parser_get_current_base_id(rdf_parser);
-
   if(is_grddl)
     raptor_grddl_parser_add_parent(grddl_parser->internal_parser, grddl_parser);
   
@@ -1311,7 +1302,6 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     raptor_world_internal_set_ignore_errors(rdf_parser->world, 1);
   
   raptor_parser_parse_chunk(grddl_parser->internal_parser, NULL, 0, 1);
-  rdf_parser->default_generate_id_handler_base = raptor_parser_get_current_base_id(grddl_parser->internal_parser);
 
   /* If content was saved, process it as RDF/XML */
   ibuffer = raptor_parser_get_content(grddl_parser->internal_parser,
@@ -1323,14 +1313,11 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 1))
       ret = 1;
     else {
-      grddl_parser->internal_parser->default_generate_id_handler_base = raptor_parser_get_current_base_id(rdf_parser);
-
       if(raptor_parser_parse_start(grddl_parser->internal_parser, uri))
         ret = 1;
       else {
         ret = raptor_parser_parse_chunk(grddl_parser->internal_parser, ibuffer, 
                                         ibuffer_len, 1);
-        rdf_parser->default_generate_id_handler_base = raptor_parser_get_current_base_id(grddl_parser->internal_parser);
       }      
     }
     
@@ -1847,15 +1834,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(raptor_grddl_ensure_internal_parser(rdf_parser, "rdfxml", 0))
       ret = 1;
     else {
-      grddl_parser->internal_parser->default_generate_id_handler_base = raptor_parser_get_current_base_id(rdf_parser);
-
       if(raptor_parser_parse_start(grddl_parser->internal_parser, 
                                    rdf_parser->base_uri))
         ret = 1;
       else {
         ret = raptor_parser_parse_chunk(grddl_parser->internal_parser, buffer, 
                                         buffer_len, 1);
-        rdf_parser->default_generate_id_handler_base = raptor_parser_get_current_base_id(grddl_parser->internal_parser);
       }
     }
     

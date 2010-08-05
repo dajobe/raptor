@@ -210,6 +210,9 @@ raptor_free_world(raptor_world* world)
   if(!world)
     return;
 
+  if(world->default_generate_bnodeid_handler_prefix)
+    RAPTOR_FREE(cstring, world->default_generate_bnodeid_handler_prefix);
+
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_finish(world);
 #endif
@@ -227,6 +230,153 @@ raptor_free_world(raptor_world* world)
   raptor_uri_finish(world);
 
   RAPTOR_FREE(raptor_world, world);
+}
+
+
+/**
+ * raptor_world_set_generate_bnodeid_handler:
+ * @world: #raptor_world world object
+ * @user_data: user data pointer for callback
+ * @handler: generate ID callback function
+ *
+ * Set the generate ID handler function.
+ *
+ * Sets the function to generate IDs for the library.  The handler is
+ * called with the @user_data parameter.
+ *
+ * The final argument of the callback method is user_bnodeid, the value of
+ * the rdf:nodeID attribute that the user provided if any (or NULL).
+ * It can either be returned directly as the generated value when present or
+ * modified.  The passed in value must be free()d if it is not used.
+ *
+ * If handler is NULL, the default method is used
+ * 
+ **/
+void
+raptor_world_set_generate_bnodeid_handler(raptor_world* world,
+                                          void *user_data,
+                                          raptor_generate_bnodeid_handler handler)
+{
+  world->generate_bnodeid_handler_user_data = user_data;
+  world->generate_bnodeid_handler = handler;
+}
+
+
+static unsigned char*
+raptor_world_default_generate_bnodeid_handler(void *user_data,
+                                              unsigned char *user_bnodeid) 
+{
+  raptor_world *world = (raptor_world*)user_data;
+  int id;
+  unsigned char *buffer;
+  int length;
+  int tmpid;
+
+  if(user_bnodeid)
+    return user_bnodeid;
+
+  id = ++world->default_generate_bnodeid_handler_base;
+
+  tmpid = id;
+  length = 2; /* min length 1 + \0 */
+  while(tmpid /= 10)
+    length++;
+
+  if(world->default_generate_bnodeid_handler_prefix)
+    length += world->default_generate_bnodeid_handler_prefix_length;
+  else
+    length += 5; /* strlen("genid") */
+  
+  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length);
+  if(!buffer)
+    return NULL;
+
+  if(world->default_generate_bnodeid_handler_prefix) {
+    memcpy(buffer, world->default_generate_bnodeid_handler_prefix,
+           world->default_generate_bnodeid_handler_prefix_length);
+    sprintf((char*)buffer + world->default_generate_bnodeid_handler_prefix_length,
+            "%d", id);
+  } else 
+    sprintf((char*)buffer, "genid%d", id);
+
+  return buffer;
+}
+
+
+/**
+ * raptor_world_generate_bnodeid:
+ * @world: #raptor_parser parser object
+ * 
+ * Generate an new blank node ID
+ *
+ * Return value: newly allocated generated ID or NULL on failure
+ **/
+unsigned char*
+raptor_world_generate_bnodeid(raptor_world *world)
+{
+  return raptor_world_internal_generate_id(world, NULL);
+}
+
+
+unsigned char*
+raptor_world_internal_generate_id(raptor_world *world, 
+                                  unsigned char *user_bnodeid)
+{
+  if(world->generate_bnodeid_handler)
+    return world->generate_bnodeid_handler(world->generate_bnodeid_handler_user_data,
+                                           user_bnodeid);
+  else
+    return raptor_world_default_generate_bnodeid_handler(world, user_bnodeid);
+}
+
+
+/**
+ * raptor_world_set_generate_bnodeid_parameters:
+ * @world: #raptor_world object
+ * @prefix: prefix string
+ * @base: integer base identifier
+ *
+ * Set default ID generation parameters.
+ *
+ * Sets the parameters for the default algorithm used to generate IDs.
+ * The default algorithm uses both @prefix and @base to generate a new
+ * identifier.   The exact identifier generated is not guaranteed to
+ * be a strict concatenation of @prefix and @base but will use both
+ * parts. The @prefix parameter is copied to generate an ID.
+ *
+ * For finer control of the generated identifiers, use
+ * raptor_world_set_generate_bnodeid_handler().
+ *
+ * If @prefix is NULL, the default prefix is used (currently "genid")
+ * If @base is less than 1, it is initialised to 1.
+ * 
+ **/
+void
+raptor_world_set_generate_bnodeid_parameters(raptor_world* world, 
+                                             char *prefix, int base)
+{
+  char *prefix_copy = NULL;
+  size_t length = 0;
+
+  if(--base < 0)
+    base = 0;
+
+  if(prefix) {
+    length = strlen(prefix);
+    
+    prefix_copy = (char*)RAPTOR_MALLOC(cstring, length + 1);
+    if(!prefix_copy)
+      return;
+
+    memcpy(prefix_copy, prefix, length+1);
+  }
+  
+  if(world->default_generate_bnodeid_handler_prefix)
+    RAPTOR_FREE(cstring, world->default_generate_bnodeid_handler_prefix);
+
+  world->default_generate_bnodeid_handler_prefix = prefix_copy;
+  world->default_generate_bnodeid_handler_prefix_length = length;
+  world->default_generate_bnodeid_handler_base = base;
 }
 
 
@@ -603,7 +753,7 @@ raptor_free_memory(void *ptr)
  * that can be freed inside raptor either internally or via
  * raptor_free_memory.
  *
- * Examples include using this in the raptor_parser_get_new_generated_id() handler
+ * Examples include using this in the raptor_world_generate_bnodeid() handler
  * code to create new strings that will be used internally
  * as short identifiers and freed later on by the parsers.
  *
@@ -630,7 +780,7 @@ raptor_alloc_memory(size_t size)
  * that can be freed inside raptor either internally or via
  * raptor_free_memory.
  *
- * Examples include using this in the raptor_parser_get_new_generated_id() handler
+ * Examples include using this in the raptor_world_generate_bnodeid() handler
  * code to create new strings that will be used internally
  * as short identifiers and freed later on by the parsers.
  *

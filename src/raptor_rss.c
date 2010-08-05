@@ -532,8 +532,7 @@ raptor_rss_start_element_handler(void *user_data,
     RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
                   raptor_rss_items_info[block_type].name);
     update_item = raptor_rss_get_current_item(rss_parser);
-    id = raptor_parser_internal_generate_id(rdf_parser,
-                                            RAPTOR_GENID_TYPE_BNODEID, NULL);
+    id = raptor_world_generate_bnodeid(rdf_parser->world);
     block = raptor_new_rss_block(rdf_parser->world, block_type, id);
     raptor_rss_item_add_block(update_item, block);
     rss_parser->current_block = block;
@@ -1032,9 +1031,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           const unsigned char *id;
 
           /* need to make bnode */
-          id = raptor_parser_internal_generate_id(rdf_parser,
-                                                  RAPTOR_GENID_TYPE_BNODEID,
-                                                  NULL);
+          id = raptor_world_generate_bnodeid(rdf_parser->world);
           item->term = raptor_new_term_from_blank(rdf_parser->world, id);
           RAPTOR_FREE(cstring, id);
         }
@@ -1087,9 +1084,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
       if(!block->identifier) {
         const unsigned char *id;
         /* need to make bnode */
-        id = raptor_parser_internal_generate_id(rdf_parser,
-                                                RAPTOR_GENID_TYPE_BNODEID,
-                                                NULL);
+        id = raptor_world_generate_bnodeid(rdf_parser->world);
         item->term = raptor_new_term_from_blank(rdf_parser->world, id);
         RAPTOR_FREE(cstring, id);
       }
@@ -1400,9 +1395,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     const unsigned char* id;
     raptor_term *items;
 
-    id = raptor_parser_internal_generate_id(rdf_parser, 
-                                            RAPTOR_GENID_TYPE_BNODEID,
-                                            NULL);
+    id = raptor_world_generate_bnodeid(rdf_parser->world);
     
     /* make a new genid for the <rdf:Seq> node */
     items = raptor_new_term_from_blank(rdf_parser->world, id);

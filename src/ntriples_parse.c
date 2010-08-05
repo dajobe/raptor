@@ -730,9 +730,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
             goto cleanup;
           }
           strcpy((char*)blank, (const char*)dest);
-          dest = raptor_parser_internal_generate_id(rdf_parser, 
-                                                    RAPTOR_GENID_TYPE_BNODEID,
-                                                    blank);
+          dest = raptor_world_generate_bnodeid(rdf_parser->world);
           terms_allocated[i] = 1;
         }
 

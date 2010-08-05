@@ -1247,9 +1247,7 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
       unsigned char *reified_id = NULL;
 
       /* reified_term is NULL so generate a bag ID */
-      reified_id = raptor_parser_internal_generate_id(rdf_parser, 
-                                                      RAPTOR_GENID_TYPE_BNODEID,
-                                                      NULL);
+      reified_id = raptor_world_generate_bnodeid(rdf_parser->world);
       if(!reified_id)
         goto generate_tidy;
 
@@ -1780,9 +1778,8 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
 
         } else if(element->rdf_attr[RDF_NS_nodeID]) {
           unsigned char* subject_id;
-          subject_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                          RAPTOR_GENID_TYPE_BNODEID,
-                                                          (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
+          subject_id = raptor_world_internal_generate_id(rdf_parser->world,
+                                                         (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
           if(!subject_id)
             goto oom;
           
@@ -1810,9 +1807,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
           element->subject = raptor_term_copy(element->parent->object);
         } else {
           unsigned char* subject_id;
-          subject_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                          RAPTOR_GENID_TYPE_BNODEID,
-                                                          NULL);
+          subject_id = raptor_world_generate_bnodeid(rdf_parser->world);
           if(!subject_id)
             goto oom;
 
@@ -1896,9 +1891,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             raptor_term* idList_term;
             raptor_term* object_term;
               
-            idList = raptor_parser_internal_generate_id(rdf_parser,
-                                                        RAPTOR_GENID_TYPE_BNODEID,
-                                                        NULL);
+            idList = raptor_world_generate_bnodeid(rdf_parser->world);
             if(!idList)
               goto oom;
             /* idList string is saved below in element->parent->tail_id */
@@ -2244,9 +2237,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
             element->child_content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_PROPERTIES;
 
             /* create a node for the subject of the contained properties */
-            subject_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                            RAPTOR_GENID_TYPE_BNODEID,
-                                                            NULL);
+            subject_id = raptor_world_generate_bnodeid(rdf_parser->world);
             if(!subject_id)
               goto oom;
 
@@ -2621,9 +2612,8 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 element->content_type = RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_RESOURCE;
               } else if(element->rdf_attr[RDF_NS_nodeID]) {
                 unsigned char* resource_id;
-                resource_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                                 RAPTOR_GENID_TYPE_BNODEID, 
-                                                                 (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
+                resource_id = raptor_world_internal_generate_id(rdf_parser->world,
+                                                                (unsigned char*)element->rdf_attr[RDF_NS_nodeID]);
                 if(!resource_id)
                   goto oom;
                 
@@ -2645,9 +2635,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 }
               } else {
                 unsigned char* resource_id;
-                resource_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                                 RAPTOR_GENID_TYPE_BNODEID,
-                                                                 NULL);
+                resource_id = raptor_world_generate_bnodeid(rdf_parser->world);
                 if(!resource_id)
                   goto oom;
                 
@@ -2720,9 +2708,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                  raptor_rdfxml_element_has_property_attributes(element) &&
                  !element->object) {
                 unsigned char* object_id;
-                object_id = raptor_parser_internal_generate_id(rdf_parser,
-                                                               RAPTOR_GENID_TYPE_BNODEID,
-                                                               NULL);
+                object_id = raptor_world_generate_bnodeid(rdf_parser->world);
                 if(!object_id)
                   goto oom;
                 
