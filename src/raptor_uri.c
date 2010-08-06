@@ -636,7 +636,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   if(!buffer)
     goto path_done;
 
-  strcpy((char*)buffer, "file://");
+  memcpy(buffer, "file://", 7);
   from = filename;
   to = (char*)(buffer+7);
 #ifdef WIN32
