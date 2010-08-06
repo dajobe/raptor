@@ -119,13 +119,15 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
   if(value) {
     int value_length = strlen((char*)value);
-    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    unsigned char* new_value;
 
+    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
-    strcpy((char*)new_value, (char*)value);
+
+    memcpy(new_value, value, value_length + 1); /* copy NUL */
     qname->value = new_value;
     qname->value_length = value_length;
   }
@@ -140,12 +142,13 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     local_name_length = p-name;
 
     /* No : in the name */
-    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
     }
-    strcpy((char*)new_name, (char*)name);
+    memcpy(new_name, name, local_name_length); /* no NUL to copy */
+    new_name[local_name_length] = '\0';
     qname->local_name = new_name;
     qname->local_name_length = local_name_length;
 
@@ -173,12 +176,13 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
     /* p now is at start of local_name */
     local_name_length = strlen((char*)p);
-    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
     }
-    strcpy((char*)new_name, (char*)p);
+    memcpy(new_name, p, local_name_length); /* No NUL to copy */
+    new_name[local_name_length] = '\0';
     qname->local_name = new_name;
     qname->local_name_length = local_name_length;
 
@@ -253,23 +257,27 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
 
   if(value) {
     int value_length = strlen((char*)value);
-    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    unsigned char* new_value;
 
+    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
-    strcpy((char*)new_value, (char*)value);
+
+    memcpy(new_value, value, value_length + 1); /* Copy NUL */
     qname->value = new_value;
     qname->value_length = value_length;
   }
 
-  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length+1);
+  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(qname);
     return NULL;
   }
-  strcpy((char*)new_name, (char*)local_name);
+
+  memcpy(new_name, local_name, local_name_length); /* No NUL to copy */
+  new_name[local_name_length] = '\0';
   qname->local_name = new_name;
   qname->local_name_length = local_name_length;
 
@@ -308,23 +316,26 @@ raptor_qname_copy(raptor_qname *qname)
 
   if(qname->value) {
     int value_length = qname->value_length;
-    unsigned char* new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length+1);
+    unsigned char* new_value;
 
+    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
     } 
-    strcpy((char*)new_value, (char*)qname->value);
+
+    memcpy(new_value, qname->value, value_length + 1); /* Copy NUL */
     new_qname->value = new_value;
     new_qname->value_length = value_length;
   }
 
-  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length+1);
+  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(new_qname);
     return NULL;
   }
-  strcpy((char*)new_name, (char*)qname->local_name);
+
+  memcpy(new_name, qname->local_name, qname->local_name_length + 1); /* Copy NUL */
   new_qname->local_name = new_name;
   new_qname->local_name_length = qname->local_name_length;
 
@@ -547,12 +558,12 @@ raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
 
   p = s;
   if(qname->nspace && qname->nspace->prefix_length > 0) {
-    memcpy(p, qname->nspace->prefix, qname->nspace->prefix_length);
-    p+= qname->nspace->prefix_length;
+    memcpy(p, qname->nspace->prefix, qname->nspace->prefix_length); /* Do not copy NUL */
+    p += qname->nspace->prefix_length;
     *p++ = ':';
   }
   
-  memcpy(p, qname->local_name, qname->local_name_length + 1);
+  memcpy(p, qname->local_name, qname->local_name_length + 1); /* Copy final NUL */
 
   return s;
 }
