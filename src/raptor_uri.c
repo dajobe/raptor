@@ -325,13 +325,15 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
   RAPTOR_DEBUG2("Using ID %s\n", id);
 #endif
 
+  len = strlen((char*)id);
   /* "#id\0" */
-  len = 1 + strlen((char*)id);
-  local_name = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  local_name = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1 + 1);
   if(!local_name)
     return NULL;
+
   *local_name = '#';
-  strcpy((char*)local_name + 1, (char*)id);
+  memcpy(local_name + 1, id, len + 1); /* len+1 to copy NUL */
+
   new_uri = raptor_new_uri_relative_to_base(world, base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
