@@ -537,7 +537,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
   len = sizeof(raptor_namespace);
   if(prefix) {
     prefix_length = strlen((char*)prefix);
-    len += prefix_length+1;
+    len += prefix_length + 1;
   }
 
   /* Just one malloc for structure + namespace (maybe) + prefix (maybe)*/
@@ -554,7 +554,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
     }
   }
   if(prefix) {
-    ns->prefix = (const unsigned char*)strcpy((char*)p, (char*)prefix);
+    ns->prefix = (const unsigned char*)memcpy(p, prefix, prefix_length + 1);
     ns->prefix_length = prefix_length;
 
     if(!strcmp((char*)ns->prefix, "xml"))

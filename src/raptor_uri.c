@@ -325,13 +325,15 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
   RAPTOR_DEBUG2("Using ID %s\n", id);
 #endif
 
+  len = strlen((char*)id);
   /* "#id\0" */
-  len = 1 + strlen((char*)id);
-  local_name = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  local_name = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1 + 1);
   if(!local_name)
     return NULL;
+
   *local_name = '#';
-  strcpy((char*)local_name + 1, (char*)id);
+  memcpy(local_name + 1, id, len + 1); /* len+1 to copy NUL */
+
   new_uri = raptor_new_uri_relative_to_base(world, base_uri, local_name);
   RAPTOR_FREE(cstring, local_name);
   return new_uri;
@@ -358,7 +360,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   const unsigned char *base_uri_string = raptor_rdf_namespace_uri;
   unsigned int base_uri_string_len = raptor_rdf_namespace_uri_len;
   unsigned int new_uri_string_len;
-
+  size_t name_len;
+  
   if(!name)
     return NULL;
   
@@ -366,14 +369,15 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 
   raptor_world_open(world);
 
-  new_uri_string_len = base_uri_string_len + strlen((const char*)name);
+  name_len = strlen((const char*)name);
+  new_uri_string_len = base_uri_string_len + name_len;
   new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring,
                                                  new_uri_string_len + 1);
   if(!new_uri_string)
     return NULL;
 
-  strcpy((char*)new_uri_string, (const char*)base_uri_string);
-  strcpy((char*)new_uri_string + base_uri_string_len, (const char*)name);
+  memcpy(new_uri_string, base_uri_string, base_uri_string_len);
+  memcpy(new_uri_string + base_uri_string_len, name, name_len + 1); /* copy NUL */
 
   new_uri = raptor_new_uri_from_counted_string(world, new_uri_string,
                                                new_uri_string_len);
@@ -632,7 +636,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
   if(!buffer)
     goto path_done;
 
-  strcpy((char*)buffer, "file://");
+  memcpy(buffer, "file://", 7);
   from = filename;
   to = (char*)(buffer+7);
 #ifdef WIN32
@@ -1333,19 +1337,14 @@ int
 raptor_uri_print(const raptor_uri* uri, FILE *stream)
 {
   int rc = 0;
-  size_t len;
+  size_t len = 10;
+  unsigned char *string = (unsigned char*)"(NULL URI)";
   
-  if(uri) {
-    unsigned char *string;
+  if(uri)
     string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
-    rc = fwrite(string, len, 1, stream);
-  } else  {
-    len = 10;
-    rc = fwrite("(NULL URI)", len, 1, stream);
-  }
-  
-  rc = (rc < (int)len);
-  if(rc)
+
+  rc = fwrite(string, 1, len, stream);
+  if(rc != (int)len)
     raptor_log_error_formatted(uri->world, RAPTOR_LOG_LEVEL_ERROR,
                                NULL, "fwrite failed - %s", strerror(errno));
 

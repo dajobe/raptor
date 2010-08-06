@@ -440,20 +440,6 @@ typedef enum {
 
 
 /**
- * raptor_genid_type:
- * @RAPTOR_GENID_TYPE_BNODEID: Generated ID is for a blank node
- * @RAPTOR_GENID_TYPE_BAGID: Generated ID is for rdf:bagID
- *
- * Intended type for a generated identifier asked for by the handler
- * registered with raptor_parser_set_generate_id_handler().
- */
-typedef enum {
-  RAPTOR_GENID_TYPE_BNODEID,
-  RAPTOR_GENID_TYPE_BAGID
-} raptor_genid_type;
-
-
-/**
  * raptor_term_literal_value:
  * @string: literal string
  * @string_len: length of string
@@ -693,16 +679,15 @@ typedef enum {
 typedef void (*raptor_graph_mark_handler)(void *user_data, raptor_uri *graph, int flags);
 
 /**
- * raptor_generate_id_handler:
+ * raptor_generate_bnodeid_handler:
  * @user_data: user data
- * @type: type of ID to create
  * @user_bnodeid: a user-specified ID or NULL if none available.
  *
- * Generate an identifier handler function.
+ * Generate a blank node identifier handler function.
  *
- * Return value: new ID to use
+ * Return value: new blank node ID to use
  */
-typedef unsigned char* (*raptor_generate_id_handler)(void *user_data, raptor_genid_type type, unsigned char* user_bnodeid);
+typedef unsigned char* (*raptor_generate_bnodeid_handler)(void *user_data, unsigned char* user_bnodeid);
 
 /**
  * raptor_namespace_handler:
@@ -890,6 +875,12 @@ int raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value
 RAPTOR_API
 int raptor_world_set_log_handler(raptor_world *world, void *user_data, raptor_log_handler handler);
 RAPTOR_API
+void raptor_world_set_generate_bnodeid_handler(raptor_world* world, void *user_data, raptor_generate_bnodeid_handler handler);
+RAPTOR_API
+unsigned char* raptor_world_generate_bnodeid(raptor_world *world);
+RAPTOR_API
+void raptor_world_set_generate_bnodeid_parameters(raptor_world* world, char *prefix, int base);
+RAPTOR_API
 const char* raptor_log_level_get_label(raptor_log_level level);
 RAPTOR_API
 const char* raptor_domain_get_label(raptor_domain domain);
@@ -978,15 +969,11 @@ void raptor_parser_set_statement_handler(raptor_parser* parser, void *user_data,
 RAPTOR_API
 void raptor_parser_set_graph_mark_handler(raptor_parser* parser, void *user_data, raptor_graph_mark_handler handler);
 RAPTOR_API
-void raptor_parser_set_generate_id_handler(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler);
-RAPTOR_API
 void raptor_parser_set_namespace_handler(raptor_parser* parser, void *user_data, raptor_namespace_handler handler);
 RAPTOR_API
 void raptor_parser_set_uri_filter(raptor_parser* parser, raptor_uri_filter_func filter, void* user_data);
 RAPTOR_API
 raptor_locator* raptor_parser_get_locator(raptor_parser* rdf_parser);
-RAPTOR_API
-void raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, char *prefix, int base);
 
 
 /* Parsing functions */
@@ -1020,8 +1007,6 @@ int raptor_parser_get_option(raptor_parser *parser, raptor_option option, char**
 /* parser utility methods */
 RAPTOR_API
 const char* raptor_parser_get_accept_header(raptor_parser* rdf_parser);
-RAPTOR_API
-unsigned char* raptor_parser_get_new_generated_id(raptor_parser *rdf_parser, raptor_genid_type type);
 RAPTOR_API
 raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
 RAPTOR_API

@@ -191,15 +191,6 @@ raptor_guess_accept_header(raptor_parser* rdf_parser)
 }
 
 
-static int
-raptor_guess_get_current_base_id(raptor_parser* rdf_parser)
-{
-  raptor_guess_parser_context *guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
-
-  return raptor_parser_get_current_base_id(guess_parser->parser);
-}
-
-
 static const char*
 raptor_guess_guess_get_name(raptor_parser* rdf_parser)
 {
@@ -248,7 +239,6 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   factory->chunk     = raptor_guess_parse_chunk;
   factory->content_type_handler = raptor_guess_parse_content_type_handler;
   factory->accept_header = raptor_guess_accept_header;
-  factory->get_current_base_id = raptor_guess_get_current_base_id;
   factory->get_name = raptor_guess_guess_get_name;
   factory->get_description = raptor_guess_guess_get_description;
 

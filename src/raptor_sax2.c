@@ -2,7 +2,7 @@
  *
  * raptor_sax2.c - Raptor SAX2 API
  *
- * Copyright (C) 2000-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -802,7 +802,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
             (*sax2->namespace_handler)(sax2->user_data, nspace);
         }
       } else if(!strcmp((char*)atts[i], "xml:lang")) {
-        xml_language = (unsigned char*)RAPTOR_MALLOC(cstring, strlen((char*)atts[i+1])+1);
+        size_t lang_len = strlen((char*)atts[i+1]);
+        xml_language = (unsigned char*)RAPTOR_MALLOC(cstring, lang_len + 1);
         if(!xml_language) {
           raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_FATAL,
                            sax2->locator, "Out of memory");
@@ -816,13 +817,13 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
           
           while(*from) {
             if(isupper(*from))
-              *to++ =tolower(*from++);
+              *to++ = tolower(*from++);
             else
-              *to++ =*from++;
+              *to++ = *from++;
           }
-          *to='\0';
+          *to = '\0';
         } else
-          strcpy((char*)xml_language, (char*)atts[i+1]);
+          memcpy(xml_language, atts[i+1], lang_len + 1); /* Copy NUL */
       } else if(!strcmp((char*)atts[i], "xml:base")) {
         raptor_uri* base_uri;
         raptor_uri* xuri;

@@ -496,7 +496,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *p;
   unsigned char *dest;
   unsigned char *terms[3];
-  int terms_allocated[3];
   size_t term_lengths[3];
   raptor_term_type term_types[3];
   size_t term_length= 0;
@@ -504,9 +503,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *object_literal_datatype = NULL;
   int rc = 0;
   
-  for(i = 0; i < 3; i++)
-    terms_allocated[i] = 0;
-
   /* ASSERTION:
    * p always points to first char we are considering
    * p[len-1] always points to last char
@@ -683,7 +679,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
           object_literal_language = NULL;
         }
-          
 
         break;
 
@@ -722,18 +717,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         if(!term_length) {
           raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
           goto cleanup;
-        } else {
-          unsigned char *blank = (unsigned char*)RAPTOR_MALLOC(cstring, term_length+1);
-          if(!blank) {
-            raptor_parser_fatal_error(rdf_parser, "Out of memory");
-            rc = 1;
-            goto cleanup;
-          }
-          strcpy((char*)blank, (const char*)dest);
-          dest = raptor_parser_internal_generate_id(rdf_parser, 
-                                                    RAPTOR_GENID_TYPE_BNODEID,
-                                                    blank);
-          terms_allocated[i] = 1;
         }
 
         break;
@@ -796,9 +779,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   rdf_parser->locator.byte += len;
 
  cleanup:
-  for(i = 0; i < 3; i++)
-    if(terms_allocated[i])
-      RAPTOR_FREE(cstring, terms[i]);
 
   return rc;
 }

@@ -952,8 +952,8 @@ blank: BLANK_LITERAL
 #if RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
-  id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser,
-                                          RAPTOR_GENID_TYPE_BNODEID, $1);
+  id = raptor_world_internal_generate_id(((raptor_parser*)rdf_parser)->world,
+                                         $1);
   if(!id)
     YYERROR;
 
@@ -968,8 +968,7 @@ blank: BLANK_LITERAL
   int i;
   const unsigned char *id;
 
-  id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser,
-                                          RAPTOR_GENID_TYPE_BNODEID, NULL);
+  id = raptor_world_generate_bnodeid(((raptor_parser*)rdf_parser)->world);
   if(!id) {
     if($2)
       raptor_free_sequence($2);
@@ -1060,9 +1059,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
     const unsigned char *blank_id;
 
-    blank_id = raptor_parser_internal_generate_id((raptor_parser*)rdf_parser,
-                                                  RAPTOR_GENID_TYPE_BNODEID,
-                                                  NULL);
+    blank_id = raptor_world_generate_bnodeid(((raptor_parser*)rdf_parser)->world);
     if(!blank_id)
       goto err_collection;
 

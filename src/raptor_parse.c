@@ -517,9 +517,6 @@ raptor_free_parser(raptor_parser* rdf_parser)
   if(rdf_parser->base_uri)
     raptor_free_uri(rdf_parser->base_uri);
 
-  if(rdf_parser->default_generate_id_handler_prefix)
-    RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
-
   if(rdf_parser->sb)
     raptor_free_stringbuffer(rdf_parser->sb);
 
@@ -963,36 +960,6 @@ raptor_parser_set_graph_mark_handler(raptor_parser* parser,
 
 
 /**
- * raptor_parser_set_generate_id_handler:
- * @parser: #raptor_parser parser object
- * @user_data: user data pointer for callback
- * @handler: generate ID callback function
- *
- * Set the generate ID handler function for the parser.
- *
- * Sets the function to generate IDs for the parser.  The handler is
- * called with the @user_data parameter and an ID type of either
- * #RAPTOR_GENID_TYPE_BNODEID
- *
- * The final argument of the callback method is user_bnodeid, the value of
- * the rdf:nodeID attribute that the user provided if any (or NULL).
- * It can either be returned directly as the generated value when present or
- * modified.  The passed in value must be free()d if it is not used.
- *
- * If handler is NULL, the default method is used
- * 
- **/
-void
-raptor_parser_set_generate_id_handler(raptor_parser* parser,
-                                      void *user_data,
-                                      raptor_generate_id_handler handler)
-{
-  parser->generate_id_handler_user_data = user_data;
-  parser->generate_id_handler = handler;
-}
-
-
-/**
  * raptor_parser_set_namespace_handler:
  * @parser: #raptor_parser parser object
  * @user_data: user data pointer for callback
@@ -1132,55 +1099,6 @@ raptor_parser_set_strict(raptor_parser* rdf_parser, int is_strict)
 
 
 /**
- * raptor_parser_set_default_generate_id_parameters:
- * @rdf_parser: #raptor_parser object
- * @prefix: prefix string
- * @base: integer base identifier
- *
- * Set default ID generation parameters.
- *
- * Sets the parameters for the default algorithm used to generate IDs.
- * The default algorithm uses both @prefix and @base to generate a new
- * identifier.   The exact identifier generated is not guaranteed to
- * be a strict concatenation of @prefix and @base but will use both
- * parts. The @prefix parameter is copied to generate an ID.
- *
- * For finer control of the generated identifiers, use
- * raptor_parser_set_generate_id_handler().
- *
- * If @prefix is NULL, the default prefix is used (currently "genid")
- * If @base is less than 1, it is initialised to 1.
- * 
- **/
-void
-raptor_parser_set_default_generate_id_parameters(raptor_parser* rdf_parser, 
-                                                 char *prefix, int base)
-{
-  char *prefix_copy = NULL;
-  size_t length = 0;
-
-  if(--base < 0)
-    base = 0;
-
-  if(prefix) {
-    length = strlen(prefix);
-    
-    prefix_copy = (char*)RAPTOR_MALLOC(cstring, length+1);
-    if(!prefix_copy)
-      return;
-    strcpy(prefix_copy, prefix);
-  }
-  
-  if(rdf_parser->default_generate_id_handler_prefix)
-    RAPTOR_FREE(cstring, rdf_parser->default_generate_id_handler_prefix);
-
-  rdf_parser->default_generate_id_handler_prefix = prefix_copy;
-  rdf_parser->default_generate_id_handler_prefix_length = length;
-  rdf_parser->default_generate_id_handler_base = base;
-}
-
-
-/**
  * raptor_parser_get_name:
  * @rdf_parser: #raptor_parser parser object
  *
@@ -1243,80 +1161,6 @@ void
 raptor_parser_parse_abort(raptor_parser *rdf_parser)
 {
   rdf_parser->failed = 1;
-}
-
-
-static unsigned char*
-raptor_default_generate_id_handler(void *user_data, raptor_genid_type type,
-                                   unsigned char *user_bnodeid) 
-{
-  raptor_parser *rdf_parser = (raptor_parser *)user_data;
-  int id;
-  unsigned char *buffer;
-  int length;
-  int tmpid;
-
-  if(user_bnodeid)
-    return user_bnodeid;
-
-  id = ++rdf_parser->default_generate_id_handler_base;
-
-  tmpid = id;
-  length = 2; /* min length 1 + \0 */
-  while(tmpid /= 10)
-    length++;
-
-  if(rdf_parser->default_generate_id_handler_prefix)
-    length += rdf_parser->default_generate_id_handler_prefix_length;
-  else
-    length += 5; /* genid */
-  
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length);
-  if(!buffer)
-    return NULL;
-  if(rdf_parser->default_generate_id_handler_prefix) {
-    memcpy(buffer, rdf_parser->default_generate_id_handler_prefix,
-           rdf_parser->default_generate_id_handler_prefix_length);
-    sprintf((char*)buffer+rdf_parser->default_generate_id_handler_prefix_length,
-            "%d", id);
-  } else 
-    sprintf((char*)buffer, "genid%d", id);
-
-  return buffer;
-}
-
-
-/**
- * raptor_parser_get_new_generated_id:
- * @rdf_parser: #raptor_parser parser object
- * @type: Type of ID to generate; either #RAPTOR_GENID_TYPE_BNODEID or #RAPTOR_GENID_TYPE_BAGID
- * 
- * Generate an ID for a parser
- *
- * Return value: newly allocated generated ID or NULL on failure
- **/
-unsigned char*
-raptor_parser_get_new_generated_id(raptor_parser *rdf_parser,
-                                   raptor_genid_type type)
-{
-  if(type != RAPTOR_GENID_TYPE_BNODEID || 
-     type != RAPTOR_GENID_TYPE_BAGID)
-    return NULL;
-  
-  return raptor_parser_internal_generate_id(rdf_parser, type, NULL);
-}
-
-
-unsigned char*
-raptor_parser_internal_generate_id(raptor_parser *rdf_parser, 
-                                   raptor_genid_type type,
-                                   unsigned char *user_bnodeid)
-{
-  if(rdf_parser->generate_id_handler)
-    return rdf_parser->generate_id_handler(rdf_parser->generate_id_handler_user_data,
-                                           type, user_bnodeid);
-  else
-    return raptor_default_generate_id_handler(rdf_parser, type, user_bnodeid);
 }
 
 
@@ -1537,21 +1381,6 @@ raptor_parser_copy_user_state(raptor_parser *to_parser,
   
   to_parser->user_data = from_parser->user_data;
   to_parser->statement_handler = from_parser->statement_handler;
-  to_parser->generate_id_handler_user_data = from_parser->generate_id_handler_user_data;
-  to_parser->generate_id_handler = from_parser->generate_id_handler;
-  to_parser->default_generate_id_handler_base = from_parser->default_generate_id_handler_base;
-  /* copy over non-shared user state - generate ID prefix string */
-  if(from_parser->default_generate_id_handler_prefix) {
-    size_t len = from_parser->default_generate_id_handler_prefix_length;
-    to_parser->default_generate_id_handler_prefix = (char*)RAPTOR_MALLOC(cstring, len+1);
-    if(to_parser->default_generate_id_handler_prefix)
-      memcpy(to_parser->default_generate_id_handler_prefix, 
-             from_parser->default_generate_id_handler_prefix,
-             len + 1);
-    else
-      rc = 1;
-  }
-  to_parser->default_generate_id_handler_prefix_length = from_parser->default_generate_id_handler_prefix_length;
   to_parser->namespace_handler = from_parser->namespace_handler;
   to_parser->namespace_handler_user_data = from_parser->namespace_handler_user_data;
   to_parser->uri_filter = from_parser->uri_filter;
@@ -1780,16 +1609,6 @@ raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int is_declared)
   
   if(parser->graph_mark_handler)
     (*parser->graph_mark_handler)(parser->user_data, uri, flags);
-}
-
-
-int
-raptor_parser_get_current_base_id(raptor_parser* parser)
-{
-  if(parser->factory->get_current_base_id)
-    return parser->factory->get_current_base_id(parser);
-  else
-    return parser->default_generate_id_handler_base;
 }
 
 
