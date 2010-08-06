@@ -1,4 +1,139 @@
-2010-07-20 Dave Beckett <dave@dajobe.org>
+2010-08-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www.c:
+	(raptor_www_set_user_agent): memcpy comment
+
+	* src/raptor_libxml.c: memcpy replacing more strcpy for known
+	length strings.  Check NUL copying.
+
+	* src/raptor_www.c: memcpy replacing more strcpy for known length
+	strings.  Check NUL copying.
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_start_element): memcpy replacing strcpy with known
+	length string.
+
+	* src/raptor_qname.c: memcpy replacing more strcpy for known
+	length strings.  Check NUL copying.
+
+	* src/raptor_namespace.c:
+	(raptor_new_namespace_from_uri): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_uri_filename_to_uri_string): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_for_rdf_concept): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_id): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_uri_print): Correct error check and simplify code.
+
+2010-08-05  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_term.c: Changed behaviour of
+	raptor_new_term_from_counted_blank() and
+	raptor_new_term_from_blank() to generate a new identifier if NULL
+	is passed in.
+
+	* src/ntriples_parse.c: Fix for ntriples parsing after the
+	raptor_world_generate_bnodeid() changes.  Fix was to delete code -
+	blank nodes must be named in ntriples.
+
+2010-08-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_guess.c, src/raptor_internal.h: Remove internal
+	raptor_parser_get_current_base_id and raptor_parser_factory method
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_general.c,
+	src/raptor_grddl.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Move
+	generate ID code from raptor_parser to raptor_world class
+
+	(raptor_world_generate_bnodeid): Replaces
+	raptor_parser_internal_generate_id with arg
+	RAPTOR_GENID_TYPE_BNODEID.
+
+	Enum raptor_genid_type deleted - only RAPTOR_GENID_TYPE_BNODEID was
+	ever used.
+
+	raptor_generate_bnodeid_handler handler typedef renamed from
+	raptor_generate_id_handler since it now just applies to blank node
+	IDs.
+
+	raptor_generate_bnodeid_handler handler renamed from
+	raptor_generate_id_handler.
+
+	(raptor_free_world): Free user genid prefix if set.
+
+	(raptor_world_set_generate_bnodeid_handler): Renamed from
+	raptor_parser_set_generate_id_handler.
+
+	(raptor_world_generate_bnodeid): Renamed from
+	raptor_parser_get_new_generated_id and loses type arg.
+
+	(raptor_world_set_generate_bnodeid_parameters): Renamed from
+	raptor_parser_set_default_generate_id_parameters.
+
+	Update all callers to mostly use raptor_world_generate_bnodeid()
+	except where a user bnode ID is given, such as in Turtle _:foo or
+	RDF/XML rdf:nodeid="foo".
+
+	Remove copying of genid fields from parsers to parsers when
+	creating sub-parsers for e.g. grddl.
+
+	typedef raptor_parser loses generate_id* and default_generate_id*
+	fields.
+
+	(raptor_world_internal_generate_id): Renamed from
+	raptor_parser_internal_generate_id and loses type arg.
+
+	typedef raptor_world gains generate_bnodeid and
+	default_generate_bnodeid fields.
+
+	(raptor_free_parser): Lose tidying user genid prefix.
+
+	(raptor_parser_copy_user_state): Remove copying of genid fields
+	between parser user states.
+
+	(raptor_parser_get_current_base_id): Deleted, no longer needed to
+	support copying genids between parser states.
+
+2010-08-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c: More raptor_term unit tests
+
+	* src/Makefile.am, src/raptor_term.c: Add unit tests for
+	raptor_term
+
+2010-08-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_term_equals): Make terms *different* not equal if lengths
+	are different
+
+2010-07-20  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa/Makefile.am: typo
+
+	* tests/rdfa/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_RDFA to enable tests
+
+	* tests/json/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_JSON to enable tests
+
+	* tests/grddl/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_GRDDL to enable tests
+
+	* docs/raptor-parsers.xml: Added json parser section
+
+	* src/raptor_json.c: Note this is RDF/JSON parser (resource
+	centric) today
+
+	* src/raptor_serialize_json.c: Accept "text/json" mime type with
+	low Q for json serializers
 
 	* INSTALL.html: words
 
