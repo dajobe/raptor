@@ -360,7 +360,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   const unsigned char *base_uri_string = raptor_rdf_namespace_uri;
   unsigned int base_uri_string_len = raptor_rdf_namespace_uri_len;
   unsigned int new_uri_string_len;
-
+  size_t name_len;
+  
   if(!name)
     return NULL;
   
@@ -368,14 +369,15 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 
   raptor_world_open(world);
 
-  new_uri_string_len = base_uri_string_len + strlen((const char*)name);
+  name_len = strlen((const char*)name);
+  new_uri_string_len = base_uri_string_len + name_len;
   new_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring,
                                                  new_uri_string_len + 1);
   if(!new_uri_string)
     return NULL;
 
-  strcpy((char*)new_uri_string, (const char*)base_uri_string);
-  strcpy((char*)new_uri_string + base_uri_string_len, (const char*)name);
+  memcpy(new_uri_string, base_uri_string, base_uri_string_len);
+  memcpy(new_uri_string + base_uri_string_len, name, name_len + 1); /* copy NUL */
 
   new_uri = raptor_new_uri_from_counted_string(world, new_uri_string,
                                                new_uri_string_len);
