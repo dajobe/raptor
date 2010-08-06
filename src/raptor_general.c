@@ -233,16 +233,18 @@ raptor_free_world(raptor_world* world)
 /**
  * raptor_world_set_libxslt_security_preferences:
  * @world: world
- * @security_preferences: security preferences (an #xsltSecurityPrefsPtr)
+ * @security_preferences: security preferences (an #xsltSecurityPrefsPtr) or NULL
  * 
  * Set libxslt security preferences policy object
  *
  * The @security_preferences object will NOT become owned by
- * #raptor_world
+ * #raptor_world.
  *
  * If libxslt is compiled into the library, @security_preferences
  * should be an #xsltSecurityPrefsPtr and will be used to call
  * xsltSetCtxtSecurityPrefs() when an XSLT engine is initialised.
+ * If @security_preferences is NULL, this will disable all raptor's
+ * calls to xsltSetCtxtSecurityPrefs().
  *
  * If libxslt is not compiled in, the object set here is not used.
  *
@@ -258,6 +260,7 @@ raptor_world_set_libxslt_security_preferences(raptor_world *world,
     return 1;
 
   world->xslt_security_preferences = security_preferences;
+  world->xslt_security_preferences_policy = 1;
 
   return 0;
 }

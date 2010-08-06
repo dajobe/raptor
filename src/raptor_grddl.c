@@ -2009,7 +2009,8 @@ raptor_init_parser_grddl_common(raptor_world* world)
   xsltInit();
 #endif
 
-  if(world->xslt_security_preferences == NULL)  {
+  if(world->xslt_security_preferences &&
+     !world->xslt_security_preferences_policy)  {
     xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
     raptor_xslt_sec = xsltNewSecurityPrefs();
@@ -2035,7 +2036,6 @@ raptor_init_parser_grddl_common(raptor_world* world)
                          xsltSecurityForbid);
     
     world->xslt_security_preferences = (void*)raptor_xslt_sec;
-    world->free_xslt_security_preferences = 1;
   }
   
   return 0;
@@ -2056,7 +2056,7 @@ raptor_terminate_parser_grddl_common(raptor_world *world)
   xsltCleanupGlobals();
 
   if(world->xslt_security_preferences &&
-     world->free_xslt_security_preferences)
+     !world->xslt_security_preferences_policy)
     xsltFreeSecurityPrefs((xsltSecurityPrefsPtr)world->xslt_security_preferences);
 
 }
