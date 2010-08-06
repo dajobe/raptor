@@ -1333,19 +1333,14 @@ int
 raptor_uri_print(const raptor_uri* uri, FILE *stream)
 {
   int rc = 0;
-  size_t len;
+  size_t len = 10;
+  unsigned char *string = (unsigned char*)"(NULL URI)";
   
-  if(uri) {
-    unsigned char *string;
+  if(uri)
     string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
-    rc = fwrite(string, len, 1, stream);
-  } else  {
-    len = 10;
-    rc = fwrite("(NULL URI)", len, 1, stream);
-  }
-  
-  rc = (rc < (int)len);
-  if(rc)
+
+  rc = fwrite(string, 1, len, stream);
+  if(rc != (int)len)
     raptor_log_error_formatted(uri->world, RAPTOR_LOG_LEVEL_ERROR,
                                NULL, "fwrite failed - %s", strerror(errno));
 
