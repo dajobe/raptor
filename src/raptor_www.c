@@ -292,7 +292,8 @@ raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
   ua_copy = (char*)RAPTOR_MALLOC(cstring, ua_len + 1);
   if(!ua_copy)
     return;
-  memcpy(ua_copy, user_agent, ua_len + 1);
+
+  memcpy(ua_copy, user_agent, ua_len + 1); /* copy NUL */
   
   www->user_agent = ua_copy;
 }
