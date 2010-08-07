@@ -685,6 +685,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
                 raptor_uri_as_string(xslt_uri),
                 base_uri_string);
   
+  /* This calls xsltGetDefaultSecurityPrefs() */
   sheet = xsltParseStylesheetDoc(xslt_doc);
   if(!sheet) {
     raptor_parser_error(rdf_parser, "Failed to parse stylesheet in '%s'",
@@ -693,11 +694,19 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     goto cleanup_xslt;
   }
 
+  /* This calls xsltGetDefaultSecurityPrefs() */
   userCtxt = xsltNewTransformContext(sheet, doc);
+
+  /* set per-transform security preferences */
   if(world->xslt_security_preferences)
     xsltSetCtxtSecurityPrefs((xsltSecurityPrefs*)world->xslt_security_preferences,
                              userCtxt);
 
+  /* set per-transform generic error handler */
+  xsltSetTransformErrorFunc(userCtxt, rdf_parser,
+                            raptor_grddl_xsltGenericError_handler);
+
+  /* save and then set global (libxslt-wide) generic error handler */
   saved_xsltGenericError = xsltGenericError;
   saved_xsltGenericErrorContext = xsltGenericErrorContext;
   xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
@@ -826,6 +835,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   if(sheet)
     xsltFreeStylesheet(sheet);
   
+  /* restore global (libxslt-wide) generic error */
   xsltSetGenericErrorFunc(saved_xsltGenericErrorContext,
                           saved_xsltGenericError);
 
@@ -1998,8 +2008,9 @@ raptor_init_parser_grddl_common(raptor_world* world)
     xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
     raptor_xslt_sec = xsltNewSecurityPrefs();
+
+    /* set global (libxslt-wide) security preferences */
     xsltSetDefaultSecurityPrefs(raptor_xslt_sec);
-  
 
     /* no read from file (read from URI with scheme = file) */
     xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_READ_FILE,
