@@ -2005,7 +2005,7 @@ raptor_init_parser_grddl_common(raptor_world* world)
   xsltInit();
 #endif
 
-  if(world->xslt_security_preferences &&
+  if(!world->xslt_security_preferences &&
      !world->xslt_security_preferences_policy)  {
     xsltSecurityPrefsPtr raptor_xslt_sec = NULL;
 
