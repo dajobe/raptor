@@ -84,6 +84,9 @@ static void raptor_grddl_filter_triples(void *user_data, raptor_statement *state
 
 static void raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 0);
 
+static void raptor_libxslt_set_global_state(raptor_parser *rdf_parser);
+static void raptor_libxslt_reset_global_state(raptor_parser *rdf_parser);
+
 
 typedef struct
 {
@@ -167,6 +170,11 @@ struct raptor_grddl_parser_context_s {
 
   /* non-0 to perform HTML <link> processing on document */
   int html_link_processing;
+
+  xmlGenericErrorFunc saved_xsltGenericError;
+  void *saved_xsltGenericErrorContext;
+
+  xsltSecurityPrefsPtr saved_xsltSecurityPrefs;
 };
 
 
@@ -670,8 +678,6 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   raptor_uri* xslt_uri;
   raptor_uri* base_uri;
   char *quoted_base_uri = NULL;
-  xmlGenericErrorFunc saved_xsltGenericError;
-  void *saved_xsltGenericErrorContext;
   xsltTransformContextPtr userCtxt;
 
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
@@ -685,6 +691,8 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
                 raptor_uri_as_string(xslt_uri),
                 base_uri_string);
   
+  raptor_libxslt_set_global_state(rdf_parser);
+
   /* This calls xsltGetDefaultSecurityPrefs() */
   sheet = xsltParseStylesheetDoc(xslt_doc);
   if(!sheet) {
@@ -706,10 +714,6 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   xsltSetTransformErrorFunc(userCtxt, rdf_parser,
                             raptor_grddl_xsltGenericError_handler);
 
-  /* save and then set global (libxslt-wide) generic error handler */
-  saved_xsltGenericError = xsltGenericError;
-  saved_xsltGenericErrorContext = xsltGenericErrorContext;
-  xsltSetGenericErrorFunc(rdf_parser, raptor_grddl_xsltGenericError_handler);
 
   /*
    * Define 'base', 'Base' and 'url' params to allow some XSLT sheets to work:
@@ -835,9 +839,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   if(sheet)
     xsltFreeStylesheet(sheet);
   
-  /* restore global (libxslt-wide) generic error */
-  xsltSetGenericErrorFunc(saved_xsltGenericErrorContext,
-                          saved_xsltGenericError);
+  raptor_libxslt_reset_global_state(rdf_parser);
 
   return ret;
 }
@@ -2009,9 +2011,6 @@ raptor_init_parser_grddl_common(raptor_world* world)
 
     raptor_xslt_sec = xsltNewSecurityPrefs();
 
-    /* set global (libxslt-wide) security preferences */
-    xsltSetDefaultSecurityPrefs(raptor_xslt_sec);
-
     /* no read from file (read from URI with scheme = file) */
     xsltSetSecurityPrefs(raptor_xslt_sec, XSLT_SECPREF_READ_FILE,
                          xsltSecurityForbid);
@@ -2048,10 +2047,70 @@ raptor_init_parser_grddl(raptor_world* world)
 void
 raptor_terminate_parser_grddl_common(raptor_world *world)
 {
-  xsltCleanupGlobals();
-
   if(world->xslt_security_preferences &&
-     !world->xslt_security_preferences_policy)
-    xsltFreeSecurityPrefs((xsltSecurityPrefsPtr)world->xslt_security_preferences);
+     !world->xslt_security_preferences_policy)  {
 
+    /* Free the security preferences object owned by raptor world */
+    xsltFreeSecurityPrefs((xsltSecurityPrefsPtr)world->xslt_security_preferences);
+    world->xslt_security_preferences = NULL;
+  }
+
+  xsltCleanupGlobals();
 }
+
+
+
+/*
+ * Save libxslt global state that needs overwriting.
+ *
+ * Initialise the global state with raptor GRDDL parser values.
+ *
+ * Restored by raptor_libxslt_reset_global_state()
+ */
+static void
+raptor_libxslt_set_global_state(raptor_parser *rdf_parser)
+{
+  raptor_grddl_parser_context* grddl_parser;
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+
+  /* save global (libxslt-wide) generic error handler */
+  grddl_parser->saved_xsltGenericError = xsltGenericError;
+  grddl_parser->saved_xsltGenericErrorContext = xsltGenericErrorContext;
+
+  /* set global (libxslt-wide) generic error handler to raptor GRDDL parser */
+  xsltSetGenericErrorFunc(rdf_parser,
+                          raptor_grddl_xsltGenericError_handler);
+
+  if(grddl_parser->world->xslt_security_preferences &&
+     !grddl_parser->world->xslt_security_preferences_policy)  {
+    /* save global (libxslt-wide) default security prefs */
+    grddl_parser->saved_xsltSecurityPrefs = xsltGetDefaultSecurityPrefs();
+
+    /* set global (libxslt-wide) security preferences to raptor */
+    xsltSetDefaultSecurityPrefs(grddl_parser->world->xslt_security_preferences);
+  }
+}
+
+
+/*
+ * Restore libxslt global state that raptor_libxslt_set_global_state()
+ * overwrote back to the original values.
+ *
+ */
+static void
+raptor_libxslt_reset_global_state(raptor_parser* rdf_parser)
+{
+  raptor_grddl_parser_context* grddl_parser;
+  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
+
+  if(grddl_parser->saved_xsltSecurityPrefs &&
+     !grddl_parser->world->xslt_security_preferences_policy) {
+    /* restore global (libxslt-wide) default security prefs */
+    xsltSetDefaultSecurityPrefs(grddl_parser->saved_xsltSecurityPrefs);
+  }
+
+  /* restore global (libxslt-wide) generic error handler */
+  xsltSetGenericErrorFunc(grddl_parser->saved_xsltGenericErrorContext,
+                          grddl_parser->saved_xsltGenericError);
+}
+
