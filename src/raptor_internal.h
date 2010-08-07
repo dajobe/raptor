@@ -1365,10 +1365,11 @@ struct raptor_world_s {
    * pointer when libxslt is compiled in.
    */
   void* xslt_security_preferences;
-  /* If non-0 - raptors own the above object and should free it with
-   * xsltFreeSecurityPrefs() on exit
+  /* 0 raptor owns the above object and should free it with
+   *    xsltFreeSecurityPrefs() on exit
+   * 1 user set the above object and raptor does not own it
    */
-  int free_xslt_security_preferences;
+  int xslt_security_preferences_policy;
 
   /* Flags for libxml set by raptor_world_set_libxml_flags() and
    * raptor_set_libxml_flags() - see #raptor_libxml_flags for

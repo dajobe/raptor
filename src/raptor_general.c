@@ -299,6 +299,7 @@ raptor_world_set_libxslt_security_preferences(raptor_world *world,
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
 
   world->xslt_security_preferences = security_preferences;
+  world->xslt_security_preferences_policy = 1;
 }
 
 
