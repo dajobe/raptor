@@ -822,7 +822,7 @@ fi
 
 json_parser_ok=no
 AC_MSG_CHECKING(JSON parser requirements)
-if test $ac_cv_header_yajl_yajl_parse_h = yes -a $ac_cv_lib_yajl_yajl_parse = yes; then
+if test "X$ac_cv_header_yajl_yajl_parse_h" = Xyes -a "X$ac_cv_lib_yajl_yajl_parse" = Xyes; then
   AC_MSG_RESULT(yes)
   json_parser_ok=yes
   rdf_parsers_available="$rdf_parsers_available json"
