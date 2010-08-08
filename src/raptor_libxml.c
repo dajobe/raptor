@@ -250,6 +250,7 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
   int prefix_length = strlen(xml_warning_prefix);
   int length;
   char *nmsg;
+  size_t msg_len;
 
   /* Work around libxml2 bug - sometimes the sax2->error
    * returns a ctx, sometimes the userdata
@@ -264,11 +265,12 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length = prefix_length+strlen(msg)+1;
+  msg_len = strlen(msg);
+  length = prefix_length + msg_len + 1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
-    strcpy(nmsg, xml_warning_prefix);
-    strcpy(nmsg+prefix_length, msg);
+    memcpy(nmsg, xml_warning_prefix, prefix_length); /* Do not copy NUL */
+    memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
     if(nmsg[length-2] == '\n')
       nmsg[length-2]='\0';
   }
@@ -292,7 +294,8 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   int prefix_length = strlen(prefix);
   int length;
   char *nmsg;
-
+  size_t msg_len;
+  
   if(user_data) {
     /* Work around libxml2 bug - sometimes the sax2->error
      * returns a user_data, sometimes the userdata
@@ -307,11 +310,12 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   if(sax2->locator)
     raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length = prefix_length+strlen(msg)+1;
+  msg_len = strlen(msg);
+  length = prefix_length + msg_len + 1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
-    strcpy(nmsg, prefix);
-    strcpy(nmsg+prefix_length, msg);
+    memcpy(nmsg, prefix, prefix_length); /* Do not copy NUL */
+    memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
     if(nmsg[length-1] == '\n')
       nmsg[length-1]='\0';
   }
@@ -355,14 +359,16 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
   int prefix_length = strlen(prefix);
   int length;
   char *nmsg;
-
+  size_t msg_len;
+  
   va_start(args, msg);
 
-  length = prefix_length+strlen(msg)+1;
+  msg_len = strlen(msg);
+  length = prefix_length + msg_len + 1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
-    strcpy(nmsg, prefix);
-    strcpy(nmsg+prefix_length, msg);
+    memcpy(nmsg, prefix, prefix_length); /* Do not copy NUL */
+    memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
     if(nmsg[length-1] == '\n')
       nmsg[length-1]='\0';
   }
@@ -410,16 +416,18 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
   int prefix_length = strlen(xml_validation_warning_prefix);
   int length;
   char *nmsg;
-
+  size_t msg_len;
+  
   va_start(args, msg);
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  length = prefix_length+strlen(msg)+1;
+  msg_len = strlen(msg);
+  length = prefix_length + msg_len + 1;
   nmsg = (char*)RAPTOR_MALLOC(cstring, length);
   if(nmsg) {
-    strcpy(nmsg, xml_validation_warning_prefix);
-    strcpy(nmsg+prefix_length, msg);
+    memcpy(nmsg, xml_validation_warning_prefix, prefix_length); /* Do not copy NUL */
+    memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
     if(nmsg[length-2] == '\n')
       nmsg[length-2]='\0';
   }

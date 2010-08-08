@@ -281,16 +281,19 @@ void
 raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
 {
   char *ua_copy = NULL;
-
+  size_t ua_len;
+  
   if(!user_agent || !*user_agent) {
     www->user_agent = NULL;
     return;
   }
   
-  ua_copy = (char*)RAPTOR_MALLOC(cstring, strlen(user_agent)+1);
+  ua_len = strlen(user_agent);
+  ua_copy = (char*)RAPTOR_MALLOC(cstring, ua_len + 1);
   if(!ua_copy)
     return;
-  strcpy(ua_copy, user_agent);
+
+  memcpy(ua_copy, user_agent, ua_len + 1); /* copy NUL */
   
   www->user_agent = ua_copy;
 }
@@ -309,14 +312,17 @@ void
 raptor_www_set_proxy(raptor_www* www, const char *proxy)
 {
   char *proxy_copy;
-
+  size_t proxy_len;
+  
   if(!proxy)
     return;
-  
-  proxy_copy = (char*)RAPTOR_MALLOC(cstring, strlen(proxy)+1);
+
+  proxy_len = strlen(proxy);
+  proxy_copy = (char*)RAPTOR_MALLOC(cstring, proxy_len + 1);
   if(!proxy_copy)
     return;
-  strcpy(proxy_copy, proxy);
+
+  memcpy(proxy_copy, proxy, proxy_len + 1); /* copy NUL */
   
   www->proxy = proxy_copy;
 }
@@ -335,20 +341,29 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
 {
   char *value_copy;
   size_t len = 8; /* strlen("Accept:")+1 */
+  size_t value_len = 0;
   
-  if(value)
-    len += 1+strlen(value); /* " "+value */
+  if(value) {
+    value_len = strlen(value);
+    len += 1 + value_len; /* " "+value */
+  }
   
   value_copy = (char*)RAPTOR_MALLOC(cstring, len);
   if(!value_copy)
     return;
   www->http_accept = value_copy;
 
-  strcpy(value_copy, "Accept:");
+  /* copy header name */
+  memcpy(value_copy, "Accept:", 7); /* Do not copy NUL */
   value_copy += 7;
+
+  /* copy header value */
   if(value) {
-    *value_copy++=' ';
-    strcpy(value_copy, value);
+    *value_copy ++= ' ';
+    memcpy(value_copy, value, value_len + 1); /* Copy NUL */
+  } else {
+    /* Ensure value is NUL terminated */
+    *value_copy = '\0';
   }
 
 #if RAPTOR_DEBUG > 1
@@ -390,7 +405,8 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   const char* const header="Cache-Control:";
   const size_t header_len = 14; /* strlen("Cache-Control:") */
   size_t len;
-  
+  size_t cc_len;
+
   RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
 
   if(www->cache_control) {
@@ -403,7 +419,8 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
     return 0;
   }
   
-  len = header_len + 1 +strlen(cache_control) + 1; /* header+" "+cache_control+"\0" */
+  cc_len = strlen(cache_control);
+  len = header_len + 1 + cc_len + 1; /* header+" "+cache_control+"\0" */
   
   cache_control_copy = (char*)RAPTOR_MALLOC(cstring, len);
   if(!cache_control_copy)
@@ -411,11 +428,17 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   
   www->cache_control = cache_control_copy;
 
-  memcpy(cache_control_copy, header, header_len);
-  cache_control_copy+= header_len;
+  /* copy header name */
+  memcpy(cache_control_copy, header, header_len); /* Do not copy NUL */
+  cache_control_copy += header_len;
+
+  /* copy header value */
   if(*cache_control) {
-    *cache_control_copy++=' ';
-    strcpy(cache_control_copy, cache_control);
+    *cache_control_copy ++= ' ';
+    memcpy(cache_control_copy, cache_control, cc_len + 1); /* Copy NUL */
+  } else {
+    /* Ensure value is NUL terminated */
+    *cache_control_copy = '\0';
   }
   
 #if RAPTOR_DEBUG > 1
