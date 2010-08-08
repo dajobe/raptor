@@ -24,14 +24,6 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 <!-- ##### SECTION Image ##### -->
 
 
-<!-- ##### ENUM raptor_genid_type ##### -->
-<para>
-
-</para>
-
-@RAPTOR_GENID_TYPE_BNODEID: 
-@RAPTOR_GENID_TYPE_BAGID: 
-
 <!-- ##### ENUM raptor_term_type ##### -->
 <para>
 
@@ -84,6 +76,17 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 
 @world: 
 @blank: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_term_from_counted_blank ##### -->
+<para>
+
+</para>
+
+@world: 
+@blank: 
+@length: 
 @Returns: 
 
 

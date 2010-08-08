@@ -97,16 +97,6 @@ adjust how parsing is performed.
 @handler: 
 
 
-<!-- ##### FUNCTION raptor_parser_set_generate_id_handler ##### -->
-<para>
-
-</para>
-
-@parser: 
-@user_data: 
-@handler: 
-
-
 <!-- ##### ENUM raptor_graph_mark_flags ##### -->
 <para>
 
@@ -151,16 +141,6 @@ adjust how parsing is performed.
 
 @rdf_parser: 
 @Returns: 
-
-
-<!-- ##### FUNCTION raptor_parser_set_default_generate_id_parameters ##### -->
-<para>
-
-</para>
-
-@rdf_parser: 
-@prefix: 
-@base: 
 
 
 <!-- ##### FUNCTION raptor_parser_parse_abort ##### -->
@@ -309,16 +289,6 @@ adjust how parsing is performed.
 @parser: 
 @filter: 
 @user_data: 
-
-
-<!-- ##### FUNCTION raptor_parser_get_new_generated_id ##### -->
-<para>
-
-</para>
-
-@rdf_parser: 
-@type: 
-@Returns: 
 
 
 <!-- ##### FUNCTION raptor_parser_get_world ##### -->

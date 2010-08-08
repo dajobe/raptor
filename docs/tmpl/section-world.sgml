@@ -149,3 +149,32 @@ library-wide configuration flags and options.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_world_generate_bnodeid ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_set_generate_bnodeid_handler ##### -->
+<para>
+
+</para>
+
+@world: 
+@user_data: 
+@handler: 
+
+
+<!-- ##### FUNCTION raptor_world_set_generate_bnodeid_parameters ##### -->
+<para>
+
+</para>
+
+@world: 
+@prefix: 
+@base: 
+
+
