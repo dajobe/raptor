@@ -720,7 +720,7 @@ raptor_json_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.mime_types = json_types;
   factory->desc.mime_types_count = JSON_TYPES_COUNT;
 
-  factory->desc.label = "RDF/JSON Resource-Centric";
+  factory->desc.label = "RDF/JSON (either Triples or Resource-Centric)";
   factory->desc.uri_string = NULL; /* "http://n2.talis.com/wiki/RDF_JSON_Specification"; */
 
   factory->desc.flags = 0;
