@@ -223,7 +223,7 @@
 1.4.21	void	raptor_set_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	Replaced by raptor_world_set_log_handler() on the #raptor_world object.
 1.4.21	void	raptor_set_fatal_error_handler	(raptor_parser* parser, void *user_data, raptor_message_handler handler)	1.9.0	-	-	-	Replaced by raptor_world_set_log_handler() on the #raptor_world object.
 1.4.21	int	raptor_set_feature	(raptor_parser *parser, raptor_feature feature, int value)	1.9.0	int	raptor_parser_set_option	(raptor_parser *parser, raptor_option option, char* string, int integer)	-
-1.4.21	void	raptor_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)	1.9.0	void	raptor_world_set_generate_id_handler	(raptor_world* world, void *user_data, raptor_generate_bnodeid_handler handler)	-
+1.4.21	void	raptor_set_generate_id_handler	(raptor_parser* parser, void *user_data, raptor_generate_id_handler handler)	1.9.0	void	raptor_world_set_generate_bnodeid_handler	(raptor_world* world, void *user_data, raptor_generate_bnodeid_handler handler)	-
 1.4.21	void	raptor_set_graph_handler	(raptor_parser* parser, void *user_data, raptor_graph_handler handler)	1.9.0	void	raptor_parser_set_graph_mark_handler	(raptor_parser* parser, void *user_data, raptor_graph_mark_handler handler)	-
 1.4.21	void	raptor_set_libxslt_security_preferences	(void *security_preferences)	1.9.0	int	raptor_world_set_libxslt_security_preferences	(raptor_world *world, void *security_preferences)	-
 1.4.21	void	raptor_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)	1.9.0	void	raptor_parser_set_namespace_handler	(raptor_parser* parser, void *user_data, raptor_namespace_handler handler)	-
