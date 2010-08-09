@@ -620,7 +620,6 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
 
 
 #ifdef STANDALONE
-#endif
 
 /* one more prototype */
 int main(int argc, char *argv[]);
@@ -896,3 +895,5 @@ main(int argc, char *argv[])
 
   return rc;
 }
+
+#endif /* STANDALONE */
