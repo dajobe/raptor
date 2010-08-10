@@ -861,22 +861,3 @@ raptor_sign_free(void *ptr)
   free(p);
 }
 #endif
-
-
-#if defined (RAPTOR_DEBUG) && defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-
-#undef malloc
-void*
-raptor_system_malloc(size_t size)
-{
-  return malloc(size);
-}
-
-#undef free
-void
-raptor_system_free(void *ptr)
-{
-  free(ptr);
-}
-
-#endif

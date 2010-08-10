@@ -180,7 +180,7 @@ MAINTAINER_CPPFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h unistd.h string.h limits.h math.h dmalloc.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
+AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -1275,24 +1275,7 @@ LIBS="$oLIBS"
 MEM=
 MEM_LIBS=
 CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
-AC_ARG_WITH(dmalloc, [  --with-dmalloc            Use dmalloc debugging library (default=no)], use_dmalloc="$withval", use_dmalloc="no") 
-AC_MSG_CHECKING(using dmalloc library)
-if test "$USE_MAINTAINER_MODE" = yes; then
-  if test "$ac_cv_header_dmalloc_h" = yes; then
-    if test "X$use_dmalloc" = Xauto; then
-      use_dmalloc=yes
-    fi
-  else
-    use_dmalloc=no
-  fi
-else
-  use_dmalloc=no
-fi
-AC_MSG_RESULT($use_dmalloc);
-if test $use_dmalloc = yes; then
-  MEM=-DRAPTOR_MEMORY_DEBUG_DMALLOC=1
-  MEM_LIBS=-ldmalloc
-fi
+
 AC_ARG_WITH(memory-signing, [  --with-memory-signing     Sign allocated memory (default=no)], use_memory_signing="$withval", use_memory_signing="no") 
 AC_MSG_CHECKING(using memory signing)
 AC_MSG_RESULT($use_memory_signing);

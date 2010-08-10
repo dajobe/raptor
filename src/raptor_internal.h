@@ -42,11 +42,6 @@ extern "C" {
 #undef HAVE_STDLIB_H
 #endif
 
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-#include <dmalloc.h>
-#endif
-
-
 /* Can be over-ridden or undefined in a config.h file or -Ddefine */
 #ifndef RAPTOR_INLINE
 #define RAPTOR_INLINE inline
@@ -84,16 +79,6 @@ void raptor_sign_free(void *ptr);
 #define RAPTOR_DEBUG4(msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3);} while(0)
 #define RAPTOR_DEBUG5(msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4);} while(0)
 #define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4, arg5);} while(0)
-
-#if defined(HAVE_DMALLOC_H) && defined(RAPTOR_MEMORY_DEBUG_DMALLOC)
-void* raptor_system_malloc(size_t size);
-void raptor_system_free(void *ptr);
-#define SYSTEM_MALLOC(size)   raptor_system_malloc(size)
-#define SYSTEM_FREE(ptr)   raptor_system_free(ptr)
-#else
-#define SYSTEM_MALLOC(size)   malloc(size)
-#define SYSTEM_FREE(ptr)   free(ptr)
-#endif
 
 #ifndef RAPTOR_ASSERT_DIE
 #define RAPTOR_ASSERT_DIE abort();
