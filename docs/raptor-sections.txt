@@ -167,7 +167,7 @@ raptor_locator_line
 raptor_locator_column
 raptor_locator_byte
 raptor_locator_file
-raptor_locator_uri_string
+raptor_locator_uri
 </SECTION>
 
 <SECTION>

@@ -70,8 +70,8 @@
 1.4.21	int	raptor_locator_column	(raptor_locator *locator)	1.9.0	int	raptor_locator_column	(raptor_locator *locator)	-
 1.4.21	const char*	raptor_locator_file	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_file	(raptor_locator *locator)	-
 1.4.21	int	raptor_locator_line	(raptor_locator *locator)	1.9.0	int	raptor_locator_line	(raptor_locator *locator)	-
-1.4.21	const char*	raptor_locator_uri	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)	-
-1.4.21	const char*	raptor_locator_uri_v2	(raptor_world* world, raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri_string	(raptor_locator *locator)	-
+1.4.21	const char*	raptor_locator_uri	(raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri	(raptor_locator *locator)	-
+1.4.21	const char*	raptor_locator_uri_v2	(raptor_world* world, raptor_locator *locator)	1.9.0	const char*	raptor_locator_uri	(raptor_locator *locator)	-
 1.4.21	int	raptor_namespace_copy	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)	1.9.0	int	raptor_namespace_stack_start_namespace	(raptor_namespace_stack *nstack, raptor_namespace *ns, int new_depth)	-
 1.4.21	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)	1.9.0	const unsigned char*	raptor_namespace_get_counted_prefix	(const raptor_namespace *ns, size_t *length_p)	-
 1.4.21	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)	1.9.0	const unsigned char*	raptor_namespace_get_prefix	(const raptor_namespace *ns)	-

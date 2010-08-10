@@ -209,7 +209,7 @@ raptor_locator_file(raptor_locator *locator)
 
 
 /**
- * raptor_locator_uri_string:
+ * raptor_locator_uri:
  * @locator: locator
  *
  * Get URI from locator.
@@ -220,9 +220,10 @@ raptor_locator_file(raptor_locator *locator)
  * Return value: string URI, or NULL if there is no URI available
  **/
 const char *
-raptor_locator_uri_string(raptor_locator *locator)
+raptor_locator_uri(raptor_locator *locator)
 {
   if(!locator)
     return NULL;
+
   return (const char*)raptor_uri_as_string(locator->uri);
 }
