@@ -1,0 +1,7 @@
+# from Redland Issue #0000369
+# http://bugs.librdf.org/mantis/view.php?id=369
+# The terminating """ is three leftmost-parsed double-quotes
+
+<http://example.org>
+  <http://example.org/prop1>
+  """This literal ends with an unescaped quote"""" .
