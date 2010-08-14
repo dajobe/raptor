@@ -1,5 +1,117 @@
+2010-08-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor.h, src/raptor_locator.c: Revert
+	raptor_locator_uri_string to raptor_locator_uri to protect Reland
+	SWIG API
+
+	* configure.ac, src/raptor_general.c, src/raptor_internal.h:
+	Remove --with-dmalloc and dmalloc library support
+
+2010-08-09 Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_term.c: STANDALONE flagging for raptor_term unit
+          tests
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: ID function rename typo
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-parser.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-world.sgml: Update tmpls
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Update sections for ID handler changes
+
+	* configure.ac: Protect checks for optional configure tests
+          with quoting and X
+
+2010-08-08  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: The JSON parser supports both
+          Resource-Centric and Triples.
+
 2010-08-06  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_grddl.c:  Simplify libxslt save/restore logic
+
+	(raptor_libxslt_set_global_state): Always save default
+	security prefs.
+    
+	(raptor_libxslt_reset_global_state): Always restore default
+	security prefs.
+
+	(raptor_init_parser_grddl_common): Init sec prefs if policy
+	allows and NULL
+
+	* src/raptor_grddl.c: Alter GRDDL init/cleanup of libxslt to be
+	done around transform
+    
+	This means that raptor can operate in a single threaded
+	environment with other libxslt users, since it saves/restores all
+	the libxslt global vars that it needs back to their original state
+	after every xslt transform.
+	
+	raptor_grddl_parser_context gains saved_xsltGenericError,
+	saved_xsltGenericErrorContext and saved_xsltSecurityPrefs fields.
+	
+	(raptor_grddl_run_grddl_transform_doc): Use
+	raptor_libxslt_set_global_state() and
+	raptor_libxslt_reset_global_state() to save restore around
+	transforms.
+	
+	(raptor_init_parser_grddl_common): Do not set default security
+	prefs.
+	
+	(raptor_terminate_parser_grddl_common): NULL security prefs after
+	freeing them.
+	
+	(raptor_libxslt_set_global_state): Added to save libxslt shared
+	state that grddl parser needs to overwrite.
+	
+	(raptor_libxslt_reset_global_state): Added to reset state back to
+	original values.
+	
+	Candidate for backporting to raptor1 since it has no API impact.
+
+	* src/raptor_grddl.c: Document libxslt global settings.
+	
+	(raptor_grddl_run_grddl_transform_doc): set per-transform generic
+	error handler
+
+	* docs/raptor-1-to-2-map.tsv: Update from genid changes
+	
+	Renamed 1.9.0 genid functions are renamed again, moving to world
+	class.
+	- raptor_world_set_generate_bnodeid_parameters renamed from
+	  raptor_parser_set_default_generate_id_parameters 
+	- raptor_world_set_generate_id_handler renamed from
+	  raptor_parser_set_generate_id_handler
+	
+	New 1.9.0 genid function renamed:
+	- raptor_world_generate_bnodeid renamed from
+	raptor_parser_get_new_generated_id and loses type arg.
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h:
+	Make XSLT security preference setting totally disableable
+    
+	(raptor_world_set_libxslt_security_preferences): If user sets any
+	value, even NULL, record that.
+	
+	(raptor_init_parser_grddl_common): If pointer is NULL and user
+	didn't set it, only then make raptor-specific policy.
+	
+	(raptor_terminate_parser_grddl_common): If pointer is not NULL and
+	raptor set it, then free policy.
+	
+	xslt_security_preferences_policy field of raptor_world internal
+	renamed from free_xslt_security_preferences
+	
+	This patch is a candidate for backporting to raptor1.
+	
 	* src/raptor_www.c:
 	(raptor_www_set_user_agent): memcpy comment
 
