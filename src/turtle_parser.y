@@ -223,6 +223,7 @@ graph: graphName colonMinusOpt LEFT_CURLY
     raptor_parser_end_graph(parser, turtle_parser->graph_name->value.uri, 1);
     raptor_free_term(turtle_parser->graph_name);
     turtle_parser->graph_name = NULL;
+    parser->emitted_default_graph = 0;
   }
 }
 |
@@ -248,7 +249,7 @@ LEFT_CURLY
   turtle_parser = (raptor_turtle_parser*)parser->context;
   if(turtle_parser->trig) {
     raptor_parser_end_graph(parser, NULL, 1);
-    parser->emitted_default_graph--;
+    parser->emitted_default_graph = 0;
   }
 }
 ;
