@@ -14,8 +14,52 @@
 <p>Not yet released.
 </p>
 
-<p>1.9.x series are unsupported preview releases of Raptor 2.
+<p>1.9.0 is the first beta release of Raptor 2.  The API is probably
+stable but there may be changes before 2.0.0.
 </p>
+
+<p>This is a major cleanup and update of the Raptor 2 API and ABI.
+The API has been made more consistent in naming, with some features
+moving to the core world class, rather than being attached to a
+parser object.  There are also major restructings and cleanups
+internally.</p>
+
+<p>The detailed additions, removals and changes of functions and
+structures typedefs and enums are listed in the
+<a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+section on
+<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>.
+</p>
+
+<p>The major changes are:</p>
+<ul>
+<li>All constructors use a raptor_world object.</li>
+<li>URI class now interns URIs and no longer has a swapped implementation.</li>
+<li>Removed all deprecated functions and typedefs</li>
+<li>Renamed functions for consistent use of the form: <code>raptor_</code><em>class</em><code>_</code><em>method</em></li>
+<li>Moved all logging handling to methods on the raptor_world.</li>
+<li>Added HTML and N-Quads serializers</li>
+<li>Added JSON parsers for JSON-Resource centric and JSON-Triples</li>
+<li>Added AVL-Tree to public API.</li>
+<li>Raptor generates raptor_statements which are now an array of 3-4 raptor_terms (new class) to allow potentially generating any combination of RDF terms for example with literal subjects, blank node predicates, graph URIs.  None of the current serializers generate anything except legal RDF triples with optional graph URI (TRiG).</li>
+<li>Features are now called options and can handle several typed values.</li>
+</ul>
+
+<p>FIXME - above is not a full list, expand from detailed changelog</p>
+
+<p>Fixed Issues:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=357">0000357</a>: raptor_term_as_string does not return N-Triples escaped string, although API says so</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: [PATCH] HTML Table serializer</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=370">0000370</a>: Odd behaviour regarding the parsing of Trig files</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=373">0000373</a>: Remove deprecated GTK symbols</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=379">0000379</a>: raptor libxslt security policy conflicts with apps that also use libxslt and set security policy</li>
+</ul>
+
+<h3>World class changes</h3>
+<h3>Parser class changes</h3>
+<h3>Serializer class changes</h3>
+<h3>URI class changes</h3>
 
 
 <h2 id="rel1_4_21"><a name="rel1_4_21">Raptor 1.4.21 Changes</a></h2>
