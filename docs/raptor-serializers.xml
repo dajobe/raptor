@@ -60,6 +60,20 @@ design.
 </section>
 
 
+<section id="serializer-nquads">
+<title>N-Quads serializer - default (name <literal>nquads</literal>)</title>
+
+<para>A serializer to the
+<ulink url="http://sw.deri.org/2008/07/n-quads/">N-Quads</ulink>
+extension to N-Triples, providing an optional 4th context graph term
+at the end of the line when a named graph is associated with a triple
+(the triple is contained in a named graph).  This is useful for seeing the
+output of named graphs or dealing with SPARQL Datasets.
+</para>
+
+</section>
+
+
 <section id="serializer-ntriples">
 <title>N-Triples serializer - default (name <literal>ntriples</literal>)</title>
 
