@@ -132,8 +132,10 @@ which is the least reliable.
 <section id="parser-json">
 <title>JSON parser (name <literal>json</literal>)</title>
 
-<para>A parser for the resource-centric RDF/JSON syntax as defined by Talis at
-<ulink url="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON Specification</ulink>.
+<para>A parser for both the
+resource-centric RDF/JSON syntax as defined by Talis at
+<ulink url="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON Specification</ulink>
+and the triples-centric format based on the SPARQL results in JSON format.
 </para>
 
 </section>
