@@ -22,7 +22,7 @@ The supported parsing syntaxes are RDF/XML, N-Triples, TRiG, Turtle,
 RSS tag soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL
 and microformats for HTML, XHTML and XML and RDFa.  The
 serializing syntaxes are RDF/XML (regular, and abbreviated),
-Atom 1.0, GraphViz, JSON, N-Triples, RSS 1.0 and XMP.</p>
+Atom 1.0, GraphViz, JSON, N-Quads, N-Triples, RSS 1.0 and XMP.</p>
 
 <p>Raptor was designed to work closely with the
 <a href="http://librdf.org/">Redland RDF library</a>
@@ -159,6 +159,17 @@ of some pre-processing.  This is suitable for small documents.
 </p>
 
 
+<h3>N-Quads Serializer</h3>
+
+<p>A serializer to the
+<a href="http://sw.deri.org/2008/07/n-quads/">N-Quads</a>
+extension to N-Triples, providing an optional 4th context graph term
+at the end of the line when a named graph is associated with a triple
+(the triple is contained in a named graph).  This is useful for seeing the
+output of named graphs or dealing with SPARQL Datasets.
+</p>
+
+
 <h3>N-Triples Serializer</h3>
 
 <p>A serializer to the
@@ -173,7 +184,6 @@ for the <a href="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</a>.
 
 <p>A serializer to the Atom 1.0 syndication format defined in IETF
 <a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>.
-Beta quality.
 </p>
 
 
@@ -183,8 +193,7 @@ Beta quality.
 (<code>json</code>) in a resource-centric abbreviated form <a
 href="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON</a>
 like Turtle or RDF/XML-Abbreviated; the other a triple-centric format
-(<code>json-triples</code>) based on the SPARQL results in JSON
-format.  Beta quality.
+(<code>json-triples</code>) based on the SPARQL results in JSON format.
 </p>
 
 
