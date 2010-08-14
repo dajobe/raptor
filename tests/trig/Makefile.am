@@ -24,7 +24,7 @@ TEST_FILES=\
 example1.trig example2.trig example3.trig bug370.trig
 
 TEST_OUT_FILES=\
-example1.out example2.out example3.out
+example1.out example2.out example3.out bug370.out
 
 # Used to make N-triples output consistent
 BASE_URI=http://example.librdf.org/
