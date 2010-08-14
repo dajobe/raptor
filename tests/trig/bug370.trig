@@ -1,0 +1,27 @@
+# Issue #0000370 http://bugs.librdf.org/mantis/bug_change_status_page.php
+#
+# rapper -i trig --show-graphs bug370.trig http://mmt.me.uk/examples/rdf/trig1.tt
+#
+
+@base <http://mmt.me.uk/examples/rdf/trig1.ttl> .
+
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix foo: <http://example.com/foo/> .
+@prefix : <http://example.com/lame/> .
+
+:romeo a foaf:Person ;
+    foaf:name "Romeo Montague".
+    
+:juliet a foaf:Person ; 
+    foaf:name "Juliet Capulet" .
+
+:juliet foaf:gender "female" .
+
+:reality { 
+    :romeo foo:loves :juliet . } 
+
+:alternative { 
+    :romeo foo:hates :juliet . }
+
+:romeo foaf:gender "male" .   

@@ -1,0 +1,8 @@
+<http://example.com/lame/romeo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://example.com/lame/romeo> <http://xmlns.com/foaf/0.1/name> "Romeo Montague" .
+<http://example.com/lame/juliet> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://example.com/lame/juliet> <http://xmlns.com/foaf/0.1/name> "Juliet Capulet" .
+<http://example.com/lame/juliet> <http://xmlns.com/foaf/0.1/gender> "female" .
+<http://example.com/lame/romeo> <http://example.com/foo/loves> <http://example.com/lame/juliet> <http://example.com/lame/juliet> .
+<http://example.com/lame/romeo> <http://example.com/foo/hates> <http://example.com/lame/juliet> <http://example.com/lame/juliet> .
+<http://example.com/lame/romeo> <http://xmlns.com/foaf/0.1/gender> "male" .

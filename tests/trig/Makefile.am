@@ -21,7 +21,7 @@
 # 
 
 TEST_FILES=\
-example1.trig example2.trig example3.trig
+example1.trig example2.trig example3.trig bug370.trig
 
 TEST_OUT_FILES=\
 example1.out example2.out example3.out
@@ -45,7 +45,7 @@ check-trig: build-rapper $(TEST_FILES)
 	  name=`basename $$test .trig` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i trig -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -q -i trig -o nquads $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(ECHO) FAILED returned status $$status; result=1; \
