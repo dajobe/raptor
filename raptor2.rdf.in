@@ -65,8 +65,8 @@
     <!-- source repository -->
     <repository>
       <GITRepository>
-	<location rdf:resource="git://git.librdf.org/repositories/raptor.git" />
-	<browse rdf:resource="http://git.librdf.org/view?p=raptor.git;a=summary" />
+	<location rdf:resource="git://github.com/dajobe/raptor.git" />
+	<browse rdf:resource="http://github.com/dajobe/raptor" />
       </GITRepository>
     </repository>
   </Project>
