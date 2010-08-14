@@ -1,8 +1,8 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_serialize_ntriples.c - N-Triples serializer
+ * raptor_serialize_ntriples.c - N-Triples and Nquads serializer
  *
- * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  *
  * This package is Free Software and part of Redland http://librdf.org/
@@ -50,7 +50,7 @@
  * Raptor N-Triples serializer object
  */
 typedef struct {
-  int dummy;
+  int is_nquads;
 } raptor_ntriples_serializer_context;
 
 
@@ -59,6 +59,11 @@ typedef struct {
 static int
 raptor_ntriples_serialize_init(raptor_serializer* serializer, const char *name)
 {
+  raptor_ntriples_serializer_context* ntriples_serializer;
+
+  ntriples_serializer = (raptor_ntriples_serializer_context*)serializer->context;
+  ntriples_serializer->is_nquads = !strcmp(name, "nquads");
+
   return 0;
 }
   
@@ -222,7 +227,12 @@ static int
 raptor_ntriples_serialize_statement(raptor_serializer* serializer, 
                                     raptor_statement *statement)
 {
-  raptor_statement_ntriples_write(statement, serializer->iostream, 0);
+  raptor_ntriples_serializer_context* ntriples_serializer;
+
+  ntriples_serializer = (raptor_ntriples_serializer_context*)serializer->context;
+
+  raptor_statement_ntriples_write(statement, serializer->iostream, 
+                                  ntriples_serializer->is_nquads);
   return 0;
 }
 
@@ -244,6 +254,7 @@ raptor_ntriples_serialize_finish_factory(raptor_serializer_factory* factory)
 }
 
 
+#ifdef RAPTOR_SERIALIZER_NTRIPLES
 static const char* const ntriples_names[2] = { "ntriples", NULL};
 
 #define NTRIPLES_TYPES_COUNT 1
@@ -274,13 +285,56 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 
   return 0;
 }
+#endif
 
 
+#ifdef RAPTOR_SERIALIZER_NQUADS
+static const char* const nquads_names[2] = { "nquads", NULL};
+
+#define NQUADS_TYPES_COUNT 1
+static const raptor_type_q nquads_types[NQUADS_TYPES_COUNT + 1] = {
+  { "text/x-nquads", 13, 10},
+  { NULL, 0, 0}
+};
+
+static int
+raptor_nquads_serializer_register_factory(raptor_serializer_factory *factory)
+{
+  factory->desc.names = nquads_names;
+  factory->desc.mime_types = nquads_types;
+  factory->desc.mime_types_count = NQUADS_TYPES_COUNT;
+
+  factory->desc.label = "N-Triples with context graph term";
+  factory->desc.uri_string = "http://sw.deri.org/2008/07/n-quads/#n-quads";
+
+  factory->context_length     = sizeof(raptor_ntriples_serializer_context);
+  
+  factory->init                = raptor_ntriples_serialize_init;
+  factory->terminate           = raptor_ntriples_serialize_terminate;
+  factory->declare_namespace   = raptor_ntriples_serialize_declare_namespace;
+  factory->serialize_start     = NULL;
+  factory->serialize_statement = raptor_ntriples_serialize_statement;
+  factory->serialize_end       = NULL;
+  factory->finish_factory      = raptor_ntriples_serialize_finish_factory;
+
+  return 0;
+}
+#endif
+
+#ifdef RAPTOR_SERIALIZER_NTRIPLES
 int
 raptor_init_serializer_ntriples(raptor_world* world)
 {
   return !raptor_serializer_register_factory(world,
                                              &raptor_ntriples_serializer_register_factory);
 }
+#endif
 
-
+#ifdef RAPTOR_SERIALIZER_NQUADS
+int
+raptor_init_serializer_nquads(raptor_world* world)
+{
+  return !raptor_serializer_register_factory(world,
+                                             &raptor_nquads_serializer_register_factory);
+}
+#endif

@@ -829,13 +829,19 @@ void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
 /* serializers */
-int raptor_init_serializer_rdfxml(raptor_world* world);
-int raptor_init_serializer_ntriples(raptor_world* world);
-int raptor_init_serializer_dot(raptor_world* world);
-
 /* raptor_serializer.c */
 int raptor_serializers_init(raptor_world* world);
 void raptor_serializers_finish(raptor_world* world);
+
+/* raptor_serializer_dot.c */
+int raptor_init_serializer_dot(raptor_world* world);
+
+/* raptor_serializer_ntriples.c */
+int raptor_init_serializer_ntriples(raptor_world* world);
+int raptor_init_serializer_nquads(raptor_world* world);
+
+/* raptor_serialize_rdfxml.c */  
+int raptor_init_serializer_rdfxml(raptor_world* world);
 
 /* raptor_serialize_rdfxmla.c */  
 int raptor_init_serializer_rdfxmla(raptor_world* world);

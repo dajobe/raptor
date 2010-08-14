@@ -102,8 +102,13 @@ endif
 if RAPTOR_SERIALIZER_RDFXML
 libraptor2_la_SOURCES += raptor_serialize_rdfxml.c
 endif
+
 if RAPTOR_SERIALIZER_NTRIPLES
 libraptor2_la_SOURCES += raptor_serialize_ntriples.c
+else
+if RAPTOR_SERIALIZER_NQUADS
+libraptor2_la_SOURCES += raptor_serialize_ntriples.c
+endif
 endif
 
 #raptor_abbrev.c required by both turtle and xml-abbrev
