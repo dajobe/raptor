@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor docs
 #
-# Copyright (C) 2000-2006, David Beckett http://purl.org/net/dajobe/
+# Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -35,7 +35,7 @@ SCAN_OPTIONS= --deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
 DOC_SOURCE_DIR=../src
 
 # Used for dependencies
-HFILE_GLOB=raptor.i
+HFILE_GLOB=$(srcdir)/raptor-fake.i
 CFILE_GLOB=$(top_srcdir)/src/raptor_*.c
 
 IGNORE_CFILES= \
@@ -50,12 +50,17 @@ turtle_common.c \
 parsedate.c \
 strcasecmp.c
 
-# Headers to ignore
+# Use fixed version of raptor.h
+EXTRA_HFILES=$(srcdir)/raptor-fake.i
+
+# Headers to ignore: yes raptor.h is intended to be in this list
+# since it is added as a fixed file raptor-fake.i by EXTRA_HFILES above
 IGNORE_HFILES= \
 	n3_common.h \
 	n3_lexer.h \
 	n3_parser.h \
 	parsedate.h \
+	raptor.h \
 	raptor_config.h \
 	raptor_internal.h \
 	raptor_nfc.h \
@@ -108,7 +113,7 @@ version.xml.in \
 upgrade-script.pl
 
 CLEANFILES += \
-raptor.i
+raptor-fake.i
 
 if MAINTAINER_MODE
 libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
@@ -139,7 +144,7 @@ $(top_builddir)/scripts/build-formats:
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
-raptor.i: $(top_srcdir)/src/raptor.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+raptor-fake.i: $(top_srcdir)/src/raptor.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
 	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif

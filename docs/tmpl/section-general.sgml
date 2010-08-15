@@ -61,6 +61,7 @@ and various other utility functions.
 </para>
 
 @message: 
+@arguments: 
 @Returns: 
 
 
@@ -194,6 +195,7 @@ and various other utility functions.
 
 </para>
 
+@names: 
 @label: 
 @mime_types: 
 @mime_types_count: 
