@@ -43,7 +43,7 @@ section on
 <li>Added AVL-Tree to public API.</li>
 <li>Raptor generates raptor_statements which are now an array of 3-4 raptor_terms (new class) to allow potentially generating any combination of RDF terms for example with literal subjects, blank node predicates, graph URIs.  None of the current serializers generate anything except legal RDF triples with optional graph URI (TRiG).</li>
 <li>Features are now called options and can handle several typed values.</li>
-<li>Parsers and Serializers for the same syntax now accept the same mime types.</p>
+<li>Parsers and Serializers for the same syntax now accept the same mime types.</li>
 </ul>
 
 <p>FIXME - above is not a full list, expand from detailed changelog</p>
@@ -58,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-01-29 ChangeLog changes -->
+<!-- updated to 2010-02-03 ChangeLog changes -->
 
 <h3>World class changes</h3>
 
@@ -99,9 +99,13 @@ with enum <code>raptor_term_type</code> and a smaller set of 3
 possible term types.</p>
 
 
-<h3>IO Stream class changes</h3>
+<h3>I/O Stream class changes</h3>
 
 <p>Constructors all gain a world argument.</p>
+
+<p>Some methods now return an int error status such as
+<code>raptor_iostream_write_end()</code>
+</p>
 
 <p>The argument order of many methods was renamed to put the iostream
 argument at the end.
@@ -113,6 +117,13 @@ argument at the end.
 <code>raptor_new_iostream_from_handler()</code>,
 <code>raptor_iostream_get_bytes_written_count()</code> and
 <code>raptor_iostream_write_string_turtle()</code>
+</p>
+
+
+<h3>Locator changes</h3>
+
+<p>Renamed some methods to follow the
+<code>raptor_locator_</code><em>method</em> standard.
 </p>
 
 
@@ -297,6 +308,12 @@ adding a few new constructors such as for the URI and Term classes.
 <p>Code style: methods called with a NULL object return failure
 and destructors called with a NULL object return silently.
 </p>
+
+<p>Code style: copy constructor is now called
+<code>raptor_</code><em>class</em><code>_copy()</code> rather than
+<code>raptor_new_</code><em>class</em><code>_from_</code><em>class</em><code>()</code>
+for brevity.
+</p> 
 
 <h3>Other changes</h3>
 
