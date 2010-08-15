@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <title>Raptor RDF Syntax Library - Upgrading to the Raptor V2 API</title>
+</head>
+<body>
+
+  <h1>Raptor RDF Syntax Library - Upgrading to the Raptor V2 API</h1>
+
+<h2>Overview</h2>
+
+<p>Raptor V2 is a cleaned up version of the Raptor V1 API with
+changes that include adding, removing and re-ordering parameters,
+adding and removing return types as well as renaming the
+functions.</p>
+
+<p>The headers and libraries install to different places or names so
+that Raptor V1 and Raptor V2 can both be present (including headers)
+on the same system without clashing.  However, if you do try linking
+the same binary with both, that won't work!   There are only two
+installed files that overlap - the <code>rapper</code> utility
+and it's manual page.
+</p>
+
+
+<h2>Configuration and compiling changes</h2>
+
+<p>Raptor V2 uses <code>pkg-config(1)</code> to provide the compile
+and link parameters whereas Raptor V1 supports that as well as a
+script <code>raptor-config</code>. The recommended linking approach
+is now as follows:
+</p>
+<pre>
+  cc -o prog prog.c  `pkg-config raptor2 --cflags` `pkg-config raptor2 --libs`
+</pre>
+<p>Shown here as a compile in link all in one line but you typically
+split that into two stages.
+</p>
+<pre>
+  cc -c `pkg-config raptor2 --cflags` raptor-module.c
+  ...
+  cc -o prog raptor-module.c ... other modules ... `pkg-config raptor2 --libs`
+</pre>
+
+
+<h2>Code changes</h2>
+
+<p>There are significant API changes, which are described in the
+<a href="RELEASE.html">Release Notes</a> in long summary form with
+some background to why, in the <a href="ChangeLog">ChangeLog</a> in
+very long form.   The reference manual contains sections describing
+what was added, deleted, renamed and otherwise changed for
+both the functions exported from the library, as well as the
+typedefs.
+</p>
+
+<p>
+see html
+</p>
+
+<p>There is no fully automatic way to handle updating the code
+however there is a perl script provided in the docs directory that
+renames what it can, and otherwise inserts a WARNING comment near
+code that needs manual updating.  It is used like
+<code>perl docs/upgrade-script.pl</code> <em>source files</em> for example</p>
+<pre>
+  $ perl docs/upgrade-script.pl prog.c
+</pre>
+
+<p>and then edit the file prog.c and search for WARNING</p>
+
+
+<h2>Handling Raptor V1 and Raptor V2 in the same code</h2>
+
+<p>If you need to handle both APIs in the same codebase, it is
+recommended that after deciding which to use, you use the
+following approach based on macros.
+</p>
+
+<p>
+Create a <code>#define</code> that records the choice of which API
+you want to use.  You can do this triggered on whichever
+<code>raptor.h</code> is in the include path by <code>#ifdef
+RAPTOR_V2_AVAILABLE</code> but that may be dangerous if both
+libraries and headers are present.  Better is an application define
+that is determined by a configuration step.
+</p>
+
+<p>Once the choice is made, it is recommended you convert the
+code to the Raptor V2 API and then add backwards-compatible macros
+for the changed functions:
+</p>
+
+<pre>
+#ifdef APP_WANTS_RAPTOR_V2
+/* nop */
+
+#else
+#define raptor_v2_function(arg1, arg2) raptor_v1_function(arg2, arg1, arg3)
+
+#endif
+</pre>
+
+<p>Another approach if the Raptor code is in a separate module /
+source file is to fork it and make a V2 version and then choose the
+file to use at configure or build time.
+</p>
+
+<p>Either way, basing the interface on the V2 APIs makes it clear
+what to remove when V1 is no longer supported.
+</p>
+
+
+<h2>Packaging recommendations for distributors</h2>
+
+<p>Since Raptor V2 installs files independent from Raptor V1, it can
+be given a new package name.  There are two files that are shared,
+<code>rapper(1)</code> and <code>rapper.1</code> the manual page.
+For packaging systems that split the files (libraries, headers, docs,
+debug files) into multiple packages, these should be in a package of
+their own that replace and conflict with the earlier files. (This is
+what I have done with the debian packages). For packaging systems
+that do not use multiple packages, you will have to either leave
+these files out of the V2 package or migrate them from the V1 package
+to the V2 package using dependencies to ensure there are no
+conflicts.  The advantage of the V2 versions is that it means
+the useful command-line utility uses the latest Raptor code.</p>
+
+<hr />
+
+<p>Copyright 2010 <a href="http://www.dajobe.org/">Dave Beckett</a></p>
+
+</body>
+</html>
