@@ -21,7 +21,7 @@ stable but there may be changes before 2.0.0.
 <p>This is a major cleanup and update of the Raptor 2 API and ABI.
 The API has been made more consistent in naming, with some features
 moving to the core world class, rather than being attached to a
-parser object.  There are also major restructings and cleanups
+parser object.  There are also major restructurings and cleanups
 internally.</p>
 
 <p>The detailed additions, removals and changes of functions and
@@ -33,20 +33,22 @@ section on
 
 <p>The major changes are:</p>
 <ul>
-<li>All constructors use a raptor_world object.</li>
-<li>URI class now interns URIs and no longer has a swapped implementation.</li>
-<li>Removed all deprecated functions and typedefs</li>
-<li>Renamed functions for consistent use of the form: <code>raptor_</code><em>class</em><code>_</code><em>method</em></li>
-<li>Moved all logging handling to methods on the raptor_world.</li>
-<li>Added HTML and N-Quads serializers</li>
-<li>Added JSON parsers for JSON-Resource centric and JSON-Triples</li>
-<li>Added AVL-Tree to public API.</li>
-<li>Raptor generates raptor_statements which are now an array of 3-4 raptor_terms (new class) to allow potentially generating any combination of RDF terms for example with literal subjects, blank node predicates, graph URIs.  None of the current serializers generate anything except legal RDF triples with optional graph URI (TRiG).</li>
-<li>Features are now called options and can handle several typed values.</li>
+<li>Removed all deprecated functions and typedefs.</li>
+<li>Renamed all functions to the form <code>raptor_</code><em>class</em><code>_</code><em>method</em>.</li>
+<li>All constructors take a <code>raptor_world</code> argument.</li>
+<li>URIs are interned and there is no longer a swappable implementation.</li>
+<li>Statement is now an array of 3 or 4 RDF Terms to handle triples and quads.</li>
+<li>Added serializers for HTML 'html' and N-Quads 'nquads'.</li>
+<li>Added parser 'json' for JSON-Resource centric and JSON-Triples.</li>
+<li>Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a></li>
+<li>Features are now called options and have typed values.</li>
+<li>Moved the memory-based AVL-Tree to the public API.</li>
+<li>World object now owns all logging, blank node ID generation and describing syntaxes.</li>
 <li>Parsers and Serializers for the same syntax now accept the same mime types and Q values.</li>
+<li>GRDDL parser now saves and restores shared libxslt state</li>
+<li>rapper utility loses -a, -n and -s options</li>
 </ul>
 
-<p>FIXME - above is not a full list, expand from detailed changelog</p>
 
 <p>Fixed Issues:</p>
 <ul>
@@ -64,11 +66,12 @@ section on
 
 <p>Renamed the library name and package tarball name to a new
 separate names (libraptor2, raptor2-X.tar.gz) so they can be
-distinguished and installed into the same system as raptor1 without
-file clashes.  Note: This does not apply to the rapper utility and
-it's manual page which are in both packages.  Packagers should stop
-packaging rapper and rapper.1 from raptor1, in preference to
-the raptor 2 version.
+distinguished and installed into the same system as raptor 1 without
+file clashes.  Note: This does not apply to the
+<code>rapper(1)</code> utility and it's manual page which are in both
+packages.  Packagers should stop packaging the <code>rapper(1)</code>
+binary and the rapper manual page from raptor 1, in preference to the
+raptor 2 version.
 </p>
 
 <p>Nicholas J Humfrey is a new committer.
@@ -80,10 +83,10 @@ Raptor 1 to Raptor 2 APIs.  If it is not a simple rename, the script
 annotates the change as a comment near the code.
 </p>
 
-<p>Raptor Term class and URI class can fully replace
-librdf's librdf_node and librdf_uri class.  This has been tested
-with GIT versions when both Rasqal and librdf are built with
-<code>--with-raptor2</code>.
+<p>Raptor's Term class and URI class can fully replace librdf's
+<code>librdf_node</code> and <code>librdf_uri</code> class.  This has
+been tested with GIT versions when both Rasqal and librdf are built
+with <code>--with-raptor2</code>.
 </p>
 
 
@@ -93,15 +96,14 @@ with GIT versions when both Rasqal and librdf are built with
 reference section on the
 <a href="http://librdf.org/raptor/api/raptor-formats.html">functions and types that were added, removed and changed between raptor 1 and raptor 2 APIs</a>.
 
-It also includes an automatically generated section on the parser and
-serializer
-<a href="http://librdf.org/raptor/api/raptor-formats.html">names, supported syntax mime types, and Q values.</a>
+It also includes an automatically generated section on the
+<a href="http://librdf.org/raptor/api/raptor-formats.html">parser and serializers with their names, mime types and Q values.</a>
 </p>
 
 <p>The tutorial examples were updated to the Raptor 2 APIs.
 </p>
 
-<p>NOTE: At this time, the descriptive parts of the tutorial has NOT
+<p>NOTE: At this time, the descriptive parts of the tutorial have NOT
 been updated to use the Raptor 2 API.
 </p>
 
@@ -207,7 +209,7 @@ convention and to put the iostream argument at the end.
 <h3>Namespaces and namespace stack classes changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data args.</p>
+error data arguments.</p>
 
 
 <h3>Options</h3>
@@ -296,11 +298,6 @@ Fixes
 </p>
 
 
-<p>The N-Triples parser accepts text/plain.
-Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=319">Issue #0000319</a>
-</p>
-
 <p>The RDF/XML parser never generated special names for bag IDs
 (bagidNNN), so all support for that has been removed.
 </p>
@@ -312,24 +309,6 @@ terms to prevent a lot of malloc/free for temporary uses.
 <p>Removed RDF/XML parser feature
 <code>RAPTOR_FEATURE_ASSUME_IS_RDF</code> since it did nothing since
 at least 2003, maybe earlier.
-</p>
-
-<p>The Turtle parser now handles newlines correctly in long literals.
-Fixes 
-<a href="http://bugs.librdf.org/mantis/view.php?id=331">Issue #0000331</a>
-</p>
-
-<p>The Turtle parser now handles <code>\\</code> at the end of long literals.
-Fixes 
-<a href="http://bugs.librdf.org/mantis/view.php?id=318">Issue #0000318</a>
-</p>
-
-<p>The Turtle parser was updated to match the specification for the
-<a href="http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#prefixName">prefixName</a> and
-<a href="http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#name">name</a> tokens.
-This makes some previously accepted not-to-spec turtle documents be rejected.
-Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=326">Issue #0000326</a>.
 </p>
 
 <p>Added a JSON parser (name 'json') that can read both the
@@ -347,15 +326,16 @@ per-parser.
 <h3>QName class changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data args.</p>
+error data arguments.</p>
 
 
 <h3>Sequence changes</h3>
 
-<p>Use new generic raptor_data_free_handler,
-raptor_data_print_handler, raptor_data_context_free_handler,
-raptor_data_context_print_handler for data-focused handlers which are
-shared with the AVL Tree.
+<p>Use new generic <code>raptor_data_free_handler</code>,
+<code>raptor_data_print_handler</code>,
+<code>raptor_data_context_free_handler</code>,
+<code>raptor_data_context_print_handler</code> for data-focused
+handlers which are shared with the AVL Tree.
 </p>
 
 
@@ -376,12 +356,6 @@ Nicholas J Humfrey.
 <p>Removed the obsolete 'simple' serializer from the source code.
 N-Triples is an appropriate simple (and well-defined) replacement
 syntax.
-</p>
-
-<p>The Turtle serializer was updated to ensure that XML Qnames
-that are not legal Turtle Qnames are never serialized.
-Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=337">Issue #0000337</a>.
 </p>
 
 
@@ -417,7 +391,7 @@ semantics of comparison (ordering) and equality are the same.
 
 <p>Several utility functions were renamed to match their
 functionality more accurately and be associated with the Unicode
-module set of funtions.  For example <code>raptor_utf8_check()</code>
+module set of functions.  For example <code>raptor_utf8_check()</code>
 was renamed to <code>raptor_unicode_check_utf8_string()</code>
 </p>
 
@@ -448,10 +422,10 @@ destructor and method naming format.
 </p>
 
 
-<h3>XML Writer classe changes</h3>
+<h3>XML Writer class changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data args.</p>
+error data arguments.</p>
 
 
 <h3>Configuration changes</h3>
@@ -485,11 +459,11 @@ use <code>TYPE* var_name = RAPTOR_CALLOC(TYPE, 1, sizeof(*var_name))</code>
 rather than repeat the type name which can be error-prone.
 </p>
 
-<p>Code style: put whitespace round assignemnt and operators i.e.
+<p>Code style: put whitespace round assignment and operators i.e.
 use <code>c = a + b</code> rather than <code>c=a+b</code>.
 </p>
 
-<p>Code style: removed some strdups().
+<p>Code style: removed some strdup()s.
 </p>
 
 <p>Code style: try to remove un-necessary strlen() by tending to pass
@@ -670,7 +644,7 @@ configuration.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=307">Issue#0000307</a>
 </p>
 
-<p>Use <code>calloc()</code> for allocating a raptor_statement in
+<p>Use <code>calloc()</code> for allocating a <code>raptor_statement</code> in
 rdfserializer.c example code to properly initialise state.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=312">Issue#0000312</a>
 </p>
@@ -893,7 +867,7 @@ new constructor/destructor.</p>
 <p><b>NOTE:</b> The method names here are illustrative of the final
 V2 names but are not confirmed - <strong>These functions are not
 supported in the 1.4.x series</strong>.  Some methods will still be
-altered for fields and (raptor_world) parameters.  All constructors
+altered for fields and (<code>raptor_world</code>) parameters.  All constructors
 should have it as a parameter.  All methods will not have them (so
 for example, all the URI methods named _v2 will lose the world
 parameter and just have the URI parameter - but that is also because
