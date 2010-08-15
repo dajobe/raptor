@@ -498,7 +498,7 @@ main(int argc, char *argv[])
 
       /* term */
       emit_start_desc_list_term(iostr);
-      emit_mime_type_name(this_mime_type, iostr);
+      emit_mime_type_name(last_mime_type, iostr);
 
       /* definition */
       emit_start_desc_list_defn(iostr);
