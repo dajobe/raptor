@@ -37,9 +37,9 @@
 1.4.21	unsigned int	raptor_get_feature_count	(void)	1.9.0	unsigned int	raptor_option_get_count	(void)	-
 1.4.21	const char*	raptor_get_label	(raptor_parser *rdf_parser)	1.9.0	raptor_syntax_description*	raptor_parser_get_description	(raptor_parser* rdf_parser)	Use label field of returned description.
 1.4.21	raptor_locator*	raptor_get_locator	(raptor_parser* rdf_parser)	1.9.0	raptor_locator*	raptor_parser_get_locator	(raptor_parser* rdf_parser)	-
-1.4.21	const char*	raptor_get_mime_type	(raptor_parser *rdf_parser)	1.9.0	raptor_syntax_description*	raptor_parser_get_description	(raptor_parser* rdf_parser)	Use mime_types array field of returned description.
+1.4.21	const char*	raptor_get_mime_type	(raptor_parser *rdf_parser)	1.9.0	raptor_syntax_description*	raptor_parser_get_description	(raptor_parser* rdf_parser)	Use the mime_types array field of returned #raptor_syntax_description
 1.4.21	const char*	raptor_get_name	(raptor_parser *rdf_parser)	1.9.0	const char*	raptor_parser_get_name	(raptor_parser *rdf_parser)	-
-1.4.21	int	raptor_get_need_base_uri	(raptor_parser *rdf_parser)	1.9.0	raptor_syntax_description*	raptor_parser_get_description	(raptor_parser* rdf_parser)	Use need_base_uri field of returned description.
+1.4.21	int	raptor_get_need_base_uri	(raptor_parser *rdf_parser)	1.9.0	raptor_syntax_description*	raptor_parser_get_description	(raptor_parser* rdf_parser)	Use the #RAPTOR_SYNTAX_NEED_BASE_URI bitflag in the flags field of the returned #raptor_syntax_description
 1.4.21	const char*	raptor_guess_parser_name	(raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
 1.4.21	const char*	raptor_guess_parser_name_v2	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	1.9.0	const char*	raptor_world_guess_parser_name	(raptor_world* world, raptor_uri *uri, const char* mime_type, const unsigned char* buffer, size_t len, const unsigned char* identifier)	-
 1.4.21	void	raptor_init	(void)	1.9.0	-	-	-	Use raptor_new_world() to create a new #raptor_world object.
@@ -154,7 +154,7 @@
 1.4.21	int	raptor_parsers_enumerate_v2	(raptor_world* world, const unsigned int counter, const char* *name, const char* *label)	1.9.0	raptor_syntax_description*	raptor_world_get_parser_description	(raptor_world* world, const unsigned int counter)	-
 1.4.21	void	raptor_print_locator	(FILE *stream, raptor_locator* locator)	1.9.0	int	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
 1.4.21	void	raptor_print_locator_v2	(raptor_world* world, FILE *stream, raptor_locator* locator)	1.9.0	void	raptor_locator_print	(raptor_locator* locator, FILE *stream)	-
-1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	Use raptor_string_ntriples_write() with a raptor_iostream.
+1.4.21	int	raptor_print_ntriples_string	(FILE *stream, const unsigned char* string, const char delim)	1.9.0	-	-	-	Use raptor_string_ntriples_write() with a #raptor_iostream
 1.4.21	void	raptor_print_statement	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print	(const raptor_statement * statement, FILE *stream)	-
 1.4.21	void	raptor_print_statement_as_ntriples	(const raptor_statement * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
 1.4.21	void	raptor_print_statement_as_ntriples_v2	(const raptor_statement_v2 * statement, FILE *stream)	1.9.0	int	raptor_statement_print_as_ntriples	(const raptor_statement * statement, FILE *stream)	-
@@ -233,8 +233,8 @@
 1.4.21	int	raptor_start_parse	(raptor_parser *rdf_parser, raptor_uri *uri)	1.9.0	int	raptor_parser_parse_start	(raptor_parser *rdf_parser, raptor_uri *uri)	-
 1.4.21	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
 1.4.21	int	raptor_statement_compare_v2	(const raptor_statement_v2 *s1, const raptor_statement_v2 *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
-1.4.21	unsigned char*	raptor_statement_part_as_counted_string	(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
-1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
+1.4.21	unsigned char*	raptor_statement_part_as_counted_string	(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_counted_string().
+1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_counted_string().
 1.4.21	unsigned char*	raptor_statement_part_as_string	()	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
 1.4.21	unsigned char*	raptor_statement_part_as_string_v2	()	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
 1.4.21	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	-
@@ -401,7 +401,7 @@
 1.4.21	type	raptor_free_uri_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_graph_handler	-	1.9.0	type	raptor_graph_mark_handler	-	-
 1.4.21	type	raptor_identifier	-	1.9.0	type	raptor_term	-	Fields changed to be simpler #raptor_term_type and #raptor_term_value
-1.4.21	type	raptor_identifier_type	-	1.9.0	type	raptor_term_type	-	Removed several enum values to leave just uri, blank and literal.
+1.4.21	type	raptor_identifier_type	-	1.9.0	type	raptor_term_type	-	Removed several enum values to leave just URI, blank and literal types.
 1.4.21	type	raptor_iostream_handler2	-	1.9.0	type	raptor_iostream_handler	-	-
 1.4.21	type	raptor_iostream_write_end_func	-	1.9.0	type	raptor_iostream_write_end_func	-	handler returns an int
 1.4.21	type	raptor_libxml_flags	-	1.9.0	type	-	-	replaced by raptor_world_set_flags() with #raptor_world_flag
@@ -419,16 +419,16 @@
 1.4.21	type	raptor_sequence_print_handler	-	1.9.0	type	raptor_data_print_handler	-	-
 1.4.21	type	raptor_sequence_print_handler_v2	-	1.9.0	type	raptor_data_context_print_handler	-	-
 1.4.21	type	raptor_simple_message_handler	-	1.9.0	type	raptor_log_handler	-	Replaced by generic raptor log mechanism.
-1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use raptor_term
+1.4.21	type	raptor_statement	-	1.9.0	type	raptor_statement	-	fields changed to use #raptor_term
 1.4.21	type	raptor_statement_handler	-	1.9.0	type	raptor_statement_handler	-	added const
-1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	Fields changed to be a 4-tuple of raptor_term
+1.4.21	type	raptor_statement_v2	-	1.9.0	type	raptor_statement	-	Fields changed to be a 3 or 4 tuple of #raptor_term
 1.4.21	type	raptor_uri_as_counted_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_as_string_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_compare_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_copy_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_equals_func	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
 1.4.21	type	raptor_uri_handler	-	1.9.0	type	-	-	Entire URI implementation is internal and not replaceable.
-1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	URI source was of no use.
+1.4.21	type	raptor_uri_source	-	1.9.0	type	-	-	URI source was useless.
 1.4.21	type	-	-	1.9.0	type	raptor_avltree	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_bitflags	-	-
 1.4.21	type	-	-	1.9.0	type	raptor_avltree_iterator	-	-
