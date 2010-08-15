@@ -26,6 +26,8 @@ fix-groff-xhtml \
 fix-gtkdoc-header.pl \
 process-changes.pl
 
+CLEANFILES =
+
 if MAINTAINER_MODE
 EXTRA_PROGRAMS = build-formats
 
