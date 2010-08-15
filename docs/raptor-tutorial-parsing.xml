@@ -28,7 +28,7 @@ process.
 
   rdf_parser = raptor_new_parser(world, "rdfxml");
 </programlisting>
-or the name can be discovered from an <emphasis>enumeration</emphasis>
+or the name can be discovered from an <emphasis>description</emphasis>
 as discussed in <link linkend="tutorial-querying-functionality">Querying Functionality</link>
 </para>
 
