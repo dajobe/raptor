@@ -16,7 +16,7 @@ has gone too far into the list.
 
 <variablelist>
 <title>Listing Functionality with Descriptions</title>
-<varlistentry><term>Get descriptons of the parser syntaxes</term>
+<varlistentry><term>Get descriptions of the parser syntaxes</term>
 <listitem><programlisting>
   const raptor_syntax_description*
   raptor_world_get_parser_description(raptor_world* world,
