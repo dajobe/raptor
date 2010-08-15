@@ -327,6 +327,58 @@ sort_type_syntax_by_mime_type(const void *a, const void *b)
 
 
 
+static void
+emit_format_to_syntax_list(raptor_iostream* iostr,
+                           type_syntax* type_syntaxes,
+                           const char* mime_type,
+                           int start, int end) 
+{
+  int i;
+  int parser_seen = 0;
+  int serializer_seen = 0;
+  
+  /* term */
+  emit_start_desc_list_term(iostr);
+  emit_mime_type_name(mime_type, iostr);
+  
+  /* definition */
+  emit_start_desc_list_defn(iostr);
+  raptor_iostream_string_write("\n    ", iostr);
+  
+  emit_start_list(iostr);
+  for(i = start; i <= end; i++) {
+    raptor_iostream_string_write("    ", iostr);
+    emit_start_list_item(iostr);
+    if(type_syntaxes[i].parser_sd) {
+      emit_format_description_name("Parser",
+                                   type_syntaxes[i].parser_sd,
+                                   iostr);
+      parser_seen++;
+    } else {
+      emit_format_description_name("Serializer",
+                                   type_syntaxes[i].serializer_sd,
+                                   iostr);
+      serializer_seen++;
+    }
+    raptor_iostream_string_write(" with ", iostr);
+    emit_mime_type_q(type_syntaxes[i].q, iostr);
+    emit_end_list_item(iostr);
+  }
+  if(!parser_seen || !serializer_seen) {
+    emit_start_list_item(iostr);
+    if(!parser_seen)
+      raptor_iostream_string_write("No parser.", iostr);
+    else
+      raptor_iostream_string_write("No serializer.", iostr);
+    emit_end_list_item(iostr);
+  }
+  raptor_iostream_string_write("    ", iostr);
+  emit_end_list(iostr);
+  
+  emit_end_desc_list_item(iostr);
+}
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -482,9 +534,6 @@ main(int argc, char *argv[])
     const char* last_mime_type = NULL;
     int last_start_index = -1;
     for(i = 0; i < type_syntaxes_count; i++) {
-      int j;
-      int parser_seen = 0;
-      int serializer_seen = 0;
       const char *this_mime_type = type_syntaxes[i].mime_type;
       
       if(last_start_index < 0) {
@@ -496,45 +545,8 @@ main(int argc, char *argv[])
       if(!strcmp(last_mime_type, this_mime_type))
         continue;
 
-      /* term */
-      emit_start_desc_list_term(iostr);
-      emit_mime_type_name(last_mime_type, iostr);
-
-      /* definition */
-      emit_start_desc_list_defn(iostr);
-      raptor_iostream_string_write("\n    ", iostr);
-      
-      emit_start_list(iostr);
-      for(j = last_start_index; j < i; j++) {
-        raptor_iostream_string_write("    ", iostr);
-        emit_start_list_item(iostr);
-        if(type_syntaxes[j].parser_sd) {
-          emit_format_description_name("Parser",
-                                       type_syntaxes[j].parser_sd,
-                                       iostr);
-          parser_seen++;
-        } else {
-          emit_format_description_name("Serializer",
-                                       type_syntaxes[j].serializer_sd,
-                                       iostr);
-          serializer_seen++;
-        }
-        raptor_iostream_string_write(" with ", iostr);
-        emit_mime_type_q(type_syntaxes[j].q, iostr);
-        emit_end_list_item(iostr);
-      }
-      if(!parser_seen || !serializer_seen) {
-        emit_start_list_item(iostr);
-        if(!parser_seen)
-          raptor_iostream_string_write("No parser.", iostr);
-        else
-          raptor_iostream_string_write("No serializer.", iostr);
-        emit_end_list_item(iostr);
-      }
-      raptor_iostream_string_write("    ", iostr);
-      emit_end_list(iostr);
-
-      emit_end_desc_list_item(iostr);
+      emit_format_to_syntax_list(iostr, type_syntaxes,
+                                 last_mime_type, last_start_index, i-1);
 
       last_mime_type = type_syntaxes[i].mime_type;
       last_start_index = i;
