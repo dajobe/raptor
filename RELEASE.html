@@ -58,7 +58,22 @@ section on
 </ul>
 
 
-<!-- updated to 2010-03-08 ChangeLog changes -->
+<!-- updated to 2010-04-06 ChangeLog changes -->
+
+<h3>General changes</h3>
+
+<p>Renamed the library name and package tarball name to a new
+separate names (libraptor2, raptor2-X.tar.gz) so they can be
+distinguished and installed into the same system as raptor1 without
+file clashes.  Note: This does not apply to the rapper utility and
+it's manual page which are in both packages.  Packagers should stop
+packaging rapper and rapper.1 from raptor1, in preference to
+the raptor 2 version.
+</p>
+
+<p>Nicholas J Humfrey is a new committer.
+</p>
+
 
 <h3>Documentation changes</h3>
 
@@ -82,7 +97,10 @@ serializers and writing into variables passed in, was replaced with
 methods that return pointers to static
 <code>raptor_syntax_description</code> objects to allow more
 parameters to be returned.  This allowed the removal of multiple
-older calls that kept having to gain new return arguments.</p>
+older calls that kept having to gain new return arguments.
+The description also returns a list of (mime type, qname) pairs
+using a new typedef <code>raptor_type_q</code>.
+</p>
 
 <p><code>raptor_world_set_libxml_flags()</code> is replaced with
 <code>raptor_world_set_flag()</code> which are simple flags that
@@ -185,6 +203,15 @@ parser option get and set methods
 
 <h3>Parser class changes</h3>
 
+<p>Parser object methods to return information about the parser class
+were removed since they can be done instead via fields of the static
+object returned from
+<code>raptor_world_get_parser_description()</code>.  Deleted
+functions include <code>raptor_parser_get_label()</code>,
+<code>raptor_parser_get_mime_type()</code>, and
+<code>raptor_parser_get_need_base_uri()</code>.
+</p>
+
 <p>Parsing may generate start graph and end graph events for syntaxes
 that return graph names such as TRiG.  These are returned by the handler
 of typedef <code>raptor_graph_mark_handler</code>
@@ -270,6 +297,16 @@ shared with the AVL Tree.
 
 
 <h3>Serializer class changes</h3>
+
+<p>Added an HTML Table serializer with name 'table' contributed by
+Nicholas J Humfrey.
+</p>
+
+
+<p>Removed the obsolete 'simple' serializer from the source code.
+N-Triples is an appropriate simple (and well-defined) replacement
+syntax.
+</p>
 
 <p>The Turtle serializer was updated to ensure that XML Qnames
 that are not legal Turtle Qnames are never serialized.
