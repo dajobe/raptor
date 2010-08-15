@@ -612,8 +612,7 @@ typedef enum {
  *
  * Log message.
  */
-typedef struct
-{
+typedef struct {
   int code;
   raptor_domain domain;
   raptor_log_level level;
