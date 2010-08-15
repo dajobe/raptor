@@ -24,4 +24,5 @@ rdfcat.c
 rdfprint.c
 rdfserialize.c
 version.xml
+upgrade-script.pl
 xml/
