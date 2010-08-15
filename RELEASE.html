@@ -58,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-02-04 ChangeLog changes -->
+<!-- updated to 2010-02-23 ChangeLog changes -->
 
 <h3>World class changes</h3>
 
@@ -107,8 +107,10 @@ possible term types.</p>
 <code>raptor_iostream_write_end()</code>
 </p>
 
-<p>The argument order of many methods was renamed to put the iostream
-argument at the end.
+<p>Many classes iostream writing methods and methods of the iostream
+class itself were changed to follow the standard
+<code>raptor_</code><em>CLASS</em><code>_write</code> naming
+convention and to put the iostream argument at the end.
 </p>
  
 <p>Deprecated typedef <code>raptor_iostream_handler</code> was removed</p>
@@ -166,7 +168,10 @@ static string to ensure NUL is copied.
 </p>
 
 <p>Many functions were renamed to match the
-<code>raptor_parser_</code><em>method</em> naming standard
+<code>raptor_parser_</code><em>method</em> naming standard.  Some of
+these get a long longer, but are at least consistent.  For example
+<code>raptor_parse_uri()</code> becomes
+<code>raptor_parser_parse_uri()</code>.
 </p>
 
 <p>Deprecated typedef <code>raptor_ntriples_parser</code> was removed.
@@ -266,6 +271,15 @@ Term: literal, URI or blank node and is reference counted and
 dynamic.  It is a union of fields for three types.</p>
 
 
+<h3>Unicode changes</h3>
+
+<p>Several utility functions were renamed to match their
+functionality more accurately and be associated with the Unicode
+module set of funtions.  For example <code>raptor_utf8_check()</code>
+was renamed to <code>raptor_unicode_check_utf8_string()</code>
+</p>
+
+
 <h3>URI class changes</h3>
 
 <p>The whole concept of URI handlers was removed, there is no longer
@@ -282,6 +296,13 @@ use this.
 
 <p>The <code>raptor_uri_resolve_uri_reference()</code> now returns the
 length of the URI written into the buffer.
+</p>
+
+
+<h3>WWW class changes</h3>
+
+<p>Rename several of the functions to the standard constructor,
+destructor and method naming format.
 </p>
 
 
@@ -339,6 +360,27 @@ and destructors called with a NULL object return silently.
 <code>raptor_new_</code><em>class</em><code>_from_</code><em>class</em><code>()</code>
 for brevity.
 </p> 
+
+<h3>rapper Utility changes</h3>
+
+<p>Print out the option types next to the description in the <code>-f
+help</code> usage message.  The main visible type is boolean.</p>
+
+<p>Removed unused <code>-a</code> flag from code.</p>
+
+<p>Did NOT rename <code>-f</code> option to match the renaming of
+features to options in the API.  Not needed.
+</p>
+
+<p>Removed long deprecated <code>-n</code> flag which was shortcut for
+selecting the N-Triples parser and can be done with <code>-i
+ntriples</code.</p>
+
+<p>Removed <code>-s/--scan</code> flag since it is an option of a
+single parser (RDF/XML) which can be done with <code>-f/--feature
+scanForRDF</code>.
+</p>
+
 
 <h3>Other changes</h3>
 
