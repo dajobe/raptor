@@ -27,7 +27,7 @@ such as <literal>rdfxml</literal> for the W3C Recommendation RDF/XML syntax:
 
   rdf_serializer = raptor_new_serializer(world, "rdfxml");
 </programlisting>
-or the name can be discovered from an <emphasis>enumeration</emphasis>
+or the name can be discovered from an <emphasis>description</emphasis>
 as discussed in
 <link linkend="tutorial-querying-functionality">Querying Functionality</link>
 </para>
