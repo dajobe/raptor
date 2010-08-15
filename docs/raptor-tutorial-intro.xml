@@ -3,9 +3,10 @@
 <chapter id="tutorial-initialising-finishing">
 <title>Initialising and Finishing using the Library</title>
 
-<para>Raptor requires initialising a raptor_world object
-before using any of the classes.  The constructor to make the object
-is raptor_new_world(), the destructor raptor_free_world().
+<para>Raptor requires initialising a raptor_world object before using
+any of the classes which take the world object as an argument in
+their constructors.  The function to make the world object is
+raptor_new_world() and the destructor raptor_free_world().
 <programlisting>
   raptor_world* world;
   world = raptor_new_world();
