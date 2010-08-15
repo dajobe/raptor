@@ -11,6 +11,7 @@ raptor-changes.xml
 raptor-decl-list.txt
 raptor-decl.txt
 raptor-docs.sgml
+raptor-fake.h
 raptor-formats.xml
 raptor-undeclared.txt
 raptor-undocumented.txt
