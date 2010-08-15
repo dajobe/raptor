@@ -43,6 +43,7 @@ section on
 <li>Added AVL-Tree to public API.</li>
 <li>Raptor generates raptor_statements which are now an array of 3-4 raptor_terms (new class) to allow potentially generating any combination of RDF terms for example with literal subjects, blank node predicates, graph URIs.  None of the current serializers generate anything except legal RDF triples with optional graph URI (TRiG).</li>
 <li>Features are now called options and can handle several typed values.</li>
+<li>Parsers and Serializers for the same syntax now accept the same mime types.</p>
 </ul>
 
 <p>FIXME - above is not a full list, expand from detailed changelog</p>
@@ -57,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-01-24 ChangeLog changes -->
+<!-- updated to 2010-01-29 ChangeLog changes -->
 
 <h3>World class changes</h3>
 
@@ -75,6 +76,13 @@ methods that return pointers to static
 <code>raptor_syntax_description</code> objects to allow more
 parameters to be returned.  This allowed the removal of multiple
 older calls that kept having to gain new return arguments.</p>
+
+
+<h3>AVL Tree changes</h3>
+
+<p>The internal memory-based AVL Tree implementation is exposed as a
+public API.
+</p>
 
 
 <h3>Features changes</h3>
@@ -138,6 +146,16 @@ static string to ensure NUL is copied.
 <code>raptor_ntriples_string_as_utf8_string()</code>
 </p>
 
+<p>The librdfa parser was updated with the latest updates to the RDFa
+syntax (first, rel/rev, whitespace, xml:lang) and fixes issues with
+non-terminated strings.
+</p>
+
+<p>The N-Triples parser accepts text/plain.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=319">Issue #0000319</a>
+</p>
+
 <p>The RDF/XML parser never generated special names for bag IDs
 (bagidNNN), so all support for that has been removed.
 </p>
@@ -151,6 +169,19 @@ Fixes
 <a href="http://bugs.librdf.org/mantis/view.php?id=331">Issue #0000331</a>
 </p>
 
+<p>The Turtle parser now handles <code>\\</code> at the end of long literals.
+Fixes 
+<a href="http://bugs.librdf.org/mantis/view.php?id=318">Issue #0000318</a>
+</p>
+
+<p>The Turtle parser was updated to match the specification for the
+<a href="http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#prefixName">prefixName</a> and
+<a href="http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#name">name</a> tokens.
+This makes some previously accepted not-to-spec turtle documents be rejected.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=326">Issue #0000326</a>.
+</p>
+
 
 <h3>QName class changes</h3>
 
@@ -158,7 +189,22 @@ Fixes
 error data args.</p>
 
 
+<h3>Sequence changes</h3>
+
+<p>Use new generic raptor_data_free_handler,
+raptor_data_print_handler, raptor_data_context_free_handler,
+raptor_data_context_print_handler for data-focused handlers which are
+shared with the AVL Tree.
+</p>
+
+
 <h3>Serializer class changes</h3>
+
+<p>The Turtle serializer was updated to ensure that XML Qnames
+that are not legal Turtle Qnames are never serialized.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=337">Issue #0000337</a>.
+</p>
 
 
 <h3>Statement class changes</h3>
