@@ -58,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-02-03 ChangeLog changes -->
+<!-- updated to 2010-02-04 ChangeLog changes -->
 
 <h3>World class changes</h3>
 
@@ -135,8 +135,28 @@ error data args.</p>
 
 <h3>Options</h3>
 
-<p>A new name for features and expanded to allow use of values types
-string, integer and boolean.</p>
+<p>A new name for what were called features in Raptor 1 and this was
+expanded to allow use of values types string, integer and boolean.
+Options can be set on multiple classes such as parser, serializer but
+are centrally described using the new
+<code>raptor_option_description</code> structure.</p>
+
+<p>The option get/set operations were reduced from multiple methods
+per class for getting/setting an int, int/string to just one get and
+one set, with optional parameters.  It can also handle adding new
+types later, which will be passed in as strings and converted
+internally.
+</p>
+
+<p>The options code
+introduces a new enum <code>raptor_domain</code> which essentially is
+for describing a class such as parser.  
+For example options listed
+for domain <code>RAPTOR_DOMAIN_PARSER</code> will be usable with the
+parser option get and set methods
+<code>raptor_parser_get_option(parser, ...)</code> and
+<code>raptor_parser_set_option(parser, ...)</code>.
+</p>
 
 
 <h3>Parser class changes</h3>
@@ -173,6 +193,11 @@ Fixes
 
 <p>The RDF/XML parser uses the new reference-counted URIs and raptor
 terms to prevent a lot of malloc/free for temporary uses.
+</p>
+
+<p>Removed RDF/XML parser feature
+<code>RAPTOR_FEATURE_ASSUME_IS_RDF</code> since it did nothing since
+at least 2003, maybe earlier.
 </p>
 
 <p>The Turtle parser now handles newlines correctly in long literals.
