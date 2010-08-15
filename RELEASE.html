@@ -57,7 +57,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-01-08 ChangeLog changes -->
+<!-- updated to 2010-01-12 ChangeLog changes -->
 
 <h3>World class changes</h3>
 
@@ -127,6 +127,10 @@ static string to ensure NUL is copied.
 <code>raptor_ntriples_string_as_utf8_string()</code>
 </p>
 
+<p>The RDF/XML parser never generated special names for bag IDs
+(bagidNNN), so all support for that has been removed.
+</p>
+
 
 <h3>QName class changes</h3>
 
@@ -146,6 +150,10 @@ the allowed RDF Statements.  This change allows representing
 non-RDF triples as well as triples with named graphs (also known as
 quads).</p>
 
+<p><code>raptor_statement_part_as_counted_string()</code> turns into
+a method of the new Term class, as a "statement part" is now
+represented as a Term.
+</p>
 
 <h3>Term class changes</h3>
 
@@ -155,6 +163,14 @@ reference counted and dynamic.</p>
 
 
 <h3>URI class changes</h3>
+
+<p>The whole concept of URI handlers was removed, there is no longer
+a way to replace the implementation of the URI class.  The
+implementation built in now interns URIs string so that a single URIs
+for a string is only ever in memory once, but reference counted.  This
+is what Redland librdf has done for many years, and librdf can fully
+use this.
+</p>
 
 <p>Deprecated functions were removed:
 <code>raptor_uri_is_file_uri()</code>.
