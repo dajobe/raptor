@@ -58,7 +58,14 @@ section on
 </ul>
 
 
-<!-- updated to 2010-02-23 ChangeLog changes -->
+<!-- updated to 2010-03-08 ChangeLog changes -->
+
+<h3>Documentation changes</h3>
+
+<p>The API reference manual now includes an automatically generated
+reference section on the functions and types that were added,
+removed and changed between raptor 1 and raptor 2 APIs.
+</p>
 
 <h3>World class changes</h3>
 
@@ -76,6 +83,21 @@ methods that return pointers to static
 <code>raptor_syntax_description</code> objects to allow more
 parameters to be returned.  This allowed the removal of multiple
 older calls that kept having to gain new return arguments.</p>
+
+<p><code>raptor_world_set_libxml_flags()</code> is replaced with
+<code>raptor_world_set_flag()</code> which are simple flags that
+require no initialisation of the world since they are used before it
+is opened.  This means that it cannot use the Options module for
+world flags.  New flag
+<code>RAPTOR_WORLD_FLAGS_URI_INTERNING</code> allows disabling of
+the URI interning using an AVL-Tree which can use up memory.
+</p>
+
+<p><code>raptor_world_set_libxslt_security_preferences()</code> and
+<code>raptor_world_set_log_handler()</code> gains an int return value
+to report failure if world is already opened.
+</p>
+
 
 
 <h3>AVL Tree changes</h3>
@@ -162,6 +184,14 @@ parser option get and set methods
 
 
 <h3>Parser class changes</h3>
+
+<p>Parsing may generate start graph and end graph events for syntaxes
+that return graph names such as TRiG.  These are returned by the handler
+of typedef <code>raptor_graph_mark_handler</code>
+set by new function <code>raptor_parser_set_graph_mark_handler()</code>
+which returns a start or end event of type enum
+<code>raptor_graph_mark_flags</code>.
+</p>
 
 <p><code>raptor_parser_get_accept_header()</code> fixed length of
 static string to ensure NUL is copied.
