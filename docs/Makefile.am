@@ -35,7 +35,7 @@ SCAN_OPTIONS= --deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
 DOC_SOURCE_DIR=../src
 
 # Used for dependencies
-HFILE_GLOB=$(top_srcdir)/src/raptor.h
+HFILE_GLOB=raptor.i
 CFILE_GLOB=$(top_srcdir)/src/raptor_*.c
 
 IGNORE_CFILES= \
@@ -107,6 +107,8 @@ $(man_MANS) \
 version.xml.in \
 upgrade-script.pl
 
+CLEANFILES += \
+raptor.i
 
 if MAINTAINER_MODE
 libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
@@ -136,5 +138,8 @@ $(top_builddir)/scripts/build-formats:
 
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
+
+raptor.i: $(top_srcdir)/src/raptor.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif

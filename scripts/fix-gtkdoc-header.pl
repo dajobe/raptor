@@ -1,9 +1,12 @@
-# -*- Mode: Makefile -*-
+#!/usr/bin/perl -w
 #
-# Makefile.am - automake file for Raptor libraptor
+# Edit raptor.h so that gtk-doc is happy about it
+#
+# USAGE:
+#   perl fix-gtkc-header.pl < raptor.h > raptor.i
 #
 # Copyright (C) 2010, David Beckett http://www.dajobe.org/
-# 
+#
 # This package is Free Software and part of Redland http://librdf.org/
 # 
 # It is licensed under the following three licenses as alternatives:
@@ -17,24 +20,12 @@
 # See LICENSE.html or LICENSE.txt at the top of this package for the
 # complete terms and further detail along with the license texts for
 # the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
-# 
 
-EXTRA_DIST= \
-fix-bison \
-fix-flex \
-fix-groff-xhtml \
-fix-gtkdoc-header.pl \
-process-changes.pl
+while(<>) {
+  # Remove trailing macros
+  s{RAPTOR_PRINTF_FORMAT\(\d+, \d+\);}{;};
 
-if MAINTAINER_MODE
-EXTRA_PROGRAMS = build-formats
-
-CLEANFILES += build-formats
-
-build_formats_SOURCES = build-formats.c
-build_formats_LDADD= $(top_builddir)/src/libraptor2.la
-
-endif
-
-$(top_builddir)/src/libraptor2.la:
-	cd $(top_builddir)/src && $(MAKE) libraptor2.la
+  # gtk-doc hates const in some places
+  s/const char\* const\* (\w+)/const char\* $1/;
+  print;
+}
