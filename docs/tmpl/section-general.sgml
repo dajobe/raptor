@@ -74,6 +74,17 @@ and various other utility functions.
 @message: 
 
 
+<!-- ##### STRUCT raptor_log_message ##### -->
+<para>
+
+</para>
+
+@code: 
+@domain: 
+@level: 
+@locator: 
+@text: 
+
 <!-- ##### ENUM raptor_log_level ##### -->
 <para>
 
