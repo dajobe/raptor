@@ -334,6 +334,9 @@ This function can use take an optional <emphasis>filename</emphasis> which
 is used in locator error messages.
 The <emphasis>base_uri</emphasis> may be required by some parsers
 and if <literal>NULL</literal> will cause the parsing to fail.
+This requirement can be checked by looking at the flags in
+the parser description using
+<link linkend="raptor-world-get-parser-description"><function>raptor_world_get_parser_description()</function></link>.
 </para>
 </section>
 
