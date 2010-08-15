@@ -27,6 +27,7 @@ raptor_version_decimal
 raptor_statement_handler
 raptor_vsnprintf
 raptor_log_handler
+raptor_log_message
 raptor_log_level
 raptor_log_level_get_label
 raptor_domain
