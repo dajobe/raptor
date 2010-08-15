@@ -56,10 +56,137 @@ section on
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=379">0000379</a>: raptor libxslt security policy conflicts with apps that also use libxslt and set security policy</li>
 </ul>
 
+
+<!-- updated to 2010-01-08 ChangeLog changes -->
+
 <h3>World class changes</h3>
+
+<p>A log handler function for receiving warnings and errors (fatal or
+other) are now all sent to a single log handler of type
+<code>raptor_log_handler</code> registered to the world class with
+<code>raptor_world_set_log_handler()</code>, rather than handlers set
+for each parser, sax2, serializer or www instance.  Several
+constructors lose error handler and error data parameters
+consequently.</p>
+
+<p>The enumerating approach for listing the known parsers and
+serializers and writing into variables passed in, was replaced with
+methods that return pointers to static
+<code>raptor_syntax_description</code> objects to allow more
+parameters to be returned.  This allowed the removal of multiple
+older calls that kept having to gain new return arguments.</p>
+
+
+<h3>Identifier class changes</h3>
+
+<p>Replaced with Term class.</p>
+
+<p><code>raptor_identifier_type</code> enum was removed and replaced
+with enum <code>raptor_term_type</code> and a smaller set of 3
+possible term types.</p>
+
+
+<h3>IO Stream class changes</h3>
+
+<p>Constructors all gain a world argument.</p>
+
+<p>The argument order of many methods was renamed to put the iostream
+argument at the end.
+</p>
+ 
+<p>Deprecated typedef <code>raptor_iostream_handler</code> was removed</p>
+
+<p>Deprecated functions were removed:
+<code>raptor_new_iostream_from_handler()</code>,
+<code>raptor_iostream_get_bytes_written_count()</code> and
+<code>raptor_iostream_write_string_turtle()</code>
+</p>
+
+
+<h3>Namespaces and namespace stack classes changes</h3>
+
+<p>Constructors all gain a world argument and lose error handler,
+error data args.</p>
+
+
 <h3>Parser class changes</h3>
+
+<p><code>raptor_parser_get_accept_header()</code> fixed length of
+static string to ensure NUL is copied.
+</p>
+
+<p>Many functions were renamed to match the
+<code>raptor_parser_</code><em>method</em> naming standard
+</p>
+
+<p>Deprecated typedef <code>raptor_ntriples_parser</code> was removed.
+</p>
+
+<p>Deprecated functions were removed:
+<code>raptor_ntriples_term_as_string()</code>, and
+<code>raptor_ntriples_string_as_utf8_string()</code>
+</p>
+
+
+<h3>QName class changes</h3>
+
+<p>Constructors all gain a world argument and lose error handler,
+error data args.</p>
+
+
 <h3>Serializer class changes</h3>
+
+
+<h3>Statement class changes</h3>
+
+<p>This was made a more regular class that can be created, copied and
+freed using reference counting.   The structure changed to be an
+array of 4 raptor terms rather than a complex union focused on
+the allowed RDF Statements.  This change allows representing
+non-RDF triples as well as triples with named graphs (also known as
+quads).</p>
+
+
+<h3>Term class changes</h3>
+
+<p>This new class replacing <code>raptor_identifier</code> was
+created to represent an RDF Term: literal, URI or blank node and is
+reference counted and dynamic.</p>
+
+
 <h3>URI class changes</h3>
+
+<p>Deprecated functions were removed:
+<code>raptor_uri_is_file_uri()</code>.
+</p>
+
+
+<h3>XML Writer classe changes</h3>
+
+<p>Constructors all gain a world argument and lose error handler,
+error data args.</p>
+
+
+<h3>Configuration changes</h3>
+
+<p>Raptor headers are now installed in a sub-directory of
+<em>PREFIX</em><code>/include</code>.</p>
+
+<p><code>raptor-config</code> was removed. Building against raptor 2
+should be done only using <code>pkg-config</code> with either
+<code>--cflags</code> or <code>--libs</code> arguments like this:</p>
+<pre>
+  cc -o prog prog.c `pkg-config raptor2 --cflags`  `pkg-config raptor2 --libs`
+</pre>
+
+
+<h3>Internal changes</h3>
+
+<p>Lots of code style changes.  Whitespace</p>
+
+
+
+<!-- *********************************************** -->
 
 
 <h2 id="rel1_4_21"><a name="rel1_4_21">Raptor 1.4.21 Changes</a></h2>
