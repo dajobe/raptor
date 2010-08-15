@@ -34,6 +34,7 @@ README      NEWS      LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 RELEASE.html \
 LICENSE-2.0.txt NOTICE \
+UPGRADING.html \
 raptor2.rdf.in \
 autogen.sh \
 raptor2.spec.in \
