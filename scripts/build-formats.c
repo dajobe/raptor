@@ -551,6 +551,9 @@ main(int argc, char *argv[])
       last_mime_type = type_syntaxes[i].mime_type;
       last_start_index = i;
     }
+
+    emit_format_to_syntax_list(iostr, type_syntaxes,
+                               last_mime_type, last_start_index, i-1);
   }
   emit_end_desc_list(iostr);
   emit_end_section(iostr);
