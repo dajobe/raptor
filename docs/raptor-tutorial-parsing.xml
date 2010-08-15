@@ -197,31 +197,27 @@ For example, in RDF/XML generated blank node identifiers and those
 those specified <literal>rdf:nodeID</literal> are passed through this
 process.  Setting a handler allows the identifier generation mechanism to be
 fully replaced.  A lighter alternative is to use
-<link linkend="raptor-parser-set-default-generate-id-parameters"><function>raptor_parser_set_default_generate_id_parameters()</function></link>
+<link linkend="raptor-world-set-generate-bnodeid-parameters"><function>raptor_world_set_generate_bnodeid_parameters()</function></link>
 to adjust the default algorithm for generated identifiers.
 </para>
 
 <para>It is used as follows
 <programlisting>
-  raptor_generate_id_handler id_handler;
+  raptor_generate_bnodeid_handler bnodeid_handler;
 
-  raptor_parser_set_generate_id_handler(rdf_parser, user_data, id_handler);
+  raptor_world_set_generate_bnodeid_handler(rdf_parser, user_data, bnodeid_handler);
 </programlisting>
 </para>
 
-<para>The <emphasis>id_handler</emphasis> takes the following signature:
+<para>The <emphasis>bnodeid_handler</emphasis> takes the following signature:
 <programlisting>
 unsigned char*
-generate_id_handler(void* user_data, raptor_genid_type type,
-                    unsigned char* user_id)
+generate_id_handler(void* user_data, unsigned char* user_id)
 {
    /* return a new generated ID based on user_id (optional) */
 }
 </programlisting>
-where the
-<link linkend="raptor-genid-type"><type>raptor_genid_type</type></link>
-provides extra information on the identifier being created and
-<emphasis>user_id</emphasis> an optional user-supplied identifier,
+where <emphasis>user_id</emphasis> an optional user-supplied identifier,
 such as the value of a <literal>rdf:nodeID</literal> in RDF/XML.
 </para>
 
@@ -451,6 +447,7 @@ void write_bytes_handler(raptor_www* www, void *user_data,
                          const void *ptr, size_t size, size_t nmemb) {
 {
   raptor_parser* rdf_parser = (raptor_parser*)user_data;
+
   raptor_parser_parse_chunk(rdf_parser, (unsigned char*)ptr, size*nmemb, 0);
 }
 
@@ -462,7 +459,7 @@ int main(int argc, char *argv[]) {
   ...
 
   rdf_parser = raptor_new_parser(world, "rdfxml");
-  www = raptor_new_www();
+  www = raptor_new_www(world);
 
   /* filter all URI requests */
   raptor_www_set_uri_filter(www, uri_filter, filter_user_data);
@@ -504,6 +501,7 @@ the <link linkend="tutorial-filter-network-www-uri-filter">previous section</lin
   }
 
   rdf_parser = raptor_new_parser(world, "rdfxml");
+
   raptor_parser_set_uri_filter(rdf_parser, uri_filter, filter_user_data);
 
   /* parse content as normal */
