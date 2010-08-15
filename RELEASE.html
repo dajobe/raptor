@@ -58,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-05-14 ChangeLog changes -->
+<!-- updated to 2010-08-09 ChangeLog changes -->
 
 <h3>General changes</h3>
 
@@ -78,6 +78,12 @@ the raptor 2 version.
 automatically generated from the changes data to aid migrating from
 Raptor 1 to Raptor 2 APIs.  If it is not a simple rename, the script
 annotates the change as a comment near the code.
+</p>
+
+<p>Raptor Term class and URI class can fully replace
+librdf's librdf_node and librdf_uri class.  This has been tested
+with GIT versions when both Rasqal and librdf are built with
+<code>--with-raptor2</code>.
 </p>
 
 
@@ -138,6 +144,12 @@ the URI interning using an AVL-Tree which can use up memory.
 to report failure if world is already opened.
 </p>
 
+<p>Moved the generation of blank node IDs from the parsers (many
+objects) to the world class (1 object).  Cannot think of good reasons
+why the blank node ID generation policy needs to be different
+per-parser. Enumeration <code>raptor_genid_type</code> was deleted
+since only the blank node type was ever used.
+</p>
 
 
 <h3>AVL Tree changes</h3>
@@ -271,6 +283,19 @@ syntax (first, rel/rev, whitespace, xml:lang) and fixes issues with
 non-terminated strings.
 </p>
 
+
+<p>The GRDDL parser now saves and restores the libxslt global state
+(handlers, security preferences) so that it does not affect other
+applications in the same memory space.  Part of this can be
+overridden with
+<code>raptor_world_set_libxslt_security_preferences()</code> which
+allows user code to disable raptor touching the security preferences
+entirely.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=379">Issue #0000379</a>
+</p>
+
+
 <p>The N-Triples parser accepts text/plain.
 Fixes
 <a href="http://bugs.librdf.org/mantis/view.php?id=319">Issue #0000319</a>
@@ -307,6 +332,17 @@ Fixes
 <a href="http://bugs.librdf.org/mantis/view.php?id=326">Issue #0000326</a>.
 </p>
 
+<p>Added a JSON parser (name 'json') that can read both the
+resource-centric and triples JSON RDF formats.  Requires the YAJL
+JSON parser library.  Contributed by Nicholas J Humfrey.
+</p>
+
+<p>Moved the generation of blank node IDs from the parsers (many
+objects) to the world class (1 object).  Cannot think of good reasons
+why the blank node ID generation policy needs to be different
+per-parser.
+</p>
+
 
 <h3>QName class changes</h3>
 
@@ -336,7 +372,6 @@ benefit from this.
 <p>Added an HTML Table serializer with name 'table' contributed by
 Nicholas J Humfrey.
 </p>
-
 
 <p>Removed the obsolete 'simple' serializer from the source code.
 N-Triples is an appropriate simple (and well-defined) replacement
@@ -371,6 +406,11 @@ represented as a Term.
 <code>raptor_identifier</code> and was created to represent an RDF
 Term: literal, URI or blank node and is reference counted and
 dynamic.  It is a union of fields for three types.</p>
+
+<p>This class can fully replace librdf's librdf_node when both Rasqal
+and librdf are built with <code>--with-raptor2</code>.  The
+semantics of comparison (ordering) and equality are the same.
+</p>
 
 
 <h3>Unicode changes</h3>
@@ -415,6 +455,10 @@ error data args.</p>
 
 
 <h3>Configuration changes</h3>
+
+<p>Added configure argument <code>--with-yajl=DIR</code> (or 'no') to
+set the prefix where YAJL libraries and headers are installed.
+</p>
 
 <p>Raptor headers are now installed in a sub-directory of
 <em>PREFIX</em><code>/include</code>.</p>
@@ -491,6 +535,17 @@ scanForRDF</code>.
 
 
 <h3>Other changes</h3>
+
+<p>Removed support for building raptor with dmalloc debugging
+(removing <code>--with-dmalloc</code> configure argument). Valgrind
+wins.
+</p>
+
+<p>The example 'grapper' GNOME GUI utility for raptor was updated
+to the latest GTK APIs (2.5.0+ but still quite old) so that it
+builds with all the GTK 'disable deprecated' flags set.  The
+UI is not quite correct though - the preferences menu is broken.
+</p>
 
 <p>Switched to GIT version control, hosted by GitHub.  The latest
 raptor 1 code is available on branch 'raptor1' as well as from the
