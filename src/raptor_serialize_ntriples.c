@@ -304,7 +304,7 @@ raptor_nquads_serializer_register_factory(raptor_serializer_factory *factory)
   factory->desc.mime_types = nquads_types;
   factory->desc.mime_types_count = NQUADS_TYPES_COUNT;
 
-  factory->desc.label = "N-Triples with context graph term";
+  factory->desc.label = "N-Quads";
   factory->desc.uri_string = "http://sw.deri.org/2008/07/n-quads/#n-quads";
 
   factory->context_length     = sizeof(raptor_ntriples_serializer_context);
