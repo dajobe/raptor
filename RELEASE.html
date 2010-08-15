@@ -43,7 +43,7 @@ section on
 <li>Added AVL-Tree to public API.</li>
 <li>Raptor generates raptor_statements which are now an array of 3-4 raptor_terms (new class) to allow potentially generating any combination of RDF terms for example with literal subjects, blank node predicates, graph URIs.  None of the current serializers generate anything except legal RDF triples with optional graph URI (TRiG).</li>
 <li>Features are now called options and can handle several typed values.</li>
-<li>Parsers and Serializers for the same syntax now accept the same mime types.</li>
+<li>Parsers and Serializers for the same syntax now accept the same mime types and Q values.</li>
 </ul>
 
 <p>FIXME - above is not a full list, expand from detailed changelog</p>
@@ -58,7 +58,7 @@ section on
 </ul>
 
 
-<!-- updated to 2010-04-06 ChangeLog changes -->
+<!-- updated to 2010-05-14 ChangeLog changes -->
 
 <h3>General changes</h3>
 
@@ -74,13 +74,31 @@ the raptor 2 version.
 <p>Nicholas J Humfrey is a new committer.
 </p>
 
+<p>A utility script <code>docs/upgrade-script.pl</code> is
+automatically generated from the changes data to aid migrating from
+Raptor 1 to Raptor 2 APIs.  If it is not a simple rename, the script
+annotates the change as a comment near the code.
+</p>
+
 
 <h3>Documentation changes</h3>
 
 <p>The API reference manual now includes an automatically generated
-reference section on the functions and types that were added,
-removed and changed between raptor 1 and raptor 2 APIs.
+reference section on the
+<a href="http://librdf.org/raptor/api/raptor-formats.html">functions and types that were added, removed and changed between raptor 1 and raptor 2 APIs</a>.
+
+It also includes an automatically generated section on the parser and
+serializer
+<a href="http://librdf.org/raptor/api/raptor-formats.html">names, supported syntax mime types, and Q values.</a>
 </p>
+
+<p>The tutorial examples were updated to the Raptor 2 APIs.
+</p>
+
+<p>NOTE: At this time, the descriptive parts of the tutorial has NOT
+been updated to use the Raptor 2 API.
+</p>
+
 
 <h3>World class changes</h3>
 
@@ -99,7 +117,11 @@ methods that return pointers to static
 parameters to be returned.  This allowed the removal of multiple
 older calls that kept having to gain new return arguments.
 The description also returns a list of (mime type, qname) pairs
-using a new typedef <code>raptor_type_q</code>.
+using a new typedef <code>raptor_type_q</code>.  It includes a set
+of bitflags for some simple information such as
+<code>RAPTOR_SYNTAX_NEED_BASE_URI</code> to describe when
+a syntax requires a base URI passed in, otherwise is not needed
+or optional.
 </p>
 
 <p><code>raptor_world_set_libxml_flags()</code> is replaced with
@@ -136,7 +158,8 @@ public API.
 
 <p><code>raptor_identifier_type</code> enum was removed and replaced
 with enum <code>raptor_term_type</code> and a smaller set of 3
-possible term types.</p>
+possible term types.  The enum values match the int values used
+in <code>librdf_node_type</code>.</p>
 
 
 <h3>I/O Stream class changes</h3>
@@ -202,6 +225,10 @@ parser option get and set methods
 
 
 <h3>Parser class changes</h3>
+
+<p><code>raptor_parser_set_strict()</code> was removed and replaced
+with a new parser option <code>RAPTOR_OPTION_STRICT</code>.
+</p>
 
 <p>Parser object methods to return information about the parser class
 were removed since they can be done instead via fields of the static
@@ -297,6 +324,14 @@ shared with the AVL Tree.
 
 
 <h3>Serializer class changes</h3>
+
+<p>Added <code>raptor_serializer_flush()</code> for user code to
+indicate to a serializer to flush state since the application knows a
+block has been ended, or it needs to save memory.  No serializer
+currently implements this, but it is expected the abbreviated
+serializers that use a lot of state - Turtle, RDF/XML-Abbrev - would
+benefit from this.
+</p>
 
 <p>Added an HTML Table serializer with name 'table' contributed by
 Nicholas J Humfrey.
@@ -419,7 +454,8 @@ adding a few new constructors such as for the URI and Term classes.
 </p>
 
 <p>Code style: methods called with a NULL object return failure
-and destructors called with a NULL object return silently.
+and destructors called with a NULL object return silently rather than
+the former mix of crashing or abort()ing.
 </p>
 
 <p>Code style: copy constructor is now called
@@ -427,6 +463,11 @@ and destructors called with a NULL object return silently.
 <code>raptor_new_</code><em>class</em><code>_from_</code><em>class</em><code>()</code>
 for brevity.
 </p> 
+
+<p>Code style: print methods return an int return status indicating
+success.
+</p>
+
 
 <h3>rapper Utility changes</h3>
 
