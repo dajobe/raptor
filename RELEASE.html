@@ -11,17 +11,14 @@
 
 <h2 id="rel1_9_0"><a name="rel1_9_0">Raptor 1.9.0 Changes</a></h2>
 
-<p>Not yet released.
-</p>
-
-<p>NOTE: 1.9.0 is the first beta release of Raptor 2. The API is
-relatively stable but there may be changes before 2.0.0.
+<p>1.9.0 is the first beta release of Raptor 2.  There may be changes
+and additional releases before version 2.0.0 with the final stable API.
 </p>
 
 <p>This is a major update and cleanup to the Raptor API and ABI with
 additions, removals and changes. There are also major restructurings
-of the internal code and cleanups.  There are a few new features in
-the form of additional APIs and new serializers and parsers.
+of the internal code and cleanups.  There are also some new features
+in the form of additional APIs, new serializers and parsers.
 </p>
 
 <p>The details of the additions, removals and changes of functions,
@@ -37,19 +34,17 @@ the new APIs.
 <p>The major changes in this release are:</p>
 <ul>
 <li>Removed all deprecated functions and typedefs.</li>
-<li>Renamed all functions to the form <code>raptor_</code><em>class</em><code>_</code><em>method</em>.</li>
+<li>Renamed all functions to the standard <code>raptor_</code><em>class</em><code>_</code><em>method</em> form.</li>
 <li>All constructors take a <code>raptor_world</code> argument.</li>
 <li>URIs are interned and there is no longer a swappable implementation.</li>
-<li>Statement is now an array of 3 or 4 RDF Terms to handle triples and quads.</li>
+<li>Statement is now an array of 3-4 RDF Terms to support triples and quads.</li>
+<li>World object owns logging, blank node ID generation and describing syntaxes.</li>
+<li>Features are now called options and have typed values.</li>
+<li>GRDDL parser now saves and restores shared libxslt state.</li>
 <li>Added serializers for HTML 'html' and N-Quads 'nquads'.</li>
 <li>Added parser 'json' for JSON-Resource centric and JSON-Triples.</li>
-<li>Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a></li>
-<li>Features are now called options and have typed values.</li>
-<li>Moved the memory-based AVL-Tree to the public API.</li>
-<li>World object now owns all logging, blank node ID generation and describing syntaxes.</li>
-<li>Parsers and Serializers for the same syntax now accept the same mime types and Q values.</li>
-<li>GRDDL parser now saves and restores shared libxslt state</li>
-<li>rapper utility loses -a, -n and -s options</li>
+<li>Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a>.</li>
+<li>Added memory-based AVL-Tree to the public API.</li>
 </ul>
 
 
@@ -57,13 +52,14 @@ the new APIs.
 <ul>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=357">0000357</a>: raptor_term_as_string does not return N-Triples escaped string, although API says so</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: [PATCH] HTML Table serializer</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=369">0000369</a>: Unescaped quotes in long literals (Turtle/N3) cause parser failure if at the end of the literal</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=370">0000370</a>: Odd behaviour regarding the parsing of Trig files</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=373">0000373</a>: Remove deprecated GTK symbols</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=379">0000379</a>: raptor libxslt security policy conflicts with apps that also use libxslt and set security policy</li>
 </ul>
 
 
-<!-- updated to 2010-08-09 ChangeLog changes -->
+<!-- updated to 2010-08-15 ChangeLog changes -->
 
 <h3>General changes</h3>
 
