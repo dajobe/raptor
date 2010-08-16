@@ -1,3 +1,117 @@
+2010-08-15  Dave Beckett <dave@dajobe.org>
+
+	* UPGRADING.html: remove overview section
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, UPGRADING.html: Tidy HTML style and change title to
+	Raptor RDF Syntax Library
+
+	* TODO.html: Empty document and point at bugs.librdf.org
+
+	* UPGRADING.html, Makefile.am: Added UPGRADING.html
+
+	* docs/tmpl/section-general.sgml: Update tmpl for adding
+	raptor_log_message
+
+	* src/raptor.h: Remove newline so raptor_log_message gets scanned
+	by gtk-doc!
+
+	* docs/raptor-sections.txt: Add raptor_log_message
+
+	* docs/.gitignore: Ignore raptor-fake.i for real
+
+	* docs/.gitignore: Ignore raptor-fake.i
+
+	* docs/Makefile.am, docs/tmpl/section-general.sgml: Make
+	raptor-fake.i generate properly
+
+	* scripts/Makefile.am: restore CLEANFILES
+
+	* docs/Makefile.am, scripts/Makefile.am,
+	scripts/fix-gtkdoc-header.pl: Attempt to fix raptor.h header to
+	make gtk-doc happier
+
+	* docs/raptor-1-to-2-map.tsv: more words in notes
+
+	* docs/raptor-tutorial-parsing.xml: need base uri pointer
+
+	* docs/raptor-tutorial-serializing.xml: enumeration
+
+	* docs/raptor-tutorial-parsing.xml: enumeration
+
+	* docs/raptor-tutorial-querying-functionality.xml: typo
+
+	* docs/raptor-tutorial-parsing.xml: raptor 2
+
+	* docs/raptor-tutorial-intro.xml: raptor 2
+
+	* docs/.gitignore: Ignore upgrade-script.pl
+
+	* scripts/build-formats.c: Call emit_format_to_syntax_list() at
+	end to emit last seen mime type.
+
+	* scripts/build-formats.c:
+	(emit_format_to_syntax_list): Added to emit format -> list of
+	parser/serializers.
+
+	* scripts/build-formats.c: print previous mime type in types index
+
+	* src/raptor_serialize_ntriples.c: Label nquads as "N-Quads"
+
+2010-08-14  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor2.3: Cut down for raptor2 and point to API docs in
+	HTML
+
+	* README.html: N-Quads serializer
+
+	* docs/raptor-parsers.xml: JSON parser
+
+	* INSTALL.html, README.html, raptor2.rdf.in: Update docs to point
+	to GitHub source and browse
+
+	* 000-README-GIT.txt: Remove migration text
+
+	* AUTHORS: Add Nicholas J Humfrey
+
+	* docs/tmpl/section-locator.sgml: Update generated tmpl for
+	locator rename
+
+	* RELEASE.html: 1.9.0 notes
+
+	* docs/raptor-serializers.xml: Add N-Quads section
+
+	* tests/trig/Makefile.am: Add bug370.out to dist
+
+	* tests/trig/Makefile.am, tests/trig/bug370.out,
+	tests/trig/bug370.trig, tests/trig/example1.out,
+	tests/trig/example2.out, tests/trig/example3.out:
+	Convert TRiG output results file to N-Quads to check graph
+	parameter.
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_serialize.c, src/raptor_serialize_ntriples.c:
+	Add N-Quads serializer name 'nquads' using N-Triples serializer.
+
+	Add conditions in makefile to allow ntriples and/or nquads
+	serializers
+
+	raptor_ntriples_serializer_context rename dummy field to is_quads
+
+	(raptor_ntriples_serialize_statement): Pass on flag to print
+	graph.
+
+	(raptor_nquads_serializer_register_factory): Added to register
+	nquads serializer with text/n-quads mime type
+
+	(raptor_init_serializer_nquads): Added
+
+2010-08-11  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-23.ttl:
+	Add bad test bad-23 for
+	http://bugs.librdf.org/mantis/view.php?id=369
+
 2010-08-09  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
