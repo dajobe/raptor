@@ -13,7 +13,8 @@
 <p>Raptor V2 is a major new version of the Raptor V1 API with many
 cleanups and changes that include adding, removing and re-ordering
 parameters, adding and removing return types as well as renaming the
-functions.</p>
+functions.
+</p>
 
 <p>The headers and libraries install to different places or names so
 that Raptor V1 and Raptor V2 can both be present (including headers)
@@ -76,7 +77,8 @@ code that needs manual updating.  It is used like
 </pre>
 
 <p>and then edit the file prog.c and search for <code>WARNING:</code>
-for any places that manual editing is needed.</p>
+for any places that manual editing is needed.
+</p>
 
 
 <h2>Handling Raptor V1 or Raptor V2 in the same code</h2>
@@ -104,10 +106,16 @@ for the changed functions:
 /* nop */
 
 #else
-#define raptor_v2_function(arg1, arg2) raptor_v1_function(arg2, arg1, arg3)
+#define raptor_v2_function(arg1, arg2, arg3) raptor_v1_function(arg2, arg3)
 
 #endif
 </pre>
+
+<p>Where the code cannot be done by simple expansion such as use of
+<code>raptor_init()</code> and <code>raptor_finish()</code> in V1
+that are replaced by the functions around the world object in V2, use
+an <code>#ifdef</code> that provides the two code paths.
+</p>
 
 <p><a href="http://librdf.org/rasqal/">rasqal</a>
 in GIT (will be 0.9.20) uses this approach.
@@ -115,7 +123,8 @@ in GIT (will be 0.9.20) uses this approach.
 
 <p>Another approach if the Raptor V1 code is in a separate module /
 source file is to copy it and make a V2 version and then choose the
-file to use at configure or build time.</p>
+file to use at configure or build time.
+</p>
 
 <p><a href="http://librdf.org/">librdf</a> in GIT
 (will be 1.0.11) uses this approach.
@@ -130,7 +139,8 @@ what to remove when V1 is no longer supported.
 
 <p>Since Raptor V2 probably needs to be installed in parallel with V1
 for some time, at least for the different libraries and headers, both
-need to be packaged such that no files clash.</p>
+need to be packaged such that no files clash.
+</p>
 
 <p>There are, however, two files that are shared after a 'make install':
 <code>rapper(1)</code> and <code>rapper.1</code> the manual page.
@@ -148,7 +158,8 @@ the V2 package using dependencies to ensure there are no conflicts.
 
 <p>The advantage of making the V2 version of rapper is that it means
 the command-line utility under the well known name uses the latest
-Raptor code.</p>
+Raptor code.
+</p>
 
 <hr />
 

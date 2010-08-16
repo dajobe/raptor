@@ -2,11 +2,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-  <title>Raptor RDF Parser Library - Release Notes</title>
+  <title>Raptor RDF Syntax Library - Release Notes</title>
 </head>
 <body>
 
-  <h1 style="text-align:center">Raptor RDF Parser Library - Release Notes</h1>
+<h1 style="text-align:center">Raptor RDF Syntax Library - Release Notes</h1>
 
 
 <h2 id="rel1_9_0"><a name="rel1_9_0">Raptor 1.9.0 Changes</a></h2>
@@ -14,15 +14,16 @@
 <p>Not yet released.
 </p>
 
-<p>1.9.0 is the first beta release of Raptor 2.  The API is probably
-stable but there may be changes before 2.0.0.
+<p>NOTE: 1.9.0 is the first beta release of Raptor 2. The API is
+relatively stable but there may be changes before 2.0.0.
 </p>
 
 <p>This is a major cleanup and update of the Raptor 2 API and ABI.
 The API has been made more consistent in naming, with some features
 moving to the core world class, rather than being attached to a
 parser object.  There are also major restructurings and cleanups
-internally.</p>
+internally.
+</p>
 
 <p>The detailed additions, removals and changes of functions and
 structures typedefs and enums are listed in the
@@ -116,7 +117,8 @@ other) are now all sent to a single log handler of type
 <code>raptor_world_set_log_handler()</code>, rather than handlers set
 for each parser, sax2, serializer or www instance.  Several
 constructors lose error handler and error data parameters
-consequently.</p>
+consequently.
+</p>
 
 <p>The enumerating approach for listing the known parsers and
 serializers and writing into variables passed in, was replaced with
@@ -168,17 +170,20 @@ public API.
 
 <h3>Identifier class changes</h3>
 
-<p>Replaced with Term class.</p>
+<p>Replaced with Term class.
+</p>
 
 <p><code>raptor_identifier_type</code> enum was removed and replaced
 with enum <code>raptor_term_type</code> and a smaller set of 3
 possible term types.  The enum values match the int values used
-in <code>librdf_node_type</code>.</p>
+in <code>librdf_node_type</code>.
+</p>
 
 
 <h3>I/O Stream class changes</h3>
 
-<p>Constructors all gain a world argument.</p>
+<p>Constructors all gain a world argument.
+</p>
 
 <p>Some methods now return an int error status such as
 <code>raptor_iostream_write_end()</code>
@@ -209,7 +214,8 @@ convention and to put the iostream argument at the end.
 <h3>Namespaces and namespace stack classes changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data arguments.</p>
+error data arguments.
+</p>
 
 
 <h3>Options</h3>
@@ -218,7 +224,8 @@ error data arguments.</p>
 expanded to allow use of values types string, integer and boolean.
 Options can be set on multiple classes such as parser, serializer but
 are centrally described using the new
-<code>raptor_option_description</code> structure.</p>
+<code>raptor_option_description</code> structure.
+</p>
 
 <p>The option get/set operations were reduced from multiple methods
 per class for getting/setting an int, int/string to just one get and
@@ -326,7 +333,8 @@ per-parser.
 <h3>QName class changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data arguments.</p>
+error data arguments.
+</p>
 
 
 <h3>Sequence changes</h3>
@@ -366,7 +374,8 @@ freed using reference counting.   The structure changed to be an
 array of 4 raptor terms rather than a complex union focused on
 the allowed RDF Statements.  This change allows representing
 non-RDF triples as well as triples with named graphs (also known as
-quads).</p>
+quads).
+</p>
 
 <p><code>raptor_statement_part_as_counted_string()</code> turns into
 a method of the new Term class, as a "statement part" is now
@@ -379,7 +388,8 @@ represented as a Term.
 <p>This new class with an open structure replaces
 <code>raptor_identifier</code> and was created to represent an RDF
 Term: literal, URI or blank node and is reference counted and
-dynamic.  It is a union of fields for three types.</p>
+dynamic.  It is a union of fields for three types.
+</p>
 
 <p>This class can fully replace librdf's librdf_node when both Rasqal
 and librdf are built with <code>--with-raptor2</code>.  The
@@ -425,7 +435,8 @@ destructor and method naming format.
 <h3>XML Writer class changes</h3>
 
 <p>Constructors all gain a world argument and lose error handler,
-error data arguments.</p>
+error data arguments.
+</p>
 
 
 <h3>Configuration changes</h3>
@@ -435,7 +446,8 @@ set the prefix where YAJL libraries and headers are installed.
 </p>
 
 <p>Raptor headers are now installed in a sub-directory of
-<em>PREFIX</em><code>/include</code>.</p>
+<em>PREFIX</em><code>/include</code>.
+</p>
 
 <p><code>raptor-config</code> was removed. Building against raptor 2
 should be done only using <code>pkg-config</code> with either
@@ -449,10 +461,12 @@ should be done only using <code>pkg-config</code> with either
 
 <p>Code style: lots of changes mostly adding lots more whitespace
 such as to show control change (if, while) or early function exit
-(return).</p>
+(return).
+</p>
 
 <p>All strcpy() with known lengths and strncpy() were replaced with
-memcpy() which is quicker and compilers optimize better.</p>
+memcpy() which is quicker and compilers optimize better.
+</p>
 
 <p>Code style: 
 use <code>TYPE* var_name = RAPTOR_CALLOC(TYPE, 1, sizeof(*var_name))</code>
@@ -490,9 +504,11 @@ success.
 <h3>rapper Utility changes</h3>
 
 <p>Print out the option types next to the description in the <code>-f
-help</code> usage message.  The main visible type is boolean.</p>
+help</code> usage message.  The main visible type is boolean.
+</p>
 
-<p>Removed unused <code>-a</code> flag from code.</p>
+<p>Removed unused <code>-a</code> flag from code.
+</p>
 
 <p>Did NOT rename <code>-f</code> option to match the renaming of
 features to options in the API.  Not needed.
@@ -500,7 +516,8 @@ features to options in the API.  Not needed.
 
 <p>Removed long deprecated <code>-n</code> flag which was shortcut for
 selecting the N-Triples parser and can be done with <code>-i
-ntriples</code.</p>
+ntriples</code.
+</p>
 
 <p>Removed <code>-s/--scan</code> flag since it is an option of a
 single parser (RDF/XML) which can be done with <code>-f/--feature
@@ -535,7 +552,8 @@ release tags for specific versions.
 
 <p>This is a bug fix only release with no new features.  New
 development has moved to raptor 2 where a planned ABI and API break
-is underway.</p>
+is underway.
+</p>
 
 <p>Fixed Issues:</p>
 <ul>
@@ -559,11 +577,13 @@ memory leaks and some other minor bugs.
 </p>
 
 <p>RDF/XML parser: Properly reset the ID-checking set at the start of
-each parse.</p>
+each parse.
+</p>
 
 <p>Turtle parser: Allow \\ at the end of triple-quoted literals.
 Forbid '.'s in prefixes and qnames (follow specification).
-Properly count newlines inside the literals for error reporting.</p>
+Properly count newlines inside the literals for error reporting.
+</p>
 
 <h3>Serializer changes</h3>
 
@@ -581,7 +601,8 @@ rules for the maintainer (by default), or when
 </p>
 
 <p><code>autogen.sh</code> script was updated to enforce the
-autotools versions above.</p>
+autotools versions above.
+</p>
 
 
 
@@ -590,7 +611,8 @@ autotools versions above.</p>
 <p>This is a bug fix only release with no new features.  New
 development has moved to raptor 2 where a planned ABI and API break
 will happen.  There may be preview releases of raptor 2 with 1.9.x
-numbering.</p>
+numbering.
+</p>
 
 <p>Fixed Issues:</p>
 <ul>
