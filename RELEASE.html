@@ -18,21 +18,23 @@
 relatively stable but there may be changes before 2.0.0.
 </p>
 
-<p>This is a major cleanup and update of the Raptor 2 API and ABI.
-The API has been made more consistent in naming, with some features
-moving to the core world class, rather than being attached to a
-parser object.  There are also major restructurings and cleanups
-internally.
+<p>This is a major update and cleanup to the Raptor API and ABI with
+additions, removals and changes. There are also major restructurings
+of the internal code and cleanups.  There are a few new features in
+the form of additional APIs and new serializers and parsers.
 </p>
 
-<p>The detailed additions, removals and changes of functions and
-structures typedefs and enums are listed in the
+<p>The details of the additions, removals and changes of functions,
+structures, typedefs and enums are listed in the
 <a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
 section on
 <a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>.
+The <a href="UPGRADING.html">upgrading document</a>
+explains how to upgrade existing code that uses the V1 APIs to use
+the new APIs.
 </p>
 
-<p>The major changes are:</p>
+<p>The major changes in this release are:</p>
 <ul>
 <li>Removed all deprecated functions and typedefs.</li>
 <li>Renamed all functions to the form <code>raptor_</code><em>class</em><code>_</code><em>method</em>.</li>
@@ -504,7 +506,7 @@ success.
 <h3>rapper Utility changes</h3>
 
 <p>Print out the option types next to the description in the <code>-f
-help</code> usage message.  The main visible type is boolean.
+help</code> usage message.
 </p>
 
 <p>Removed unused <code>-a</code> flag from code.
