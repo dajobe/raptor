@@ -245,7 +245,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
   switch(term_class) {
     case RAPTOR_TERM_CLASS_URI:
       /* ends on > */
-      result = (c!= '>');
+      result = (c != '>');
       break;
       
     case RAPTOR_TERM_CLASS_BNODEID:  
@@ -257,7 +257,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
       
     case RAPTOR_TERM_CLASS_STRING:
       /* ends on " */
-      result = (c!= '"');
+      result = (c != '"');
       break;
 
     case RAPTOR_TERM_CLASS_LANGUAGE:
@@ -317,15 +317,15 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
                      raptor_ntriples_term_class term_class,
                      int allow_utf8)
 {
-  const unsigned char *p=*start;
-  unsigned char c='\0';
+  const unsigned char *p = *start;
+  unsigned char c = '\0';
   size_t ulen = 0;
   unsigned long unichar = 0;
   unsigned int position = 0;
   int end_char_seen = 0;
 
   if(term_class == RAPTOR_TERM_CLASS_FULL)
-    end_char='\0';
+    end_char = '\0';
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -347,14 +347,14 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
           return 1;
         }
         memcpy(dest, p-1, unichar_len);
-        dest+= unichar_len;
+        dest += unichar_len;
 
         unichar_len--; /* p, *lenp were moved on by 1 earlier */
         
         p += unichar_len;
         (*lenp) -= unichar_len;
-        rdf_parser->locator.column+= unichar_len;
-        rdf_parser->locator.byte+= unichar_len;
+        rdf_parser->locator.column += unichar_len;
+        rdf_parser->locator.byte += unichar_len;
         continue;
       }
     } else if(!IS_ASCII_PRINT(c)) {
@@ -388,7 +388,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
       }
       
       /* otherwise store and move on */
-      *dest++=c;
+      *dest++ = c;
       position++;
       continue;
     }
@@ -409,16 +409,16 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     switch(c) {
       case '"':
       case '\\':
-        *dest++=c;
+        *dest++ = c;
         break;
       case 'n':
-        *dest++='\n';
+        *dest++ = '\n';
         break;
       case 'r':
-        *dest++='\r';
+        *dest++ = '\r';
         break;
       case 't':
-        *dest++='\t';
+        *dest++ = '\t';
         break;
       case 'u':
       case 'U':
@@ -477,12 +477,12 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   }
 
   /* terminate dest, can be shorter than source */
-  *dest='\0';
+  *dest = '\0';
 
   if(dest_lenp)
     *dest_lenp = p - *start;
 
-  *start=p;
+  *start = p;
 
   return 0;
 }
@@ -498,7 +498,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *terms[3];
   size_t term_lengths[3];
   raptor_term_type term_types[3];
-  size_t term_length= 0;
+  size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
   unsigned char *object_literal_datatype = NULL;
   int rc = 0;
@@ -535,7 +535,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   
   /* Remove trailing spaces */
   while(len > 0 && isspace((int)p[len-1])) {
-    p[len-1]='\0';
+    p[len-1] = '\0';
     len--;
   }
 
@@ -550,7 +550,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     return 0;
   }
 
-  p[len-1]='\0';
+  p[len-1] = '\0';
   len--;
 
 
@@ -582,7 +582,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
     switch(*p) {
       case '<':
-        term_types[i]= RAPTOR_TERM_TYPE_URI;
+        term_types[i] = RAPTOR_TERM_TYPE_URI;
         
         dest = p;
 
@@ -601,7 +601,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         break;
 
       case '"':
-        term_types[i]= RAPTOR_TERM_TYPE_LITERAL;
+        term_types[i] = RAPTOR_TERM_TYPE_LITERAL;
         
         dest = p;
 
@@ -650,10 +650,10 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           object_literal_datatype = p;
 
           /* Skip ^^ */
-          p+= 2;
-          len-= 2;
-          rdf_parser->locator.column+= 2;
-          rdf_parser->locator.byte+= 2;
+          p += 2;
+          len -= 2;
+          rdf_parser->locator.column += 2;
+          rdf_parser->locator.byte += 2;
 
           if(!len || (len && *p != '<')) {
             raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
@@ -684,7 +684,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
       case '_':
-        term_types[i]= RAPTOR_TERM_TYPE_BLANK;
+        term_types[i] = RAPTOR_TERM_TYPE_BLANK;
 
         /* store where _ was */
         dest = p;
@@ -765,7 +765,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
      */
     for(q = object_literal_language; *q; q++) {
       if(IS_ASCII_UPPER(*q))
-        *q=TO_ASCII_LOWER(*q);
+        *q = TO_ASCII_LOWER(*q);
     }
   }
 
@@ -859,12 +859,12 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     RAPTOR_DEBUG3("found newline \\x%02x at offset %d\n", *ptr,
                   ptr-line_start);
 #endif
-    ntriples_parser->last_char=*ptr;
+    ntriples_parser->last_char = *ptr;
 
     len = ptr-line_start;
     rdf_parser->locator.column = 0;
 
-    *ptr='\0';
+    *ptr = '\0';
     if(raptor_ntriples_parse_line(rdf_parser,line_start,len))
       return 1;
     
@@ -902,7 +902,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     memcpy(buffer, 
            ntriples_parser->line + ntriples_parser->line_length - len,
            len);
-    buffer[len]='\0';
+    buffer[len] = '\0';
 
     RAPTOR_FREE(cstring, ntriples_parser->line);
 
@@ -937,14 +937,14 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 static int
 raptor_ntriples_parse_start(raptor_parser* rdf_parser) 
 {
-  raptor_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator = &rdf_parser->locator;
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
 
   locator->line = 1;
   locator->column = 0;
   locator->byte = 0;
 
-  ntriples_parser->last_char='\0';
+  ntriples_parser->last_char = '\0';
 
   return 0;
 }
@@ -957,7 +957,7 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
                                        const unsigned char *suffix, 
                                        const char *mime_type)
 {
-  int score= 0;
+  int score = 0;
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "nt"))
