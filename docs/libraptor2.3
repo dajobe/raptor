@@ -4,10 +4,10 @@
 .\" Copyright (C) 2002-2010 David Beckett - http://www.dajobe.org/
 .\" Copyright (C) 2002-2005 University of Bristol, UK
 .\"
-.TH libraptor2 3 "2010-08-14"
+.TH libraptor2 3 "2010-08-16"
 .\" Please adjust this date whenever revising the manpage.
 .SH NAME
-libraptor2 \- Raptor RDF parser and serializer library 2.0
+libraptor2 \- Raptor RDF syntax library 2.0
 .SH SYNOPSIS
 .nf
 .B #include <raptor.h>
@@ -67,7 +67,9 @@ encoding of Unicode at the API for passing in or returning Unicode
 strings.  It is intended that the preservation of Unicode for URIs
 supports Internationalized Resource Identifiers (IRIs).
 .SH "API REFERENCE"
-See the HTML API docs installed system wide or on the web at
+See the HTML API docs that may be installed system wide at
+/usr/share/gtk-doc/html/raptor2/
+or on the web at
 .UR http://librdf.org/raptor/api/
 http://librdf.org/raptor/api/
 .UE
@@ -75,6 +77,10 @@ http://librdf.org/raptor/api/
 See the Raptor API docs changes section at
 .UR http://librdf.org/raptor/api/raptor-changes.html
 http://librdf.org/raptor/api/raptor-changes.html 
+and the upgrading information when converting from libraptor(1)
+code at
+.UR http://librdf.org/raptor/UPGRADING.html
+http://librdf.org/raptor/UPGRADING.html
 .br
 .SH "CONFORMING TO"
 \fIRDF/XML Syntax (Revised)\fP, Dave Beckett (ed.)
