@@ -51,7 +51,7 @@ the new APIs.
 <p>Fixed Issues:</p>
 <ul>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=357">0000357</a>: raptor_term_as_string does not return N-Triples escaped string, although API says so</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: [PATCH] HTML Table serializer</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: HTML Table serializer</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=369">0000369</a>: Unescaped quotes in long literals (Turtle/N3) cause parser failure if at the end of the literal</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=370">0000370</a>: Odd behaviour regarding the parsing of Trig files</li>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=373">0000373</a>: Remove deprecated GTK symbols</li>
@@ -82,10 +82,12 @@ Raptor 1 to Raptor 2 APIs.  If it is not a simple rename, the script
 annotates the change as a comment near the code.
 </p>
 
-<p>Raptor's Term class and URI class can fully replace librdf's
-<code>librdf_node</code> and <code>librdf_uri</code> class.  This has
-been tested with GIT versions when both Rasqal and librdf are built
-with <code>--with-raptor2</code>.
+<p>Raptor's Statement, Term and URI classes can fully replace
+librdf's <code>librdf_statement</code>, <code>librdf_node</code> and
+<code>librdf_uri</code> classes.  This has been tested with GIT
+versions when both Rasqal and librdf are configured with
+<code>--with-raptor2</code>.  When raptor 2 is stable, Rasqal and
+librdf will default to use these..
 </p>
 
 
@@ -225,9 +227,9 @@ are centrally described using the new
 <code>raptor_option_description</code> structure.
 </p>
 
-<p>The option get/set operations were reduced from multiple methods
-per class for getting/setting an int, int/string to just one get and
-one set, with optional parameters.  It can also handle adding new
+<p>The option get / set operations were reduced from multiple methods
+per class for getting / setting an int, int / string to just one get
+and one set, with optional parameters.  It can also handle adding new
 types later, which will be passed in as strings and converted
 internally.
 </p>
@@ -340,8 +342,8 @@ error data arguments.
 <p>Use new generic <code>raptor_data_free_handler</code>,
 <code>raptor_data_print_handler</code>,
 <code>raptor_data_context_free_handler</code>,
-<code>raptor_data_context_print_handler</code> for data-focused
-handlers which are shared with the AVL Tree.
+<code>raptor_data_context_print_handler</code>
+data-focused handlers which are shared with the AVL Tree.
 </p>
 
 
@@ -462,8 +464,9 @@ such as to show control change (if, while) or early function exit
 (return).
 </p>
 
-<p>All strcpy() with known lengths and strncpy() were replaced with
-memcpy() which is quicker and compilers optimize better.
+<p>All <code>strcpy()</code> with known lengths and
+<code>strncpy()</code> were replaced with <code>memcpy()</code> which
+is quicker and compilers optimize better.
 </p>
 
 <p>Code style: 
@@ -475,17 +478,18 @@ rather than repeat the type name which can be error-prone.
 use <code>c = a + b</code> rather than <code>c=a+b</code>.
 </p>
 
-<p>Code style: removed some strdup()s.
+<p>Code style: removed some <code>strdup()</code>s.
 </p>
 
-<p>Code style: try to remove un-necessary strlen() by tending to pass
-around a string with it's length, a counted string.  This meant
-adding a few new constructors such as for the URI and Term classes.
+<p>Code style: try to remove un-necessary <code>strlen()</code> by
+tending to pass around a string with it's length, a counted string.
+This meant adding a few new constructors such as for the URI and Term
+classes.
 </p>
 
 <p>Code style: methods called with a NULL object return failure
 and destructors called with a NULL object return silently rather than
-the former mix of crashing or abort()ing.
+the former mix of crashing or <code>abort()</code>ing.
 </p>
 
 <p>Code style: copy constructor is now called
