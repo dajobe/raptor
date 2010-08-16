@@ -9,11 +9,41 @@
 <h1 style="text-align:center">Raptor RDF Syntax Library - News</h1>
 
 
-<h2 id="D2010-XX-XX-V1.9.0">2010-XX-XX Raptor Version 1.9.0 Released</h2>
+<h2 id="D2010-08-16-V1.9.0">2010-08-16 Raptor Version 1.9.0 Released</h2>
 
-<p>Not yet released and not supported.  The APIs in V2 may change before
-the release.
+<p>Raptor 2 first beta release. There may be changes before a stable 2.0.0 API<br />
+Removed all deprecated functions and typedefs.<br />
+Renamed all functions to the standard <code>raptor_</code><em>class</em><code>_</code><em>method</em> form.<br />
+All constructors take a <code>raptor_world</code> argument.<br />
+URIs are interned and there is no longer a swappable implementation.<br />
+Statement is now an array of 3-4 RDF Terms to support triples and quads.<br />
+World object owns logging, blank node ID generation and describing syntaxes.<br />
+Features are now called options and have typed values.<br />
+GRDDL parser now saves and restores shared libxslt state.<br />
+Added serializers for HTML 'html' and N-Quads 'nquads'.<br />
+Added parser 'json' for JSON-Resource centric and JSON-Triples.<br />
+Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a>.<br />
+Added memory-based AVL-Tree to the public API.<br />
+Fixed reported <a href="http://bugs.librdf.org/">issues</a>:
+<a href="http://bugs.librdf.org/mantis/view.php?id=357">0000357</a>,
+<a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>,
+<a href="http://bugs.librdf.org/mantis/view.php?id=369">0000369</a>,
+<a href="http://bugs.librdf.org/mantis/view.php?id=370">0000370</a>,
+<a href="http://bugs.librdf.org/mantis/view.php?id=373">0000373</a> and
+<a href="http://bugs.librdf.org/mantis/view.php?id=379">0000379</a>
 </p>
+
+<p>The <a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+section on
+<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>
+provides detailed function and type changes.
+The <a href="UPGRADING.html">upgrading document</a>
+explains how to upgrade existing Raptor V1 code to the new APIs.
+</p>
+
+<p>See the <a href="RELEASE.html#rel1_9_0">Raptor 1.9.0 Release Notes</a>
+for the full details of the changes.</p>
+
 
 
 <h2 id="D2010-01-30-V1.4.21">2010-01-30 Raptor Version 1.4.21 Released</h2>
