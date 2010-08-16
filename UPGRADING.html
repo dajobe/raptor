@@ -10,18 +10,28 @@
 
 <h2>Overview</h2>
 
-<p>Raptor V2 is a cleaned up version of the Raptor V1 API with
-changes that include adding, removing and re-ordering parameters,
-adding and removing return types as well as renaming the
+<p>Raptor V2 is a major new version of the Raptor V1 API with many
+cleanups and changes that include adding, removing and re-ordering
+parameters, adding and removing return types as well as renaming the
 functions.</p>
 
 <p>The headers and libraries install to different places or names so
 that Raptor V1 and Raptor V2 can both be present (including headers)
 on the same system without clashing.  However, if you do try linking
-the same binary with both, that won't work!   There are only two
-installed files that overlap - the <code>rapper</code> utility
-and it's manual page.
+the same binary with both libraries, the symbols will clash and the
+program will fail in mysterious ways if it runs at all.  There are
+only two installed files that overlap - the <code>rapper</code>
+utility and it's manual page.
 </p>
+
+<blockquote>
+<!-- FIXME remove at 2.0.0 -->
+<strong>Questions for the Raptor V2 beta:</strong>
+<ol>
+<li>Should Raptor generate versioned symbols for V2?</li>
+<li>Should <code>rapper</code> be renamed to <code>rapper2</code> for V2 to prevent the libraries from clashing in any file?  This is undesireable from a user point of view.</li>
+</ol>
+</blockquote>
 
 
 <h2>Configuration and compiling changes</h2>
@@ -49,14 +59,11 @@ split that into two stages.
 <p>There are significant API changes, which are described in the
 <a href="RELEASE.html">Release Notes</a> in long summary form with
 some background to why, in the <a href="ChangeLog">ChangeLog</a> in
-very long form.   The reference manual contains sections describing
-what was added, deleted, renamed and otherwise changed for
+very long form.   The reference manual contains
+<a href="http://librdf.org/raptor/api/raptor-changes.html">a section</a>
+describing what was added, deleted, renamed and otherwise changed for
 both the functions exported from the library, as well as the
 typedefs.
-</p>
-
-<p>
-see html
 </p>
 
 <p>There is no fully automatic way to handle updating the code
@@ -68,23 +75,23 @@ code that needs manual updating.  It is used like
   $ perl docs/upgrade-script.pl prog.c
 </pre>
 
-<p>and then edit the file prog.c and search for WARNING</p>
+<p>and then edit the file prog.c and search for <code>WARNING:</code>
+for any places that manual editing is needed.</p>
 
 
-<h2>Handling Raptor V1 and Raptor V2 in the same code</h2>
+<h2>Handling Raptor V1 or Raptor V2 in the same code</h2>
 
-<p>If you need to handle both APIs in the same codebase, it is
-recommended that after deciding which to use, you use the
-following approach based on macros.
+<p>If you need to handle both APIs in the same codebase as
+alternatives, it is recommended that you use the following approach.
 </p>
 
 <p>
-Create a <code>#define</code> that records the choice of which API
-you want to use.  You can do this triggered on whichever
+Create an application <code>#define</code> that records the choice of
+which API you want to use.  You can do this triggered on whichever
 <code>raptor.h</code> is in the include path by <code>#ifdef
 RAPTOR_V2_AVAILABLE</code> but that may be dangerous if both
-libraries and headers are present.  Better is an application define
-that is determined by a configuration step.
+libraries and headers are present. A better choice is an application
+specific define that is determined by a configuration step.
 </p>
 
 <p>Once the choice is made, it is recommended you convert the
@@ -102,9 +109,16 @@ for the changed functions:
 #endif
 </pre>
 
-<p>Another approach if the Raptor code is in a separate module /
-source file is to fork it and make a V2 version and then choose the
-file to use at configure or build time.
+<p><a href="http://librdf.org/rasqal/">rasqal</a>
+in GIT (will be 0.9.20) uses this approach.
+</p>
+
+<p>Another approach if the Raptor V1 code is in a separate module /
+source file is to copy it and make a V2 version and then choose the
+file to use at configure or build time.</p>
+
+<p><a href="http://librdf.org/">librdf</a> in GIT
+(will be 1.0.11) uses this approach.
 </p>
 
 <p>Either way, basing the interface on the V2 APIs makes it clear
@@ -114,18 +128,27 @@ what to remove when V1 is no longer supported.
 
 <h2>Packaging recommendations for distributors</h2>
 
-<p>Since Raptor V2 installs files independent from Raptor V1, it can
-be given a new package name.  There are two files that are shared,
+<p>Since Raptor V2 probably needs to be installed in parallel with V1
+for some time, at least for the different libraries and headers, both
+need to be packaged such that no files clash.</p>
+
+<p>There are, however, two files that are shared after a 'make install':
 <code>rapper(1)</code> and <code>rapper.1</code> the manual page.
-For packaging systems that split the files (libraries, headers, docs,
-debug files) into multiple packages, these should be in a package of
-their own that replace and conflict with the earlier files. (This is
-what I have done with the debian packages). For packaging systems
-that do not use multiple packages, you will have to either leave
-these files out of the V2 package or migrate them from the V1 package
-to the V2 package using dependencies to ensure there are no
-conflicts.  The advantage of the V2 versions is that it means
-the useful command-line utility uses the latest Raptor code.</p>
+</p>
+
+<p>For packaging systems that split the installation into multiple
+packages (libraries, headers, docs, debug files), these two files
+should be in a package of their own that replace and conflict with
+the earlier files.  (This is what I have done with the Debian
+packages raptor-utils and raptor2-utils).  For packaging systems that
+do not use multiple packages, you will have to either leave these
+files out of the V2 package or migrate them from the V1 package to
+the V2 package using dependencies to ensure there are no conflicts.
+</p>
+
+<p>The advantage of making the V2 version of rapper is that it means
+the command-line utility under the well known name uses the latest
+Raptor code.</p>
 
 <hr />
 
