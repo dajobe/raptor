@@ -1,3 +1,8 @@
+2010-08-16  Dave Beckett <dave@dajobe.org>
+
+	* Snapshotted raptor2_1_9_0 for 1.9.0 release (GIT
+	9223bfb82c7291dfc778d5bde690a6ecdb652e8e)
+
 2010-08-15  Dave Beckett <dave@dajobe.org>
 
 	* UPGRADING.html: remove overview section
