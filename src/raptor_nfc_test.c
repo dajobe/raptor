@@ -94,7 +94,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 
     p = (const char*)endptr;
     
-    u += raptor_unicode_utf8_string_put_char(c, u);
+    u += raptor_unicode_utf8_string_put_char(c, u, (end-p));
     
     if((u-utf8_string) > (int)utf8_string_length) {
       fprintf(stderr,
@@ -120,7 +120,7 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
   
   while(i < length && *input) {
     unsigned long c;
-    int size = raptor_unicode_utf8_string_get_char(&c, input, length-i);
+    int size = raptor_unicode_utf8_string_get_char(input, length - i, &c);
     if(size <= 0)
       return;
     if(i)
