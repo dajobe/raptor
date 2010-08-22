@@ -22,17 +22,17 @@
 
     <maintainer>
       <foaf:Person>
-	<foaf:name>Dave Beckett</foaf:name>
-	<foaf:homepage rdf:resource="http://www.dajobe.org/"/>
-	<foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
+        <foaf:name>Dave Beckett</foaf:name>
+        <foaf:homepage rdf:resource="http://www.dajobe.org/"/>
+        <foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
       </foaf:Person>
     </maintainer>
 
     <release>
       <Version>
         <name>stable</name>
-	<created>2005-02-01</created>
-	<revision>@VERSION@</revision>
+        <created>2005-02-01</created>
+        <revision>@VERSION@</revision>
       </Version>
     </release>
 
@@ -65,8 +65,8 @@
     <!-- source repository -->
     <repository>
       <GITRepository>
-	<location rdf:resource="git://github.com/dajobe/raptor.git" />
-	<browse rdf:resource="http://github.com/dajobe/raptor" />
+        <location rdf:resource="git://github.com/dajobe/raptor.git" />
+        <browse rdf:resource="http://github.com/dajobe/raptor" />
       </GITRepository>
     </repository>
   </Project>
@@ -79,9 +79,9 @@
   <rdf:Description rdf:about="">
     <foaf:maker>
       <foaf:Person>
-	<foaf:name>Dave Beckett</foaf:name>
-	<foaf:homepage rdf:resource="http://www.dajobe.org/"/>
-	<foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
+        <foaf:name>Dave Beckett</foaf:name>
+        <foaf:homepage rdf:resource="http://www.dajobe.org/"/>
+        <foaf:mbox_sha1sum>970987f991961f2553a1bf2574166fa29befbccb</foaf:mbox_sha1sum>
       </foaf:Person>
     </foaf:maker>
   </rdf:Description>
