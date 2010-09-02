@@ -141,7 +141,7 @@ raptor_json_serialize_start(raptor_serializer* serializer)
   }
 
   /* start callback */
-  value = RAPTOR_OPTIONS_GET_STRING(serializer, RAPTOR_OPTION_RELATIVE_URIS);
+  value = RAPTOR_OPTIONS_GET_STRING(serializer, RAPTOR_OPTION_JSON_CALLBACK);
   if(value) {
     raptor_iostream_string_write(value, serializer->iostream);
     raptor_iostream_write_byte('(', serializer->iostream);
