@@ -888,7 +888,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   }
   
 
-  if(item) {
+  if(item && statement->subject->type == RAPTOR_TERM_TYPE_URI) {
     raptor_rss_item_set_uri(item, statement->subject->value.uri);
     
     /* Move any existing statements to the newly discovered item */
