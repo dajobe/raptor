@@ -839,6 +839,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++) {
     raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
     if(item_uri &&
+       statement->object->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals_v2(rss_serializer->world,
                             (raptor_uri*)statement->object, item_uri)) {
       type = (raptor_rss_type)i;
