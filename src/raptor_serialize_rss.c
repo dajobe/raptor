@@ -836,16 +836,16 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
        statement->object->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals(statement->object->value.uri, item_uri)) {
       type = (raptor_rss_type)i;
-      RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
+      RAPTOR_DEBUG4("Found typed node %i - %s with term %s\n", type,
                     raptor_rss_items_info[type].name,
-                    raptor_uri_as_string(statement->subject->value.uri));
+                    raptor_term_as_string(statement->subject));
       break;
     }
   }
 
   if(type == RAPTOR_RSS_NONE) {
-    RAPTOR_DEBUG2("UNKNOWN typed node with type URI <%s>\n",
-                  raptor_uri_as_string(statement->object->value.uri));
+    RAPTOR_DEBUG2("UNKNOWN typed node with type term %s\n",
+                  raptor_term_as_string(statement->object));
     goto savetriple;
   }
 
@@ -862,8 +862,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     if(i < size) {
       RAPTOR_DEBUG2("Found RSS item at entry %d in sequence of items\n", i);
     } else {
-      RAPTOR_DEBUG2("RSS item URI <%s> is not in sequence of items\n",
-                    raptor_uri_as_string(statement->subject->value.uri));
+      RAPTOR_DEBUG2("RSS item term %s is not in sequence of items\n",
+                    raptor_term_as_string(statement->subject));
       item = NULL;
     }
   } else if(type == RAPTOR_RSS_ENCLOSURE) {
@@ -877,8 +877,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     if(i < size) {
       RAPTOR_DEBUG2("Found enclosure at entry %d in sequence of enclosures\n", i);
     } else {
-      RAPTOR_DEBUG2("Add new enclosure to sequence with URI <%s>\n",
-                    raptor_uri_as_string(statement->subject->value.uri));
+      RAPTOR_DEBUG2("Add new enclosure to sequence with term %s\n",
+                    raptor_term_as_string(statement->subject));
       
       item = raptor_new_rss_item(rss_serializer->world);
       raptor_sequence_push(rss_serializer->enclosures, item);
@@ -955,8 +955,8 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
                   "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44))
         ordinal= raptor_check_ordinal(uri_str + 44);
 
-      RAPTOR_DEBUG3("Found RSS 1.0 item %d with URI <%s>\n", ordinal,
-                    raptor_uri_as_string(s->object->value.uri));
+      RAPTOR_DEBUG3("Found RSS 1.0 item %d with term %s\n", ordinal,
+                    raptor_term_as_string(s->object));
 
       if(ordinal >= 0) {
         raptor_rss_item *item;
