@@ -833,6 +833,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
 
     if(item_uri &&
+       statement->object->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals(statement->object->value.uri, item_uri)) {
       type = (raptor_rss_type)i;
       RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
