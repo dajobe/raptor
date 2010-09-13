@@ -639,6 +639,7 @@ raptor_rss10_remove_mapped_fields(raptor_rss10_serializer_context *rss_serialize
   return 0;
 }
 
+
 /**
  * raptor_rss10_store_statement:
  * @rss_serializer: serializer object
@@ -734,13 +735,20 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   }
   
   if(!handled) {
-    raptor_sequence_push(rss_serializer->triples, s);
+    raptor_statement *t;
+
+    /* Need to handle this later so copy it */
+    t = raptor_statement_copy(s);
+    if(t) {
+      raptor_sequence_push(rss_serializer->triples, t);
+
 #if RAPTOR_DEBUG > 1
-    fprintf(stderr,"Stored statement: ");
-    raptor_statement_print_as_ntriples(s, stderr);
-    fprintf(stderr,"\n");
+      fprintf(stderr,"Stored statement: ");
+      raptor_statement_print_as_ntriples(s, stderr);
+      fprintf(stderr,"\n");
 #endif
-    handled = 1;
+      handled = 1;
+    }
   }
 
   return handled;
@@ -928,12 +936,8 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
 
   savetriple:
-  if(!handled) {
-    raptor_statement *t;
-    t = raptor_statement_copy(statement);
-    if(t)
-      handled = raptor_rss10_store_statement(rss_serializer, t);
-  }
+  if(!handled)
+    handled = raptor_rss10_store_statement(rss_serializer, statement);
 
   return 0;
 }
