@@ -637,7 +637,7 @@ raptor_rss10_remove_mapped_fields(raptor_rss10_serializer_context *rss_serialize
 /**
  * raptor_rss10_store_statement:
  * @rss_serializer: serializer object
- * @s: statement
+ * @s: statement (shared - do not become owner of this)
  *
  * INTERNAL - decide where to store a statement in an item or keep pending
  *
@@ -715,7 +715,6 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
 
         RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
-        raptor_free_statement_v2(s);
 #if RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
 #endif
@@ -766,7 +765,7 @@ raptor_rss10_serialize_start(raptor_serializer* serializer)
 /**
  * raptor_rss10_serialize_statement:
  * @serializer: serializer object
- * @statement: statement
+ * @statement: statement (shared - am not owner of this)
  *
  * INTERNAL (raptor_serializer_factory API) - Serialize a statement
  *
