@@ -658,16 +658,22 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   int is_atom = rss_serializer->is_atom;
   
   item = raptor_rss10_get_group_item(rss_serializer, s->subject);
-  if(item && s->object->type != RAPTOR_TERM_TYPE_BLANK) {
+
+  if(item &&
+     s->predicate->type == RAPTOR_TERM_TYPE_URI &&
+     (s->object->type == RAPTOR_TERM_TYPE_URI ||
+      s->object->type == RAPTOR_TERM_TYPE_LITERAL)) {
     int f;
+    raptor_uri* predicate_uri = s->predicate->value.uri;
+    
+    /* scan triples (? <predicate-uri> <uri or literal>) */
 
     for(f = 0; f < RAPTOR_RSS_FIELDS_SIZE; f++) {
       raptor_rss_field* field;
       if(!rss_serializer->world->rss_fields_info_uris[f])
         continue;
 
-      if(s->predicate->type == RAPTOR_TERM_TYPE_URI &&
-         raptor_uri_equals(s->predicate->value.uri,
+      if(raptor_uri_equals(predicate_uri,
                            rss_serializer->world->rss_fields_info_uris[f])) {
         /* found field this triple to go in 'item' so move the
          * object value over 
@@ -678,6 +684,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
           field->uri = s->object->value.uri;
           s->object->value.uri = NULL;
         } else {
+          /* must be literal - checked above */
           field->value = s->object->value.literal.string;
 
           if(s->object->value.literal.datatype &&
