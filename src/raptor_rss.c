@@ -202,6 +202,8 @@ raptor_rss_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_sax2_set_comment_handler(sax2, raptor_rss_comment_handler);
   raptor_sax2_set_namespace_handler(sax2, raptor_rss_sax2_new_namespace_handler);
 
+  raptor_statement_init(&rss_parser->statement, rdf_parser->world);
+  
   return 0;
 }
 
