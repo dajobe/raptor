@@ -848,10 +848,10 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 #ifdef RAPTOR_DEBUG
         if(1) {
           unsigned char* ts;
-          ts = raptor_term_as_string(statement->subject);
+          ts = raptor_term_to_string(statement->subject);
           RAPTOR_DEBUG4("Found typed node %i - %s with term %s\n", type,
                         raptor_rss_items_info[type].name, ts);
-          raptor_free_memory(ts);
+          RAPTOR_FREE(cstring, ts);
         }
 #endif
         break;
@@ -863,9 +863,9 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 #ifdef RAPTOR_DEBUG
     if(1) {
       unsigned char* ts;
-      ts = raptor_term_as_string(statement->object);
+      ts = raptor_term_to_string(statement->object);
       RAPTOR_DEBUG2("UNKNOWN typed node with type term %s\n", ts);
-      raptor_free_memory(ts);
+      RAPTOR_FREE(cstring, ts);
     }
 #endif
     goto savetriple;
@@ -887,10 +887,10 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 #ifdef RAPTOR_DEBUG
       if(1) {
         unsigned char* ts;
-        ts = raptor_term_as_string(statement->subject);
+        ts = raptor_term_to_string(statement->subject);
           
         RAPTOR_DEBUG2("RSS item term %s is not in sequence of items\n", ts);
-        raptor_free_memory(ts);
+        RAPTOR_FREE(cstring, ts);
       }
 #endif
       item = NULL;
@@ -909,9 +909,9 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 #ifdef RAPTOR_DEBUG
       if(1) {
         unsigned char* ts;
-        ts = raptor_term_as_string(statement->subject);
+        ts = raptor_term_to_string(statement->subject);
         RAPTOR_DEBUG2("Add new enclosure to sequence with term %s\n", ts);
-        raptor_free_memory(ts);
+        RAPTOR_FREE(cstring, ts);
       }
 #endif
       
@@ -989,9 +989,9 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
 #ifdef RAPTOR_DEBUG
       if(1) {
         unsigned char* ts;
-        ts = raptor_term_as_string(s->object);
+        ts = raptor_term_to_string(s->object);
         RAPTOR_DEBUG3("Found RSS 1.0 item %d with term %s\n", ordinal, ts);
-        raptor_free_memory(ts);
+        RAPTOR_FREE(cstring, ts);
       }
 #endif
 

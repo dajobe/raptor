@@ -482,15 +482,15 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   raptor_avltree_iterator* iter = NULL;
 
   /* Note: The raptor_abbrev_node field passed as the first argument for
-   * raptor_term_as_string() is somewhat arbitrary, since as
+   * raptor_term_to_string() is somewhat arbitrary, since as
    * the data structure is designed, the first word in the value union
    * is what was passed as the subject/predicate/object of the
    * statement.
    */
-  subj = raptor_term_as_string(subject);
+  subj = raptor_term_to_string(subject);
 
   if(subject->type) {
-    obj = raptor_term_as_string(subject);
+    obj = raptor_term_to_string(subject);
     fprintf(stderr,"[%s, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, %s]\n", subj, obj);      
     RAPTOR_FREE(cstring, obj);
   }
@@ -499,7 +499,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
 
     raptor_abbrev_node* o = raptor_sequence_get_at(subject->elements, i);
     if(o) {
-      obj = raptor_term_as_string(o);
+      obj = raptor_term_to_string(o);
       fprintf(stderr,"[%s, [rdf:_%d], %s]\n", subj, i, obj);      
       RAPTOR_FREE(cstring, obj);
     }
