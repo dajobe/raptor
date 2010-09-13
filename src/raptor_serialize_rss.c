@@ -815,31 +815,33 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
     goto savetriple;
   
 
-  /* Look for triple (?resource rdf:type rdf:Seq) */
-  if(statement->object->type == RAPTOR_TERM_TYPE_URI &&
-     raptor_uri_equals(statement->object->value.uri,
-                       RAPTOR_RDF_Seq_URI(serializer->world))) {
-    
-    rss_serializer->seq_term = raptor_term_copy(statement->subject);
-    
-    handled = 1;
-    goto savetriple;
-  }
-
-
-  /* look for triple: (? rdf:type ?) to find containers and blocks */
   type = RAPTOR_RSS_NONE;
-  for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++) {
-    raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
 
-    if(item_uri &&
-       statement->object->type == RAPTOR_TERM_TYPE_URI &&
-       raptor_uri_equals(statement->object->value.uri, item_uri)) {
-      type = (raptor_rss_type)i;
-      RAPTOR_DEBUG4("Found typed node %i - %s with term %s\n", type,
-                    raptor_rss_items_info[type].name,
-                    raptor_term_as_string(statement->subject));
-      break;
+  if(statement->object->type == RAPTOR_TERM_TYPE_URI) {
+    raptor_uri* object_uri = statement->object->value.uri;
+    
+    /* look for triple: (? rdf:type ?class-uri) to find containers and blocks */
+
+    /* Look for triple (? rdf:type rdf:Seq) */
+    if(raptor_uri_equals(object_uri, RAPTOR_RDF_Seq_URI(serializer->world))) {
+      
+      rss_serializer->seq_term = raptor_term_copy(statement->subject);
+      
+      handled = 1;
+      goto savetriple;
+    }
+
+    /* look for triple: (? rdf:type ?class-uri) to find containers and blocks */
+    for(i = 0; i < RAPTOR_RSS_COMMON_SIZE; i++) {
+      raptor_uri *item_uri = serializer->world->rss_types_info_uris[i];
+      
+      if(item_uri && raptor_uri_equals(object_uri, item_uri)) {
+        type = (raptor_rss_type)i;
+        RAPTOR_DEBUG4("Found typed node %i - %s with term %s\n", type,
+                      raptor_rss_items_info[type].name,
+                      raptor_term_as_string(statement->subject));
+        break;
+      }
     }
   }
 
