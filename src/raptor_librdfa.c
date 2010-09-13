@@ -68,11 +68,12 @@ typedef struct raptor_librdfa_parser_context_s raptor_librdfa_parser_context;
 static int
 raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-/*
   raptor_librdfa_parser_context *librdfa_parser;
 
   librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
-*/
+
+  raptor_statement_init(&rdf_parser->statement, rdf_parser->world);
+  
   return 0;
 }
 
