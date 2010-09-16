@@ -528,14 +528,22 @@ raptor_rss_start_element_handler(void *user_data,
     raptor_rss_type block_type;
     raptor_rss_item* update_item;
     const unsigned char *id;
-
+    raptor_term* block_term;
+    
     block_type = raptor_rss_fields_info[rss_parser->current_field].block_type;
 
     RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
                   raptor_rss_items_info[block_type].name);
+
     update_item = raptor_rss_get_current_item(rss_parser);
+
     id = raptor_world_generate_bnodeid(rdf_parser->world);
-    block = raptor_new_rss_block(rdf_parser->world, block_type, id);
+    block_term = raptor_new_term_from_blank(rdf_parser->world, id);
+    RAPTOR_FREE(cstring, id);
+
+    block = raptor_new_rss_block(rdf_parser->world, block_type, block_term);
+    raptor_free_term(block_term);
+
     raptor_rss_item_add_block(update_item, block);
     rss_parser->current_block = block;
 

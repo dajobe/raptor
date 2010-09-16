@@ -430,7 +430,7 @@ void raptor_rss_item_add_field(raptor_rss_item* item, int type, raptor_rss_field
 int raptor_rss_item_equals_statement_subject(const raptor_rss_item *item, const raptor_statement *statement);
 int raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri);
 
-raptor_rss_block *raptor_new_rss_block(raptor_world *world, raptor_rss_type rss_type, const unsigned char* id);
+raptor_rss_block *raptor_new_rss_block(raptor_world *world, raptor_rss_type rss_type, raptor_term* block_term);
 void raptor_free_rss_block(raptor_rss_block *block);
 
 raptor_rss_field* raptor_rss_new_field(raptor_world* world);

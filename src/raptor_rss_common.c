@@ -599,7 +599,7 @@ raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
 
 raptor_rss_block*
 raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
-                     const unsigned char* id)
+                     raptor_term* block_term)
 {
   raptor_rss_block *block;
   block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1, sizeof(*block));
@@ -607,10 +607,10 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
   if(block) {
     block->rss_type = type;
     block->node_type = world->rss_types_info_uris[type];
-    block->identifier = raptor_new_term_from_blank(world, id);
+    block->identifier = block_term;
   }
-  RAPTOR_FREE(cstring, id);
-    
+  raptor_free_term(block_term);
+  
   return block;
 }
 
