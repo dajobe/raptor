@@ -596,7 +596,16 @@ raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
 }
 
 
-
+/*
+ * raptor_new_rss_block:
+ * @world: world
+ * @type: RSS block type
+ * @block_term: Block subject term (shared)
+ *
+ * INTERNAL - Create a new RSS Block such as <author> etc
+ *
+ * Return value: new RSS block or NULL on failure
+ */
 raptor_rss_block*
 raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
                      raptor_term* block_term)
@@ -607,9 +616,8 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
   if(block) {
     block->rss_type = type;
     block->node_type = world->rss_types_info_uris[type];
-    block->identifier = block_term;
+    block->identifier = raptor_term_copy(block_term);
   }
-  raptor_free_term(block_term);
   
   return block;
 }
