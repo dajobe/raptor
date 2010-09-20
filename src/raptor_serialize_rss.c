@@ -637,7 +637,7 @@ raptor_rss10_remove_mapped_fields(raptor_rss10_serializer_context *rss_serialize
 /**
  * raptor_rss10_store_statement:
  * @rss_serializer: serializer object
- * @s: statement (shared - do not become owner of this)
+ * @s: statement (NOT shared - become owner of this)
  *
  * INTERNAL - decide where to store a statement in an item or keep pending
  *
@@ -715,6 +715,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
 
         RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
+        raptor_free_statement_v2(s);
 #if RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
 #endif
@@ -726,6 +727,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
   }
   
   if(!handled) {
+    /* Move owned triple to sequence */
     raptor_sequence_push(rss_serializer->triples, s);
 #if RAPTOR_DEBUG > 1
     fprintf(stderr,"Stored statement: ");
