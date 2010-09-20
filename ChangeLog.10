@@ -1,0 +1,1019 @@
+2009-11-29  Dave Beckett  <dave@dajobe.org>
+
+	* Merge from raptor 1.4.20 release SVNr15728 to trunk
+
+2009-11-28  Dave Beckett  <dave@dajobe.org>
+
+	* Merge RDFa changes from Raptor branch raptor1 (r15719)
+
+	* Snapshotted raptor_1_4_20 for 1.4.20 release (SVN 15727)
+	
+	* tests/rdfa/0172.out, tests/rdfa/0172.xhtml, tests/rdfa/0173.out,
+	tests/rdfa/0173.xhtml, tests/rdfa/0174.out, tests/rdfa/0174.xhtml,
+	tests/rdfa/Makefile.am:
+	Added unapproved RDFa tests from librdfa upstream test suite:
+	 0172: empty datatype attribute
+	 0173: empty xml:lang attribute on plain literal
+	 0174: single character namespace prefixes
+
+	0172 and 0173 test
+	Issue#0000306 http://bugs.librdf.org/mantis/view.php?id=306
+
+	0174 tests
+	Issue#0000310 http://bugs.librdf.org/mantis/view.php?id=310
+
+	* librdfa/rdfa.c:
+	(start_element): For raptor, turn a NULL language to "" which is
+	what librdfa expects.
+
+	* librdfa/curie.c, librdfa/language.c, librdfa/rdfa.c,
+	librdfa/triple.c:
+	Apply librdfa GIT commits up to
+	5823cb8bffe50fb1b46960f237f7274388cb5f93
+
+	commit 5823cb8bffe50fb1b46960f237f7274388cb5f93
+	    Fixed @property CURIE processing unit tests to match code
+	    updates.
+
+	commit a85d8e9e2e3d28452ad03d1ca64fdd98eed1c180
+	    Fixed CURIE processing bug for TC 174.
+
+	    The bug caused single-character prefixed CURIEs to be processed
+	    incorrectly. Also fixed @property processing to not use reserved
+	    words specified in a very early version of the RDFa spec. Fixed
+	    a small bug related to processing CURIEs that have ':' as the
+	    second character in the URI string.
+
+	commit f384b28bf916a2e0c7a7dbc99101a1a44c301965
+	    Fixed plain literal bug uncovered by TC 172.
+
+	    This bug caused plain literals to not be generated when
+	    datatype="" was specified and when the content inside the element
+	    contained XHTML child nodes.
+
+	* librdfa/language.c:
+	Apply librdfa GIT commit
+	9960791ee4beca8e52e5d3a9766aba73d33f0063
+	    Fixed bug that caused unreviewed TC 173 to partially fail.
+
+	    The currently active language, specified via xml:lang, was not
+	    being cleared when xml:lang="" was specified.
+
+	Related to Redland Issue#0000306
+	http://bugs.librdf.org/mantis/view.php?id=306
+
+2009-11-25  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, src/raptor_abbrev.c: Casts for C++
+
+2009-11-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_lookup): Free node if
+	raptor_new_abbrev_subject() ownership transfer did not succeed.
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_find): Check for failures.
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit): Free iterators on before returning an error.
+
+	* src/raptor_abbrev.c, src/raptor_avltree.c:
+	(raptor_avltree_sprout): Always take ownership of passed in node
+	data - free it if malloc fails. Make sure free_fn is not null
+	before calling it.
+
+	(raptor_abbrev_node_lookup,raptor_abbrev_subject_add_property):
+	raptor_avltree_add() now always takes ownership of added nodes.
+
+	* src/raptor_internal.h, src/raptor_serialize_rdfxmla.c:
+	fixed indent tabs -> spaces
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_invalidate): Return value expected
+
+2009-11-24  Dave Beckett <dave@dajobe.org>
+
+	* many files: Merge from raptor branch raptor1
+
+2009-11-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	tests/feeds/test01-result.ttl, tests/feeds/test02-result.ttl,
+	tests/feeds/test03-result.ttl, tests/feeds/test04-result.ttl,
+	tests/rdfxml/Makefile.am, tests/turtle/Makefile.am: Apply SVN
+	r15690 to raptor head
+
+2009-11-15  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Apply SVN 15667 to raptor trunk
+
+2009-10-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_uri): Fix XML parser context
+	resource leak if raptor_grddl_fetch_uri fails.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_chunk): Save and restore error handlers
+	properly - restore loop was broken.  Remove memcpy for clarity in
+	copying.
+
+2009-08-25  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Update common autogen.sh
+
+2009-08-21  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_www.c:
+	(raptor_www_set_http_cache_control): Avoid dangling pointers
+
+2009-08-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_internal.h: Fixed comment
+
+2009-07-27  Dave Beckett <dave@dajobe.org>
+	* src/turtle_parser.y
+	(main): Terminate parser
+
+	* src/turtle_lexer.l
+	(main): Init world and namespaces so turtle lexing test does not
+	die.
+
+	* src/raptor_parse.c
+	(raptor_parse_file): Simplify, no need for O_LARGEFILES flag and
+	open/fdopen sequence.
+
+	* configure.ac:
+	Check for fcntl.h and AC_SYS_LARGEFILE to get large file checks
+
+	* src/raptor_parse.c:
+	(raptor_parse_file): Use open(2) and apply O_LARGEFILE option to
+	allow 32bit systems to read multi-gigabyte files.
+
+2009-07-23  Dave Beckett <dave@dajobe.org>
+
+	* Changelog entries above this are on BRANCH raptor1
+
+	* Create raptor 1 branch (SVN r15287)
+
+2009-07-19  Dave Beckett <dave@dajobe.org>
+
+	* Tagged for raptor 1.4.19 (SVN r15280)
+
+	* Snapshotted raptor_1_4_19 for 1.4.19 release (SVN 15279)
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_item): Handle C++'s picky casting between enum
+	types - that are really integers - to ints.
+
+	* src/raptor_rss_common.c: static data raptor_rss_fields_info:
+	semantic data errors found by C++'s more strict aliasing.
+	- Fix author item class.
+	- Set URI flag value for atom:schema and atom:href
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_init_v2, raptor_namespace_stack_to_array):
+	Casts for C++ in returns from RAPTOR_CALLOC for namespace stacks
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_doc): Cast for C++ for arg to
+	xsltSetCtxtSecurityPrefs.
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Use memmove for overlapping
+	copy, not memcpy. [valgrind]
+
+	* src/raptor_serialize_json.c: raptor_json_context - use
+	raptor_statement_v2 for last statement.
+	(raptor_json_serialize_avltree_visit): Make V1 statements for the
+	stored V2 statements.
+	Improve fatal error messages.
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): Restore actually freeing statement memory
+	- resource leak.
+
+	* configure.ac: libtool version change.
+	was: current 2  revision 0  age 1
+	rules steps:
+	   3. source code changed: revision++ = 3
+	   4. interfaces added and changed: current++ = 3, revision = 0
+	   5. interfaces added: age++ = 2
+	   6. interfaces removed: no
+	now: current 3  revision  0  age 2
+
+	* docs/libraptor.3: 1.4.19 changes
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_literal): More silly games to prevent stupid
+	gcc warning: ignoring return value of 'strtol', declared with
+	attribute warn_unused_result so use the value and then discard it
+	in a stupid expression.  Ditto strtod.
+
+	* src/raptor_uri.c:
+	(raptor_uri_print_v2): Silly games to prevent stupid gcc warning:
+	ignoring return value of 'fwrite', declared with attribute
+	warn_unused_result but right now there is nowhere to return the
+	error too.
+
+	* src/raptor_rss.c:
+	(raptor_rss_uplift_fields): Comment out variables used only in
+	debugging.
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_literal): Ignore unused return values from
+	strtol and strtod used for checking.
+
+	* utils/rapper.c: Revert r15252 and reapply r14951 on rapper to
+	use experimental V2 APIs again
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_v2.h: Remove raptor_v2.h again - no need to dup this
+	for an internal build.  Instead use -DRAPTOR_V2_EXPERIMENTAL when
+	building
+
+	* src/Makefile.am, src/raptor.h, src/raptor_internal.h,
+	src/raptor_v2.h: Added raptor_v2.h again - internal only and put
+	scary warning about V2 things into raptor.h
+
+	* src/raptor.h: use -DRAPTOR_V2_EXPERIMENTAL to enable the V2
+	structs and functions
+
+	* src/Makefile.am: Remove raptor_v2.h - bad idea for now
+
+	* src/Makefile.am, src/raptor.h, src/raptor_internal.h,
+	src/raptor_v2.h: Move public V2 structs and prototypes to internal
+	raptor_v2.h
+
+	* utils/rapper.c: Revert r14951 on rapper to use V1 APIs only for now
+
+	* COPYING, COPYING.LIB: Add specific versions of GPL (2) and
+	LGPL (2.1) to source control
+
+2009-07-16  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml, docs/raptor-sections.txt,
+	docs/tmpl/section-general.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml:
+	Add new functions.  Add section world for init/cleanup and V2
+	world stuff
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_sequence.c:
+	(raptor_new_sequence_v2): Renamed from
+	raptor_new_sequence_with_handler_context
+
+	* tests/rdfxml: Ignore automake outputs
+
+	* tests/ntriples: Ignore automake outputs
+
+	* tests/feeds: Ignore ttl outputs
+
+	* tests/feeds/Makefile.am: (check-serialize-atom): Make test use
+	generated file from build dir.
+
+	* utils/rapper.c: calloc another feature_value
+
+	* tests/feeds/Makefile.am: set result=1 on failures
+
+	* utils/rapper.c: calloc feature_value so that fields are
+	initialised to 0/NULL
+
+	* Raptor passes 'make check' test suite as of SVN r15234
+
+	* src/raptor_serialize_rss.c: Guess whether <atom:summary> on
+	input is xml or not based on if it starts with <
+
+	* tests/feeds/test02-result.atom, tests/feeds/test02-result.ttl,
+	tests/feeds/test02.rdf: Add <div>...</div> once to descs
+
+	* tests/feeds/test02.rdf: use <div>...</div> in descriptions
+
+	* tests/feeds/test03-result.atom: fix relative atom:link @href in
+	expected output
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_atom_feed): Output relative URIs for
+	<atom:link @href>
+
+	* src/raptor_serialize_rss.c: Extra/tidy debug messages
+
+2009-07-15  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement, raptor_rss10_build_items): Use
+	raptor_rss_item_set_uri to always assign item identifier and uri
+	fields correctly.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c:
+	(raptor_rss_item_set_uri): Added to set the item identifier fields
+	plus the item->uri field correctly.
+
+2009-07-13  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Add SHAVE support - disabled by default and enabled
+	for maintainers.
+	libtool V2 needed
+	Add -Wall to automake args
+	Reorder args to remove dups
+	Find config_aux_dir and config_macro_dir and use them for copying in
+	config.{sub,guess} and adjusting aclocal args respectively.
+
+2009-06-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_move_statements, raptor_rss10_store_statement): When
+	mapping fields rss to atom, do not copy into a field that has a
+	value already.
+
+2009-06-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_get_name): Use factory method if present.
+
+	* src/raptor_guess.c:
+	(raptor_guess_guess_get_name): Implement get_name by passing it on
+	to internal guessed parser.
+	(raptor_guess_parser_register_factory): Register get_name
+
+	* src/raptor_internal.h: struct raptor_parser_factory_s gains
+	get_name method
+
+	* src/raptor_guess.c:
+	(raptor_guess_parse_chunk): docs
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_doc): Init userCtxt *after*
+	sheet is defined as not NULL.  GRDDL transforms now work again.
+
+	* utils/rapper.c:
+	(main): If counting, do not use a serializer at all.
+
+2009-05-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: autodocs
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_rss_link): Added to add rss:link from atom:id
+	or <link rel=self>
+	(raptor_rss_insert_identifiers): Call above for channel and items.
+
+	* tests/feeds/test04-result.ttl: items and rss:links point to url
+	not tag: uri
+
+	* tests/feeds/test05-result.ttl: Moved dc:date to top
+
+	* tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Added more atom:entrymap values
+
+2009-05-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_identifiers): Add an rss:link with
+	/atom:link[@rel="self"]/@href string contents if not already
+	present.
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Add resource parameter for the subject of
+	the triples to set.  Do not try to play save/restore games with
+	the statement.subject
+	(raptor_rss_emit_item): Pass in item identifier to above.
+
+2009-05-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_item): Set the atom author output node type by a
+	quick hack to alter the URIs.
+
+2009-05-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c: raptor_rss_uplift_map merged into
+	raptor_atom_to_rss
+	(raptor_rss_copy_field): Added to do field copy/conversion with
+	pair
+	(raptor_rss_uplift_fields): Iterate over list of conversions and
+	call raptor_rss_copy_field.
+
+	* src/raptor_rss_common.c:
+	(raptor_rss_field_conversion_date_uplift): Added for converting
+	from junk date to ISO dates.
+	(raptor_rss_date_uplift): Deleted, replaced by above.
+	raptor_atom_to_rss: gains fields from raptor_rss_uplift_map and
+	uses above conversion function to fix rss:pubdate to dc:date
+
+	* src/raptor_rss.h: Add raptor_rss_field_conversion for converting
+	field values and add to raptor_field_pair
+
+	* tests/feeds/test05-result.ttl: Add dc:date, atom:id, atom:title
+	fields
+
+2009-05-09  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test04-result.ttl: add both rss and renamed atom
+	fields rather than just one:
+	- dc:date & atom:updated
+	- rss:title & atom:title
+	- atom:id
+	- atom:summary
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Remove renaming of atom terms
+	to rss
+	(raptor_rss_uplift_fields): Add copying of atom to rss terms, not
+	renaming.
+
+	* src/raptor_rss_common.c: atom:author is a container, not a block
+	raptor_rss_items_info - set value type to RAPTOR_RSS_ITEM_CONTAINER
+	raptor_rss_fields_info - set class to RAPTOR_RSS_RDF_ATOM_AUTHOR_CLASS
+	raptor_rss_block_fields_info - remove author from list of blocks
+
+	* tests/feeds/test04.atom: Restore xhtml namespace to div
+
+2009-05-01  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-general.sgml: update tmpls
+
+	* tests/turtle/Makefile.am, tests/turtle/test-32-out.ttl,
+	tests/turtle/test-32.ttl: Added test-32 based on test for
+	http://bugs.librdf.org/mantis/view.php?id=274
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject_collection_items): Notice when a new
+	subject happens and reset property iterator.
+	(raptor_turtle_emit_subject): Look for trees with 2 or more
+	properties to be a potential collection.
+	Fixes Issue#0000277 http://bugs.librdf.org/mantis/view.php?id=277
+
+	* src/raptor_parse.c:
+	(raptor_get_feature): Return raw parser int feature.
+	Fixes Issue#0000288 http://bugs.librdf.org/mantis/view.php?id=288
+
+	* src/raptor_feature.c: raptor_features_list use bit 16 to record
+	that an int is not a boolean flag.  Should refactor these flags
+	for Raptor V2 and alter the raptor_feature_value_type() return.
+
+2009-04-30  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am: Add atom to turtle expected results to
+	EXPECTED_TTLS
+
+	* tests/turtle/Makefile.am: Add $(TURTLE_SERIALIZE_RDF_FILES) to dist
+
+	* tests/turtle/Makefile.am: More fixes for make distcheck testing
+
+	* tests/turtle/Makefile.am:
+	(check-turtle-parse-ntriples, check-turtle-serialize-rdf): Get
+	filenames from invoking Makefiles in nearby build-dirs not
+	src-dirs, which won't have makefiles in 'make distcheck' mode
+
+	* tests/ntriples/Makefile.am: Revert r15175
+
+	* tests/ntriples/Makefile.am: Make print-nt-test-files work in
+	'make distcheck' mode
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_parse_chunk): Make undeclared entity not fatal in
+	parsing - errors are still thrown by the error callback, but
+	parsing continues.  Makes
+	http://bugs.librdf.org/mantis/view.php?id=303 easier to deal with
+	- primary data gets out when errors are present; when DTDs are not
+	loaded.
+
+	* src/raptor_libxml.c:
+	(raptor_libxml_xmlStructuredErrorFunc): Hunt for error_handlers in
+	parser context user data too.
+
+	* src/raptor_sax2.c:
+	(raptor_new_sax2): Save correct libxml error handlers
+
+2009-04-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h: Revert raptor_error_handlers ABI change for now
+
+2009-04-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_sax2.c: Protect calls to xmlSetStructuredErrorFunc()
+	and xmlSetGenericErrorFunc() by libxml flags and if enabled, save
+	and restore the previous values.  Added
+	raptor_set_libxml_flags() (raptor V1) and
+	raptor_world_set_libxml_flags() (raptor V2) to set these flags.
+	Flags are defined in new enum raptor_libxml_flags.
+
+	Fixes Issue#000299 http://bugs.librdf.org/mantis/view.php?id=299
+
+	* docs/tmpl/section-feature.sgml, src/raptor.h,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c: Use context-specific libslt security
+	configuration to avoid calling 	xsltSetDefaultSecurityPrefs().
+
+	Also allow user to set the policy for raptor globally with new API
+	function raptor_set_libxslt_security_preferences() (and in Raptor V2
+	with raptor_world_set_libxslt_security_preferences method on the
+	world class)
+
+	Fixes Isssue#0000296 http://bugs.librdf.org/mantis/view.php?id=296
+
+2009-04-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c:
+	(raptor_libxml_init, raptor_libxml_init_sax_error_handlers): Init
+	per-context structured error handlers to go to
+	raptor_libxml_xmlStructuredErrorFunc
+
+	* configure.ac: Use RAPTOR_LDFLAGS for rest of internally linked
+	libs for libm, curl, fetch, libxml, expat, libxslt, libinn (for
+	parsedate)
+
+	* configure.ac, raptor.pc.in, src/Makefile.am: Introduce
+	RAPTOR_LDFLAGS to replace raw LIBS as the internal set of
+	arguments to use in linking.
+
+	* configure.ac, src/Makefile.am, utils/Makefile.am: Add
+	--enable-debug configure option. use AM_CPPFLAGS for defines and
+	include options Remove unused STANDARD_CFLAGS
+
+2009-03-31  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_namespace.c:
+	(raptor_new_namespaces_v2): Lowmem fix. Use calloc instead of
+	malloc to have struct members initialized to zero in case
+	raptor_namespaces_init_v2() fails and need to free a partially
+	initialized nstack.
+
+2009-03-30  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_serialize_rss.c: Test for
+	gettimeofday. (raptor_rss10_ensure_atom_feed_valid): Use condition
+	to avoid calling it on windows that doesn't have it.  Patch from
+	Lou Sakey 2008-07-31 to redland-dev
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_finish): Call xmlCleanupParser() libxml call last to
+	avoid an access violation on windows. Patch from Lou Sakey
+	2008-07-31 to redland-dev.
+
+	* src/raptor_general.c:
+	(raptor_vsnprintf): Windows vsnprintf() portability patch from Lou
+	Sakey.
+
+2009-03-29  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Substitute ECHO
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Make namespaces seen in fields
+	after any potential renames, so they will get declared later.
+	(raptor_rss_end_element_handler): End any blocks in all cases -
+	was not happening when there was no cdata.
+	(raptor_rss_emit_block): Only emit block strings that are not
+	NULL.
+	(raptor_rss_emit_connection): Turn predicate ordinals into URIs
+	since the RAPTOR_IDENTIFIER_TYPE_ORDINAL is deprecated (and turtle
+	serialiser does not handle it).
+	(raptor_rss_uplift_fields): Gain rss_parser arg and mark
+	namespaces seen in renames.
+
+	* src/raptor_rss_common.c: raptor_rss_fields_info - restore
+	rss:link value to string. raptor_rss_block_fields_info - fix
+	clashing offset for atom author name/email fields.
+
+2009-03-28  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am, tests/feeds/test02-result.atom,
+	tests/feeds/test04-result.ttl, tests/feeds/test04.atom,
+	tests/feeds/test05-result.ttl, tests/feeds/test05.atom: Add test04
+	and test05 atom parsing to turtle.  Update test suite to show
+	errors better and use ECHO macros
+
+	* tests/feeds/test0[123].rdf:: Rename test0[123].rss to .rdf
+
+	* tests/turtle/Makefile.am: Use TURTLE_SERIALIZE_RDF_FILES so that
+	ex-62.rdf gets used
+
+	* tests/turtle/Makefile.am, tests/turtle/test-31-out.ttl,
+	tests/turtle/test-31.ttl: Add tests for serializing rdf:_<n>
+	properties back to themselves.
+
+2009-03-23  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am: use conditionals to execute tests in
+	sane order via FEED_TESTS var
+
+	* tests/feeds/Makefile.am:
+	(check-serialize-atom): Set parser/input base URI for test.
+
+	* tests/feeds/Makefile.am: notes
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.ttl,
+	tests/feeds/test02-result.ttl, tests/feeds/test03-result.ttl: Add
+	parsing and serializing tests with intermediate turtle results to
+	check
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Renamed
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE to
+	RAPTOR_FEATURE_PREFIX_ELEMENTS (prefixElements) and change
+	meaning; it always declares prefix: and default namespace but this
+	option flips whether it core vocab is in the prefixed or default
+	namespace.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_build_xml_names): Do not declare or start namespaces
+	with NULL prefix; only the default namespace *may* do that.
+
+2009-03-20  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test01-result.atom: fix namespaces
+
+	* tests/feeds/test01-result.atom, tests/feeds/test02-result.atom,
+	tests/feeds/test03-result.atom: Add namespaces back to all
+	expected results
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_build_xml_names): Enable turning on/off namespaced
+	elements based on feature_alias_default_namespace
+
+2009-03-19  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.atom,
+	tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Remove -f aliasDefaultNamespace=0 from tests for now, to enable
+	fixing of other things on their own
+
+2009-03-17  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/Makefile.am: use $(srcdir) before expected
+
+	* tests/feeds/Makefile.am: report failure diff the right way
+	around: from expected to actual
+
+2009-03-12  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Fix atom namespaces
+
+	* tests/feeds/Makefile.am: Set aliasDefaultNamespace=0
+
+	* tests/feeds/Makefile.am, tests/feeds/test01-result.atom,
+	tests/feeds/test02-result.atom, tests/feeds/test03-result.atom:
+	Add expected test results, make check works from Makefile alone
+
+	* tests/feeds/Makefile.am: Fix RAPPER call
+
+2009-03-10  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test01.atom, tests/feeds/test02.atom,
+	tests/feeds/test03.atom: Remove atom output - now generated via
+	test
+
+	* tests/feeds/Makefile.am: fix error in error logging
+
+	* configure.ac, tests/Makefile.am, tests/feeds,
+	tests/feeds/Makefile.am: automaked tests/feed
+
+	* tests/feeds/Makefile: Removed, now autogenerated
+
+2009-02-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: comments
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement):
+	Code style, remove if() depth.
+
+2009-02-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: Make itunes:owner container work again.
+
+2009-02-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: fix enclosure class/predicate RDF names
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Added
+	RAPTOR_RSS_RDF_ENCLOSURE for enclosure predicate in RDF as well as
+	RAPTOR_RSS_RDF_ENCLOSURE_CLASS for enclosure class in RDF
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Declare as
+	seen the namespace for a block.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add RAPTOR_ATOM_LINK
+	block type
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Emit type URI from
+	cls field, not predicate.
+
+2009-02-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c: raptor_rss_element loses unused rel field
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Remove
+	unused element attribute recognition <source url> and <category domain>
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Set
+	enclosure namespace used if an enclosure block was seen.
+
+2009-02-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss_common.c: raptor_rss_items_info - add block
+	predicate types raptor_rss_fields_info - make atom:author a
+	block. add atom:Author, atom:Category, atom:label, atom:schema and
+	atom:term raptor_rss_block_fields_info - add new predicates for
+	atom:category block add atom:author block
+
+	* src/raptor_rss.c: raptor_rss_parser gains current_block field to
+	store current metadata block object.
+	(raptor_rss_start_element_handler): Set current_block.
+	(raptor_rss_end_element_handler): Store any cdata in block field
+	with NULL attribute if there is one.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Wildcard element name matches
+	for RSS namespaces
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_set_field): Added.
+	(raptor_rss_start_element_handler): Use above to set a block
+	attribute value
+
+	* src/raptor_rss.c: raptor_rss_parser - comment.
+	(raptor_rss_start_element_handler): Use
+	raptor_rss_get_current_item to get item.  When checking block
+	attributes, skip NULL attribute names - for element cdata
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Code style and skip block fields with no name.
+	(raptor_rss_emit_item): Code style.
+
+	* src/raptor_rss_common.c: raptor_rss_fields_info modify to make
+	rss:link and rss:docs take URLs
+
+	* src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: Use RAPTOR_RSS_RDF_ENCLOSURE_CLASS for
+	enclosure class and RAPTOR_RSS_FIELD_ENCLOSURE for predicate
+
+	* src/raptor_rss.h: RAPTOR_RSS_BLOCKS_SIZE 10 after removing rss
+	container
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add itunes: namespace
+	and itunes:owner container with fields in namespace itunes:
+	author, subtitle, summary, keywords explicit, image, name, block,
+	category and email
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: raptor_rss_type loses
+	RAPTOR_RSS_CATEGORY type.  raptor_rss_block_fields_info loses rss
+	category - just make it a string value
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_type delete RAPTOR_RSS_UNKNOWN and replace with
+	RAPTOR_RSS_NONE everywhere
+
+2009-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: raptor_rss_field_info renamed from
+	raptor_rss_info
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: raptor_rss_items_info renamed from
+	raptor_rss_types_info raptor_rss_types_info gains a flags field to
+	distinguish blocks from containers.
+	(raptor_rss_add_container): Use flag to only scan containers, not
+	blocks.
+	(raptor_rss_emit_block): Handle all types of blocks.  Use the node
+	type from raptor_rss_types_info to emit the node type.  Use the
+	raptor_rss_block_fields_info to emit the predicates for all
+	blocks.
+
+2009-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Code style.
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_identifiers): Tidy to use
+	raptor_set_identifier_uri. Indenting.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: 
+	(raptor_rss_start_element_handler, raptor_rss_insert_identifiers,
+	raptor_rss10_serialize_statement): Use raptor_set_identifier_uri
+	and raptor_set_identifier_id and refactor to use them better.
+	(raptor_rss_block_make_blank_node,
+	raptor_rss_insert_block_identifiers): Deleted.
+	(raptor_rss_item_equals_statement_subject): Added.
+	(raptor_new_rss_block): Add id argument.
+
+	* src/raptor_identifier.c, src/raptor_internal.h:
+	Added raptor_set_identifier_uri and raptor_set_identifier_id
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c: Remove old enclosure core and switch
+	to data-driven raptor_rss_block metadata code.  Update copyrights
+	for 2009.  typedef raptor_rss_block_fields_info renamed from
+	raptor_rss_block_info and add docs.  Renamed field 'attribute'
+	from field_name, attribute_type from field_type.  Added rdf
+	predicate info 'field'.  raptor_rss_block_fields_info adds
+	predicate info.
+	(raptor_rss_start_element_handler): Read from
+	raptor_rss_block_fields_info.
+	(raptor_rss_insert_block_identifiers): Renamed from
+	raptor_rss_insert_enclosure_identifiers.
+	(raptor_rss_insert_identifiers): Call above with new name.
+	(raptor_rss_emit_block): Use more data tables to emit block.
+
+	* src/raptor_rss_common.c: Add sentinel to end
+	raptor_rss_blocks_info array
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Recognise blocks from flags
+	and handle <enclosure> attributes @url, @length and @type -
+	statically for now.
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: raptor_rss_info gains
+	block flag and block_type to use when a block is found.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Fix conditions for recognizing
+	inner containers.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c: Add
+	raptor_rss_block_info to record other metadata blocks
+	configuration: rss enclosues, atom categories, rss category and
+	rss source.  Switch raptor_rss_block structure from a list of
+	specific fields to short arrays of urls and strings.
+	(raptor_free_rss_block, raptor_rss_start_element_handler,
+	raptor_rss_insert_enclosure_identifiers, raptor_rss_emit_block):
+	Switch to generic raptor_rss_block URLs, strings
+
+2009-02-20  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Compilation fix after function parameter
+	rename
+
+2009-02-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_block): Renamed from raptor_rss_emit_enclosure
+
+	* src/raptor_rss.h, src/raptor_rss_common.c: Add none raptor node type
+
+	* src/raptor_rss.c: Code style / whitespace.
+	(raptor_rss_end_element_handler): Use
+	raptor_rss_get_current_item() to get update_item.
+
+2009-02-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_get_current_item): Pull logic out to get item for
+	current type.
+	(raptor_rss_start_element_handler): Fix inner container
+	processing. Look for rdf:about on an item to get item URI there
+	first. Pull out enclosure construction from general field
+	handling.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Remove extra code block &
+	outdent.
+
+	* src/raptor_rss.c:
+	(raptor_rss_promote_namespace_uri): Added for storing namespace
+	change rules.
+	(raptor_rss_start_element_handler): Use above to simplify field
+	search logic.  Document how an element matches a field.
+
+	* src/raptor_rss.c:
+	(raptor_rss_add_container): Add rules about inner containers,
+	setting prev_type if seen and put author element ambiguity rules
+	here.
+	(raptor_rss_start_element_handler): Use above to replace inner
+	container identification code.
+
+	* src/raptor_rss.c:
+	(raptor_rss_add_container): Added, pulled out of
+	raptor_rss_start_element_handler to include the logic for
+	determining feed type and container from element name.
+	(raptor_rss_start_element_handler): Call above.
+
+	* src/raptor_rss.c:
+	(raptor_rss_start_element_handler): Comments and tidying control
+	flow when identifying a container for rss_parser->current_type
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_make_blank_node): Added
+	pulled out of raptor_rss_insert_identifiers
+	(raptor_rss_insert_identifiers): Call above.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_block gains rss_type field
+	(raptor_new_rss_block): Take type as param and use to set
+	node_type.
+	(raptor_rss_insert_enclosure_identifiers): Remove node_type init
+	and let raptor_new_rss_block set it.
+	(raptor_rss_start_element_handler): Call raptor_new_rss_type with
+	param for enclosure.
+
+	* src/raptor_rss.h: prototype param
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	raptor_rss_item renamed field enclosure to blocks.
+	(raptor_rss_insert_identifiers, raptor_rss_emit_item,
+	raptor_free_rss_item, raptor_rss_item_add_block): Renamed
+	item->enclosure to item->blocks and renamed variables.
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Rename raptor_rss_enclosure to raptor_rss_block throughout and
+	corrected naming convention.
+
+	(raptor_new_rss_block): Renamed from raptor_rss_new_enclosure.
+	(raptor_rss_item_add_block): Renamed from
+	raptor_rss_item_add_enclosure.
+	(raptor_free_rss_block): Renamed from raptor_enclosure_free.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c, utils/rapper.c:
+	Added serializer feature
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE (aliasDefaultNamespace) for
+	atom and rss 1.0 serializers to prevent declaring the default
+	namespace twice with a prefix and without.  raptor_feature gains
+	RAPTOR_FEATURE_ALIAS_DEFAULT_NAMESPACE raptor_features_list gains
+	new feature
+
+	(raptor_turtle_writer_set_feature, raptor_sax2_set_feature,
+	raptor_xml_writer_set_feature, raptor_set_feature,
+	raptor_get_feature, raptor_serializer_set_feature_string,
+	raptor_serializer_get_feature_string): enum extensions for
+	raptor_feature switches.  struct raptor_serializer_s gains int
+	field feature_alias_default_namespace
+	raptor_rss10_serializer_context gains a flag free_default_nspace
+	to know when to free default namespace now that it may not be
+	needed.
+	(raptor_rss10_serialize_terminate): Use the free_default_nspace
+	flag.
+	(raptor_rss10_build_xml_names): Implement altered namespace
+	declaration rules.
+	(raptor_new_serializer_v2): Initialise default namespace aliasing
+	to true by default.
+	(raptor_serializer_set_feature): Set flag.
+
+	* src/raptor_rss.h: document struct raptor_rss_enclosure_s fields
+
+2009-02-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_internal.h, src/raptor_sax2.c: Lowmem fixes in
+	raptor_sax2
+
+	(raptor_sax2_s): Internal struct gains "failed" field.
+
+	(raptor_sax2_parse_start):
+	Check for raptor_namespaces_init_v2() failure and set sax2 struct
+	failure flag.
+
+	(raptor_sax2_start_element, raptor_sax2_end_element,
+	raptor_sax2_characters, raptor_sax2_cdata, raptor_sax2_comment,
+	raptor_sax2_unparsed_entity_decl,
+	raptor_sax2_external_entity_ref):
+	No-op if sax2 struct in failed state.
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_init_v2): Check for alloc failure
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_qname_from_uri): Init ns to NULL to prevent
+	use-before-init warnings from some optimizing compilers.
+
+2009-02-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_get_default_namespace): Make this work again -
+	look for default namespace in correct bucket.
+
+	* librdfa/rdfa.c, src/raptor_internal.h, src/raptor_namespace.c:
+	Replace namespace storage from a linked list to a hash on prefix
+	using raptor_hash_ns_string() witb a DJ Bernstein hash.  This
+	makes turtle parsing with lots of namespaces (100s) much faster.
+	Based on the initial patch in the bug it fixes.
+
+	Fixes Issue#0000290 http://bugs.librdf.org/mantis/view.php?id=290
+
+2009-02-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_ensure_writen_header):
+	For XMP add a cosmetic newline after <?xpacket>
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_generate_statement): Adjust predicate_type when
+	removing ordinal identifier type from predicate.
+	Fixes Issue#0000293 http://bugs.librdf.org/mantis/view.php?id=293
+
