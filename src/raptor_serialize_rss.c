@@ -844,10 +844,16 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
        raptor_uri_equals_v2(rss_serializer->world,
                             (raptor_uri*)statement->object, item_uri)) {
       type = (raptor_rss_type)i;
-      RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
-                    raptor_rss_items_info[type].name,
-                    raptor_uri_as_string_v2(rss_serializer->world,
-                                            (raptor_uri*)statement->subject));
+#ifdef RAPTOR_DEBUG
+      if(statement->subject_type == RAPTOR_IDENTIFIER_TYPE_RESOURCE)
+        RAPTOR_DEBUG4("Found typed node %i - %s with URI <%s>\n", type,
+                      raptor_rss_items_info[type].name,
+                      raptor_uri_as_string_v2(rss_serializer->world,
+                                              (raptor_uri*)statement->subject));
+      else
+        RAPTOR_DEBUG4("Found typed node %i - %s with bnode _:%s\n", type,
+                      raptor_rss_items_info[type].name, (char*)statement->subject);
+#endif
       break;
     }
   }
