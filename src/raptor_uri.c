@@ -438,6 +438,8 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
     /* Both not-NULL - compare for equality */
     if(uri1 == uri2)
       return 1;
+    else if (uri1->length != uri2->length)
+      return 0;
     else
       return strcmp((const char*)uri1->string, (const char*)uri2->string) == 0;
   } else if(uri1 || uri2)
