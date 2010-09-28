@@ -466,8 +466,11 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
   if(uri1 == uri2)
     return 0;
 
-  if(uri1 && uri2)
-    return strcmp((const char*)uri1->string, (const char*)uri2->string);
+  if(uri1 && uri2)  {
+    unsigned int len = (uri1->length > uri2->length) ?
+                        uri1->length : uri2->length;
+    return strncmp((const char*)uri1->string, (const char*)uri2->string, len);
+  }
 
   /* One arg is NULL - sort that first */
   return (!uri1) ? -1 : 1;
