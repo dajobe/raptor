@@ -21,10 +21,10 @@
 # 
 
 TEST_FILES=\
-example1.json example2.json example3.json
+example1.json example2.json example3.json example4.json
 
 TEST_OUT_FILES=\
-example1.nt example2.nt example3.nt
+example1.nt example2.nt example3.nt exmample4.nt
 
 JSON_BAD_TEST_FILES=bad-00.json bad-01.json bad-02.json bad-03.json \
 bad-04.json bad-05.json bad-06.json bad-07.json bad-08.json bad-09.json \
