@@ -439,9 +439,12 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
     if(uri1 == uri2)
       return 1;
     else if (uri1->length != uri2->length)
+      /* Different if lengths are different */
       return 0;
     else
-      return strcmp((const char*)uri1->string, (const char*)uri2->string) == 0;
+      /* Same length compare: do not need strncmp() NUL checking */
+      return memcmp((const char*)uri1->string, (const char*)uri2->string,
+                    uri1->length) == 0;
   } else if(uri1 || uri2)
     /* Only one is NULL - not equal */
     return 0;
@@ -469,9 +472,17 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
     return 0;
 
   if(uri1 && uri2)  {
+    /* compare common (shortest) prefix */
     unsigned int len = (uri1->length > uri2->length) ?
-                        uri1->length : uri2->length;
-    return strncmp((const char*)uri1->string, (const char*)uri2->string, len);
+                       uri2->length : uri1->length;
+
+    /* Same length compare: Do not need the strncmp() NUL checking */
+    int result = memcmp((const char*)uri1->string, (const char*)uri2->string,
+                        len);
+    if(!result)
+      /* if prefix is the same, the shorter is earlier */
+      result = uri1->length - uri2->length;
+    return result;
   }
 
   /* One arg is NULL - sort that first */
