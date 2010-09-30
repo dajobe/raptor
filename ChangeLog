@@ -1,3 +1,141 @@
+2010-09-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: Remove use of strncmp when strings are same
+	length
+
+	(raptor_uri_equals): Use memcmp() on same length strings to remove
+	need for strncmp that looks for NULs.
+
+	(raptor_uri_compare): Use memcmp() on same length strings to
+	remove need for strncmp that looks for NULs.  Sort shorter urls
+	earlier by comparing lengths.
+
+2010-09-28  Nicholas J Humfrey <njh@aelius.com>
+
+	* tests/json/Makefile.am, tests/json/example4.json,
+	tests/json/example4.nt: Added a more 'real-world' JSON pasing test
+	file, that includes a rdf:type URI.
+
+	* src/raptor_uri.c:
+	(raptor_uri_equals): small optimisation - URI lengths are now
+	compared before comparing strings.
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): URI comparison now takes into account the
+	stored string length, and does not depend upon NULL-termination of
+	strings.
+
+2010-09-24  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	Use AC_LANG_SOURCE for gcc flag test
+
+2010-09-19  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.10, Makefile.am:
+	Added ChangeLog.10 for 2009
+
+	* NEWS.html, RELEASE.html, configure.ac, src/win32_raptor_config.h:
+	
+	Bumped version to 1.9.1
+
+	* src/raptor_rss_common.c:
+	(raptor_new_rss_block): Copy block_term when needed, do not own
+	it.
+
+2010-09-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Use raptor_term as arg to raptor_new_rss_block
+
+	(raptor_new_rss_block): Change blank node ID to a raptor_term arg.
+
+	(raptor_rss_start_element_handler): Adjust call to
+	raptor_new_rss_block.
+
+2010-09-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_store_statement): Code tidy to move checks out of
+	loop.
+
+2010-09-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_serialize_rss.c: Remove internal
+	uses of deprecated raptor_term_as_string()
+
+	* src/raptor_serialize_rss.c: Copy statements when saving them for
+	later.
+
+	(raptor_rss10_store_statement): Move copy statement only when not
+	handled, no need to do copy/free.
+
+	(raptor_rss10_serialize_statement): Pass on handled but do not do
+	copy statmenethere.
+
+	* src/raptor_serialize_rss.c: When debugging free memory allocated
+	by raptor_term_as_string()
+
+	* src/raptor.h, src/raptor_term.c:
+	Deprecated raptor_term_as_..._string() for _to_...string form
+
+	(raptor_term_to_counted_string): Added replacing
+	raptor_term_as_counted_string.
+
+	(raptor_term_to_string): Added replacing
+	raptor_term_as_string.
+
+	(raptor_term_as_counted_string, raptor_term_as_string):
+	Deprecated.
+
+	* src/raptor_librdfa.c: Make rdfa (librdfa) parser correctly
+	initialize static statement
+
+	(raptor_librdfa_parse_init): Init static statement with
+	raptor_statement_init() so reference counting and copying works.
+
+	* src/raptor_rss.c: Make RSS parser correctly initialize static
+	statement
+
+	(raptor_rss_parse_init): Init static statement with
+	raptor_statement_init() so reference counting and copying works.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_store_statement): Never call raptor_free_statement()
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Tidy logic looking for type
+	triples.
+
+	* src/raptor_serialize_rss.c: Update debug messages to emit raptor
+	term not assume URIs
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Do not set block URIs from
+	blank nodes
+
+	* src/raptor_serialize_rss.c:
+	Fix crash in serializing to atom when comparing blank node as URI
+
+	(raptor_rss10_serialize_statement): Do not assume object is URI.
+	NOTE: This should use raptor_term_equals and be rewritten to
+	remove the item_uri code.
+
+2010-09-02  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_serialize_json.c:
+	(raptor_json_serialize_start): Corrected option macro name from
+	RAPTOR_OPTION_RELATIVE_URIS to RAPTOR_OPTION_JSON_CALLBACK.
+
+2010-08-22  Nicholas J Humfrey <njh@aelius.com>
+
+	* raptor2.rdf.in:
+	Normalised tabs into spaces #ws
+
+2010-08-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_nfc_test.c: Update for Raptor 2 API.
+
 2010-08-16  Dave Beckett <dave@dajobe.org>
 
 	* Snapshotted raptor2_1_9_0 for 1.9.0 release (GIT
