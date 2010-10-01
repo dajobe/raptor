@@ -152,7 +152,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
      */
     handler(world->message_handler_user_data, &world->message);
   else {
-    if(locator && world) {
+    if(locator) {
       raptor_locator_print(locator, stderr);
       fputc(' ', stderr);
     }
