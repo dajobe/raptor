@@ -604,10 +604,10 @@ typedef enum {
 
 /**
  * raptor_log_message:
- * @code: error code or <0
- * @domain: message domain or RAPTOR_DOMAIN_NONE
- * @level: log level
- * @locator: location associated with message or NULL
+ * @code: error code or < 0 if not used or known
+ * @domain: message domain or #RAPTOR_DOMAIN_NONE if not used or known
+ * @level: log message level
+ * @locator: location associated with message or NULL if not known
  * @text: message string
  *
  * Log message.
