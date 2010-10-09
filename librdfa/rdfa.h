@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Digital Bazaar, Inc.
+ * Copyright 2008-2010 Digital Bazaar, Inc.
  *
  * This file is part of librdfa.
  *
@@ -30,7 +30,38 @@
  * rdfa_set_triple_handler(context, triple_function);
  * rdfa_set_buffer_filler(context, buffer_filler_function);
  * rdfa_parse(context);
- * rdfa_destroy_context(context);
+ * rdfa_free_context(context);
+ *
+ * Usage if you need more control over when to fill rdfa's buffer:
+ *
+ * rdfacontext* context = rdfa_create_context(base_uri);
+ * context->callback_data = your_user_data;
+ * rdfa_set_triple_handler(context, triple_function);
+ * int rval = rdfa_parse_start(context);
+ * if(rval == RDFA_PARSE_SUCCESS)
+ * {
+ *    FILE* myfile = fopen("myfilename");
+ *    size_t buf_len = 0;
+ *    size_t read = 0;
+ *    do
+ *    {
+ *       char* buf = rdfa_get_buffer(context, &buf_len);
+ *       if(buf_len > 0)
+ *       {
+ *          // fill buffer here up to buf_len bytes from your input stream
+ *          read = fread(buf, sizeof(char), buf_len, myfile);
+ *       }
+ *
+ *       // parse the read data
+ *       rdfa_parse_buffer(context, read);
+ *    }
+ *    while(read > 0);
+ *    fclose(myfile);
+ *
+ *    rdfa_parse_end(context);
+ * }
+ * rdfa_free_context(context);
+ *
  */
 #ifndef _LIBRDFA_RDFA_H_
 #define _LIBRDFA_RDFA_H_
@@ -38,9 +69,9 @@
 
 // Activate the stupid Windows DLL exporting mechanism if we're building for Windows
 #ifdef WIN32
-#define DLLEXPORT __declspec(dllexport) 
+#define DLLEXPORT __declspec(dllexport)
 #else
-#define DLLEXPORT 
+#define DLLEXPORT
 #endif
 
 #ifdef LIBRDFA_IN_RAPTOR
@@ -58,7 +89,7 @@
 #endif
 
 #ifdef __cplusplus
-extern "C" 
+extern "C"
 {
 #endif
 
@@ -75,7 +106,7 @@ extern "C"
 #define XMLNS_DEFAULT_MAPPING "XMLNS_DEFAULT"
 
 #define RDFA_WHITESPACE " \t\n\v\f\r"
-   
+
 /**
  * An RDF resource type is used to denote the content of a triple's
  * object value.
@@ -113,8 +144,8 @@ typedef struct rdftriple
 typedef void (*triple_handler_fp)(rdftriple*, void*);
 
 /**
- * The specification for a callback that is capable of handling
- * triples.
+ * The specification for a callback that is used to fill the input buffer
+ * with data to parse.
  */
 typedef size_t (*buffer_filler_fp)(char*, size_t, void*);
 
@@ -135,7 +166,7 @@ typedef struct rdfalistitem
  * cannot be shrunk.
  */
 typedef struct rdfalist
-{   
+{
    rdfalistitem** items;
    size_t num_items;
    size_t max_items;
@@ -143,8 +174,8 @@ typedef struct rdfalist
 
 /**
  * The RDFa Parser structure is responsible for keeping track of the state of
- * the current RDFa parser. Things such as the default namespace, 
- * CURIE mappings, and other context-specific 
+ * the current RDFa parser. Things such as the default namespace,
+ * CURIE mappings, and other context-specific
  */
 typedef struct rdfacontext
 {
@@ -218,7 +249,8 @@ DLLEXPORT rdfacontext* rdfa_create_context(const char* base);
  * @param context the base rdfa context for the application.
  * @param th the triple handler function.
  */
-DLLEXPORT void rdfa_set_triple_handler(rdfacontext* context, triple_handler_fp th);
+DLLEXPORT void rdfa_set_triple_handler(
+   rdfacontext* context, triple_handler_fp th);
 
 /**
  * Sets the buffer filler for the application.
@@ -226,7 +258,8 @@ DLLEXPORT void rdfa_set_triple_handler(rdfacontext* context, triple_handler_fp t
  * @param context the base rdfa context for the application.
  * @param bf the buffer filler function.
  */
-DLLEXPORT void rdfa_set_buffer_filler(rdfacontext* context, buffer_filler_fp bf);
+DLLEXPORT void rdfa_set_buffer_filler(
+   rdfacontext* context, buffer_filler_fp bf);
 
 /**
  * Starts processing given the base rdfa context.
@@ -241,7 +274,42 @@ DLLEXPORT int rdfa_parse(rdfacontext* context);
 
 DLLEXPORT int rdfa_parse_start(rdfacontext* context);
 
-DLLEXPORT int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done);
+DLLEXPORT int rdfa_parse_chunk(
+   rdfacontext* context, char* data, size_t wblen, int done);
+
+/**
+ * Gets the input buffer for the given context so it can be filled with data.
+ * A pointer to the buffer will be returned and the maximum number of bytes
+ * that can be written to that buffer will be set to the blen parameter. Once
+ * data has been written to the buffer, rdfa_parse_buffer() should be called.
+ *
+ * @param context the base rdfa context.
+ * @param blen the variable to set to the buffer length.
+ *
+ * @return a pointer to the context's input buffer.
+ */
+DLLEXPORT char* rdfa_get_buffer(rdfacontext* context, size_t* blen);
+
+/**
+ * Informs the parser to attempt to parse more of the given context's input
+ * buffer. To fill the input buffer with data, call rdfa_get_buffer().
+ *
+ * If any of the input buffer can be parsed, it will be. It is possible
+ * that none of the data will be parsed, in which case this function will
+ * still return RDFA_PARSE_SUCCESS. More data should be written to the input
+ * buffer using rdfa_get_buffer() as it is made available to the application.
+ * Once there is no more data to write, rdfa_parse_end() should be called.
+ *
+ * @param context the base rdfa context.
+ * @param bytes the number of bytes written to the input buffer via the last
+ *           call to rdfa_get_buffer(), a value of 0 will indicate that there
+ *           is no more data to parse.
+ *
+ * @return RDFA_PARSE_SUCCESS if everything went well. RDFA_PARSE_FAILED
+ *         if there was a fatal error and RDFA_PARSE_WARNING if there
+ *         was a non-fatal error.
+ */
+DLLEXPORT int rdfa_parse_buffer(rdfacontext* context, size_t bytes);
 
 DLLEXPORT void rdfa_parse_end(rdfacontext* context);
 
