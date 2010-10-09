@@ -1,3 +1,20 @@
+2010-10-09  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa.h: Update to librdf GIT commit
+	ddead5d1f72acd7fcd9e4c42503eadcce9d6ec87
+
+2010-10-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Add raptor_parser_parse_iostream -
+	was new in 1.9.0
+
+2010-10-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_log.c:
+	(raptor_log_error): code tidy
+
+	* src/raptor.h: raptor_log_message: autodocs
+
 2010-09-28  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_uri.c: Remove use of strncmp when strings are same
