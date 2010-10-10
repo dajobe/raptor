@@ -978,8 +978,11 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
      * and that all URLs are absoluete, and there are a lot of http:
      * URLs
      */
-#define  HAS_NTRIPLES_0_LEN 8
-#define  HAS_NTRIPLES_0 (!memcmp((const char*)buffer, "<http://", HAS_NTRIPLES_0_LEN))
+#define  HAS_NTRIPLES_START_1_LEN 8
+#define  HAS_NTRIPLES_START_1 (!memcmp((const char*)buffer, "<http://", HAS_NTRIPLES_START_1_LEN))
+#define  HAS_NTRIPLES_START_2_LEN 2
+#define  HAS_NTRIPLES_START_2 (!memcmp((const char*)buffer, "_:", HAS_NTRIPLES_START_2_LEN))
+
 #define  HAS_NTRIPLES_1 (raptor_memstr((const char*)buffer, len, "\n<http://") != NULL)
 #define  HAS_NTRIPLES_2 (raptor_memstr((const char*)buffer, len, "\r<http://") != NULL)
 #define  HAS_NTRIPLES_3 (raptor_memstr((const char*)buffer, len, "> <http://") != NULL)
@@ -988,7 +991,9 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
     int has_ntriples_3 = HAS_NTRIPLES_3;
 
     /* Bonus if the first bytes look N-Triples-like */
-    if(len >= HAS_NTRIPLES_0_LEN && HAS_NTRIPLES_0)
+    if(len >= HAS_NTRIPLES_START_1_LEN && HAS_NTRIPLES_START_1)
+      score++;
+    if(len >= HAS_NTRIPLES_START_2_LEN && HAS_NTRIPLES_START_2)
       score++;
 
     if(HAS_NTRIPLES_1 || HAS_NTRIPLES_2) {
