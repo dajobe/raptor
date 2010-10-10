@@ -25,7 +25,7 @@ main(int argc, char *argv[])
     goto tidy;
   }
   
-  for(i = 1; (filename = (const char*)argv[1]); i++) {
+  for(i = 1; (filename = (const char*)argv[i]); i++) {
     raptor_iostream* iostr = NULL;
     const char* name;
     size_t read_len;
@@ -47,6 +47,7 @@ main(int argc, char *argv[])
     if(count < 1) {
       fprintf(stderr, "rdfguess: Failed to read any data from file %s\n",
               filename);
+      raptor_free_iostream(iostr);
       goto tidy;
     }
 
@@ -61,15 +62,14 @@ main(int argc, char *argv[])
     if(name)
       fprintf(stdout, "rdfguess: %s guessed to be %s\n", filename, name);
     else
-      fprintf(stdout, "rdfguess: failed to guess parser\n");
+      fprintf(stdout, "rdfguess: failed to guess parser for %s\n", filename);
+
+    raptor_free_iostream(iostr);
   }
   
   rc = 0;
 
   tidy:
-  if(iostr)
-    raptor_free_iostream(iostr);
-  
   raptor_free_world(world);
 
   return rc;
