@@ -21,7 +21,7 @@
 # 
 # 
 
-EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint rdfserialize
+EXTRA_PROGRAMS = raptor_abort grapper rdfcat rdfprint rdfserialize rdfguess
 
 examples: $(EXTRA_PROGRAMS)
 
@@ -52,6 +52,10 @@ rdfprint_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 rdfserialize_SOURCES = rdfserialize.c
 rdfserialize_LDADD=$(top_builddir)/src/libraptor2.la
 rdfserialize_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
+
+rdfguess_SOURCES = rdfguess.c
+rdfguess_LDADD=$(top_builddir)/src/libraptor2.la
+rdfguess_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 
 $(top_builddir)/src/libraptor2.la:
