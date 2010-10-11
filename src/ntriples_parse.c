@@ -978,6 +978,8 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
      * and that all URLs are absoluete, and there are a lot of http:
      * URLs
      */
+#define  HAS_AT_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
+
 #define  HAS_NTRIPLES_START_1_LEN 8
 #define  HAS_NTRIPLES_START_1 (!memcmp((const char*)buffer, "<http://", HAS_NTRIPLES_START_1_LEN))
 #define  HAS_NTRIPLES_START_2_LEN 2
@@ -988,28 +990,33 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 #define  HAS_NTRIPLES_3 (raptor_memstr((const char*)buffer, len, "> <http://") != NULL)
 #define  HAS_NTRIPLES_4 (raptor_memstr((const char*)buffer, len, "> <") != NULL)
 #define  HAS_NTRIPLES_5 (raptor_memstr((const char*)buffer, len, "> \"") != NULL)
-    int has_ntriples_3 = HAS_NTRIPLES_3;
+    if(HAS_AT_PREFIX)
+      /* Turtle */
+      score = 0;
+    else  {
+      int has_ntriples_3 = HAS_NTRIPLES_3;
 
-    /* Bonus if the first bytes look N-Triples-like */
-    if(len >= HAS_NTRIPLES_START_1_LEN && HAS_NTRIPLES_START_1)
-      score++;
-    if(len >= HAS_NTRIPLES_START_2_LEN && HAS_NTRIPLES_START_2)
-      score++;
+      /* Bonus if the first bytes look N-Triples-like */
+      if(len >= HAS_NTRIPLES_START_1_LEN && HAS_NTRIPLES_START_1)
+        score++;
+      if(len >= HAS_NTRIPLES_START_2_LEN && HAS_NTRIPLES_START_2)
+        score++;
 
-    if(HAS_NTRIPLES_1 || HAS_NTRIPLES_2) {
-      /* N-Triples file with newlines and HTTP subjects */
-      score += 6;
-      if(has_ntriples_3)
-        score++;
-    } else if(has_ntriples_3) {
-      /* an HTTP URL predicate or object but no HTTP subject */
-      score += 3;
-    } else if(HAS_NTRIPLES_4) {
-      /* non HTTP urls - weak check */
-      score += 2;
-      if(HAS_NTRIPLES_5)
-        /* bonus for a literal object */
-        score++;
+      if(HAS_NTRIPLES_1 || HAS_NTRIPLES_2) {
+        /* N-Triples file with newlines and HTTP subjects */
+        score += 6;
+        if(has_ntriples_3)
+          score++;
+      } else if(has_ntriples_3) {
+        /* an HTTP URL predicate or object but no HTTP subject */
+        score += 3;
+      } else if(HAS_NTRIPLES_4) {
+        /* non HTTP urls - weak check */
+        score += 2;
+        if(HAS_NTRIPLES_5)
+          /* bonus for a literal object */
+          score++;
+      }
     }
   }
   
