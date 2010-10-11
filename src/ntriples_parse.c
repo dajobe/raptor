@@ -962,10 +962,6 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
   if(suffix) {
     if(!strcmp((const char*)suffix, "nt"))
       score = 8;
-    if(!strcmp((const char*)suffix, "ttl"))
-      score = 3;
-    if(!strcmp((const char*)suffix, "n3"))
-      score = 1;
   }
   
   if(mime_type) {
