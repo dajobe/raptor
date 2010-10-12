@@ -3,15 +3,19 @@
  *
  * This file is part of librdfa.
  *
- * librdfa is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * librdfa is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * librdfa is Free Software, and can be licensed under any of the
+ * following three licenses:
+ * 
+ *   1. GNU Lesser General Public License (LGPL) V2.1 or any 
+ *      newer version
+ *   2. GNU General Public License (GPL) V2 or any newer version
+ *   3. Apache License, V2.0 or any newer version
+ * 
+ * You may not use this file except in compliance with at least one of
+ * the above three licenses.
+ * 
+ * See LICENSE-* at the top of this software distribution for more
+ * information regarding the details of each license.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with librdfa. If not, see <http://www.gnu.org/licenses/>.
