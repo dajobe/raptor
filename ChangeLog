@@ -1,3 +1,9 @@
+2010-10-11  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_recognise_syntax): Refuse to handle .ttl or
+	.n3 named content.
+
 2010-10-09  Dave Beckett <dave@dajobe.org>
 
 	* librdfa/rdfa.c, librdfa/rdfa.h: Update to librdf GIT commit
