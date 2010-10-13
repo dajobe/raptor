@@ -971,7 +971,7 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
   
   if(buffer && len) {
     /* recognizing N-Triples is tricky but rely that it is line based
-     * and that all URLs are absoluete, and there are a lot of http:
+     * and that all URLs are absolute, and there are a lot of http:
      * URLs
      */
 #define  HAS_AT_PREFIX (raptor_memstr((const char*)buffer, len, "@prefix ") != NULL)
