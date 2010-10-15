@@ -415,6 +415,8 @@ raptor_serializer_start_to_iostream(raptor_serializer *rdf_serializer,
 
   rdf_serializer->iostream = iostream;
 
+  rdf_serializer->free_iostream_on_end = 0;
+
   if(rdf_serializer->factory->serialize_start)
     return rdf_serializer->factory->serialize_start(rdf_serializer);
   return 0;
