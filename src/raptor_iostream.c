@@ -1042,7 +1042,7 @@ raptor_read_string_iostream_read_bytes(void *user_data, void *ptr,
     return 0;
 
   avail = (int)((con->length-con->offset) / size);  
-  if(avail < nmemb)
+  if(avail > nmemb)
     avail = nmemb;
   blen = (avail * size);
   memcpy(ptr, (char*)con->string + con->offset, blen);
