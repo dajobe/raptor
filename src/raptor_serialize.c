@@ -390,7 +390,7 @@ raptor_new_serializer(raptor_world* world, const char *name)
  * 
  * Start serialization to an iostream with given base URI
  *
- * The passed in @iostream does not becomes owned by the serializer
+ * The passed in @iostream does not become owned by the serializer
  * and can be used by the caller after serializing is done.  It
  * must be destroyed by the caller.
  *
