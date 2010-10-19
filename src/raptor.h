@@ -853,6 +853,13 @@ typedef int (*raptor_data_print_handler)(void *object, FILE *fh);
  */
 typedef int (*raptor_data_context_print_handler)(void *context, void *object, FILE *fh);
 
+/**
+ * raptor_stringbuffer:
+ *
+ * Raptor string buffer class
+ */
+typedef struct raptor_stringbuffer_s raptor_stringbuffer;
+
 
 /* Public functions */
 
@@ -1156,7 +1163,8 @@ RAPTOR_API
 char* raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
 RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
-
+RAPTOR_API
+int raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb, const char* string, size_t length, int space_is_plus);
 
 
 /**
@@ -1315,13 +1323,6 @@ int raptor_namespace_write(raptor_namespace *ns, raptor_iostream* iostr);
 /* namespace string utility function */
 RAPTOR_API
 int raptor_xml_namespace_string_parse(const unsigned char *string, unsigned char **prefix, unsigned char **uri_string);
-
-/**
- * raptor_stringbuffer:
- *
- * Raptor string buffer class
- */
-typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
 /* Sequence class */
 /**
