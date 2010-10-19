@@ -547,6 +547,33 @@ raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
   return 0;
 }
 
+
+
+/**
+ * raptor_stringbuffer_append_hexadecimal:
+ * @stringbuffer: raptor stringbuffer
+ * @hex: integer to format
+ *
+ * Add an integer formatted in hexdecimal (base 16) to the stringbuffer.
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_stringbuffer_append_hexadecimal(raptor_stringbuffer* stringbuffer, 
+                                       int hex)
+{
+  unsigned char buf[2];
+  
+  if(hex < 0 || hex > 0xF)
+     return 1;
+
+  *buf = (hex < 10) ? ('0' + hex) : ('A' + hex - 10);
+  buf[1] = '\0';
+
+  return raptor_stringbuffer_append_counted_string(stringbuffer, buf, 1, 1);
+}
+
+
 #endif
 
 

@@ -1405,6 +1405,8 @@ int raptor_stringbuffer_append_string(raptor_stringbuffer* stringbuffer, const u
 RAPTOR_API
 int raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer, int integer);
 RAPTOR_API
+int raptor_stringbuffer_append_hexadecimal(raptor_stringbuffer* stringbuffer, int hex);
+RAPTOR_API
 int raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer, raptor_stringbuffer* append);
 RAPTOR_API
 int raptor_stringbuffer_prepend_counted_string(raptor_stringbuffer* stringbuffer, const unsigned char *string, size_t length, int do_copy);
