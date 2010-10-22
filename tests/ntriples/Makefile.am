@@ -39,7 +39,8 @@ EXTRA_DIST = \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
 	$(NT_BAD_TEST_FILES) \
-	$(NQ_TEST_FILES)
+	$(NQ_TEST_FILES) \
+	$(NQ_OUT_FILES)
 
 
 build-rapper:
