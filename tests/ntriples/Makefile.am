@@ -109,5 +109,4 @@ check-nq: build-rapper $(NQ_TEST_FILES)
 	set -e; exit $$result
 
 print-nt-test-files:
-	@echo $(NT_TEST_FILES) | tr ' ' '\012'; echo $(NQ_TEST_FILES) | tr ' ' '\012'
-
+	@echo $(NT_TEST_FILES) | tr ' ' '\012'
