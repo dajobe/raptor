@@ -93,7 +93,7 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 
 check-nq: build-rapper $(NQ_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing N-Quaads"; \
+	$(ECHO) "Testing N-Quads"; \
 	for test in $(NQ_TEST_FILES); do \
 	  name=`basename $$test .nq` ; \
 	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
