@@ -805,8 +805,9 @@ grddl_parser=no
 guess_parser=yes
 rdfa_parser=yes
 json_parser=no
+nquads_parser=no
 
-rdf_parsers_available="rdfxml ntriples turtle trig guess rss-tag-soup rdfa"
+rdf_parsers_available="rdfxml ntriples turtle trig guess rss-tag-soup rdfa nquads"
 rdf_parsers_enabled=
 
 
@@ -844,6 +845,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_GUESS, 1, [Building guess parser])
   AC_DEFINE(RAPTOR_PARSER_RDFA, 1, [Building RDFA parser])
   AC_DEFINE(RAPTOR_PARSER_JSON, 1, [Building JSON parser])
+  AC_DEFINE(RAPTOR_PARSER_NQUADS, 1, [Building N-Quads parser])
 fi
 
 AC_MSG_CHECKING(RDF parsers required)
@@ -914,6 +916,7 @@ AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GUESS, test $guess_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RDFA, test $rdfa_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_JSON, test $json_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_NQUADS, test $ntriples_parser = yes)
 
 AM_CONDITIONAL(LIBRDFA, test $need_librdfa = yes)
 

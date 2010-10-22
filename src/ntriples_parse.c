@@ -57,7 +57,7 @@
 
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_term_type subject_type, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_term_type subject_type, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype, const void *graph, const raptor_term_type graph_type);
 
 /*
  * NTriples parser object
@@ -74,6 +74,11 @@ struct raptor_ntriples_parser_context_s {
   
   /* static statement for use in passing to user code */
   raptor_statement statement;
+
+  /* Non-0 if N-Quads */
+  int is_nquads;
+
+  int literal_graph_warning;
 };
 
 
@@ -96,6 +101,9 @@ raptor_ntriples_parse_init(raptor_parser* rdf_parser, const char *name)
   ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
 
   raptor_statement_init(&ntriples_parser->statement, rdf_parser->world);
+
+  if(!strcmp(name, "nquads"))
+    ntriples_parser->is_nquads = 1;
   
   return 0;
 }
@@ -128,7 +136,9 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                    const void *object,
                                    const raptor_term_type object_type,
                                    const unsigned char *object_literal_language,
-                                   const unsigned char *object_literal_datatype)
+                                   const unsigned char *object_literal_datatype,
+                                   const void *graph,
+                                   const raptor_term_type graph_type)
 {
   /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement = &parser->statement;
@@ -205,6 +215,32 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                                      object,
                                                      datatype_uri,
                                                      object_literal_language);
+  }
+
+
+  if(graph) {
+    /* Three choices for graph/context from N-Quads according to
+     * http://sw.deri.org/2008/07/n-quads/ but I am IGNORING Literal
+     */
+    if(graph_type == RAPTOR_TERM_TYPE_URI) {
+      raptor_uri *graph_uri;
+
+      graph_uri = raptor_new_uri(parser->world, (const unsigned char*)graph);
+      if(!graph_uri) {
+        raptor_parser_error(parser,
+                            "Could not create object uri '%s', skipping", 
+                            (const char *)graph);
+        goto cleanup;
+      }
+      statement->graph = raptor_new_term_from_uri(parser->world, graph_uri);
+      raptor_free_uri(graph_uri);
+      graph_uri = NULL;
+    } else if(graph_type == RAPTOR_TERM_TYPE_BLANK) {
+      statement->graph = raptor_new_term_from_blank(parser->world, graph);
+    } else { 
+      /* Warning about literal graphs is handled below */
+      statement->graph = NULL;
+    }
   }
 
   /* Generate the statement */
@@ -490,14 +526,16 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
 static int
 raptor_ntriples_parse_line(raptor_parser* rdf_parser,
-                           unsigned char *buffer, size_t len)
+                           unsigned char *buffer, size_t len,
+                           int max_terms)
 {
+  raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   int i;
   unsigned char *p;
   unsigned char *dest;
-  unsigned char *terms[3];
-  size_t term_lengths[3];
-  raptor_term_type term_types[3];
+  unsigned char *terms[4];
+  size_t term_lengths[4];
+  raptor_term_type term_types[4];
   size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
   unsigned char *object_literal_datatype = NULL;
@@ -556,7 +594,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   /* Must be triple */
 
-  for(i = 0; i < 3; i++) {
+  for(i = 0; i < max_terms; i++) {
     if(!len) {
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
@@ -769,12 +807,21 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
   }
 
+
+  if(terms[3] && term_types[3] == RAPTOR_TERM_TYPE_LITERAL) {
+    if(!ntriples_parser->literal_graph_warning++)
+      raptor_parser_warning(rdf_parser, "Ignoring N-Quad literal contexts");
+
+    terms[3] = NULL;
+  }
+
   raptor_ntriples_generate_statement(rdf_parser, 
                                      terms[0], term_types[0],
                                      terms[1], term_types[1],
                                      terms[2], term_types[2],
                                      object_literal_language,
-                                     object_literal_datatype);
+                                     object_literal_datatype,
+                                     terms[3], term_types[3]);
 
   rdf_parser->locator.byte += len;
 
@@ -793,6 +840,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   unsigned char *ptr;
   unsigned char *start;
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
+  int max_terms = ntriples_parser->is_nquads ? 4 : 3;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to buffer\n", (unsigned int)len);
@@ -865,7 +913,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     rdf_parser->locator.column = 0;
 
     *ptr = '\0';
-    if(raptor_ntriples_parse_line(rdf_parser,line_start,len))
+    if(raptor_ntriples_parse_line(rdf_parser, line_start, len, max_terms))
       return 1;
     
     rdf_parser->locator.line++;
@@ -950,6 +998,7 @@ raptor_ntriples_parse_start(raptor_parser* rdf_parser)
 }
 
 
+#ifdef RAPTOR_PARSER_NTRIPLES
 static int
 raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory, 
                                        const unsigned char *buffer, size_t len,
@@ -1068,3 +1117,83 @@ raptor_init_parser_ntriples(raptor_world* world)
   return !raptor_world_register_parser_factory(world,
                                                &raptor_ntriples_parser_register_factory);
 }
+
+#endif
+
+
+#ifdef RAPTOR_PARSER_NQUADS
+static int
+raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory, 
+                                     const unsigned char *buffer, size_t len,
+                                     const unsigned char *identifier, 
+                                     const unsigned char *suffix, 
+                                     const char *mime_type)
+{
+  int score = 0;
+  
+  if(suffix) {
+    if(!strcmp((const char*)suffix, "nq"))
+      score = 2;
+
+    /* Explicitly refuse to do anything with N-Triples, Turtle or N3
+     * named content 
+     */
+    if(!strcmp((const char*)suffix, "nt") ||
+       !strcmp((const char*)suffix, "ttl") ||
+       !strcmp((const char*)suffix, "n3")) {
+      return 0;
+    }
+  }
+  
+  if(mime_type) {
+    if(strstr((const char*)mime_type, "nquads"))
+      score += 2;
+  }
+  
+  /* Do not guess on content since it looks so similar o N-Triples*/ 
+
+  return score;
+}
+
+
+static const char* const nquads_names[2] = { "nquads", NULL };
+
+#define NQUADS_TYPES_COUNT 0
+static const raptor_type_q nquads_types[NQUADS_TYPES_COUNT + 1] = {
+  { NULL, 0, 0}
+};
+
+static int
+raptor_nquads_parser_register_factory(raptor_parser_factory *factory) 
+{
+  int rc = 0;
+
+  factory->desc.names = nquads_names;
+
+  factory->desc.mime_types = nquads_types;
+  factory->desc.mime_types_count = NQUADS_TYPES_COUNT;
+
+  factory->desc.label = "N-Quads";
+  factory->desc.uri_string = "http://sw.deri.org/2008/07/n-quads/";
+
+  factory->desc.flags = 0;
+  
+  factory->context_length     = sizeof(raptor_ntriples_parser_context);
+
+  factory->init      = raptor_ntriples_parse_init;
+  factory->terminate = raptor_ntriples_parse_terminate;
+  factory->start     = raptor_ntriples_parse_start;
+  factory->chunk     = raptor_ntriples_parse_chunk;
+  factory->recognise_syntax = raptor_nquads_parse_recognise_syntax;
+
+  return rc;
+}
+
+
+int
+raptor_init_parser_nquads(raptor_world* world)
+{
+  return !raptor_world_register_parser_factory(world,
+                                               &raptor_nquads_parser_register_factory);
+}
+#endif

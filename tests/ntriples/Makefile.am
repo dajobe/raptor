@@ -28,20 +28,25 @@ NT_OUT_FILES=test.out
 NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
 bad-05.nt bad-06.nt bad-07.nt
 
+NQ_TEST_FILES=testnq-1.nq
+
+NQ_OUT_FILES=testnq-1.out
+
 # Used to make N-triples output consistent
 BASE_URI=http://librdf.org/raptor/tests/
 
 EXTRA_DIST = \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
-	$(NT_BAD_TEST_FILES)
+	$(NT_BAD_TEST_FILES) \
+	$(NQ_TEST_FILES)
 
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 check-local: build-rapper \
-check-nt check-bad-nt
+check-nt check-bad-nt check-nq
 
 check-nt: build-rapper $(NT_TEST_FILES)
 	@set +e; result=0; \
@@ -85,5 +90,23 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
+check-nq: build-rapper $(NQ_TEST_FILES)
+	@set +e; result=0; \
+	$(ECHO) "Testing N-Quaads"; \
+	for test in $(NQ_TEST_FILES); do \
+	  name=`basename $$test .nq` ; \
+	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(top_builddir)/utils/rapper -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    $(ECHO) "ok"; \
+	  else \
+	    $(ECHO) "FAILED"; \
+	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	  fi; \
+	  rm -f $$name.res ; \
+	done; \
+	set -e; exit $$result
+
 print-nt-test-files:
-	@echo $(NT_TEST_FILES) | tr ' ' '\012'
+	@echo $(NT_TEST_FILES) | tr ' ' '\012'; echo $(NQ_TEST_FILES) | tr ' ' '\012'
+

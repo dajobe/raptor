@@ -80,6 +80,10 @@ endif
 endif
 if RAPTOR_PARSER_NTRIPLES
 libraptor2_la_SOURCES += ntriples_parse.c
+else
+if RAPTOR_PARSER_NQUADS
+libraptor2_la_SOURCES += ntriples_parse.c
+endif
 endif
 if RAPTOR_RSS_COMMON
 libraptor2_la_SOURCES += raptor_rss_common.c raptor_rss.h
