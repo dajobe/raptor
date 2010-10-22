@@ -916,7 +916,7 @@ AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GUESS, test $guess_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RDFA, test $rdfa_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_JSON, test $json_parser = yes)
-AM_CONDITIONAL(RAPTOR_PARSER_NQUADS, test $ntriples_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_NQUADS, test $nquads_parser = yes)
 
 AM_CONDITIONAL(LIBRDFA, test $need_librdfa = yes)
 
