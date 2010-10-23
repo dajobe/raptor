@@ -600,23 +600,27 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
       goto cleanup;
     }
     
-    /* Expect either <URI> or _:name */
+
     if(i == 2) {
+      /* object term (2): expect either <URI> or _:name or literal */
       if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
         goto cleanup;
       }
     } else if(i == 1) {
+      /* predicate term (1): expect URI only */
       if(*p != '<') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>", *p);
         goto cleanup;
       }
-    } else /* i == 0 */ {
+    } else {
+      /* subject (0) or graph (3) terms: expect <URI> or _:name */
       if(*p != '<' && *p != '_') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
         goto cleanup;
       }
     }
+
 
     switch(*p) {
       case '<':
@@ -807,6 +811,10 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
   }
 
+
+  /* Just to be sure */
+  if(!ntriples_parser->is_nquads)
+    terms[3] = NULL;
 
   if(terms[3] && term_types[3] == RAPTOR_TERM_TYPE_LITERAL) {
     if(!ntriples_parser->literal_graph_warning++)
@@ -1150,7 +1158,7 @@ raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory,
       score += 2;
   }
   
-  /* Do not guess on content since it looks so similar o N-Triples*/ 
+  /* Do not guess using content since it looks so similar to N-Triples */
 
   return score;
 }
