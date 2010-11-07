@@ -14,6 +14,76 @@
 <p>Not yet released.
 </p>
 
+<p>FIXME: Do not deprecate items in 1.9.1 beta - just remove them from API.
+</p>
+
+
+<h3>AVLTree class changes</h3>
+
+<p>Free the iterator at the end of debug method
+<code>raptor_avltree_print()</code>.
+</p>
+
+
+<h3>I/O Stream class changes</h3>
+
+<p>Fix major copying too much error in the internal
+<code>raptor_read_string_iostream_read_bytes()</code> memcpy that
+could cause crashes - the function always copied the maximum amount
+the user requested in the read method even if the string was
+smaller.</p>
+
+
+<h3>Parser class changes</h3>
+<p>JSON parser: Made relative URIs option work.
+</p>
+
+<p>N-Quads parser: Added.  The serializer already existed.</p>
+
+<p>librdfa parser: Updated to latest librdfa GIT 
+ddead5d1f72acd7fcd9e4c42503eadcce9d6ec87</p>
+
+
+<h3>Serializer class changes</h3>
+
+<p>Fix <code>raptor_serializer_start_to_iostream()</code> to prevent
+crash when this method is used more than once on the same
+serializer.</p>
+
+<p>RSS/Atom serializer: Fix crashes with feeds containing entries
+with blank node items.
+</p>
+
+
+<h3>Stringbuffer class changes</h3>
+
+<p>Added utility methods
+<code>raptor_stringbuffer_append_uri_escaped_counted_string()</code>
+and <code>raptor_stringbuffer_append_hexadecimal()</code>.
+</p>
+
+
+<h3>Term class changes</h3>
+
+<p>Added <code>raptor_term_to_counted_string()</code> replacing
+<code>raptor_term_as_counted_string()</code>.</p>
+
+<p>Added <code>raptor_term_to_string()</code> replacing
+raptor_term_as_string.</p>
+
+<p>Deprecated
+<code>raptor_term_as_counted_string()</code> and
+<code>raptor_term_as_string()</code>
+</p>
+
+
+<h3>URI class changes</h3>
+
+<p>Use string lengths in equals and comparisons for faster checking.
+Use memcmp instead of strncmp when lengths are known and the same.
+</p>
+
+
 
 <h2 id="rel1_9_0"><a name="rel1_9_0">Raptor 1.9.0 Changes</a></h2>
 
