@@ -14,9 +14,6 @@
 <p>Not yet released.
 </p>
 
-<p>FIXME: Do not deprecate items in 1.9.1 beta - just remove them from API.
-</p>
-
 
 <h3>AVLTree class changes</h3>
 
@@ -81,7 +78,8 @@ deleted <code>raptor_term_as_string()</code>.</p>
 <h3>URI class changes</h3>
 
 <p>Use string lengths in equals and comparisons for faster checking.
-Use memcmp instead of strncmp when lengths are known and the same.
+Use <code>memcmp()</code> instead of <code>strncmp()</code> when
+lengths are known and the same.
 </p>
 
 
