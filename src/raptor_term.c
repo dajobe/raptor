@@ -378,33 +378,6 @@ raptor_free_term(raptor_term *term)
 
 
 /**
- * raptor_term_as_counted_string:
- * @term: #raptor_term
- * @len_p: Pointer to location to store length of new string (if not NULL)
- *
- * Turns part of raptor term into a N-Triples format counted string.
- * 
- * Turns the given @term into an N-Triples escaped string using all the
- * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
- *
- * This function uses raptor_term_ntriples_write() to write to an
- * #raptor_iostream which is the prefered way to write formatted
- * output.
- *
- * @Deprecated: use raptor_term_to_counted_string() with same calling
- * convention.
- *
- * Return value: the new string or NULL on failure.  The length of
- * the new string is returned in *@len_p if len_p is not NULL.
- **/
-unsigned char*
-raptor_term_as_counted_string(raptor_term *term, size_t* len_p)
-{
-  return raptor_term_to_counted_string(term, len_p);
-}
-
-
-/**
  * raptor_term_to_counted_string:
  * @term: #raptor_term
  * @len_p: Pointer to location to store length of new string (if not NULL)
@@ -445,29 +418,6 @@ raptor_term_to_counted_string(raptor_term *term, size_t* len_p)
   }
 
   return (unsigned char *)string;
-}
-
-
-/**
- * raptor_term_as_string:
- * @term: #raptor_term
- *
- * Turns part of raptor statement into a N-Triples format string.
- * 
- * Turns the given @term into an N-Triples escaped string using all the
- * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
- *
- * @Deprecated: use raptor_term_as_string() with same calling
- * convention.
- *
- * Return value: the new string or NULL on failure.
- **/
-unsigned char*
-raptor_term_as_string(raptor_term *term)
-{
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(term, raptor_term, NULL);
-  
-  return raptor_term_to_counted_string(term, NULL);
 }
 
 

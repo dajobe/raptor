@@ -926,10 +926,6 @@ RAPTOR_API
 unsigned char* raptor_term_to_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_term_to_string(raptor_term *term);
-RAPTOR_API RAPTOR_DEPRECATED
-unsigned char* raptor_term_as_counted_string(raptor_term *term, size_t* len_p);
-RAPTOR_API RAPTOR_DEPRECATED
-unsigned char* raptor_term_as_string(raptor_term *term);
 RAPTOR_API
 int raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr);
 
