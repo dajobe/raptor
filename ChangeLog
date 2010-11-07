@@ -1,3 +1,62 @@
+2010-10-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c:
+	(raptor_avltree_print): Free avltree_iterator at end
+
+2010-10-22  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: N-Quads code tidying
+
+	* tests/ntriples/Makefile.am: Remove N-Quads from N-Triples test
+	files so Turtle parser doesn't barf.
+
+	* tests/ntriples/Makefile.am: #typo
+
+	* configure.ac: Typo in AM_CONDITIONAL enabling N-Quads parser
+
+	* tests/ntriples/Makefile.am: Add $(NQ_OUT_FILES) to dist
+
+	* tests/json/Makefile.am: example4.nt
+
+	* configure.ac, src/Makefile.am, src/ntriples_parse.c,
+	src/raptor_internal.h, src/raptor_parse.c,
+	tests/ntriples/Makefile.am, tests/ntriples/testnq-1.nq,
+	tests/ntriples/testnq-1.out: Added N-Quads parser.  Hey, that was
+	easy!
+
+	Don't allow literal graphs/contexts despite that being in the spec
+	at http://sw.deri.org/2008/07/n-quads/ because it's a stupid idea.
+	Added test from the spec
+
+2010-10-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_stringbuffer.c:
+	(raptor_stringbuffer_append_uri_escaped_counted_string): Added
+
+	* src/raptor.h, src/raptor_stringbuffer.c:
+	(raptor_stringbuffer_append_hexadecimal): Added
+
+2010-10-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize.c: #doc typo
+
+2010-10-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_iostream.c: Fix major copying too much error with
+	raptor_read_string_iostream_read_bytes() memcpy
+
+	(raptor_read_string_iostream_read_bytes): Adjust copied bytes to
+	the maximum available in the buffer, not the maximum requested by
+	user.  Could cause crashes since memcpy is called to always copy
+	the maximum amount the user requests, whatever amount of data is
+	in the string.
+
+2010-10-15  Dave Beckett <dajobe@digg.com>
+
+	* src/raptor_serialize.c:
+	(raptor_serializer_start_to_iostream): Reset free_iostream_on_end
+	flag to prevent crashes on reuse.
+
 2010-10-11  Dave Beckett <dave@dajobe.org>
 
 	* src/ntriples_parse.c:
