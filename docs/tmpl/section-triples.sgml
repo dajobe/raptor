@@ -163,7 +163,7 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @term: 
 
 
-<!-- ##### FUNCTION raptor_term_as_counted_string ##### -->
+<!-- ##### FUNCTION raptor_term_to_counted_string ##### -->
 <para>
 
 </para>
@@ -173,7 +173,7 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_term_as_string ##### -->
+<!-- ##### FUNCTION raptor_term_to_string ##### -->
 <para>
 
 </para>

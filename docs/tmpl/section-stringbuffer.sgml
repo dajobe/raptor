@@ -58,6 +58,26 @@ and #raptor_serializer classes.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_stringbuffer_append_decimal ##### -->
+<para>
+
+</para>
+
+@stringbuffer: 
+@integer: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_stringbuffer_append_hexadecimal ##### -->
+<para>
+
+</para>
+
+@stringbuffer: 
+@hex: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_stringbuffer_append_string ##### -->
 <para>
 
@@ -69,16 +89,6 @@ and #raptor_serializer classes.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_stringbuffer_append_decimal ##### -->
-<para>
-
-</para>
-
-@stringbuffer: 
-@integer: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_stringbuffer_append_stringbuffer ##### -->
 <para>
 
@@ -86,6 +96,18 @@ and #raptor_serializer classes.
 
 @stringbuffer: 
 @append: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_stringbuffer_append_uri_escaped_counted_string ##### -->
+<para>
+
+</para>
+
+@sb: 
+@string: 
+@length: 
+@space_is_plus: 
 @Returns: 
 
 
