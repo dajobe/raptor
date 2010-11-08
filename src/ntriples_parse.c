@@ -208,13 +208,14 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     raptor_free_uri(object_uri);
     object_uri = NULL;
   } else if(object_type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->object = raptor_new_term_from_blank(parser->world, object);
+    statement->object = raptor_new_term_from_blank(parser->world, 
+                                                   (const unsigned char*)object);
   } else { 
     /*  RAPTOR_TERM_TYPE_LITERAL */
     statement->object = raptor_new_term_from_literal(parser->world,
-                                                     object,
+                                                     (const unsigned char*)object,
                                                      datatype_uri,
-                                                     object_literal_language);
+                                                     (const unsigned char*)object_literal_language);
   }
 
 
@@ -236,7 +237,8 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
       raptor_free_uri(graph_uri);
       graph_uri = NULL;
     } else if(graph_type == RAPTOR_TERM_TYPE_BLANK) {
-      statement->graph = raptor_new_term_from_blank(parser->world, graph);
+      statement->graph = raptor_new_term_from_blank(parser->world, 
+                                                    (const unsigned char*)graph);
     } else { 
       /* Warning about literal graphs is handled below */
       statement->graph = NULL;

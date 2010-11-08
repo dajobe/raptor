@@ -815,8 +815,8 @@ void raptor_parsers_finish(raptor_world *world);
 
 void raptor_parser_save_content(raptor_parser* rdf_parser, int save);
 const unsigned char* raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p);
-void raptor_parser_start_graph(raptor_parser* parser, raptor_uri* uri, int explicit);
-void raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int explicit);
+void raptor_parser_start_graph(raptor_parser* parser, raptor_uri* uri, int is_declared);
+void raptor_parser_end_graph(raptor_parser* parser, raptor_uri* uri, int is_declared);
 
 /* raptor_rss.c */
 int raptor_init_serializer_rss10(raptor_world* world);

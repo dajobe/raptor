@@ -2087,7 +2087,7 @@ raptor_libxslt_set_global_state(raptor_parser *rdf_parser)
   if(grddl_parser->world->xslt_security_preferences &&
      !grddl_parser->world->xslt_security_preferences_policy)  {
     /* set global (libxslt-wide) security preferences to raptor */
-    xsltSetDefaultSecurityPrefs(grddl_parser->world->xslt_security_preferences);
+    xsltSetDefaultSecurityPrefs((xsltSecurityPrefs*)grddl_parser->world->xslt_security_preferences);
   }
 }
 
