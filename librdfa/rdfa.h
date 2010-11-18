@@ -36,6 +36,10 @@
  * rdfa_parse(context);
  * rdfa_free_context(context);
  *
+ * If you would like to get warnings/error triples from the processor graph:
+ *
+ * rdfa_set_issue_handler(context, triple_function);
+ *
  * Usage if you need more control over when to fill rdfa's buffer:
  *
  * rdfacontext* context = rdfa_create_context(base_uri);
@@ -193,8 +197,9 @@ typedef struct rdfacontext
    rdfalist* local_incomplete_triples;
    char* language;
 
-   triple_handler_fp triple_callback;
+   triple_handler_fp default_graph_triple_callback;
    buffer_filler_fp buffer_filler_callback;
+   triple_handler_fp processor_graph_triple_callback;
 
    unsigned char recurse;
    unsigned char skip_element;
@@ -218,7 +223,7 @@ typedef struct rdfacontext
    unsigned char xml_literal_xml_lang_defined;
    size_t wb_allocated;
    char* working_buffer;
-   size_t wb_offset;
+   size_t wb_position;
 #ifdef LIBRDFA_IN_RAPTOR
    raptor_world *world;
    raptor_locator *locator;
@@ -248,12 +253,21 @@ typedef struct rdfacontext
 DLLEXPORT rdfacontext* rdfa_create_context(const char* base);
 
 /**
- * Sets the triple handler for the application.
+ * Sets the default graph triple handler for the application.
  *
  * @param context the base rdfa context for the application.
  * @param th the triple handler function.
  */
-DLLEXPORT void rdfa_set_triple_handler(
+DLLEXPORT void rdfa_set_default_graph_triple_handler(
+   rdfacontext* context, triple_handler_fp th);
+
+/**
+ * Sets the processor graph triple handler for the application.
+ *
+ * @param context the base rdfa context for the application.
+ * @param th the triple handler function.
+ */
+DLLEXPORT void rdfa_set_processor_graph_triple_handler(
    rdfacontext* context, triple_handler_fp th);
 
 /**

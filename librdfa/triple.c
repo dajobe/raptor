@@ -182,7 +182,7 @@ void rdfa_generate_namespace_triple(
    rdftriple* triple =
       rdfa_create_triple(
          "@prefix", prefix, iri, RDF_TYPE_NAMESPACE_PREFIX, NULL, NULL);
-   context->triple_callback(triple, context->callback_data);
+   context->processor_graph_triple_callback(triple, context->callback_data);
 }
 #endif
 
@@ -227,9 +227,9 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
          //    [new subject]
          rdftriple* triple =
             rdfa_create_triple(context->parent_subject,
-               (const char*)incomplete_triple->data, context->new_subject, RDF_TYPE_IRI,
-               NULL, NULL);
-         context->triple_callback(triple, context->callback_data);
+               (const char*)incomplete_triple->data, context->new_subject, 
+               RDF_TYPE_IRI, NULL, NULL);
+         context->default_graph_triple_callback(triple, context->callback_data);
       }
       else
       {
@@ -243,9 +243,9 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
          //    [parent subject]
          rdftriple* triple =
             rdfa_create_triple(context->new_subject,
-               (const char*)incomplete_triple->data, context->parent_subject, RDF_TYPE_IRI,
-               NULL, NULL);
-         context->triple_callback(triple, context->callback_data);
+               (const char*)incomplete_triple->data, context->parent_subject, 
+               RDF_TYPE_IRI, NULL, NULL);
+         context->default_graph_triple_callback(triple, context->callback_data);
       }
       free(incomplete_triple);
    }
@@ -277,7 +277,7 @@ void rdfa_complete_type_triples(
          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
          (const char*)curie->data, RDF_TYPE_IRI, NULL, NULL);
       
-      context->triple_callback(triple, context->callback_data);
+      context->default_graph_triple_callback(triple, context->callback_data);
       iptr++;
    }
 }
@@ -310,10 +310,10 @@ void rdfa_complete_relrev_triples(
          rdfalistitem* curie = *relptr;
       
          rdftriple* triple = rdfa_create_triple(context->new_subject,
-            (const char*)curie->data, context->current_object_resource, RDF_TYPE_IRI,
-            NULL, NULL);
+            (const char*)curie->data, context->current_object_resource, 
+            RDF_TYPE_IRI, NULL, NULL);
       
-         context->triple_callback(triple, context->callback_data);
+         context->default_graph_triple_callback(triple, context->callback_data);
          relptr++;
       }
    }
@@ -339,7 +339,7 @@ void rdfa_complete_relrev_triples(
             context->current_object_resource, (const char*)curie->data,
             context->new_subject, RDF_TYPE_IRI, NULL, NULL);
       
-         context->triple_callback(triple, context->callback_data);
+         context->default_graph_triple_callback(triple, context->callback_data);
          revptr++;
       }
    }
@@ -529,10 +529,10 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       rdftriple* triple = NULL;
       
       triple = rdfa_create_triple(context->new_subject,
-         (const char*)curie->data, current_object_literal, type, context->datatype,
-         context->language);
+         (const char*)curie->data, current_object_literal, type, 
+         context->datatype, context->language);
       
-      context->triple_callback(triple, context->callback_data);
+      context->default_graph_triple_callback(triple, context->callback_data);
       pptr++;
    }
 
