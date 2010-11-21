@@ -141,7 +141,7 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats
 $(top_builddir)/scripts/build-formats:
 	cd $(top_builddir)/scripts && $(MAKE) build-formats
 
-upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl
+upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
 raptor-fake.i: $(top_srcdir)/src/raptor.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
