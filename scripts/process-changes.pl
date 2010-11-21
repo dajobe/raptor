@@ -581,7 +581,7 @@ EOT
 
   print_start_section_as_docbook_xml($out_fh,
 				     'raptor-changes-renamed',
-				     "Renamed function and types in $package $new_version");
+				     "Renamed function and enums in $package $new_version");
   print_renamed_functions_as_docbook_xml($out_fh,
 					 undef,
 					 "$old_version function",
