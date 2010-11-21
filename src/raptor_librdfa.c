@@ -263,7 +263,7 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
                                         raptor_librdfa_generate_statement);
 
   /* returns RDFa Processing Graph error triples - not used by raptor */
-  rdfa_set_processor_graph_triple_handler(NULL, NULL);
+  rdfa_set_processor_graph_triple_handler(librdfa_parser->context, NULL);
 
   rc = rdfa_parse_start(librdfa_parser->context);
   if(rc != RDFA_PARSE_SUCCESS)
