@@ -95,7 +95,6 @@ sub format_type_name_as_docbook_xml($) {
   return qq{<link linkend="$escaped_name"><type>$name</type></link>};
 }
 
-
 sub format_enum_name_as_docbook_xml($) {
   my($name)=@_;
   
@@ -155,6 +154,11 @@ sub format_type_sig($$) {
   return $format_name ? format_type_name_as_docbook_xml($type_name) : $type_name;
 }
 
+sub format_enum_sig($$) {
+  my($format_name, $enum_name)=@_;
+  return $format_name ? format_enum_name_as_docbook_xml($enum_name) : $enum_name;
+}
+
 
 sub print_types_list_as_docbook_xml($$$$@) {
   my($fh, $title, $format_name, $show_sig, @list)=@_;
@@ -170,6 +174,29 @@ EOT
   for my $item (@list) {
     my($type_name, $notes) = @$item;
     my $formatted_fn = format_type_sig($format_name, $type_name);
+    $notes = format_notes(1, $notes);
+    print $fh "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
+  }
+  print $fh <<"EOT";
+  </itemizedlist>
+EOT
+}
+
+
+sub print_enums_list_as_docbook_xml($$$$@) {
+  my($fh, $title, $format_name, $show_sig, @list)=@_;
+
+  print $fh <<"EOT";
+  <itemizedlist>
+    <title>Enums</title>
+EOT
+
+  print $fh "  <caption>$title</caption>\n"
+    if defined $title;
+
+  for my $item (@list) {
+    my($enum_name, $notes) = @$item;
+    my $formatted_fn = format_enum_sig($format_name, $enum_name);
     $notes = format_notes(1, $notes);
     print $fh "    <listitem><para>$formatted_fn $notes</para></listitem>\n";
   }
@@ -300,6 +327,41 @@ EOT
 }
 
 
+sub print_renamed_enums_as_docbook_xml($$$$@) {
+  my($fh, $title, $old_enum_header, $new_enum_header, @list)=@_;
+
+  print $fh <<"EOT";
+<table border='1'>
+EOT
+
+  print $fh "  <caption>$title</caption>\n"
+    if defined $title;
+
+  print $fh <<"EOT";
+  <thead>
+  </thead>
+  <tbody>
+    <tr>
+      <th>$old_enum_header</th>
+      <th>$new_enum_header</th>
+      <th>Notes</th>
+    </tr>
+EOT
+  for my $item (@list) {
+    my($from, $to,  $notes) = @$item;
+    my $formatted_name = format_enum_sig_as_docbook_xml($to);
+
+    $notes = format_notes(0, $notes);
+    print $fh "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
+  }
+  print $fh <<"EOT";
+  </tbody>
+</table>
+EOT
+
+}
+
+
 sub print_deletes_as_perl_script($$@) {
   my($out_fh, $title, @names) = @_;
 
@@ -313,15 +375,16 @@ sub print_deletes_as_perl_script($$@) {
 }
 
 
-sub print_renames_as_perl_script($$@) {
-  my($out_fh, $title, @names) = @_;
+sub print_renames_as_perl_script($$$@) {
+  my($out_fh, $title, $is_function, @names) = @_;
 
   print $out_fh "\n# $title\n";
 
   for my $entry (@names) {
     my($from, $to, $note)=@$entry;
     $note ||= '';
-    print $out_fh qq{s|$from\\(|$to\\(|g;\n};
+    my $suffix = ($is_function ? '\\(' : '');
+    print $out_fh qq{s|$from$suffix|$to$suffix|g;\n};
   }
 }
 
@@ -375,6 +438,10 @@ my(@new_types);
 my(@deleted_types);
 my(@changed_types);
 
+my(@new_enums);
+my(@deleted_enums);
+my(@renamed_enums);
+
 our $old_version;
 our $new_version;
 
@@ -407,6 +474,26 @@ while(<IN>) {
     } else {
       # renamed and maybe something else changed - in the notes
       push(@changed_types, [$old_name, $new_name, $notes]);
+    }
+
+  } elsif($fields[1] eq 'enum') {
+    # Do not handle enum yet.
+
+    my($old_ver, $dummy1, $old_name, $old_args, $new_ver, $dummy2, $new_name, $new_args,$notes)=@fields;
+
+    $old_version = $old_ver unless defined $old_version;
+    $new_version = $new_ver unless defined $new_version;
+
+    $notes = '' if $notes eq '-';
+
+    if($old_name eq '-') {
+      push(@new_enums, [$new_name, $notes]);
+    } elsif($new_name eq '-') {
+      push(@deleted_enums, [$old_name, $notes]);
+    } elsif($old_name eq $new_name) {
+      # same
+    } else {
+      push(@renamed_enums, [$old_name, $new_name, $notes]);
     }
 
   } else {
@@ -477,6 +564,8 @@ EOT
 				     undef, 1, 1, @new_functions);
   print_types_list_as_docbook_xml($out_fh,
 				     undef, 1, 1, @new_types);
+  print_enums_list_as_docbook_xml($out_fh,
+				     undef, 1, 1, @new_enums);
   print_end_section_as_docbook_xml($out_fh);
 
   print_start_section_as_docbook_xml($out_fh,
@@ -485,7 +574,9 @@ EOT
   print_functions_list_as_docbook_xml($out_fh,
 				     undef, 0, 0, @deleted_functions);
   print_types_list_as_docbook_xml($out_fh,
-				     undef, 1, 1, @deleted_types);
+				  undef, 1, 1, @deleted_types);
+  print_enums_list_as_docbook_xml($out_fh,
+				  undef, 1, 1, @deleted_enums);
   print_end_section_as_docbook_xml($out_fh);
 
   print_start_section_as_docbook_xml($out_fh,
@@ -496,6 +587,11 @@ EOT
 					 "$old_version function",
 					 "$new_version function",
 					 @renamed_functions);
+  print_renamed_enums_as_docbook_xml($out_fh,
+				     'Enums', 
+				     "$old_version enum",
+				     "$new_version enum",
+				     @renamed_enums);
   print_end_section_as_docbook_xml($out_fh);
 
   print_start_section_as_docbook_xml($out_fh,
@@ -535,8 +631,14 @@ if(defined $upgrade_script_file) {
   print_deletes_as_perl_script($out_fh, 'Deleted types',
 			       @deleted_types);
 
-  print_renames_as_perl_script($out_fh, 'Renamed functions',
+  print_deletes_as_perl_script($out_fh, 'Deleted enums',
+			       @deleted_enums);
+
+  print_renames_as_perl_script($out_fh, 'Renamed functions', 1,
 			       @renamed_functions);
+
+  print_renames_as_perl_script($out_fh, 'Renamed enums', 0,
+			       @renamed_enums);
 
   print_changes_as_perl_script($out_fh, 'Changed functions',
 			       (map { [ $_->[1], $_->[4], $_->[6] ] } @changed_functions));
