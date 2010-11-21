@@ -349,7 +349,7 @@ EOT
 EOT
   for my $item (@list) {
     my($from, $to,  $notes) = @$item;
-    my $formatted_name = format_enum_sig_as_docbook_xml($to);
+    my $formatted_name = format_enum_name_as_docbook_xml($to);
 
     $notes = format_notes(0, $notes);
     print $fh "    <tr valign='top'>\n      <td>$from</td> <td>$formatted_name</td> <td>$notes</td>\n   </tr>\n";
@@ -574,9 +574,9 @@ EOT
   print_functions_list_as_docbook_xml($out_fh,
 				     undef, 0, 0, @deleted_functions);
   print_types_list_as_docbook_xml($out_fh,
-				  undef, 1, 1, @deleted_types);
+				  undef, 0, 1, @deleted_types);
   print_enums_list_as_docbook_xml($out_fh,
-				  undef, 1, 1, @deleted_enums);
+				  undef, 0, 1, @deleted_enums);
   print_end_section_as_docbook_xml($out_fh);
 
   print_start_section_as_docbook_xml($out_fh,
