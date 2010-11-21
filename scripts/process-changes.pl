@@ -404,7 +404,7 @@ sub print_changes_as_perl_script($$@) {
 
 sub print_statement_field_renames_as_perl_script($) {
   my($out_fh)=@_;
-g  # These are tricky / tedious to deal with entirely by hand but
+  # These are tricky / tedious to deal with entirely by hand but
   # the replacement for subject and object can only be determined by a person
   my(%statement_field_maps) = (
     'subject' => 'subject.value.uri or subject.value.blank.string /* WARNING: must choose one */',
