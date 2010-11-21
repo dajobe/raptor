@@ -1,3 +1,45 @@
+2010-11-21  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv:
+	Add enum changes
+
+	* scripts/process-changes.pl: Handle enums
+
+	* docs/Makefile.am: upgrade-script.pl depends on tsv file
+
+2010-11-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c: Replace rdfa_set_triple_handler with
+	rdfa_set_default_graph_triple_handler
+
+	* librdfa/rdfa.c, librdfa/rdfa.h, librdfa/triple.c: Update to
+	librdfa GIT 1a1a08c790b7649a7f6c12fb9e40c0d3dbe70481
+
+2010-11-08  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/turtle_parser.y: Fixes for C++ - Casts for C++ from void* to
+	typed pointer/function pointers - Rename some prototype args to
+	avoid 'explicit' C++ keyword.
+
+2010-11-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt, docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml: Update generated docs
+
+	* src/raptor_stringbuffer.c: docs
+
+	* UPGRADING.html: deleted questions
+
+	* RELEASE.html: 1.9.1
+
+	* RELEASE.html, src/raptor.h, src/raptor_term.c: Removed
+	raptor_term_as_counted_string() and raptor_term_as_string()
+	replaced by _to_ versions.  These were 'deprecated' in GIT but
+	since 1.9.0 Raptor V2 was beta, it is OK to delete them.
+
+	* RELEASE.html: 1.9.1
+
 2010-10-27  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_avltree.c:
