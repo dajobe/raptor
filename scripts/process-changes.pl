@@ -402,6 +402,27 @@ sub print_changes_as_perl_script($$@) {
 }
 
 
+sub print_statement_field_renames_as_perl_script($) {
+  my($out_fh)=@_;
+g  # These are tricky / tedious to deal with entirely by hand but
+  # the replacement for subject and object can only be determined by a person
+  my(%statement_field_maps) = (
+    'subject' => 'subject.value.uri or subject.value.blank.string /* WARNING: must choose one */',
+    'subject_type' => 'subject.type',
+    'predicate' => 'predicate.value.uri',
+    'predicate_type' => 'predicate.type',
+    'object' => 'object.value.uri or object.value.literal.string or object.value.blank.string /* WARNING: must choose one */',
+    'object_type' => 'object.type',
+    'object_literal_datatype' => 'object.value.literal.datatype',
+    'object_literal_language' => 'object.value.literal.language'
+  );
+  print $out_fh "\n# Replace statement fields with term fields.\n";
+  while(my($old,$new) = each %statement_field_maps) {
+    print $out_fh qq{s|->$old|->$new|g;\n};
+  }
+  print $out_fh "\n";
+}
+
 
 # main
 
@@ -624,6 +645,8 @@ if(defined $upgrade_script_file) {
   print $out_fh "#!/usr/bin/perl -pi~\n";
 
   print $out_fh "# Perl script to upgrade $package $old_version to $new_version\n\n";
+
+  print_statement_field_renames_as_perl_script($out_fh);
 
   print_deletes_as_perl_script($out_fh, 'Deleted functions',
 			       (map { [ $_->[1], $_->[3] ] } @deleted_functions));
