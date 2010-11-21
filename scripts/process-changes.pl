@@ -559,7 +559,7 @@ EOT
 
   print_start_section_as_docbook_xml($out_fh,
 				     'raptor-changes-new',
-				     "New functions and types in $package $new_version");
+				     "New functions, types and enums in $package $new_version");
   print_functions_list_as_docbook_xml($out_fh,
 				     undef, 1, 1, @new_functions);
   print_types_list_as_docbook_xml($out_fh,
@@ -570,7 +570,7 @@ EOT
 
   print_start_section_as_docbook_xml($out_fh,
 				     'raptor-changes-deleted',
-				     "Deleted functions and types in $package $new_version");
+				     "Deleted functions, types and enums in $package $new_version");
   print_functions_list_as_docbook_xml($out_fh,
 				     undef, 0, 0, @deleted_functions);
   print_types_list_as_docbook_xml($out_fh,
@@ -581,7 +581,7 @@ EOT
 
   print_start_section_as_docbook_xml($out_fh,
 				     'raptor-changes-renamed',
-				     "Renamed functions in $package $new_version");
+				     "Renamed function and types in $package $new_version");
   print_renamed_functions_as_docbook_xml($out_fh,
 					 undef,
 					 "$old_version function",
