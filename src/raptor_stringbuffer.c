@@ -587,7 +587,7 @@ raptor_stringbuffer_append_hexadecimal(raptor_stringbuffer* stringbuffer,
  * @sb: raptor stringbuffer
  * @string: string
  * @length: length of string
- * @space_is_plus: if non-0, escape spaces as '+' otherwise %-encode them
+ * @space_is_plus: if non-0, escape spaces as '+' otherwise percent-encode them
  *
  * Add a URI-escaped version of @string to the stringbuffer.
  *
