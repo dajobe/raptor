@@ -53,13 +53,15 @@ very long form.   The reference manual contains
 <a href="http://librdf.org/raptor/api/raptor-changes.html">a section</a>
 describing what was added, deleted, renamed and otherwise changed for
 both the functions exported from the library, as well as the
-typedefs.
+typedefs and enum values.
 </p>
 
 <p>There is no fully automatic way to handle updating the code
 however there is a perl script provided in the docs directory that
 renames what it can, and otherwise inserts a WARNING comment near
-code that needs manual updating.  It is used like
+code that needs manual updating.  This cannot be automated in some
+places such as when the fields of the raptor_statement object were
+replaced with raptor_term pointers.  The script is used like
 <code>perl docs/upgrade-script.pl</code> <em>source files</em> for example</p>
 <pre>
   $ perl docs/upgrade-script.pl prog.c
@@ -115,8 +117,7 @@ source file is to copy it and make a V2 version and then choose the
 file to use at configure or build time.
 </p>
 
-<p><a href="http://librdf.org/">librdf</a> in GIT
-(will be 1.0.11) uses this approach.
+<p><a href="http://librdf.org/">librdf</a> 1.0.11 uses this approach.
 </p>
 
 <p>Either way, basing the interface on the V2 APIs makes it clear
