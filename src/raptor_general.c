@@ -879,7 +879,7 @@ raptor_sign_free(void *ptr)
 
 
 int
-raptor_check_constructor_world(raptor_world* world, const char* name)
+raptor_check_world_internal(raptor_world* world, const char* name)
 {
   static int __warned = 0;
 
@@ -889,7 +889,9 @@ raptor_check_constructor_world(raptor_world* world, const char* name)
     return 1;
   }
   
-  if(world->magic == RAPTOR1_WORLD_MAGIC) {
+  /* In Raptor V1 ABI the first int of raptor_world is the 'opened' field */
+  if(world->magic == RAPTOR1_WORLD_MAGIC_1 ||
+     world->magic == RAPTOR1_WORLD_MAGIC_2) {
     if(!__warned++)
       fprintf(stderr, "%s called with Raptor V1 world object\n", name);
     return 1;
@@ -900,5 +902,6 @@ raptor_check_constructor_world(raptor_world* world, const char* name)
       fprintf(stderr, "%s called with invalid Raptor V2 world object\n", name);
     return 1;
   }
+
   return 0;
 }

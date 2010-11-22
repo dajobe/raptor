@@ -1270,17 +1270,18 @@ int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
 
 /* raptor_world structure */
-#define RAPTOR1_WORLD_MAGIC 0xF00DD00D
+#define RAPTOR1_WORLD_MAGIC_1 0
+#define RAPTOR1_WORLD_MAGIC_2 1
 #define RAPTOR2_WORLD_MAGIC 0xC4129CEF
 
 #define RAPTOR_CHECK_CONSTRUCTOR_WORLD(world)                           \
   do {                                                                  \
-    if(raptor_check_constructor_world(world, __func__))                 \
+    if(raptor_check_world_internal(world, __func__))                 \
        return NULL;                                                     \
   } while(0)  
     
 
-int raptor_check_constructor_world(raptor_world* world, const char* name);
+int raptor_check_world_internal(raptor_world* world, const char* name);
 
 
 
