@@ -39,17 +39,22 @@
 2010-11-21  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c, src/raptor_internal.h,
-	src/raptor_iostream.c, src/raptor_libxml.c, src/raptor_namespace.c,
-	src/raptor_parse.c, src/raptor_qname.c, src/raptor_sax2.c,
-	src/raptor_serialize.c, src/raptor_statement.c, src/raptor_term.c,
-	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
-	src/raptor_xml_writer.c:
-	Check world object is valid for Raptor V2
-	in every constructor RAPTOR2_WORLD_MAGIC: Alter the RAPTOR_MAGIC value to be different
-	for raptor V2 and rename it inc ode.  RAPTOR1_WORLD_MAGIC is the old
-	value.  (raptor_check_constructor_world): Added to handle the check and
+	src/raptor_iostream.c, src/raptor_libxml.c,
+	src/raptor_namespace.c, src/raptor_parse.c, src/raptor_qname.c,
+	src/raptor_sax2.c, src/raptor_serialize.c, src/raptor_statement.c,
+	src/raptor_term.c, src/raptor_turtle_writer.c, src/raptor_uri.c,
+	src/raptor_www.c, src/raptor_xml_writer.c: Check world object is
+	valid for Raptor V2 in every constructor
+
+	RAPTOR2_WORLD_MAGIC: Alter the RAPTOR_MAGIC value to be different
+	for raptor V2 and rename it in code.  RAPTOR1_WORLD_MAGIC is the
+	old value.
+
+	(raptor_check_constructor_world): Added to handle the check and
 	provide a function to debugger-break on.  It warns once about the
-	pointer problems using a static var.  (RAPTOR_CHECK_CONSTRUCTOR_WORLD): Macro added to call
+	pointer problems using a static var.
+
+	(RAPTOR_CHECK_CONSTRUCTOR_WORLD): Macro added to call
 	raptor_check_constructor_world() and replace generic
 	RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE check.
 
