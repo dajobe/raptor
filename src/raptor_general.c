@@ -100,7 +100,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 /**
  * raptor_new_world:
- * @raptor_version_decimal: raptor version as a decimal integer as defined by the macro #RAPTOR_VERSION and static int #raptor_version_decimal
+ * @version_decimal: raptor version as a decimal integer as defined by the macro #RAPTOR_VERSION and static int #raptor_version_decimal
  *
  * Allocate a new raptor_world object.
  *
