@@ -27,12 +27,11 @@ library-wide configuration flags and options.
 </para>
 
 
-<!-- ##### FUNCTION raptor_new_world ##### -->
+<!-- ##### MACRO raptor_new_world ##### -->
 <para>
 
 </para>
 
-@void: 
 @Returns: 
 
 
