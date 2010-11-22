@@ -100,6 +100,7 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
 
 /**
  * raptor_new_world:
+ * @raptor_version_decimal: raptor version as a decimal integer as defined by the macro #RAPTOR_VERSION and static int #raptor_version_decimal
  *
  * Allocate a new raptor_world object.
  *
@@ -117,9 +118,16 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
  * Return value: uninitialized raptor_world object or NULL on failure
  */
 raptor_world *
-raptor_new_world(void)
+raptor_new_world_internal(unsigned int version_decimal)
 {
   raptor_world *world;
+  
+  if(version_decimal != RAPTOR_VERSION) {
+    fprintf(stderr,
+            "Raptor compiled with version %u but raptor_new_world() was initialised with version %u\n",
+            RAPTOR_VERSION, version_decimal);
+    return NULL;
+  }
   
   world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(*world), 1);
   if(world) {

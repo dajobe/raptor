@@ -221,7 +221,14 @@ AC_DEFINE_UNQUOTED(RAPTOR_VERSION_RELEASE, $version_release, [Release version nu
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_DECIMAL, $version_decimal, [Release version as a decimal])
 
 # for raptor-config.in
+RAPTOR_VERSION_MAJOR=$version_major
+RAPTOR_VERSION_MINOR=$version_minor
+RAPTOR_VERSION_RELEASE=$version_release
 RAPTOR_VERSION_DECIMAL=$version_decimal
+AC_SUBST(RAPTOR_VERSION)
+AC_SUBST(RAPTOR_VERSION_MAJOR)
+AC_SUBST(RAPTOR_VERSION_MINOR)
+AC_SUBST(RAPTOR_VERSION_RELEASE)
 AC_SUBST(RAPTOR_VERSION_DECIMAL)
 
 # Libtool versioning
@@ -1342,6 +1349,7 @@ docs/Makefile
 docs/version.xml
 examples/Makefile
 scripts/Makefile
+src/raptor.h
 src/Makefile
 tests/Makefile
 tests/feeds/Makefile

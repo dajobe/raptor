@@ -47,6 +47,43 @@ extern "C" {
 
 
 /**
+ * RAPTOR_VERSION:
+ *
+ * Raptor library version number
+ *
+ * Format: major * 10000 + minor * 100 + release
+ */
+#define RAPTOR_VERSION @RAPTOR_VERSION_DECIMAL@
+
+/**
+ * RAPTOR_VERSION_STRING:
+ *
+ * Raptor library version string
+ */
+#define RAPTOR_VERSION_STRING "@VERSION@"
+
+/**
+ * RAPTOR_VERSION_MAJOR:
+ *
+ * Raptor library major version
+ */
+#define RAPTOR_VERSION_MAJOR @RAPTOR_VERSION_MAJOR@
+
+/**
+ * RAPTOR_VERSION_MINOR:
+ *
+ * Raptor library minor version
+ */
+#define RAPTOR_VERSION_MINOR @RAPTOR_VERSION_MINOR@
+
+/**
+ * RAPTOR_VERSION_RELEASE:
+ *
+ * Raptor library release
+ */
+#define RAPTOR_VERSION_RELEASE @RAPTOR_VERSION_RELEASE@
+
+/**
  * RAPTOR_API:
  *
  * Macro for wrapping API function call declarations.
@@ -863,8 +900,10 @@ typedef struct raptor_stringbuffer_s raptor_stringbuffer;
 
 /* Public functions */
 
+#define raptor_new_world() raptor_new_world_internal(RAPTOR_VERSION)
+/* The real target of the raptor_new_world() macro */
 RAPTOR_API
-raptor_world* raptor_new_world(void);
+raptor_world *raptor_new_world_internal(unsigned int version_decimal);
 RAPTOR_API
 int raptor_world_open(raptor_world* world);
 RAPTOR_API
