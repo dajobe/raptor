@@ -15,6 +15,26 @@
 </p>
 
 
+<h3>Raptor V1 to V2 upgrading changes</h3>
+
+<p>Improved the <code>upgrade-script.pl</code> raptor V1 to V2
+upgrade script to handle changes to enums and macros as well as
+handle statement field renaming.  Updated the generated documentation
+to also include enum and macro changes.
+</p>
+
+<p>Added defensive code in each constructor to check the passed-in
+raptor world object is a valid Raptor V2 world rather than V1.  It
+generates a warning once per run of the program.
+</p>
+
+<p>The <code>raptor_new_world()</code> function is now a macro that
+calls an internal function <code>raptor_check_world_internal()</code>
+with a version macro argument to detect when Raptor V2 is called with
+inconsistent header and library.
+</p>
+
+
 <h3>AVLTree class changes</h3>
 
 <p>Free the iterator at the end of debug method
@@ -38,7 +58,7 @@ smaller.</p>
 <p>N-Quads parser: Added.  The serializer already existed.</p>
 
 <p>librdfa parser: Updated to latest librdfa GIT 
-ddead5d1f72acd7fcd9e4c42503eadcce9d6ec87</p>
+1a1a08c790b7649a7f6c12fb9e40c0d3dbe70481</p>
 
 
 <h3>Serializer class changes</h3>
