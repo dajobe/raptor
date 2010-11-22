@@ -100,6 +100,8 @@ raptor_uri_set_handler(const raptor_uri_handler *handler, void *context)
 void
 raptor_uri_set_handler_v2(raptor_world* world, const raptor_uri_handler *handler, void *context) 
 {
+  RAPTOR_CHECK_WORLD_RETURN(world, );
+
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(handler, raptor_uri_handler);
   /* RAPTOR_ASSERT is the negative of ordinary asserts - it fails if the condition is true */
   RAPTOR_ASSERT(!(handler->initialised >= 1 && handler->initialised <= 2),
@@ -227,6 +229,8 @@ raptor_new_uri(const unsigned char *uri_string)
 raptor_uri*
 raptor_new_uri_v2(raptor_world* world, const unsigned char *uri_string) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri_string || !*uri_string)
     return NULL;
   
@@ -294,6 +298,8 @@ raptor_new_uri_from_uri_local_name(raptor_uri *uri, const unsigned char *local_n
 raptor_uri*
 raptor_new_uri_from_uri_local_name_v2(raptor_world* world, raptor_uri *uri, const unsigned char *local_name)
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri || !local_name)
     return NULL;
   
@@ -364,6 +370,8 @@ raptor_new_uri_relative_to_base_v2(raptor_world* world,
                                    raptor_uri *base_uri, 
                                    const unsigned char *uri_string) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!base_uri || !uri_string)
     return NULL;
 
@@ -491,6 +499,8 @@ raptor_new_uri_for_rdf_concept(const char *name)
 raptor_uri*
 raptor_new_uri_for_rdf_concept_v2(raptor_world* world, const char *name) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!name)
     return NULL;
   
@@ -535,6 +545,8 @@ raptor_free_uri(raptor_uri *uri)
 void
 raptor_free_uri_v2(raptor_world* world, raptor_uri *uri)
 {
+  RAPTOR_CHECK_WORLD_RETURN(world, );
+
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(uri, raptor_uri);
 
   (*world->uri_handler->free_uri)(world->uri_handler_context, uri);
@@ -593,6 +605,8 @@ raptor_uri_equals(raptor_uri* uri1, raptor_uri* uri2)
 int
 raptor_uri_equals_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)
 {
+  RAPTOR_CHECK_WORLD_RETURN(world, 1);
+
   if(uri1 && uri2)
     /* Both not-NULL - check with handler */
     return (*world->uri_handler->uri_equals)(world->uri_handler_context, uri1, uri2);
@@ -643,6 +657,8 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
 int
 raptor_uri_compare_v2(raptor_world* world, raptor_uri* uri1, raptor_uri* uri2)
 {
+  RAPTOR_CHECK_WORLD_RETURN(world, 1);
+
   if(uri1 && uri2) {
     /* string compare function is available in API V2 or newer */
     if(world->uri_handler->initialised >= 2)
@@ -702,6 +718,8 @@ raptor_uri_copy(raptor_uri *uri)
 raptor_uri*
 raptor_uri_copy_v2(raptor_world* world, raptor_uri *uri) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri)
     return NULL;
   
@@ -756,6 +774,8 @@ raptor_uri_as_string(raptor_uri *uri)
 unsigned char*
 raptor_uri_as_string_v2(raptor_world* world, raptor_uri *uri) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri)
     return NULL;
   
@@ -817,6 +837,8 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 unsigned char*
 raptor_uri_as_counted_string_v2(raptor_world* world, raptor_uri *uri, size_t* len_p) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri)
     return NULL;
   
@@ -1223,6 +1245,8 @@ raptor_new_uri_for_xmlbase_v2(raptor_world* world, raptor_uri* old_uri)
   raptor_uri* new_uri;
   raptor_uri_detail *ud;
   
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!old_uri)
     return NULL;
 
@@ -1294,6 +1318,8 @@ raptor_new_uri_for_retrieval_v2(raptor_world* world, raptor_uri* old_uri)
   raptor_uri* new_uri;
   raptor_uri_detail *ud;
   
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!old_uri)
     return NULL;
 
@@ -1339,6 +1365,8 @@ static const raptor_uri_handler raptor_uri_default_handler = {
 int
 raptor_uri_init(raptor_world* world)
 {
+  RAPTOR_CHECK_WORLD_RETURN(world, 1);
+
   raptor_uri_set_handler_v2(world, &raptor_uri_default_handler, world);
   return 0;
 }
@@ -1534,6 +1562,8 @@ raptor_uri_to_relative_counted_uri_string_v2(raptor_world* world,
   unsigned char *result=NULL;
   int suffix_is_result=0;
   
+  RAPTOR_CHECK_WORLD_RETURN(world, NULL);
+
   if(!reference_uri)
     return NULL;
     

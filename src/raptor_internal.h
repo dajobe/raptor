@@ -1327,6 +1327,26 @@ int raptor_avltree_iterator_next(raptor_avltree_iterator* iterator);
 void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 
 /* raptor_world structure */
+#define RAPTOR1_WORLD_MAGIC_1 0
+#define RAPTOR1_WORLD_MAGIC_2 1
+#define RAPTOR2_WORLD_MAGIC 0xC4129CEF
+
+#define RAPTOR_CHECK_CONSTRUCTOR_WORLD(world)                           \
+  do {                                                                  \
+    if(raptor_check_world_internal(world, __func__))                    \
+       return NULL;                                                     \
+  } while(0)
+    
+#define RAPTOR_CHECK_WORLD_RETURN(world, value)                         \
+  do {                                                                  \
+    if(raptor_check_world_internal(world, __func__))                    \
+      return value;                                                     \
+  } while(0)
+    
+int raptor_check_world_internal(raptor_world* world, const char* name);
+
+
+/* raptor_world structure */
 struct raptor_world_s {
   /* world has been initialized with raptor_world_open() */
   int opened;

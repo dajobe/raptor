@@ -913,3 +913,32 @@ raptor_system_free(void *ptr)
 }
 
 #endif
+
+
+int
+raptor_check_world_internal(raptor_world* world, const char* name)
+{
+  static int __warned = 0;
+
+  if(!world) {
+    fprintf(stderr, "%s called with NULL world object\n", name);
+    RAPTOR_ASSERT_DIE
+    return 1;
+  }
+  
+  /* in Raptor V2 ABI the first int of raptor_world is the 'magic' field */
+  if((unsigned int)(world->opened) == RAPTOR2_WORLD_MAGIC) {
+    if(!__warned++)
+      fprintf(stderr, "%s called with Raptor V2 world object\n", name);
+    return 1;
+  }
+
+  if(world->opened != RAPTOR1_WORLD_MAGIC_1 &&
+     world->opened != RAPTOR1_WORLD_MAGIC_2) {
+    if(!__warned++)
+      fprintf(stderr, "%s called with invalid Raptor V1 world object\n", name);
+    return 1;
+  }
+
+  return 0;
+}
