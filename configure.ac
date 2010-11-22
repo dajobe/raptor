@@ -142,7 +142,7 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
   AC_MSG_CHECKING([whether $CC supports $1])
   redland_save_CFLAGS="$CFLAGS"
   CFLAGS="$CFLAGS $1"
-  AC_COMPILE_IFELSE([ ], [redland_cc_flag=yes], [redland_cc_flag=no])
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE([ ])], [redland_cc_flag=yes], [redland_cc_flag=no])
   CFLAGS="$redland_save_CFLAGS"
   if test "X$redland_cc_flag" = "Xyes"; then
     ifelse([$2], , :, [$2])
