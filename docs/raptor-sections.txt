@@ -20,6 +20,11 @@ raptor_world_set_generate_bnodeid_parameters
 
 <SECTION>
 <FILE>section-general</FILE>
+RAPTOR_VERSION
+RAPTOR_VERSION_MAJOR
+RAPTOR_VERSION_MINOR
+RAPTOR_VERSION_RELEASE
+RAPTOR_VERSION_STRING
 raptor_version_major
 raptor_version_minor
 raptor_version_release
@@ -452,4 +457,5 @@ RAPTOR_API
 RAPTOR_DEPRECATED
 RAPTOR_PRINTF_FORMAT
 RAPTOR_V2_AVAILABLE
+raptor_new_world_internal
 </SECTION>
