@@ -206,7 +206,7 @@ raptor_new_namespaces(raptor_world* world, int defaults)
 {
   raptor_namespace_stack *nstack;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 

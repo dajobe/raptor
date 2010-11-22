@@ -243,10 +243,10 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
   unsigned char* new_name;
   int local_name_length = strlen((char*)local_name);
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!local_name)
     return NULL;
-
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 

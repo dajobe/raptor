@@ -118,7 +118,7 @@ raptor_new_iostream_from_handler(raptor_world *world,
 {
   raptor_iostream* iostr;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(handler, raptor_iostream_handler, NULL);
 
   raptor_world_open(world);
@@ -196,7 +196,7 @@ static const raptor_iostream_handler raptor_iostream_sink_handler = {
 raptor_iostream*
 raptor_new_iostream_to_sink(raptor_world *world)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
   
@@ -280,7 +280,7 @@ raptor_new_iostream_to_filename(raptor_world *world, const char *filename)
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
   
@@ -346,7 +346,7 @@ raptor_new_iostream_to_file_handle(raptor_world *world, FILE *handle)
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
   
@@ -478,11 +478,11 @@ raptor_new_iostream_to_string(raptor_world *world,
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_WRITE;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!string_p)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
   
   handler = &raptor_iostream_write_string_handler;
@@ -542,7 +542,7 @@ raptor_new_iostream_to_string(raptor_world *world,
 raptor_iostream*
 raptor_new_iostream_from_sink(raptor_world *world)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
   
@@ -580,11 +580,11 @@ raptor_new_iostream_from_filename(raptor_world *world, const char *filename)
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!filename)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
   
   handler = &raptor_iostream_read_filename_handler;
@@ -646,11 +646,11 @@ raptor_new_iostream_from_file_handle(raptor_world *world, FILE *handle)
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!handle)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
   
   handler = &raptor_iostream_read_file_handle_handler;
@@ -1092,11 +1092,11 @@ raptor_new_iostream_from_string(raptor_world *world,
   const raptor_iostream_handler* handler;
   const unsigned int mode = RAPTOR_IOSTREAM_MODE_READ;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!string)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
   
   handler = &raptor_iostream_read_string_handler;

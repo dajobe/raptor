@@ -344,7 +344,7 @@ raptor_new_parser(raptor_world* world, const char *name)
   raptor_parser_factory* factory;
   raptor_parser* rdf_parser;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
   
@@ -417,7 +417,7 @@ raptor_new_parser_for_content(raptor_world* world,
 {
   const char* name;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 

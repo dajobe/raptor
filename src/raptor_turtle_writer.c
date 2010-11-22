@@ -158,11 +158,11 @@ raptor_new_turtle_writer(raptor_world* world,
 {
   raptor_turtle_writer* turtle_writer;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!nstack || !iostr)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
 
   turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1,

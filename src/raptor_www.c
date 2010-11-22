@@ -118,7 +118,7 @@ raptor_new_www_with_connection(raptor_world* world, void *connection)
 {
   raptor_www* www;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 
@@ -164,7 +164,7 @@ raptor_new_www_with_connection(raptor_world* world, void *connection)
 raptor_www*
 raptor_new_www(raptor_world* world)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 

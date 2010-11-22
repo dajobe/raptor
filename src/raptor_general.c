@@ -103,9 +103,16 @@ const unsigned int raptor_version_decimal = RAPTOR_VERSION_DECIMAL;
  *
  * Allocate a new raptor_world object.
  *
- * The raptor_world is initialized with raptor_world_open().
- * Allocation and initialization are decoupled to allow
+ * Allocation of the world and initialization are decoupled to allow
  * changing settings on the world object before init.
+ *
+ * Settings and configuration of the world may be made after creating
+ * the object and before the world is initialized using methods such
+ * as raptor_world_set_flag(), raptor_world_set_log_handler(),
+ * raptor_world_set_generate_bnodeid_handler().  Some configuration
+ * may not be changed after initialization.
+ *
+ * The raptor_world is initialized with raptor_world_open().
  *
  * Return value: uninitialized raptor_world object or NULL on failure
  */
@@ -116,9 +123,9 @@ raptor_new_world(void)
   
   world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(*world), 1);
   if(world) {
-    world->magic = RAPTOR_WORLD_MAGIC;
+    world->magic = RAPTOR2_WORLD_MAGIC;
     
-    /* set default flags - can be updated by raptor_world_set_flags() */
+    /* set default flags - can be updated by raptor_world_set_flag() */
 
     /* set: RAPTOR_LIBXML_FLAGS_GENERIC_ERROR_SAVE
      * set: RAPTOR_LIBXML_FLAGS_STRUCTURED_ERROR_SAVE
@@ -861,3 +868,29 @@ raptor_sign_free(void *ptr)
   free(p);
 }
 #endif
+
+
+int
+raptor_check_constructor_world(raptor_world* world, const char* name)
+{
+  static int __warned = 0;
+
+  if(!world) {
+    fprintf(stderr, "%s called with NULL world object\n", name);
+    RAPTOR_ASSERT_DIE
+    return 1;
+  }
+  
+  if(world->magic == RAPTOR1_WORLD_MAGIC) {
+    if(!__warned++)
+      fprintf(stderr, "%s called with Raptor V1 world object\n", name);
+    return 1;
+  }
+
+  if(world->magic != RAPTOR2_WORLD_MAGIC) {
+    if(!__warned++)
+      fprintf(stderr, "%s called with invalid Raptor V2 world object\n", name);
+    return 1;
+  }
+  return 0;
+}

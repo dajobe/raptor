@@ -58,7 +58,7 @@ raptor_new_statement(raptor_world *world)
 {
   raptor_statement* statement;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 
@@ -96,7 +96,7 @@ raptor_new_statement_from_nodes(raptor_world* world, raptor_term *subject,
 {
   raptor_statement* t;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   t = raptor_new_statement(world);
   if(!t) {

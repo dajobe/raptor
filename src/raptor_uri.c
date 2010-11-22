@@ -98,10 +98,10 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   raptor_uri* new_uri;
   unsigned char *new_string;
   
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri_string || !*uri_string)
     return NULL;
-
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
@@ -187,11 +187,11 @@ raptor_new_uri_from_counted_string(raptor_world* world,
 raptor_uri*
 raptor_new_uri(raptor_world* world, const unsigned char *uri_string) 
 {
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri_string)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
 
   return raptor_new_uri_from_counted_string(world, uri_string,
@@ -222,11 +222,11 @@ raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
   raptor_uri* new_uri;
   size_t local_name_length;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!uri)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
 
   local_name_length = strlen((const char*)local_name);
@@ -267,10 +267,10 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   raptor_uri* new_uri;
   size_t actual_length;
   
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!base_uri || !uri_string)
     return NULL;
-
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
@@ -314,10 +314,10 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
   unsigned char *local_name;
   int len;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!base_uri || !id)
     return NULL;
-
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
 
   raptor_world_open(world);
 
@@ -362,11 +362,11 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   unsigned int new_uri_string_len;
   size_t name_len;
   
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!name)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
 
   name_len = strlen((const char*)name);

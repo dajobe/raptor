@@ -410,11 +410,11 @@ raptor_new_xml_writer(raptor_world* world,
 {
   raptor_xml_writer* xml_writer;
 
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
   if(!iostr)
     return NULL;
   
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
-
   raptor_world_open(world);
 
   xml_writer = (raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1,

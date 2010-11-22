@@ -331,7 +331,7 @@ raptor_new_serializer(raptor_world* world, const char *name)
   raptor_serializer_factory* factory;
   raptor_serializer* rdf_serializer;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
 
