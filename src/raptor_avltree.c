@@ -81,7 +81,7 @@ struct raptor_avltree_s {
   /* node print function (optional) */
   raptor_data_print_handler print_handler;
 
-  /* tree flags (none defined at present) */
+  /* tree bitflags - bitmask of #raptor_avltree_bitflags flags */
   unsigned int flags;
 
   /* number of nodes in tree */
