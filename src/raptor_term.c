@@ -81,6 +81,72 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 
 
 /**
+ * raptor_new_term_from_counted_uri_string:
+ * @world: raptor world
+ * @uri_string: URI string.
+ * @length: length of URI string
+ *
+ * Constructor - create a new URI statement term from a UTF-8 encoded Unicode string
+ *
+ * Note: The @uri_string need not be NULL terminated - a NULL will be
+ * added to the copied string used.
+ *
+ * Return value: new term or NULL on failure
+*/
+raptor_term*
+raptor_new_term_from_counted_uri_string(raptor_world* world, 
+                                        const unsigned char *uri_string,
+                                        size_t length)
+{
+  raptor_term *t;
+  raptor_uri* uri;
+
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
+  uri = raptor_new_uri_from_counted_string(world, uri_string, length);
+  if(!uri)
+    return NULL;
+
+  t = raptor_new_term_from_uri(world, uri);
+  
+  raptor_free_uri(uri);
+  
+  return t;
+}
+
+
+/**
+ * raptor_new_term_from_uri_string:
+ * @world: raptor world
+ * @uri_string: URI string.
+ * @length: length of URI string
+ *
+ * Constructor - create a new URI statement term from a UTF-8 encoded Unicode string
+ *
+ * Return value: new term or NULL on failure
+*/
+raptor_term*
+raptor_new_term_from_uri_string(raptor_world* world, 
+                                const unsigned char *uri_string)
+{
+  raptor_term *t;
+  raptor_uri* uri;
+
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
+  uri = raptor_new_uri(world, uri_string);
+  if(!uri)
+    return NULL;
+
+  t = raptor_new_term_from_uri(world, uri);
+  
+  raptor_free_uri(uri);
+  
+  return t;
+}
+
+
+/**
  * raptor_new_term_from_counted_literal:
  * @world: raptor world
  * @literal: literal data (or NULL for empty literal)
@@ -681,6 +747,7 @@ main(int argc, char *argv[])
     rc = 1;
     goto tidy;
   }
+  raptor_free_uri(uri1); uri1 = NULL;
   if(term1->type != uri_string1_type) {
     fprintf(stderr, "%s: raptor term 1 is of type %d expected %d\n",
             program, term1->type, uri_string1_type);
@@ -727,9 +794,16 @@ main(int argc, char *argv[])
   raptor_free_term(term2);
 
   /* check a literal with language and datatype fails */
+  uri1 = raptor_new_uri(world, uri_string1);
+  if(!uri1) {
+    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
+    rc = 1;
+    goto tidy;
+  }
   term2 = raptor_new_term_from_counted_literal(world, literal_string1,
                                                literal_string1_len, 
                                                uri1, language1, 0);
+  raptor_free_uri(uri1); uri1 = NULL;
   if(term2) {
     fprintf(stderr, "%s: raptor_new_term_from_counted_literal() with language and datatype returned object rather than failing\n", program);
     rc = 1;
@@ -786,15 +860,11 @@ main(int argc, char *argv[])
 
 
   /* check a different URI term succeeds */
-  uri1 = raptor_new_uri(world, uri_string2);
-  if(!uri1) {
-    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string2);
-    rc = 1;
-    goto tidy;
-  }
-  term4 = raptor_new_term_from_uri(world, uri1);
+  term4 = raptor_new_term_from_counted_uri_string(world, uri_string2,
+                                                  uri_string2_len);
   if(!term4) {
-    fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
+    fprintf(stderr,
+            "%s: raptor_new_term_from_counted_uri_string(URI %s) failed\n",
             program, uri_string2);
     rc = 1;
     goto tidy;
@@ -823,13 +893,7 @@ main(int argc, char *argv[])
 
 
   /* check the same URI term as term1 succeeds */
-  uri1 = raptor_new_uri(world, uri_string1);
-  if(!uri1) {
-    fprintf(stderr, "%s: raptor_new_uri(%s) failed\n", program, uri_string1);
-    rc = 1;
-    goto tidy;
-  }
-  term5 = raptor_new_term_from_uri(world, uri1);
+  term5 = raptor_new_term_from_uri_string(world, uri_string1);
   if(!term5) {
     fprintf(stderr, "%s: raptor_new_term_from_uri_string(URI %s) failed\n",
             program, uri_string1);
