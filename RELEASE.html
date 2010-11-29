@@ -97,6 +97,11 @@ deleted <code>raptor_term_as_string()</code>.</p>
 
 <h3>URI class changes</h3>
 
+<p>Added convenience methods for constructing URI terms from strings:
+<code>raptor_new_term_from_counted_uri_string()</code> and 
+<code>raptor_new_term_from_uri_string()</code>.
+</p>
+
 <p>Use string lengths in equals and comparisons for faster checking.
 Use <code>memcmp()</code> instead of <code>strncmp()</code> when
 lengths are known and the same.
