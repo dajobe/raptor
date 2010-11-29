@@ -81,7 +81,7 @@ struct raptor_uri_s {
  * raptor_new_uri_from_counted_string:
  * @world: raptor_world object
  * @uri_string: URI string.
- * @length: lenght of URI string
+ * @length: length of URI string
  * 
  * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
  * 
