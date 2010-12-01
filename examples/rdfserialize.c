@@ -22,9 +22,9 @@ main(int argc, char *argv[])
   raptor_serializer_start_to_file_handle(rdf_serializer, base_uri, stdout);
   
   /* Make a triple with URI subject, URI predicate, literal object */
-  triple = (raptor_statement*)calloc(1, sizeof(raptor_statement));
-  triple->subject = raptor_new_term_from_uri(world, raptor_new_uri(world, (const unsigned char*)"http://example.org/subject"));
-  triple->predicate = raptor_new_term_from_uri(world, raptor_new_uri(world, (const unsigned char*)"http://example.org/predicate"));
+  triple = raptor_new_statement(world);
+  triple->subject = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://example.org/subject");
+  triple->predicate = raptor_new_term_from_uri_string(world, (const unsigned char*)"http://example.org/predicate");
   triple->object = raptor_new_term_from_literal(world,
                                                 (const unsigned char*)"An example literal",
                                                 NULL,
@@ -34,9 +34,7 @@ main(int argc, char *argv[])
   raptor_serializer_serialize_statement(rdf_serializer, triple);
 
   /* Delete the triple */
-  raptor_free_uri((raptor_uri*)triple->subject);
-  raptor_free_uri((raptor_uri*)triple->predicate);
-  free(triple);
+  raptor_free_statement(triple);
 
   raptor_serializer_serialize_end(rdf_serializer);
   raptor_free_serializer(rdf_serializer);
