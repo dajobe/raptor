@@ -751,7 +751,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, NULL);
-    RAPTOR_FREE(cstring, $3);
+    RAPTOR_FREE(cstring, $1);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
@@ -776,7 +776,6 @@ literal: STRING_LITERAL AT IDENTIFIER
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, NULL);
     RAPTOR_FREE(cstring, $1);
-    RAPTOR_FREE(cstring, $3);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
