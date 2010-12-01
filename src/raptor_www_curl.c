@@ -53,11 +53,18 @@ raptor_www_curl_update_status(raptor_www* www)
   if(www->checked_status++)
     return;
   
-  if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, 
-                       &final_uri) == CURLE_OK) {
-    www->final_uri = raptor_new_uri(www->world, (const unsigned char*)final_uri);
-    if(www->final_uri_handler)
-      www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
+  if(!www->final_uri) {
+    /* If not already found in headers by
+     * raptor_www_curl_header_callback() which overrides what libcurl
+     * found in HTTP status line (3xx)
+     */
+
+    if(curl_easy_getinfo(www->curl_handle, CURLINFO_EFFECTIVE_URL, 
+                         &final_uri) == CURLE_OK) {
+      www->final_uri = raptor_new_uri(www->world, (const unsigned char*)final_uri);
+      if(www->final_uri_handler)
+        www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
+    }
   }
 
 }
@@ -101,9 +108,10 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
   if(www->failed)
     return 0;
   
-  if(!strncmp((char*)ptr, "Content-Type: ", 14)) {
-    int len = bytes-16;
-    char *type_buffer = (char*)RAPTOR_MALLOC(cstring, len+1);
+#define CONTENT_TYPE_LEN 14
+  if(!raptor_strncasecmp((char*)ptr, "Content-Type: ", CONTENT_TYPE_LEN)) {
+    int len = bytes - CONTENT_TYPE_LEN - 2; /* for \r\n */
+    char *type_buffer = (char*)RAPTOR_MALLOC(cstring, len + 1);
     memcpy(type_buffer, (char*)ptr + 14, len);
     type_buffer[len]='\0';
     if(www->type)
@@ -112,10 +120,32 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     www->free_type = 1;
 
 #if RAPTOR_DEBUG > 2
-    RAPTOR_DEBUG3("Got content type '%s' (%d bytes)\n", type_buffer, len);
+    RAPTOR_DEBUG3("Got content type header '%s' (%d bytes)\n", type_buffer, len);
 #endif
     if(www->content_type)
       www->content_type(www, www->content_type_userdata, www->type);
+  }
+  
+
+#define CONTENT_LOCATION_LEN 18
+  if(!raptor_strncasecmp((char*)ptr, "Content-Location: ", 
+                         CONTENT_LOCATION_LEN)) {
+    size_t uri_len = bytes - CONTENT_LOCATION_LEN - 2; /* for \r\n */
+    const unsigned char* uri_str = (const unsigned char*)ptr + CONTENT_LOCATION_LEN;
+
+    if(www->final_uri)
+      raptor_free_uri(www->final_uri);
+
+    www->final_uri = raptor_new_uri_from_counted_string(www->world, uri_str,
+                                                        uri_len);
+
+#if RAPTOR_DEBUG > 2
+    if(www->final_uri)
+      RAPTOR_DEBUG3("Got content location header '%s'\n", 
+                    raptor_uri_as_string(www->final_uri));
+#endif
+    if(www->final_uri_handler)
+      www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
   }
   
   return bytes;
