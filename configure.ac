@@ -140,9 +140,9 @@ AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 AC_CHECK_PROGS(RECHO, echo)
 RECHO_C=
 RECHO_N=
-case `$(RECHO) -n x` in
+case `$RECHO -n x` in
   -n*)
-    case `$(RECHO) 'xy\c'` in
+    case `$RECHO 'xy\c'` in
       *c*)
          ;;
       xy)
