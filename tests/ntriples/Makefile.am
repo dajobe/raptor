@@ -51,15 +51,15 @@ check-nt check-bad-nt check-nq
 
 check-nt: build-rapper $(NT_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing N-Triples"; \
+	$(RECHO) "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
@@ -68,23 +68,23 @@ check-nt: build-rapper $(NT_TEST_FILES)
 
 check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing that bad N-Triples fails"; \
+	$(RECHO) "Testing that bad N-Triples fails"; \
 	for test in $(NT_BAD_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=$(BASE_URI)$$name.nt; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i ntriples -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
+	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  elif test $$status -eq 0 ; then \
-	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
+	    $(RECHO) "FAILED - parsing succeeded but should have failed"; \
 	    cat $$name.res; result=1; \
 	  else \
-	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -93,15 +93,15 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 
 check-nq: build-rapper $(NQ_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing N-Quads"; \
+	$(RECHO) "Testing N-Quads"; \
 	for test in $(NQ_TEST_FILES); do \
 	  name=`basename $$test .nq` ; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \

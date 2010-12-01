@@ -73,7 +73,7 @@ check-local: build-rapper $(FEED_TESTS)
 # Parse from RDF/XML and Serialize to Turtle
 check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
 	@set +e; result=0; \
-	$(ECHO) "Testing RDF/XML to Turtle"; \
+	$(RECHO) "Testing RDF/XML to Turtle"; \
 	for test in $?; do \
 	  parser=rdfxml; \
 	  name=`basename $$test .rdf` ; \
@@ -88,19 +88,19 @@ check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
 	    baseuri="http://example.org"; \
 	  fi; \
 	  opts="-q -i $$parser -o turtle $$opts -O $$baseuri"; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> errors.log; \
 	  status=$$?; \
 	  if test $$status != 0; then \
-	    $(ECHO) "FAILED with code $$status"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(RECHO) "FAILED with code $$status"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
 	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(RECHO) "FAILED"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
@@ -110,7 +110,7 @@ check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
 # Parser from Atom and Serialize to Turtle
 check-atom-to-turtle: $(TEST_IN_ATOMS)
 	@set +e; result=0; \
-	$(ECHO) "Testing Atom to Turtle"; \
+	$(RECHO) "Testing Atom to Turtle"; \
 	for test in $?; do \
 	  parser=rss-tag-soup; \
 	  name=`basename $$test .atom` ; \
@@ -122,19 +122,19 @@ check-atom-to-turtle: $(TEST_IN_ATOMS)
 	    baseuri="http://www.example.org/blog/"; \
 	  fi; \
 	  opts="-q -i $$parser -o turtle $$opts -O $$baseuri"; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> errors.log; \
 	  status=$$?; \
 	  if test $$status != 0; then \
-	    $(ECHO) "FAILED with code $$status"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(RECHO) "FAILED with code $$status"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    cat errors.log ; \
 	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(RECHO) "FAILED"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
@@ -144,7 +144,7 @@ check-atom-to-turtle: $(TEST_IN_ATOMS)
 # Parser from Turtle and Serialize to Atom
 check-serialize-atom: $(OUT_RDF_TTLS)
 	@set +e; result=0; \
-	$(ECHO) "Testing Turtle to Atom XML"; \
+	$(RECHO) "Testing Turtle to Atom XML"; \
 	for test in $(OUT_RDF_TTLS); do \
 	  name=`basename $$test .ttl` ; \
 	  atom="$$name.atom"; \
@@ -159,19 +159,19 @@ check-serialize-atom: $(OUT_RDF_TTLS)
 	    baseuri="http://example.org"; \
 	  fi; \
 	  opts="-q -i turtle -o atom $$opts -I $$baseuri -O $$baseuri"; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) $$opts file:$$test > $$atom 2> errors.log; \
 	  status=$$?; \
 	  if test $$status != 0; then \
-	    $(ECHO) "FAILED with code $$status"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$$test"; \
+	    $(RECHO) "FAILED with code $$status"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$$test"; \
 	    cat errors.log ; \
 	    result=1 ; \
 	  elif cmp $(srcdir)/$$expected $$atom >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
-	    $(ECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
+	    $(RECHO) "FAILED"; \
+	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
 	    diff -u $(srcdir)/$$expected $$atom; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
@@ -187,18 +187,18 @@ SUFFIXES = .rng .rnc
 
 check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	@set +e; result=0; \
-	$(ECHO) "Validating Atom XML with RelaxNG"; \
+	$(RECHO) "Validating Atom XML with RelaxNG"; \
 	for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
-	  $(ECHO) $(ECHO_N) "Validating $$atom $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
 	  jing $(srcdir)/atom.rng $$atom > errors.log 2>&1; \
 	  status=$$?; \
 	  if test $$status != 0; then \
-	    $(ECHO) "FAILED with code $$status"; result=1; \
-	    $(ECHO) jing $(srcdir)/atom.rng $$atom; \
+	    $(RECHO) "FAILED with code $$status"; result=1; \
+	    $(RECHO) jing $(srcdir)/atom.rng $$atom; \
 	    sed -e "s,^.*$$atom,$$atom," errors.log ; \
 	    result=1 ; \
 	  else \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
           fi; \
           rm -f errors.log; \
 	done; \

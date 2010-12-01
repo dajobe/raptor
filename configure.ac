@@ -137,6 +137,24 @@ AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
 AM_MISSING_PROG(AUTOMAKE, automake, $missing_dir)
 AM_MISSING_PROG(AUTOHEADER, autoheader, $missing_dir)
 
+AC_CHECK_PROGS(RECHO, echo)
+RECHO_C=
+RECHO_N=
+case `$(RECHO) -n x` in
+  -n*)
+    case `$(RECHO) 'xy\c'` in
+      *c*)
+         ;;
+      xy)
+         RECHO_C='\c'
+         ;;
+    esac;;
+  *)
+    RECHO_N='-n'
+    ;;
+esac
+
+
 
 dnl compiler checks
 
@@ -1317,11 +1335,9 @@ AC_SUBST(RAPTOR_LDFLAGS)
 AC_SUBST(MEM)
 AC_SUBST(MEM_LIBS)
 
-AC_SUBST(ECHO)
-ECHO_N="$ECHO_N"
-ECHO_C="$ECHO_C"
-AC_SUBST(ECHO_N)
-AC_SUBST(ECHO_C)
+AC_SUBST(RECHO)
+AC_SUBST(RECHO_N)
+AC_SUBST(RECHO_C)
 
 # Features
 # lists

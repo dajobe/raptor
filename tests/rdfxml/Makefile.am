@@ -124,7 +124,7 @@ check-rdfdiff check-rdfxml check-rdfxmla
 
 check-rdf: build-rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing legal rdf/xml"; \
+	$(RECHO) "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  if test $$name = 22-rdf-syntax-ns; then \
@@ -140,19 +140,19 @@ check-rdf: build-rapper $(RDF_TEST_FILES)
 	  else \
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
-	    $(ECHO) FAILED returned status $$status; result=1; \
+	    $(RECHO) FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(ECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
-	      $(ECHO) "ok"; \
+	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
@@ -161,16 +161,16 @@ check-rdf: build-rapper $(RDF_TEST_FILES)
 
 check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdf/xml known by context"; \
+	$(RECHO) "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
@@ -179,16 +179,16 @@ check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
 
 check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdf/xml inside other XML"; \
+	$(RECHO) "Testing rdf/xml inside other XML"; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
@@ -197,23 +197,23 @@ check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 
 check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
 	@set +e; \
-	$(ECHO) "Testing rdf/xml (may fail due to XML parser bugs)"; \
+	$(RECHO) "Testing rdf/xml (may fail due to XML parser bugs)"; \
 	for test in $(RDF_MAYFAIL_XML_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
-	    $(ECHO) FAILED returned status $$status; \
+	    $(RECHO) FAILED returned status $$status; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(ECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
-	      $(ECHO) "ok"; \
+	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
@@ -222,23 +222,23 @@ check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
 
 check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing that bad rdf/xml fails"; \
+	$(RECHO) "Testing that bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
+	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  elif test $$status -eq 0 ; then \
-	    $(ECHO) "FAILED - parsing succeeded but should have failed"; \
+	    $(RECHO) "FAILED - parsing succeeded but should have failed"; \
 	    cat $$name.res; result=1; \
 	  else \
-	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -247,23 +247,23 @@ check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 
 check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
+	$(RECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
 	for test in $(RDF_BAD_NFC_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
-	    $(ECHO) "FAILED - parsing succeeded with a warning"; \
+	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
 	    cat $$name.res; grep Warning $$name.err; result=1; \
 	  elif test $$status -eq 0 ; then \
-	    $(ECHO) "FAILED - parsing succeeded but should have failed (NFC test)"; \
+	    $(RECHO) "FAILED - parsing succeeded but should have failed (NFC test)"; \
 	    cat $$name.res; result=0; \
 	  else \
-	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -272,25 +272,25 @@ check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
 
 check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdf/xml with warnings"; \
+	$(RECHO) "Testing rdf/xml with warnings"; \
 	for test in $(RDF_WARN_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
-	    $(ECHO) "FAILED - parsing failed when should have warned"; \
+	    $(RECHO) "FAILED - parsing failed when should have warned"; \
 	    cat $$name.res; grep Error $$name.err; result=1; \
 	  elif test $$status -eq 2 ; then \
 	    if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
-	      $(ECHO) "ok"; \
+	      $(RECHO) "ok"; \
 	    else \
-	      $(ECHO) "FAILED"; \
+	      $(RECHO) "FAILED"; \
 	      diff $(srcdir)/$$name.out $$name.res; result=1; \
 	    fi; \
 	  else \
-	    $(ECHO) "FAILED - parsing failed with unknown status $$status"; \
+	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
@@ -299,16 +299,16 @@ check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
 
 check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdfdiff with legal rdf/xml"; \
+	$(RECHO) "Testing rdfdiff with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
@@ -317,16 +317,16 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 
 check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdfxml serialization with legal rdf/xml"; \
+	$(RECHO) "Testing rdfxml serialization with legal rdf/xml"; \
 	for test in $(RDF_SERIALIZE_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$name-rdfxml.rdf 2> $$name.err; \
 	  if cmp $(srcdir)/$$name.rdf $$name-rdfxml.rdf >/dev/null 2>&1; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.rdf $$name-rdfxml.rdf; result=1; \
 	  fi; \
 	  rm -f $$name-rdfxml.rdf $$name.res $$name.err; \
@@ -335,11 +335,11 @@ check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
 
 check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	@set +e; result=0; \
-	$(ECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
+	$(RECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
 	  status1=$$?; \
 	  if test $$test = ex-38.rdf; then \
@@ -350,9 +350,9 @@ check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
 	    status2=$$?; \
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
-	    $(ECHO) "ok"; \
+	    $(RECHO) "ok"; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    echo $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \
 	  status1=$$?; \
 	    echo $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf '>' $$name.res; \

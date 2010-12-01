@@ -45,22 +45,22 @@ endif
 
 check-grddl: build-rapper $(TEST_FILES)
 	@result=0; \
-	$(ECHO) "Testing GRDDL"; \
+	$(RECHO) "Testing GRDDL"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .html` ; \
-	  $(ECHO) $(ECHO_N) "Checking $$test $(ECHO_C)"; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(top_builddir)/utils/rapper -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
-	    $(ECHO) FAILED returned status $$status; result=1; \
+	    $(RECHO) FAILED returned status $$status; result=1; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(ECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
-	      $(ECHO) "ok"; \
+	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
-	    $(ECHO) "FAILED"; \
+	    $(RECHO) "FAILED"; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  if test $$status != 1 ; then \
