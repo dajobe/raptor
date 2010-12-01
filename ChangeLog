@@ -1,3 +1,27 @@
+2010-11-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c: Respect Content-Location: header in HTTP
+	responses for final URI
+
+	(raptor_www_curl_update_status): If HTTP header Content-Location:
+	was found, use that rather than the HTTP 3xx redirect URI.
+
+	(raptor_www_curl_header_callback): Use raptor_strncasecmp rather
+	than strncmp to find content type and content location.  If
+	content location is found, set the final_uri
+
+	Fixes Issue#0000402 http://bugs.librdf.org/mantis/view.php?id=402
+
+	* docs/Makefile.am, docs/raptor1-eol.html: Add raptor1-eol.html
+
+	* INSTALL.html:
+	update - encouraging the released tarballs path
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Remove unused created_p args / variables from raptor_abbrev
+	internal APIs
+
 2010-11-29  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor.h.in, src/raptor_term.c: Added convenience methods
