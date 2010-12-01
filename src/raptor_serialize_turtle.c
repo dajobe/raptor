@@ -1043,9 +1043,6 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   raptor_abbrev_node* object = NULL;
   int rv;
   raptor_term_type object_type;
-  int subject_created = 0;
-  int predicate_created = 0;
-  int object_created = 0;
 
   if(!(statement->subject->type == RAPTOR_TERM_TYPE_URI ||
        statement->subject->type == RAPTOR_TERM_TYPE_BLANK)) {
@@ -1057,8 +1054,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         statement->subject,
-                                         &subject_created);
+                                         statement->subject);
   if(!subject) {
     return 1;
   }
@@ -1074,17 +1070,13 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     return 1;
   }
 
-  object = raptor_abbrev_node_lookup(context->nodes,
-                                     statement->object,
-                                     &object_created);
+  object = raptor_abbrev_node_lookup(context->nodes, statement->object);
   if(!object)
     return 1;          
 
 
   if(statement->predicate->type == RAPTOR_TERM_TYPE_URI) {
-    predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          statement->predicate,
-                                          &predicate_created);
+    predicate = raptor_abbrev_node_lookup(context->nodes, statement->predicate);
     if(!predicate)
       return 1;
 	      

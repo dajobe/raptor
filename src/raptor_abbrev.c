@@ -149,7 +149,6 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
  * raptor_abbrev_node_lookup:
  * @nodes: Tree of nodes to search
  * @node: Node value to search for
- * @created_p: (output parameter) set to non-0 if a node was created
  *
  * INTERNAL - Look in an avltree of nodes for a node described by parameters
  *   and if present create it, add it and return it
@@ -157,8 +156,7 @@ raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2)
  * Return value: the node found/created or NULL on failure
  */
 raptor_abbrev_node* 
-raptor_abbrev_node_lookup(raptor_avltree* nodes,
-                          raptor_term* term, int* created_p)
+raptor_abbrev_node_lookup(raptor_avltree* nodes, raptor_term* term)
 {
   raptor_abbrev_node *lookup_node;
   raptor_abbrev_node *rv_node;
@@ -170,9 +168,6 @@ raptor_abbrev_node_lookup(raptor_avltree* nodes,
     return NULL;
 
   rv_node = (raptor_abbrev_node*)raptor_avltree_search(nodes, lookup_node);
-  
-  if(created_p)
-    *created_p=(!rv_node);
   
   /* If not found, insert/return a new one */
   if(!rv_node) {
@@ -441,8 +436,7 @@ raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
 raptor_abbrev_subject* 
 raptor_abbrev_subject_lookup(raptor_avltree* nodes,
                              raptor_avltree* subjects, raptor_avltree* blanks,
-                             raptor_term* term,
-                             int* created_p)
+                             raptor_term* term)
 {
   raptor_avltree *tree;
   raptor_abbrev_subject* rv_subject;
@@ -451,12 +445,9 @@ raptor_abbrev_subject_lookup(raptor_avltree* nodes,
   tree = (term->type == RAPTOR_TERM_TYPE_BLANK) ? blanks : subjects;
   rv_subject = raptor_abbrev_subject_find(tree, term);
 
-  if(created_p)
-    *created_p = (!rv_subject);
-  
   /* If not found, create one and insert it */
   if(!rv_subject) {
-    raptor_abbrev_node* node = raptor_abbrev_node_lookup(nodes, term, NULL);
+    raptor_abbrev_node* node = raptor_abbrev_node_lookup(nodes, term);
     if(node) {      
       rv_subject = raptor_new_abbrev_subject(node);
       if(rv_subject) {

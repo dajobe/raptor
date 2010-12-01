@@ -1310,9 +1310,6 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   raptor_abbrev_node* object = NULL;
   int rv = 0;
   raptor_term_type object_type;
-  int subject_created = 0;
-  int predicate_created = 0;
-  int object_created = 0;
   
   if(!(statement->subject->type == RAPTOR_TERM_TYPE_URI ||
        statement->subject->type == RAPTOR_TERM_TYPE_BLANK)) {
@@ -1324,8 +1321,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
 
   subject = raptor_abbrev_subject_lookup(context->nodes, context->subjects,
                                          context->blanks,
-                                         statement->subject,
-                                         &subject_created);
+                                         statement->subject);
   if(!subject)
     return 1;
   
@@ -1341,16 +1337,13 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
   }
   
   object = raptor_abbrev_node_lookup(context->nodes,
-                                     statement->object,
-                                     &object_created);
+                                     statement->object);
   if(!object)
     return 1;          
 
 
   if(statement->predicate->type == RAPTOR_TERM_TYPE_URI) {
-    predicate = raptor_abbrev_node_lookup(context->nodes,
-                                          statement->predicate,
-                                          &predicate_created);
+    predicate = raptor_abbrev_node_lookup(context->nodes, statement->predicate);
     if(!predicate)
       return 1;
 
@@ -1363,8 +1356,7 @@ raptor_rdfxmla_serialize_statement(raptor_serializer* serializer,
        * multiple type definitions.  All definitions after the
        * first go in the property list */
       subject->node_type = raptor_abbrev_node_lookup(context->nodes,
-                                                     statement->object,
-                                                     NULL);
+                                                     statement->object);
       if(!subject->node_type)
         return 1;
       subject->node_type->ref_count++;
