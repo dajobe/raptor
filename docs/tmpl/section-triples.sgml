@@ -116,6 +116,17 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_term_from_counted_uri_string ##### -->
+<para>
+
+</para>
+
+@world: 
+@uri_string: 
+@length: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_term_from_uri ##### -->
 <para>
 
@@ -123,6 +134,16 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 
 @world: 
 @uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_new_term_from_uri_string ##### -->
+<para>
+
+</para>
+
+@world: 
+@uri_string: 
 @Returns: 
 
 

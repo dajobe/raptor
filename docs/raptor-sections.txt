@@ -78,7 +78,9 @@ raptor_new_term_from_blank
 raptor_new_term_from_counted_blank
 raptor_new_term_from_literal
 raptor_new_term_from_counted_literal
+raptor_new_term_from_counted_uri_string
 raptor_new_term_from_uri
+raptor_new_term_from_uri_string
 raptor_term_copy
 raptor_term_compare
 raptor_term_equals

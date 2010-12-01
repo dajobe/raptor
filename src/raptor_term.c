@@ -119,7 +119,6 @@ raptor_new_term_from_counted_uri_string(raptor_world* world,
  * raptor_new_term_from_uri_string:
  * @world: raptor world
  * @uri_string: URI string.
- * @length: length of URI string
  *
  * Constructor - create a new URI statement term from a UTF-8 encoded Unicode string
  *

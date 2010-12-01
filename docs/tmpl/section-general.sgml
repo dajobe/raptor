@@ -22,6 +22,41 @@ and various other utility functions.
 <!-- ##### SECTION Image ##### -->
 
 
+<!-- ##### MACRO RAPTOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RAPTOR_VERSION_MAJOR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RAPTOR_VERSION_MINOR ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RAPTOR_VERSION_RELEASE ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO RAPTOR_VERSION_STRING ##### -->
+<para>
+
+</para>
+
+
+
 <!-- ##### VARIABLE raptor_version_major ##### -->
 <para>
 
