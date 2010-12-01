@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+  <title>Raptor RDF Syntax Library - Raptor 1 End of Life (EOL)</title>
+</head>
+<body>
+
+<h1 style="text-align:center">Raptor RDF Syntax Library - Raptor 1 End of Life (EOL)</h1>
+
+
+<h2>End of life timeline</h2>
+
+<p><b>Nov 2010 onwards</b></p>
+
+<ol>
+<li>Raptor V1 last release remains
+<a href="http://librdf.org/raptor/NEWS.html#D2010-01-30-V1.4.21">1.4.21 of 2010-01-30</a></li>
+<li>Raptor V2 release 2.0.0 will happen "soon".</li>
+<li>The next Rasqal release will support Raptor V2 only.</li>
+<li>The next librdf release will support Raptor V2 only
+(and require a Rasqal built with Raptor V2).</li>
+</ol>
+
+<p>In the style of open source I've been using for the Redland libraries,
+which might be described as "release when it's ready, not release by date",
+these dates may slip a little but the intention is that Raptor V2 becomes
+the mainline.</p>
+
+<p>I do NOT rule out that there will be another Raptor V1 release but
+it will be ONLY for security issues (including data loss or crashes).
+It will contain minimal changes and not add any new features or fix
+any other type of bug.</p>
+
+
+<h2>Developer Actions</h2>
+
+<p>If you use the Raptor V1 ABI/API directly, you will need to
+upgrade.  If you want to write conditional code, that's possible.
+The redland librdf GIT source (or 1.0.12) uses the approach of macros
+that rewrite V2 into V1 forms and I recommend this way since dropping
+Raptor V1 support then amounts to removing the macros.
+</p>
+
+<p>The
+<a href="http://librdf.org/raptor/api/">Raptor V2 API documentation</a>
+has a detailed
+<a href="http://librdf.org/raptor/api/raptor-changes.html">section on the changes</a>
+and there is also an
+<a href="http://librdf.org/raptor/UPGRADING.html">upgrading document</a>
+plus it points to a perl script docs/upgrade-script.pl (also in the Raptor
+V2 distribution) that automates some of the work (renames mostly) and
+leaves markers where a human has to fix.</p>
+
+<p>The Raptor V1 API documentation will remain in a frozen state available
+at
+<a href="http://librdf.org/raptor/api-1.4/">http://librdf.org/raptor/api-1.4/</a>
+</p>
+
+<h2>Packager Actions</h2>
+
+<p>If you are a packager of the redland libraries, you need to prepare for the
+Raptor V1 / Raptor V2 transition which can vary depending on your
+distribution's standards.  The two versions share two files: the rapper
+binary and the rapper.1 man page.  I do not want to rename them to rapper2
+etc. since rapper is a well known utility name in RDF and I want 'rapper'
+to provide the latest version.</p>
+
+<p>In the Debian packaging which I maintain, these are already planned to be
+in separate packages so that both libraries can be installed and you can
+choose the raptor-utils2 package over raptor-utils (V1).</p>
+
+<p>In other distributions where everything is in one package (BSD Ports
+for example) you may have to move the rapper/rapper.1 files to the
+raptor V2 package and create a new raptor1 package without them.
+i.e. something like this</p>
+
+<dl>
+<dt><b>Raptor V1 package 1.4.21-X:</b><br /></dt>
+<dd>
+  <code>/usr/lib/libraptor1.so.1</code>* ...<br />
+  (no <code>/usr/bin/rapper</code> or <code>/usr/share/man/man1/rapper.1</code> )
+</dd>
+<dt><b>Raptor V2 package 2.0.0-1:</b><br /></dt>
+<dd>
+   <code>/usr/lib/libraptor2.so.0</code>* ...<br />
+   <code>/usr/bin/rapper</code><br />
+   <code>/usr/share/man/man1/rapper.1</code><br />
+   conflicts with older raptor1 packages before 1.4.21-X
+</dd>
+</dl>
+
+<p>The other thing to deal with is that when Rasqal is built against
+Raptor V2, it has internal change that mean librdf has to also be built
+against rasqal-with-raptor2.  This needs enforcing with packaging
+dependencies.</p>
+
+<p>This packaging work can be done/started as soon as Raptor V2 2.0.0
+is released which will be "soon".</p>
+
+<p><a href="http://www.dajobe.org/">Dave Beckett</a>, 2010-11-07</p>
+
+<hr />
+
+<p>Copyright (C) 2010 <a href="http://www.dajobe.org/">Dave Beckett</a></p>
+
+</body>
+</html>

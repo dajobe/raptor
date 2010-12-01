@@ -108,6 +108,7 @@ man_MANS = libraptor2.3
 
 EXTRA_DIST+= \
 libraptor2.html \
+raptor1-eol.html \
 $(man_MANS) \
 version.xml.in \
 upgrade-script.pl
