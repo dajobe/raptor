@@ -30,8 +30,8 @@ generates a warning once per run of the program.
 
 <p>The <code>raptor_new_world()</code> function is now a macro that
 calls an internal function <code>raptor_check_world_internal()</code>
-with a version macro argument to detect when Raptor V2 is called with
-inconsistent header and library.
+with a version macro argument to detect when Raptor V2 is invoked with
+an inconsistent header and library.
 </p>
 
 
@@ -107,6 +107,15 @@ Use <code>memcmp()</code> instead of <code>strncmp()</code> when
 lengths are known and the same.
 </p>
 
+
+<h3>WWW class changes</h3>
+
+<p>The CURL WWW module now looks for and uses the HTTP response
+<code>Content-Location:</code> header to get the base URI for content
+retrievals.  This allows these base URIs to be used in parsing
+content retrived from URIs.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=402">Issue#0000402</a>
+</p>
 
 
 <h2 id="rel1_9_0"><a name="rel1_9_0">Raptor 1.9.0 Changes</a></h2>
