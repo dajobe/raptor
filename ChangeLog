@@ -1,3 +1,8 @@
+2010-12-01  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_1_9_1 for 1.9.1 release (GIT
+	697d55552c5897afab65715d16abbce838acd3e7)
+
 2010-11-30  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_www_curl.c: Respect Content-Location: header in HTTP
