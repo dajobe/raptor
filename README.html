@@ -18,7 +18,7 @@ is a free software / Open Source C library that provides
 a set of parsers and serializers that
 generate Resource Description Framework (RDF) triples
 by parsing syntaxes or serialize the triples into a syntax.
-The supported parsing syntaxes are RDF/XML, N-Triples, TRiG, Turtle,
+The supported parsing syntaxes are RDF/XML, N-Quads, N-Triples, TRiG, Turtle,
 RSS tag soup including all versions of RSS, Atom 1.0 and 0.3, GRDDL
 and microformats for HTML, XHTML and XML and RDFa.  The
 serializing syntaxes are RDF/XML (regular, and abbreviated),
@@ -72,6 +72,15 @@ and file-by-file changes in the <a href="ChangeLog">ChangeLog</a>.
 <li>Handles <code>rdf:resource</code> / <code>resource</code> attributes</li>
 <li>Uses <a href="http://expat.sourceforge.net/">expat</a> and/or (GNOME) <a href="http://xmlsoft.org/">libxml</a> XML parsers as available or required</li>
 </ul>
+
+
+<h3>N-Quads Parser</h3>
+
+<p>A parser for the
+<a href="http://sw.deri.org/2008/07/n-quads/">N-Quads</a>
+extension to N-Triples, providing an optional 4th context graph term
+at the end of the line when a triple is associated with a  named graph.
+</p>
 
 
 <h3>N-Triples Parser</h3>
@@ -179,9 +188,7 @@ of some pre-processing.  This is suitable for small documents.
 <p>A serializer to the
 <a href="http://sw.deri.org/2008/07/n-quads/">N-Quads</a>
 extension to N-Triples, providing an optional 4th context graph term
-at the end of the line when a named graph is associated with a triple
-(the triple is contained in a named graph).  This is useful for seeing the
-output of named graphs or dealing with SPARQL Datasets.
+at the end of the line when a triple is associated with a  named graph.
 </p>
 
 
