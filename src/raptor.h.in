@@ -293,8 +293,7 @@ typedef enum {
  * @names: array of syntax names - the first one (required) is the public name, the rest are aliases.  The array is NULL terminated.
  * @label: long descriptive label for syntax
  * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL).  If present the array is NULL terminated.
- * @mime_types_count: size of @mime_types array (or 0)
- * @uri_string: URI identifying the syntax (or NULL)
+ * @uri_string: array of URIs identifying the syntax - the first one if present is the main URI, the rest are aliases.  The array is NULL terminated. (or NULL)
  * @flags: See #raptor_syntax_bitflags for the bits
  *
  * Description of a syntax or file format.
@@ -306,9 +305,8 @@ typedef struct {
   const char* label;
 
   const raptor_type_q* mime_types;
-  unsigned int mime_types_count;
 
-  const char* uri_string;
+  const char* const* uri_strings;
 
   unsigned int flags;
 } raptor_syntax_description;
