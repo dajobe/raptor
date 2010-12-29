@@ -188,31 +188,13 @@ raptor_world_register_parser_factory(raptor_world* world,
   if(factory(parser))
     return NULL; /* parser is owned and freed by the parsers sequence */
   
-  if(!parser->desc.names || !parser->desc.names[0] || !parser->desc.label) {
+  if(raptor_syntax_description_validate(&parser->desc)) {
     raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                     "Parser failed to register required names and label fields\n");
+                     "Parser description failed to validate\n");
     goto tidy;
   }
+  
 
-#ifdef RAPTOR_DEBUG
-  /* Maintainer only check of static data */
-  if(parser->desc.mime_types) {
-    unsigned int i;
-    const raptor_type_q* type_q = NULL;
-
-    for(i = 0; 
-        (type_q = &parser->desc.mime_types[i]) && type_q->mime_type;
-        i++) {
-      size_t len = strlen(type_q->mime_type);
-      if(len != type_q->mime_type_len) {
-        fprintf(stderr,
-                "Parser %s  mime type %s  actual len %d  static len %d\n",
-                parser->desc.names[0], type_q->mime_type,
-                (int)len, (int)type_q->mime_type_len);
-      }
-    }
-  }
-#endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Registered parser %s with context size %d\n",

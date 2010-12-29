@@ -61,7 +61,8 @@ raptor_term.c \
 raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
 raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c \
 raptor_turtle_writer.c raptor_avltree.c snprintf.c \
-raptor_json_writer.c raptor_memstr.c raptor_concepts.c
+raptor_json_writer.c raptor_memstr.c raptor_concepts.c \
+raptor_syntax_description.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c

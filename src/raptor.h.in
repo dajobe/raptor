@@ -291,9 +291,12 @@ typedef enum {
 /**
  * raptor_syntax_description:
  * @names: array of syntax names - the first one (required) is the public name, the rest are aliases.  The array is NULL terminated.
+ * @names_count: size of @names array
  * @label: long descriptive label for syntax
  * @mime_types: Array of (MIME type, Q) values associated with the syntax (or NULL).  If present the array is NULL terminated.
- * @uri_string: array of URIs identifying the syntax - the first one if present is the main URI, the rest are aliases.  The array is NULL terminated. (or NULL)
+ * @mime_types_count: size of @mime_types array
+ * @uri_strings: array of URIs identifying the syntax (or NULL). The first one if present is the main URI, the rest are aliases.  The array is NULL terminated.
+ * @uri_strings_count: size of @uri_strings array
  * @flags: See #raptor_syntax_bitflags for the bits
  *
  * Description of a syntax or file format.
@@ -301,12 +304,15 @@ typedef enum {
  */
 typedef struct {
   const char* const* names;
+  unsigned int names_count;
 
   const char* label;
 
   const raptor_type_q* mime_types;
+  unsigned int mime_types_count;
 
   const char* const* uri_strings;
+  unsigned int uri_strings_count;
 
   unsigned int flags;
 } raptor_syntax_description;
@@ -923,18 +929,22 @@ const char* raptor_log_level_get_label(raptor_log_level level);
 RAPTOR_API
 const char* raptor_domain_get_label(raptor_domain domain);
 
-/* Parser names */
-RAPTOR_API
-const raptor_syntax_description* raptor_world_get_parser_description(raptor_world* world, unsigned int counter);
+/* Names */
 RAPTOR_API
 int raptor_world_is_parser_name(raptor_world* world, const char *name);
 RAPTOR_API
 const char* raptor_world_guess_parser_name(raptor_world* world, raptor_uri *uri, const char *mime_type, const unsigned char *buffer, size_t len, const unsigned char *identifier);
+RAPTOR_API
+int raptor_world_is_serializer_name(raptor_world* world, const char *name);
 
+/* Syntax descriptions */
+RAPTOR_API
+const raptor_syntax_description* raptor_world_get_parser_description(raptor_world* world, unsigned int counter);
 RAPTOR_API
 const raptor_syntax_description* raptor_world_get_serializer_description(raptor_world* world, unsigned int counter);
 RAPTOR_API
-int raptor_world_is_serializer_name(raptor_world* world, const char *name);
+int raptor_syntax_description_validate(raptor_syntax_description* desc);
+
 RAPTOR_API
 raptor_option raptor_world_get_option_from_uri(raptor_world* world, raptor_uri *uri);
 

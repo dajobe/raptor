@@ -169,32 +169,11 @@ raptor_serializer_register_factory(raptor_world* world,
   if(factory(serializer))
     return NULL; /* serializer is owned and freed by the serializers sequence */
   
-  if(!serializer->desc.names || !serializer->desc.names[0] || 
-     !serializer->desc.label) {
+  if(raptor_syntax_description_validate(&serializer->desc)) {
     raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                     "Serializer failed to register required names and label fields\n");
+                     "Serializer description failed to validate\n");
     goto tidy;
   }
-
-#ifdef RAPTOR_DEBUG
-  /* Maintainer only check of static data */
-  if(serializer->desc.mime_types) {
-    unsigned int i;
-    const raptor_type_q* type_q = NULL;
-
-    for(i = 0; 
-        (type_q = &serializer->desc.mime_types[i]) && type_q->mime_type;
-        i++) {
-      size_t len = strlen(type_q->mime_type);
-      if(len != type_q->mime_type_len) {
-        fprintf(stderr,
-                "Serializer %s  mime type %s  actual len %d  static len %d\n",
-                serializer->desc.names[0], type_q->mime_type,
-                (int)len, (int)type_q->mime_type_len);
-      }
-    }
-  }
-#endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Registered serializer %s with context size %d\n",
