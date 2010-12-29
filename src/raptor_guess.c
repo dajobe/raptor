@@ -225,10 +225,9 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = guess_names;
 
   factory->desc.mime_types = NULL;
-  factory->desc.mime_types_count = 0;
 
   factory->desc.label = "Pick the parser to use using content type and URI";
-  factory->desc.uri_string = NULL;
+  factory->desc.uri_strings = NULL;
   
   factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   

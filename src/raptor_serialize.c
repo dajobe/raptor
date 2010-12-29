@@ -193,13 +193,6 @@ raptor_serializer_register_factory(raptor_world* world,
                 (int)len, (int)type_q->mime_type_len);
       }
     }
-
-    if(i != serializer->desc.mime_types_count) {
-        fprintf(stderr,
-                "Serializer %s  saw %d mime types  static count %d\n",
-                serializer->desc.names[0], i,
-                serializer->desc.mime_types_count);
-    }
   }
 #endif
 

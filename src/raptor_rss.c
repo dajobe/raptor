@@ -1689,10 +1689,9 @@ raptor_rss_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = rss_tag_soup_names;
 
   factory->desc.mime_types = rss_tag_soup_types;
-  factory->desc.mime_types_count = RSS_TAG_SOUP_TYPES_COUNT;
 
   factory->desc.label = "RSS Tag Soup";
-  factory->desc.uri_string = NULL;
+  factory->desc.uri_strings = NULL;
 
   factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   

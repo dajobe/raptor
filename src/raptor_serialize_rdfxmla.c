@@ -1478,6 +1478,11 @@ raptor_rdfxmla_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* const rdfxml_xmp_names[2] = { "rdfxml-xmp", NULL};
 
+static const char* const rdfxml_xmp_uri_strings[2] = {
+  "http://www.w3.org/TR/rdf-syntax-grammar",
+  NULL
+};
+  
 #define RDFXML_XMP_TYPES_COUNT 1
 static const raptor_type_q rdfxml_xmp_types[RDFXML_XMP_TYPES_COUNT + 1] = {
   { "application/rdf+xml", 19, 0},
@@ -1489,10 +1494,9 @@ raptor_rdfxml_xmp_serializer_register_factory(raptor_serializer_factory *factory
 {
   factory->desc.names = rdfxml_xmp_names;
   factory->desc.mime_types = rdfxml_xmp_types;
-  factory->desc.mime_types_count = RDFXML_XMP_TYPES_COUNT;
 
   factory->desc.label = "RDF/XML (XMP Profile)";
-  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
+  factory->desc.uri_strings = rdfxml_xmp_uri_strings;
 
   factory->context_length     = sizeof(raptor_rdfxmla_context);
   
@@ -1511,6 +1515,11 @@ raptor_rdfxml_xmp_serializer_register_factory(raptor_serializer_factory *factory
 
 static const char* const rdfxmla_names[2] = { "rdfxml-abbrev", NULL};
 
+static const char* const rdfxml_uri_strings[2] = {
+  "http://www.w3.org/TR/rdf-syntax-grammar",
+  NULL
+};
+
 #define RDFXMLA_TYPES_COUNT 1
 static const raptor_type_q rdfxmla_types[RDFXMLA_TYPES_COUNT + 1] = {
   { "application/rdf+xml", 19, 0},
@@ -1522,10 +1531,9 @@ raptor_rdfxmla_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = rdfxmla_names;
   factory->desc.mime_types = rdfxmla_types;
-  factory->desc.mime_types_count = RDFXMLA_TYPES_COUNT;
 
   factory->desc.label = "RDF/XML (Abbreviated)";
-  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar";
+  factory->desc.uri_strings = rdfxml_uri_strings;
 
   factory->context_length     = sizeof(raptor_rdfxmla_context);
   

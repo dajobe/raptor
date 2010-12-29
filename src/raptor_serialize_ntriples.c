@@ -257,6 +257,11 @@ raptor_ntriples_serialize_finish_factory(raptor_serializer_factory* factory)
 #ifdef RAPTOR_SERIALIZER_NTRIPLES
 static const char* const ntriples_names[2] = { "ntriples", NULL};
 
+static const char* const ntriples_uri_strings[2] = {
+  "http://www.w3.org/TR/rdf-testcases/#ntriples",
+  NULL
+};
+  
 #define NTRIPLES_TYPES_COUNT 1
 static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {
   { "text/plain", 10, 1}, 
@@ -268,10 +273,9 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = ntriples_names;
   factory->desc.mime_types = ntriples_types;
-  factory->desc.mime_types_count = NTRIPLES_TYPES_COUNT;
 
   factory->desc.label =  "N-Triples";
-  factory->desc.uri_string = "http://www.w3.org/TR/rdf-testcases/#ntriples";
+  factory->desc.uri_strings = ntriples_uri_strings;
 
   factory->context_length     = sizeof(raptor_ntriples_serializer_context);
   
@@ -291,6 +295,11 @@ raptor_ntriples_serializer_register_factory(raptor_serializer_factory *factory)
 #ifdef RAPTOR_SERIALIZER_NQUADS
 static const char* const nquads_names[2] = { "nquads", NULL};
 
+static const char* const nquads_uri_strings[2] = {
+  "http://sw.deri.org/2008/07/n-quads/#n-quads",
+  NULL
+};
+  
 #define NQUADS_TYPES_COUNT 1
 static const raptor_type_q nquads_types[NQUADS_TYPES_COUNT + 1] = {
   { "text/x-nquads", 13, 10},
@@ -302,10 +311,9 @@ raptor_nquads_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = nquads_names;
   factory->desc.mime_types = nquads_types;
-  factory->desc.mime_types_count = NQUADS_TYPES_COUNT;
 
   factory->desc.label = "N-Quads";
-  factory->desc.uri_string = "http://sw.deri.org/2008/07/n-quads/#n-quads";
+  factory->desc.uri_strings = nquads_uri_strings;
 
   factory->context_length     = sizeof(raptor_ntriples_serializer_context);
   

@@ -1978,10 +1978,9 @@ raptor_grddl_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = grddl_names;
 
   factory->desc.mime_types = grddl_types;
-  factory->desc.mime_types_count = GRDDL_TYPES_COUNT;
 
   factory->desc.label = "Gleaning Resource Descriptions from Dialects of Languages";
-  factory->desc.uri_string = NULL;
+  factory->desc.uri_strings = NULL;
 
   factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   

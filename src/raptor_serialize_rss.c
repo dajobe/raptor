@@ -2340,6 +2340,11 @@ raptor_rss10_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* rss10_names[3] = { "rss-1.0", NULL};
 
+static const char* const rss10_uri_strings[2] = {
+"http://purl.org/rss/1.0/spec",
+  NULL
+};
+
 #define RSS10_TYPES_COUNT 5
 static const raptor_type_q rss10_types[RSS10_TYPES_COUNT + 1] = {
   { "application/rss+xml", 19, 10},
@@ -2355,10 +2360,9 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = rss10_names;
   factory->desc.mime_types = rss10_types;
-  factory->desc.mime_types_count = RSS10_TYPES_COUNT;
 
   factory->desc.label = "RSS 1.0";
-  factory->desc.uri_string = "http://purl.org/rss/1.0/spec";
+  factory->desc.uri_strings = rss10_uri_strings;
 
   factory->context_length     = sizeof(raptor_rss10_serializer_context);
   
@@ -2378,6 +2382,11 @@ raptor_rss10_serializer_register_factory(raptor_serializer_factory *factory)
 
 static const char* atom_names[3] = { "atom", NULL};
 
+static const char* const atom_uri_strings[2] = {
+  "http://www.ietf.org/rfc/rfc4287.txt",
+  NULL
+};
+  
 #define ATOM_TYPES_COUNT 1
 static const raptor_type_q atom_types[ATOM_TYPES_COUNT + 1] = {
   { "application/atom+xml", 20, 10},
@@ -2389,10 +2398,9 @@ raptor_atom_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = atom_names;
   factory->desc.mime_types = atom_types;
-  factory->desc.mime_types_count = ATOM_TYPES_COUNT;
 
   factory->desc.label = "Atom 1.0";
-  factory->desc.uri_string = NULL;
+  factory->desc.uri_strings = atom_uri_strings;
 
   factory->context_length     = sizeof(raptor_rss10_serializer_context);
   

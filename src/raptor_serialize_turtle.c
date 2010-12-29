@@ -1130,6 +1130,11 @@ raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* const turtle_names[2] = { "turtle", NULL};
 
+static const char* const turtle_uri_strings[2] = {
+  "http://www.dajobe.org/2004/01/turtle/",
+  NULL
+};
+  
 #define TURTLE_TYPES_COUNT 5
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
   { "application/turtle", 18, 10},
@@ -1145,10 +1150,9 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = turtle_names;
   factory->desc.mime_types = turtle_types;
-  factory->desc.mime_types_count = TURTLE_TYPES_COUNT;
 
   factory->desc.label = "Turtle Terse RDF Triple Language";
-  factory->desc.uri_string = "http://www.dajobe.org/2004/01/turtle";
+  factory->desc.uri_strings = turtle_uri_strings;
   
   factory->context_length     = sizeof(raptor_turtle_context);
   

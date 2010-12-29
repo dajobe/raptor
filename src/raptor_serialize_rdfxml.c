@@ -699,6 +699,11 @@ raptor_rdfxml_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* const rdfxml_names[2] = { "rdfxml", NULL};
 
+static const char* const rdfxml_uri_strings[2] = {
+  "http://www.w3.org/TR/rdf-syntax-grammar",
+  NULL
+};
+  
 #define RDFXML_TYPES_COUNT 2
 static const raptor_type_q rdfxml_types[RDFXML_TYPES_COUNT + 1] = {
   { "application/rdf+xml", 19, 10},
@@ -711,10 +716,9 @@ raptor_rdfxml_serializer_register_factory(raptor_serializer_factory *factory)
 {
   factory->desc.names = rdfxml_names;
   factory->desc.mime_types = rdfxml_types;
-  factory->desc.mime_types_count = RDFXML_TYPES_COUNT;
 
   factory->desc.label = "RDF/XML";
-  factory->desc.uri_string = "http://www.w3.org/TR/rdf-syntax-grammar",
+  factory->desc.uri_strings = rdfxml_uri_strings,
 
   factory->context_length     = sizeof(raptor_rdfxml_serializer_context);
 

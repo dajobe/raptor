@@ -322,6 +322,11 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const rdfa_names[2] = { "rdfa", NULL };
 
+static const char* const rdfa_uri_strings[2] = {
+  "http://www.w3.org/TR/rdfa/",
+  NULL
+};
+  
 #define RDFA_TYPES_COUNT 2
 static const raptor_type_q html_types[RDFA_TYPES_COUNT + 1] = {
   { "text/html", 9, 6},
@@ -337,10 +342,9 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = rdfa_names;
 
   factory->desc.mime_types = html_types;
-  factory->desc.mime_types_count = RDFA_TYPES_COUNT;
   
   factory->desc.label = "RDF/A via librdfa";
-  factory->desc.uri_string = "http://www.w3.org/TR/rdfa/";
+  factory->desc.uri_strings = rdfa_uri_strings;
   
   factory->desc.flags = 0;
   

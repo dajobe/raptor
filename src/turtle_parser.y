@@ -1547,6 +1547,11 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 
 #ifdef RAPTOR_PARSER_TURTLE
 static const char* const turtle_names[4] = { "turtle", "ntriples-plus", "n3", NULL };
+
+static const char* const turtle_uri_strings[2] = {
+  "http://www.dajobe.org/2004/01/turtle/",
+  NULL
+};
   
 #define TURTLE_TYPES_COUNT 5
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
@@ -1567,10 +1572,9 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = turtle_names;
 
   factory->desc.mime_types = turtle_types;
-  factory->desc.mime_types_count = TURTLE_TYPES_COUNT;
 
   factory->desc.label = "Turtle Terse RDF Triple Language";
-  factory->desc.uri_string = "http://www.dajobe.org/2004/01/turtle/";
+  factory->desc.uri_strings = turtle_uri_strings;
 
   factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
@@ -1591,6 +1595,11 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 #ifdef RAPTOR_PARSER_TRIG
 static const char* const trig_names[2] = { "trig", NULL };
   
+static const char* const trig_uri_strings[2] = {
+  "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/",
+  NULL
+};
+  
 #define TRIG_TYPES_COUNT 1
 static const raptor_type_q trig_types[TRIG_TYPES_COUNT + 1] = {
   /* first one is the default */
@@ -1606,10 +1615,9 @@ raptor_trig_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = trig_names;
 
   factory->desc.mime_types = trig_types;
-  factory->desc.mime_types_count = TRIG_TYPES_COUNT;
 
   factory->desc.label = "TriG - Turtle with Named Graphs";
-  factory->desc.uri_string = "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/";
+  factory->desc.uri_strings = trig_uri_strings;
 
   factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   

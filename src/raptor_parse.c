@@ -211,12 +211,6 @@ raptor_world_register_parser_factory(raptor_world* world,
                 (int)len, (int)type_q->mime_type_len);
       }
     }
-
-    if(i != parser->desc.mime_types_count) {
-        fprintf(stderr,
-                "Parser %s  saw %d mime types  static count %d\n",
-                parser->desc.names[0], i, parser->desc.mime_types_count);
-    }
   }
 #endif
 
@@ -1301,12 +1295,22 @@ raptor_world_guess_parser_name(raptor_world* world,
     if(score >= 10)
       break;
     
-    if(uri && factory->desc.uri_string &&
-       !strcmp((const char*)raptor_uri_as_string(uri), 
-               (const char*)factory->desc.uri_string))
-      /* got an exact match syntax for URI - return result */
-      break;
-
+    if(uri && factory->desc.uri_strings) {
+      int j;
+      const char* uri_string = (const char*)raptor_uri_as_string(uri);
+      const char* factory_uri_string;
+      
+      for(j = 0;
+          (factory_uri_string = factory->desc.uri_strings[j]);
+          j++) {
+        if(!strcmp(uri_string, factory_uri_string))
+          break;
+      }
+      if(uri_string)
+        /* got an exact match syntax for URI - return result */
+        break;
+    }
+    
     if(factory->recognise_syntax) {
       int c = -1;
     

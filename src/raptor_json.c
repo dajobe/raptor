@@ -703,6 +703,11 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const json_names[2] = { "json", NULL };
 
+static const char* const json_uri_strings[2] = {
+  "http://n2.talis.com/wiki/RDF_JSON_Specification",
+  NULL
+};
+  
 #define JSON_TYPES_COUNT 2
 static const raptor_type_q json_types[JSON_TYPES_COUNT + 1] = {
   { "application/json", 16, 1},
@@ -718,10 +723,9 @@ raptor_json_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.names = json_names;
 
   factory->desc.mime_types = json_types;
-  factory->desc.mime_types_count = JSON_TYPES_COUNT;
 
   factory->desc.label = "RDF/JSON (either Triples or Resource-Centric)";
-  factory->desc.uri_string = NULL; /* "http://n2.talis.com/wiki/RDF_JSON_Specification"; */
+  factory->desc.uri_strings = json_uri_strings;
 
   factory->desc.flags = 0;
 
