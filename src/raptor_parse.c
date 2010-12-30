@@ -1280,7 +1280,7 @@ raptor_world_guess_parser_name(raptor_world* world,
     if(uri && factory->desc.uri_strings) {
       int j;
       const char* uri_string = (const char*)raptor_uri_as_string(uri);
-      const char* factory_uri_string;
+      const char* factory_uri_string = NULL;
       
       for(j = 0;
           (factory_uri_string = factory->desc.uri_strings[j]);
@@ -1288,7 +1288,7 @@ raptor_world_guess_parser_name(raptor_world* world,
         if(!strcmp(uri_string, factory_uri_string))
           break;
       }
-      if(uri_string)
+      if(factory_uri_string)
         /* got an exact match syntax for URI - return result */
         break;
     }
