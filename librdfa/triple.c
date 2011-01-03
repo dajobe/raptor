@@ -182,7 +182,8 @@ void rdfa_generate_namespace_triple(
    rdftriple* triple =
       rdfa_create_triple(
          "@prefix", prefix, iri, RDF_TYPE_NAMESPACE_PREFIX, NULL, NULL);
-   context->processor_graph_triple_callback(triple, context->callback_data);
+   if(context->processor_graph_triple_callback)
+     context->processor_graph_triple_callback(triple, context->callback_data);
 }
 #endif
 
