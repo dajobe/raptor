@@ -653,7 +653,7 @@ raptor_vsnprintf(const char *message, va_list arguments)
 const char*
 raptor_basename(const char *name)
 {
-  char *p;
+  const char *p;
   if((p = strrchr(name, '/')))
     name = p+1;
   else if((p = strrchr(name, '\\')))

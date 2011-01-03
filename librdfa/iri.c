@@ -36,7 +36,7 @@
 char* rdfa_iri_get_base(const char* iri)
 {
    char* rval = NULL;
-   char* eindex = 0;
+   const char* eindex = 0;
 
    // search to see if there is iquery separator
    eindex = strchr(iri, '?');

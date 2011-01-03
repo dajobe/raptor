@@ -1294,7 +1294,7 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
       "\"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">";
 
    // Create a working buffer for finding the DOCTYPE
-   doctype_buffer = malloc(*bytes + 1);
+   doctype_buffer = (char*)malloc(*bytes + 1);
    memcpy(doctype_buffer, context->working_buffer, *bytes);
    doctype_buffer[*bytes + 1] = '\0';
    doctype_position = strstr(doctype_buffer, "<!DOCTYPE");
