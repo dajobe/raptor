@@ -1,4 +1,7 @@
-2011-01-03  Dave Beckett <dave@dajobe.org>
+2011-01-03  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_0 for 2.0.0 release (GIT
+	8ba659697c83891eb6ae9b47ce0e0ce8bb070e40)
 
 	* docs/raptor-docs.xml: shorter title
 
