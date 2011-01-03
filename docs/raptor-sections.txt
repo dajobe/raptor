@@ -45,6 +45,7 @@ raptor_data_malloc_handler
 raptor_data_print_handler
 raptor_syntax_bitflags
 raptor_syntax_description
+raptor_syntax_description_validate
 raptor_type_q
 </SECTION>
 
