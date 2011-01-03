@@ -1,3 +1,43 @@
+2011-01-03  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml: shorter title
+
+	* NEWS.html, RELEASE.html: 2.0.0
+
+	* librdfa/rdfa.c: Revert upstream
+	62d939ec1e3756a69eef48a50be0ab0624e2d4ad
+
+	* librdfa/triple.c:
+	(rdfa_generate_namespace_triple): Protect
+	processor_graph_triple_callback
+
+	* examples/grapper.c, librdfa/iri.c, librdfa/rdfa.c,
+	src/raptor_general.c: Casts for C++
+
+	* examples/grapper.c:
+	Use raptor_term_to_string in final 2.0.0 API
+
+	* docs/raptor-sections.txt:
+	Added raptor_syntax_description_validate
+
+	* docs/raptor-1-to-2-map.tsv: Added
+	raptor_syntax_description_validate
+
+	* docs/raptor-1-to-2-map.tsv: Update for older API change:
+	raptor_term_to_.*string not _as_
+
+	* src/.gitignore:
+	Ignore generated win32_raptor_config.h
+
+	* src/win32_raptor_config.h.in:
+	Insert generated @symbols
+
+	* src/win32_raptor_config.h, src/win32_raptor_config.h.in: Rename
+	win32_raptor_config.h to win32_raptor_config.h.in
+
+	* configure.ac:
+	generate src/win32_raptor_config.h
+
 2010-12-29  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_parse.c:
