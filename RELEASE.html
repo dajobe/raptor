@@ -14,6 +14,24 @@
 <p>Not yet released.
 </p>
 
+<p>Raptor V2 final release.  See the release notes for 1.9.0 and
+1.9.1 for the major changes in Raptor V2.</p>
+
+<h3>API changes since 1.9.1 beta</h3>
+
+<p>Added <code>raptor_syntax_description_validate()</code> to public
+API to validate and compute counts for syntax descriptions.
+Primarily this is for use by Rasqal.
+</p>
+
+<p>The <code>raptor_syntax_description</code> now has an array of URI
+strings instead of a single one, to allow URI aliasing.  This is
+primarily for use by Rasqal.</p>
+
+<p>Fixed guessing by URI in
+<code>raptor_world_guess_parser_name()</code> which was not
+working.</p>
+
 
 <h2 id="rel1_9_1"><a name="rel1_9_1">Raptor 1.9.1 Changes</a></h2>
 
