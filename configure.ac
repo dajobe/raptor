@@ -3,7 +3,7 @@ dnl
 dnl configure.ac - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl Copyright (C) 2000-2010 David Beckett http://www.dajobe.org/
+dnl Copyright (C) 2000-2011 David Beckett http://www.dajobe.org/
 dnl Copyright (C) 2000-2005 University of Bristol, UK http://www.bristol.ac.uk/
 dnl 
 dnl This package is Free Software and part of Redland http://librdf.org/
@@ -24,7 +24,7 @@ dnl
 
 
 AC_PREREQ(2.62)
-AC_INIT(Raptor RDF Parser and Serializer library, 1.9.2, http://bugs.librdf.org/, raptor2)
+AC_INIT(Raptor RDF Parser and Serializer library, 2.0.0, http://bugs.librdf.org/, raptor2)
 AC_CONFIG_SRCDIR([src/raptor_general.c])
 AM_CONFIG_HEADER([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
