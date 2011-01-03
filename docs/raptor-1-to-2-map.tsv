@@ -235,7 +235,7 @@
 1.4.21	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
 1.4.21	int	raptor_statement_compare_v2	(const raptor_statement_v2 *s1, const raptor_statement_v2 *s2)	1.9.0	int	raptor_statement_compare	(const raptor_statement *s1, const raptor_statement *s2)	-
 1.4.21	unsigned char*	raptor_statement_part_as_counted_string	(const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_counted_string().
-1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_counted_string().
+1.4.21	unsigned char*	raptor_statement_part_as_counted_string_v2	(raptor_world* world, const void *term, raptor_identifier_type type, raptor_uri* literal_datatype, const unsigned char* literal_language, size_t* len_p)	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_to_counted_string().
 1.4.21	unsigned char*	raptor_statement_part_as_string	()	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
 1.4.21	unsigned char*	raptor_statement_part_as_string_v2	()	1.9.0	-	-	-	Better done via methods of #raptor_term class such as raptor_term_as_string().
 1.4.21	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	1.9.0	int	raptor_stringbuffer_append_counted_string	(raptor_stringbuffer* stringbuffer, const unsigned char* string, size_t length, int do_copy)	-
@@ -385,8 +385,8 @@
 1.4.21	-	-	-	1.9.0	void	raptor_statement_clear	(raptor_statement *statement)	-
 1.4.21	-	-	-	1.9.0	raptor_statement*	raptor_statement_copy	(raptor_statement *statement)	-
 1.4.21	-	-	-	1.9.0	int	raptor_statement_equals	(const raptor_statement* s1, const raptor_statement* s2)	-
-1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_counted_string	(raptor_term *term, size_t* len_p)	-
-1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_as_string	(raptor_term *term)	-
+1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_to_counted_string	(raptor_term *term, size_t* len_p)	-
+1.4.21	-	-	-	1.9.0	unsigned char*	raptor_term_to_string	(raptor_term *term)	-
 1.4.21	-	-	-	1.9.0	int	raptor_term_compare	(const raptor_term *t1, const raptor_term *t2)	-
 1.4.21	-	-	-	1.9.0	raptor_term*	raptor_term_copy	(raptor_term* term)	-
 1.4.21	-	-	-	1.9.0	int	raptor_term_equals	(raptor_term* term1, raptor_term* term2)	-
