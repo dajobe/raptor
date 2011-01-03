@@ -1,3 +1,52 @@
+2010-12-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_world_guess_parser_name): Fix guessing by URI
+
+	* src/Makefile.am, src/raptor.h.in, src/raptor_parse.c,
+	src/raptor_serialize.c, src/raptor_syntax_description.c: Restore
+	array counts to syntax description.
+
+	Pull out common validation.
+
+	raptor_syntax_description gains names_count, mime_types_count and
+	uri_strings_count all computed at registration.
+
+	(raptor_syntax_description_validate): Added to public API to
+	validate and compute counts.
+
+	(raptor_world_register_parser_factory,
+	raptor_world_register_serializer_factory): Call above for common
+	validation checks.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_json.c, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/turtle_parser.y: Update parsers and serializers to use
+	uri_strings for syntax description.
+
+	* src/raptor.h.in: raptor_syntax_description has an array of URI
+	strings, loses mime types count.
+
+2010-12-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	Lower RSS mime type q values to 0.8 since that
+	is good enough, raptor cannot ever reach 100%
+
+2010-12-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac,
+	src/win32_raptor_config.h:
+	Bumped version to 1.9.2
+
+	* README.html:
+	N-Quads
+
 2010-12-01  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor2_1_9_1 for 1.9.1 release (GIT
