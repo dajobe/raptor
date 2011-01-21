@@ -134,6 +134,9 @@ raptor_statement_init(raptor_statement *statement, raptor_world *world)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(world, raptor_world);
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(statement, raptor_statement);
 
+  /* ensure all fields are set to NULL to start with */
+  memset(statement, 0, sizeof(*statement));
+
   statement->world = world;
 
   /* static - not usage counted */
