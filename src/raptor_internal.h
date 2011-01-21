@@ -1189,7 +1189,6 @@ int raptor_abbrev_node_compare(raptor_abbrev_node* node1, raptor_abbrev_node* no
 int raptor_abbrev_node_equals(raptor_abbrev_node* node1, raptor_abbrev_node* node2);
 raptor_abbrev_node* raptor_abbrev_node_lookup(raptor_avltree* nodes, raptor_term* term);
 
-raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
 void raptor_free_abbrev_subject(raptor_abbrev_subject* subject);
 int raptor_abbrev_subject_add_property(raptor_abbrev_subject* subject, raptor_abbrev_node* predicate, raptor_abbrev_node* object);
 int raptor_abbrev_subject_compare(raptor_abbrev_subject* subject1, raptor_abbrev_subject* subject2);

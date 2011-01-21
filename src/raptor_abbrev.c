@@ -3,7 +3,7 @@
  * raptor_abbrev.c - Code common to abbreviating serializers (ttl/rdfxmla)
  *
  * Copyright (C) 2006, Dave Robillard
- * Copyright (C) 2004-2008, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2004-2011, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * Copyright (C) 2005, Steve Shepard steveshep@gmail.com
  * 
@@ -53,6 +53,8 @@
  *
  */
 
+
+static raptor_abbrev_subject* raptor_new_abbrev_subject(raptor_abbrev_node* node);
 
 /**
  * raptor_new_abbrev_node:
@@ -255,7 +257,7 @@ raptor_print_abbrev_po(raptor_abbrev_node** nodes, FILE* handle)
  **/
 
 
-raptor_abbrev_subject*
+static raptor_abbrev_subject*
 raptor_new_abbrev_subject(raptor_abbrev_node* node)
 {
   raptor_abbrev_subject* subject;
@@ -405,6 +407,15 @@ raptor_abbrev_subject_compare(raptor_abbrev_subject* subject1,
 }
 
 
+/**
+ * raptor_abbrev_subject_find:
+ * @subjects: AVL-Tree of subject nodes
+ * @term: node to find
+ *
+ * INTERNAL - Find a subject node in an AVL-Tree of subject nodes
+ *
+ * Return value: node or NULL if not found or failure
+ */
 raptor_abbrev_subject*
 raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
 {
@@ -412,7 +423,7 @@ raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
   raptor_abbrev_node* lookup_node = NULL;
   raptor_abbrev_subject* lookup = NULL;
 
-  /* datatype and language both null for a subject node */
+  /* datatype and language are both NULL for a subject node */
   
   lookup_node = raptor_new_abbrev_node(node->world, node);
   if(!lookup_node)
@@ -433,6 +444,17 @@ raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
 }
 
 
+/**
+ * raptor_abbrev_subject_lookup:
+ * @nodes: AVL-Tree of subject nodes
+ * @subjects: AVL-Tree of URI-subject nodes
+ * @blanks: AVL-Tree of blank-subject nodes
+ * @term: node to find
+ *
+ * INTERNAL - Find a subject node in the appropriate uri/blank AVL-Tree of subject nodes or add it
+ *
+ * Return value: node or NULL on failure
+ */
 raptor_abbrev_subject* 
 raptor_abbrev_subject_lookup(raptor_avltree* nodes,
                              raptor_avltree* subjects, raptor_avltree* blanks,
