@@ -275,7 +275,8 @@ typedef enum {
 
 
 static int 
-raptor_ntriples_term_valid(unsigned char c, int position, 
+raptor_ntriples_term_valid(raptor_parser* rdf_parser,
+                           unsigned char c, int position, 
                            raptor_ntriples_term_class term_class) 
 {
   int result = 0;
@@ -310,7 +311,8 @@ raptor_ntriples_term_valid(unsigned char c, int position,
       break;
       
     default:
-      RAPTOR_FATAL2("Unknown ntriples term %d", term_class);
+      raptor_parser_error(rdf_parser, "Unknown N-Triples term class %d",
+                          term_class);
   }
 
   return result;
@@ -410,7 +412,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
       }
 
-      if(!raptor_ntriples_term_valid(c, position, term_class)) {
+      if(!raptor_ntriples_term_valid(rdf_parser, c, position, term_class)) {
         if(end_char) {
           /* end char was expected, so finding an invalid thing is an error */
           raptor_parser_error(rdf_parser, "Missing terminating '%c' (found '%c')", end_char, c);

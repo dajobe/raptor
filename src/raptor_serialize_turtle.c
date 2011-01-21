@@ -339,7 +339,9 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
 
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, "Triple has unsupported term type %d", 
+                                   object->term->type);
         break;
 
     }
@@ -422,7 +424,9 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
 
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, "Triple has unsupported term type %d", 
+                                   object->term->type);
         break;
     }
 
@@ -562,7 +566,9 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
           
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, "Triple has unsupported term type %d", 
+                                   object->term->type);
         break;
     }    
     

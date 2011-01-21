@@ -991,8 +991,15 @@ raptor_uri_init(raptor_world* world)
   if(world->uri_interning && !world->uris_tree) {
     world->uris_tree = raptor_new_avltree((raptor_data_compare_handler)raptor_uri_compare,
                                           /* free */ NULL, 0);
-    if(!world->uris_tree)
-      RAPTOR_FATAL1("Failed to create URI avltree");
+    if(!world->uris_tree) {
+#ifdef RAPTOR_DEBUG
+      RAPTOR_FATAL1("Failed to create raptor URI avltree");
+#else
+      raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                       "Failed to create raptor URI avltree");
+#endif
+    }
+    
   }
 
   return 0;

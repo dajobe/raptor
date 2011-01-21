@@ -264,7 +264,8 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
   
   if(!(node->term->type == RAPTOR_TERM_TYPE_URI ||
        node->term->type == RAPTOR_TERM_TYPE_BLANK)) {
-    RAPTOR_FATAL1("Subject node must be a resource or blank\n");
+    raptor_log_error(node->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                     "Subject node is type %d not a uri or blank node");
     return NULL;
   }  
   
@@ -571,7 +572,9 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   size_t ns_uri_string_len;
   
   if(node->term->type != RAPTOR_TERM_TYPE_URI) {
-    RAPTOR_FATAL1("Node must be a resource\n");
+#ifdef RAPTOR_DEBUG
+    RAPTOR_FATAL1("Node must be a URI\n");
+#endif
     return NULL;
   }
 

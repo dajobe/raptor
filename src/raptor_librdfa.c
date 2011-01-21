@@ -112,13 +112,17 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     goto cleanup;
 
   if(!triple->subject || !triple->predicate || !triple->object) {
+#ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Triple has NULL parts\n");
+#endif
     rdfa_free_triple(triple);
     return;
   }
   
   if(triple->object_type == RDF_TYPE_NAMESPACE_PREFIX) {
+#ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Triple has namespace object type\n");
+#endif
     rdfa_free_triple(triple);
     return;
   }
@@ -198,7 +202,9 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
                                                language);
     raptor_free_uri(datatype_uri);
   } else {
-    RAPTOR_FATAL2("Triple has unknown object type %d\n", s->object->type);
+    raptor_log_error_formatted(parser->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
+                               "Triple has unknown object term type %d", 
+                               s->object->type);
     goto cleanup;
   }
   s->object = object_term;

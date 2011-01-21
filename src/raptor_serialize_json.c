@@ -202,7 +202,10 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_LITERAL:
     case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, 
+                                   "Triple has unsupported subject term type %d", 
+                                   statement->subject->type);
         break;
   }
   raptor_iostream_write_byte(',', serializer->iostream);
@@ -240,7 +243,10 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL1("Unsupported identifier type\n");
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL,
+                                   "Triple has unsupported object term type %d", 
+                                   statement->object->type);
         break;
   }
   raptor_json_writer_newline(context->json_writer);
@@ -313,8 +319,10 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       case RAPTOR_TERM_TYPE_LITERAL:
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL2("Unsupported statement subject identifier type %d\n",
-                      s1->subject->type);
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL,
+                                   "Triple has unsupported subject term type %d", 
+                                   s1->subject->type);
         break;
     }
 
@@ -384,8 +392,10 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
-        RAPTOR_FATAL2("Unsupported statement object identifier type %d\n",
-                      s1->object->type);
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL,
+                                   "Triple has unsupported object term type %d", 
+                                   s1->object->type);
         break;
   }
 
