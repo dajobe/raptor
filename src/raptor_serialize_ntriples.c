@@ -214,7 +214,7 @@ raptor_statement_ntriples_write(const raptor_statement *statement,
 
   if(statement->graph && write_graph_term) {
     raptor_iostream_write_byte(' ', iostr);
-    if(raptor_term_ntriples_write(statement->object, iostr))
+    if(raptor_term_ntriples_write(statement->graph, iostr))
       return 1;
   }
   
