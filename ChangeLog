@@ -1,4 +1,46 @@
-2011-01-03  Dave Beckett  <dave@dajobe.org>
+2011-01-27  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.1
+
+2011-01-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Rename librdfa symbols for internal
+	linking of librdfa
+
+	Fixes Issue#0000416
+	http://bugs.librdf.org/mantis/view.php?id=416
+
+	* librdfa/rdfa.c, librdfa/rdfa_utils.c, librdfa/triple.c: Update
+	to librdfa GIT commit aeebd00d68ab7292cae35ebfbcb638f3a2625f39
+
+2011-01-24  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_serialize_ntriples.c, tests/ntriples/testnq-1.out,
+	tests/trig/bug370.out, tests/trig/example1.out,
+	tests/trig/example2.out, tests/trig/example3.out: Fixed the nquads
+	serialiser to output the graph name in the fourth column, instead
+	of repeating the object
+
+2011-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_abbrev.c, src/raptor_librdfa.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/raptor_uri.c: Replace all RAPTOR_FATAL with error log messages
+	in user builds
+
+	All RAPTOR_FATAL calls are now only called inside RAPTOR_DEBUG
+	blocks.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h:
+	(raptor_new_abbrev_subject): Made static to this module
+
+	* src/raptor_statement.c:
+	(raptor_statement_init): Init statement to NULL pointers
+
+2011-01-03  Dave Beckett <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_0 for 2.0.0 release (GIT
 	8ba659697c83891eb6ae9b47ce0e0ce8bb070e40)
