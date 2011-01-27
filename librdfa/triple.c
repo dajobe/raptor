@@ -2,18 +2,18 @@
  * Copyright 2008 Digital Bazaar, Inc.
  *
  * This file is part of librdfa.
- * 
+ *
  * librdfa is Free Software, and can be licensed under any of the
  * following three licenses:
- * 
- *   1. GNU Lesser General Public License (LGPL) V2.1 or any 
+ *
+ *   1. GNU Lesser General Public License (LGPL) V2.1 or any
  *      newer version
  *   2. GNU General Public License (GPL) V2 or any newer version
  *   3. Apache License, V2.0 or any newer version
- * 
+ *
  * You may not use this file except in compliance with at least one of
  * the above three licenses.
- * 
+ *
  * See LICENSE-* at the top of this software distribution for more
  * information regarding the details of each license.
  *
@@ -47,7 +47,7 @@ rdftriple* rdfa_create_triple(const char* subject, const char* predicate,
    //printf("OBJECT   : %s\n", object);
    //printf("DATATYPE : %s\n", datatype);
    //printf("LANG     : %s\n", language);
-   
+
    // a triple needs a subject, predicate and object at minimum to be
    // considered a triple.
    if((subject != NULL) && (predicate != NULL) && (object != NULL))
@@ -105,7 +105,7 @@ void rdfa_print_triple(rdftriple* triple)
       {
          printf("   INCOMPLETE\n");
       }
-   
+
       if(triple->object != NULL)
       {
          if(triple->object_type == RDF_TYPE_IRI)
@@ -179,11 +179,12 @@ void rdfa_free_triple(rdftriple* triple)
 void rdfa_generate_namespace_triple(
    rdfacontext* context, const char* prefix, const char* iri)
 {
-   rdftriple* triple =
-      rdfa_create_triple(
+   if(context->processor_graph_triple_callback != NULL)
+   {
+      rdftriple* triple = rdfa_create_triple(
          "@prefix", prefix, iri, RDF_TYPE_NAMESPACE_PREFIX, NULL, NULL);
-   if(context->processor_graph_triple_callback)
-     context->processor_graph_triple_callback(triple, context->callback_data);
+      context->processor_graph_triple_callback(triple, context->callback_data);
+   }
 }
 #endif
 
@@ -215,7 +216,7 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
    {
       rdfalist* incomplete_triples = context->incomplete_triples;
       rdfalistitem* incomplete_triple = incomplete_triples->items[i];
-      
+
       if(incomplete_triple->flags & RDFALIST_FLAG_FORWARD)
       {
          // If [direction] is 'forward' then the following triple is generated:
@@ -228,7 +229,7 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
          //    [new subject]
          rdftriple* triple =
             rdfa_create_triple(context->parent_subject,
-               (const char*)incomplete_triple->data, context->new_subject, 
+               (const char*)incomplete_triple->data, context->new_subject,
                RDF_TYPE_IRI, NULL, NULL);
          context->default_graph_triple_callback(triple, context->callback_data);
       }
@@ -244,7 +245,7 @@ void rdfa_complete_incomplete_triples(rdfacontext* context)
          //    [parent subject]
          rdftriple* triple =
             rdfa_create_triple(context->new_subject,
-               (const char*)incomplete_triple->data, context->parent_subject, 
+               (const char*)incomplete_triple->data, context->parent_subject,
                RDF_TYPE_IRI, NULL, NULL);
          context->default_graph_triple_callback(triple, context->callback_data);
       }
@@ -273,11 +274,11 @@ void rdfa_complete_type_triples(
    for(i = 0; i < type_of->num_items; i++)
    {
       rdfalistitem* curie = *iptr;
-      
+
       rdftriple* triple = rdfa_create_triple(context->new_subject,
          "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
          (const char*)curie->data, RDF_TYPE_IRI, NULL, NULL);
-      
+
       context->default_graph_triple_callback(triple, context->callback_data);
       iptr++;
    }
@@ -302,18 +303,18 @@ void rdfa_complete_relrev_triples(
    // predicate
    //    full URI
    // object
-   //    [current object resource]   
+   //    [current object resource]
    if(rel != NULL)
    {
       rdfalistitem** relptr = rel->items;
       for(i = 0; i < rel->num_items; i++)
       {
          rdfalistitem* curie = *relptr;
-      
+
          rdftriple* triple = rdfa_create_triple(context->new_subject,
-            (const char*)curie->data, context->current_object_resource, 
+            (const char*)curie->data, context->current_object_resource,
             RDF_TYPE_IRI, NULL, NULL);
-      
+
          context->default_graph_triple_callback(triple, context->callback_data);
          relptr++;
       }
@@ -328,18 +329,18 @@ void rdfa_complete_relrev_triples(
    // predicate
    //    full URI
    // object
-   //    [new subject] 
+   //    [new subject]
    if(rev != NULL)
    {
       rdfalistitem** revptr = rev->items;
       for(i = 0; i < rev->num_items; i++)
       {
          rdfalistitem* curie = *revptr;
-      
+
          rdftriple* triple = rdfa_create_triple(
             context->current_object_resource, (const char*)curie->data,
             context->new_subject, RDF_TYPE_IRI, NULL, NULL);
-      
+
          context->default_graph_triple_callback(triple, context->callback_data);
          revptr++;
       }
@@ -376,11 +377,11 @@ void rdfa_save_incomplete_triples(
          rdfa_add_item(
             context->local_incomplete_triples, curie->data,
                (liflag_t)(RDFALIST_FLAG_FORWARD | RDFALIST_FLAG_TEXT));
-         
+
          relptr++;
       }
    }
-   
+
    // If present, @rev must contain one or more URIs, obtained
    // according to the section on CURIE and URI Processing, each of
    // which is added to the [local list of incomplete triples] as follows:
@@ -402,7 +403,7 @@ void rdfa_save_incomplete_triples(
 
          revptr++;
       }
-   }   
+   }
 }
 
 void rdfa_complete_object_literal_triples(rdfacontext* context)
@@ -415,11 +416,11 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    // section on CURIE and URI Processing, and then the actual literal
    // value is obtained as follows:
    char* current_object_literal = NULL;
-   rdfresource_t type = RDF_TYPE_UNKNOWN;   
+   rdfresource_t type = RDF_TYPE_UNKNOWN;
 
    unsigned int i;
    rdfalistitem** pptr;
-   
+
    // * as a [plain literal] if:
    //   o @content is present;
    //   o or all children of the [current element] are text nodes;
@@ -439,7 +440,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       type = RDF_TYPE_PLAIN_LITERAL;
    }
    else if(strchr(context->xml_literal, '<') == NULL)
-   {      
+   {
       current_object_literal = context->plain_literal;
       type = RDF_TYPE_PLAIN_LITERAL;
    }
@@ -457,7 +458,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       type = RDF_TYPE_PLAIN_LITERAL;
    }
 
-   
+
    // * as an [XML literal] if:
    //    o the [current element] has any child nodes that are not
    //      simply text nodes, and @datatype is not present, or is
@@ -476,7 +477,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       current_object_literal = context->xml_literal;
       type = RDF_TYPE_XML_LITERAL;
    }
-   
+
    // * as a [typed literal] if:
    //    o @datatype is present, and does not have an empty
    //      value.
@@ -512,7 +513,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       current_object_literal = context->plain_literal;
       type = RDF_TYPE_TYPED_LITERAL;
    }
-   
+
    // The [current object literal] is then used with each predicate to
    // generate a triple as follows:
    //
@@ -525,14 +526,14 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    pptr = context->property->items;
    for(i = 0; i < context->property->num_items; i++)
    {
-      
+
       rdfalistitem* curie = *pptr;
       rdftriple* triple = NULL;
-      
+
       triple = rdfa_create_triple(context->new_subject,
-         (const char*)curie->data, current_object_literal, type, 
+         (const char*)curie->data, current_object_literal, type,
          context->datatype, context->language);
-      
+
       context->default_graph_triple_callback(triple, context->callback_data);
       pptr++;
    }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2008 Digital Bazaar, Inc.
+ * Copyright 2008-2011 Digital Bazaar, Inc.
  *
  * This file is part of librdfa.
  *
@@ -233,10 +233,7 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
 
    // copy the URI mappings
 #ifndef LIBRDFA_IN_RAPTOR
-   if(rval->uri_mappings != NULL)
-   {
-      rdfa_free_mapping(rval->uri_mappings);
-   }
+   rdfa_free_mapping(rval->uri_mappings);
    rval->uri_mappings = rdfa_copy_mapping(parent_context->uri_mappings);
 #endif
 
@@ -248,9 +245,9 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    }
 
    // set the callbacks callback
-   rval->default_graph_triple_callback = 
+   rval->default_graph_triple_callback =
       parent_context->default_graph_triple_callback;
-   rval->processor_graph_triple_callback = 
+   rval->processor_graph_triple_callback =
       parent_context->processor_graph_triple_callback;
    rval->buffer_filler_callback = parent_context->buffer_filler_callback;
 
@@ -334,20 +331,12 @@ static rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
          rval->parent_object, parent_context->parent_object);
 
       // copy the incomplete triples
-      if(rval->incomplete_triples != NULL)
-      {
-         rdfa_free_list(rval->incomplete_triples);
-      }
-
+      rdfa_free_list(rval->incomplete_triples);
       rval->incomplete_triples =
          rdfa_copy_list(parent_context->incomplete_triples);
 
       // copy the local list of incomplete triples
-      if(rval->local_incomplete_triples != NULL)
-      {
-         rdfa_free_list(rval->local_incomplete_triples);
-      }
-
+      rdfa_free_list(rval->local_incomplete_triples);
       rval->local_incomplete_triples =
          rdfa_copy_list(parent_context->local_incomplete_triples);
    }
@@ -909,7 +898,6 @@ static void XMLCALL
       // processing the object literal.
       buffer = NULL;
 
-
       if(context->xml_literal != NULL)
       {
          // get the data between the first tag and the last tag
@@ -1071,7 +1059,6 @@ static void raptor_rdfa_namespace_handler(void *user_data,
 
 #endif
 
-
 rdfacontext* rdfa_create_context(const char* base)
 {
    rdfacontext* rval = NULL;
@@ -1087,6 +1074,12 @@ rdfacontext* rdfa_create_context(const char* base)
       rval->base = rdfa_replace_string(rval->base, cleaned_base);
       free(cleaned_base);
 
+      // no callbacks set yet
+      rval->default_graph_triple_callback = NULL;
+      rval->buffer_filler_callback = NULL;
+      rval->processor_graph_triple_callback = NULL;
+      rval->callback_data = NULL;
+
       /* parse state */
       rval->wb_allocated = 0;
       rval->working_buffer = NULL;
@@ -1097,6 +1090,7 @@ rdfacontext* rdfa_create_context(const char* base)
       rval->namespace_handler = NULL;
       rval->namespace_handler_user_data = NULL;
 #else
+      rval->uri_mappings = NULL;
       rval->parser = NULL;
 #endif
       rval->done = 0;
@@ -1113,106 +1107,55 @@ rdfacontext* rdfa_create_context(const char* base)
    return rval;
 }
 
-void rdfa_free_context(rdfacontext* context)
+static void rdfa_free_context_stack(rdfacontext* context)
 {
-   if(context->base)
-   {
-      free(context->base);
-   }
-
-   if(context->parent_subject != NULL)
-   {
-      free(context->parent_subject);
-   }
-
-   if(context->parent_object != NULL)
-   {
-      free(context->parent_object);
-   }
-
-#ifndef LIBRDFA_IN_RAPTOR
-   if(context->uri_mappings != NULL)
-   {
-      rdfa_free_mapping(context->uri_mappings);
-   }
-#endif
-
-   if(context->incomplete_triples != NULL)
-   {
-      rdfa_free_list(context->incomplete_triples);
-   }
-
-   if(context->language != NULL)
-   {
-      free(context->language);
-   }
-
-   if(context->underscore_colon_bnode_name != NULL)
-   {
-      free(context->underscore_colon_bnode_name);
-   }
-
-   if(context->new_subject != NULL)
-   {
-      free(context->new_subject);
-   }
-
-   if(context->current_object_resource != NULL)
-   {
-      free(context->current_object_resource);
-   }
-
-   if(context->content != NULL)
-   {
-      free(context->content);
-   }
-
-   if(context->datatype != NULL)
-   {
-      free(context->datatype);
-   }
-
-   if(context->property != NULL)
-   {
-      rdfa_free_list(context->property);
-   }
-
-   if(context->plain_literal != NULL)
-   {
-      free(context->plain_literal);
-   }
-
-   if(context->xml_literal != NULL)
-   {
-      free(context->xml_literal);
-   }
-
-   // TODO: These should be moved into their own data structure
-   if(context->local_incomplete_triples != NULL)
-   {
-      rdfa_free_list(context->local_incomplete_triples);
-   }
-
    // this field is not NULL only on the rdfacontext* at the top of the stack
    if(context->context_stack != NULL)
    {
       void* rval;
       // free the stack ensuring that we do not delete this context if
       // it is in the list (which it may be, if parsing ended on error)
-      do {
-        rval=rdfa_pop_item(context->context_stack);
-        if(rval && rval != context)
-          rdfa_free_context((rdfacontext*)rval);
-      } while(rval);
+      do
+      {
+         rval = rdfa_pop_item(context->context_stack);
+         if(rval && rval != context)
+         {
+            rdfa_free_context((rdfacontext*)rval);
+         }
+      }
+      while(rval);
       free(context->context_stack->items);
       free(context->context_stack);
+      context->context_stack = NULL;
    }
+}
 
-   if(context->working_buffer != NULL)
-   {
-      free(context->working_buffer);
-   }
+void rdfa_free_context(rdfacontext* context)
+{
+   free(context->base);
+   free(context->parent_subject);
+   free(context->parent_object);
 
+#ifndef LIBRDFA_IN_RAPTOR
+   rdfa_free_mapping(context->uri_mappings);
+#endif
+
+   rdfa_free_list(context->incomplete_triples);
+   free(context->language);
+   free(context->underscore_colon_bnode_name);
+   free(context->new_subject);
+   free(context->current_object_resource);
+   free(context->content);
+   free(context->datatype);
+   rdfa_free_list(context->property);
+   free(context->plain_literal);
+   free(context->xml_literal);
+
+   // TODO: These should be moved into their own data structure
+   rdfa_free_list(context->local_incomplete_triples);
+
+   rdfa_free_context_stack(context);
+   free(context->working_buffer);
    free(context);
 }
 
@@ -1290,12 +1233,12 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
    int rval = 0;
    char* doctype_position = 0;
    char* doctype_buffer;
-   const char* new_doctype = 
+   const char* new_doctype =
       "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML+RDFa 1.0//EN\" "
       "\"http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd\">";
 
    // Create a working buffer for finding the DOCTYPE
-   doctype_buffer = (char*)malloc(*bytes + 1);
+   doctype_buffer = (char*)malloc(*bytes + 2);
    memcpy(doctype_buffer, context->working_buffer, *bytes);
    doctype_buffer[*bytes + 1] = '\0';
    doctype_position = strstr(doctype_buffer, "<!DOCTYPE");
@@ -1315,17 +1258,17 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
 
          // create the new doctype buffer
          bytes_to_copy = doctype_position - doctype_buffer;
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, doctype_buffer, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
          bytes_to_copy = RDFA_DOCTYPE_STRING_LENGTH;
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, new_doctype, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
          bytes_to_copy = *bytes - ((doctype_end + 1) - doctype_buffer);
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, doctype_end + 1, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
@@ -1358,22 +1301,22 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
 
          // create the new doctype buffer
          bytes_to_copy = html_position - doctype_buffer;
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, doctype_buffer, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
          bytes_to_copy = RDFA_DOCTYPE_STRING_LENGTH;
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, new_doctype, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
          bytes_to_copy = 1;
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, "\n", bytes_to_copy);
          total_bytes += bytes_to_copy;
 
          bytes_to_copy = *bytes - (html_position - doctype_buffer);
-         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer, 
+         new_doctype_buffer = rdfa_n_append_string(new_doctype_buffer,
             &new_doctype_buffer_length, html_position, bytes_to_copy);
          total_bytes += bytes_to_copy;
 
@@ -1397,7 +1340,6 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
 static void rdfa_report_error(rdfacontext* context, char* data, size_t length)
 {
    char* buffer = malloc(2<<12);
-   data[length - 1] = '\0';
    snprintf(buffer, 2<<12, "XML parsing error: %s at line %d, column %d.",
       XML_ErrorString(XML_GetErrorCode(context->parser)),
       (int)XML_GetCurrentLineNumber(context->parser),
@@ -1410,27 +1352,27 @@ static void rdfa_report_error(rdfacontext* context, char* data, size_t length)
 
       // generate the RDFa Processing Graph error type triple
       rdftriple* triple = rdfa_create_triple(
-         error_subject, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 
-         "http://www.w3.org/ns/rdfa_processing_graph#Error", 
+         error_subject, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+         "http://www.w3.org/ns/rdfa_processing_graph#Error",
          RDF_TYPE_IRI, NULL, NULL);
       context->processor_graph_triple_callback(triple, context->callback_data);
 
       // generate the error description
       triple = rdfa_create_triple(
-         error_subject, "http://purl.org/dc/terms/description", buffer, 
+         error_subject, "http://purl.org/dc/terms/description", buffer,
          RDF_TYPE_PLAIN_LITERAL, NULL, "en");
       context->processor_graph_triple_callback(triple, context->callback_data);
 
       // generate the context triple for the error
       triple = rdfa_create_triple(
-         error_subject, "http://www.w3.org/ns/rdfa_processing_graph#context", 
+         error_subject, "http://www.w3.org/ns/rdfa_processing_graph#context",
          pointer_subject, RDF_TYPE_IRI, NULL, NULL);
       context->processor_graph_triple_callback(triple, context->callback_data);
 
       // generate the type for the context triple
       triple = rdfa_create_triple(
-         pointer_subject, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", 
-         "http://www.w3.org/2009/pointers#LineCharPointer", 
+         pointer_subject, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+         "http://www.w3.org/2009/pointers#LineCharPointer",
          RDF_TYPE_IRI, NULL, NULL);
       context->processor_graph_triple_callback(triple, context->callback_data);
 
@@ -1438,8 +1380,8 @@ static void rdfa_report_error(rdfacontext* context, char* data, size_t length)
       snprintf(buffer, 2<<12, "%d",
          (int)XML_GetCurrentLineNumber(context->parser));
       triple = rdfa_create_triple(
-         pointer_subject, "http://www.w3.org/2009/pointers#lineNumber", 
-         buffer, RDF_TYPE_TYPED_LITERAL, 
+         pointer_subject, "http://www.w3.org/2009/pointers#lineNumber",
+         buffer, RDF_TYPE_TYPED_LITERAL,
          "http://www.w3.org/2001/XMLSchema#positiveInteger", NULL);
       context->processor_graph_triple_callback(triple, context->callback_data);
 
@@ -1447,8 +1389,8 @@ static void rdfa_report_error(rdfacontext* context, char* data, size_t length)
       snprintf(buffer, 2<<12, "%d",
          (int)XML_GetCurrentColumnNumber(context->parser));
       triple = rdfa_create_triple(
-         pointer_subject, "http://www.w3.org/2009/pointers#charNumber", 
-         buffer, RDF_TYPE_TYPED_LITERAL, 
+         pointer_subject, "http://www.w3.org/2009/pointers#charNumber",
+         buffer, RDF_TYPE_TYPED_LITERAL,
          "http://www.w3.org/2001/XMLSchema#positiveInteger", NULL);
       context->processor_graph_triple_callback(triple, context->callback_data);
 
@@ -1527,8 +1469,8 @@ int rdfa_parse_chunk(rdfacontext* context, char* data, size_t wblen, int done)
 
 void rdfa_parse_end(rdfacontext* context)
 {
-   // deinitialize context stack
-   rdfa_pop_item(context->context_stack);
+   // free context stack
+   rdfa_free_context_stack(context);
 
    // Free the expat parser and the like
 #ifdef LIBRDFA_IN_RAPTOR
@@ -1579,8 +1521,7 @@ int rdfa_parse(rdfacontext* context)
         context->callback_data);
      done = (wblen == 0);
 
-     rval = rdfa_parse_chunk(
-        context, context->working_buffer, wblen, done);
+     rval = rdfa_parse_chunk(context, context->working_buffer, wblen, done);
      context->done=done;
   }
   while(!context->done && rval == RDFA_PARSE_SUCCESS);
