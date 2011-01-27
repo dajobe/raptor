@@ -810,7 +810,6 @@ int raptor_init_parser_nquads(raptor_world* world);
 void raptor_terminate_parser_grddl_common(raptor_world *world);
 
 #ifdef RAPTOR_PARSER_RDFA
-#define get_curie_type raptor_librdfa_get_curie_type
 #define rdfa_add_item raptor_librdfa_rdfa_add_item
 #define rdfa_canonicalize_string raptor_librdfa_rdfa_canonicalize_string
 #define rdfa_complete_incomplete_triples raptor_librdfa_rdfa_complete_incomplete_triples
@@ -830,6 +829,7 @@ void raptor_terminate_parser_grddl_common(raptor_world *world);
 #define rdfa_free_list raptor_librdfa_rdfa_free_list
 #define rdfa_free_triple raptor_librdfa_rdfa_free_triple
 #define rdfa_get_buffer raptor_librdfa_rdfa_get_buffer
+#define rdfa_get_curie_type raptor_librdfa_get_curie_type
 #define rdfa_init_base raptor_librdfa_rdfa_init_base
 #define rdfa_init_context raptor_librdfa_rdfa_init_context
 #define rdfa_iri_get_base raptor_librdfa_rdfa_iri_get_base
