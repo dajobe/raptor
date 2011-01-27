@@ -52,7 +52,7 @@ static const char* const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZ
  *
  * @return either CURIE_TYPE_SAFE, CURIE_TYPE_URI or CURIE_TYPE_INVALID.
  */
-curie_t get_curie_type(const char* uri)
+static curie_t rdfa_get_curie_type(const char* uri)
 {
    curie_t rval = CURIE_TYPE_INVALID;
    
@@ -196,7 +196,7 @@ char* rdfa_resolve_curie(
    rdfacontext* context, const char* uri, curieparse_t mode)
 {
    char* rval = NULL;
-   curie_t ctype = get_curie_type(uri);
+   curie_t ctype = rdfa_get_curie_type(uri);
 
    if(ctype == CURIE_TYPE_INVALID)
    {

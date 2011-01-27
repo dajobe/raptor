@@ -323,8 +323,6 @@ char* rdfa_resolve_curie(
 rdfalist* rdfa_resolve_curie_list(
    rdfacontext* rdfa_context, const char* uris, curieparse_t mode);
 
-curie_t get_curie_type(const char* uri);
-
 char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri);
 
 char* rdfa_resolve_property_curie(rdfacontext* context, const char* uri);
