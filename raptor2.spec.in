@@ -10,7 +10,7 @@ Release:   %{release}
 Prefix:    %{_prefix}
 License:   LGPLv2+ or ASL 2.0
 Group:     Development/Libraries
-Source:    http://download.librdf.org/source/%{name}2-%{version}.tar.gz
+Source:    http://download.librdf.org/source/%{name}-%{version}.tar.gz
 URL:       http://librdf.org/raptor/
 BuildRoot: /tmp/%{name}-%{version}
 BuildRequires: libxml2 libxml2-devel >= 2.6.8
