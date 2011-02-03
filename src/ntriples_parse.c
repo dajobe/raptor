@@ -1179,8 +1179,9 @@ static const char* const nquads_uri_strings[2] = {
   NULL
 };
   
-#define NQUADS_TYPES_COUNT 0
+#define NQUADS_TYPES_COUNT 1
 static const raptor_type_q nquads_types[NQUADS_TYPES_COUNT + 1] = {
+  { "text/x-nquads", 13, 10},
   { NULL, 0, 0}
 };
 
