@@ -1,0 +1,5416 @@
+2010-12-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_world_guess_parser_name): Fix guessing by URI
+
+	* src/Makefile.am, src/raptor.h.in, src/raptor_parse.c,
+	src/raptor_serialize.c, src/raptor_syntax_description.c: Restore
+	array counts to syntax description.
+
+	Pull out common validation.
+
+	raptor_syntax_description gains names_count, mime_types_count and
+	uri_strings_count all computed at registration.
+
+	(raptor_syntax_description_validate): Added to public API to
+	validate and compute counts.
+
+	(raptor_world_register_parser_factory,
+	raptor_world_register_serializer_factory): Call above for common
+	validation checks.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_json.c, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/turtle_parser.y: Update parsers and serializers to use
+	uri_strings for syntax description.
+
+	* src/raptor.h.in: raptor_syntax_description has an array of URI
+	strings, loses mime types count.
+
+2010-12-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	Lower RSS mime type q values to 0.8 since that
+	is good enough, raptor cannot ever reach 100%
+
+2010-12-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac,
+	src/win32_raptor_config.h:
+	Bumped version to 1.9.2
+
+	* README.html:
+	N-Quads
+
+2010-12-01  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_1_9_1 for 1.9.1 release (GIT
+	697d55552c5897afab65715d16abbce838acd3e7)
+
+2010-11-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c: Respect Content-Location: header in HTTP
+	responses for final URI
+
+	(raptor_www_curl_update_status): If HTTP header Content-Location:
+	was found, use that rather than the HTTP 3xx redirect URI.
+
+	(raptor_www_curl_header_callback): Use raptor_strncasecmp rather
+	than strncmp to find content type and content location.  If
+	content location is found, set the final_uri
+
+	Fixes Issue#0000402 http://bugs.librdf.org/mantis/view.php?id=402
+
+	* docs/Makefile.am, docs/raptor1-eol.html: Add raptor1-eol.html
+
+	* INSTALL.html:
+	update - encouraging the released tarballs path
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Remove unused created_p args / variables from raptor_abbrev
+	internal APIs
+
+2010-11-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h.in, src/raptor_term.c: Added convenience methods
+	for constructing URI terms
+
+	(raptor_new_term_from_counted_uri_string,
+	raptor_new_term_from_uri_string): Added to replace a common
+	pattern of make uri, make term, free uri.
+
+2010-11-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c, src/raptor_internal.h: Update defensive
+	code for checking raptor_world
+
+	* src/raptor_general.c: autodocs
+
+	* docs/raptor-sections.txt: Add new symbols
+
+2010-11-21  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-world.sgml:
+	Update tmpls
+
+	* src/.gitignore:
+	ignore raptor.h
+
+	* configure.ac, src/Makefile.am, src/raptor.h, src/raptor.h.in,
+	src/raptor_general.c:
+	(raptor_new_world): Turn into a macro around the internal
+	raptor_new_world_internal()
+
+	* src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_iostream.c, src/raptor_libxml.c,
+	src/raptor_namespace.c, src/raptor_parse.c, src/raptor_qname.c,
+	src/raptor_sax2.c, src/raptor_serialize.c, src/raptor_statement.c,
+	src/raptor_term.c, src/raptor_turtle_writer.c, src/raptor_uri.c,
+	src/raptor_www.c, src/raptor_xml_writer.c: Check world object is
+	valid for Raptor V2 in every constructor
+
+	RAPTOR2_WORLD_MAGIC: Alter the RAPTOR_MAGIC value to be different
+	for raptor V2 and rename it in code.  RAPTOR1_WORLD_MAGIC is the
+	old value.
+
+	(raptor_check_constructor_world): Added to handle the check and
+	provide a function to debugger-break on.  It warns once about the
+	pointer problems using a static var.
+
+	(RAPTOR_CHECK_CONSTRUCTOR_WORLD): Macro added to call
+	raptor_check_constructor_world() and replace generic
+	RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE check.
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_parse_start): Call
+	rdfa_set_processor_graph_triple_handler with context.
+
+	* scripts/process-changes.pl:
+	print_statement_field_renames_as_perl_script added.
+	labels
+
+	* docs/raptor-1-to-2-map.tsv: more notes
+
+	* scripts/process-changes.pl: Update titles
+
+	* scripts/process-changes.pl: Fix delete enum output
+
+	* docs/raptor-1-to-2-map.tsv: RAPTOR_FEATURE_ASSUME_IS_RDF and
+	RAPTOR_FEATURE_START_URI were deleted.
+
+	* docs/raptor-1-to-2-map.tsv:
+	Add enum changes
+
+	* scripts/process-changes.pl: Handle enums
+
+	* docs/Makefile.am: upgrade-script.pl depends on tsv file
+
+2010-11-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c: Replace rdfa_set_triple_handler with
+	rdfa_set_default_graph_triple_handler
+
+	* librdfa/rdfa.c, librdfa/rdfa.h, librdfa/triple.c: Update to
+	librdfa GIT 1a1a08c790b7649a7f6c12fb9e40c0d3dbe70481
+
+2010-11-08  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/turtle_parser.y: Fixes for C++ - Casts for C++ from void* to
+	typed pointer/function pointers - Rename some prototype args to
+	avoid 'explicit' C++ keyword.
+
+2010-11-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt, docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml: Update generated docs
+
+	* src/raptor_stringbuffer.c: docs
+
+	* UPGRADING.html: deleted questions
+
+	* RELEASE.html: 1.9.1
+
+	* RELEASE.html, src/raptor.h, src/raptor_term.c: Removed
+	raptor_term_as_counted_string() and raptor_term_as_string()
+	replaced by _to_ versions.  These were 'deprecated' in GIT but
+	since 1.9.0 Raptor V2 was beta, it is OK to delete them.
+
+	* RELEASE.html: 1.9.1
+
+2010-10-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c:
+	(raptor_avltree_print): Free avltree_iterator at end
+
+2010-10-22  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: N-Quads code tidying
+
+	* tests/ntriples/Makefile.am: Remove N-Quads from N-Triples test
+	files so Turtle parser doesn't barf.
+
+	* tests/ntriples/Makefile.am: #typo
+
+	* configure.ac: Typo in AM_CONDITIONAL enabling N-Quads parser
+
+	* tests/ntriples/Makefile.am: Add $(NQ_OUT_FILES) to dist
+
+	* tests/json/Makefile.am: example4.nt
+
+	* configure.ac, src/Makefile.am, src/ntriples_parse.c,
+	src/raptor_internal.h, src/raptor_parse.c,
+	tests/ntriples/Makefile.am, tests/ntriples/testnq-1.nq,
+	tests/ntriples/testnq-1.out: Added N-Quads parser.  Hey, that was
+	easy!
+
+	Don't allow literal graphs/contexts despite that being in the spec
+	at http://sw.deri.org/2008/07/n-quads/ because it's a stupid idea.
+	Added test from the spec
+
+2010-10-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_stringbuffer.c:
+	(raptor_stringbuffer_append_uri_escaped_counted_string): Added
+
+	* src/raptor.h, src/raptor_stringbuffer.c:
+	(raptor_stringbuffer_append_hexadecimal): Added
+
+2010-10-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_serialize.c: #doc typo
+
+2010-10-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_iostream.c: Fix major copying too much error with
+	raptor_read_string_iostream_read_bytes() memcpy
+
+	(raptor_read_string_iostream_read_bytes): Adjust copied bytes to
+	the maximum available in the buffer, not the maximum requested by
+	user.  Could cause crashes since memcpy is called to always copy
+	the maximum amount the user requests, whatever amount of data is
+	in the string.
+
+2010-10-15  Dave Beckett <dajobe@digg.com>
+
+	* src/raptor_serialize.c:
+	(raptor_serializer_start_to_iostream): Reset free_iostream_on_end
+	flag to prevent crashes on reuse.
+
+2010-10-11  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_recognise_syntax): Refuse to handle .ttl or
+	.n3 named content.
+
+2010-10-09  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa.h: Update to librdf GIT commit
+	ddead5d1f72acd7fcd9e4c42503eadcce9d6ec87
+
+2010-10-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Add raptor_parser_parse_iostream -
+	was new in 1.9.0
+
+2010-10-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_log.c:
+	(raptor_log_error): code tidy
+
+	* src/raptor.h: raptor_log_message: autodocs
+
+2010-09-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: Remove use of strncmp when strings are same
+	length
+
+	(raptor_uri_equals): Use memcmp() on same length strings to remove
+	need for strncmp that looks for NULs.
+
+	(raptor_uri_compare): Use memcmp() on same length strings to
+	remove need for strncmp that looks for NULs.  Sort shorter urls
+	earlier by comparing lengths.
+
+2010-09-28  Nicholas J Humfrey <njh@aelius.com>
+
+	* tests/json/Makefile.am, tests/json/example4.json,
+	tests/json/example4.nt: Added a more 'real-world' JSON pasing test
+	file, that includes a rdf:type URI.
+
+	* src/raptor_uri.c:
+	(raptor_uri_equals): small optimisation - URI lengths are now
+	compared before comparing strings.
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): URI comparison now takes into account the
+	stored string length, and does not depend upon NULL-termination of
+	strings.
+
+2010-09-24  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	Use AC_LANG_SOURCE for gcc flag test
+
+2010-09-19  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.10, Makefile.am:
+	Added ChangeLog.10 for 2009
+
+	* NEWS.html, RELEASE.html, configure.ac, src/win32_raptor_config.h:
+	
+	Bumped version to 1.9.1
+
+	* src/raptor_rss_common.c:
+	(raptor_new_rss_block): Copy block_term when needed, do not own
+	it.
+
+2010-09-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Use raptor_term as arg to raptor_new_rss_block
+
+	(raptor_new_rss_block): Change blank node ID to a raptor_term arg.
+
+	(raptor_rss_start_element_handler): Adjust call to
+	raptor_new_rss_block.
+
+2010-09-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_store_statement): Code tidy to move checks out of
+	loop.
+
+2010-09-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c, src/raptor_serialize_rss.c: Remove internal
+	uses of deprecated raptor_term_as_string()
+
+	* src/raptor_serialize_rss.c: Copy statements when saving them for
+	later.
+
+	(raptor_rss10_store_statement): Move copy statement only when not
+	handled, no need to do copy/free.
+
+	(raptor_rss10_serialize_statement): Pass on handled but do not do
+	copy statmenethere.
+
+	* src/raptor_serialize_rss.c: When debugging free memory allocated
+	by raptor_term_as_string()
+
+	* src/raptor.h, src/raptor_term.c:
+	Deprecated raptor_term_as_..._string() for _to_...string form
+
+	(raptor_term_to_counted_string): Added replacing
+	raptor_term_as_counted_string.
+
+	(raptor_term_to_string): Added replacing
+	raptor_term_as_string.
+
+	(raptor_term_as_counted_string, raptor_term_as_string):
+	Deprecated.
+
+	* src/raptor_librdfa.c: Make rdfa (librdfa) parser correctly
+	initialize static statement
+
+	(raptor_librdfa_parse_init): Init static statement with
+	raptor_statement_init() so reference counting and copying works.
+
+	* src/raptor_rss.c: Make RSS parser correctly initialize static
+	statement
+
+	(raptor_rss_parse_init): Init static statement with
+	raptor_statement_init() so reference counting and copying works.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_store_statement): Never call raptor_free_statement()
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Tidy logic looking for type
+	triples.
+
+	* src/raptor_serialize_rss.c: Update debug messages to emit raptor
+	term not assume URIs
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Do not set block URIs from
+	blank nodes
+
+	* src/raptor_serialize_rss.c:
+	Fix crash in serializing to atom when comparing blank node as URI
+
+	(raptor_rss10_serialize_statement): Do not assume object is URI.
+	NOTE: This should use raptor_term_equals and be rewritten to
+	remove the item_uri code.
+
+2010-09-02  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_serialize_json.c:
+	(raptor_json_serialize_start): Corrected option macro name from
+	RAPTOR_OPTION_RELATIVE_URIS to RAPTOR_OPTION_JSON_CALLBACK.
+
+2010-08-22  Nicholas J Humfrey <njh@aelius.com>
+
+	* raptor2.rdf.in:
+	Normalised tabs into spaces #ws
+
+2010-08-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_nfc_test.c: Update for Raptor 2 API.
+
+2010-08-16  Dave Beckett <dave@dajobe.org>
+
+	* Snapshotted raptor2_1_9_0 for 1.9.0 release (GIT
+	9223bfb82c7291dfc778d5bde690a6ecdb652e8e)
+
+2010-08-15  Dave Beckett <dave@dajobe.org>
+
+	* UPGRADING.html: remove overview section
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, UPGRADING.html: Tidy HTML style and change title to
+	Raptor RDF Syntax Library
+
+	* TODO.html: Empty document and point at bugs.librdf.org
+
+	* UPGRADING.html, Makefile.am: Added UPGRADING.html
+
+	* docs/tmpl/section-general.sgml: Update tmpl for adding
+	raptor_log_message
+
+	* src/raptor.h: Remove newline so raptor_log_message gets scanned
+	by gtk-doc!
+
+	* docs/raptor-sections.txt: Add raptor_log_message
+
+	* docs/.gitignore: Ignore raptor-fake.i for real
+
+	* docs/.gitignore: Ignore raptor-fake.i
+
+	* docs/Makefile.am, docs/tmpl/section-general.sgml: Make
+	raptor-fake.i generate properly
+
+	* scripts/Makefile.am: restore CLEANFILES
+
+	* docs/Makefile.am, scripts/Makefile.am,
+	scripts/fix-gtkdoc-header.pl: Attempt to fix raptor.h header to
+	make gtk-doc happier
+
+	* docs/raptor-1-to-2-map.tsv: more words in notes
+
+	* docs/raptor-tutorial-parsing.xml: need base uri pointer
+
+	* docs/raptor-tutorial-serializing.xml: enumeration
+
+	* docs/raptor-tutorial-parsing.xml: enumeration
+
+	* docs/raptor-tutorial-querying-functionality.xml: typo
+
+	* docs/raptor-tutorial-parsing.xml: raptor 2
+
+	* docs/raptor-tutorial-intro.xml: raptor 2
+
+	* docs/.gitignore: Ignore upgrade-script.pl
+
+	* scripts/build-formats.c: Call emit_format_to_syntax_list() at
+	end to emit last seen mime type.
+
+	* scripts/build-formats.c:
+	(emit_format_to_syntax_list): Added to emit format -> list of
+	parser/serializers.
+
+	* scripts/build-formats.c: print previous mime type in types index
+
+	* src/raptor_serialize_ntriples.c: Label nquads as "N-Quads"
+
+2010-08-14  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor2.3: Cut down for raptor2 and point to API docs in
+	HTML
+
+	* README.html: N-Quads serializer
+
+	* docs/raptor-parsers.xml: JSON parser
+
+	* INSTALL.html, README.html, raptor2.rdf.in: Update docs to point
+	to GitHub source and browse
+
+	* 000-README-GIT.txt: Remove migration text
+
+	* AUTHORS: Add Nicholas J Humfrey
+
+	* docs/tmpl/section-locator.sgml: Update generated tmpl for
+	locator rename
+
+	* RELEASE.html: 1.9.0 notes
+
+	* docs/raptor-serializers.xml: Add N-Quads section
+
+	* tests/trig/Makefile.am: Add bug370.out to dist
+
+	* tests/trig/Makefile.am, tests/trig/bug370.out,
+	tests/trig/bug370.trig, tests/trig/example1.out,
+	tests/trig/example2.out, tests/trig/example3.out:
+	Convert TRiG output results file to N-Quads to check graph
+	parameter.
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_serialize.c, src/raptor_serialize_ntriples.c:
+	Add N-Quads serializer name 'nquads' using N-Triples serializer.
+
+	Add conditions in makefile to allow ntriples and/or nquads
+	serializers
+
+	raptor_ntriples_serializer_context rename dummy field to is_quads
+
+	(raptor_ntriples_serialize_statement): Pass on flag to print
+	graph.
+
+	(raptor_nquads_serializer_register_factory): Added to register
+	nquads serializer with text/n-quads mime type
+
+	(raptor_init_serializer_nquads): Added
+
+2010-08-11  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-23.ttl:
+	Add bad test bad-23 for
+	http://bugs.librdf.org/mantis/view.php?id=369
+
+2010-08-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor.h, src/raptor_locator.c: Revert
+	raptor_locator_uri_string to raptor_locator_uri to protect Reland
+	SWIG API
+
+	* configure.ac, src/raptor_general.c, src/raptor_internal.h:
+	Remove --with-dmalloc and dmalloc library support
+
+2010-08-09 Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_term.c: STANDALONE flagging for raptor_term unit
+          tests
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: ID function rename typo
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-parser.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-world.sgml: Update tmpls
+
+2010-08-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: Update sections for ID handler changes
+
+	* configure.ac: Protect checks for optional configure tests
+          with quoting and X
+
+2010-08-08  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: The JSON parser supports both
+          Resource-Centric and Triples.
+
+2010-08-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:  Simplify libxslt save/restore logic
+
+	(raptor_libxslt_set_global_state): Always save default
+	security prefs.
+    
+	(raptor_libxslt_reset_global_state): Always restore default
+	security prefs.
+
+	(raptor_init_parser_grddl_common): Init sec prefs if policy
+	allows and NULL
+
+	* src/raptor_grddl.c: Alter GRDDL init/cleanup of libxslt to be
+	done around transform
+    
+	This means that raptor can operate in a single threaded
+	environment with other libxslt users, since it saves/restores all
+	the libxslt global vars that it needs back to their original state
+	after every xslt transform.
+	
+	raptor_grddl_parser_context gains saved_xsltGenericError,
+	saved_xsltGenericErrorContext and saved_xsltSecurityPrefs fields.
+	
+	(raptor_grddl_run_grddl_transform_doc): Use
+	raptor_libxslt_set_global_state() and
+	raptor_libxslt_reset_global_state() to save restore around
+	transforms.
+	
+	(raptor_init_parser_grddl_common): Do not set default security
+	prefs.
+	
+	(raptor_terminate_parser_grddl_common): NULL security prefs after
+	freeing them.
+	
+	(raptor_libxslt_set_global_state): Added to save libxslt shared
+	state that grddl parser needs to overwrite.
+	
+	(raptor_libxslt_reset_global_state): Added to reset state back to
+	original values.
+	
+	Candidate for backporting to raptor1 since it has no API impact.
+
+	* src/raptor_grddl.c: Document libxslt global settings.
+	
+	(raptor_grddl_run_grddl_transform_doc): set per-transform generic
+	error handler
+
+	* docs/raptor-1-to-2-map.tsv: Update from genid changes
+	
+	Renamed 1.9.0 genid functions are renamed again, moving to world
+	class.
+	- raptor_world_set_generate_bnodeid_parameters renamed from
+	  raptor_parser_set_default_generate_id_parameters 
+	- raptor_world_set_generate_id_handler renamed from
+	  raptor_parser_set_generate_id_handler
+	
+	New 1.9.0 genid function renamed:
+	- raptor_world_generate_bnodeid renamed from
+	raptor_parser_get_new_generated_id and loses type arg.
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h:
+	Make XSLT security preference setting totally disableable
+    
+	(raptor_world_set_libxslt_security_preferences): If user sets any
+	value, even NULL, record that.
+	
+	(raptor_init_parser_grddl_common): If pointer is NULL and user
+	didn't set it, only then make raptor-specific policy.
+	
+	(raptor_terminate_parser_grddl_common): If pointer is not NULL and
+	raptor set it, then free policy.
+	
+	xslt_security_preferences_policy field of raptor_world internal
+	renamed from free_xslt_security_preferences
+	
+	This patch is a candidate for backporting to raptor1.
+	
+	* src/raptor_www.c:
+	(raptor_www_set_user_agent): memcpy comment
+
+	* src/raptor_libxml.c: memcpy replacing more strcpy for known
+	length strings.  Check NUL copying.
+
+	* src/raptor_www.c: memcpy replacing more strcpy for known length
+	strings.  Check NUL copying.
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_start_element): memcpy replacing strcpy with known
+	length string.
+
+	* src/raptor_qname.c: memcpy replacing more strcpy for known
+	length strings.  Check NUL copying.
+
+	* src/raptor_namespace.c:
+	(raptor_new_namespace_from_uri): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_uri_filename_to_uri_string): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_for_rdf_concept): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_id): memcpy replacing strcpy
+
+	* src/raptor_uri.c:
+	(raptor_uri_print): Correct error check and simplify code.
+
+2010-08-05  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_term.c: Changed behaviour of
+	raptor_new_term_from_counted_blank() and
+	raptor_new_term_from_blank() to generate a new identifier if NULL
+	is passed in.
+
+	* src/ntriples_parse.c: Fix for ntriples parsing after the
+	raptor_world_generate_bnodeid() changes.  Fix was to delete code -
+	blank nodes must be named in ntriples.
+
+2010-08-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_guess.c, src/raptor_internal.h: Remove internal
+	raptor_parser_get_current_base_id and raptor_parser_factory method
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_general.c,
+	src/raptor_grddl.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Move
+	generate ID code from raptor_parser to raptor_world class
+
+	(raptor_world_generate_bnodeid): Replaces
+	raptor_parser_internal_generate_id with arg
+	RAPTOR_GENID_TYPE_BNODEID.
+
+	Enum raptor_genid_type deleted - only RAPTOR_GENID_TYPE_BNODEID was
+	ever used.
+
+	raptor_generate_bnodeid_handler handler typedef renamed from
+	raptor_generate_id_handler since it now just applies to blank node
+	IDs.
+
+	raptor_generate_bnodeid_handler handler renamed from
+	raptor_generate_id_handler.
+
+	(raptor_free_world): Free user genid prefix if set.
+
+	(raptor_world_set_generate_bnodeid_handler): Renamed from
+	raptor_parser_set_generate_id_handler.
+
+	(raptor_world_generate_bnodeid): Renamed from
+	raptor_parser_get_new_generated_id and loses type arg.
+
+	(raptor_world_set_generate_bnodeid_parameters): Renamed from
+	raptor_parser_set_default_generate_id_parameters.
+
+	Update all callers to mostly use raptor_world_generate_bnodeid()
+	except where a user bnode ID is given, such as in Turtle _:foo or
+	RDF/XML rdf:nodeid="foo".
+
+	Remove copying of genid fields from parsers to parsers when
+	creating sub-parsers for e.g. grddl.
+
+	typedef raptor_parser loses generate_id* and default_generate_id*
+	fields.
+
+	(raptor_world_internal_generate_id): Renamed from
+	raptor_parser_internal_generate_id and loses type arg.
+
+	typedef raptor_world gains generate_bnodeid and
+	default_generate_bnodeid fields.
+
+	(raptor_free_parser): Lose tidying user genid prefix.
+
+	(raptor_parser_copy_user_state): Remove copying of genid fields
+	between parser user states.
+
+	(raptor_parser_get_current_base_id): Deleted, no longer needed to
+	support copying genids between parser states.
+
+2010-08-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c: More raptor_term unit tests
+
+	* src/Makefile.am, src/raptor_term.c: Add unit tests for
+	raptor_term
+
+2010-08-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_term_equals): Make terms *different* not equal if lengths
+	are different
+
+2010-07-20  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa/Makefile.am: typo
+
+	* tests/rdfa/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_RDFA to enable tests
+
+	* tests/json/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_JSON to enable tests
+
+	* tests/grddl/Makefile.am: Use automake conditional
+	RAPTOR_PARSER_GRDDL to enable tests
+
+	* docs/raptor-parsers.xml: Added json parser section
+
+	* src/raptor_json.c: Note this is RDF/JSON parser (resource
+	centric) today
+
+	* src/raptor_serialize_json.c: Accept "text/json" mime type with
+	low Q for json serializers
+
+	* INSTALL.html: words
+
+	* INSTALL.html: correct autotools min versions
+
+	* INSTALL.html: GIT
+
+	* INSTALL.html: add YAJL pointers
+
+	* configure.ac: add yajl pointer
+
+	* configure.ac: Added --with-yajl=DIR (or 'no') to configure where
+	yajl is installed.
+
+	* scripts/process-changes.pl: docs
+
+2010-07-02  Lauri Aalto <laalto@iki.fi>
+
+	* tests/json/Makefile.am: Run JSON parser tests only if the parser
+	is enabled
+
+2010-07-01  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Added space after commas in parameter lists
+
+	* src/raptor_json.c: Removed spaces after if
+
+	* src/raptor_json.c: Changed single line if-statments to two line
+	if statements
+
+	* src/raptor_json.c: Changed C++ style comments to C style
+
+	* tests/json/Makefile.am, tests/json/bad-13.json: Added a Test
+	Case for missing out the term type
+
+	* src/raptor_json.c: Textual changes to error messages.
+
+2010-06-30  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Removed unused debugging code.
+
+	* tests/json/Makefile.am, tests/json/bad-00.json,
+	tests/json/bad-01.json, tests/json/bad-02.json,
+	tests/json/bad-03.json, tests/json/bad-04.json,
+	tests/json/bad-05.json, tests/json/bad-06.json,
+	tests/json/bad-07.json, tests/json/bad-08.json,
+	tests/json/bad-09.json, tests/json/bad-10.json,
+	tests/json/bad-11.json, tests/json/bad-12.json: Added example of
+	bad RDF/JSON to check for parse errors.
+
+	* src/raptor_json.c: Slightly stricter parsing of JSON.  Better
+	error messages then things go wrong.
+
+	* src/raptor_json.c, tests/json/Makefile.am,
+	tests/json/example3.json, tests/json/example3.nt: Enabled allowing
+	comments in JSON
+
+	* src/raptor_json.c: Fixed comparision between signed and unsigned
+	integers.
+
+2010-06-29  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Improved JSON syntax detection to look at the
+	content.
+
+	* src/raptor_json.c: Lots of code re-factoring.
+	- Improved error handling
+	- Using Raptor memory allocation
+	- Improved memory management
+
+	* src/raptor_json.c: Changed malloc() to RAPTOR_MALLOC, free() to
+	RAPTOR_FREE().
+
+	* src/raptor_json.c: Rewrote fprintf(stderr, ...) to
+	raptor_parser_fatal_error(...)
+
+2010-06-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_counted_string): autodoc to note counted
+	string need not be NULL-terminated.
+
+	* src/raptor_term.c: autodocs to note counted string constructors
+	need not be given NULL-terminated strings.
+
+2010-06-27  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c: Added RATOR_JSON_ prefix to symbols.  Code
+	cleanup.
+
+	* src/raptor_json.c, tests/json/Makefile.am,
+	tests/json/example1.json, tests/json/example1.nt,
+	tests/json/example2.json, tests/json/example2.nt: Added support
+	for parsing resource-centric JSON
+
+	* configure.ac, tests/Makefile.am, tests/json/Makefile.am,
+	tests/json/example1.json, tests/json/example1.nt,
+	tests/json/example2.json, tests/json/example2.nt: Created some
+	tests for RDF/JSON.
+
+	* src/raptor_json.c: Added support for Bnodes and Datatyped
+	literals.  Fix for parsing small files.
+
+	* src/raptor_json.c: Commiting initial work on writing an JSON
+	parser.
+
+	Currently only handles json-triples.
+
+	Lots of tidying up required: - symbol names - remove debugging
+	messages - sort out memory management
+
+2010-06-26  Nicholas J Humfrey <njh@aelius.com>
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_parse.c: Added libyajl library checking and json parser
+	building to automake
+
+2010-06-06  Dave Beckett <dave@dajobe.org>
+
+	* examples/grapper.c: code style
+
+	* examples/Makefile.am: Add grapper-future rule
+
+	* examples/grapper.c: fix menu preferences link
+
+	* examples/grapper.c: Remove more deprecated GTK - GtkToolTips and
+	trigger based on macro
+
+2010-06-05  Dave Beckett <dave@dajobe.org>
+
+	* examples/grapper.c: Better but preferences menu still broken
+
+	* examples/grapper.c: Another attempt, still crashes.  GTK docs
+	also suck
+
+	* examples/grapper-ui.xml, examples/grapper.c: GtkUIManager and
+	external XML file is too damn complex to make work - disable.
+
+	* examples/grapper-ui.xml: Add GTK UI xml
+
+	* examples/grapper.c: more code explanation
+
+	* examples/grapper.c: Make both combo box alternatives work
+
+	* examples/grapper.c: Replace deprecated (in 2.4.x)
+	gtk_option_menu with gtk_combo_box
+
+	* examples/grapper.c: more 2.5.0+ code pruning
+
+	* examples/grapper.c: Require GTK 2.5.0+ (that's still quite old!)
+
+	* examples/grapper.c: code style
+
+	* examples/grapper.c: Update to Raptor 2 API
+
+2010-06-02  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: added
+	raptor_new_term_from_counted_blank
+
+	* src/raptor_term.c: fix raptor_new_term_from_counted_blank
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_term.c:
+	Added raptor_new_term_from_counted_blank for term with counted
+	length ID.
+
+	(raptor_new_term_from_counted_blank): Added
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	docs/tmpl/section-triples.sgml: Update docs for
+	raptor_new_term_from_counted_literal
+
+	* src/raptor.h, src/raptor_term.c: Added
+	raptor_new_term_from_counted_literal for constructing from strings
+	with known lengths.
+
+	(raptor_new_term_from_counted_literal): Added
+
+	(raptor_new_term_from_literal): Now calls
+	raptor_new_term_from_counted_literal.
+
+2010-05-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Fail if language and datatype are
+	given like librdf_new_node_from_typed_literal
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h,
+	src/raptor_serialize_ntriples.c:
+	(raptor_statement_ntriples_write): Add flag to decide whether to
+	write graph term.
+
+	* src/raptor_serialize_ntriples.c, src/raptor_statement.c:
+	(raptor_statement_print_as_ntriples,
+	raptor_statement_ntriples_write): Write N-Triples not N-Quads
+
+2010-05-25  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Ownership of language should not
+	be taken.
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Do not overwrite literal length
+	with language length.
+
+2010-05-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Add new
+	statement methods to sections and functions map
+
+	* src/raptor_serialize_html.c, src/raptor_serialize_rdfxml.c:
+	(raptor_term_html_write, raptor_rdfxml_serialize_statement): Use
+	literal and language length fields direct, remove strlen()s
+
+	* src/raptor_serialize_ntriples.c:
+	(raptor_term_ntriples_write, raptor_statement_ntriples_write):
+	Check for NULL args and early write failures
+
+	* src/raptor_term.c:
+	(raptor_term_as_counted_string, raptor_term_as_string,
+	raptor_term_print_as_ntriples, raptor_term_equals): Check for NULL
+	term args
+
+	* src/raptor_statement.c:
+	(raptor_statement_compare): Return stable order if both statements
+	are NULL
+
+	* src/raptor_statement.c:
+	(raptor_statement_print, raptor_statement_print_as_ntriples):
+	Check statement arg is not NULL
+
+	* src/raptor.h, src/raptor_statement.c:
+	(raptor_statement_equals): Added to public API
+
+	* src/raptor.h: Add raptor_statement_copy to public API
+
+	* src/raptor.h, src/raptor_statement.c: Add new public function
+	raptor_statement_clear
+	(raptor_statement_clear): Added based on core of
+	raptor_statement_free.
+	(raptor_statement_free): Simplified.
+
+	* src/raptor_statement.c:
+	(raptor_new_statement,raptor_new_statement_from_nodes,
+	raptor_statement_copy): Validate args are not NULL
+
+	* src/raptor.h, src/raptor_internal.h: Export
+	raptor_new_statement, raptor_new_statement_from_nodes and
+	raptor_statement_copy to public API
+
+2010-05-18  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_statement.c, src/raptor_term.c: Move
+	raptor_term class code to new raptor_term.c
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): code tidier
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): Make both NULL be equal.
+
+	* src/raptor_uri.c:
+	(raptor_uri_compare): Update to match librdf_uri_compare when both
+	NULL.
+
+2010-05-16  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Added raptor_term_blank_value
+
+	* scripts/Makefile.am: add rule for building libraptor2.la
+
+	* src/raptor_locator.c: #docs
+
+	* docs/raptor-sections.txt: Add raptor_term_blank_value
+
+	* utils/rdfdiff.c: Update to new raptor_term blank fields
+
+	* src/raptor_statement.c: Initialize raptor_term length fields
+	(raptor_new_term_from_literal, raptor_new_term_from_blank):
+	init the fields.
+	(raptor_term_equals): Use lengths as short cut for difference.
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y: raptor_term blank is
+	now a new typedef raptor_term_blank_value with length field.
+	Update all callers
+
+	* src/raptor.h: raptor_term_literal_value gains string_len and
+	language_len fields
+
+2010-05-14  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rfc2396.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_stringbuffer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libxml.c, src/raptor_xml.c,
+	src/turtle_lexer.l, src/turtle_parser.y: code style: 
+	Replace strncpy with memcpy - never need strncpy
+	zero-checking/filling semantics.
+
+2010-05-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Deleted raptor_unique_id prototype
+
+	* src/raptor_abbrev.c:
+	(raptor_unique_id): Deleted - never used.
+
+2010-05-07  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h: Adjust raptor_term_type so enum values match
+	librdf_node_type raptor_term_type: Made enum values match
+	librdf_node_type usage and introduce unused type '3'.
+
+2010-05-05  Dave Beckett <dave@dajobe.org>
+
+	* LICENSE.html: Link to specific GPL 2.1 version doc.  Wording and
+	formatting
+
+2010-05-04  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-tutorial-parsing.xml: pkg-config
+
+	* docs/raptor-tutorial-parsing.xml: statement not triples
+
+	* docs/raptor-tutorial-querying-functionality.xml: Fix exampel of
+	listing parser options to use correct description.
+
+	* docs/raptor-tutorial-querying-functionality.xml: RAPTOR_OPTION_LAST
+
+	* docs/raptor-1-to-2-map.tsv: Update raptor_locator_print and
+	raptor_avltree_print signatures
+
+	* docs/raptor-tutorial-parsing.xml,
+	docs/raptor-tutorial-serializing.xml: Update tutorial references
+
+	* docs/tmpl/section-avltree.sgml, docs/tmpl/section-locator.sgml:
+	Update tmpls
+
+	* src/raptor.h, src/raptor_avltree.c:
+	(raptor_avltree_print): Gains an int return status like other
+	print functions
+
+	* src/raptor.h, src/raptor_locator.c:
+	(raptor_locator_print): Gains an int return status like other
+	print functions
+
+	* src/raptor_avltree.c: autodocs
+
+	* docs/tmpl/section-triples.sgml: Update tmpls for
+	raptor_term_compare and raptor_term_equals
+
+	* src/raptor.h: fix prototype for raptor_term_equals to match code
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Add
+	raptor_term_compare and raptor_term_equals to public API
+
+	* src/raptor.h, src/raptor_internal.h: Move raptor_term_compare
+	and raptor_term_equals to public API
+
+	* src/raptor_statement.c:
+	(raptor_term_equals): autodocs
+
+	* src/raptor_parse.c: autodocs
+
+	* docs/tmpl/section-triples.sgml: Remove RAPTOR_IDENTIFIER docs
+
+	* docs/raptor-parsers.xml, docs/raptor-serializers.xml,
+	docs/raptor-tutorial-intro.xml, docs/raptor-tutorial-parsing.xml,
+	docs/raptor-tutorial-querying-functionality.xml,
+	docs/raptor-tutorial-serializing.xml: Start to update tutorial -
+	still working through WARNING
+
+	* scripts/format-changes.pl, scripts/process-changes.pl: Update
+	scripts
+
+2010-05-03  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl: Generate a perl script to rename
+	names
+
+	* scripts/process-changes.pl: put docbook xml format generation
+	optional
+
+	* scripts/process-changes.pl: Use Getopt::Long and Pod::Usage for
+	proper option handling
+
+	* docs/Makefile.am: Rename format-changes.pl to process-changes.pl
+
+	* scripts/Makefile.am: Rename format-changes.pl to
+	process-changes.pl
+
+	* scripts/process-changes.pl: switch to file handle arg on print
+	functions Rename option to --docbook-xml DOCBOOK-XML file rather
+	than print to stdout
+
+	* docs/raptor-1-to-2-map.tsv: add note for raptor_statement_v2
+
+	* docs/raptor-1-to-2-map.tsv: raptor_log is not a type
+
+	* docs/raptor-1-to-2-map.tsv: # before names in notes
+
+	* scripts/format-changes.pl: Make links to enum values
+
+2010-05-03  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_xml.c: fixed compiler warning
+
+	* src/raptor_serialize_rdfxmla.c: #ws
+
+	* src/turtle_parser.y: fixed casts for !RAPTOR_DEBUG
+
+2010-05-02  Dave Beckett <dave@dajobe.org>
+
+	* utils/Makefile.am: fix rapper.html rule for scripts
+
+	* docs/raptor-1-to-2-map.tsv: annotations for raptor_identifier to
+	raptor_term renamings
+
+	* docs/raptor-1-to-2-map.tsv: Add annotations for old raptor_www_
+	functions
+
+	* docs/raptor-1-to-2-map.tsv: Add more annotations for old
+	functions and types
+
+	* src/raptor_iostream.c:
+	(raptor_new_iostream_to_string): Rename arg to malloc_handler
+
+	* docs/raptor-1-to-2-map.tsv: typo
+
+	* docs/raptor-1-to-2-map.tsv: annotate former message handler
+	typedefs
+
+	* docs/raptor-1-to-2-map.tsv: annotate former URI handler _func
+	typedefs
+
+	* docs/raptor-1-to-2-map.tsv: raptor_log_message is new
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	docs/tmpl/section-avltree.sgml, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-www.sgml, src/raptor.h, src/raptor_abbrev.c,
+	src/raptor_avltree.c, src/raptor_grddl.c, src/raptor_iostream.c,
+	src/raptor_parse.c, src/raptor_rss_common.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c, src/raptor_uri.c,
+	src/raptor_www.c, src/turtle_parser.y: Renamed typedefs ending in
+	_function to _handler.
+
+	Also changed parameter names and internal field names from foo_fn to
+	foo_handler to match.
+
+	(raptor_data_free_handler, raptor_data_context_free_handler,
+	raptor_data_context_print_handler and
+	raptor_data_context_print_handler): Signature of these typedefs
+	were changed to match the other handlers to became *pointers* to
+	functions so
+	e.g. a call with e.g.(raptor_data_context_free_handler*)blah
+	becomes (raptor_data_context_free_handler)blah.
+	
+	raptor_data_compare_handler renamed from
+	raptor_data_compare_function
+
+	raptor_data_malloc_handler renamed from
+	raptor_data_malloc_function
+
+	raptor_data_free_handler renamed from raptor_data_free_function
+
+	raptor_avltree_visit_handler renamed from
+	raptor_avltree_visit_function
+
+	Updated all definitions, fields and arguments to match.
+
+	* scripts/.gitignore: ignore more
+
+	* scripts/format-changes.pl: add change table titles
+
+	* scripts/format-changes.pl: format types
+
+	* src/raptor.h: autodocs
+
+	* docs/tmpl/section-serializer.sgml: update tmpls
+
+	* docs/raptor-1-to-2-map.tsv: Added raptor_serializer_flush
+
+	* docs/raptor-sections.txt: add new functions
+
+	* src/raptor.h: raptor_data_free_handler autodocs
+
+	* docs/raptor-1-to-2-map.tsv: more things were added not removed
+
+	* docs/raptor-1-to-2-map.tsv: more things were added not removed
+
+	* docs/raptor-1-to-2-map.tsv: raptor_uri_source type was deleted
+	not added.
+
+	* docs/raptor-1-to-2-map.tsv: Add type changes
+
+	* scripts/format-changes.pl: Ignore types for now
+
+2010-04-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_serialize.c:
+	(raptor_serializer_flush): Added
+
+	* src/raptor_internal.h: raptor_serializer_factory_s gains
+	serialize_flush factory method.
+
+	* Makefile.am, configure.ac, docs/Makefile.am,
+	docs/build-formats.c, docs/format-changes.pl, fix-groff-xhtml,
+	scripts/Makefile.am, scripts/build-formats.c, scripts/fix-bison,
+	scripts/fix-flex, scripts/fix-groff-xhtml,
+	scripts/format-changes.pl, src/Makefile.am, src/fix-bison,
+	src/fix-flex: Move scripts and utility programs into new scripts
+	dir
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-www.sgml: Update tmpls
+
+	* docs/raptor-sections.txt, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-www.sgml,
+	src/raptor.h, src/raptor_iostream.c, src/raptor_www.c: Add typedef
+	raptor_data_malloc_function
+
+	raptor_data_malloc_function: added for a malloc() signature
+	function.
+
+	(raptor_www_fetch_to_string, raptor_new_iostream_to_string): Use
+	for argument malloc_handler.
+
+	* docs/raptor-sections.txt: Remove internal raptor_avltree_check
+	and raptor_avltree_dump
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-parser.sgml:
+	Update tmpls
+
+	* src/raptor.h, src/raptor_internal.h: Move raptor_avltree_dump
+	and raptor_avltree_check debug prototypes to internal header
+
+	* docs/raptor-sections.txt: Add raptor_graph_mark_flags,
+	raptor_parser_parse_iostream, raptor_syntax_bitflags
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-www.sgml, docs/tmpl/section-xml-namespace.sgml:
+	
+	Update tmpls
+
+2010-04-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: code style
+
+	* src/raptor_serialize.c: code style
+
+	* src/raptor_abbrev.c: code style
+
+	* src/raptor_librdfa.c: code style
+
+	* src/raptor_turtle_writer.c: Update to add RAPTOR_OPTION_STRICT
+	to cases.
+
+2010-04-28  Dave Beckett <dave@dajobe.org>
+
+	* docs/format-changes.pl: intro section
+
+	* docs/raptor-1-to-2-map.tsv: More replacements Replace
+	raptor_serializer_get_option_string with
+	raptor_serializer_get_option Note replace
+	raptor_iostream_write_string_turtle with
+	raptor_string_python_write
+
+	* docs/raptor-1-to-2-map.tsv: Add replacement note for delete
+	raptor_set_parser_strict
+
+	* docs/raptor-1-to-2-map.tsv: Remove
+	raptor_world_enumerate_parsers with
+	raptor_world_get_parser_description.
+
+	* docs/raptor-sections.txt: update for
+	graph_handler->graph_mark_handler renames
+
+	* docs/raptor-sections.txt: Update functions for changes
+
+	* docs/raptor-1-to-2-map.tsv: Update functions for 2010-03-26 to
+	2010-03-28 changes missed
+
+	* docs/raptor-1-to-2-map.tsv: raptor_set_parser_strict removed
+
+	* utils/rapper.1: Note -m/--mode removed but wasn't in the raptor
+	V1 man page.
+
+	* src/raptor_parse.c, utils/rapper.c: Replaced
+	raptor_parser_set_strict() with RAPTOR_OPTION_STRICT
+
+	(raptor_parser_set_strict): Removed from public API and made
+	static, internal.
+
+	(raptor_parser_set_option): When RAPTOR_OPTION_STRICT is seen,
+	call above function to set the values.  Update rapper to remove
+	the -m/--mode lax/strict favouring the -f strict option with
+	boolean value.
+
+	* src/raptor.h, src/raptor_option.c: Add RAPTOR_OPTION_STRICT for
+	parser with bool value
+
+	* tests/rdfxml/Makefile.am:
+	(check-scan-rdf): Use -f scanForRDF instead of removed option -s
+
+2010-04-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c:
+	Fix use of wrong array index.  Rewrite for
+	clarity
+
+	* utils/rapper.1: changes
+
+	* utils/rapper.1: adjust date
+
+	* utils/rapper.1: Remove -s / --scan
+
+	* utils/rapper.c: Remove option --scan / -s since it's the same as
+	-f scanForRDF
+
+2010-04-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c: Set mime types for RDFA parser with higher
+	Q than GRDDL parser
+
+	* docs/build-formats.c: Add intro section and remove version from
+	top.
+
+	* docs/build-formats.c: Note when there is no parser or serializer
+	for a mime type
+
+	* src/raptor_serialize_html.c: Set html serializer Q 1.0
+
+	* src/raptor_serialize_json.c: Pick json resource serializer as
+	json Q 1.0 choice
+
+	* src/raptor_serialize_rdfxml.c: Make rdfxml serializer accept
+	text/rdf with lower q
+
+	* src/raptor_serialize_turtle.c: Make turtle serializer accept
+	other turtle mime types with q < 10
+
+	* src/raptor_serialize_rss.c: Make RSS tag soup serializer accept
+	other rss mime types with low q
+
+	* src/raptor_rss.c: Make RSS tag soup parser accept
+	application/atom+xml q=1.0 for atom.
+
+	* docs/build-formats.c: Emit mime types index section
+
+2010-04-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c, src/raptor_general.c,
+	src/raptor_iostream.c, src/raptor_namespace.c,
+	src/raptor_option.c, src/raptor_parse.c, src/raptor_qname.c,
+	src/raptor_sax2.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Make all raptor object destructors handle
+	NULL object pointer.
+
+	All raptor_free_CLASS() functions when given a NULL object now
+	just return rather than a) crash or b) abort()
+
+	* docs/.gitignore:
+	ignore more
+
+	* tests/turtle/Makefile.am:
+	remove deprecated rapper -n when testing
+	turtle parser with with ntriples test
+
+	* docs/.gitignore:
+	ignore more
+
+	* tests/rdfxml/Makefile.am:
+	check-assume-rdf does not need -a flag.
+
+	* docs/tmpl/section-avltree.sgml,
+	docs/tmpl/section-constants.sgml, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-memory.sgml, docs/tmpl/section-option.sgml,
+	docs/tmpl/section-parser.sgml, docs/tmpl/section-sax2.sgml,
+	docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-unicode.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml, docs/tmpl/section-www.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Update doc tmpls
+
+	* docs/build-formats.c: init parsers/serializers count to 0
+
+	* docs/.gitignore, docs/rdfcat.c, docs/rdfprint.c,
+	docs/rdfserialize.c: Remove rdf*.c example files from git; copied
+	in by maintainer rule
+
+	* examples/.gitignore: Update examples for raptor2 API
+
+	* .gitignore: Do not ignore examples dir
+
+2010-04-19  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c: ws
+
+	* docs/build-formats.c: tidy words
+
+	* docs/build-formats.c: do not put a title on variablelist
+
+	* docs/build-formats.c: optional desc list title
+
+	* docs/raptor-docs.xml: Added raptor-formats.xml
+
+	* docs/Makefile.am: Added raptor-formats.xml
+
+	* docs/build-formats.c: now using raptor_iostream
+
+2010-04-18  Dave Beckett <dave@dajobe.org>
+
+	* docs/build-formats.c: Helper to print raptor syntaxes into
+	docbook xml
+
+2010-04-17  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: code style
+
+	* utils/rapper.c: Remove unused -a flag. sort options strings
+	alphabetically
+
+	* utils/rapper.1: 2.0.0
+
+	* utils/rapper.c: Remove long deprecated -n flag to set syntax to
+	ntriples
+
+	* src/raptor_general.c, src/raptor_iostream.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_statement.c, src/raptor_turtle_writer.c,
+	src/raptor_uri.c, src/raptor_www.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Make all constructors check for non-NULL
+	args/world and call raptor_world_open()
+
+	Adjusted some documentation to allow NULL args that weren't noted,
+	such as raptor_new_turtle_writer() can take a NULL base_uri.
+
+	* src/raptor.h: raptor_syntax_description docs
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y:
+	
+	raptor_syntax_description need_base_uri now raptor_syntax_bitflags
+	enum.
+
+	(raptor_syntax_description): Change need_base_uri filed to a
+	bitmask of bits defined in enum raptor_syntax_bitflags.  Enables
+	this structure to be used beyond parser and serializer formats.
+
+	(raptor_syntax_bitflags): Added with RAPTOR_SYNTAX_NEED_BASE_URI
+	flag.
+
+2010-04-06  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_guess.c:
+	(raptor_guess_guess_get_description): Do not call
+	raptor_parser_get_description() with NULL arg.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/turtle_parser.y: Removed writable static data.
+
+	Changed *_names arrays to be const. Also fixed dimensions of
+	*_names arrays to match number of elements.
+
+	(raptor_syntax_description): Changed syntax names array to const
+	to not lose const qualifiers in initialization/assignment.
+
+	* src/raptor.h, src/raptor_parse.c, src/raptor_serialize.c:
+	
+	(raptor_world_get_parser_description,
+	raptor_world_get_serializer_description): Removed const qualifier
+	from pass-by-value args.
+
+	* src/raptor_serialize.c: #ws
+
+2010-04-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_html.c: code style
+
+2010-04-01  Nicholas J Humfrey <njh@aelius.com>
+
+	* ChangeLog: Updated ChangeLog to include new HTML Table
+	serialiser.
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_serialize.c, src/raptor_serialize_html.c: Added HTML
+	Table serialiser.
+
+2010-03-31  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_ntriples.c: ntriples writes text/plain
+
+	* utils/rapper.c: Use raptor_world_get_serializer_description()
+	for serializer info.
+
+2010-03-29  Dave Beckett <dave@dajobe.org>
+
+	* examples/raptor_abort.c, examples/rdfcat.c, examples/rdfprint.c,
+	examples/rdfserialize.c: Update examples to raptor2 API
+
+	* examples/Makefile.am: 2010
+
+	* configure.ac: package name is raptor2 makes things a little
+	easier
+
+	* Makefile.am: Do not toy with distdir
+
+	* raptor2.spec.in: Update for raptor2
+
+	* raptor2.pc.in: link with -lraptor2
+
+	* tests/Makefile.am: Use libraptor2.la
+
+	* raptor2.pc.in: adjust includedir to be prefixed by package name
+
+	* utils/Makefile.am: Use libraptor2.la
+
+	* src/Makefile.am: libraptor2.la
+
+	* .gitignore, docs/.gitignore, src/.gitignore: Update git ignores
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-option.sgml,
+	docs/tmpl/section-parser.sgml, docs/tmpl/section-serializer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml-namespace.sgml: update doc tmpls
+
+	* Makefile.am, configure.ac, docs/Makefile.am, docs/libraptor.3,
+	docs/libraptor2.3, raptor-src-config.in, raptor.pc.in,
+	raptor.rdf.in, raptor.spec.in, raptor2.pc.in, raptor2.rdf.in,
+	raptor2.spec.in, src/Makefile.am, src/raptor-config.1,
+	src/raptor-config.in: Rename raptor to raptor2
+
+2010-03-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_parse.c: Added
+	raptor_parser_parse_iostream() to parse from an iostream
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit): Implement emit graph marks for rss-tag-soup
+	parser.
+
+	* src/raptor_rdfxml.c: Implement emit graph marks for rdfxml
+	parser.
+
+	* src/raptor_librdfa.c: Implement emit graph marks for librdfa
+	parser.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_generate_statement): Tidy emit graph mark
+	condition.
+
+	* src/raptor_librdfa.c: ws
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_generate_statement): Do nothing if there is no
+	statement handler.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_chunk): Implement graph marks for GRDDL
+	parser.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_ensure_internal_parser): Disable graph marks for
+	child parsers.
+
+	* src/raptor_parse.c:
+	(raptor_parser_start_graph, raptor_parser_end_graph): Use
+	emit_graph_marks flag.
+
+	* src/raptor_internal.h, src/raptor_parse.c: Add internal
+	raptor_parser flag emit_graph_marks default set.
+
+	* src/raptor_parse.c: save editor before commit!
+
+	* src/raptor_internal.h, src/raptor_parse.c:
+	(raptor_parser_copy_flags_state): Added to copy flags to/from
+	parsers.
+
+	* src/raptor_parse.c:
+	(raptor_parser_copy_user_state): Copy failed,
+	emitted_default_graph bit flags.
+
+	* src/ntriples_parse.c: Implement graph marks for ntriples parser
+
+	* src/turtle_common.h, src/turtle_parser.y: Switch to use
+	raptor_parser emitted_default_graph field
+
+	* src/raptor_internal.h: raptor_parser_s gains
+	emitted_default_graph flag.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c,
+	src/turtle_parser.y: Added raptor_parser_get_graph() and factory
+	method
+
+	(raptor_parser_get_graph): Added to get current graph for a
+	parser.
+
+	raptor_parser_factory: Added optional method get_graph.  If
+	missing this indicates that start/end graph marks need to be
+	synthesised.
+
+	(raptor_turtle_get_graph): Added to implement this for Turtle and
+	TRiG parsers.
+
+	* src/raptor.h, src/raptor_namespace.c,
+	src/raptor_serialize_turtle.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Rename raptor_namespace_copy to
+	raptor_namespace_stack_start_namespace
+
+	(raptor_namespace_stack_start_namespace): Renamed from
+	raptor_namespace_copy to follow conventions; this is not a copy
+	constructor for the raptor_namespace class, it's a method on the
+	raptor_namespace_stack class.  Update all callers
+
+	* src/raptor_qname.c:
+	(raptor_qname_copy): Handle NULL qname arg.
+
+	* src/turtle_common.h, src/turtle_parser.y, utils/rapper.c: Update
+	Turtle and TRiG parsers to emit new graph marks
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c: Updated
+	graph mark handler mechanism in a stream of triples
+
+	raptor_graph_mark_handler: Renamed from raptor_graph_handler since
+	it returns not just a URI (or NULL for default graph) but flags
+	that indicate if it was a start/end and whether the graph name was
+	declared in the syntax or implicit by the stream of statements.
+
+	raptor_graph_mark_flags: Added used above to record the start/end
+	marks and declared/not.
+
+	(raptor_parser_set_graph_mark_handler): Renamed from
+	raptor_parser_set_graph_handler.
+
+	raptor_parser: Renamed field to graph_mark_handler and changed
+	type to match above.
+
+	(raptor_parser_start_graph): Renamed from
+	raptor_parser_set_graph_name and added is_declared flag.
+
+	(raptor_parser_end_graph): Added.
+
+2010-03-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-triples.sgml: doc
+
+	* docs/raptor-sections.txt: fix name
+
+	* docs/raptor-sections.txt, src/raptor.h:
+	Add extra typedefs for
+	union to help gtkdoc
+
+	* src/raptor.h:
+	autodocs
+
+	* docs/raptor-sections.txt:
+	Update sections with renames
+
+	* docs/raptor-1-to-2-map.tsv: Update for serializer descriptions
+	raptor_serializers_enumerate* replaced by
+	raptor_world_get_serializer_description.
+
+	Added raptor_serializer_get_description
+
+	* src/Makefile.am, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_simple.c: Remove obsolete 'simple'
+	serializer' from sources that has not been enabled for a long time
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_rss.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, utils/rapper.c: Syntax description
+	replaces serializer enumeration and get desc methods.
+
+	(raptor_world_get_serializer_description): Renamed from
+	raptor_world_enumerate_serializers and now just takes single int
+	param.
+
+	(raptor_serializer_get_description): Added Updated all serializers
+	to register static descriptions of names, mime types, label, uris.
+
+	Updated rapper utility to use raptor_serializer_get_description()
+	for listing serializers.
+
+	* src/raptor_parse.c:
+	code style
+
+	* docs/raptor-1-to-2-map.tsv: Update changes for parser
+	descriptions raptor_get_label, raptor_get_mime_type,
+	raptor_get_need_base_uri are deleted and use result fields from
+	raptor_parser_get_description()
+
+	* docs/raptor-1-to-2-map.tsv: Use
+	raptor_world_get_parser_description to replace
+	raptor_parsers_enumerate*
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor.h, src/raptor_guess.c, src/raptor_internal.h,
+	src/raptor_parse.c, utils/rapper.c: Syntax description replaces
+	parser enumeration and get desc methods.
+
+	(raptor_world_get_parser_description): Renamed from
+	raptor_world_enumerate_parsers and now just takes single int param.
+
+	(raptor_parser_get_label, raptor_parser_get_mime_type,
+	raptor_parser_get_need_base_uri): Deleted; use
+	raptor_world_get_parser_description() result fields instead.
+
+	raptor_parser_factory gains an optional get_description factory
+	method.
+
+	(raptor_parser_get_name): Note this returns main name and point to
+	raptor_parser_get_description() to get other names and info.
+
+	(raptor_parser_get_description): Added to either use the factory
+	method or else return the factory desc.
+
+	(raptor_guess_guess_get_description): Updated guess parser to
+	return internal description rather than that of 'guess'.  Updated
+	rapper utility to use raptor_parser_get_description() for listing
+	parsers.
+
+	* src/raptor.h: group public typedefs (code style)
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Use
+	raptor_syntax_description inside raptor_parser_factory
+	raptor_parser_factory loses fields about description replaced by a
+	static raptor_syntax_description desc field.
+
+	Updated all users to use factory->desc.FIELD rather than
+	factory->FIELD for the descriptive fields.
+
+	* src/raptor.h: Added raptor_type_q and raptor_syntax_description
+	types to public API.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/turtle_parser.y: Update parsers to register mime types count
+
+	* src/raptor_parse.c: Check and use mime_types_count field.
+
+	(raptor_world_register_parser_factory): Add maintainer/debug check
+	of mime types count.
+
+	(raptor_world_enumerate_parsers, raptor_parser_get_mime_type): Do
+	not access mime types unless there is one.
+
+	* src/raptor_internal.h: raptor_parser_factory gains
+	mime_types_count field
+
+	* src/raptor_internal.h, src/raptor_parse.c, src/turtle_parser.y:
+	Remove raptor_parser_simple_error - only used once.
+
+	(turtle_parser_error): Call raptor_log_error() direct.
+
+	(raptor_parser_simple_error): Deleted.
+
+	* src/raptor_parse.c: ws, code style
+
+2010-03-25  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y: Alter
+	parser registration to be more static and declarative.
+
+	raptor_parser_factory: field name turns into C array of names.
+	field mime_types turns into a C array of #raptor_type_q
+
+	(raptor_free_parser_factory): Do not free data fields that are now
+	static and shared.
+
+	(raptor_world_register_parser_factory): Reduce args to just world
+	plus factory handler.
+
+	(raptor_parser_factory_add_alias,
+	raptor_parser_factory_add_mime_type):
+	Deleted
+
+	(raptor_world_get_parser_factory, raptor_world_enumerate_parsers,
+	raptor_parser_get_mime_type, raptor_world_guess_parser_name,
+	raptor_parser_get_accept_header_all): Update to handle mime_types
+	as array of #raptor_type_q
+
+	Alter all parser registrations to pass in static data for names,
+	mime_types, label and uri_string in factory registration function
+	handler.
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/turtle_parser.y:
+	(raptor_world_register_parser_factory): Renamed from
+	raptor_parser_register_factory.
+
+2010-03-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: struct raptor_parser_factory_s: docs
+
+	* src/raptor_parse.c:
+	(raptor_parser_register_factory): autodocs
+
+2010-03-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_term_as_counted_string): Fixed warning about strict
+	aliasing.
+
+2010-03-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_parse.c, src/raptor_serialize_turtle.c,
+	src/strcasecmp.c: Fixed gcc4 warnings about using a char where an
+	int is required
+
+2010-03-21  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_option.c:
+	Remove raptor_option_get_value_type() - can use option description
+	to get this and more details.
+
+2010-03-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_new_parser): Set default options *after* initialising
+	options block.
+
+	* src/raptor_option.c: autodoc words
+
+	* src/raptor_option.c: raptor_world_get_option_from_uri - autodocs
+
+	* src/raptor_option.c: raptor_option_get_value_type - fix autodoc
+
+	* src/raptor_general.c: Added turtle writer label to
+	raptor_domain_labels
+
+	* docs/raptor-sections.txt: Add raptor_option_description
+
+	* src/raptor.h: raptor_option_description reformatting for
+	autodocs
+
+	* docs/raptor-1-to-2-map.tsv: add notes
+
+	* docs/raptor-1-to-2-map.tsv: Added new raptor_option_description
+	functions raptor_world_get_option_description and
+	raptor_free_option_description
+
+	* docs/raptor-sections.txt: Added raptor_free_option_description
+
+	* docs/raptor-sections.txt: raptor_parser_get_option_count renamed
+	to raptor_option_get_count
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt: Update
+	docs and API ref to remove options enumeration functions.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Remove all
+	raptor_world_enumerate_CLASS_options functions.
+
+	(raptor_world_options_enumerate_common): Remove internal function
+	no longer used.
+
+	Update parser test code to use option descriptions for testing
+	option URIs.
+
+	Update autodocs to refer to raptor_world_get_option_description()
+	for getting the valid option IDs.
+
+	* src/raptor.h, src/raptor_option.c, utils/rapper.c: Added option
+	description class to describe any domain option.
+
+	typedef raptor_option_description added
+
+	(raptor_world_get_option_description): Added, to create an option
+	description object for a domain and option ID.
+
+	(raptor_free_option_description): Added to free an option
+	description.
+
+	(raptor_option_get_option_area_for_domain): Added internal helper
+	to map option IDs to area bits.
+
+	Update rapper to use option description instead of options
+	enumeration calls.
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor.h, src/raptor_option.c,
+	utils/rapper.c: Rename raptor_parser_get_option_count() to
+	raptor_option_get_count().
+
+	* src/raptor.h: Add RAPTOR_DOMAIN_TURTLE_WRITER
+
+2010-03-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_serialize.c: Changed
+	raptor_*_set_option() to take in a const char* instead of char*.
+
+2010-03-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: code style
+
+	* src/raptor.h: code style
+
+	* docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml.sgml: Update doc tmpls
+
+	* docs/raptor-1-to-2-map.tsv: Update
+	raptor_xml_writer_set_feature/string new names
+
+	* docs/raptor-1-to-2-map.tsv: Remove raptor_world_set_www_flags
+	which was added in raptor2
+
+	* docs/raptor-sections.txt, src/raptor.h, src/raptor_general.c,
+	src/raptor_www.c:
+	(raptor_world_set_flag): Replaces raptor_world_set_www_flags with
+	world flag RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH
+
+	* docs/raptor-sections.txt: Remove get/set option_string forms
+
+	* docs/raptor-1-to-2-map.tsv: Update serializer and xml_writer
+	get/set options to use just 1 function.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c: Update sax2 set options (there is no get) to
+	use generic code.
+
+	(raptor_new_sax2): Init options structure.
+
+	(raptor_free_sax2): Clear options structure.
+
+	(raptor_sax2_set_option): Alter signature to use new format.  This
+	API is not yet public.
+
+	Update code and callers to use the option access macros.
+
+	* src/raptor_xml_writer.c:
+	(raptor_new_xml_writer): Call raptor_object_options_init
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c,
+	utils/rapper.c:
+	
+	Update xml writer set/get option API to use generic code
+	raptor_xml_writer_s:
+
+	Add raptor_object_options field and delete flags, indent,
+	xml_version, xml_declaration fields that are now managed by it.
+
+	(raptor_new_xml_writer): Init options with
+	raptor_object_options_init.  Set defaults that are not 0 or NULL.
+
+	(raptor_free_xml_writer): Use raptor_object_options_clear() to
+	tidy up option strings.
+
+	(raptor_xml_writer_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_xml_writer_set_option_string): Deleted, merged into above.
+
+	(raptor_xml_writer_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_xml_writer_get_option_string): Deleted, merged into above.
+
+	Update many references in xml_writer code to numeric and string
+	options to use RAPTOR_OPTIONS_GET/SET_STRING/NUMERIC macros.
+
+	Update callers of raptor_xml_writer_set_option() inside
+	serializers to pass in NULL string arg.  Update rapper utility to
+	use new set_options style calls for parser and serializer.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c: Update
+	serializer set/get option API to use generic code
+
+	raptor_serializer_s: Add raptor_object_options field and delete
+	multiple option_* fields that are now managed by it.
+
+	(raptor_new_serializer): Init options with
+	raptor_object_options_init.  Set defaults that are not 0 or NULL.
+
+	(raptor_free_serializer): Use raptor_object_options_clear() to
+	tidy up option strings.
+
+	(raptor_serializer_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_serializer_set_option_string): Deleted, merged into above.
+
+	(raptor_serializer_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_serializer_get_option_string): Deleted, merged into above.
+
+	Update many references in serializers to numeric and string
+	options to use RAPTOR_OPTIONS_GET/SET_STRING/NUMERIC macros.  Some
+	code tidying to break long lines.
+
+	* docs/raptor-1-to-2-map.tsv: Update API docs for
+	raptor_parser_set_option: args changed
+	raptor_parser_set_option_string: deleted, use above
+	raptor_parser_get_option: args changed
+	raptor_parser_get_option_string: deleted, use above
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor_option.c: autodocs
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_parse.c: Update
+	parser set/get option API to use generic code
+
+	raptor_parser_s: loose cache_control and user_agent char* option
+	fields that are now managed by the raptor_object_options.
+
+	(raptor_free_parser): Use raptor_object_options_clear() to tidy up
+	option strings.
+
+	(raptor_parser_set_option): Use
+	raptor_object_options_set_option().
+
+	(raptor_parser_set_option_string): Deleted, merged into above.
+
+	(raptor_parser_get_option): Use
+	raptor_object_options_get_option().
+
+	(raptor_parser_get_option_string): Deleted, merged into above.
+	Update references to string options to use
+	RAPTOR_OPTIONS_GET/SET_STRING macros.
+
+	* src/raptor_internal.h, src/raptor_option.c: Move support for
+	option get/set into generic code and handle strings.
+
+	(raptor_object_options_copy_state): Copy strings when copying
+	state.
+
+	(raptor_object_options_init): Set integers / strings to 0 / NULL.
+
+	(raptor_object_options_clear_state): Added to free strings.
+
+	(raptor_object_options_get_option): Added to get any option for an
+	option area.
+
+	(raptor_object_options_set_option): Added to set any option for an
+	option area.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	
+	Added raptor_object_options_init to initialise options object.
+
+	(raptor_object_options_init): Added
+
+	(raptor_new_parser): Call above to init parser's options block.
+
+	* src/raptor_internal.h: Made raptor_object_options contain an
+	array of union str/int values and area.
+
+	raptor_object_options gains raptor_option_area area field and
+	options is now an array of raptor_str_int (union of char*/int)
+	
+	Adjusted RAPTOR_OPTIONS_GET/SET_NUMERIC macros to use integer part
+	of union.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	
+	Rename raptor_object_options_copy to
+	raptor_object_options_copy_state since it is not a copy
+	constructor
+
+	(raptor_object_options_copy_state): Renamed from
+	raptor_object_options_copy.
+
+	* src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c:
+	Add raptor_object_options_copy() for copying options
+	state (raptor_object_options_copy): Added.
+
+	(raptor_parser_copy_user_state): Use above.
+
+	* src/raptor_grddl.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c: Move per-parser-project
+	options into a raptor_object_options type.
+
+	raptor_object_options typedef added.  raptor_parser_s: use above
+	rather than array of int.
+
+	(RAPTOR_OPTIONS_GET_NUMERIC, RAPTOR_OPTIONS_SET_NUMERIC): Added
+	and used by parsers.
+
+	* src/raptor_statement.c:
+	(raptor_term_as_counted_string): Use raptor_term_ntriples_write()
+	Intended to address Issue#0000357
+
+2010-03-08  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml, docs/tmpl/section-uri-factory.sgml: Remove
+	remaining uri-factory files
+
+	* src/raptor_general.c:
+	(raptor_world_set_log_handler): Allow setting after world is open.
+
+	* docs/tmpl/section-unused.sgml: Update doc tmpls
+
+	* docs/raptor-1-to-2-map.tsv: raptor_new_iostream_from_handler is
+	arg change. no notes
+
+	* docs/raptor-1-to-2-map.tsv: raptor_uri_is_file_uri is just a
+	rename
+
+	* docs/format-changes.pl: tweak format_notes regexes
+
+	* docs/raptor-1-to-2-map.tsv: more deprecation notes
+
+	* docs/raptor-1-to-2-map.tsv: update raptor_new_identifier/_v2
+	notes
+
+	* docs/raptor-1-to-2-map.tsv: raptor_syntax_name_check and
+	raptor_syntax_name_check_v2 replaced by
+	raptor_world_is_parser_name
+
+	* docs/format-changes.pl: Make format_notes() take is_inline param
+
+	* docs/format-changes.pl: remove # from formatted type name
+
+	* docs/format-changes.pl: format notes
+
+	* docs/format-changes.pl: format notes when present
+
+	* docs/raptor-1-to-2-map.tsv: Add change notes field
+
+	* docs/format-changes.pl: read notes field
+
+	* docs/format-changes.pl: ignore comments
+
+2010-03-08  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_general.c:
+	(raptor_world_set_flag): Set uri_interning to passed in value.
+
+2010-03-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/format-changes.pl: headers for changed
+
+	* docs/format-changes.pl: adjust headers
+
+	* docs/.gitignore, docs/Makefile.am, docs/format-changes.pl,
+	docs/raptor-docs.xml: Add raptor changes formatting script
+	format-changes.pl
+
+	* docs/raptor-1-to-2-map.tsv, raptor-1-to-2-map.tsv: Move
+	raptor-1-to-2-map.tsv to docs
+
+	* raptor-1-to-2-map.tsv: move to 1 line TSV
+
+	* raptor-1-to-2-map.tsv: raptor 1 to raptor 2 function API map
+
+	* docs/raptor-sections.txt: Add RAPTOR_V2_AVAILABLE to sections.
+
+	* docs/tmpl/section-unused.sgml, src/raptor_uri.c: fix docbook
+	escapes for % in comments
+
+	* src/raptor_uri.c: autodocs and docbook for uri-hex literals
+
+	* src/raptor.h: autodocs for raptor_data_compare_function and
+	raptor_data_free_function
+
+	* src/raptor.h: autodocs for raptor_avltree,
+	raptor_avltree_iterator and raptor_avltree_visit_function.
+
+	* src/raptor_avltree.c: autodocs for raptor_avltree_print
+
+	* src/raptor_unicode.c: autodocs and docbook for linking to urls
+	with #s
+
+	* src/raptor_xml.c: autodocs
+
+	* src/raptor_statement.c: autodocs
+
+	* docs/tmpl/section-avltree.sgml: Added avltree template
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-stringbuffer.sgml,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-unicode.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Updated sgml templates
+
+	* docs/raptor-sections.txt: raptor_avltree_dump not
+	raptor_avltree_debug
+
+	* docs/raptor-sections.txt, src/raptor.h, src/raptor_avltree.c:
+	Added enum raptor_avltree_bitflags for raptor_new_avltree() flags
+	with docs.  raptor_avltree_bitflags added with docs on flags.
+
+	(raptor_new_avltree): Updated docs to point to above.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_libxml.c: Rename
+	raptor_world_flag enum values to remove plural FLAGS
+
+	* src/raptor.h: autodocs
+
+	* src/raptor_statement.c: autodocs
+
+	* docs/raptor-sections.txt: autodocs
+
+	* src/raptor_iostream.c: autodocs
+
+	* src/raptor_locator.c: autodocs
+
+	* src/raptor_avltree.c: autodocs
+
+	* src/raptor.h: autodocs
+
+	* src/raptor_namespace.c: autodocs
+
+	* docs/raptor-sections.txt: more new names
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_libxml.c, src/raptor_uri.c: Give raptor_world a flags
+	mechanism for pre-open configuration
+
+	raptor_world_flags: Replaces raptor_libxml_flags and is an enum
+	not a bitmask.
+
+	Add RAPTOR_WORLD_FLAGS_URI_INTERNING flag for disabling URI
+	interning using an AVL-Tree.
+
+	(raptor_world_set_libxslt_security_preferences,
+	raptor_world_set_log_handler): Gains an int return value to report
+	failure if world is already opened.
+
+	(raptor_world_set_flag): Replaces raptor_world_set_libxml_flags
+	and has both an enum flag, int value and int error return.  Update
+	libxml code looking for world->libxml_flags to use new enum names
+	as bitmasks.
+
+	* src/Makefile.am, src/raptor_general.c, src/raptor_log.c: Move
+	raptor logging code to new raptor_log.c
+
+2010-03-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_option.c: code style static int
+	raptor_option_uri_prefix_len replaces #define
+	RAPTOR_OPTION_URI_PREFIX_LEN
+
+	* src/raptor_parse.c: autodocs
+
+	* src/raptor.h, src/raptor_general.c: Added raptor_domain and add
+	it to raptor_log_message structure
+
+2010-03-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: Code style
+
+2010-03-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	utils/rapper.c, utils/rdfdiff.c: Added raptor_log_message for
+	message callbacks.
+
+	raptor_log_message: added struct
+
+	raptor_log_handler function prototype now takes just user dat and
+	message.
+
+	raptor_world_s gains a static raptor_log_message for use in errors.
+	No field here is reference counted.
+
+	(raptor_log_error): Rename arg to text and init raptor_log_message
+	structure in world object.
+
+	Updated rapper and rdfdiff log handler functions to new signature.
+
+2010-02-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_general.c:
+	(raptor_log_level_get_label): Added
+
+	* src/raptor.h: Move raptor_log_level earlier
+
+	* src/turtle_parser.y:
+	(graph): Do not free graph name twice for TRIG { }
+
+	* src/raptor_general.c: 2010
+
+2010-02-26  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_term_compare): Allow NULL terms in comparison
+
+	* src/raptor_statement.c:
+	(raptor_new_statement_from_nodes): free passed in graph term on
+	alloc failure
+
+	* src/turtle_parser.y:
+	(graph): No need to NULL something that's already NULL.
+
+	* src/raptor.h:
+	(raptor_statement): fixed docs
+
+	* src/turtle_parser.y:
+	(raptor_turtle_parse_terminate): Set graph_name to NULL after
+	freeing to prevent a double free.
+
+2010-02-25  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_common.h, src/turtle_parser.y: Generate graph name in
+	raptor_statement object for TRIG syntax
+
+	struct raptor_turtle_parser_s gains raptor_term* graph_name.
+
+	Turtle parser: if trig is set, update graph_name field when { and
+	} are parsed, in addition to the raptor_parser_set_graph_name()
+	calls
+
+	(raptor_turtle_parse_terminate): Free any existing graph name.
+
+	(raptor_turtle_generate_statement): Set statement graph name for
+	TRIG, free it if copied in.  End early if there is no statement
+	handler, no need to compute and free terms.
+
+	* src/raptor_statement.c:
+	(raptor_free_term): Return if term is nULL
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_statement.c,
+	src/turtle_parser.y: Added graph name to raptor_statement
+
+	raptor_statement typedef gains an optional raptor_term* graph
+	field for the graph name of the triple.
+
+	(raptor_new_statement_from_nodes): Gains an optional graph
+	argument.
+
+	(raptor_statement_copy, raptor_free_statement,
+	raptor_statement_print, raptor_statement_print_as_ntriples):
+	Updated to use graph field if present.  Updated
+	raptor_new_statement_from_nodes() callers in turtle parser.
+
+2010-02-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_uri.c:
+	(raptor_uri_finish): Set world->uris_tree to NULL after freeing
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_serialize_init): Free rdf_type_uri, uri_term -
+	already copied to other objects.
+
+2010-02-22  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_parse.c:
+	(raptor_parser_factory_add_alias): Do not leak previously added
+	aliases.  FIXME: Discards previously added aliases.
+
+2010-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc_test.c,
+	src/raptor_unicode.c, src/turtle_common.c:
+	(raptor_unicode_utf8_string_put_char): renamed from
+	raptor_unicode_string_put_char()
+
+	* src/raptor.h, src/raptor_internal.h: Export raptor_term_copy to
+	public API.
+
+	* docs/raptor-sections.txt, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_internal.h, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_xml.c, src/turtle_common.c: Define
+	raptor_unicode_max_codepoint for magic number U+10FFFF
+
+2010-02-18  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc.c,
+	src/raptor_nfc_test.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_xml.c:
+	(raptor_unicode_utf8_string_get_char): Renamed from
+	raptor_unicode_decode_utf8_char()
+
+	* src/raptor.h, src/raptor_nfc_test.c, src/raptor_unicode.c:
+	(raptor_unicode_check_utf8_string): Renamed from
+	raptor_utf8_check()
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_unicode.c:
+	(raptor_unicode_check_utf8_nfc_string): Renamed from
+	raptor_utf8_is_nfc() Internal function rename.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_nfc.c,
+	src/raptor_nfc_test.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_xml.c:
+	(raptor_unicode_decode_utf8_char): Renamed from
+	raptor_utf8_to_unicode_char()
+
+	* src/Makefile.am, src/raptor_unicode.c, src/raptor_utf8.c:
+	Renamed raptor_utf8.c to raptor_unicode.c
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_uri.c: raptor_new_avltree() loses
+	world arg.  (raptor_new_avltree): Delete world arg that is unused
+	and not necessary to tie an avltree to raptor world.
+
+	* src/raptor.h, src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_namespace.c, src/raptor_qname.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_simple.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c: Rename raptor_iostream write bytes/string
+	method to raptor_iostream_TYPE_write form with iostream arg at
+	end.
+
+	(raptor_iostream_write_bytes, raptor_iostream_write_byte,
+	raptor_iostream_read_bytes): Put iostream arg at end but don't move
+	type, bytes are the lowest level iostream read/writing routines so
+	use a different convention to writing 'types'.
+
+	(raptor_iostream_string_write); Renamed from
+	raptor_iostream_write_string().
+
+	(raptor_iostream_counted_string_write): Renamed from
+	raptor_iostream_write_counted_string().  Update callers - lots of
+	them!
+
+	* src/raptor_iostream.c:
+	(raptor_iostream_write_bytes): Move offset after a successful write.
+
+	* src/raptor.h, src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_serialize_simple.c, src/raptor_turtle_writer.c,
+	src/raptor_xml.c: Rename iostream writing methods to
+	raptor_iostream_TYPE_write form.
+
+	(raptor_iostream_decimal_write): Renamed from
+	raptor_iostream_write_decimal()
+
+	(raptor_iostream_hexadecimal_write): Renamed from
+	raptor_iostream_format_hexadecimal()
+
+	(raptor_stringbuffer_write): Renamed from
+	raptor_iostream_write_stringbuffer()
+
+	(raptor_uri_write): Renamed from raptor_iostream_write_uri()
+
+	(raptor_xml_element_write): Renamed from
+	raptor_iostream_write_xml_element()
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_namespace.c,
+	src/raptor_serialize_turtle.c, src/raptor_turtle_writer.c: Renamed
+	raptor_namespaces_qname_from_uri() to
+	raptor_new_qname_from_namespace_uri()
+
+	* src/raptor.h, src/raptor_xml.c, src/raptor_xml_writer.c: Rename
+	XML escaping utility functions to be consistent
+
+	(raptor_xml_escape_string_any): Renamed from
+	raptor_xml_any_escape_string()
+
+	(raptor_xml_escape_string_any_write): Renamed from
+	raptor_xml_any_escaped_string_write()
+
+	(raptor_xml_escape_string_write): Renamed from
+	raptor_xml_escaped_string_write()
+
+2010-02-18  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_internal.h, src/raptor_sax2.c:
+	(raptor_sax2_init,raptor_sax2_finish,raptor_world_s): Removed
+	sax2_initialized flag as no longer necessary.
+
+	* utils/rdfdiff.c: raptor_parse_uri() -> raptor_parser_parse_uri()
+
+2010-02-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt, docs/tmpl/section-general.sgml,
+	docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-www.sgml, docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	update doc templates and sections for function renames
+
+	* src/raptor.h, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c, utils/rapper.c: Rename serializer
+	methods to match raptor_CLASS_METHOD convention
+
+	(raptor_serializer_serialize_end): Renamed from
+	raptor_serialize_end().
+
+	(raptor_serializer_set_namespace): Renamed from
+	raptor_serialize_set_namespace().
+
+	(raptor_serializer_set_namespace_from_namespace): Renamed from
+	raptor_serialize_set_namespace_from_namespace().
+
+	(raptor_serializer_start_to_file_handle): Renamed from
+	raptor_serialize_start_to_file_handle().
+
+	(raptor_serializer_start_to_filename): Renamed from
+	raptor_serialize_start_to_filename().
+
+	(raptor_serializer_start_to_iostream): Renamed from
+	raptor_serialize_start_to_iostream().
+
+	(raptor_serializer_start_to_string): Renamed from
+	raptor_serialize_start_to_string().
+
+	(raptor_serializer_serialize_statement): Renamed from
+	raptor_serialize_statement().  Updated callers
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_parse.c, utils/rapper.c: Rename parse methods to match
+	raptor_CLASS_METHOD convention
+
+	(raptor_parser_parse_file_stream): Renamed from
+	raptor_parse_file_stream()
+
+	(raptor_parser_parse_file): Renamed from raptor_parse_file()
+
+	(raptor_parser_parse_uri): Renamed from raptor_parser_uri()
+
+	(raptor_parser_parse_uri_with_connection): Renamed from
+	raptor_parse_uri_with_connection()
+
+	* utils/rapper.c:
+	Update call to raptor_namespaces_format
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, utils/rapper.c: Rename namespace methods
+	to match raptor_CLASS_METHOD convention
+
+	(raptor_namespace_format_as_xml): Renamed from
+	raptor_namespaces_format()
+
+	(raptor_xml_namespace_string_parse): Renamed from
+	raptor_new_namespace_parts_from_string() since it is not a
+	constructor for anything.  Tidied docs and code.  Updated callers.
+
+	* src/raptor.h, src/raptor_www.c:
+	(raptor_world_set_www_flags): Renamed from
+	raptor_www_no_www_library_init_finish() and gains flags arg.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_statement.c: raptor_term_print_as_ntriples() now uses
+	raptor_term_ntriples_write()
+
+	(raptor_term_print_as_ntriples): Put handle at end like other
+	FILE* print methods.  Update callers
+
+	* src/raptor.h, src/raptor_general.c: Remove
+	raptor_print_ntriples_string() debug function
+
+	* src/raptor.h, src/raptor_serialize_ntriples.c: Give
+	raptor_term_ntriples_write() and raptor_statement_ntriples_write()
+	a return value
+
+	* src/raptor.h, src/raptor_json_writer.c, src/raptor_namespace.c,
+	src/raptor_qname.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_turtle_writer.c,
+	src/raptor_xml.c, src/raptor_xml_writer.c: Rename write to
+	iostream methods of class to follow raptor_CLASS_write() form
+
+	(raptor_term_ntriples_write): Renamed from
+	raptor_iostream_write_term_ntriples() and moved iostream to last
+	arg.
+
+	(raptor_xml_any_escaped_string_write): Renamed from
+	raptor_iostream_write_xml_any_escaped_string() and moved iostream
+	to last arg.
+
+	(raptor_xml_escaped_string_write): Renamed from
+	raptor_iostream_write_xml_escaped_string() and moved iostream to
+	last arg.
+
+	(raptor_qname_write): Renamed from raptor_iostream_write_qname()
+	and moved iostream to last arg.
+
+	(raptor_namespace_write): Renamed from
+	raptor_iostream_write_namespace() and moved iostream to last arg.
+
+	(raptor_string_ntriples_write): Renamed from
+	raptor_iostream_write_string_ntriples() and moved iostream to last
+	arg.
+
+	(raptor_string_python_write): Renamed from
+	raptor_iostream_write_string_python() and moved iostream to last
+	arg.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_www.c: Move
+	raptor_www_init and raptor_www_finish to internal API.
+
+	* src/raptor_parse.c: Define ACCEPT_HEADER_LEN since this has been
+	a crash bug twice.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_generate_statement): Let datatype URI be freed
+	after making literal term.
+
+	* src/raptor_parse.c:
+	(raptor_parser_get_accept_header): strncpy 9
+
+	* src/ntriples_parse.c: Use raptor_free_statement() to clear
+	static statement.
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): use if(dynamic...)
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): NULL triple part pointers after free
+	terms.
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_init): Init static statement.
+
+2010-02-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_test.c: test fix for www
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_parse.c,
+	src/raptor_www.c, src/raptor_www_test.c: Rename raptor_www
+	constructor / destructor to standard names
+
+	(raptor_new_www): Renamed from raptor_www_new
+
+	(raptor_new_www_with_connection): Renamed from
+	raptor_www_new_with_commection
+
+	(raptor_free_www): Renamed from raptor_www_free Update all
+	callers.
+
+2010-02-16  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_statement.c:
+	(raptor_free_statement): Free terms contained in statically
+	allocated statements.
+
+	* src/raptor_iostream.c: raptor_iostream write_bytes handlers are
+	supposed to return the number of bytes written or 0 on failure
+
+	* src/raptor.h, src/raptor_uri.c:
+	(raptor_uri_get_world): Added new API helper function.  Needed to
+	prevent API breakage in librdf_uri.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Fixed compilation with
+	RAPTOR_DEBUG > 1.
+
+	* src/turtle_parser.y: Replaced raptor_term_print() calls with
+	raptor_term_print_as_ntriples() to compile with RAPTOR_DEBUG > 1.
+
+2010-02-14  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-option.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-world.sgml,
+	docs/tmpl/section-xml.sgml: Update generated docs
+
+	* README.html: GIT
+
+	* src/raptor_parse.c:
+	(raptor_parser_get_accept_header): Static accept header should be
+	9 when string is correct.
+
+2010-02-12  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h: Reintroduced RAPTOR_V2_AVAILABLE flag so that
+	library users can support both raptor1 and raptor2.
+
+2010-02-11  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h: Pulled
+	raptor_statement_init(), raptor_free_statement() to public
+	API.
+
+2010-02-10  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_statement.c:
+	
+	Pulled raptor_new_term_from_{uri,literal,blank}(),
+	raptor_free_term() to public API.  Added API documentation.
+
+2010-02-09  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_option.c:
+	Fixed warnings about enum-int mismatches.
+
+2010-02-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_rss.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_uri.c, src/raptor_xml.c, src/raptor_xml_writer.c:
+	indent + whitespace
+
+	* src/raptor_rdfxml.c: Made daml_namespace_uri_string_len
+	const.  Does not need to be initialised data.
+
+	* src/raptor_iostream.c:
+	(raptor_iostream_write_end): Return success (0) if iostream
+	handler does not implement write_end.  Was returning an
+	uninitialized value (most likely non-0).
+
+	* src/fix-bison, src/turtle_parser.y:
+	Removed fix-bison/yydestruct hack to pass in YYPARAM* to
+	%destructors.  Was required for raptor_uri cleanup before
+	raptor_uri became a struct containting raptor_world*.
+
+	* src/raptor_www.c:
+	(raptor_www_init,raptor_www_finish): Pulled functionality
+	from similar _common functions (removed, no longer a need to
+	share functionality).
+
+	* src/raptor_serialize_rdfxmla.c:
+	Remove accidental formatting
+	whitespace from string literal.
+
+	* src/raptor_rfc2396.c: Fixed code formatter artifact in
+	comment URL.
+
+	* src/raptor.h: Fixed typo in comment.
+
+2010-02-06  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am: Add check-warn-rdf to check-local
+
+	* tests/turtle/Makefile.am: Move test-35 to TEST_WARN_FILES
+
+	* src/raptor_statement.c:
+	(raptor_new_term_from_literal): Remove language used with
+	typed literal and generate warning
+
+	* src/turtle_parser.y: Fix warning message
+
+	* src/turtle_parser.y: Remove language used with typed
+	literal and generate warning
+
+	* tests/turtle/Makefile.am, tests/turtle/test-35.out,
+	tests/turtle/test-35.ttl: Add turtle test 35 to ensure
+	language is removed when datatype is present
+
+2010-02-05  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-sections.txt: some more fn renames
+
+	* docs/raptor-docs.xml: rename section-feature.xml to
+	section.option.xml
+
+	* src/raptor_parse.c:
+	(main): need program even when not debugging
+
+	* docs/raptor-sections.txt, docs/tmpl/section-feature.sgml,
+	docs/tmpl/section-option.sgml: Rename feature to option - tutorial
+	docs not updated
+
+	* utils/rapper.c: Use raptor_option_get_value_type_label to print
+	option types
+
+	* src/raptor.h, src/raptor_option.c:
+	(raptor_option_get_value_type_label): Added
+
+	* src/raptor_option.c: Update option descriptions to give specific
+	instance names.
+
+	* utils/rapper.c:
+	feature->option in API calls except leave -f/--feature alone
+
+	* src/raptor_internal.h, src/raptor_option.c: Renamed
+	raptor_options_enumerate_common to
+	raptor_world_options_enumerate_common
+
+	* src/raptor_uri.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_rfc2396.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_www_test.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_sequence.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_iostream.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_stringbuffer.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_parse.c:
+	(main): Make test code less verbose except when very debuggy.
+
+	* src/raptor_option.c: Restore old feature URI prefix
+
+	* src/Makefile.am, src/raptor.h, src/raptor_feature.c,
+	src/raptor_grddl.c, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Rename
+	feature to option
+
+	* src/raptor_feature.c, src/raptor_parse.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Move raptor_world_enumerate_*_features
+	functions to raptor_feature.c
+
+	* src/raptor_serialize.c: #autodocs
+
+	* src/raptor_feature.c, src/raptor_internal.h, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Replace raptor_feature_get_areas with
+	raptor_feature_is_valid_for_area
+
+	(raptor_feature_get_areas):
+	Deleted.  (raptor_feature_is_valid_for_area): Added to check if a
+	feature is valid for a given area; this all the calls to
+	raptor_feature_get_areas() ever was used for.
+
+	* src/raptor_xml_writer.c: Check for valid xml writer features
+	before getting or setting them.
+
+	(raptor_xml_writer_set_feature,
+	raptor_xml_writer_set_feature_string,
+	raptor_xml_writer_get_feature,
+	raptor_xml_writer_get_feature_string): Use
+	raptor_feature_get_areas() to check the features are valid.
+
+	* src/raptor_internal.h, src/raptor_turtle_writer.c: Check for
+	valid turtle writer features before setting them.
+
+	(raptor_world_enumerate_turtle_writer_features): Renamed from
+	raptor_turtle_writer_features_enumerate()
+
+	(raptor_turtle_writer_set_feature,
+	raptor_turtle_writer_set_feature_string): Use
+	raptor_feature_get_areas()
+
+	* src/raptor_serialize.c: Check for valid serializer features
+	before getting them
+
+	(raptor_serializer_get_feature,
+	raptor_serializer_get_feature_string): Use
+	raptor_feature_get_areas() to check for valid serializer features.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Remove unused
+	RAPTOR_FEATURE_START_URI
+
+	* src/raptor_serialize.c: Check for valid serializer features
+	before setting them
+
+	(raptor_serializer_set_feature,
+	raptor_serializer_set_feature_string): Use
+	raptor_feature_get_areas() to check for valid serializer features.
+
+	* src/raptor.h, src/raptor_sax2.c: Added
+	raptor_world_enumerate_sax2_features()
+
+	* src/raptor_sax2.c: Check for valid features before setting
+	them
+
+	(raptor_sax2_set_feature): Check for a feature that applies using
+	raptor_feature_get_areas() then set the values.
+
+	* src/raptor_feature.c, src/raptor_internal.h: Added
+	raptor_feature_get_areas()
+
+	* src/raptor_internal.h: Add RAPTOR_FEATURE_AREA_NONE
+
+	* src/raptor_feature.c, src/raptor_internal.h: Added
+	RAPTOR_FEATURE_AREA_SAX2 for raptor_sax2 features
+
+	raptor_feature_area gains RAPTOR_FEATURE_AREA_SAX2
+
+	raptor_features_list: Use RAPTOR_FEATURE_AREA_SAX2 for
+	RAPTOR_FEATURE_NORMALIZE_LANGUAGE and RAPTOR_FEATURE_NO_NET.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Reapply: Remove
+	RAPTOR_FEATURE_ASSUME_IS_RDF - obsolete since 2003
+
+	Reapply GIT d7b9a598372cf1630dad79943ecd262427240719
+
+	raptor_feature enum loses RAPTOR_FEATURE_ASSUME_IS_RDF
+
+	(raptor_parser_set_feature, raptor_parser_get_feature): Remove check
+	for RAPTOR_FEATURE_ASSUME_IS_RDF.
+
+	Remove all case RAPTOR_FEATURE_ASSUME_IS_RDF:
+
+	* ChangeLog, src/raptor.h, src/raptor_feature.c,
+	src/raptor_internal.h, src/raptor_parse.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Revert the commits that removed the
+	switch()s around features
+
+	Reverts commits 
+	60c814c462961b42e3e54dde1a4fb31bb274b2a8
+	c0db820178c7b4df4d22d7b2e9bbbfb808e21ad4
+	8834cdc5fe3b9191b999dd1fb438912d19335771
+	aaa15968153874b15cd084301fc9d01e625503c2
+	961f3225876929de7aa111b14bfa2470f1738175
+	791de39082f36e449f586021797e768b798bb4f3
+	24d277a1a920c393dd905be063784153f7ea6b00
+	30737c28676891e0602bd2f39c7fe4d2ad56ed03
+	85f3d2a285238f4dae1f3a344387be7e71afeb50
+	65f264148fcb4fba792dea2fe40c079ffaa2af0a
+	33df189465408c1a877a2a8b8ce6ad03c17e3f32
+	c9baae1679a55ac10b3bd91303679c7974c10335
+	bf43e7b8a12818742420c7fd860629a10d9584f8
+	6355375feca96d6dcc2be74f9dd3422f30ff48a6
+	faa08164fcbd21a390633adfc75ee56595b73857
+	d7b9a598372cf1630dad79943ecd262427240719
+	6c28294c30f870f8a26c985af412477cafc4cba9
+
+2010-02-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c: code style
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_get_feature, raptor_xml_writer_set_feature):
+	Use raptor_feature_get_areas() to check for valid xml writer
+	features.
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_get_feature): Use raptor_feature_get_areas()
+	to check for valid turtle writer features.
+
+	* src/raptor_internal.h, src/raptor_turtle_writer.c: Set turtle
+	writer features using feature data tables
+
+	(raptor_turtle_writer_set_feature): Use raptor_feature_get_areas.
+
+	(raptor_world_enumerate_turtle_writer_features): Renamed from
+	raptor_turtle_writer_features_enumerate()
+
+	* src/raptor_serialize.c: Make raptor_serializer_get_feature and
+	raptor_serializer_get_feature_string use area and numeric checks
+	to remove cases
+
+	(raptor_serializer_set_feature_string): docs.
+
+	(raptor_serializer_get_feature,
+	raptor_serializer_get_feature_string): Use
+	raptor_feature_get_areas() and raptor_feature_value_is_numeric()
+	to validate features for serializers.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Remove unused RAPTOR_FEATURE_START_URI
+
+	* src/raptor_serialize.c:
+	(raptor_serializer_set_feature_string): Use
+	raptor_feature_get_areas() to check for valid serializer features.
+
+	* src/raptor_serialize.c:
+	(raptor_serializer_set_feature): Use raptor_feature_get_areas() to
+	check for valid serializer features.
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_set_feature): use bit &
+
+	* src/raptor.h, src/raptor_sax2.c: Added
+	raptor_world_enumerate_sax2_features()
+
+	* src/raptor_sax2.c: Make raptor_sax2_set_feature smaller using
+	raptor_feature_get_areas
+
+	(raptor_sax2_set_feature): Check for a feature that applies using
+	raptor_feature_get_areas() then set the values.
+
+	* src/raptor_feature.c, src/raptor_internal.h: Added
+	raptor_feature_get_areas()
+
+	* src/raptor_internal.h: Add RAPTOR_FEATURE_AREA_NONE
+
+	* src/raptor_feature.c, src/raptor_internal.h: Added
+	RAPTOR_FEATURE_AREA_SAX2 for raptor_sax2 features
+
+	raptor_feature_area gains RAPTOR_FEATURE_AREA_SAX2
+
+	raptor_features_list: Use RAPTOR_FEATURE_AREA_SAX2 for
+	RAPTOR_FEATURE_NORMALIZE_LANGUAGE and RAPTOR_FEATURE_NO_NET.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c,
+	src/raptor_sax2.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Remove
+	RAPTOR_FEATURE_ASSUME_IS_RDF - obsolete since 2003
+
+	raptor_feature enum loses RAPTOR_FEATURE_ASSUME_IS_RDF
+
+	(raptor_parser_set_feature, raptor_parser_get_feature): Remove
+	check for RAPTOR_FEATURE_ASSUME_IS_RDF.
+
+	Remove all case RAPTOR_FEATURE_ASSUME_IS_RDF:
+
+	* src/raptor_parse.c: Use raptor_feature_value_is_numeric() in
+	get/set parser features
+
+	(raptor_parser_set_feature, raptor_parser_get_feature): Use
+	raptor_feature_value_is_numeric rather than huge cases with very
+	similar checks.
+
+	* src/turtle_parser.y: Remove obsolete raptor_init()
+	raptor_finish() calls
+
+	* utils/rapper.c: Update for feature type api
+
+	* src/raptor_feature.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Added raptor_feature_value_is_numeric for
+	internal use.
+
+	(raptor_feature_value_is_numeric): Added.
+	Replaced most uses of same pattern:
+	  int value_is_string = (raptor_feature_get_value_type(feature) == RAPTOR_FEATURE_VALUE_TYPE_STRING);
+	  if(!value_is_string)
+	  ...
+	with a raptor_feature_value_is_numeric() call.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c: Add
+	raptor_feature_value_type enum and use for features
+
+	raptor_features_list gains a raptor_feature_value_type value_type
+	field and uses enum values in data.
+
+	raptor_feature_area gains RAPTOR_FEATURE_AREA_TURTLE_WRITER since
+	XML writer features don't all apply; just indenting ones.
+
+	typedef raptor_feature_value_type added to public API
+
+	(raptor_feature_get_value_type): Renamed from
+	raptor_feature_value_type to return raptor_feature_value_type and
+	updated callers.
+
+	* src/raptor_feature.c: #ws
+
+	* src/raptor_feature.c: Use raptor_feature_area to split
+	raptor_features_list area / value type.
+
+	raptor_features_list flags field is split into area and value_type.
+
+	Use raptor_features_list enum values in data.
+
+	(raptor_features_enumerate_common): Get features for an
+	area.  (raptor_feature_value_type): Use VT_STRING define.
+
+	* src/raptor_feature.c, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: Added raptor_feature_area enum for
+	raptor_features_enumerate_common()
+
+	raptor_feature_area added internally.
+
+	(raptor_features_enumerate_common): Switch flags arg to use enum.
+	Update callers.
+
+	* src/raptor_parse.c: #autodocs
+
+	* src/raptor_feature.c: Turn feature flag magic numbers into
+	defines
+
+	* src/raptor_feature.c: Add feature flag 32 for features with
+	URI-string values
+
+	raptor_features_list: Split the flags into their bits and set
+	RAPTOR_FEATURE_START_URI and RAPTOR_FEATURE_ATOM_ENTRY_URI to have
+	URI string value.
+
+2010-02-03  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore: Ignore bak files
+
+	* docs/tmpl/section-general.sgml, docs/tmpl/section-locator.sgml,
+	docs/tmpl/section-sequence.sgml, docs/tmpl/section-uri.sgml:
+	Update docbook tmpls
+
+	* src/raptor_sequence.c: code style
+
+	* src/raptor_sequence.c: Use RAPTOR_SEQUENCE_MIN_CAPACITY to
+	declare magic number
+
+	* src/raptor_sequence.c: #autodocs
+
+	* src/raptor.h, src/raptor_sequence.c: Make raptor_sequence_sort
+	take raptor_data_compare_function typedef
+
+	(raptor_sequence_sort): Adjusted parameters to use
+	raptor_data_compare_function.  It's the same parameter type but
+	now via a typedef.
+
+	* src/raptor.h, src/raptor_iostream.c: iostream write_end now
+	returns a status code
+
+	typedef raptor_iostream_write_end_func returns an int
+
+	(raptor_iostream_write_end): Returns an int.
+
+	(raptor_filename_iostream_write_end): Update file write handlers
+	to return fclose value.
+
+	* src/raptor.h, src/raptor_iostream.c: Rename
+	raptor_iostream_handler2 to raptor_iostream_handler
+
+	typedef raptor_iostream_handler: renamed from
+	raptor_iostream_handler2
+
+	Update all callers and rename parameters and variables from
+	handler2 to handler.
+
+	(raptor_new_iostream_from_handler): Renamed from
+	raptor_new_iostream_from_handler2.
+
+	* src/ntriples_parse.c:
+	Remove support for xml"..." N-Triples
+	literals, long obsolete.
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bad-07.nt: Add
+	bad07.nt to test literal form xml"..." is refused
+
+	* .gitignore:
+	do not ignore rdf files
+
+	* src/raptor.h, src/raptor_sequence.c: Remove
+	raptor_sequence_print_string from public API
+
+	(raptor_sequence_print_string): Moved to static and used for test
+	only.
+
+	* src/raptor.h, src/raptor_sequence.c: Remove
+	raptor_compare_strings from public API
+
+	(raptor_compare_strings): Moved to static and used for test only.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_statement.c,
+	src/turtle_parser.y: Rename raptor_new_term_from_term to
+	raptor_term_copy
+
+	(raptor_term_copy): Renamed from raptor_new_term_from_term Updated
+	all callers with new name.  All copy constructors should be
+	raptor_CLASS_copy now.
+
+2010-01-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h: Reorder prototypes to group class and methods.
+
+	* src/raptor.h: #ws
+
+	* src/raptor.h, src/raptor_locator.c: Renamed
+	raptor_format_locator to raptor_locator_format
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_locator.c,
+	utils/rapper.c, utils/rdfdiff.c: raptor_print_locator renamed to
+	raptor_locator_print
+
+	* src/raptor.h: Reorder and group by class.
+
+	* src/raptor_avltree.c, src/raptor_internal.h: Remove legacy
+	raptor_avltree cursor functions
+
+	raptor_avltree loses cursor_iterator field.
+
+	(raptor_avltree_cursor_first, raptor_avltree_cursor_last,
+	raptor_avltree_cursor_prev, raptor_avltree_cursor_next,
+	raptor_avltree_cursor_get): Deleted
+
+	* src/raptor_avltree.c:
+	code style - whitespace, line breaks
+
+	* src/raptor.h, src/raptor_avltree.c: Rename
+	raptor_avltree_iterator_end to raptor_avltree_iterator_is_end
+
+	* src/raptor_avltree.c, src/raptor_internal.h: Move
+	raptor_avltree_s internals into raptor_avltree.c module.
+
+	* src/raptor_abbrev.c: Use term->world to save knowing internals
+	of raptor_avltree.
+
+	* docs/raptor-docs.xml, docs/raptor-sections.txt, src/raptor.h,
+	src/raptor_avltree.c, src/raptor_internal.h: Move raptor_avltree
+	to public API.
+
+	Public opaque typedefs: raptor_avltree and raptor_avltree_iterator
+
+	Public function typedefs: raptor_data_compare_function,
+	raptor_data_free_function and raptor_avltree_visit_function
+
+	Public functions: raptor_new_avltree, raptor_free_avltree,
+	raptor_avltree_add, raptor_avltree_delete, raptor_avltree_print,
+	raptor_avltree_remove, raptor_avltree_search,
+	raptor_avltree_set_print_handler, raptor_avltree_size,
+	raptor_avltree_visit, raptor_new_avltree_iterator,
+	raptor_free_avltree_iterator, raptor_avltree_iterator_end,
+	raptor_avltree_iterator_get and raptor_avltree_iterator_next NOTE:
+	These were not made public and seem to be internal/unused:
+	raptor_avltree_cursor_first, raptor_avltree_cursor_last,
+	raptor_avltree_cursor_prev, raptor_avltree_cursor_next and
+	raptor_avltree_cursor_get
+
+	* docs/raptor-docs.xml:
+	2010
+
+	* NEWS.html, RELEASE.html:
+	Merge 1.4.21 news and release notes
+
+	* ChangeLog, ChangeLog.9, Makefile.am:
+	ChangeLog.9 for 2008
+
+	* .gitignore:
+	Do not ignore ChangeLog*
+
+	* utils/rapper.c, utils/rdfdiff.c: Update raptor_print_locator
+	calling convention
+
+2010-01-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Ensure serialized Turtle names
+	are legal
+
+	(raptor_turtle_is_legal_turtle_qname): Added to enforce prefix and
+	local name character constraints.
+
+	(raptor_turtle_emit_resource): Use above to ensure that XML Qnames
+	that are not legal Turtle Qnames are never serialized.
+
+	Fixes Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+	* tests/turtle/Makefile.am, tests/turtle/test-34-out.ttl,
+	tests/turtle/test-34.ttl: Add Turtle serializing test 34 for not
+	serializing a qname with a .
+
+	Test for Issue#0000337 http://bugs.librdf.org/mantis/view.php?id=337
+
+2010-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: Create a new set for checking for duplicate
+	rdf:ID at start of every parse.
+
+	(raptor_rdfxml_parse_init): Remove creating set from when parser is
+	constructed. 
+
+	(raptor_rdfxml_parse_start): At start of parsing, delete any
+	existing id set and only create a new one if the feature
+	RAPTOR_FEATURE_CHECK_RDF_ID is enabled.
+
+	* src/turtle_lexer.l: Alter Turtle lexer to refuse to accept . in
+	namespace prefix/local names
+
+	Adjust Turtle lexer to match spec for the prefixName and name
+	tokens:
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#prefixName
+	http://www.w3.org/TeamSubmission/2008/SUBM-turtle-20080114/#name
+
+	This makes some previously accepted not-to-spec turtle documents be
+	rejected.
+
+	It makes new bad turtle syntax tests bad-21 and bad-22 pass. 
+
+	(NCNAME_PREFIX): Updated for prefixName
+
+	(NCNAME): Update for name
+
+	Fixes Issue#0000326 http://bugs.librdf.org/mantis/view.php?id=326
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-21.ttl,
+	tests/turtle/bad-22.ttl: Add bad turtle tests 21, 22 for . in
+	prefix and qname
+
+	* src/ntriples_parse.c: Make ntriples parser accept text/plain
+	with q=0.1
+
+	(raptor_ntriples_parser_register_factory): Register mime type
+	text/plain via raptor_parser_factory_add_mime_type.
+	Fixes Issue#0000319 http://bugs.librdf.org/mantis/view.php?id=319
+
+	* src/turtle_lexer.l: Make Turtle lexer handle \\ at end of
+	triple-quoted literals
+
+	Alter literal regex and let
+	raptor_stringbuffer_append_turtle_string report problems with
+	buffer ending in middle of \u and \U.
+
+	Add rule for bare \ on it's own which can only happen if input
+	ends on a \.
+
+	Fixes Issue#0000318 http://bugs.librdf.org/mantis/view.php?id=318
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-20.ttl: Add
+	bad-20.ttl test for end of file in middle of \ escape
+
+	* tests/turtle/Makefile.am, tests/turtle/test-33.out,
+	tests/turtle/test-33.ttl: Added test-33 for \\ at end of
+	triple-quoted turtle literal
+
+	Added tests/turtle/test-33.ttl and tests/turtle/test-33.out files
+	to test Issue#0000318 http://bugs.librdf.org/mantis/view.php?id=318
+
+	* librdfa/iri.c: Update to librdfa GIT commit
+	1979d7246a1d98f95bab78704a32b87cf95d1ef6
+
+	* librdfa/curie.c, librdfa/iri.c, librdfa/rdfa.c, librdfa/rdfa.h,
+	librdfa/triple.c: Merge librdfa changes to GIT
+	88ca099befcb1b81be1a879663e5e891707e5239
+
+	Fixes several buffer alloc/realloc problems and failure to terminate
+	strings when using them with strstr().
+
+	Other librdfa changes:
+	- added "first" to list of allowed reserved words.
+	- allow @rel/@rev reserved word values to be in any case (TC 134)
+	- librdfa now treats the following characters as valid whitespace
+	  characters: SPACE, \t, \n, \v, \f, and \r. (TC 131)
+	- fix generation of xml:lang if language was already in XML
+	  Literal (TC 102)
+
+2010-01-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: ws
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_statement.c:
+	Adjust raptor_print_ntriples_string params to put FILE* last
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_locator.c: Adjust
+	raptor_print_locator params to put FILE* last like other print
+	methods.
+
+	* src/raptor_locator.c: ws
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_sax2.c:
+	Remove raptor_log_error_to_handlers and call raptor_log_error
+	directly.
+
+	(raptor_log_error_to_handlers): Deleted.  Update several sax2
+	modules to call raptor_log_error instead.
+
+	* src/raptor_sequence.c:
+	indent
+
+	* src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_internal.h: Update raptor_avltree to us
+	raptor_data_print_handler
+
+	typedef raptor_data_print_function: deleted
+
+	(raptor_new_abbrev_subject, raptor_avltree_set_print_handler): Use
+	raptor_data_print_handler* to replace raptor_data_print_function.
+
+	(raptor_print_abbrev_po): Swap args to match
+	raptor_data_print_handler calling convention.
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_parse.c,
+	src/raptor_rss_common.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_rss.c, src/turtle_parser.y: Rename
+	sequence-specific handlers typedefs to be more raptor-general
+
+	raptor_data_free_handler renamed from raptor_sequence_free_handler
+
+	raptor_data_context_free_handler renamed from
+	raptor_sequence_context_free_handler
+	
+	raptor_data_print_handler renamed from
+	raptor_sequence_print_handler and update docs
+
+	raptor_data_context_print_handler renamed from
+	raptor_sequence_context_print_handler and update docs
+
+	Update all users.
+
+	* src/raptor_internal.h: Make all print methods return an int
+	status code
+
+	(raptor_statement_print, raptor_uri_print, raptor_sequence_print,
+	raptor_term_print_as_ntriples): Return int success code.
+
+	* src/raptor.h, src/raptor_sequence.c, src/raptor_statement.c,
+	src/raptor_uri.c: Make all print methods return an int status code
+
+	(raptor_statement_print, raptor_uri_print, raptor_sequence_print,
+	raptor_term_print_as_ntriples): Return int success code.
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_sequence.c:
+	Update sequence _v2 constructor/methods to use _with_context
+
+	Rename typedefs for handlers to match, update constructor
+	documentation to explain the difference.
+
+	typedef raptor_sequence_context_print_handler renamed from
+	raptor_sequence_print_handler_v2.
+
+	raptor_sequence - renamed fields to add context_NAME for the
+	formerly _v2 handler names.
+
+	Add explanations of what they are for. 
+
+	(raptor_new_sequence): autodocs and example of use
+
+	(raptor_new_sequence_with_context): Renamed from
+	raptor_new_sequence_v2 and autodocs.
+
+	* src/raptor.h, src/raptor_sequence.c: Remove unused
+	raptor_sequence_set_print_handler() and
+	raptor_sequence_set_print_handler_2().
+
+	(raptor_sequence_set_print_handler,
+	raptor_sequence_set_print_handler_v2): Deleted.
+
+2010-01-24  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	(verb): Get rdf:type term from static term and do not lose an URI
+	reference.
+
+	* src/turtle_parser.y: Free literal strings passed into
+	raptor_new_term_from_literal()
+
+	* src/turtle_parser.y:
+	(resource): Free uri object references when making resource from
+	QNAME_LITERAL or URI_LITERAL.
+
+	(raptor_turtle_generate_statement): Redo - free constructed terms
+
+	* src/turtle_parser.y:
+	(raptor_turtle_generate_statement): UNDO Free constructed terms
+
+	* src/turtle_parser.y:
+	(raptor_turtle_generate_statement): Free constructed terms
+
+	* src/turtle_parser.y: Free blank_id not blank
+
+	* src/raptor_rdfxml.c:
+	When creating new URIs or terms, free allocated values early.
+
+	Since functions like raptor_new_term_from_uri() take copies of their
+	arguments, any allocated objects passed in such as URIs or literals
+	should be freed.  Adjust the code so that's done early.  
+
+	(raptor_rdfxml_generate_statement): Free bag_predicate_uri.  
+
+	(raptor_rdfxml_start_element_grammar): For rdf:ID, move the syntax
+	checks earlier to save extra complexity on errors.
+
+	Generally update all places to free generated IDs and constructed
+	URIs just after making raptor_uri or raptor_term
+
+	* src/raptor_uri.c: Use raptor_uri_resolve_uri_reference length
+	with raptor_new_uri_from_counted_string internally.
+
+	raptor_uri length is now unsigned int 
+	
+	(raptor_new_uri_from_counted_string): Add maintainer assert that URI
+	string is length it is declared to be.  
+
+	(raptor_new_uri_relative_to_base): Use
+	raptor_uri_resolve_uri_reference return value to call
+	raptor_new_uri_from_counted_string.
+
+	(raptor_new_uri_for_rdf_concept): Correctly calcuate passed in
+	buffer length - it was malloced correctly.  
+
+	(assert_uri_is_valid): Added.  
+
+	(assert_uri_to_relative): Use above for checks.
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): set result_len when relative
+	is #frag.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Calculate the length of namespace
+	part of predicate URI correctly.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Namespace URI buffer was too short
+	by 1.
+
+	* src/raptor_serialize_rdfxmla.c: Replace rdf_xml_literal_uri with
+	use of static rdf:XMLLiteral URI
+
+	raptor_rdfxmla_serializer_context loses rdf_xml_literal_uri
+	
+	(raptor_rdfxmla_serialize_init): Remove init with rdf_type_uri,
+	copy RAPTOR_RDF_type_term().  Remove rdf_xml_literal_uri.
+
+	(raptor_rdfxmla_serialize_terminate): Remove free of
+	rdf_xml_literal_uri.
+
+	* src/raptor_serialize_rdfxml.c:
+	Replace rdf_xml_literal_uri with use of static rdf:XMLLiteral URI
+
+	raptor_rdfxml_serializer_context loses rdf_xml_literal_uri 
+	
+	(raptor_rdfxml_serialize_init, raptor_rdfxml_serialize_terminate):
+	Remove init, free.
+
+	(raptor_rdfxml_serialize_statement): Use
+	RAPTOR_RDF_XMLLiteral_URI()
+
+	* src/raptor.h, src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Now returns length of URI.
+
+2010-01-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_generate_statement): Use
+	raptor_new_uri_from_counted_string for rdf:XMLLiteral datatype.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_feature.c: Create feature URI prefix from counted URI
+	string
+
+	(raptor_features_enumerate_common): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_rdfxml.c:
+	Create daml namespaces from counted string URIs
+
+	Added daml_namespace_uri_string and daml_namespace_uri_string
+	statics for DAML namespace URI.
+	
+	(raptor_rdfxml_parse_init): Use
+	raptor_new_uri_from_counted_string.
+
+	* src/raptor_namespace.c: Create rdf and rdfs namespaces from
+	counted string URIs
+
+	Added raptor_rdf_schema_namespace_uri_len constant int.  
+
+	(raptor_namespaces_init): Use raptor_new_uri_from_counted_string.
+
+	* src/raptor_uri.c:
+	Ensure URI string field is always set
+
+	Renamed raptor_uri_s field string_length to length.  
+
+	(raptor_new_uri_from_uri_local_name,
+	raptor_new_uri_relative_to_base, raptor_new_uri_for_rdf_concept):
+	Use raptor_new_uri_from_counted_string with already calculated
+	length.
+
+	* src/raptor_grddl.c:
+	Create constant strings / lengths for GRDDL predicate URIs
+
+	Added grddl_namespaceTransformation_uri_string and
+	grddl_profileTransformation_uri_string constant strings with
+	macros for lengths.
+	
+	(raptor_grddl_parse_init): Use above to create grddl parser URIs
+	with raptor_new_uri_from_counted_string.
+
+	* src/raptor.h, src/raptor_uri.c:
+	Added new uri constructor raptor_new_uri_from_counted_string 
+	
+	(raptor_new_uri_from_counted_string): Added 
+
+	(raptor_new_uri): Now a wrapper around
+	raptor_new_uri_from_counted_string.
+
+2010-01-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	Use raptor_term instead of URIs and 'fake' URIs
+
+	raptor_rss_group_map uses a raptor_term as identifier, not URI.
+	
+	(raptor_free_group_map): Free term.  
+
+	(raptor_rss_group_map_compare): Compare terms.  
+
+	(raptor_rss10_get_group_item): Use terms in search.  
+
+	(raptor_rss10_set_item_group): Use term to create a new gm.  
+
+	(raptor_rss10_move_statements,
+	raptor_rss10_move_anonymous_statements,
+	raptor_rss10_store_statement): Replace URIs with terms from subject,
+	removing all fake_uri.  
+
+	(raptor_rss10_serialize_statement, raptor_rss10_build_items): Use
+	item term for calling raptor_rss10_set_item_group
+
+	* src/raptor_serialize_rss.c:
+	Use raptor_term for rdf:Seq node identity and remove a fake_uri
+
+	raptor_rss10_serializer_context replace seq_uri with raptor_term*
+	seq_term
+	
+	(raptor_rss10_serialize_terminate): Free term.  
+
+	(raptor_rss10_serialize_statement): Copy statement subject to get
+	seq node identity.  
+
+	(raptor_rss10_build_items): Use seq_term for comparisons with
+	subject and delete fake_uri
+
+	* raptor.rdf.in: GITRepository
+
+2010-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l:
+	Make Turtle long literals count raw newlines
+	correctly
+
+	(Rule <LITERAL>\" ....): Count the raw newlines seen in	the yytext
+	to adjust the line numbers correctly for long literals.
+	Fixes Issue#0000331 http://bugs.librdf.org/mantis/view.php?id=331
+
+	* src/raptor_general.c:	,
+
+	* raptor.rdf.in: Update DOAP with GIT information.
+
+2010-01-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: Always take a copy of world concepts so
+	they are consitently freed
+
+	* src/ntriples_parse.c, src/raptor_rdfxml.c: Use rdf namespace
+	raptor_terms to reduce raptor_term creations in parsers.
+
+	(raptor_ntriples_generate_statement): Tidy code, moving URI
+	construction to local blocks.
+
+	(raptor_rdfxml_generate_statement): Use concept terms for refiying
+	predicates and rdf:Statement class.
+
+	(raptor_rdfxml_start_element_grammar,
+	raptor_rdfxml_end_element_grammar): Update to use concept terms.
+
+	* src/raptor_internal.h:
+	Added macros to access the static RDF namespace raptor terms
+
+	Added macros RAPTOR_RDF_{NAME}_term(world) to get a shared pointer
+	to the static raptor_term for rdf namespace concepts.
+
+	* src/raptor_concepts.c, src/raptor_internal.h:
+	Make a set of raptor_term for RDF namespace terms used in graph.
+
+	raptor_rdf_ns_term_id gains an alias RDF_NS_LAST_SYNTAX_TERM for the
+	last syntax term.
+
+	raptor_world gains an array of raptor_term 'terms'; not all of these
+	will be used, the first few are syntax only.
+
+	(raptor_concepts_init, raptor_concepts_finish): Initialised and
+	free the terms.
+
+2010-01-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_block_set_field): Fix failure check
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c:
+	Turn two magic number offsets 0 into defines in raptor_rss.h
+
+	Add defines RAPTOR_RSS_LINK_HREF_URL_OFFSET and
+	RAPTOR_RSS_LINK_REL_STRING_OFFSET for indexes into block
+	urls/strings arrays - both at offset 0.
+
+	(raptor_rss_insert_rss_link): Use above defines and remove fixme.
+
+	Update raptor_rss_block_fields_info to use defines.
+
+	* src/raptor_xml_writer.c: raptor_xml_writer_nsd_compare - Remove
+	FIXME; duplicating a 3 line function is not a worry.
+
+	* src/raptor_uri.c:
+	(raptor_uri_print): Use world to report fwrite failure, remove
+	FIXME.
+
+	* src/raptor_serialize_rss.c: raptor_rss10_emit_item - remove
+	fixme now it is documented.
+
+	* docs/raptor-serializers.xml: note default atom:content type on
+	serializing to atom 1.0
+
+	* src/raptor_serialize_rdfxmla.c:
+	remove FIXME no longer relevant
+
+	* src/raptor_rss.c:
+	Add some resilience to calloc/malloc failure
+
+	(raptor_rss_parse_init): Code tidy.
+
+	(raptor_rss_block_set_field): Add return value for failure. Check
+	for URI and string alloc failure.
+
+	(raptor_rss_start_element_handler, raptor_rss_end_element_handler):
+	Set parser failure and end on alloc failure.
+
+	(raptor_rss_insert_rss_link): Add return value for failure and check
+	for new field, string failure.
+
+	(raptor_rss_insert_identifiers): Add return value for failure and
+	check for above function failing.
+
+	(raptor_rss_copy_field): Return failure on string alloc failure.
+
+	(raptor_rss_parse_chunk): Fail to parse when
+	raptor_rss_insert_identifiers fails.
+
+	* src/raptor_parse.c: Make score sorting us a dynamic buffer in
+	raptor_world_guess_parser_name
+
+	(raptor_world_guess_parser_name): Calloc/free the array and remove
+	FIXME!
+
+	* src/raptor_grddl.c: raptor_grddl_run_grddl_transform_doc -
+	remove FIXMEs now that these are documented
+
+	* docs/raptor-parsers.xml: document more GRDDL parser features
+
+	* src/raptor_grddl.c: raptor_grddl_run_grddl_transform_doc -
+	remove FIXME now that the XSLT params are documented
+
+	* docs/raptor-parsers.xml: document GRDDL XSTL parameters
+
+	* src/raptor_abbrev.c: autodocs
+
+	* src/turtle_parser.y: remove FIXMEs
+
+	* src/turtle_lexer.l: Update test code to Raptor V2 APIs.
+
+	* src/raptor_concepts.c, src/raptor_internal.h: Do not try to make
+	an rdf namespace concept URI for the NULL name
+
+	* src/raptor_concepts.c:
+	(raptor_concepts_init): Return 1 if URI alloc failed not succeeded
+
+	* src/raptor_concepts.c:
+	(raptor_concepts_init): Return 1 if URI alloc failed.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Rename abbrev struct compare functions to standard naming.
+
+	(raptor_abbrev_node_compare): Renamed from raptor_abbrev_node_cmp.
+
+	(raptor_abbrev_subject_compare): Renamed from
+	raptor_abbrev_subject_cmp.
+
+2010-01-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c: GRDDL parser code style - whitespace, break
+	long lines, loop pre-counting
+
+	Whitespace around operators and break long lines.
+
+	For fixed size raptor_sequence or array loops, store size in a var
+	'size' rather than run a function on every if/while loop.
+
+	* src/raptor_grddl.c: code style: break into 2 lines the long
+	assignments to grddl_parser
+
+	* src/raptor_grddl.c: Update conformance urls and doc ptr
+
+	* src/raptor_rdfxml.c: Code style fixes - indenting, whitespace, add
+	vars to break long lines.
+
+	Code style, indenting and whitespace. Add variables to break long
+	lines especially error reporting Use __func__ for internal error
+	message rather than hardcoding function name.
+
+	* src/Makefile.am, src/raptor.h, src/raptor_concepts.c,
+	src/raptor_general.c, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c, src/raptor_uri.c, src/turtle_common.h,
+	src/turtle_parser.y: Update rdf namespace concepts to add
+	PlainLiteral, share across parsers
+
+	raptor_rdf_ns_term_id gains RDF_NS_PlainLiteral; reordered to put
+	together with RDF_NS_XMLLiteral, the other datatype.
+
+	raptor_world gains an array of pointers to raptor_uri* concepts.
+
+	turtle_parser loses nil_uri, first_uri, rest_uri that are now
+	available via the macros.
+
+	rss_parser loses rdf:type and rdf:Seq concept URIs that are now
+	available via the macros.
+
+	Added macros RAPTOR_RDF_{name}_URI(world) to get pointer to static
+	raptor_uri* for NS terms.
+
+	RDF/XML parser cuts down to just 5 DAML NS URIs to manage itself. 
+
+	(raptor_new_uri_for_rdf_concept): now takes const name. 
+
+	(raptor_concepts_init, raptor_concepts_finish): Added. 
+
+	(raptor_world_open): Call raptor_concepts_init; re-order to init
+	URIs then concepts first. 
+
+	(raptor_free_world): Call raptor_concepts_finish
+
+	Update RDF/XML, RSS and Turtle parsers to use shared URIs.
+
+	* src/fix-flex: alter lexer output to remove signed/unsigned
+	comparison that gcc 4.x warns.
+
+	* src/raptor_librdfa.c: Do not strdup language in
+	raptor_librdfa_generate_statement
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_rss_common.c, src/raptor_serialize_rss.c,
+	src/raptor_statement.c, src/turtle_parser.y: Change
+	raptor_new_term_from_blank calling semantics to copy id inside. 
+
+	(raptor_new_term_from_blank): Copy blank ID.
+
+	Update all calls to raptor_new_term_from_blank to remove strdup()s
+	and add a few RAPTOR_FREE for generated IDs.
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_statement.c, src/turtle_parser.y:
+	Change raptor_new_term_from_literal calling semantics to copy inside.
+
+	(raptor_new_term_from_literal): Copy literals, optional language
+	and datatype URIs.
+
+	Update all calls to raptor_new_term_from_literal to remove strdup(),
+	malloc/free, or stringbuffer copy for literal string; remove copy
+	URI for datatype URI.
+
+	* src/raptor_rdfxml.c: Rename RDF ns-checking functions and document
+	their returns
+
+	(raptor_rdfxml_check_propertyElement_name): Renamed from
+	raptor_rdfxml_forbidden_nodeElement_name and returns tri-state flag
+
+	(raptor_rdfxml_check_propertyElement_name): Renamed from
+	raptor_rdfxml_forbidden_propertyElement_name and returns tri-state
+	flag. 
+
+	(raptor_rdfxml_check_propertyAttribute_name): Renamed from
+	raptor_rdfxml_forbidden_propertyAttribute_name and returns
+	tri-state flag.
+
+	Update callers to check for <0: unknown name, 0: allowed, >0: not
+	allowed
+
+	* src/raptor_rdfxml.c: Set raptor_rdf_ns_terms_info as unsigned int
+	1 bit so bool works
+
+	* src/raptor_rdfxml.c: Adjust raptor_rdf_ns_terms_info fields:
+	reorder, make positive and use bitfields.
+
+	Altered raptor_rdf_ns_terms_info field order to group flag
+	attributes together and use 1 bit each, make them positive allowed
+	flags rather than mix of forbidden/allowed.
+
+	Adjust the raptor_rdfxml_forbidden_TEST_name calling code to use
+	!raptor_rdf_ns_terms_info[field].allowed_TEST
+
+	* src/raptor_rdfxml.c: Tidy comments for raptor_rdf_ns_term_id names
+
+	* src/raptor_rdfxml.c: Tidy RDF terms description
+	raptor_rdf_ns_term_id: Renamed enum from rdf_attr.  Names are all
+	RDF_ATTR_[name] now.
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_statement.c,
+	src/turtle_parser.y: Change raptor_new_term_from_uri calling
+	semantics to take URI copy inside
+
+	(raptor_new_term_from_uri): autodocs and call raptor_uri_copy.
+
+	Updated all calls to raptor_new_term_from_uri to remove a
+	raptor_uri_copy or add a raptor_uri_free as appropriate.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c: Make
+	raptor_abbrev_node use raptor_term rather than another embedded
+	node
+
+	raptor_abbrev_node loses the 'value' union and a pile of
+	sub-structure duplicating raptor_term* contents; yet another
+	librdf_node copy bites the dust. 
+
+	(raptor_new_abbrev_node): Use raptor_new_term_from_term
+
+	(raptor_free_abbrev_node): Use raptor_free_term
+
+	(raptor_abbrev_node_cmp): Thin wrapper around raptor_term_compare.
+
+	(raptor_abbrev_node_equals): Thin wrapper around
+	raptor_term_equals.
+
+	Update all references to the raptor_abbrev_node internals above. 
+
+	(raptor_rdfxmla_serialize_init, raptor_turtle_emit_subject): Fix a
+	couple of places where a static raptor_term was used for creating a
+	raptor_abbrev_node; now make a dynamic one so it can be reference
+	counted and freed.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_statement.c: Make raptor_term_print_as_ntriples internal
+	so can use for raptor_abbrev
+
+	(raptor_term_print_as_ntriples): No longer static.
+
+2010-01-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/rdfprint.c, examples/rdfprint.c, src/raptor.h,
+	src/raptor_grddl.c, src/raptor_rdfxml.c, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rdfdiff.c: Rename
+	statement printing methods to raptor_statement_NAME() form
+
+	(raptor_statement_print): Renamed from
+	raptor_print_statement
+
+	(raptor_statement_print_as_ntriples): Renamed from
+	raptor_print_statement_as_ntriples
+
+	* src/raptor.h: Remove unused typedefs for old URI handler code
+	raptor_new_uri_func, raptor_new_uri_from_uri_local_name_func,
+	raptor_new_uri_relative_to_base_func,
+	raptor_new_uri_for_rdf_concept_func, raptor_free_uri_func,
+	raptor_uri_equals_func, raptor_uri_compare_func,
+	raptor_uri_copy_func, raptor_uri_as_string_func,
+	raptor_uri_as_counted_string_func: Deleted.
+
+	* docs/rdfcat.c, docs/rdfprint.c, examples/grapper.c,
+	examples/raptor_abort.c, examples/rdfcat.c, examples/rdfprint.c,
+	src/raptor.h, src/raptor_feature.c, src/raptor_general.c,
+	src/raptor_grddl.c, src/raptor_guess.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Rename parser methods to all start raptor_parser_METHOD
+
+	(raptor_parser_get_feature): Renamed from raptor_get_feature. 
+
+	(raptor_parser_get_label): Renamed from raptor_get_label. 
+
+	(raptor_parser_get_locator): Renamed from raptor_get_locator. 
+
+	(raptor_parser_get_mime_type): Renamed from raptor_get_mime_type. 
+
+	(raptor_parser_get_name): Renamed from raptor_get_name. 
+
+	(raptor_parser_get_need_base_uri): Renamed from
+	raptor_get_need_base_uri. 
+
+	(raptor_world_get_parser_factory): Renamed from
+	raptor_get_parser_factory. 
+
+	(raptor_parser_parse_abort): Renamed from raptor_parse_abort. 
+
+	(raptor_parser_parse_chunk): Renamed from raptor_parse_chunk. 
+
+	(raptor_parser_set_uri_filter_no_net): Renamed from
+	raptor_parse_uri_no_net_filter. 
+
+	(raptor_parser_get_new_generated_i): Renamed from
+	raptor_parser_generate_id. 
+
+	(raptor_parser_set_default_generate_id_parameters): Renamed from
+	raptor_set_default_generate_id_parameters. 
+
+	(raptor_parser_set_generate_id_handler): Renamed from
+	raptor_set_generate_id_handler. 
+
+	(raptor_parser_set_graph_handler): Renamed from
+	raptor_set_graph_handler. 
+
+	(raptor_parser_set_namespace_handler): Renamed from
+	raptor_set_namespace_handler. 
+
+	(raptor_parser_set_statement_handler): Renamed from
+	raptor_set_statement_handler. 
+
+	(raptor_parser_parse_start): Renamed from raptor_start_parse.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_libxml.c,
+	src/raptor_parse.c:
+	Adjust raptor_log_level to match log4j levels: add trace, debug, info.
+
+	raptor_log_level gains RAPTOR_LOG_LEVEL_TRACE,
+	RAPTOR_LOG_LEVEL_DEBUG and RAPTOR_LOG_LEVEL_INFO.  Reordered to
+	match severity from trace level to fatal error.  Add autodocs.
+
+	* src/raptor_statement.c:
+	code style
+
+	* src/raptor_parse.c:
+	autodocs
+
+	* src/raptor_serialize.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c: autodocs
+
+	* src/raptor.h, src/raptor_iostream.c,
+	src/raptor_serialize_simple.c: Renamed
+	raptor_iostream_write_uri_v2 to raptor_iostream_write_uri and lose
+	world arg
+
+	* src/raptor.h, src/raptor_xml_writer.c: Rename
+	raptor_xml_writer_features_enumerate_v2 to
+	raptor_world_enumerate_xml_writer_features
+
+	* src/raptor.h, src/raptor_general.c: Rename
+	raptor_error_handlers_init_v2 to raptor_error_handlers_init
+
+	* src/raptor_serialize_rss.c: Fix debug calls to
+	raptor_print_statement_as_ntriples_v2 now called
+	raptor_print_statement_as_ntriples
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	Remove _v2 from raptor_new_xml_writer_v2 name and remove unused arg. 
+
+	(raptor_new_xml_writer_v2): Renamed from raptor_new_xml_writer and
+	delete unused
+
+	(never used) canonicalized arg.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c:
+	Renamed raptor_feature_from_uri_v2 to raptor_world_get_feature_from_uri
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_namespace.c,
+	src/raptor_qname.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c:
+	Remove _v2 from raptor_new_qname_from_namespace_local_name_v2
+
+	(raptor_new_qname_from_namespace_local_name): Renamed from
+	raptor_new_qname_from_namespace_local_name_v2.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_namespace.c,
+	src/raptor_rss.c, src/raptor_sax2.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c, src/raptor_xml_writer.c,
+	src/turtle_common.h, src/turtle_lexer.l, src/turtle_parser.y:
+	Rename raptor_namespaces/stack functions to lose _v2 in name
+
+	(raptor_new_namespaces): Renamed from raptor_new_namespaces_v2. 
+
+	(raptor_namespaces_init): Renamed from raptor_namespaces_init_v2
+
+	Also note where raptor_namespace_stack is static such as in
+	raptor_sax2, some tests and in raptor_turtle_parser.
+
+	* src/raptor_www_test.c:
+	Fix test o use raptor_www_new
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_parse.c, src/raptor_www.c:
+	Rename raptor_www functions to lose _v2 in name
+
+	(raptor_www_init): Renamed from raptor_www_init_2 - internal. 
+
+	(raptor_www_finish): Renamed from raptor_www_finish_v2 - internal. 
+
+	(raptor_www_new): Renamed from raptor_www_new_v2.
+	
+	(raptor_www_new_with_connection): Renamed from
+	raptor_www_new_with_connection_v2.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_locator.c,
+	utils/rapper.c, utils/rdfdiff.c:
+	Remove _v2 from name and world arg from raptor_locator functions
+
+	(raptor_print_locator): Renamed from raptor_print_locator_v2 and
+	loses world arg. 
+
+	(raptor_format_locator): Renamed from raptor_format_locator_v2 and
+	loses world arg. 
+
+	(raptor_locator_uri_string): Renamed from raptor_locator_uri_v2 and
+	renamed to reflect returns a string not a raptor_uri*
+
+	* src/raptor_avltree.c, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_namespace.c, src/raptor_nfc_test.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_lexer.l, src/turtle_parser.y:
+	
+	Code style:
+	use TYPE* var_name = RAPTOR_CALLOC(TYPE, 1, sizeof(*var_name))
+
+	This fix caught a few times where the calloc added an extra +1 -
+	presumably from the usual thing you need to do with a string
+	malloc.  e.g. in raptor_new_json_writer(),
+	raptor_new_turtle_writer() and raptor_new_xml_writer_v2() which
+	probably were all from the same source.
+
+	* src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c:
+	Remove some un-necessary casts to (unsigned char*)
+
+	* src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_statement.c:
+	Remove some un-necessary casts to raptor_uri*
+
+	* src/raptor_serialize_json.c:
+	(raptor_json_serialize_avltree_visit): Use raptor_term_equals
+	instead of hand-crafted equivalent.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	src/turtle_parser.y, utils/rapper.c, utils/rdfdiff.c:
+	raptor_term values are now a union of uri / literal fields / blank
+	string
+
+	raptor_term gains union value with uri field, literal struct and
+	blank field for URI, Literal and Blank rdf terms.
+
+	Lots of consequent changes; mostly mechanical search and replace.
+
+	Removed several (raptor_uri*)value and (unsigned char*)value casts. 
+
+	(raptor_rss10_move_statements): Changes but when zeroing uri /
+	literal, do that in separate steps rather than assigning to value.
+
+	* src/raptor_serialize_dot.c: Convert DOT serializer to use
+	raptor_term not local raptor_dot_serializer_node
+
+	Deleted raptor_dot_serializer_node typedef
+
+	(raptor_dot_serializer_free_node,
+	raptor_dot_serializer_node_matches, raptor_dot_serializer_new_node):
+	Deleted and replaced with raptor_term versions - both based on
+	librdf_node.
+
+	Code style fixes.
+
+	* src/raptor_statement.c:
+	Fix formatting in raptor_term_as_counted_string for blank and uri
+
+	(raptor_term_as_counted_string): RAPTOR_TERM_TYPE_BLANK and
+	RAPTOR_TERM_TYPE_URI code was wrong - bad casting.
+
+2010-01-16  Dave Beckett <dave@dajobe.org>
+
+	* Merge branch 'statement-term' to 'master' with
+	commit efd40982c2356eab8c37c1da1acd8b459ec06b56
+	
+2010-01-15  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_internal.h, src/raptor_xsd.c:
+	Removed unused raptor_new_identifier_from_double and raptor_xsd module.
+
+	* src/raptor_librdfa.c:
+	Updated RDFA parser to use statement and term object model
+
+	* src/raptor_rss.c:
+	Skip attempting to output predicates with no URI/namespace
+
+	(raptor_rss_emit_item): Check predicate_uri first.
+
+	* src/raptor_rss.c:
+	Free allocate raptor_term
+	
+	(raptor_rss_emit_item): Free some predicate and object terms just
+	allocated.  Code style.
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml: update generated docs
+
+	* src/raptor_rss.c:
+	Construct terms in raptor_rss_emit_item
+
+	(raptor_rss_emit_item): Use raptor_term constructors
+
+	* src/raptor_rss.c, src/raptor_rss.h, src/raptor_rss_common.c,
+	src/raptor_serialize_rss.c:
+	Switch RSS parser and serializer internals from identfier to term
+
+	Compiles but does not fully work yet.
+
+	* src/raptor_internal.h:
+	Added raptor_term_equals
+
+	* src/raptor_statement.c:
+	Added raptor_term_equals
+
+2010-01-14  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	Convert turtle parser to use raptor_statement and raptor_term
+
+	Change raptor_identifier to raptor_term
+
+	Change raptor_turtle_triple to raptor_statement
+
+	Code style.
+
+	(raptor_turtle_generate_statement): Use copy constructor for term. 
+
+	(raptor_turtle_new_triple, raptor_turtle_free_triple,
+	raptor_triple_print): Deleted
+
+	* src/raptor_internal.h, src/raptor_statement.c:
+	Add raptor_new_statement_from_nodes
+	
+	(raptor_new_statement_from_nodes): Added
+
+	* src/raptor_serialize_turtle.c, src/turtle_parser.y:
+	Update Turtle parser and serializer to statement reference model. 
+
+	(raptor_turtle_generate_statement): Generate new term objects for
+	each statement. 
+
+	(raptor_turtle_serialize_statement): Use correct reference to
+	statement fields.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_statement.c:
+	Made statement work statically and dynamically, promoting on copies
+
+	(raptor_new_statement): Added to make a new dynamic statement
+
+	(raptor_statement_init): Init a static statement with negative
+	usage. 
+
+	(raptor_statement_copy): Do promote to dynamic on copy. 
+
+	(raptor_free_statement): Do not free static statements. 
+
+	(raptor_rdfxml_generate_statement): Do proper predicate creation
+	when reifying - this broke statement copying and rdfdiff. 
+
+	(raptor_rdfxmla_serialize_statement): Correct pointers to statement
+	fields.
+
+2010-01-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c:
+	Code style and more fixing up RDF/XML raptor_term object use
+
+	Code style; introduce variables to break long lines/duplicate
+	expressions that hopefully the compiler will still optimize way.
+
+	(raptor_rdfxml_generate_statement): Free a locally created
+	reified_term object.
+
+	(raptor_rdfxml_process_property_attributes): Save a strlen.  Code
+	style. 
+
+	(raptor_rdfxml_start_element_grammar): Code style.  Add
+	element_name_uri to remove several long lines.  Add some OOM checks
+	when an ID/URI then raptor_term are created in two steps.
+
+	* src/ntriples_parse.c:
+	Update N-Triples parser to use raptor_term objects
+
+	(raptor_ntriples_generate_statement): Use raptor_term constructors.
+
+	* src/raptor_rdfxml.c:
+	More conversions of raptor_term statics to dynamic. 
+
+	(raptor_rdfxml_process_property_attributes): Return failure error
+	status. 
+
+	(raptor_rdfxml_process_property_attributes): Convert more
+	static (on stack) raptor_term objects into dynamic/by-reference.
+
+	* src/raptor_statement.c:
+	(raptor_statement_copy): Delete commented out old deep copy code. 
+
+	(raptor_free_statement): Just call raptor_term to free inner terms.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_statement.c:
+	Deleted raptor_clear_term and raptor_copy_term. literal languages
+
+	(raptor_clear_term, raptor_copy_term): Deleted - no longer needed
+	or used.
+
+	(raptor_free_term): Merge in old raptor_clear code here. 
+
+	(raptor_rdfxml_end_element_grammar): A little OOM checking.
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_end_element_grammar): Allocate new strings for
+	literals since they become owned by raptor_term.
+
+	* src/raptor_rdfxml.c, utils/rapper.c:
+	change raptor_rdfxml_element
+
+	raptor_term statics fields to objects
+
+	raptor_rdfxml_element: reified, bag, subject, predicate and object
+	fields are now raptor_term*
+
+	(raptor_free_rdfxml_element): Use raptor_free_term on above fields
+	instead of raptor_clear_term. 
+
+	(raptor_rdfxml_start_element_handler): Do not assign world to
+	above fields - not allocated yet.  Move setting of default
+	literal_language inscope to code near the line where raptor_term
+	for a literal is created.  Start turning direct references to
+	raptor_statement field->subject->type into static raptor_term
+	objects (memset then assigned) for bags, reified terms,
+	collections, bags, reified statements, ...  
+
+	First stage of conversion to allocated raptor_terms.
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_simple.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c: raptor_term and raptor_term get usages.
+	statement is pointer to 3 terms
+
+	Compiles, does not all work.
+
+	(raptor_statement_init): Init usage. 
+
+	(raptor_statement_copy): Now just a usage increment; comment out old
+	copying code. 
+
+	(raptor_free_statement): Free on zero usage. 
+
+	(raptor_free_term): Free on zero usage. 
+
+	(raptor_new_term_from_term, raptor_new_term_from_uri,
+	raptor_new_term_from_literal, raptor_new_term_from_blank): Added new
+	term constructors - taking ownership of their input objects.
+
+	(raptor_rdfxml_generate_statement): Create raptor_term objects to
+	generate reified statements.  Update lots of uses in parsers and
+	serializers of object.field to object->field for pointer based
+	access.
+
+2010-01-12  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-uri.sgml: Update generated docs
+
+2010-01-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c: raptor_rdfxml_generate_statement() now
+	takes raptor_term subject/ raptor_uri term.
+
+	(raptor_rdfxml_generate_statement): Use raptor_term fields. 
+
+	(raptor_rdfxml_element_has_property_attributes,
+	raptor_rdfxml_start_element_grammar): Create static raptor_term
+	objects on stack for use in constructing parameter sets for
+	raptor_rdfxml_generate_statement.  Several of these should be
+	dynamic and/or constructed once parser-wide.
+
+	* src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_statement.c: Replace raptor_identifier with raptor_term
+	inside rdf/xml parser.
+
+	struct raptor_rdfxml_element_s updated to change fields reified,
+	bag, subject, predicate, object from raptor_identifier to
+	raptor_term.  Also added a reified_id field for storing an ID used
+	for reification; not clear if this is entirely necessary.
+
+	(raptor_clear_term): Added based on raptor_clear_identifier. 
+
+	(raptor_free_term): Added. 
+
+	(raptor_copy_term): Added based on raptor_copy_identifier but not
+	calling raptor_free term on dest; call raptor_clear_term instead. 
+
+	(raptor_free_rdfxml_element): Use raptor_clear_term to replace
+	raptor_clear_identifier. 
+
+	(raptor_rdfxml_generate_statement): Updated to use raptor_term
+	field names.  Some loss of clarity here since identifier URI/blank
+	node fields are merged into one void* term field 'value' for now.
+
+	(raptor_rdfxml_process_property_attributes,
+	raptor_rdfxml_start_element_grammar): Updated for raptor_term
+	fields.  For capturing bag/reified IDs, use local variables rather
+	than overloading subject/reified/bad.id fields.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c: Make
+	abbrev_node constructors/lookup functions use raptor_term
+
+	(raptor_new_abbrev_node): Pass in a raptor_term and use that to
+	find fields to copy.
+
+	(raptor_abbrev_node_lookup, raptor_abbrev_subject_find,
+	raptor_abbrev_subject_lookup): Lookup using fields in a passed in
+	raptor_term.  Update callers to use raptor_term when searching -
+	means creating some static raptor_term objects on the stack for
+	now; will be either references or dynamically created when
+	raptor_abbrev_node / raptor_term node merge is done.
+
+	* src/raptor.h, src/raptor_serialize_ntriples.c: Added
+	raptor_iostream_write_term_ntriples and
+	raptor_iostream_write_statement_ntriples to public API
+
+	(raptor_iostream_write_statement_ntriples): Renamed from
+	raptor_iostream_write_statement_ntriples_v2 and loses world arg. 
+
+	(raptor_iostream_write_term_ntriples): Renamed from internal
+	raptor_iostream_write_statement_part_ntriples and down to just 2
+	args: the iostr and term. 
+
+	(raptor_ntriples_serialize_statement): Updated call to
+	raptor_iostream_write_statement_ntriples.
+
+	* src/raptor_internal.h, src/raptor_statement.c: Added
+	raptor_term_compare split out from raptor_statement_compare
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_statement.c: Turn
+	print-part-of-statements functions into methods of raptor_term
+
+	(raptor_term_as_counted_string): Renamed from
+	raptor_statement_part_as_counted_string and just take term arg.
+
+	(raptor_term_as_string): Renamed from
+	raptor_statement_part_as_string and just take term arg.  Update
+	callers to use new 1-arg convention.
+
+	* src/raptor_statement.c: raptor_term_print_as_ntriples formed from
+	raptor_print_statement_as_ntriples
+
+	(raptor_term_print_as_ntriples): Renamed from
+	raptor_print_statement_part_as_ntriples
+
+	(raptor_print_statement_as_ntriples): Call above with raptor_term
+	pointer.
+
+	* librdfa/curie.c, librdfa/rdfa.c, src/ntriples_parse.c,
+	src/raptor.h, src/raptor_abbrev.c, src/raptor_expat.c,
+	src/raptor_feature.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_identifier.c, src/raptor_internal.h,
+	src/raptor_iostream.c, src/raptor_json_writer.c,
+	src/raptor_librdfa.c, src/raptor_locator.c, src/raptor_namespace.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_lexer.l, src/turtle_parser.y,
+	utils/rapper.c, utils/rdfdiff.c:
+	New raptor_uri implementation - reference counted uris with interning.
+
+	Based on librdf_uri reference counted uris with interning in an
+	librdf_hash, this uses a raptor_avltree to store/lookup previously
+	seen uris so that a single URI string has one raptor_uri* object.
+
+	Removed initial world parameter from all raptor_uri class methods.
+
+	Update all callers of above.
+
+	rdfdiff debug prints also updated to generate ntriples
+
+	* src/raptor_abbrev.c: Remove too-clever inline editing of uri
+	string in raptor_new_qname_from_resource
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_uri.c:
+	Add raptor_uri_finish stup for uri class cleanup
+
+	* docs/raptor-sections.txt, docs/tmpl/section-feature.sgml,
+	docs/tmpl/section-general.sgml, docs/tmpl/section-iostream.sgml,
+	docs/tmpl/section-locator.sgml, docs/tmpl/section-parser.sgml,
+	docs/tmpl/section-sax2.sgml, docs/tmpl/section-sequence.sgml,
+	docs/tmpl/section-serializer.sgml, docs/tmpl/section-triples.sgml,
+	docs/tmpl/section-unused.sgml, docs/tmpl/section-uri.sgml,
+	docs/tmpl/section-world.sgml, docs/tmpl/section-www.sgml,
+	docs/tmpl/section-xml-namespace.sgml,
+	docs/tmpl/section-xml-qname.sgml, docs/tmpl/section-xml.sgml:
+	Update some generated docs.
+
+	* librdfa/rdfa.c, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_abbrev.c, src/raptor_feature.c, src/raptor_grddl.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_namespace.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_serialize.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_test.c,
+	src/raptor_xml_writer.c, src/raptor_xsd.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/rapper.c, utils/rdfdiff.c:
+	Remove _v2 suffix from raptor_uri constructors
+
+	* src/raptor_rss.c:
+	(raptor_rss_emit_connection): Use raptor_uri* for predicate_uri
+	arg
+
+	* src/raptor_internal.h, src/raptor_uri.c, src/raptor_xml_writer.c:
+	Removed raptor_uri_handler and made all URI functions work direct
+	with default implementation
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_uri.c:
+	Move raptor_uri_handler to internal and remove get/set functions.
+
+	(raptor_uri_get_handler_v2, raptor_uri_set_handler_v2): Deleted
+
+	(raptor_uri_init): Set default handler directly.
+
+	* src/raptor.h: Add raptor_new_identifier_from_identifier
+	prototype
+
+	* src/raptor.h, src/raptor_identifier.c:
+	Add reference count model for raptor_identifier
+
+	(raptor_new_identifier_from_identifier): Set initial usage to 1 when
+	allocaed as an object; initialising statically does not use this.
+
+	(raptor_new_identifier_from_identifier): Added copy constructor
+
+	(raptor_free_identifier): Free when usage is 0. static identifiers
+	do not call this; they use raptor_clear_identifier
+
+2010-01-08  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_identifier.c, src/raptor_internal.h,
+	src/raptor_rdfxml.c, src/turtle_parser.y:
+	Remove is_malloced field from raptor_identifier
+
+	raptor_identifier loses is_malloc field
+
+	(raptor_clear_identifier): Added to clear fields of static
+	identified; pulled out of raptor_free_identifier
+
+	(raptor_free_identifier): Call above and then free the object.
+
+	* src/raptor.h, src/raptor_parse.c, src/raptor_serialize.c,
+	utils/rapper.c: Rename parser/serializer feature enumeration
+	methods to be on raptor_world class
+
+	(raptor_world_enumerate_parser_features): Renamed from
+	raptor_features_enumerate_v2
+
+	(raptor_world_enumerate_serializer_features): Renamed from
+	raptor_serializer_features_enumerate_v2.
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_parse.c,
+	utils/rapper.c:
+	Rename raptor_set_feature to correct method name
+	raptor_parser_set_feature
+
+	* src/raptor.h, src/raptor_parse.c, utils/rapper.c: Rename
+	raptor_set_parser_strict to correct method name
+	raptor_parser_set_strict
+
+	* utils/rdfdiff.c:
+	Update for new parser constructor name
+
+	* utils/rapper.c: Update for new parser/serializer enumerate/check
+	method names
+
+	* src/raptor.h, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_serialize_rss.c:
+	Rename parser/serializer enumerating, checking and guessing
+	functions to be methods of raptor_world.
+
+	(raptor_world_enumerate_parsers): Renamed from
+	raptor_parsers_enumerate_v2
+
+	(raptor_syntaxes_enumerate_v2): Deleted; use
+	raptor_world_enumerate_parsers.
+
+	(raptor_world_is_parser_name): Renamed from
+	raptor_syntax_name_check_v2
+
+	(raptor_world_guess_parser_name): Renamed from
+	raptor_guess_parser_name_v2
+
+	(raptor_new_parser): Renamed from raptor_new_parser_v2
+
+	(raptor_new_parser_for_content): Renamed from
+	raptor_new_parser_for_content_v2.
+
+	(raptor_world_enumerate_serializers): Renamed from
+	raptor_serializers_enumerate_v2.
+
+	(raptor_world_is_serializer_name): Renamed from
+	raptor_serializer_syntax_name_check_v2
+
+	(raptor_new_serializer): Renamed from raptor_new_serializer_v2
+
+	* src/raptor_internal.h:
+	Restore raptor_simple_message_handler for internal use
+
+	* src/raptor_general.c:
+	(raptor_log_error): All user error handlers are called here now.
+
+	* src/raptor.h: Delete raptor_simple_message_handler - nothing
+	uses it anymore.
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_xml.c:
+	raptor_xml_any_escape_string and raptor_xml_any_escape_string use
+	raptor_world to replace error_handler/error_data args.
+
+	(raptor_xml_any_escape_string, raptor_xml_any_escape_string): Delete
+	error_handler and error_data args and replace with raptor_world
+	initial argument.  Pass errors via raptor_log_error/formatted.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c:
+	Serializer class loses specific fatal/error/warning handling
+
+	(raptor_serializer_set_error_handler,
+	raptor_serializer_set_warning_handler): Deleted
+
+	(raptor_serializer_error, raptor_serializer_simple_error,
+	raptor_serializer_error_varargs, raptor_serializer_warning,
+	raptor_serializer_warning_varargs): Removed the internal functions
+	that called the serializer-specific handlers.
+
+	In serializers replaced calls to the above functions with
+	raptor_log_error or raptor_log_error_formatted depending on the
+	arguments present.
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c:
+	raptor_new_turtle_writer loses error_handler / error_data args.
+
+	struct raptor_turtle_writer_s loses error_handler and error_data
+	fields.
+
+	(raptor_new_turtle_writer): error_handler and error_data args
+	deleted.
+
+	Updated callers.
+
+	* src/raptor.h, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	raptor_new_xml_writer_v2 loses error_handler / error_data args.
+
+	raptor_xml_writer gains raptor_world field.
+
+	(raptor_new_xml_writer_v2): Delete args.  Store world.
+
+	* src/raptor.h, src/raptor_internal.h, src/raptor_iostream.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c:
+	All raptor_iostream constructors gain an initial raptor_world arg.
+
+	(raptor_new_iostream_from_handler2, raptor_new_iostream_to_sink,
+	raptor_new_iostream_to_filename, raptor_new_iostream_to_file_handle,
+	raptor_new_iostream_to_string, raptor_new_iostream_from_sink,
+	raptor_new_iostream_from_filename,
+	raptor_new_iostream_from_file_handle,
+	raptor_new_iostream_from_string): Gain an initial raptor_world*
+	world argument.  Consequently: 
+
+	(raptor_iostream_write_xml_any_escaped_string,
+	raptor_iostream_write_xml_escaped_string): Both lose the
+	error_handler and error_data args since it can send errors via the
+	internal world.
+
+	* src/raptor.h, src/raptor_qname.c, src/turtle_parser.y:
+	raptor_qname_string_to_uri loses error_handler/error_data args.
+
+	(raptor_qname_string_to_uri): Delete error_handler and error_data
+	args. Use raptor_log_error_formatted to report prefix error.
+
+	* src/raptor.h, src/raptor_qname.c, src/raptor_sax2.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_xml_writer.c:
+	raptor_new_qname loses error_handler / error_data args
+
+	(raptor_new_qname): delete args and use raptor_log_error_formatted
+	for error reporting.
+
+	Update callers.
+
+	* src/raptor.h, src/raptor_namespace.c, src/raptor_rss.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_turtle_writer.c,
+	src/raptor_xml_writer.c:
+	raptor_new_namespaces_v2 loses error_handler / error_data args.
+
+	(raptor_new_namespaces_v2): Delete args.
+
+	Update all callers with the change - many of which were NULL/NULL
+	anyway!
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_namespace.c, src/raptor_sax2.c, src/turtle_parser.y:
+	raptor_namespaces_init_v2 loses error_handler / error_data
+
+	(raptor_log_error_formatted): Added to write a formatted error
+	message with sprintf style.
+
+	raptor_namespace_stack: loses error_handler and error_data fields.
+
+	(raptor_namespaces_init_v2): Remove error_handler and error_data
+	args.
+
+	(raptor_new_namespace_from_uri): Use raptor_log_error_formatted to
+	format an error message with argument.
+
+	Update all calls to raptor_namespaces_init_v2 to remove error
+	handler/data args.
+
+	* src/raptor_json_writer.c:
+	Update call to error_handler in #defined-out code
+
+	* src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_serialize_json.c:
+	Remove error_handler/error_data from json writer
+
+	struct raptor_json_writer_s: loses error_handler and error_data
+	fields.
+	
+	(raptor_new_json_writer): loses error_handler and error_data args.
+
+	(raptor_json_serialize_start): Update for new signature.
+
+	* src/raptor_libxml.c:
+	Initialise libxml generic error with pointer to raptor_world
+
+	(raptor_libxml_generic_error): Expect world and never a locator.
+
+	(raptor_libxml_init): Initialise generic error func with world
+	user data.
+
+	* src/raptor_libxml.c:
+	Handle new XML_FROM_SCHEMATRONV introduced in
+	libxml 2.6.32 2008-04-08
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_internal.h,
+	src/raptor_libxml.c:
+	libxml generic & structured error saving defaults on.
+
+	These are turned on by default so that when libxml library-wide
+	generic/structured error handlers are set, this happens by default.
+	Previously (1.4.x) it was done anyway, regardless of the flags.
+
+	raptor_libxml_flags: update docs to note default is on.
+
+	(raptor_new_world): set the flags on.
+
+	raptor_world_s: update docs for libxml_flags field to note
+	default.
+
+	(raptor_libxml_xmlStructuredError_handler_common): Renamed from
+	raptor_libxml_xmlStructuredErrorFunc and contains the core libxml
+	error handling but not the parameter guessing.
+
+	(raptor_libxml_xmlStructuredError_handler_global): Added to take
+	structured errors from the global libxml handlers. Calls
+	raptor_libxml_xmlStructuredErrorFunc with world and always NULL
+	locator.
+
+	(raptor_libxml_xmlStructuredError_handler_parsing): Added to take
+	structured errors from serror SAX handler. Calls
+	raptor_libxml_xmlStructuredErrorFunc with any world and locator
+	found.
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_libxml.c:
+	raptor_log_error no longer needs/uses error hander/data args
+
+	(raptor_log_error): Remove args and pick handler/data from work
+	error handlers.
+
+	(raptor_log_error_varags): Just call raptor_log_error and no longer
+	pick error handler/data here.
+
+	* src/raptor.h, src/raptor_general.c, src/raptor_parse.c,
+	utils/rapper.c, utils/rdfdiff.c:
+	Move error-handler setting functions to methods of raptor_world
+
+	(raptor_world_set_fatal_error_handler): Renamed from
+	raptor_set_fatal_error_handler from parser class.
+
+	(raptor_world_set_error_handler): Renamed from
+	raptor_set_error_handler from parser class.
+
+	(raptor_world_set_warning_handler): Renamed from
+	raptor_set_warning_handler from parser class.
+
+	Updated rapper.c and rdfdiff.c to use new names and calling
+	convention.
+
+	* src/raptor_general.c, src/raptor_internal.h, src/raptor_libxml.c,
+	src/raptor_parse.c, src/raptor_sax2.c, src/raptor_www.c:
+	raptor_log_error_varargs no longer needs/users error handler/data
+	args
+
+	(raptor_log_error_varargs): Remove args and pick handler and handler
+	data from world error_handlers.
+
+	Update all callers of above.
+
+	* src/raptor_www_libxml.c:
+	(raptor_www_libxml_init, raptor_www_libxml_free): Remove
+	error_handlers code.
+
+	* src/raptor_libxml.c, src/raptor_sax2.c: Move libxml init/free
+	code to raptor_libxml_init and raptor_libxml_finish
+
+	(raptor_libxml_init): Add xmlInitParser call.
+
+	(raptor_libxml_finish): Add xmlCleanupParser call.
+
+	(raptor_sax2_init): Remove xmlInitParser call.
+
+	(raptor_sax2_finish): Remove xmlCleanupParser call.
+
+	* src/raptor_grddl.c:
+	Remove use of xmlSetStructuredErrorFunc from GRDDL parser.
+
+	(raptor_grddl_parse_chunk): Remove call to xmlSetStructuredErrorFunc
+	which is now done in raptor_libxml_init, once per-library.
+
+	* src/raptor_internal.h, src/raptor_libxml.c:
+	Removed	raptor_libxml_sax_init_error_handlers - no users remain.
+
+	(raptor_libxml_sax_init_error_handlers): Deleted and merged back
+	into raptor_libxml_sax_init
+
+	* src/raptor_grddl.c:
+	GRDDL parser does not need or use libxml2 sax object.
+
+	struct raptor_grddl_parser_context_s loses sax field.
+
+	(raptor_grddl_parse_init_common): Remove call to
+	raptor_libxml_sax_init_error_handlers.
+
+	* src/raptor_grddl.c:
+	GRDDL parser does not need to create a raptor_sax2 for error
+	handlers.
+
+	struct raptor_grddl_parser_context_s loses sax2 field.
+
+	(raptor_grddl_parse_init_common, raptor_grddl_parse_terminate): Do
+	not init / free sax2.
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_libxml.c, src/raptor_sax2.c:
+	Make libxml error handling save/restore happen once in world
+
+	struct raptor_sax2_s loses saved_structured_error_context,
+	saved_structured_error_handler, saved_generic_error_context and
+	saved_generic_error_handler
+
+	struct raptor_world_s gains above fields.
+
+	(raptor_libxml_init, raptor_libxml_finish): Added to capture the
+	save/restore of xmlSetStructuredErrorFunc and xmlSetGenericErrorFunc
+	context and handlers.
+
+	(raptor_world_open, raptor_free_world): Call raptor_libxml_init and
+	raptor_libxml_finish.
+
+	(raptor_libxml_sax_init_error_handlers): Renamed from
+	raptor_libxml_init_sax_error_handlers.
+
+	(raptor_libxml_sax_init): libxml setup specific to a SAX setup
+
+	(raptor_grddl_parse_init_common): Use above.
+
+	(raptor_new_sax2): Delete libxml init code.
+
+	(raptor_sax2_parse_start): Delete xmlSetStructuredErrorFunc call
+	and use raptor_libxml_sax_init.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_init_common): Code style.
+
+2010-01-07  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, librdfa/rdfa.h, src/raptor.h, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_libxml.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_sax2.c:
+	Alter raptor_new_sax2() to take world and locator not
+	error_handlers.
+
+	struct raptor_sax2_s loses error_handlers field.
+
+	(raptor_new_sax2): Change to add world and locator at start; store
+	them and forget about error_handlers.
+
+	(raptor_sax2_simple_error, raptor_sax2_parse_chunk,
+	raptor_sax2_start_element): Take error handlers from world, not
+	sax2.
+
+	(raptor_grddl_parse_init_common, raptor_librdfa_parse_start,
+	raptor_rdfxml_parse_init, raptor_rss_parse_init): Update to new
+	raptor_new_sax2 calling convention.
+
+	(raptor_libxml_warning, raptor_libxml_error_common,
+	raptor_libxml_validation_warning): Call error handlers under world
+	rather than in sax2 error_handlers object.
+
+	(raptor_libxml_xmlStructuredErrorFunc): Find error handlers via
+	world.
+
+	struct rdfacontext [in librdfa] replaces error_handlers with world
+	and locator fields for use in calling raptor_new_sax2()
+
+	(rdfa_create_new_element_context) [in librdfa]: no need to copy
+	error_handlers.
+
+	(rdfa_parse_start) [in librdfa] use stored world and locator.
+
+	* src/raptor.h:
+	Removed prototype for raptor_www_set_error_handler
+
+	* src/raptor_general.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_librdfa.c, src/raptor_parse.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_www.c:
+	Moved raptor_error_handlers to one instance in raptor_world.
+
+	structs raptor_parser_s and raptor_www_s lose error_handlers
+	field.
+
+	struct raptor_world_s gains error_handlers field and new
+	internal_ignore_errors flag to temporarily disable errors.
+
+	(raptor_new_world): Initialise error handlers structure; this is now
+	the only place in the library this is done the public function
+	raptor_error_handlers_init_v2()
+
+	Consequently raptor_error_handlers_init_v2() could be moved internal
+	and the raptor_error_handlers structure made just fields in
+	raptor_world rather than a public structure that is hard to
+	version.
+
+	(raptor_world_internal_set_ignore_errors): Added internal function
+	to disable invoking all error handlers when set.  Used in the GRDDL
+	parser and when WWW-fetching in some cases to ignore parse/404
+	errors.
+
+	(raptor_log_error_to_handlers, raptor_log_error_varargs,
+	raptor_log_error): Respect the ignore errors flag.
+
+	(raptor_grddl_discard_message): Deleted.
+
+	(raptor_grddl_fetch_uri): No longer uses above function but instead
+	calls raptor_world_internal_set_ignore_errors() before and after the
+	WWW fetch.
+
+	(raptor_grddl_run_recursive): Also no longer sets error handlers to
+	ignore errors and uses raptor_world_internal_set_ignore_errors
+	before and after running an internal parser.
+
+	(raptor_new_parser_v2): Do not init error_handlers field, just set
+	locator.
+
+	(raptor_www_set_error_handler): Deleted; not necessary since the
+	error_handlers is part of raptor_world not in raptor_www.
+
+	(raptor_parse_uri_with_connection): Removed call to
+	raptor_www_set_error_handler.
+
+	(raptor_parser_copy_user_state): Do not copy removed error_handlers
+	field.
+
+	(raptor_www_new_with_connection_v2): Do not init error_handlers
+	field.
+
+	* src/raptor_parse.c:
+	(raptor_parser_copy_user_state): Code style for assignments.
+
+	* src/raptor_internal.h:
+	Delete unused field from raptor_parser_s
+
+	* src/raptor_abbrev.c, src/raptor_internal.h:
+	Remove unused ordinal code from raptor_abbrev_node
+
+	raptor_abbrev_node: lose ordinal union part.
+
+	(raptor_abbrev_subject_add_list_element): Deleted.
+
+	* src/raptor.h:
+	Remove RAPTOR_WORLD_DECLARED
+
+	* src/raptor_internal.h:
+	Remove an old RAPTOR_DISABLE_V1-protected prototype.
+
+2010-01-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h:
+	Break raptor_error_handlers struct ABI moving handlers array to end.
+
+	Remove V2 API fixmes near this; also allows new log levels to be
+	added later.
+
+	* src/raptor_internal.h:
+	Remove unused static_usage field from raptor_world
+
+	* src/ntriples_parse.c:
+	Replace raptor_ntriples_term_type with raptor_term_type
+
+	(raptor_ntriples_generate_statement): Change types of args.  Just
+	assign term types to statement types.
+
+	(raptor_ntriples_parse_line): Declare array of 3 term types.
+
+	* src/Makefile.am: remove n3 tests
+
+	* configure.ac, src/Makefile.am, src/n3_common.h, src/n3_lexer.l,
+	src/n3_parser.y, src/turtle_parser.y:
+	Remove experimental N3 flex/bison parser - let turtle parser handle it
+
+	This code was never in production/released code and will never be
+	since the turtle parser is likely to be updated and rewritten.
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_abbrev.c, src/raptor_grddl.c, src/raptor_identifier.c,
+	src/raptor_internal.h, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	src/raptor_xsd.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Rename raptor_identifier_type enum and values to raptor_term_type
+
+	The enum values changed: from RAPTOR_IDENTIFIER_TYPE_RESOURCE to
+	RAPTOR_TERM_TYPE_URI, from RAPTOR_IDENTIFIER_TYPE_ANONYMOUS to
+	RAPTOR_TERM_TYPE_BLANK, from RAPTOR_IDENTIFIER_TYPE_LITERAL to
+	RAPTOR_TERM_TYPE_LITERAL and from RAPTOR_IDENTIFIER_TYPE_UNKNOWN to
+	RAPTOR_TERM_TYPE_UNKNOWN.
+
+	* librdfa/iri.c:
+	fix warning: cast from pointer to integer of different size
+
+	(rdfa_iri_get_base): Do pointer calculations then cast result to
+	unsigned int.
+
+	* src/raptor.h:
+	Remove RAPTOR_V2_AVAILABLE - not needed
+
+	* configure.ac:
+	Remove -DRAPTOR_V2_EXPERIMENTAL=1 not needed anymore
+
+	* src/raptor.h, src/raptor_serialize.c:
+	raptor_serialize_start replaced by
+	raptor_serialize_start_to_iostream
+
+	(raptor_serialize_start): Removed deprecated function replaced by
+	correctly named raptor_serialize_start_to_iostream.
+
+	* src/ntriples_parse.c, src/raptor.h:
+	Removed raptor_ntriples_term_type from public api.
+
+	Moved raptor_ntriples_term_type to ntriples_parse.c module only.
+	It could be replaced by a more general raptor_term_type in future
+	when it gets added.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_identifier.c,
+	src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	utils/rdfdiff.c:
+	Remove RAPTOR_IDENTIFIER_TYPE_XML_LITERAL
+
+	This was used for rdf:parseType="Literal" object literals
+	internally 	but publically always is turned into
+	RAPTOR_IDENTIFIER_TYPE_LITERAL.
+
+	raptor_identifier_type loses RAPTOR_IDENTIFIER_TYPE_XML_LITERAL value.
+
+	Removed all code for this which mostly was deleting switch cases
+	but also deletes some functions from the Turtle and RDF/XML-abbrev
+	serializers.
+
+	(raptor_rdfxmla_emit_xml_literal, raptor_turtle_emit_xml_literal):
+	Deleted.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_identifier.c,
+	src/raptor_rdfxml.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c src/raptor_serialize_rdfxmla.c ,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_statement.c,
+	utils/rdfdiff.c:
+	raptor_identifier_type loses the RAPTOR_IDENTIFIER_TYPE_ORDINAL value.
+    
+	raptor_identifier loses ordinal field.
+    
+	Consequent removal of RAPTOR_IDENTIFIER_TYPE_ORDINAL from cases
+	especially handling predicates.
+
+	(raptor_rdfxml_end_element_grammar,
+	raptor_rdfxml_generate_statement,
+	raptor_rdfxml_process_property_attributes,
+	raptor_rdfxml_serialize_statement): Most changes were made here to
+	generate a URI instead of the ordinal integers from the various
+	rdf:li element forms.
+
+	Multiple serializers are now simpler in not having to check for
+	predicate (or even subject/object) ordinals.  Several if
+	ordinal {ordinal handling } ..  else {uri handling} were removed.
+
+	rdfdiff lost several checks for ordinal/resource alternatives.
+	(rdfdiff_ordinal_equals_resource): Deleted.
+
+	* utils/rdfdiff.c: Remove checks for
+	RAPTOR_IDENTIFIER_TYPE_PREDICATE comparison with ordinal for
+	equality.
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c: Removed RAPTOR_IDENTIFIER_TYPE_PREDICATE
+
+	raptor_identifier_type loses RAPTOR_IDENTIFIER_TYPE_PREDICATE
+	which has been a synonym for RAPTOR_IDENTIFIER_TYPE_RESOURCE for
+	some time.
+
+	Update code to remove from switch()s and conditions.
+
+	* src/n3_parser.y, src/raptor.h, src/raptor_identifier.c,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_serialize_rss.c,
+	src/raptor_xsd.c, src/turtle_parser.y:
+	Deleted raptor_uri_source enum and removed from raptor_identifier.
+
+	Only in RDF/XML parser and not used for anything public.
+
+	(raptor_new_identifier_v2): Delete uri_source arg.
+
+	(raptor_copy_identifier, raptor_set_identifier_uri,
+	raptor_set_identifier_id): Remove assignments to uri_source field.
+
+	(raptor_rdfxml_generate_statement): Remove 3 uri_source args.
+
+	(raptor_rss10_emit_item): Remove assignment to uri_source field.
+
+	Change all calls to raptor_new_identifier_v2() and
+	raptor_rdfxml_generate_statement() in the RDF/XML parser.
+
+	* src/n3_parser.y, src/ntriples_parse.c, src/raptor.h,
+	src/raptor_grddl.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_simple.c, src/raptor_serialize_turtle.c,
+	src/raptor_statement.c, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c:
+	Make a raptor_statement into a 3-tuple of raptor_term.
+
+	This is a short term stage before merging raptor_term with
+	raptor_identifier and getting rid of raptor_triple (in N3 and
+	Turtle parsers).  Also want to make the 3 raptor_terms in
+	raptor_statement as object references not statics, and add a graph
+	term.  raptor_identifier_type should be raptor_term_type and have
+	less values: kill ordinal and predicate types.  Lots of structure
+	name field changes everywhere statement is used.
+
+2010-01-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h, src/raptor_abbrev.c, src/raptor_internal.h,
+	src/raptor_parse.c, src/raptor_rss_common.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_rss.c,
+	src/raptor_statement.c, utils/rdfdiff.c:
+	Add raptor_world field to raptor_statement, remove raptor_statement_v2.
+
+	raptor_statment gains a raptor_world* field.  raptor_statement_v2
+	typedef is deleted.
+
+	(raptor_print_statement_as_ntriples_common,
+	raptor_statement_compare_common): Deleted these internal helper
+	functions.
+
+	(raptor_print_statement_v2): Renamed to raptor_print_statement
+
+	(raptor_print_statement_as_ntriples_v2): Renamed to
+	raptor_print_statement_as_ntriples.
+
+	(raptor_statement_part_as_counted_string_v2): Renamed to
+	raptor_statement_part_as_counted_string.
+
+	(raptor_statement_part_as_string_v2): Renamed to
+	raptor_statement_part_as_string.
+
+	(raptor_statement_compare_v2): Renamed to raptor_statement_compare.
+
+	(raptor_statement_copy): Loses world arg.
+
+	(raptor_statement_copy_v2, raptor_statement_copy_v2_from_v1):
+	Deleted.
+
+	(raptor_free_statement): Loses world arg.
+
+	(raptor_free_statement_v2, raptor_print_statement_v1): Deleted
+
+	(raptor_statement_init): Added to initialise statically a
+	allocated statement.
+
+	(raptor_new_parser_v2): Init static statement with
+	raptor_statement_init().
+
+2010-01-05  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor.h, src/raptor_iostream.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c:
+	Removed all V1 deprecated functions and structures.
+
+	(raptor_ntriples_term_as_string,
+	raptor_ntriples_string_as_utf8_string,
+	raptor_new_iostream_from_handler,
+	raptor_iostream_get_bytes_written_count,
+	raptor_iostream_write_string_turtle, raptor_uri_is_file_uri):
+	Deprecated functions deleted
+
+	raptor_ntriples_parser and raptor_iostream_handler: Deprecated
+	typedefs removed.
+
+	* src/raptor.h: Remove RAPTOR_V2_AVAILABLE blocks - V2 is always
+	available
+
+	* src/raptor.h, src/raptor_feature.c, src/raptor_general.c,
+	src/raptor_identifier.c, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_namespace.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_ntriples.c, src/raptor_statement.c,
+	src/raptor_uri.c, src/raptor_www.c, src/raptor_xml_writer.c:
+	Remove all raptor v1 APIs with v2 replacements.
+
+	Remove RAPTOR_V2_EXPERIMENTAL - no longer experimental.  Remove
+	RAPTOR_V1 - not needed.  Remove all blocks that were protected by
+	RAPTOR_DISABLE_V1 including structs, prototypes and V1 functions.
+
+	* src/raptor_parse.c: Fix static accept_header string length so
+	result is always NUL terminated
+
+	(raptor_parser_get_accept_header): The static last-resource
+	accept_header static string is 11 chars not 9. Ensure buffer is
+	big enough so that the NUL gets copied by strncpy().
+
+	* tests/turtle/ex-38-turtle.out: Restore hack out file
+	ex-38-turtle.out
+
+	* tests/.gitignore, tests/rdfxml/ex-38-rdfxmla.out: Restore hack out
+	file ex-38-rdfxmla.out
+
+	* src/n3_lexer.l, src/n3_parser.y, src/ntriples_parse.c,
+	src/parsedate.y, src/raptor.h, src/raptor_abbrev.c,
+	src/raptor_avltree.c, src/raptor_expat.c, src/raptor_feature.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_identifier.c, src/raptor_iostream.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_memstr.c,
+	src/raptor_namespace.c, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c, src/raptor_rss.c, src/raptor_rss.h,
+	src/raptor_rss_common.c, src/raptor_sax2.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_simple.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_utf8.c,
+	src/raptor_www.c, src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/raptor_xsd.c, src/snprintf.c,
+	src/strcasecmp.c, src/turtle_common.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/getopt.c, utils/rapper.c,
+	utils/rdfdiff.c: Code style - whitespace around assignment and
+	comparison ops
+
+2010-01-02  Dave Beckett <dave@dajobe.org>
+
+	* Use AM_SILENT_RULES and move autotools helper files to build/ dir
+
+	Update autogen.sh with latest version; dependent on automake 1.11
+	and it's dependencies to get AM_SILENT_RULES.
+    
+	Update configure.ac to invoke AM_SILENT_RULES defaulting to 'no'.
+
+	* Remove RCS ID
+
+	* Update another .gitignore
+
+	* Add .gitignore to replace SVN properties svn:ignore
