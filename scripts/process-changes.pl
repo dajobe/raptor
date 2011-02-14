@@ -3,9 +3,9 @@
 # Format changes TSV file
 #
 # USAGE:
-#   process-changes.pl [OPTIONS] raptor-changes.tsv
+#   process-changes.pl [OPTIONS] CHANGES-TSV-FILE
 #
-# Copyright (C) 2010, David Beckett http://www.dajobe.org/
+# Copyright (C) 2010-2011, David Beckett http://www.dajobe.org/
 #
 # This package is Free Software and part of Redland http://librdf.org/
 # 
@@ -20,7 +20,18 @@
 # See LICENSE.html or LICENSE.txt at the top of this package for the
 # complete terms and further detail along with the license texts for
 # the licenses in COPYING.LIB, COPYING and LICENSE-2.0.txt respectively.
-
+#
+#
+# Example of Format (9 fields):
+# OLD VERSION<tab>type | enum | OLD RETURN<tab>OLD NAME<tab>OLD ARGS<tab>NEW VERSION<tab>type | enum | NEW RETURN<tab>NEW NAME<tab>NEW ARGS<tab>NOTES
+#
+# Functions
+# 0.9.21<tab>void<tab>oldfunctionor-<tab>(args)<tab>0.9.22<tab>void<tab>newfunctionor-<tab>(args)<tab>NOTES
+# Types
+# 0.9.21<tab>type<tab>oldtypenameor-<tab>-<tab>0.9.22<tab>type<tab>newtypeor-<tab>-<tab>NOTES
+# Enums
+# 0.9.21<tab>enum<tab>oldenumvalueor-<tab>-<tab>0.9.22<tab>enum<tab>newenumvalueor-<tab>-<tab>NOTES
+#
 
 use strict;
 use File::Basename;
@@ -31,6 +42,8 @@ use Pod::Usage;
 our $program = basename $0;
 
 our $nbsp = '&#160;';
+
+our $id_prefix = undef;
 
 sub print_start_chapter_as_docbook_xml($$$$) {
   my($fh, $id, $title, $intro_para)=@_;
@@ -92,6 +105,9 @@ sub format_type_name_as_docbook_xml($) {
   my($name)=@_;
   
   my $escaped_name = $name; $escaped_name =~ s/_/-/g;
+  if($escaped_name =~ /^[-A-Z]+$/) {
+    $escaped_name .= ":CAPS";
+  }
   return qq{<link linkend="$escaped_name"><type>$name</type></link>};
 }
 
@@ -99,7 +115,10 @@ sub format_enum_name_as_docbook_xml($) {
   my($name)=@_;
   
   my $escaped_name = $name; $escaped_name =~ s/_/-/g;
-  return qq{<link linkend="$escaped_name:CAPS"><literal>$name</literal></link>};
+  if($escaped_name =~ /^[-A-Z]+$/) {
+    $escaped_name .= ":CAPS";
+  }
+  return qq{<link linkend="$escaped_name"><literal>$name</literal></link>};
 }
 
 
@@ -128,6 +147,8 @@ sub format_notes($$) {
 sub print_functions_list_as_docbook_xml($$$$@) {
   my($fh, $title, $format_name, $show_sig, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
   <itemizedlist>
     <title>Functions</title>
@@ -135,6 +156,9 @@ EOT
 
   print $fh "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by fn_name name
+  @list = sort { $a->[1] cmp $b->[1] } @list;
 
   for my $item (@list) {
     my($fn_return, $fn_name, $fn_args, $notes) = @$item;
@@ -163,6 +187,8 @@ sub format_enum_sig($$) {
 sub print_types_list_as_docbook_xml($$$$@) {
   my($fh, $title, $format_name, $show_sig, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
   <itemizedlist>
     <title>Types</title>
@@ -170,6 +196,9 @@ EOT
 
   print $fh "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by type name
+  @list = sort { $a->[0] cmp $b->[0] } @list;
 
   for my $item (@list) {
     my($type_name, $notes) = @$item;
@@ -186,6 +215,8 @@ EOT
 sub print_enums_list_as_docbook_xml($$$$@) {
   my($fh, $title, $format_name, $show_sig, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
   <itemizedlist>
     <title>Enums</title>
@@ -193,6 +224,9 @@ EOT
 
   print $fh "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by format name
+  @list = sort { $a->[0] cmp $b->[0] } @list;
 
   for my $item (@list) {
     my($enum_name, $notes) = @$item;
@@ -209,12 +243,17 @@ EOT
 sub print_renamed_functions_as_docbook_xml($$$$@) {
   my($fh, $title, $old_function_header, $new_function_header, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
 <table border='1'>
 EOT
 
   print $fh  "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by from name
+  @list = sort { $a->[0] cmp $b->[0] } @list;
 
   print $fh <<"EOT";
   <thead>
@@ -242,6 +281,8 @@ EOT
 
 sub print_changed_functions_as_docbook_xml($$$$@) {
   my($fh, $title, $old_function_header, $new_function_header, @list)=@_;
+
+  return if !@list;
 
   print $fh <<"EOT";
 <table border='1'>
@@ -293,12 +334,17 @@ EOT
 sub print_changed_types_as_docbook_xml($$$$@) {
   my($fh, $title, $old_type_header, $new_type_header, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
 <table border='1'>
 EOT
 
   print $fh "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by old type name
+  @list = sort { $a->[0] cmp $b->[0] } @list;
 
   print $fh <<"EOT";
   <thead>
@@ -330,12 +376,17 @@ EOT
 sub print_renamed_enums_as_docbook_xml($$$$@) {
   my($fh, $title, $old_enum_header, $new_enum_header, @list)=@_;
 
+  return if !@list;
+
   print $fh <<"EOT";
 <table border='1'>
 EOT
 
   print $fh "  <caption>$title</caption>\n"
     if defined $title;
+
+  # Sort by from name
+  @list = sort { $a->[0] cmp $b->[0] } @list;
 
   print $fh <<"EOT";
   <thead>
@@ -424,6 +475,18 @@ sub print_statement_field_renames_as_perl_script($) {
 }
 
 
+sub to_id($) {
+  my $id=shift;
+
+  $id =~ s/\W/-/g;
+  $id =~ s/\-+/-/g;
+  $id =~ s/^\-//;
+  $id =~ s/\-$//;
+
+  return $id;
+}
+
+
 # main
 
 my $docbook_xml_file = undef;
@@ -433,6 +496,7 @@ my $usage = undef;
 GetOptions(
   'docbook-xml=s'    => \$docbook_xml_file,
   'upgrade-script=s' => \$upgrade_script_file,
+  'package=s'        => \$id_prefix,
   'help|h|?'         => \$usage
 ) || pod2usage(2);
 
@@ -442,29 +506,31 @@ pod2usage(-verbose => 2)
 # Arguments
 our($package, $file) = @ARGV;
 
+$id_prefix ||= $package;
 
 # Read in data
 
-# Example of Format (9 fields):
-# OLD VERSION<tab>OLD RETURN<tab>OLD NAME<tab>OLD ARGS<tab>NEW VERSION<tab>NEW RETURN<tab>NEW NAME<tab>NEW ARGS<tab>NOTES
-# 1.4.21	void*	raptor_alloc_memory	(size_t size)	1.9.0	void*	raptor_alloc_memory	(size_t size)	-
 our $expected_n_fields = 9;
 
-my(@new_functions);
-my(@deleted_functions);
-my(@renamed_functions);
-my(@changed_functions);
+# "$old-$new" versions in order
+our(@version_pairs);
+# and seen
+our(%version_pairs_seen);
 
-my(@new_types);
-my(@deleted_types);
-my(@changed_types);
+# Hashes keyed by $version_pair.  Value is array of descriptive
+# arrays specific to each type
+my(%new_functions);
+my(%deleted_functions);
+my(%renamed_functions);
+my(%changed_functions);
 
-my(@new_enums);
-my(@deleted_enums);
-my(@renamed_enums);
+my(%new_types);
+my(%deleted_types);
+my(%changed_types);
 
-our $old_version;
-our $new_version;
+my(%new_enums);
+my(%deleted_enums);
+my(%renamed_enums);
 
 open(IN, "<$file") or die "$program: Cannot read $file - $!\n";
 while(<IN>) {
@@ -477,68 +543,73 @@ while(<IN>) {
     unless scalar(@fields) == $expected_n_fields;
 
   if($fields[1] eq 'type') {
-    # Do not handle types yet.
-
     my($old_ver, $dummy1, $old_name, $old_args, $new_ver, $dummy2, $new_name, $new_args,$notes)=@fields;
 
-    $old_version = $old_ver unless defined $old_version;
-    $new_version = $new_ver unless defined $new_version;
+    my $version_pair = $old_ver."-".$new_ver;
+    if(!$version_pairs_seen{$version_pair}) {
+      push(@version_pairs, [$old_ver, $new_ver]);
+      $version_pairs_seen{$version_pair} = 1;
+    }
 
     $notes = '' if $notes eq '-';
 
     if($old_name eq '-') {
-      push(@new_types, [$new_name, $notes]);
+      push(@{$new_types{$version_pair}}, [$new_name, $notes]);
     } elsif($new_name eq '-') {
-      push(@deleted_types, [$old_name, $notes]);
-    } elsif($old_name eq $new_name) {
+      push(@{$deleted_types{$version_pair}}, [$old_name, $notes]);
+    } elsif(($old_name eq $new_name) && $notes eq '') {
       # same
     } else {
       # renamed and maybe something else changed - in the notes
-      push(@changed_types, [$old_name, $new_name, $notes]);
+      push(@{$changed_types{$version_pair}}, [$old_name, $new_name, $notes]);
     }
 
   } elsif($fields[1] eq 'enum') {
-    # Do not handle enum yet.
-
     my($old_ver, $dummy1, $old_name, $old_args, $new_ver, $dummy2, $new_name, $new_args,$notes)=@fields;
 
-    $old_version = $old_ver unless defined $old_version;
-    $new_version = $new_ver unless defined $new_version;
+    my $version_pair = $old_ver."-".$new_ver;
+    if(!$version_pairs_seen{$version_pair}) {
+      push(@version_pairs, [$old_ver, $new_ver]);
+      $version_pairs_seen{$version_pair} = 1;
+    }
 
     $notes = '' if $notes eq '-';
 
     if($old_name eq '-') {
-      push(@new_enums, [$new_name, $notes]);
+      push(@{$new_enums{$version_pair}}, [$new_name, $notes]);
     } elsif($new_name eq '-') {
-      push(@deleted_enums, [$old_name, $notes]);
-    } elsif($old_name eq $new_name) {
+      push(@{$deleted_enums{$version_pair}}, [$old_name, $notes]);
+    } elsif(($old_name eq $new_name) && $notes eq '') {
       # same
     } else {
-      push(@renamed_enums, [$old_name, $new_name, $notes]);
+      push(@{$renamed_enums{$version_pair}}, [$old_name, $new_name, $notes]);
     }
 
   } else {
     my($old_ver, $old_return, $old_name, $old_args, $new_ver, $new_return, $new_name, $new_args,$notes)=@fields;
 
-    $old_version = $old_ver unless defined $old_version;
-    $new_version = $new_ver unless defined $new_version;
+    my $version_pair = $old_ver."-".$new_ver;
+    if(!$version_pairs_seen{$version_pair}) {
+      push(@version_pairs, [$old_ver, $new_ver]);
+      $version_pairs_seen{$version_pair} = 1;
+    }
 
     $notes = '' if $notes eq '-';
 
     if($old_name eq '-') {
-      push(@new_functions, [$new_return, $new_name, $new_args, $notes]);
+      push(@{$new_functions{$version_pair}}, [$new_return, $new_name, $new_args, $notes]);
     } elsif($new_name eq '-') {
-      push(@deleted_functions, [$old_return, $old_name, $old_args, $notes]);
+      push(@{$deleted_functions{$version_pair}}, [$old_return, $old_name, $old_args, $notes]);
     } elsif($old_return eq $new_return && $old_name eq $new_name &&
 	    $old_args eq $new_args) {
       # same
     } elsif($old_return eq $new_return && $old_name ne $new_name &&
 	    $old_args eq $new_args) {
       # renamed but nothing else changed
-      push(@renamed_functions, [$old_name, $new_name, $notes]);
+      push(@{$renamed_functions{$version_pair}}, [$old_name, $new_name, $notes]);
     } else {
       # something changed - args and/or return
-      push(@changed_functions, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args, $notes]);
+      push(@{$changed_functions{$version_pair}}, [$old_return, $old_name, $old_args, $new_return, $new_name, $new_args, $notes]);
     }
   }
 }
@@ -555,80 +626,116 @@ if(defined $docbook_xml_file) {
 
   our $intro_title = "API Changes";
   our $intro_para = <<"EOT";
-This chapter describes the API changes between $package
-$old_version and $new_version.
+This chapter describes the API changes for $package.
 EOT
+
   print_start_chapter_as_docbook_xml($out_fh,
-				     'raptor-changes',
+				     $id_prefix.'-changes',
 				     $intro_title,
 				     $intro_para);
+  
 
-  print_start_section_as_docbook_xml($out_fh,
-				     'raptor-changes-intro',
-				     "Introduction");
-  print $out_fh <<'EOT';
+    print_start_section_as_docbook_xml($out_fh,
+				       $id_prefix.'-changes-intro',
+				       "Introduction");
+    print $out_fh <<"EOT";
 <para>
-The following sections describe the function changes in the API:
-additions, deletions, renames (retaining the same number of
-parameters, types and return value type) and functions with more
-complex changes.  Changes to typedefs and structs are not described here.
+The following sections describe the changes in the API between
+versions including additions, deletions, renames (retaining the same
+number of parameters, types and return value type) and more complex
+changes to functions, types and enums.
 </para>
 EOT
 
-  print_end_section_as_docbook_xml($out_fh);
+    print_end_section_as_docbook_xml($out_fh);
 
+  # Sort by new version, newest first
+  for my $vp (sort { $b->[1] cmp $a->[1] } @version_pairs) {
+    my($old_version, $new_version)= @$vp;
+    my $id = to_id($old_version) . "-to-" . to_id($new_version);
 
-  print_start_section_as_docbook_xml($out_fh,
-				     'raptor-changes-new',
-				     "New functions, types and enums in $package $new_version");
-  print_functions_list_as_docbook_xml($out_fh,
-				     undef, 1, 1, @new_functions);
-  print_types_list_as_docbook_xml($out_fh,
-				     undef, 1, 1, @new_types);
-  print_enums_list_as_docbook_xml($out_fh,
-				     undef, 1, 1, @new_enums);
-  print_end_section_as_docbook_xml($out_fh);
+    my $version_pair = $old_version."-".$new_version;
 
-  print_start_section_as_docbook_xml($out_fh,
-				     'raptor-changes-deleted',
-				     "Deleted functions, types and enums in $package $new_version");
-  print_functions_list_as_docbook_xml($out_fh,
-				     undef, 0, 0, @deleted_functions);
-  print_types_list_as_docbook_xml($out_fh,
-				  undef, 0, 1, @deleted_types);
-  print_enums_list_as_docbook_xml($out_fh,
-				  undef, 0, 1, @deleted_enums);
-  print_end_section_as_docbook_xml($out_fh);
+    print_start_section_as_docbook_xml($out_fh,
+				       $id_prefix.'-changes-'.$id,
+				       "Changes between $package $old_version and $new_version");
 
-  print_start_section_as_docbook_xml($out_fh,
-				     'raptor-changes-renamed',
-				     "Renamed function and enums in $package $new_version");
-  print_renamed_functions_as_docbook_xml($out_fh,
+    my(@f, @t, @e);
+    @f = @{$new_functions{$version_pair} || []};
+    @t = @{$new_types{$version_pair} || []};
+    @e = @{$new_enums{$version_pair} || []};
+
+    if(@f || @t || @e) {
+      print_start_section_as_docbook_xml($out_fh,
+					 $id_prefix.'-changes-new-'.$id,
+					 "New functions, types and enums");
+      print_functions_list_as_docbook_xml($out_fh,
+					  undef, 1, 1, @f);
+      print_types_list_as_docbook_xml($out_fh,
+				      undef, 1, 1, @t);
+      print_enums_list_as_docbook_xml($out_fh,
+				      undef, 1, 1, @e);
+      print_end_section_as_docbook_xml($out_fh);
+    }
+
+    @f = @{$deleted_functions{$version_pair} || []};
+    @t = @{$deleted_types{$version_pair} || []};
+    @e = @{$deleted_enums{$version_pair} || []};
+    if(@f || @t || @e) {
+      print_start_section_as_docbook_xml($out_fh,
+					 $id_prefix.'-changes-deleted-'.$id,
+					 "Deleted functions, types and enums");
+      print_functions_list_as_docbook_xml($out_fh,
+					  undef, 0, 0, @f);
+      print_types_list_as_docbook_xml($out_fh,
+				      undef, 0, 1, @t);
+      print_enums_list_as_docbook_xml($out_fh,
+				      undef, 0, 1, @e);
+      print_end_section_as_docbook_xml($out_fh);
+    }
+    
+
+    @f = @{$renamed_functions{$version_pair} || []};
+    @e = @{$renamed_enums{$version_pair} || []};
+    if(@f || @e) {
+      print_start_section_as_docbook_xml($out_fh,
+					 $id_prefix.'-changes-renamed-'.$id,
+					 "Renamed function and enums");
+      print_renamed_functions_as_docbook_xml($out_fh,
+					     undef,
+					     "$old_version function",
+					     "$new_version function",
+					     @f);
+      print_renamed_enums_as_docbook_xml($out_fh,
 					 undef,
-					 "$old_version function",
-					 "$new_version function",
-					 @renamed_functions);
-  print_renamed_enums_as_docbook_xml($out_fh,
-				     'Enums', 
-				     "$old_version enum",
-				     "$new_version enum",
-				     @renamed_enums);
-  print_end_section_as_docbook_xml($out_fh);
+					 "$old_version enum",
+					 "$new_version enum",
+					 @e);
+      print_end_section_as_docbook_xml($out_fh);
+    }
+    
+    @f = @{$changed_functions{$version_pair} || []};
+    @t = @{$changed_types{$version_pair} || []};
+    if(@f || @t) {
+      print_start_section_as_docbook_xml($out_fh,
+					 $id_prefix.'-changes-changed-'.$id,
+					 "Changed functions and types");
+      print_changed_functions_as_docbook_xml($out_fh,
+					     undef,
+					     "$old_version function",
+					     "$new_version function",
+					     @f);
+      print_changed_types_as_docbook_xml($out_fh,
+					 undef,
+					 "$old_version type",
+					 "$new_version type",
+					 @t);
+      print_end_section_as_docbook_xml($out_fh);
+   }
 
-  print_start_section_as_docbook_xml($out_fh,
-				     'raptor-changes-changed',
-				     "Changed functions and types in $package $new_version");
-  print_changed_functions_as_docbook_xml($out_fh,
-					 'Functions', 
-					 "$old_version function",
-					 "$new_version function",
-					 @changed_functions);
-  print_changed_types_as_docbook_xml($out_fh,
-				     'Types', 
-				     "$old_version type",
-				     "$new_version type",
-				     @changed_types);
-  print_end_section_as_docbook_xml($out_fh);
+   print_end_section_as_docbook_xml($out_fh);
+
+  } # end pair of old/new versions
 
   print_end_chapter_as_docbook_xml($out_fh);
 
@@ -644,30 +751,47 @@ if(defined $upgrade_script_file) {
 
   print $out_fh "#!/usr/bin/perl -pi~\n";
 
-  print $out_fh "# Perl script to upgrade $package $old_version to $new_version\n\n";
+  for my $vp (@version_pairs) {
+    my($old_version, $new_version)= @$vp;
 
-  print_statement_field_renames_as_perl_script($out_fh);
+    my $version_pair = $old_version."-".$new_version;
 
-  print_deletes_as_perl_script($out_fh, 'Deleted functions',
-			       (map { [ $_->[1], $_->[3] ] } @deleted_functions));
+    print $out_fh "# Perl script to upgrade $package $old_version to $new_version\n\n";
 
-  print_deletes_as_perl_script($out_fh, 'Deleted types',
-			       @deleted_types);
+    print_statement_field_renames_as_perl_script($out_fh);
 
-  print_deletes_as_perl_script($out_fh, 'Deleted enums',
-			       @deleted_enums);
+    my(@f, @t, @e);
 
-  print_renames_as_perl_script($out_fh, 'Renamed functions', 1,
-			       @renamed_functions);
+    @f = @{$deleted_functions{$version_pair} || []};
+    @t = @{$deleted_types{$version_pair} || []};
+    @e = @{$deleted_enums{$version_pair} || []};
 
-  print_renames_as_perl_script($out_fh, 'Renamed enums', 0,
-			       @renamed_enums);
+    print_deletes_as_perl_script($out_fh, 'Deleted functions',
+				 (map { [ $_->[1], $_->[3] ] } @f));
 
-  print_changes_as_perl_script($out_fh, 'Changed functions',
-			       (map { [ $_->[1], $_->[4], $_->[6] ] } @changed_functions));
+    print_deletes_as_perl_script($out_fh, 'Deleted types',
+				 @t);
 
-  print_changes_as_perl_script($out_fh, 'Changed types',
-			       @changed_types);
+    print_deletes_as_perl_script($out_fh, 'Deleted enums',
+				 @e);
+
+    @f = @{$renamed_functions{$version_pair} || []};
+    @e = @{$renamed_enums{$version_pair} || []};
+    print_renames_as_perl_script($out_fh, 'Renamed functions', 1,
+				 @f);
+
+    print_renames_as_perl_script($out_fh, 'Renamed enums', 0,
+				 @e);
+
+    @f = @{$changed_functions{$version_pair} || []};
+    @t = @{$changed_types{$version_pair} || []};
+    print_changes_as_perl_script($out_fh, 'Changed functions',
+				 (map { [ $_->[1], $_->[4], $_->[6] ] } @f));
+
+    print_changes_as_perl_script($out_fh, 'Changed types',
+				 @t);
+
+  } # end of version pair loop
 
   $out_fh->close;
 }
