@@ -1,7 +1,41 @@
+2011-02-27  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl:
+	Update to latest process-changes.pl
+
+2011-02-14  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl:
+	Update to latest process-changes.pl
+
+	* tests/turtle/Makefile.am, tests/turtle/test-36.out,
+	tests/turtle/test-36.ttl, tests/turtle/test-37.out,
+	tests/turtle/test-37.ttl: Add tests for long literal with dups and
+	lang
+
+2011-02-07  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.11, Makefile.am:
+	Add ChangeLog.11 for 2010
+
+2011-02-06  Dave Beckett <dave@dajobe.org>
+
+	* LICENSE.html: Make GPL V2 or newer explicit.
+
+2011-02-01  Dave Beckett <dave@dajobe.org>
+
+	* raptor2.spec.in: fix Source:
+
 2011-01-27  Dave Beckett <dave@dajobe.org>
 
-	* NEWS.html, RELEASE.html, configure.ac:
-	Bumped version to 2.0.1
+	* src/raptor_internal.h: Remove get_curie_type rename for librdfa
+	- now static
+
+	* librdfa/curie.c, librdfa/rdfa_utils.h: Update to librda GIT
+	commit 3838bb11fb155bbae200a2388096cbe6804a7551 No longer exports
+	get_curie_type.
+
+	* NEWS.html, RELEASE.html, configure.ac: Bumped version to 2.0.1
 
 2011-01-26  Dave Beckett <dave@dajobe.org>
 
