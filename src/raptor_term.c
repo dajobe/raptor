@@ -83,7 +83,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
 /**
  * raptor_new_term_from_counted_uri_string:
  * @world: raptor world
- * @uri_string: URI string.
+ * @uri_string: UTF-8 encoded URI string.
  * @length: length of URI string
  *
  * Constructor - create a new URI statement term from a UTF-8 encoded Unicode string
@@ -118,7 +118,7 @@ raptor_new_term_from_counted_uri_string(raptor_world* world,
 /**
  * raptor_new_term_from_uri_string:
  * @world: raptor world
- * @uri_string: URI string.
+ * @uri_string: UTF-8 encoded URI string.
  *
  * Constructor - create a new URI statement term from a UTF-8 encoded Unicode string
  *
@@ -148,13 +148,13 @@ raptor_new_term_from_uri_string(raptor_world* world,
 /**
  * raptor_new_term_from_counted_literal:
  * @world: raptor world
- * @literal: literal data (or NULL for empty literal)
+ * @literal: UTF-8 encoded literal string (or NULL for empty literal)
  * @literal_len: length of literal
  * @datatype: literal datatype URI (or NULL)
  * @language: literal language (or NULL for no language)
  * @language_len: literal language length
  *
- * Constructor - create a new literal statement term from a counted length literal.
+ * Constructor - create a new literal statement term from a counted UTF-8 encoded literal string
  *
  * Takes copies of the passed in @literal, @datatype, @language
  *
@@ -244,7 +244,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
 /**
  * raptor_new_term_from_literal:
  * @world: raptor world
- * @literal: literal data (or NULL for empty literal)
+ * @literal: UTF-8 encoded literal string (or NULL for empty literal)
  * @datatype: literal datatype URI (or NULL)
  * @language: literal language (or NULL)
  *
@@ -285,10 +285,10 @@ raptor_new_term_from_literal(raptor_world* world,
 /**
  * raptor_new_term_from_counted_blank:
  * @world: raptor world
- * @blank: blank node identifier (or NULL)
+ * @blank: UTF-8 encoded blank node identifier (or NULL)
  * @length: length of identifier (or 0)
  *
- * Constructor - create a new blank node statement term from counted string ID
+ * Constructor - create a new blank node statement term from a counted UTF-8 encoded blank node ID
  *
  * Takes a copy of the passed in @blank
  *
@@ -340,9 +340,9 @@ raptor_new_term_from_counted_blank(raptor_world* world,
 /**
  * raptor_new_term_from_blank:
  * @world: raptor world
- * @blank: blank node identifier (or NULL)
+ * @blank: UTF-8 encoded blank node identifier (or NULL)
  *
- * Constructor - create a new blank node statement term
+ * Constructor - create a new blank node statement term from a UTF-8 encoded blank node ID
  *
  * Takes a copy of the passed in @blank
  *
