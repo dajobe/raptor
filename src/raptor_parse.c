@@ -905,7 +905,10 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
  * @handler: new statement callback function
  *
  * Set the statement handler function for the parser.
- * 
+ *
+ * Use this to set the function to receive statements as the parsing
+ * proceeds. The statement argument to @handler is shared and must be
+ * copied by the caller with raptor_statement_copy().
  **/
 void
 raptor_parser_set_statement_handler(raptor_parser* parser,

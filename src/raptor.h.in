@@ -678,6 +678,12 @@ typedef void (*raptor_log_handler)(void *user_data, raptor_log_message *message)
  * @statement: statement to report
  *
  * Statement (triple) reporting handler function.
+ *
+ * This handler function set with
+ * raptor_parser_set_statement_handler() on a parser receives
+ * statements as the parsing proceeds. The @statement argument to the
+ * handler is shared and must be copied by the caller with
+ * raptor_statement_copy().
  */
 typedef void (*raptor_statement_handler)(void *user_data, raptor_statement *statement);
 
