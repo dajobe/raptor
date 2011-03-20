@@ -11,7 +11,24 @@
 
 <h2 id="rel2_0_1"><a name="rel2_0_1">Raptor 2.0.1 Changes</a></h2>
 
-<p>Not yet released.
+<h3>Parser class changes</h3>
+
+<p>The internal librdfa parser that uses Raptor internals now exports
+symbols prefixed with raptor_librdfa so that Raptor can be linked
+with the standard librdfa in applications without symbol clashes.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=416">Issue #0000416</a>
+</p>
+
+<h3>Serializer class changes</h3>
+
+<p>The N-Quads serializer was fixed to output the graph name in the
+fourth column, instead of repeating the object.
+</p>
+
+<h3>Internal changes</h3>
+
+<p>Replaced all internal fatal errors that went to
+an <code>abort()</code> with regular logged error.
 </p>
 
 
