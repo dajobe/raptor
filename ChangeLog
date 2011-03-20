@@ -1,3 +1,12 @@
+2011-03-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h.in, src/raptor_parse.c: autodocs
+
+2011-03-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c: Autodocs - mention UTF-8 encodings in
+	args/returns for raptor_term docs
+
 2011-02-27  Dave Beckett <dave@dajobe.org>
 
 	* scripts/process-changes.pl:
