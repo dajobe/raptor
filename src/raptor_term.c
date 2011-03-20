@@ -292,7 +292,9 @@ raptor_new_term_from_literal(raptor_world* world,
  *
  * Takes a copy of the passed in @blank
  *
- * If @blank is NULL, creates a new internal identifier and assigns it.
+ * If @blank is NULL, creates a new internal identifier and uses it.
+ * This will use the handler set with
+ * raptor_world_set_generate_bnodeid_parameters()
  *
  * Note: The @blank need not be NULL terminated - a NULL will be
  * added to the copied string used.
@@ -346,7 +348,9 @@ raptor_new_term_from_counted_blank(raptor_world* world,
  *
  * Takes a copy of the passed in @blank
  *
- * If @blank is NULL, creates a new internal identifier and assigns it.
+ * If @blank is NULL, creates a new internal identifier and uses it.
+ * This will use the handler set with
+ * raptor_world_set_generate_bnodeid_parameters()
  *
  * Return value: new term or NULL on failure
 */
