@@ -233,10 +233,15 @@ changequote([, ])dnl
 
 version_decimal=`expr $version_major \* 10000 + $version_minor \* 100 + $version_release`
 
+# The minimum runtime API version that is supported.  MUST be updated at
+# an API break as well as changing the libtool version
+min_version_decimal=20000
+
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MAJOR, $version_major, [Major version number])
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_MINOR, $version_minor, [Minor version number])
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_RELEASE, $version_release, [Release version number])
 AC_DEFINE_UNQUOTED(RAPTOR_VERSION_DECIMAL, $version_decimal, [Release version as a decimal])
+AC_DEFINE_UNQUOTED(RAPTOR_MIN_VERSION_DECIMAL, $min_version_decimal, [Minimum supported package version])
 
 # for raptor-config.in
 RAPTOR_VERSION_MAJOR=$version_major
