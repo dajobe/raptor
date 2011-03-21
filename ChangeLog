@@ -1,4 +1,7 @@
-2011-03-20  Dave Beckett <dave@dajobe.org>
+2011-03-20  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_2 for 2.0.2 release (GIT
+	4d782df45fd4b3e11243008c4dc221effcaad591)
 
 	* configure.ac, src/raptor_general.c: Error out when calling
 	library presents a too old header
