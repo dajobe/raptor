@@ -1,4 +1,15 @@
-2011-03-20  Dave Beckett  <dave@dajobe.org>
+2011-03-20  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_general.c: Error out when calling
+	library presents a too old header
+
+	(raptor_new_world_internal): Switch to checking for too old, not
+	exact match.
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.2
+
+	* src/raptor_term.c: autodocs
 
 	* Snapshotted raptor2_2_0_1 for 2.0.1 release (GIT
 	6f1655f985df370999a92897726d359946c1dbd9)
