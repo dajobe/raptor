@@ -68,6 +68,8 @@
 /* Re-entrant scanner */
 %option reentrant
 
+%option extra-type="raptor_parser*"
+
 
   /* definitions */
 
@@ -194,7 +196,7 @@ EXPONENT [eE][+-]?[0-9]+
   /* rules */
 
 %{
-  raptor_parser *rdf_parser = (raptor_parser*)yyextra;
+  raptor_parser *rdf_parser = yyextra;
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
 #ifdef HAVE_SETJMP
