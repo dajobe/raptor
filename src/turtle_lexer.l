@@ -809,9 +809,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
 
 
-#ifdef STANDALONE
-
-static void
+void
 turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 {
   if(!token)
@@ -835,6 +833,8 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
   }
 }
 
+
+#ifdef STANDALONE
 
 int
 main(int argc, char *argv[]) 

@@ -34,6 +34,9 @@ extern "C" {
 int turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 
+/* turtle_lexer.l */
+extern void turtle_token_free(raptor_world* world, int token, YYSTYPE *lval);
+
 
 /*
  * Turtle parser object
