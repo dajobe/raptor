@@ -260,47 +260,59 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
 
   fputc('[', stream);
 
-  if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    fputs((const char*)statement->subject->value.blank.string, stream);
+  if(!statement->subject) {
+    fputs("NULL", stream);
+  } else {
+    if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
+      fputs((const char*)statement->subject->value.blank.string, stream);
+    } else {
+#ifdef RAPTOR_DEBUG
+      if(!statement->subject->value.uri)
+        RAPTOR_FATAL1("Statement has NULL subject URI\n");
+#endif
+      fputs((const char*)raptor_uri_as_string(statement->subject->value.uri),
+            stream);
+    }
+  }
+  
+  fputs(", ", stream);
+
+  if(!statement->predicate) {
+    fputs("NULL", stream);
   } else {
 #ifdef RAPTOR_DEBUG
-    if(!statement->subject->value.uri)
-      RAPTOR_FATAL1("Statement has NULL subject URI\n");
+    if(!statement->predicate->value.uri)
+      RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
-    fputs((const char*)raptor_uri_as_string(statement->subject->value.uri),
+    fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri),
           stream);
   }
-
+  
   fputs(", ", stream);
 
+  if(!statement->object) {
+    fputs("NULL", stream);
+  } else {
+    if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
+      if(statement->object->value.literal.datatype) {
+        raptor_uri* dt_uri = statement->object->value.literal.datatype;
+        fputc('<', stream);
+        fputs((const char*)raptor_uri_as_string(dt_uri), stream);
+        fputc('>', stream);
+      }
+      fputc('"', stream);
+      fputs((const char*)statement->object->value.literal.string, stream);
+      fputc('"', stream);
+    } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK)
+      fputs((const char*)statement->object->value.blank.string, stream);
+    else {
 #ifdef RAPTOR_DEBUG
-  if(!statement->predicate->value.uri)
-    RAPTOR_FATAL1("Statement has NULL predicate URI\n");
+      if(!statement->object->value.uri)
+        RAPTOR_FATAL1("Statement has NULL object URI\n");
 #endif
-  fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri),
-        stream);
-
-  fputs(", ", stream);
-
-  if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
-    if(statement->object->value.literal.datatype) {
-      raptor_uri* dt_uri = statement->object->value.literal.datatype;
-      fputc('<', stream);
-      fputs((const char*)raptor_uri_as_string(dt_uri), stream);
-      fputc('>', stream);
+      fputs((const char*)raptor_uri_as_string(statement->object->value.uri),
+            stream);
     }
-    fputc('"', stream);
-    fputs((const char*)statement->object->value.literal.string, stream);
-    fputc('"', stream);
-  } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK)
-    fputs((const char*)statement->object->value.blank.string, stream);
-  else {
-#ifdef RAPTOR_DEBUG
-    if(!statement->object->value.uri)
-      RAPTOR_FATAL1("Statement has NULL object URI\n");
-#endif
-    fputs((const char*)raptor_uri_as_string(statement->object->value.uri),
-          stream);
   }
 
   if(statement->graph) {
