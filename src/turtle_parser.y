@@ -209,6 +209,7 @@ graph: graphName colonMinusOpt LEFT_CURLY
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
       turtle_parser->graph_name = $1; /* becomes owner of $1 */
+      $1 = NULL;
       raptor_parser_start_graph(parser, turtle_parser->graph_name->value.uri, 1);
     }
   }
@@ -1222,6 +1223,10 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length) {
   if(turtle_lexer_lex_init(&turtle_parser->scanner))
     return 1;
   turtle_parser->scanner_set = 1;
+
+#if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_parser_debug = 1;
+#endif
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
   buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
