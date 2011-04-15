@@ -102,6 +102,9 @@ HTML_IMAGES =
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=
 
+# gtkdoc might not define this
+DISTCLEANFILES=
+
 include $(top_srcdir)/gtk-doc.make
 
 man_MANS = libraptor2.3
@@ -113,7 +116,7 @@ $(man_MANS) \
 version.xml.in \
 upgrade-script.pl
 
-DISTCLEANFILES += \
+DISTCLEANFILES+= \
 raptor-fake.i
 
 if MAINTAINER_MODE
