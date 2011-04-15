@@ -113,7 +113,7 @@ $(man_MANS) \
 version.xml.in \
 upgrade-script.pl
 
-CLEANFILES += \
+DISTCLEANFILES += \
 raptor-fake.i
 
 if MAINTAINER_MODE
