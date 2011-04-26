@@ -20,7 +20,7 @@ example?
 parsedate.c
 parsedate.h
 parsedate.output
-raptor.h
+raptor2.h
 raptor-config
 raptor_config.h
 raptor_config.h.in

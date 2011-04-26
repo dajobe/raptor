@@ -48,8 +48,8 @@
 #include <stdlib.h>
 #endif
 
-#include <raptor.h>
-#include <raptor_internal.h>
+#include "raptor2.h"
+#include "raptor_internal.h"
 
 #include <turtle_parser.h>
 

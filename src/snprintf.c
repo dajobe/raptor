@@ -11,7 +11,7 @@
 #include <raptor_config.h>
 #endif
 
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 
 #include <float.h>

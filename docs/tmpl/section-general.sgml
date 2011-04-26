@@ -96,7 +96,6 @@ and various other utility functions.
 </para>
 
 @message: 
-@arguments: 
 @Returns: 
 
 
@@ -241,12 +240,10 @@ and various other utility functions.
 
 </para>
 
-@names: 
 @names_count: 
 @label: 
 @mime_types: 
 @mime_types_count: 
-@uri_strings: 
 @uri_strings_count: 
 @flags: 
 

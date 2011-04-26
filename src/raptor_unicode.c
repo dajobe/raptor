@@ -38,7 +38,7 @@
 #endif
 
 /* Raptor includes */
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 #ifdef RAPTOR_NFC_CHECK
 #include "raptor_nfc.h"

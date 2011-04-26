@@ -36,7 +36,7 @@
 #include <stdarg.h>
 
 /* Raptor includes */
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 
 #ifdef RAPTOR_WWW_LIBXML

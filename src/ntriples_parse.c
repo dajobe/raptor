@@ -46,7 +46,7 @@
 #endif
 
 /* Raptor includes */
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 
 /* Set RAPTOR_DEBUG to > 1 to get lots of buffer related debugging */

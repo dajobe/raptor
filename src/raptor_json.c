@@ -47,7 +47,7 @@
 #include <yajl/yajl_parse.h>
 
 /* Raptor includes */
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 
 

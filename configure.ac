@@ -1370,7 +1370,7 @@ docs/Makefile
 docs/version.xml
 examples/Makefile
 scripts/Makefile
-src/raptor.h
+src/raptor2.h
 src/win32_raptor_config.h
 src/Makefile
 tests/Makefile

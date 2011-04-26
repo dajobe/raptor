@@ -8,7 +8,7 @@
 
 
 /* Raptor includes */
-#include "raptor.h"
+#include "raptor2.h"
 #include "raptor_internal.h"
 #include "raptor_nfc.h"
 
