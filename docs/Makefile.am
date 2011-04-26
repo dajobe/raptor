@@ -50,10 +50,10 @@ turtle_common.c \
 parsedate.c \
 strcasecmp.c
 
-# Use fixed version of raptor.h
+# Use fixed version of raptor2.h
 EXTRA_HFILES=$(srcdir)/raptor-fake.i
 
-# Headers to ignore: yes raptor.h is intended to be in this list
+# Headers to ignore: yes raptor2.h is intended to be in this list
 # since it is added as a fixed file raptor-fake.i by EXTRA_HFILES above
 IGNORE_HFILES= \
 	n3_common.h \
@@ -61,6 +61,7 @@ IGNORE_HFILES= \
 	n3_parser.h \
 	parsedate.h \
 	raptor.h \
+	raptor2.h \
 	raptor_config.h \
 	raptor_internal.h \
 	raptor_nfc.h \
@@ -148,7 +149,7 @@ $(top_builddir)/scripts/build-formats:
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
-raptor-fake.i: $(top_srcdir)/src/raptor.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+raptor-fake.i: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
 	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif
