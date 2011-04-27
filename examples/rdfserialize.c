@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <raptor.h>
+#include <raptor2.h>
 #include <stdlib.h>
 
 /* rdfserialize.c: serialize 1 triple to RDF/XML-Abbrev */

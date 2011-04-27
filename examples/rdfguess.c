@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <raptor.h>
+#include <raptor2.h>
 
 
 /* rdfguess.c: guess parser name from filename and its content */

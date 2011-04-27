@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <raptor.h>
+#include <raptor2.h>
 
 /* rdfcat.c: parse any RDF syntax and serialize to RDF/XML-Abbrev */
 

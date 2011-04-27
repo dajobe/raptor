@@ -47,7 +47,7 @@
 #endif
 
 /* Raptor includes */
-#include <raptor.h>
+#include <raptor2.h>
 
 /* Gtk 2.0 */
 #include <gtk/gtk.h>

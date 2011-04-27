@@ -26,7 +26,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <raptor.h>
+#include <raptor2.h>
 
 static const char * const program = "build-formats";
 

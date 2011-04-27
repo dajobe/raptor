@@ -22,7 +22,7 @@
  * 
  */
 
-#include <raptor.h>
+#include <raptor2.h>
 
 int main(int argc, char *argv[]);
 

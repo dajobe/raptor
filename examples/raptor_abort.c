@@ -44,7 +44,7 @@
 #endif
 
 /* Raptor includes */
-#include <raptor.h>
+#include <raptor2.h>
 
 
 static void handle_statements(void *user_data, raptor_statement *statement);
