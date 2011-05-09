@@ -1,3 +1,71 @@
+2011-04-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor2.3, examples/grapper.c, examples/raptor_abort.c,
+	examples/rdfcat.c, examples/rdfguess.c, examples/rdfprint.c,
+	examples/rdfserialize.c, scripts/build-formats.c, tests/empty.c:
+	Use raptor2.h header
+
+2011-04-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/Makefile.am:
+	Make docs use raptor2.h
+
+	* configure.ac, docs/tmpl/section-general.sgml, librdfa/rdfa.h,
+	src/.gitignore, src/Makefile.am, src/ntriples_parse.c,
+	src/raptor.h, src/raptor.h.in, src/raptor2.h.in,
+	src/raptor_abbrev.c, src/raptor_avltree.c, src/raptor_concepts.c,
+	src/raptor_expat.c, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_log.c,
+	src/raptor_memstr.c, src/raptor_namespace.c, src/raptor_nfc.c,
+	src/raptor_nfc_data.c, src/raptor_nfc_test.c, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c, src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_sax2.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_stringbuffer.c, src/raptor_syntax_description.c,
+	src/raptor_term.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c, src/turtle_common.c,
+	src/turtle_lexer.l, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c: Switch to raptor2.h as main header. raptor.h
+	includes it
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.3
+
+2011-04-15  Nicholas J Humfrey <njh@aelius.com>
+
+	* docs/Makefile.am: Set DISTCLEANFILES to empty before including
+	gtk-doc.make
+
+	* docs/Makefile.am: Moved raptor-fake.i from CLEANFILES to
+	DISTCLEANFILES.
+
+2011-04-05  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	(graph): Ensure $1 is NULLed out and ownership passed on Fixes
+	Issue#0000437 http://bugs.librdf.org/mantis/view.php?id=437
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Handle NULL terms.
+
+	* src/turtle_parser.y: Fix extra debugging use of
+	raptor_term_print_as_ntriples
+
+2011-03-27  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Use %option extra-type to set type of extra
+	arg.
+
 2011-03-20  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_2 for 2.0.2 release (GIT
