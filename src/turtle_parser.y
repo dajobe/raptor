@@ -1273,7 +1273,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
     
     token = turtle_lexer_lex(&lval, turtle_parser->scanner);
 
-#ifdef RAPTOR_DEBUG
+#if RAPTOR_DEBUG > 1
     printf("token %s\n", turtle_token_print(world, token, &lval));
 #endif
 
