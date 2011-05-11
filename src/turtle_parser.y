@@ -123,7 +123,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
-%expect 0
+%expect 2
 
 
 /* others */
@@ -140,7 +140,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token RIGHT_ROUND ")"
 %token LEFT_CURLY "{"
 %token RIGHT_CURLY "}"
-%token COLONMINUS ":-"
 %token TRUE_TOKEN "true"
 %token FALSE_TOKEN "false"
 %token PREFIX "@prefix"
@@ -149,6 +148,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* literals */
 %token <string> STRING_LITERAL "string literal"
 %token <uri> URI_LITERAL "URI literal"
+%token <uri> GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
 %token <string> BLANK_LITERAL "blank node"
 %token <uri> QNAME_LITERAL "QName"
 %token <string> IDENTIFIER "identifier"
@@ -159,8 +159,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blank collection graphName
-%type <sequence> objectList itemList propertyList
+%type <identifier> subject predicate object verb literal resource blank collection
+%type <sequence> objectList itemList propertyList propertyListOpt
 
 /* tidy up tokens after errors */
 
@@ -177,29 +177,20 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blank collection graphName
+} subject predicate object verb literal resource blank collection
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList propertyList
+} objectList itemList propertyList propertyListOpt
 
 %%
 
 Document : statementList
-;
+;;
 
-colonMinusOpt: COLONMINUS 
-{
-  raptor_parser* parser = (raptor_parser *)rdf_parser;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
-  if(!turtle_parser->trig)
-    turtle_parser_error(rdf_parser, ":- is not allowed in Turtle");
-}
-| /* empty */
-;
 
-graph: graphName colonMinusOpt LEFT_CURLY
+graph: GRAPH_NAME_LEFT_CURLY
   {
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_parser* parser = (raptor_parser *)rdf_parser;
@@ -211,7 +202,8 @@ graph: graphName colonMinusOpt LEFT_CURLY
     else {
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
-      turtle_parser->graph_name = $1; /* becomes owner of $1 */
+      turtle_parser->graph_name = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
+      raptor_free_uri($1);
       raptor_parser_start_graph(parser, turtle_parser->graph_name->value.uri, 1);
     }
   }
@@ -257,31 +249,28 @@ LEFT_CURLY
 }
 ;
 
-graphName: resource
-;
 
 graphBody: triplesList
 |
 /* empty */
 ;
 
-triplesList: triples
-|
-terminatedTriples triplesList
-|
-terminatedTriples
+triplesList: dotTriplesList
+| dotTriplesList DOT
 ;
 
-terminatedTriples: triples DOT
+dotTriplesList: triples
+| dotTriplesList DOT triples
 ;
 
 statementList: statementList statement
-| /* empty line */
+| statementList statement DOT
+| /* empty */
 ;
 
 statement: directive
 | graph
-| terminatedTriples
+| triples
 ;
 
 triples: subject propertyList
@@ -613,13 +602,6 @@ propertyList: propertyList SEMICOLON verb objectList
 
   $$ = $2;
 }
-| /* empty */
-{
-#if RAPTOR_DEBUG > 1  
-  printf("propertyList 4\n empty returning NULL\n\n");
-#endif
-  $$ = NULL;
-}
 | propertyList SEMICOLON
 {
   $$ = $1;
@@ -945,6 +927,16 @@ resource: URI_LITERAL
 ;
 
 
+propertyListOpt: propertyList
+{
+  $$ = $1;
+}
+| /* empty */
+{
+  $$ = NULL;
+}
+
+
 blank: BLANK_LITERAL
 {
   const unsigned char *id;
@@ -962,7 +954,7 @@ blank: BLANK_LITERAL
   if(!$$)
     YYERROR;
 }
-| LEFT_SQUARE propertyList RIGHT_SQUARE
+| LEFT_SQUARE propertyListOpt RIGHT_SQUARE
 {
   int i;
   const unsigned char *id;
