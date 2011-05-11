@@ -1242,7 +1242,9 @@ static int
 turtle_push_parse(raptor_parser *rdf_parser, 
                   const char *string, size_t length)
 {
+#if RAPTOR_DEBUG > 1
   raptor_world* world = rdf_parser->world;
+#endif
   raptor_turtle_parser* turtle_parser;
   void *buffer;
   int status;
