@@ -277,22 +277,20 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
   
   fputs(", ", stream);
 
-  if(!statement->predicate) {
-    fputs("NULL", stream);
-  } else {
+  if(statement->predicate) {
 #ifdef RAPTOR_DEBUG
     if(!statement->predicate->value.uri)
       RAPTOR_FATAL1("Statement has NULL predicate URI\n");
 #endif
     fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri),
           stream);
+  } else {
+    fputs("NULL", stream);
   }
   
   fputs(", ", stream);
 
-  if(!statement->object) {
-    fputs("NULL", stream);
-  } else {
+  if(statement->object) {
     if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
       if(statement->object->value.literal.datatype) {
         raptor_uri* dt_uri = statement->object->value.literal.datatype;
@@ -313,6 +311,8 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
       fputs((const char*)raptor_uri_as_string(statement->object->value.uri),
             stream);
     }
+  } else {
+    fputs("NULL", stream);
   }
 
   if(statement->graph) {

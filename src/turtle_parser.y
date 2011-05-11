@@ -65,6 +65,12 @@
 #define YYERROR_VERBOSE 1
 #endif
 
+#ifdef RAPTOR_DEBUG
+const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
+#endif
+
+
+
 /* Slow down the grammar operation and watch it work */
 #if RAPTOR_DEBUG > 2
 #define YYDEBUG 1
@@ -72,6 +78,8 @@
 
 /* the lexer does not seem to track this */
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+
+#define TURTLE_PUSH_PARSE 1
 
 /* Prototypes */ 
 int turtle_parser_error(void* rdf_parser, const char *msg);
@@ -84,19 +92,6 @@ int turtle_lexer_get_column(yyscan_t yyscanner);
 
 /* What the lexer wants */
 extern int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t scanner);
-#define YYLEX_PARAM ((raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
-
-/* Pure parser argument (a void*) */
-#define YYPARSE_PARAM rdf_parser
-
-/* Make the yyerror below use the rdf_parser */
-#undef yyerror
-#define yyerror(message) turtle_parser_error(rdf_parser, message)
-
-/* Make lex/yacc interface as small as possible */
-#undef yylex
-#define yylex turtle_lexer_lex
-
 
 /* Prototypes for local functions */
 static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *triple);
@@ -107,9 +102,17 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* directives */
 
 
+/* Pure parser - want a reentrant parser  */
+%define api.pure
 
-%pure-parser
+/* Push or pull parser? */
+%define api.push_pull "push"
 
+ /* Extra lexer parameter to turtle_lexer_lex */
+%lex-param { ((raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->contxt))->scanner }
+
+/* Pure parser argument */
+%parse-param { raptor_parser* rdf_parser }
 
 /* Interface between lexer and parser */
 %union {
@@ -120,7 +123,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
-%expect 0
+%expect 2
 
 
 /* others */
@@ -137,17 +140,17 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token RIGHT_ROUND ")"
 %token LEFT_CURLY "{"
 %token RIGHT_CURLY "}"
-%token COLONMINUS ":-"
 %token TRUE_TOKEN "true"
 %token FALSE_TOKEN "false"
+%token PREFIX "@prefix"
+%token BASE "@base"
 
 /* literals */
 %token <string> STRING_LITERAL "string literal"
 %token <uri> URI_LITERAL "URI literal"
+%token <uri> GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
 %token <string> BLANK_LITERAL "blank node"
 %token <uri> QNAME_LITERAL "QName"
-%token <string> PREFIX "@prefix"
-%token <string> BASE "@base"
 %token <string> IDENTIFIER "identifier"
 %token <string> INTEGER_LITERAL "integer literal"
 %token <string> FLOATING_LITERAL "floating point literal"
@@ -156,8 +159,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blank collection graphName
-%type <sequence> objectList itemList propertyList
+%type <identifier> subject predicate object verb literal resource blank collection
+%type <sequence> objectList itemList propertyList propertyListOpt
 
 /* tidy up tokens after errors */
 
@@ -174,29 +177,20 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blank collection graphName
+} subject predicate object verb literal resource blank collection
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList propertyList
+} objectList itemList propertyList propertyListOpt
 
 %%
 
 Document : statementList
-;
+;;
 
-colonMinusOpt: COLONMINUS 
-{
-  raptor_parser* parser = (raptor_parser *)rdf_parser;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)parser->context;
-  if(!turtle_parser->trig)
-    turtle_parser_error(rdf_parser, ":- is not allowed in Turtle");
-}
-| /* empty */
-;
 
-graph: graphName colonMinusOpt LEFT_CURLY
+graph: GRAPH_NAME_LEFT_CURLY
   {
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_parser* parser = (raptor_parser *)rdf_parser;
@@ -208,8 +202,8 @@ graph: graphName colonMinusOpt LEFT_CURLY
     else {
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
-      turtle_parser->graph_name = $1; /* becomes owner of $1 */
-      $1 = NULL;
+      turtle_parser->graph_name = raptor_new_term_from_uri(((raptor_parser*)rdf_parser)->world, $1);
+      raptor_free_uri($1);
       raptor_parser_start_graph(parser, turtle_parser->graph_name->value.uri, 1);
     }
   }
@@ -255,31 +249,28 @@ LEFT_CURLY
 }
 ;
 
-graphName: resource
-;
 
 graphBody: triplesList
 |
 /* empty */
 ;
 
-triplesList: triples
-|
-terminatedTriples triplesList
-|
-terminatedTriples
+triplesList: dotTriplesList
+| dotTriplesList DOT
 ;
 
-terminatedTriples: triples DOT
+dotTriplesList: triples
+| dotTriplesList DOT triples
 ;
 
 statementList: statementList statement
-| /* empty line */
+| statementList statement DOT
+| /* empty */
 ;
 
 statement: directive
 | graph
-| terminatedTriples
+| triples
 ;
 
 triples: subject propertyList
@@ -611,13 +602,6 @@ propertyList: propertyList SEMICOLON verb objectList
 
   $$ = $2;
 }
-| /* empty */
-{
-#if RAPTOR_DEBUG > 1  
-  printf("propertyList 4\n empty returning NULL\n\n");
-#endif
-  $$ = NULL;
-}
 | propertyList SEMICOLON
 {
   $$ = $1;
@@ -634,13 +618,9 @@ directive : prefix | base
 
 prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 {
-  unsigned char *prefix=$2;
+  unsigned char *prefix = $2;
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
   raptor_namespace *ns;
-
-#if 0
-  Get around bison complaining about not using $1
-#endif
 
 #if RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
@@ -947,6 +927,16 @@ resource: URI_LITERAL
 ;
 
 
+propertyListOpt: propertyList
+{
+  $$ = $1;
+}
+| /* empty */
+{
+  $$ = NULL;
+}
+
+
 blank: BLANK_LITERAL
 {
   const unsigned char *id;
@@ -964,7 +954,7 @@ blank: BLANK_LITERAL
   if(!$$)
     YYERROR;
 }
-| LEFT_SQUARE propertyList RIGHT_SQUARE
+| LEFT_SQUARE propertyListOpt RIGHT_SQUARE
 {
   int i;
   const unsigned char *id;
@@ -1212,8 +1202,10 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 
 
 
+#ifndef TURTLE_PUSH_PARSE
 static int
-turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length) {
+turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
+{
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   void *buffer;
   
@@ -1238,6 +1230,66 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length) {
 
   return 0;
 }
+#endif
+
+
+#ifdef TURTLE_PUSH_PARSE
+static int
+turtle_push_parse(raptor_parser *rdf_parser, 
+                  const char *string, size_t length)
+{
+#if RAPTOR_DEBUG > 1
+  raptor_world* world = rdf_parser->world;
+#endif
+  raptor_turtle_parser* turtle_parser;
+  void *buffer;
+  int status;
+  yypstate *ps;
+
+  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+
+  if(!string || !*string)
+    return 0;
+  
+  if(turtle_lexer_lex_init(&turtle_parser->scanner))
+    return 1;
+  turtle_parser->scanner_set = 1;
+
+  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
+  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
+
+  /* returns a parser instance or 0 on out of memory */
+  ps = yypstate_new();
+  if(!ps)
+    return 1;
+
+  do {
+    YYSTYPE lval;
+    int token;
+
+    memset(&lval, 0, sizeof(YYSTYPE));
+    
+    token = turtle_lexer_lex(&lval, turtle_parser->scanner);
+
+#if RAPTOR_DEBUG > 1
+    printf("token %s\n", turtle_token_print(world, token, &lval));
+#endif
+
+    status = yypush_parse(ps, token, &lval, rdf_parser);
+
+    /* turtle_token_free(world, token, &lval); */
+
+    if(!token || token == EOF || token == ERROR_TOKEN)
+      break;
+  } while (status == YYPUSH_MORE);
+  yypstate_delete(ps);
+
+  turtle_lexer_lex_destroy(turtle_parser->scanner);
+  turtle_parser->scanner_set = 0;
+
+  return 0;
+}
+#endif
 
 
 /**
@@ -1409,9 +1461,14 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   /* Nothing to do */
   if(!turtle_parser->buffer_length)
     return 0;
-  
+
+#ifdef TURTLE_PUSH_PARSE
+  turtle_push_parse(rdf_parser, 
+                    turtle_parser->buffer, turtle_parser->buffer_length);
+#else
   turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
-  
+#endif  
+
   if(rdf_parser->emitted_default_graph) {
     /* for non-TRIG - end default graph after last triple */
     raptor_parser_end_graph(rdf_parser, NULL, 0);
@@ -1665,9 +1722,9 @@ raptor_init_parser_trig(raptor_world* world)
 
 #define TURTLE_FILE_BUF_SIZE 2048
 
-static
-void turtle_parser_print_statement(void *user,
-                                   const raptor_statement *statement) 
+static void
+turtle_parser_print_statement(void *user,
+                              raptor_statement *statement) 
 {
   FILE* stream = (FILE*)user;
   raptor_statement_print(statement, stream);
@@ -1726,21 +1783,29 @@ main(int argc, char *argv[])
 
   turtle_parser.lineno= 1;
 
-  rdf_parser.world = raptor_world_instance();
-  rdf_parser.context=&turtle_parser;
-  rdf_parser.base_uri = raptor_new_uri((const unsigned char*)"http://example.org/fake-base-uri/");
+  rdf_parser.world = raptor_new_world();
+  rdf_parser.context = &turtle_parser;
+  rdf_parser.base_uri = raptor_new_uri(rdf_parser.world,
+                                       (const unsigned char*)"http://example.org/fake-base-uri/");
 
-  raptor_parser_set_statement_handler(&rdf_parser, stdout, turtle_parser_print_statement);
+  raptor_parser_set_statement_handler(&rdf_parser, stdout,
+                                      turtle_parser_print_statement);
   raptor_turtle_parse_init(&rdf_parser, "turtle");
   
   turtle_parser.error_count = 0;
 
+#ifdef TURTLE_PUSH_PARSE
+  turtle_push_parse(&rdf_parser, string, strlen(string));
+#else
   turtle_parse(&rdf_parser, string, strlen(string));
+#endif
 
   raptor_turtle_parse_terminate(&rdf_parser);
   
   raptor_free_uri(rdf_parser.base_uri);
 
+  raptor_free_world(rdf_parser.world);
+  
   return (0);
 }
 #endif
