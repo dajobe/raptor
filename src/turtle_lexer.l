@@ -226,7 +226,6 @@ EXPONENT [eE][+-]?[0-9]+
 ")"       { return RIGHT_ROUND; }
 "{"       { return LEFT_CURLY; }
 "}"       { return RIGHT_CURLY; }
-":-"      { return COLONMINUS; }
 "true"    { return TRUE_TOKEN; }
 "false"   { return FALSE_TOKEN; }
 
@@ -333,6 +332,30 @@ EXPONENT [eE][+-]?[0-9]+
                   turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
                   yyterminate();  }
 
+
+{QUOTEDURI}(":-")?"{"   { if(yyleng == 3) 
+                  turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
+                else {
+                  raptor_stringbuffer* sb;
+                  unsigned char* uri_string;
+
+                  yytext[yyleng-1]='\0';
+                  sb = raptor_new_stringbuffer();
+                  if(!sb)
+                    TURTLE_LEXER_OOM();
+                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
+                    raptor_free_stringbuffer(sb);
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
+                  }
+                  uri_string = raptor_stringbuffer_as_string(sb);
+                  turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                  if(!turtle_parser_lval->uri) {
+                    raptor_free_stringbuffer(sb);
+                    TURTLE_LEXER_OOM();
+                  }
+                  raptor_free_stringbuffer(sb);
+                }
+                return GRAPH_NAME_LEFT_CURLY; }
 
 {QUOTEDURI}   { if(yyleng == 2) 
                   turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
