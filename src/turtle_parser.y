@@ -1255,6 +1255,10 @@ turtle_push_parse(raptor_parser *rdf_parser,
     return 1;
   turtle_parser->scanner_set = 1;
 
+#if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_parser_debug = 1;
+#endif
+
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
   buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
 
