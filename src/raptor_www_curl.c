@@ -141,7 +141,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
 
 #if RAPTOR_DEBUG > 2
     if(www->final_uri)
-      RAPTOR_DEBUG3("Got content location header '%s'\n", 
+      RAPTOR_DEBUG2("Got content location header '%s'\n", 
                     raptor_uri_as_string(www->final_uri));
 #endif
     if(www->final_uri_handler)

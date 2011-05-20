@@ -176,8 +176,7 @@ raptor_serializer_register_factory(raptor_world* world,
   }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("Registered serializer %s with context size %d\n",
-                serializer->names[0], serializer->context_length);
+  RAPTOR_DEBUG2("Registered serializer %s\n", serializer->desc.names[0]);
 #endif
 
   return serializer;

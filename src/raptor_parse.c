@@ -197,8 +197,7 @@ raptor_world_register_parser_factory(raptor_world* world,
 
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("Registered parser %s with context size %d\n",
-                parser->names[0], parser->context_length);
+  RAPTOR_DEBUG2("Registered parser %s\n", parser->desc.names[0]);
 #endif
 
   return parser;
@@ -1168,7 +1167,7 @@ raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 {
 #ifdef RAPTOR_PARSER_RDFXML
 #if RAPTOR_DEBUG > 1
-  if(!strcmp(rdf_parser->factory->name, "rdfxml")) {
+  if(!strcmp(rdf_parser->factory->desc.names[0], "rdfxml")) {
     raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
     raptor_rdfxml_parser_stats_print(rdf_xml_parser, stream);
@@ -1319,7 +1318,7 @@ raptor_world_guess_parser_name(raptor_world* world,
     scores[i].score = score < 10 ? score : 10; 
     scores[i].factory = factory;
 #if RAPTOR_DEBUG > 2
-    RAPTOR_DEBUG3("Score %15s : %d\n", factory->name, score);
+    RAPTOR_DEBUG3("Score %15s : %d\n", factory->desc.names[0], score);
 #endif
   }
   
