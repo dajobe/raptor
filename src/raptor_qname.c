@@ -426,8 +426,8 @@ raptor_qname_equal(raptor_qname *name1, raptor_qname *name2)
  * namespace name (URI) for the namespace with prefix "p".
  * 
  * Partially equivalent to 
- *   qname=raptor_new_qname(nstack, name, NULL, error_handler, error_data);
- *   uri=raptor_uri_copy(qname->uri);
+ *   qname = raptor_new_qname(nstack, name, NULL);
+ *   uri = raptor_uri_copy(qname->uri);
  *   raptor_free_qname(qname)
  * but without making the qname, and it also handles the NULL and
  * ":" name cases as well as error checking.
