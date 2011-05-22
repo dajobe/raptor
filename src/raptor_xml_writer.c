@@ -428,7 +428,7 @@ raptor_new_xml_writer(raptor_world* world,
 
   xml_writer->nstack = nstack;
   if(!xml_writer->nstack) {
-    xml_writer->nstack = nstack = raptor_new_namespaces(world, 1);
+    xml_writer->nstack = raptor_new_namespaces(world, 1);
     xml_writer->my_nstack = 1;
   }
 
