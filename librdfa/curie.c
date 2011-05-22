@@ -150,9 +150,9 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
 
 	 rval_copy = rdfa_replace_string(rval, tmp);
 
-	 if(rval[tlen] == '/')
+	 if(rval_copy[tlen] == '/')
 	 {
-	    rval[tlen] = '\0';
+	    rval_copy[tlen] = '\0';
 	 }
 	 rval = rdfa_join_string(rval_copy, uri);
          free(rval_copy);
@@ -227,7 +227,6 @@ char* rdfa_resolve_curie(
       char* prefix = NULL;
       char* curie_reference = NULL;
       const char* expanded_prefix = NULL;
-      size_t expanded_prefix_length = 0;
 
       working_copy = (char*)malloc(strlen(uri) + 1);
       strcpy(working_copy, uri);//rdfa_replace_string(working_copy, uri);
@@ -297,12 +296,6 @@ char* rdfa_resolve_curie(
          }
       }
 
-      // get the length of the expanded prefix if it exists.
-      if(expanded_prefix != NULL)
-      {
-         expanded_prefix_length = strlen(expanded_prefix);
-      }
-      
       if((expanded_prefix != NULL) && (curie_reference != NULL))
       {
          // if the expanded prefix and the reference exist, generate the
