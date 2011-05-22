@@ -6,6 +6,7 @@
 *.nt
 *.o
 *.owl
+*.plist
 *.rdf
 *.rdfs
 *.rss
