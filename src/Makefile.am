@@ -282,6 +282,7 @@ raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c libraptor2.la $(LIBS)
 
 
+if MAINTAINER_MODE
 # Run Clang static analyzer over sources.
 analyze: $(libraptor2_la_SOURCES)
 	@list='$(libraptor2_la_SOURCES)'; \
@@ -297,3 +298,4 @@ analyze: $(libraptor2_la_SOURCES)
 	  fi; \
 	done; \
 	set -e; exit $$result
+endif
