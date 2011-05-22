@@ -27,7 +27,8 @@ EXTRA_PROGRAMS = rdfdiff
 
 man_MANS = rapper.1
 
-CLEANFILES=rdfdiff
+CLEANFILES=rdfdiff \
+*.plist
 
 # Memory debugging
 MEM=@MEM@
