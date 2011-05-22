@@ -295,7 +295,9 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   int length;
   char *nmsg;
   size_t msg_len;
-  
+  raptor_world* world = NULL;
+  raptor_locator* locator = NULL;
+
   if(user_data) {
     /* Work around libxml2 bug - sometimes the sax2->error
      * returns a user_data, sometimes the userdata
@@ -307,8 +309,13 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
       sax2 = (raptor_sax2*)((xmlParserCtxtPtr)user_data)->userData;
   }
 
-  if(sax2->locator)
-    raptor_libxml_update_document_locator(sax2, sax2->locator);
+  if(sax2) {
+    world = sax2->world;
+    locator = sax2->locator;
+    
+    if(locator)
+      raptor_libxml_update_document_locator(sax2, sax2->locator);
+  }
 
   msg_len = strlen(msg);
   length = prefix_length + msg_len + 1;
@@ -321,15 +328,15 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
   }
 
   if(is_fatal)
-    raptor_log_error_varargs(sax2->world,
+    raptor_log_error_varargs(world,
                              RAPTOR_LOG_LEVEL_FATAL,
-                             sax2->locator, 
+                             locator, 
                              nmsg ? nmsg : msg, 
                              args);
   else
-    raptor_log_error_varargs(sax2->world,
+    raptor_log_error_varargs(world,
                              RAPTOR_LOG_LEVEL_ERROR,
-                             sax2->locator, 
+                             locator, 
                              nmsg ? nmsg : msg, 
                              args);
   
@@ -745,7 +752,7 @@ raptor_libxml_xmlStructuredError_handler_parsing(void *user_data,
 
   /* user_data may point to a raptor_sax2* */
   if(user_data) {
-    sax2 = (raptor_sax2*)sax2;
+    sax2 = (raptor_sax2*)user_data;
     if(sax2->magic != RAPTOR_LIBXML_MAGIC)
       sax2 = NULL;
   }
