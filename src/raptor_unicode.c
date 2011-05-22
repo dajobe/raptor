@@ -212,7 +212,8 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
       c |= in;
       /* FALLTHROUGH */
     case 2:
-      in=*input++ & 0x3f;
+      /* '*input' used here since we never need to use new value of input [CLANG] */
+      in = *input & 0x3f;
       c= c << 6;
       c |= in;
       /* FALLTHROUGH */
