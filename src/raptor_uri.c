@@ -1362,13 +1362,16 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream)
   int rc = 0;
   size_t len = 10;
   unsigned char *string = (unsigned char*)"(NULL URI)";
+  raptor_world* world = NULL;
   
-  if(uri)
+  if(uri) {
+    world = uri->world;
     string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
+  }
 
   rc = fwrite(string, 1, len, stream);
   if(rc != (int)len)
-    raptor_log_error_formatted(uri->world, RAPTOR_LOG_LEVEL_ERROR,
+    raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR,
                                NULL, "fwrite failed - %s", strerror(errno));
 
   return rc;
