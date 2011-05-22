@@ -151,6 +151,8 @@ static int
 raptor_json_writer_quoted(raptor_json_writer* json_writer,
                           const char *value, size_t value_len)
 {
+  int rc = 0;
+  
   if(!value) {
     raptor_iostream_counted_string_write("\"\"", 2, json_writer->iostr);
     return 0;
@@ -159,12 +161,12 @@ raptor_json_writer_quoted(raptor_json_writer* json_writer,
     value_len = strlen((const char*)value);
 
   raptor_iostream_write_byte('\"', json_writer->iostr);
-  raptor_string_python_write((const unsigned char*)value, value_len,
-                             '"', 3,
-                             json_writer->iostr);
+  rc = raptor_string_python_write((const unsigned char*)value, value_len,
+                                  '"', 3,
+                                  json_writer->iostr);
   raptor_iostream_write_byte('\"', json_writer->iostr);
 
-  return 0;
+  return rc;
 }
 
 
@@ -227,7 +229,7 @@ raptor_json_writer_key_uri_value(raptor_json_writer* json_writer,
   
   RAPTOR_FREE(cstring, value);
 
-  return 0;
+  return rc;
 }
 
 
