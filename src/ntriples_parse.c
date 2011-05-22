@@ -528,6 +528,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 }
 
 
+#define MAX_NTRIPLES_TERMS 4
+
 static int
 raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                            unsigned char *buffer, size_t len,
@@ -537,9 +539,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   int i;
   unsigned char *p;
   unsigned char *dest;
-  unsigned char *terms[4];
-  size_t term_lengths[4];
-  raptor_term_type term_types[4];
+  unsigned char *terms[MAX_NTRIPLES_TERMS] = { NULL, NULL, NULL, NULL};
+  size_t term_lengths[MAX_NTRIPLES_TERMS] = {0, 0, 0, 0};
+  raptor_term_type term_types[MAX_NTRIPLES_TERMS] = {RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN};
   size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
   unsigned char *object_literal_datatype = NULL;
