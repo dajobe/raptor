@@ -507,7 +507,6 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
           prev = NULL;
           cur = NULL;
           p = NULL;
-          last_char='\0';
           s = path_buffer;
         }
         
