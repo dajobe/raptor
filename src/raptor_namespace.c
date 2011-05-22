@@ -777,7 +777,8 @@ raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
     p += xml_uri_length;
   }
   *p++ = quote;
-  *p++ = '\0';
+  /* *p used here since we never need to use value of p again [CLANG] */
+  *p = '\0';
 
   return buffer;
 }
