@@ -678,7 +678,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   raptor_uri* xslt_uri;
   raptor_uri* base_uri;
   char *quoted_base_uri = NULL;
-  xsltTransformContextPtr userCtxt;
+  xsltTransformContextPtr userCtxt = NULL;
 
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
@@ -964,7 +964,6 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
                                      grddl_xml_context* xml_context, 
                                      xmlDocPtr doc)
 {
-  raptor_grddl_parser_context* grddl_parser;
   xmlParserCtxtPtr xslt_ctxt = NULL;
   raptor_grddl_xml_parse_bytes_context xpbc;
   int ret = 0;
@@ -976,8 +975,6 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
   xslt_uri = xml_context->uri;
   base_uri = xml_context->base_uri ? xml_context->base_uri : xml_context->uri;
 
-  grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
-  
   RAPTOR_DEBUG3("Running GRDDL transform with XSLT URI %s and base URI %s\n",
                 raptor_uri_as_string(xslt_uri),
                 raptor_uri_as_string(base_uri));
@@ -1503,7 +1500,6 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     } else
       continue;
 
-    rc = 0;
 
     if(grddl_parser->html_ctxt) {
       RAPTOR_DEBUG2("Parser %p: Parsing as HTML\n", rdf_parser);
