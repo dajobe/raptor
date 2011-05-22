@@ -196,9 +196,8 @@ raptor_nfc_get_code_flag (unsigned long c)
  * Return value: Non 0 if the string is NFC
  **/
 int
-raptor_nfc_check (const unsigned char* string, size_t len, int *error)
+raptor_nfc_check(const unsigned char* string, size_t len, int *error)
 {
-  const unsigned char* start;
   int is_start;
   size_t offset;
   
@@ -206,7 +205,6 @@ raptor_nfc_check (const unsigned char* string, size_t len, int *error)
   unsigned long prev_char = 0L;
   int prev_class;
   
-  start = string;
   is_start = 1;
   offset = 0;
   prev_class = 0;
