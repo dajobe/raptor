@@ -943,8 +943,13 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
 
 
   savetriple:
-  if(!handled)
+  if(!handled) {
     handled = raptor_rss10_store_statement(rss_serializer, statement);
+
+    /* failed to store */
+    if(!handled)
+      return 1;
+  }
 
   return 0;
 }
