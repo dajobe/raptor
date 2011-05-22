@@ -286,11 +286,13 @@ analyze: $(libraptor2_la_SOURCES)
 	@list='$(libraptor2_la_SOURCES)'; \
 	result=0; \
 	for file in $$list; do \
-	  $(RECHO) "Analyzing $$file"; \
-	  $(ANALYZE_COMMAND) $(srcdir)/$$file; \
-	  status=$$?; \
-	  if test $$status != 0; then \
-	    result=1; \
+	  if echo $$file | grep '\.c$$' >/dev/null 2>&1; then \
+	    $(RECHO) "Analyzing $$file"; \
+	    $(ANALYZE_COMMAND) $(srcdir)/$$file; \
+	    status=$$?; \
+	    if test $$status != 0; then \
+	      result=1; \
+	    fi; \
 	  fi; \
 	done; \
 	set -e; exit $$result
