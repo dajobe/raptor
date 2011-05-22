@@ -556,7 +556,6 @@ raptor_rss_start_element_handler(void *user_data,
         const char* attrName = (const char*)attr->local_name;
         const unsigned char* attrValue = attr->value;
         const raptor_rss_block_field_info *bfi;
-        int attribute_type = -1;
         int offset = -1;
         
         for(bfi = &raptor_rss_block_fields_info[0];
@@ -566,7 +565,6 @@ raptor_rss_start_element_handler(void *user_data,
             continue;
           
           if(bfi->type == block_type && !strcmp(attrName, bfi->attribute)) {
-            attribute_type = bfi->attribute_type;
             offset = bfi->offset;
             break;
           }
@@ -1024,15 +1022,21 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           raptor_rss_field* field;
 
           for(field = item->fields[url_fields[f]]; field; field = field->next) {
-            raptor_uri *new_uri;
+            raptor_uri *new_uri = NULL;
             if(field->value)
               new_uri = raptor_new_uri(rdf_parser->world,
                                        (const unsigned char*)field->value);
             else if(field->uri)
               new_uri = raptor_uri_copy(field->uri);
 
+            if(!new_uri)
+              return 1;
+            
             item->term = raptor_new_term_from_uri(rdf_parser->world, new_uri);
             raptor_free_uri(new_uri);
+            if(!item->term)
+              return 1;
+
             break;
           }
         }
