@@ -786,7 +786,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
     /* The element */
 
     /* If has no namespace or the namespace has no name (xmlns="") */
-    if(!ns || (ns && !raptor_namespace_get_uri(ns))) {
+    if((!ns || (ns && !raptor_namespace_get_uri(ns))) && element->parent) {
       raptor_qname* parent_el_name;
 
       parent_el_name = raptor_xml_element_get_name(element->parent->xml_element);
@@ -1169,13 +1169,10 @@ raptor_rdfxml_generate_statement(raptor_parser *rdf_parser,
                                  raptor_term *reified_term,
                                  raptor_rdfxml_element* bag_element)
 {
-  raptor_rdfxml_parser *rdf_xml_parser;
   raptor_statement *statement = &rdf_parser->statement;
   raptor_term* predicate_term = NULL;
   int free_reified_term = 0;
   
-  rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
-
   if(rdf_parser->failed)
     return;
 
@@ -2222,7 +2219,6 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               raptor_parser_error(rdf_parser, "Attribute '%s' cannot be used with rdf:parseType='%s'", raptor_rdf_ns_terms_info[i].name, parse_type);
               state = RAPTOR_STATE_SKIPPING;
               element->child_state = RAPTOR_STATE_SKIPPING;
-              finished = 1;
               break;
             }
 
@@ -2588,7 +2584,6 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                                   el_name);
               state = RAPTOR_STATE_SKIPPING;
               element->child_state = RAPTOR_STATE_SKIPPING;
-              finished = 1;
               break;
             }
 
@@ -2630,7 +2625,6 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                   raptor_parser_error(rdf_parser, "Illegal rdf:nodeID value '%s'", (const char*)element->object->value.blank.string);
                   state = RAPTOR_STATE_SKIPPING;
                   element->child_state = RAPTOR_STATE_SKIPPING;
-                  finished = 1;
                   break;
                 }
               } else {
@@ -2700,7 +2694,6 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                                     el_name);
                 state = RAPTOR_STATE_SKIPPING;
                 element->child_state = RAPTOR_STATE_SKIPPING;
-                finished = 1;
                 break;
               }
 
