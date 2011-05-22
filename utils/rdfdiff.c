@@ -342,8 +342,10 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
        return 0; */
   } else {
     if(!raptor_uri_equals(s1->object->value.uri,
-                          s2->object->value.uri))
+                          s2->object->value.uri)) {
       rv = 0;
+      goto done;
+    }
   }
 
   rv = 1;
