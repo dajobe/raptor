@@ -40,7 +40,8 @@ endif
 
 CLEANFILES=$(TESTS) \
 turtle_lexer_test turtle_parser_test \
-rdfdiff
+rdfdiff \
+*.plist
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
 turtle_parser.c turtle_parser.h turtle_parser.output
