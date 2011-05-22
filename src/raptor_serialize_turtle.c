@@ -430,6 +430,10 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
         break;
     }
 
+    /* Return error if emitting something failed above */
+    if(rv)
+      return rv;
+
     /* last item */
     rv = raptor_avltree_iterator_next(iter);
     if(rv)
@@ -572,6 +576,10 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         break;
     }    
     
+    /* Return error if emitting something failed above */
+    if(rv)
+      return rv;
+
     last_predicate = predicate;
   }
 
