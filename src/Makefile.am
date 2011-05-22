@@ -51,6 +51,14 @@ MEM_LIBS=@MEM_LIBS@
 
 AM_CPPFLAGS = $(MEM)
 
+ANALYZE = clang
+ANALYZE_FLAGS = "--analyze"
+# Based on COMPILE target
+ANALYZE_COMMAND = $(ANALYZE) \
+	$(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) \
+	$(ANALYZE_FLAGS)
+
 
 libraptor2_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_log.c raptor_locator.c \
@@ -271,3 +279,18 @@ raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2.la
 
 raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c libraptor2.la $(LIBS)
+
+
+# Run Clang static analyzer over sources.
+analyze: $(libraptor2_la_SOURCES)
+	@list='$(libraptor2_la_SOURCES)'; \
+	result=0; \
+	for file in $$list; do \
+	  $(RECHO) "Analyzing $$file"; \
+	  $(ANALYZE_COMMAND) $(srcdir)/$$file; \
+	  status=$$?; \
+	  if test $$status != 0; then \
+	    result=1; \
+	  fi; \
+	done; \
+	set -e; exit $$result
