@@ -449,7 +449,6 @@ static void XMLCALL
       {
          unsigned char insert_xmlns_definition = 1;
          const char* attr = NULL;
-         const char* value = NULL;
 
          // get the next mapping to process
 #ifdef LIBRDFA_IN_RAPTOR
@@ -472,7 +471,6 @@ static void XMLCALL
             while((*attrs != NULL) && insert_xmlns_definition)
             {
                attr = *attrs++;
-               value = *attrs++;
 
                // if the attribute is a umap_key, skip the definition
                // of the attribute.
@@ -514,7 +512,6 @@ static void XMLCALL
                context->xml_literal, &context->xml_literal_size, "\"", 1);
          }
 
-         insert_xmlns_definition = 1;
       } /* end while umap not NULL */
       context->xml_literal_namespaces_defined = 1;
 
