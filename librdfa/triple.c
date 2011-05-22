@@ -492,7 +492,10 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    {
       if(context->content != NULL)
       {
-         current_object_literal = context->content;
+         /* Static code analyzer clang says next line is not needed;
+          * "Assigned value is always the same as the existing value"
+          */
+         /* current_object_literal = context->content; */
          type = RDF_TYPE_TYPED_LITERAL;
       }
       else if(strcmp(context->datatype,
