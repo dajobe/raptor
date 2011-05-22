@@ -284,8 +284,8 @@ raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 
 if MAINTAINER_MODE
 # Run Clang static analyzer over sources.
-analyze: $(libraptor2_la_SOURCES)
-	@list='$(libraptor2_la_SOURCES)'; \
+analyze: $(SOURCES)
+	@list='$(SOURCES)'; \
 	result=0; \
 	for file in $$list; do \
 	  if echo $$file | grep '\.c$$' >/dev/null 2>&1; then \
