@@ -608,6 +608,10 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
         break;
     }    
 
+    /* Return error if emitting something failed above */
+    if(rv)
+      return rv;
+
     raptor_free_xml_element(element);
     
   }
