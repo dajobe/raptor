@@ -1229,65 +1229,6 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 #endif
 
 
-#ifdef TURTLE_PUSH_PARSE
-static int
-turtle_push_parse(raptor_parser *rdf_parser, 
-                  const char *string, size_t length)
-{
-#if RAPTOR_DEBUG > 1
-  raptor_world* world = rdf_parser->world;
-#endif
-  raptor_turtle_parser* turtle_parser;
-  void *buffer;
-  int status;
-  yypstate *ps;
-
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-
-  if(!string || !*string)
-    return 0;
-  
-  if(turtle_lexer_lex_init(&turtle_parser->scanner))
-    return 1;
-  turtle_parser->scanner_set = 1;
-
-  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
-
-  /* returns a parser instance or 0 on out of memory */
-  ps = yypstate_new();
-  if(!ps)
-    return 1;
-
-  do {
-    YYSTYPE lval;
-    int token;
-
-    memset(&lval, 0, sizeof(YYSTYPE));
-    
-    token = turtle_lexer_lex(&lval, turtle_parser->scanner);
-
-#if RAPTOR_DEBUG > 1
-    printf("token %s\n", turtle_token_print(world, token, &lval));
-#endif
-
-    status = yypush_parse(ps, token, &lval, rdf_parser);
-
-    /* turtle_token_free(world, token, &lval); */
-
-    if(!token || token == EOF || token == ERROR_TOKEN)
-      break;
-  } while (status == YYPUSH_MORE);
-  yypstate_delete(ps);
-
-  turtle_lexer_lex_destroy(turtle_parser->scanner);
-  turtle_parser->scanner_set = 0;
-
-  return 0;
-}
-#endif
-
-
 /**
  * raptor_turtle_parse_init - Initialise the Raptor Turtle parser
  *
@@ -1322,6 +1263,9 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
   if(turtle_parser->scanner_set) {
+#ifdef TURTLE_PUSH_PARSE
+    yypstate_delete(turtle_parser->ps); turtle_parser->ps = NULL;
+#endif
     turtle_lexer_lex_destroy(turtle_parser->scanner);
     turtle_parser->scanner_set = 0;
   }
@@ -1417,11 +1361,54 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
                           const unsigned char *s, size_t len,
                           int is_end)
 {
-  char *ptr;
   raptor_turtle_parser *turtle_parser;
-
+  int rc = 0;
+#ifdef TURTLE_PUSH_PARSE
+  void *buffer;
+  int status;
+#else
+  char *ptr;
+#endif
+  
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   
+#ifdef TURTLE_PUSH_PARSE
+  buffer = turtle_lexer__scan_bytes((const char*)s, len, turtle_parser->scanner);
+
+  do {
+    YYSTYPE lval;
+    int token;
+    
+    memset(&lval, 0, sizeof(YYSTYPE));
+    
+    token = turtle_lexer_lex(&lval, turtle_parser->scanner);
+    if(token < 0) {
+      /* need more input */
+      fprintf(stderr, "Turtle lexer needs more input\n");
+      rc = 0;
+      break;
+    }
+
+#if RAPTOR_DEBUG > 1
+    printf("token %s\n", turtle_token_print(world, token, &lval));
+#endif
+
+    status = yypush_parse(turtle_parser->ps, token, &lval, rdf_parser);
+
+    /* turtle_token_free(world, token, &lval); */
+
+    if(!token || token == EOF || token == ERROR_TOKEN)
+      break;
+  } while (status == YYPUSH_MORE);
+
+  turtle_lexer__delete_buffer(buffer, turtle_parser->scanner);
+
+  if(rc || len)
+    return rc;
+
+  /* when len == 0 FALL THROUGH below to handle end of TRIG */
+
+#else
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
 #endif
@@ -1452,25 +1439,22 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   
   /* if not end, wait for rest of input */
   if(!is_end)
-    return 0;
+    return rc;
 
   /* Nothing to do */
   if(!turtle_parser->buffer_length)
-    return 0;
+    return rc;
 
-#ifdef TURTLE_PUSH_PARSE
-  turtle_push_parse(rdf_parser, 
-                    turtle_parser->buffer, turtle_parser->buffer_length);
-#else
   turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
 #endif  
+
 
   if(rdf_parser->emitted_default_graph) {
     /* for non-TRIG - end default graph after last triple */
     raptor_parser_end_graph(rdf_parser, NULL, 0);
     rdf_parser->emitted_default_graph--;
   }
-  return 0;
+  return rc;
 }
 
 
@@ -1495,6 +1479,25 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
   }
   
   turtle_parser->lineno = 1;
+
+#ifdef TURTLE_PUSH_PARSE
+  if(turtle_parser->ps) {
+    yypstate_delete(turtle_parser->ps); turtle_parser->ps = NULL;
+    turtle_lexer_lex_destroy(turtle_parser->scanner);
+    turtle_parser->scanner_set = 0;
+  }
+  
+  /* returns a parser instance or 0 on out of memory */
+  turtle_parser->ps = yypstate_new();
+  if(!turtle_parser->ps)
+    return 1;
+
+  if(turtle_lexer_lex_init(&turtle_parser->scanner))
+    return 1;
+  turtle_parser->scanner_set = 1;
+
+  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
+#endif
 
   return 0;
 }

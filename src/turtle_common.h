@@ -38,6 +38,8 @@ raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, 
 extern void turtle_token_free(raptor_world* world, int token, YYSTYPE *lval);
 
 
+struct yypstate;
+
 /*
  * Turtle parser object
  */
@@ -74,6 +76,9 @@ struct raptor_turtle_parser_s {
 
   /* Allow TRIG extensions */
   int trig : 1;
+
+  /* Push parser state */
+  struct yypstate *ps;
 };
 
 

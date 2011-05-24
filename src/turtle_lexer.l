@@ -400,6 +400,14 @@ EXPONENT [eE][+-]?[0-9]+
                   yyterminate();
 		}
 
+<<EOF>>		{
+		  /* signify to caller that we need more data.
+                   * YYTOKENTYPE values for real tokens are all positive
+                   */
+		  return -1;
+		}
+
+
 %%
   /* user code */
 
