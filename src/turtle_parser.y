@@ -79,7 +79,8 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 /* the lexer does not seem to track this */
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
 
-#define TURTLE_PUSH_PARSE 1
+/* set api.push_pull to "push" if this is defined */
+#undef TURTLE_PUSH_PARSE
 
 /* Prototypes */ 
 int turtle_parser_error(void* rdf_parser, const char *msg);
@@ -92,6 +93,12 @@ int turtle_lexer_get_column(yyscan_t yyscanner);
 
 /* What the lexer wants */
 extern int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t scanner);
+
+/* Make lex/yacc interface as small as possible */
+#undef yylex
+#define yylex turtle_lexer_lex
+#define YYLEX_PARAM ((raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context))->scanner
+
 
 /* Prototypes for local functions */
 static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *triple);
@@ -106,10 +113,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %define api.pure
 
 /* Push or pull parser? */
-%define api.push_pull "push"
-
- /* Extra lexer parameter to turtle_lexer_lex */
-%lex-param { ((raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->contxt))->scanner }
+%define api.push_pull "pull"
 
 /* Pure parser argument */
 %parse-param { raptor_parser* rdf_parser }
