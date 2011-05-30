@@ -1134,12 +1134,6 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
 /* Support functions */
 
-/* This is declared in turtle_lexer.h but never used, so we always get
- * a warning unless this dummy code is here.  Used once below as a return.
- */
-static int yy_init_globals (yyscan_t yyscanner ) { return 0; };
-
-
 int
 turtle_parser_error(void* ctx, const char *msg)
 {
@@ -1159,7 +1153,7 @@ turtle_parser_error(void* ctx, const char *msg)
   raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
                    &rdf_parser->locator, msg);
 
-  return yy_init_globals(NULL); /* 0 but a way to use yy_init_globals */
+  return 0;
 }
 
 
