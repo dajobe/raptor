@@ -183,8 +183,14 @@ relay_namespaces(void* user_data, raptor_namespace *nspace)
 #define HELP_PAD "\n      "
 #endif
 
+#define DEFAULT_CHUNK_SIZE 1
 
+#ifdef RAPTOR_DEBUG
+#define GETOPT_STRING "cef:ghi:I:k:o:O:qrtvw"
+#else
 #define GETOPT_STRING "cef:ghi:I:o:O:qrtvw"
+#endif
+
 
 #ifdef HAVE_GETOPT_LONG
 #define SHOW_NAMESPACES_FLAG 0x100
@@ -200,6 +206,9 @@ static const struct option long_options[] =
   {"help", 0, 0, 'h'},
   {"input", 1, 0, 'i'},
   {"input-uri", 1, 0, 'I'},
+#ifdef RAPTOR_DEBUG
+  {"chunk-size", 1, 0, 'k'},
+#endif
   {"output", 1, 0, 'o'},
   {"output-uri", 1, 0, 'O'},
   {"quiet", 0, 0, 'q'},
@@ -303,6 +312,94 @@ typedef struct
 
 
 
+#ifdef RAPTOR_DEBUG
+static void
+rapper_iostream_hex_buffer_write(const unsigned char* buffer, size_t len,
+                                 raptor_iostream* iostr)
+{
+  int i;
+
+  for(i = 0; i < (int)len; i++) {
+    int c = buffer[i];
+    raptor_iostream_hexadecimal_write(c, 2, iostr);; 
+    raptor_iostream_write_byte(' ', iostr);
+  }
+  raptor_iostream_write_byte('\'', iostr);
+  raptor_string_ntriples_write(buffer, len, '\'', iostr);
+  raptor_iostream_write_byte('\'', iostr);
+}
+
+
+static int
+rapper_parser_parse_chunked_buffer(raptor_parser* rdf_parser,
+                                   raptor_uri *uri,
+                                   raptor_uri *base_uri,
+                                   size_t chunk_size)
+{
+  raptor_world* world = raptor_parser_get_world(rdf_parser);
+  const char* filename = NULL;
+  raptor_iostream* iostr = NULL;
+  raptor_iostream* out_iostr = NULL;
+  unsigned char* buffer = NULL;
+  int free_base_uri = 0;
+  int rc = 0;
+
+  filename = raptor_uri_uri_string_to_filename(raptor_uri_as_string(uri));
+
+  if(!base_uri) {
+    base_uri = raptor_uri_copy(uri);
+    free_base_uri = 1;
+  }
+
+  iostr = raptor_new_iostream_from_filename(world, filename);
+  if(!iostr) {
+    rc = 1;
+    goto done;
+  }
+  
+  buffer = (unsigned char*)raptor_alloc_memory(chunk_size + 1);
+  if(!buffer) {
+    rc = 1;
+    goto done;
+  }
+
+  rc = raptor_parser_parse_start(rdf_parser, base_uri);
+  if(rc)
+    goto done;
+  
+  out_iostr = raptor_new_iostream_to_file_handle(world, stderr);
+
+  while(!raptor_iostream_read_eof(iostr)) {
+    int len = raptor_iostream_read_bytes(buffer, 1, chunk_size, iostr);
+    int is_end = (len < (int)chunk_size);
+    
+    raptor_iostream_string_write(program, out_iostr);
+    raptor_iostream_string_write(": Read ", out_iostr);
+    raptor_iostream_decimal_write(len, out_iostr);
+    raptor_iostream_string_write(" bytes: ", out_iostr);
+    rapper_iostream_hex_buffer_write(buffer, len, out_iostr);
+    raptor_iostream_write_byte('\n', out_iostr);
+    
+    rc = raptor_parser_parse_chunk(rdf_parser, buffer, len, is_end);
+    if(rc || is_end)
+      break;
+  }
+
+  done:
+  if(iostr)
+    raptor_free_iostream(iostr);
+  if(buffer)
+    raptor_free_memory(buffer);
+  if(free_base_uri)
+    raptor_free_uri(base_uri);
+  if(out_iostr)
+    raptor_free_iostream(out_iostr);
+  
+  return rc;
+}
+#endif
+
+
 int
 main(int argc, char *argv[]) 
 {
@@ -335,6 +432,9 @@ main(int argc, char *argv[])
   int rc;
   int usage = 0;
   int help = 0;
+#ifdef RAPTOR_DEBUG
+  int chunk_size = DEFAULT_CHUNK_SIZE;
+#endif
   char *p;
 
   program = argv[0];
@@ -524,6 +624,15 @@ main(int argc, char *argv[])
         help = 1;
         break;
 
+#ifdef RAPTOR_DEBUG
+      case 'k':
+        if(optarg)
+          chunk_size = atoi(optarg);
+        else
+          chunk_size = DEFAULT_CHUNK_SIZE;
+        break;
+#endif
+
       case 't':
         trace = 1;
         break;
@@ -707,6 +816,9 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("g", "guess           ", "Guess the input syntax (same as -i guess)"));
     puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
     puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
+#ifdef RAPTOR_DEBUG
+    puts(HELP_TEXT("k CHUNK-SIZE", "chunk-size CHUNK-SIZE  ", "Set parse chunk size"));
+#endif
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
 #ifdef SHOW_GRAPHS_FLAG
@@ -913,11 +1025,16 @@ main(int argc, char *argv[])
    */
   rc = 0;
   if(!uri || filename) {
+#ifdef DEFAULT_CHUNK_SIZE
+    rc = rapper_parser_parse_chunked_buffer(rdf_parser, uri, base_uri,
+                                            chunk_size);
+#else
     if(raptor_parser_parse_file(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse file %s %s content\n",
               program, FILENAME_LABEL(filename), syntax_name);
       rc = 1;
     }
+#endif
   } else {
     if(raptor_parser_parse_uri(rdf_parser, uri, base_uri)) {
       fprintf(stderr, "%s: Failed to parse URI %s %s content\n",

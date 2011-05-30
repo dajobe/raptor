@@ -79,8 +79,6 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 /* the lexer does not seem to track this */
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
 
-#define TURTLE_PUSH_PARSE 1
-
 /* Prototypes */ 
 int turtle_parser_error(void* rdf_parser, const char *msg);
 
@@ -1134,12 +1132,6 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
 /* Support functions */
 
-/* This is declared in turtle_lexer.h but never used, so we always get
- * a warning unless this dummy code is here.  Used once below as a return.
- */
-static int yy_init_globals (yyscan_t yyscanner ) { return 0; };
-
-
 int
 turtle_parser_error(void* ctx, const char *msg)
 {
@@ -1159,7 +1151,7 @@ turtle_parser_error(void* ctx, const char *msg)
   raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
                    &rdf_parser->locator, msg);
 
-  return yy_init_globals(NULL); /* 0 but a way to use yy_init_globals */
+  return 0;
 }
 
 
@@ -1202,33 +1194,6 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 
 
 
-#ifndef TURTLE_PUSH_PARSE
-static int
-turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
-{
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-  void *buffer;
-  
-  if(!string || !*string)
-    return 0;
-  
-  if(turtle_lexer_lex_init(&turtle_parser->scanner))
-    return 1;
-  turtle_parser->scanner_set = 1;
-
-  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
-
-  turtle_parser_parse(rdf_parser);
-
-  turtle_lexer_lex_destroy(turtle_parser->scanner);
-  turtle_parser->scanner_set = 0;
-
-  return 0;
-}
-#endif
-
-
 /**
  * raptor_turtle_parse_init - Initialise the Raptor Turtle parser
  *
@@ -1263,9 +1228,7 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
   if(turtle_parser->scanner_set) {
-#ifdef TURTLE_PUSH_PARSE
     yypstate_delete(turtle_parser->ps); turtle_parser->ps = NULL;
-#endif
     turtle_lexer_lex_destroy(turtle_parser->scanner);
     turtle_parser->scanner_set = 0;
   }
@@ -1363,16 +1326,11 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
 {
   raptor_turtle_parser *turtle_parser;
   int rc = 0;
-#ifdef TURTLE_PUSH_PARSE
   void *buffer;
   int status;
-#else
-  char *ptr;
-#endif
   
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   
-#ifdef TURTLE_PUSH_PARSE
   buffer = turtle_lexer__scan_bytes((const char*)s, len, turtle_parser->scanner);
 
   do {
@@ -1382,15 +1340,8 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     memset(&lval, 0, sizeof(YYSTYPE));
     
     token = turtle_lexer_lex(&lval, turtle_parser->scanner);
-    if(token < 0) {
-      /* need more input */
-      fprintf(stderr, "Turtle lexer needs more input\n");
-      rc = 0;
-      break;
-    }
-
 #if RAPTOR_DEBUG > 1
-    printf("token %s\n", turtle_token_print(world, token, &lval));
+    printf("token %s\n", turtle_token_print(rdf_parser->world, token, &lval));
 #endif
 
     status = yypush_parse(turtle_parser->ps, token, &lval, rdf_parser);
@@ -1407,47 +1358,6 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     return rc;
 
   /* when len == 0 FALL THROUGH below to handle end of TRIG */
-
-#else
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
-#endif
-
-  if(len) {
-    turtle_parser->buffer = (char*)RAPTOR_REALLOC(cstring, turtle_parser->buffer, turtle_parser->buffer_length + len + 1);
-    if(!turtle_parser->buffer) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
-      return 1;
-    }
-
-    /* move pointer to end of cdata buffer */
-    ptr = turtle_parser->buffer+turtle_parser->buffer_length;
-
-    /* adjust stored length */
-    turtle_parser->buffer_length += len;
-
-    /* now write new stuff at end of cdata buffer */
-    memcpy(ptr, s, len);
-    ptr += len;
-    *ptr = '\0';
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("buffer buffer now '%s' (%d bytes)\n", 
-                  turtle_parser->buffer, turtle_parser->buffer_length);
-#endif
-  }
-  
-  /* if not end, wait for rest of input */
-  if(!is_end)
-    return rc;
-
-  /* Nothing to do */
-  if(!turtle_parser->buffer_length)
-    return rc;
-
-  turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
-#endif  
-
 
   if(rdf_parser->emitted_default_graph) {
     /* for non-TRIG - end default graph after last triple */
@@ -1480,7 +1390,6 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
   
   turtle_parser->lineno = 1;
 
-#ifdef TURTLE_PUSH_PARSE
   if(turtle_parser->ps) {
     yypstate_delete(turtle_parser->ps); turtle_parser->ps = NULL;
     turtle_lexer_lex_destroy(turtle_parser->scanner);
@@ -1497,7 +1406,6 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
   turtle_parser->scanner_set = 1;
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-#endif
 
   return 0;
 }
@@ -1793,11 +1701,7 @@ main(int argc, char *argv[])
   
   turtle_parser.error_count = 0;
 
-#ifdef TURTLE_PUSH_PARSE
   turtle_push_parse(&rdf_parser, string, strlen(string));
-#else
-  turtle_parse(&rdf_parser, string, strlen(string));
-#endif
 
   raptor_turtle_parse_terminate(&rdf_parser);
   
