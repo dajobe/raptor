@@ -1,3 +1,224 @@
+2011-05-31  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Fix API change typos; there are no
+	raptor_term_as.*string() functions
+
+	* src/turtle_lexer.l: Cleanup stringbuffer if EOF happens in a
+	literal
+
+	* docs/tmpl/section-general.sgml: doc tmpls
+
+2011-05-30  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: More fixups for going back to pull parser
+
+	bison's yacc.c skeleton output does not support %lex-param so use
+	#define YYLEX_PARAM again
+
+	* src/turtle_parser.y:
+	(turtle_parser_error): Remove yy_init_globals call.
+
+2011-05-22  Dave Beckett <dave@dajobe.org>
+
+	* utils/Makefile.am: CLEANFILES cleans *.plist from clang output
+
+	* utils/rdfdiff.c:
+	(rdfdiff_statement_equals): Return different if object URIs
+	differ.
+	[CLANG]
+
+	* utils/Makefile.am: ANALYZE
+
+	* src/Makefile.am: all SOURCES
+
+	* src/Makefile.am: analyze for maintainer only
+
+	* src/Makefile.am: CLEANFILES cleans *.plist from clang output
+
+	* librdfa/triple.c:
+	Fixes from clang --analyze
+
+	(rdfa_complete_object_literal_triples): Remove assignment of
+	'current_object_literal' that always assigns the existing value.
+
+	* librdfa/rdfa.c:
+	Fixes from clang --analyze
+
+	(start_element): Remove unused (attribute) 'value' var Remove
+	usless assignment of 'insert_xmlns_definition' at end of block it
+	is scoped to.
+
+	* librdfa/curie.c:
+	Fixes from clang --analyze
+
+	(rdfa_resolve_uri): use rval_copy to alter final char from '/' not
+	rval, which is always NULL.
+
+	(rdfa_resolve_curie): Remove unused var 'expanded_prefix_length'
+
+	* src/raptor_xml_writer.c:
+	(raptor_new_xml_writer): Remove useless assignment to 'nstack'.
+	[CLANG]
+
+	* src/raptor_uri.c:
+	Fixes [CLANG]
+	(raptor_uri_print): Initialize 'world' carefully and check if it is
+	NULL when calling raptor_log_error_formatted.
+
+	* src/raptor_unicode.c: Fixes [CLANG]
+	(raptor_unicode_utf8_string_get_char): Do not uslessly increment
+	'input' pointer at end of function.
+
+	* src/raptor_turtle_writer.c: Fixes [CLANG]
+	(raptor_new_turtle_writer): Remove useless assignment to 'nstack'.
+
+	(raptor_turtle_writer_quoted_counted_string): Initialize 'rc' and
+	use it to return faiure from raptor_string_python_write()
+
+	* src/raptor_serialize_turtle.c: Fixes [CLANG]
+	(raptor_turtle_emit_subject_collection_items)
+
+	(raptor_turtle_emit_subject_properties): Return 'rv' on error.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Return failure on not handled
+	[CLANG]
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Return 'rv' on error
+	[CLANG].
+
+	* src/raptor_serialize_rdfxml.c:
+	Fixes [CLANG]
+
+	(raptor_rdfxml_serialize_statement): Remove
+	'end_predicate_element' assignemnts that are immediately
+	overwritten.  Use 'attrs_count' in writing a URI - be consistent
+	with other emitting even know we know in all cases what the values
+	will be.
+
+	* src/raptor_rss.c:
+	Fixes [CLANG]
+
+	(raptor_rss_start_element_handler): Remove unused 'attribute_type'
+	var.
+
+	(raptor_rss_insert_identifiers): Initialize 'new_uri' to NULL and
+	check for failures of it and term construction.
+
+	* src/raptor_rfc2396.c:
+	Fixes [CLANG]
+
+	(raptor_uri_resolve_uri_reference): Remove assignment to
+	'last_char' never needed - loop continue action overwrites it.
+
+	* src/raptor_rdfxml.c:
+	Fixes [CLANG]
+
+	(raptor_rdfxml_start_element_handler): Check element->parent is
+	not NULL before using pointer.
+
+	(raptor_rdfxml_generate_statement): Remove unused rdf_xml_parser
+	var.  (raptor_rdfxml_start_element_grammar): Remove assignments to
+	'finished' that are immediately re-assigned.
+
+	* src/raptor_nfc.c:
+	(raptor_nfc_check): Remove unused 'start' var [CLANG]
+
+	* src/raptor_namespace.c:
+	(raptor_namespace_format_as_xml): Do not increment p at end [CLANG]
+
+	* src/raptor_memstr.c:
+	(raptor_memstr): Remove unused 'c' var [CLANG]
+
+	* src/raptor_libxml.c:
+	Fixes [CLANG]
+
+	(raptor_libxml_error_common): Set world and locator to NULL and
+	carefully assign and check use.
+
+	(raptor_libxml_xmlStructuredError_handler_parsing): Turn
+	assignment into something that does work.  Hints that the
+	workaround for an ancient libxml2 context error pointer bug are no
+	longer needed since anyone using such an old libxml would have
+	crashed at this point when an error happened.  Could bump minimum
+	libxml2 version.
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_parse_init): Remove unused librdfa_parser [CLANG]
+
+	* src/raptor_json_writer.c:
+	Fixes [CLANG]
+
+	(raptor_json_writer_quoted): Initialize rc and set it to value of
+	any raptor_string_python_write error return.  Return rc.
+
+	(raptor_json_writer_key_uri_value): Return error rc
+
+	* src/raptor_grddl.c:
+	Fixes [CLANG]
+
+	(raptor_grddl_run_grddl_transform_doc): Initialize userCtxt
+
+	(raptor_grddl_run_grddl_transform_uri): Remove unused grddl_parser
+
+	(raptor_grddl_parse_chunk): Remove assigning rc a value never read
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Initialize term fields in all
+	cases[CLANG]
+
+	* src/.gitignore: .gitignore
+
+	* src/Makefile.am: 'analyze' target fixes
+
+	* src/Makefile.am: Added 'analyze' target to invoke clang over
+	sources
+
+2011-05-19  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: lets have bison debugging with push parser
+	too
+
+	* src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_www_curl.c: Fixes for building in RAPTOR_DEBUG > 2 mode
+
+	* src/raptor_qname.c: docs
+
+2011-05-12  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Ensure Bison 2.4+ is used
+
+2011-05-11  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l:
+	Make TRiG lexer recognize URI/qname (ws)*
+
+	(:-)? (ws)* { Add new rule to recognize QNAME as the graph name.
+	Adjust it to skip over extra optional tokens.  Adjust existing
+	rule to handle all whitespace around optional ':-'
+
+2011-05-10  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Handle trig graph name and start in lexer
+	(GRAPH_NAME_LEFT_CURLY): Added returning URI for <uri> { with
+	optional ':-'
+
+	* src/turtle_parser.y: Fix calls to
+	raptor_term_print_as_ntriples() to raptor 2 API form
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Handle printing partial statements for
+	debugging.
+
+	* src/.gitignore: ignore raptor2.h
+
+	* src/turtle_parser.y:
+	(turtle_push_parse): world only if very debuggy
+
+	* src/turtle_parser.y:
+	(turtle_push_parse): print token on very debug only.
+
 2011-04-27  Dave Beckett <dave@dajobe.org>
 
 	* docs/libraptor2.3, examples/grapper.c, examples/raptor_abort.c,
