@@ -14,6 +14,56 @@
 <p>Not yet released.
 </p>
 
+<p>The main change is to change the main header file to a
+new <code>raptor2.h</code> file.  The old one <code>raptor.h</code>
+<code>#include</code> and remain until the next major raptor release
+(V3).  This was added to allow applications to be sure they have got
+the raptor V2 header and not the raptor V1 header file.
+</p>
+
+
+<h3>Other Changes</h3>
+
+<p>Raptor was ran through 'clang' static code analyzer and several
+issues fixed, mostly in unused variables and error recovery.  Some
+actual potential crash bugs were found:</p>
+<ol>
+  <li>The workaround for ancient libxml2 error handling in
+    <code>raptor_libxml_xmlStructuredError_handler_parsing()</code>
+    was broken for some time, so I guess nobody uses old
+    libxml2.</li>
+  <li>librdfa's URI resolving in <code>rdfa_resolve_uri()</code> used
+    unallocated memory in some relative URI cases.</li>
+</ol>
+
+<p>Bison 2.4 is required to build Raptor from GIT source with
+no pregenerated files.
+</p>
+
+
+<h3>Turtle / TRiG parser changes</h3>
+
+<p>Alter the parser to not use a large token stack when parsing TRiG
+graphs, enabling the parser to handle much larger files.  The parser
+still gathers all input into a single memory segment so the maximum
+amount of input is probably memory size/3.
+</p>
+
+<p>TRiG parser now allows a QName for the graph name.
+</p>
+
+<p>Attempted to make the parser handle streaming lexing and parsing
+but only partially successful; bison could be made to stream parse
+but flex could not be made to stream lex.  This meant it could not
+be convinced to return a "need more input" response at the end of a
+chunk of data and continue lexing later.
+</p>
+
+<p>Fix value ownership fix graph name.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=437">Issue#0000437</a>
+</p>
+
+
 
 <h2 id="rel2_0_2"><a name="rel2_0_2">Raptor2 2.0.2 changes</a></h2>
 
