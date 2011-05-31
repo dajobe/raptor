@@ -273,8 +273,9 @@
 2011-04-05  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_parser.y:
-	(graph): Ensure $1 is NULLed out and ownership passed on Fixes
-	Issue#0000437 http://bugs.librdf.org/mantis/view.php?id=437
+	(graph): Ensure $1 is NULLed out and ownership passed on
+
+	Fixes Issue#0000437 http://bugs.librdf.org/mantis/view.php?id=437
 
 	* src/raptor_statement.c:
 	(raptor_statement_print): Handle NULL terms.
