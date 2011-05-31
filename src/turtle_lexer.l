@@ -283,9 +283,21 @@ EXPONENT [eE][+-]?[0-9]+
 
 <LITERAL>\\	{
      		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
-                turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    yyterminate();
 }
 
+<LITERAL><<EOF>>     {
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    yyterminate();
+}
+    
 {BNAME}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!turtle_parser_lval->string)
             YY_FATAL_ERROR_EOF("turtle_copy_token failed");
