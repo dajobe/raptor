@@ -1,3 +1,8 @@
+2011-06-01  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_3 for 2.0.3 release (GIT
+	148879e3346d0976792b51bddf4d98db34263d07)
+
 2011-05-31  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-1-to-2-map.tsv: Fix API change typos; there are no
