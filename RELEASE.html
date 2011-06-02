@@ -14,30 +14,13 @@
 <p>Not yet released.
 </p>
 
-<p>The main change is to change the main header file to a
-new <code>raptor2.h</code> file.  The old one <code>raptor.h</code>
-<code>#include</code> and remain until the next major raptor release
-(V3).  This was added to allow applications to be sure they have got
-the raptor V2 header and not the raptor V1 header file.
-</p>
-
-
-<h3>Other Changes</h3>
-
-<p>Raptor was ran through 'clang' static code analyzer and several
-issues fixed, mostly in unused variables and error recovery.  Some
-actual potential crash bugs were found:</p>
-<ol>
-  <li>The workaround for ancient libxml2 error handling in
-    <code>raptor_libxml_xmlStructuredError_handler_parsing()</code>
-    was broken for some time, so I guess nobody uses old
-    libxml2.</li>
-  <li>librdfa's URI resolving in <code>rdfa_resolve_uri()</code> used
-    unallocated memory in some relative URI cases.</li>
-</ol>
-
-<p>Bison 2.4 is required to build Raptor from GIT source with
-no pregenerated files.
+<p>The main change is to add the new main header file
+<code>raptor2.h</code>.  The new header has been added to allow
+applications to be sure they have got the raptor V2 header
+(with <code>#include &lt;raptor2.h&gt;</code> and not the raptor V1
+header file (<code>#include &lt;raptor.h&gt;</code>).
+The <code>raptor.h</code> header will NOT be removed until the next
+major raptor release (V3).
 </p>
 
 
@@ -61,6 +44,28 @@ chunk of data and continue lexing later.
 
 <p>Fix value ownership fix graph name.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=437">Issue#0000437</a>
+</p>
+
+<h3>Other Changes</h3>
+
+<p>Raptor was ran through the
+LLVM <a href="http://clang-analyzer.llvm.org/">clang</a> static code
+analyzer and several issues fixed, mostly in unused variables and in
+unlikely error recovery conditions.  Some actual potential crash bugs
+were found:</p>
+<ol>
+  <li>The workaround for
+    ancient <a href="http://xmlsoft.org/">libxml2</a> error handling
+    in <code>raptor_libxml_xmlStructuredError_handler_parsing()</code>
+    was broken for some time, so that probably means nobody uses old
+    libxml2.</li>
+  <li><a href="http://github.com/msporny/librdfa/">librdfa</a> URI
+    resolving in <code>rdfa_resolve_uri()</code> used unallocated
+    memory in some relative URI cases.</li>
+</ol>
+
+<p>Bison 2.4 is required to build Raptor from GIT source with
+no pregenerated files.
 </p>
 
 
