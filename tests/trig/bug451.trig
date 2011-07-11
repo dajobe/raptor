@@ -1,0 +1,24 @@
+@prefix nie: <http://www.semanticdesktop.org/ontologies/2007/01/19/nie#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix nrl: <http://www.semanticdesktop.org/ontologies/2007/08/15/nrl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# HERE "nie:" is used as graph name
+nie: {nie:characterSet
+          a rdf:Property ;
+          rdfs:comment "Characterset in which the content of the InformationElement was created." ;
+          rdfs:domain nie:InformationElement ;
+          rdfs:label "characterSet" ;
+          rdfs:range xsd:string ;
+          nrl:maxCardinality "1" .
+}
+
+<http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#> {
+    nie: a nrl:Ontology ;
+    <http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#>
+          a nrl:GraphMetadata ;
+          nrl:coreGraphMetadataFor
+                  nie: .
+}
