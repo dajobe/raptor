@@ -17,6 +17,8 @@ nie: {nie:characterSet
 
 <http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#> {
     nie: a nrl:Ontology ;
+    .
+
     <http://www.semanticdesktop.org/ontologies/2007/01/19/nie_metadata#>
           a nrl:GraphMetadata ;
           nrl:coreGraphMetadataFor
