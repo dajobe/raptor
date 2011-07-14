@@ -830,7 +830,15 @@ if test "x$yajl_prefix" != "xno" ; then
     fi
 
     AC_CHECK_LIB(yajl, yajl_parse, libyajl=1, libyajl=0)
+    AC_CHECK_LIB(yajl, yajl_tree_parse, yajl_api_version=2, yajl_api_version=1)
     AC_CHECK_HEADERS(yajl/yajl_parse.h)
+
+    AC_MSG_CHECKING(YAJL API version)
+    AC_MSG_RESULT($yajl_api_version)
+    if test $yajl_api_version = 2; then
+      AC_DEFINE_UNQUOTED(HAVE_YAJL2, 1, [YAJL has API version 2])
+    fi
+
     CPPFLAGS="$oCPPFLAGS"
     LIBS="$oLIBS"
   fi

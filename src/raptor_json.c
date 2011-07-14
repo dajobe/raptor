@@ -84,7 +84,10 @@ typedef enum {
  * JSON parser object
  */
 struct raptor_json_parser_context_s {
+#ifdef HAVE_YAJL2
+#else
   yajl_parser_config config;
+#endif
   yajl_handle handle;
 
   /* Parser state */
@@ -226,7 +229,13 @@ static int raptor_json_yajl_boolean(void * ctx, int b)
   return 0;
 }
 
-static int raptor_json_yajl_integer(void * ctx, long l)
+#ifdef HAVE_YAJL2
+#define YAJL_INTEGER_CALLBACK_ARG_TYPE long long
+#else
+#define YAJL_INTEGER_CALLBACK_ARG_TYPE long
+#endif
+static int raptor_json_yajl_integer(void * ctx,
+                                    YAJL_INTEGER_CALLBACK_ARG_TYPE integerVal)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
   raptor_parser_error(rdf_parser, "Integers are not valid in RDF/JSON");
@@ -562,8 +571,11 @@ raptor_json_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_statement_init(&context->statement, rdf_parser->world);
 
   /* Configure the parser */
+#ifdef HAVE_YAJL2
+#else
   context->config.allowComments = 1;
   context->config.checkUTF8 = 0;
+#endif
 
   return 0;
 }
@@ -602,8 +614,12 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
     /* Parse the chunk passed to us */
     status = yajl_parse(context->handle, s, len);
 
-    if(status != yajl_status_ok &&
-        status != yajl_status_insufficient_data)
+    if(status != yajl_status_ok 
+#ifdef HAVE_YAJL2
+#else
+       && status != yajl_status_insufficient_data
+#endif
+    )
     {
       unsigned char * str = yajl_get_error(context->handle, 1, s, len);
       raptor_parser_error(rdf_parser, "YAJL error: %s", (const char *) str);
@@ -614,7 +630,11 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
 
   if(is_end) {
     /* parse any remaining buffered data */
-    status = yajl_parse_complete(context->handle);
+#ifdef HAVE_YAJL2
+#else
+#define yajl_complete_parse(h) yajl_parse_complete(h)
+#endif
+    status = yajl_complete_parse(context->handle);
 
     if(status != yajl_status_ok)
     {
@@ -644,7 +664,10 @@ raptor_json_parse_start(raptor_parser* rdf_parser)
   /* Initialise a new parser */
   context->handle = yajl_alloc(
     &raptor_json_yajl_callbacks,
+#ifdef HAVE_YAJL2
+#else
     &context->config,
+#endif
     &raptor_json_yajl_alloc_funcs,
     (void *)rdf_parser
   );
@@ -655,6 +678,12 @@ raptor_json_parse_start(raptor_parser* rdf_parser)
   }
 
   /* Initialise the parse state */
+#ifdef HAVE_YAJL2
+  yajl_config(context->handle, yajl_allow_comments, 1);
+  yajl_config(context->handle, yajl_dont_validate_strings, 1);
+#else
+#endif
+
   context->state = RAPTOR_JSON_STATE_ROOT;
   raptor_json_reset_term(context);
   raptor_statement_clear(&context->statement);
