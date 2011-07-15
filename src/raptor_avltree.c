@@ -126,8 +126,9 @@ static void raptor_avltree_balance_right(raptor_avltree* tree, raptor_avltree_no
 static raptor_avltree_node* raptor_avltree_search_internal(raptor_avltree* tree, raptor_avltree_node* node, const void* p_data);
 static int raptor_avltree_visit_internal(raptor_avltree* tree, raptor_avltree_node* node, int depth, raptor_avltree_visit_handler visit_fn, void* user_data);
 static void raptor_free_avltree_internal(raptor_avltree* tree, raptor_avltree_node* node);
+#ifdef RAPTOR_DEBUG
 static void raptor_avltree_check_internal(raptor_avltree* tree, raptor_avltree_node* node, unsigned int* count_p);
-
+#endif
 
 
 /**
@@ -481,7 +482,7 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
     case -1:
       /* left branch was already too long. rebalance */
       RAPTOR_AVLTREE_DEBUG1("LESS: case -1: rebalancing\n");
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree before rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
@@ -530,14 +531,14 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
         *node_pp = p2;
         (*node_pp)->parent = p_parent;
       } /* end else */
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree after rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
 
       (*node_pp)->balance = 0;
       *rebalancing_p = FALSE;
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       if(1) {
         unsigned int discard = 0;
         raptor_avltree_check_internal(tree, *node_pp, &discard);
@@ -588,7 +589,7 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
       RAPTOR_AVLTREE_DEBUG1("MORE: balance was off, need to rebalance\n");
       p1 = (*node_pp)->right;
       
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree before rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
@@ -637,13 +638,13 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
         (*node_pp)->parent = p_parent;
       } /* end else */
       
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree after rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
       (*node_pp)->balance = 0;
       *rebalancing_p = FALSE;
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
       if(1) {
         unsigned int discard = 0;
         raptor_avltree_check_internal(tree, *node_pp, &discard);
@@ -669,6 +670,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
 {
   int cmp;
 
+#if RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Enter\n");
   if ( *node_pp) { 
       raptor_avltree_print_node(*node_pp);
@@ -677,6 +679,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
   else {
       RAPTOR_AVLTREE_DEBUG1("Nil node\n");
   }
+#endif
 
   /* If grounded, add the node here, set the rebalance flag and return */
   if(!*node_pp) {
@@ -689,7 +692,9 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
       return RAPTOR_AVLTREE_ENOMEM;
     }
 
-    RAPTOR_DEBUG2("Creating new node %p", *node_pp);
+#if RAPTOR_DEBUG > 1
+    RAPTOR_DEBUG2("Creating new node %p\n", *node_pp);
+#endif
     
     (*node_pp)->parent = parent;
     (*node_pp)->left = NULL;
@@ -700,18 +705,18 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
 
     tree->size++;
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  raptor_avltree_check_node(tree, *node_pp, 0, 0);
-#endif
+#if RAPTOR_DEBUG > 1
+    raptor_avltree_check_node(tree, *node_pp, 0, 0);
 
     RAPTOR_AVLTREE_DEBUG1("Tree now looks this way\n");
     raptor_avltree_dump(tree,stderr);
+#endif
     
     return FALSE;
   }
 
   /* check node */
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#if RAPTOR_DEBUG > 1
   raptor_avltree_check_node(tree, *node_pp, 0, 0);
 #endif
   /* compare the data */
