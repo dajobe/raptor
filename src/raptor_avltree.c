@@ -785,10 +785,14 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
     if(pr_q->right == NULL) {
       RAPTOR_AVLTREE_DEBUG1("right subtree null\n");
       *node_pp = pr_q->left;
+      if(*node_pp)
+        (*node_pp)->parent = pr_q->parent;
       *rebalancing_p = TRUE;
     } else if(pr_q->left == NULL) {
       RAPTOR_AVLTREE_DEBUG1("right subtree non-null, left subtree null\n");
       *node_pp = pr_q->right;
+      if(*node_pp)
+        (*node_pp)->parent = pr_q->parent;
       *rebalancing_p = TRUE;
     } else {
       RAPTOR_AVLTREE_DEBUG1("neither subtree null\n");
@@ -824,11 +828,15 @@ raptor_avltree_delete_internal2(raptor_avltree* tree,
       raptor_avltree_balance_right(tree, ppr_r, rebalancing_p);
 
   } else {
+    raptor_avltree_node* ppr_r_left_new_parent;
     rdata = (*ppr_q)->data;
 
     (*ppr_q)->data = (*ppr_r)->data;
     *ppr_q = *ppr_r;
+    ppr_r_left_new_parent = (*ppr_r)->parent;
     *ppr_r = (*ppr_r)->left;
+    if(*ppr_r)
+      (*ppr_r)->parent = ppr_r_left_new_parent;
     *rebalancing_p = TRUE;
   }
 
