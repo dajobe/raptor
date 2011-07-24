@@ -328,6 +328,7 @@ raptor_iostream_string_write
 raptor_iostream_write_byte
 raptor_iostream_write_bytes
 raptor_iostream_write_end
+raptor_bnodeid_ntriples_write
 raptor_string_ntriples_write
 raptor_string_python_write
 </SECTION>

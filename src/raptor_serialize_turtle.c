@@ -281,10 +281,9 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
           
   } else {
     /* Blank node that needs an explicit name */
-    const unsigned char *node_id = node->term->value.blank.string;
-
-    raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)"_:");
-    raptor_turtle_writer_raw(context->turtle_writer, node_id);
+    raptor_turtle_writer_bnodeid(context->turtle_writer,
+                                 node->term->value.blank.string,
+                                 node->term->value.blank.string_len);
   }
 
   RAPTOR_DEBUG2("Emitted %p\n", node);

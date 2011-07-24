@@ -871,6 +871,25 @@ raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer,
   return NULL;
 }
 
+
+/**
+ * raptor_turtle_writer_bnodeid:
+ * @turtle_writer: Turtle writer object
+ * @bnodeid: blank node ID to write
+ * @len: length of @bnodeid
+ *
+ * Write a blank node ID with leading _: to the Turtle writer.
+ *
+ **/
+void
+raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer,
+                             const unsigned char *bnodeid, size_t len)
+{
+  raptor_bnodeid_ntriples_write(bnodeid, len,
+                                turtle_writer->iostr);
+}
+
+
 #endif
 
 

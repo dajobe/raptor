@@ -1281,6 +1281,7 @@ int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_
 int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
 int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
 const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
+void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const unsigned char *bnodeid, size_t len);
 
 
 /**

@@ -121,6 +121,38 @@ raptor_string_ntriples_write(const unsigned char *string,
 
 
 /**
+ * raptor_bnodeid_ntriples_write:
+ * @bnodeid: bnode ID to write
+ * @len: length of bnode ID
+ * @iostr: #raptor_iostream to write to
+ *
+ * Write a blank node ID in a form legal for N-Triples with _: prefix
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_bnodeid_ntriples_write(const unsigned char *bnodeid,
+                              size_t len,
+                              raptor_iostream *iostr)
+{
+  unsigned int i;
+
+  raptor_iostream_counted_string_write("_:", 2, iostr);
+
+  for(i = 0; i < len; i++) {
+    unsigned char c = *bnodeid++;
+    if(!isalpha(c) && !isdigit(c)) {
+      /* Replace characters not in legal N-Triples bnode set */
+      c = 'z';
+    }
+    raptor_iostream_write_byte(c, iostr);
+  }
+
+  return 0;
+}
+
+
+/**
  * raptor_term_ntriples_write:
  * @term: term to write
  * @iostr: raptor iostream
@@ -160,8 +192,9 @@ raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
       break;
       
     case RAPTOR_TERM_TYPE_BLANK:
-      raptor_iostream_counted_string_write("_:", 2, iostr);
-      raptor_iostream_string_write(term->value.blank.string, iostr);
+      raptor_bnodeid_ntriples_write(term->value.blank.string,
+                                    term->value.blank.string_len,
+                                    iostr);
       break;
       
     case RAPTOR_TERM_TYPE_URI:
