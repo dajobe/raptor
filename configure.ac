@@ -35,6 +35,9 @@ libxml_min_version=2.6.8
 
 libxslt_min_version=1.0.18
 
+libcurl_min_version=7.12.0
+libcurl_min_vernum=071200
+
 AC_REVISION($Revision: $)dnl
 
 AM_MAINTAINER_MODE
@@ -1084,9 +1087,15 @@ if test "X$CURL_CONFIG" != X; then
   CPPFLAGS="$oCPPFLAGS"
   AC_MSG_CHECKING(for libcurl library)
   if test $have_curl_easy_init = yes -a "$ac_cv_header_curl_curl_h" = yes; then
-    have_libcurl=1
     LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
-    AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
+    libcurl_vernum=`$CURL_CONFIG --vernum`
+    if test $libcurl_vernum -lt $libcurl_min_vernum; then
+      AC_MSG_WARN(Using libcurl $LIBCURL_VERSION is unsupported - $libcurl_min_version or newer required.)
+      AC_MSG_RESULT(no - version $LIBCURL_VERSION is too old)
+    else
+      have_libcurl=1
+      AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
+    fi
   else
     AC_MSG_RESULT(no)
   fi
