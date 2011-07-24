@@ -187,15 +187,60 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
   AC_MSG_RESULT($redland_cc_flag)
 ])
 
-possible_warnings="-Wall -Wextra \
--Wshadow -Wpointer-arith -Wstrict-prototypes -Wmissing-prototypes \
--Wmissing-declarations -Wnested-externs -Wredundant-decls -Wswitch-enum \
--Wsign-compare -Werror-implicit-function-declaration -Wwrite-strings
--Wpacked -Wmissing-format-attribute -Wpointer-arith -Wcast-align -Winit-self \
--Wunsafe-loop-optimizations -Wdeclaration-after-statement \
+# GCC warning options
+# http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+#
+# Too noisy:
+#  -Wconversion
+#  -Wunused-parameter : variables can be marked  __attribute__('unused')
+#  -Wmissing-noreturn : functions can be marked with __attribute__((__noreturn__))
+#  -Wformat-nonliteral : variables are used in raptor_rdfxml.c for format strings: fixable with code change
+#
+# Apple gcc specific (probably): -Wshorten-64-to-32
+possible_warnings="\
+-Wall \
+-Wc++-compat \
+-Wextra \
+-Wunused \
+\
+-Waggregate-return \
+-Wbad-function-cast \
+-Wcast-align \
+-Wdeclaration-after-statement \
+-Wdisabled-optimization \
+-Wdiv-by-zero \
+-Wendif-labels \
+-Werror-implicit-function-declaration \
+-Wfloat-equal \
+-Wformat-security \
+-Wframe-larger-than=4096 \
+-Winit-self \
+-Winline \
+-Wmissing-declarations \
+-Wmissing-format-attribute \
+-Wmissing-noreturn \
+-Wmissing-prototypes \
+-Wnested-externs \
 -Wold-style-definition \
--Wno-missing-field-initializers -Wno-unused-parameter \
--Wformat-security"
+-Wpacked \
+-Wpointer-arith \
+-Wredundant-decls \
+-Wshadow \
+-Wsign-compare \
+-Wsign-conversion \
+-Wstrict-prototypes \
+-Wswitch-enum \
+-Wundef \
+-Wunsafe-loop-optimizations \
+-Wwrite-strings \
+\
+-Wshorten-64-to-32
+\
+-Wno-conversion \
+-Wno-missing-field-initializers \
+-Wno-system-headers \
+-Wno-unused-parameter \
+"
 
 warning_cflags=
 if test "$USE_MAINTAINER_MODE" = yes; then
