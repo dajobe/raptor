@@ -933,7 +933,7 @@ struct  raptor_www_s {
   raptor_world* world;
   char *type;
   int free_type;
-  int total_bytes;
+  size_t total_bytes;
   int failed;
   int status_code;
 

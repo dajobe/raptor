@@ -74,7 +74,7 @@ static size_t
 raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userdata) 
 {
   raptor_www* www = (raptor_www*)userdata;
-  int bytes = size*nmemb;
+  size_t bytes = size * nmemb;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer
@@ -100,7 +100,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
                                 void *userdata) 
 {
   raptor_www* www = (raptor_www*)userdata;
-  int bytes = size*nmemb;
+  size_t bytes = size * nmemb;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer

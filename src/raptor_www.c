@@ -542,7 +542,7 @@ raptor_www_file_handle_fetch(raptor_www* www, FILE* fh)
   unsigned char buffer[RAPTOR_WWW_BUFFER_SIZE+1];
   
   while(!feof(fh)) {
-    int len = fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
+    size_t len = fread(buffer, 1, RAPTOR_WWW_BUFFER_SIZE, fh);
     if(len > 0) {
       www->total_bytes += len;
       buffer[len]='\0';
@@ -672,7 +672,7 @@ raptor_www_fetch_to_string_write_bytes(raptor_www* www, void *userdata,
                                        size_t nmemb)
 {
   raptor_stringbuffer* sb = (raptor_stringbuffer*)userdata;
-  int len = size*nmemb;
+  size_t len = size * nmemb;
 
   raptor_stringbuffer_append_counted_string(sb, (unsigned char*)ptr, len, 1);
 }
