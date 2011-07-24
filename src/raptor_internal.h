@@ -948,14 +948,11 @@ struct  raptor_www_s {
 
 #ifdef RAPTOR_WWW_LIBXML
   void *ctxt;
-  char buffer[RAPTOR_WWW_BUFFER_SIZE];
   int is_end;
   void *old_xmlGenericErrorContext;
 #endif
 
-#ifdef RAPTOR_WWW_LIBFETCH
-  char buffer[RAPTOR_WWW_BUFFER_SIZE];
-#endif
+  char buffer[RAPTOR_WWW_BUFFER_SIZE + 1];
 
   char *user_agent;
 
