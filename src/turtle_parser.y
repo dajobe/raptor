@@ -1205,7 +1205,6 @@ static int
 turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-  void *buffer;
   
   if(!string || !*string)
     return 0;
@@ -1219,7 +1218,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 #endif
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
+  (void)turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
 
   turtle_parser_parse(rdf_parser);
 
