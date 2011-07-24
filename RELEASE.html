@@ -14,6 +14,24 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=308">0000308</a>: undefined reference to round and trunc while cross compiling for mipsel</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=449">0000449</a>: ntriples serializer and parser inconsistent w.r.t. _ in name tokens</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=451">0000451</a>: Incorrect qname definition in TRiG parser</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=455">0000455</a>: Incorrect AVL tree operations. [ with fix ]</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=456">0000456</a>: raptor-2.0.3 fails to build against yajl-2.0.2 API</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=457">0000457</a>: raptor-2.0.3 fails to build with curl-7.21.7</li>
+</ul>
+
+<p>Added support for YAJL V2 support.  Note that YAJL V1 and V2 both
+install the same library name 'libyajl' even though they have
+different ABI & APIs.</p>
+
+<p>Added <code>raptor_bnodeid_ntriples_write()</code> to write a
+N-Triples blank node ID in legal form, replacing any letters
+not in the allowed set.</p>
+
 
 <h2 id="rel2_0_3"><a name="rel2_0_3">Raptor2 2.0.3 changes</a></h2>
 
@@ -237,7 +255,7 @@ lengths are known and the same.
 <code>Content-Location:</code> header to get the base URI for content
 retrievals.  This allows these base URIs to be used in parsing
 content retrived from URIs.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=402">Issue#0000402</a>
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=402">Issue #0000402</a>
 </p>
 
 
