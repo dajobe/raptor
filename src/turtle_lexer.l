@@ -164,6 +164,9 @@ static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
 #define TURTLE_LEXER_OOM() YY_FATAL_ERROR_EOF(turtle_lexer_oom_text)
 static const char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
+/* Dot not need input() to to read from stdin */
+#define YY_NO_INPUT 1
+
 %}
 
 /* Tokens from SPARQL spec, adjusted for Turtle */
