@@ -118,7 +118,7 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   }
   
   if(!buffer || !length || length < bufsize)
-    return bufsize;
+    return (int)bufsize;
   
 
   if(locator->uri)
