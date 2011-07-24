@@ -315,6 +315,17 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_bnodeid_ntriples_write ##### -->
+<para>
+
+</para>
+
+@bnodeid: 
+@len: 
+@iostr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_string_ntriples_write ##### -->
 <para>
 
