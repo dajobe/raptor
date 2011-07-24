@@ -920,7 +920,6 @@ int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t leng
 
 #ifdef RAPTOR_WWW_LIBCURL
 #include <curl/curl.h>
-#include <curl/types.h>
 #include <curl/easy.h>
 #endif
 
