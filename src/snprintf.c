@@ -41,7 +41,7 @@ raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
   #define FRAC_MAX_LEN 52
 
   double ufvalue;
-  double intpart;
+  long intpart;
   double fracpart = 0;
   double frac;
   double frac_delta = 10;
@@ -59,7 +59,7 @@ raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
   buffer[idx--] = '\0';
   
   ufvalue = fabs (fvalue);
-  intpart = round(ufvalue);
+  intpart = lround(ufvalue);
 
   /* We "cheat" by converting the fractional part to integer by
    * multiplying by a factor of 10
@@ -104,9 +104,9 @@ raptor_format_float(char *buffer, size_t *currlen, size_t maxlen,
 
   /* Convert/write integer part (right to left) */
   do {
-    buffer[idx--] = "0123456789"[(int)fmod(intpart, 10)];
+    buffer[idx--] = "0123456789"[intpart % 10];
     intpart /= 10;
-  } while(round(intpart));
+  } while(intpart);
   
   /* Write a sign, if requested */
   if(fvalue < 0)
