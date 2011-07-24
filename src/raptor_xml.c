@@ -539,7 +539,7 @@ raptor_xml_element_get_language(raptor_xml_element* xml_element)
 int
 raptor_valid_xml_ID(raptor_parser *rdf_parser, const unsigned char *string)
 {
-  int len = strlen((const char*)string);
+  size_t len = strlen((const char*)string);
 #ifdef RAPTOR_XML_1_1
   #define XML_ID_XML_VERSION 11
 #else
