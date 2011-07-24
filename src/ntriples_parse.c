@@ -540,7 +540,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *p;
   unsigned char *dest;
   unsigned char *terms[MAX_NTRIPLES_TERMS] = { NULL, NULL, NULL, NULL};
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   size_t term_lengths[MAX_NTRIPLES_TERMS] = {0, 0, 0, 0};
+#endif
   raptor_term_type term_types[MAX_NTRIPLES_TERMS] = {RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN};
   size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
@@ -777,7 +779,10 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
     /* Store term */
-    terms[i] = dest; term_lengths[i] = term_length;
+    terms[i] = dest;
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+    term_lengths[i] = term_length;
+#endif
 
     /* Whitespace must separate the terms */
     if(i < 2 && !isspace((int)*p)) {
