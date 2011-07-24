@@ -1,4 +1,104 @@
-2011-06-01  Dave Beckett  <dave@dajobe.org>
+2011-07-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: Make sure N-Triples and Turtle
+	serialize legal blank node IDs
+
+	Fixes Issue #0000449
+	http://bugs.librdf.org/mantis/view.php?id=449
+
+	(raptor_bnodeid_ntriples_write): Added to write a N-Triples blank
+	node ID in legal form, replacing any letters not in the allowed
+	set.
+
+	(raptor_turtle_writer_bnodeid): Added internal method for Turtle
+	writer to do this too.
+
+	(raptor_turtle_emit_blank): Use above.
+
+	* configure.ac:
+	Enforce libcurl earliest version supported 7.12.0
+
+	See previous commit for Issue#0000457
+	http://bugs.librdf.org/mantis/view.php?id=457 and curl GIT commit
+	https://github.com/bagder/curl/commit/ffc5fa3a2be787c8198eb68836a45c440876c1bd
+
+	* src/raptor_internal.h:
+	Remove curl/types.h
+
+	Fixes Issue#0000457
+	http://bugs.librdf.org/mantis/view.php?id=457
+
+	Was made a blank file over 7 years ago.
+
+	curl GIT commit ffc5fa3a2be787c8198eb68836a45c440876c1bd
+	  Date: Mon Apr 26 14:06:51 2004 +0000
+	  "typedef CURL in the curl.h file instead of only having a single
+	  useful typedef in the separate types.h"
+
+	Which is 7.11.2 but it wasn't mentioned in the release notes (even
+	if I'd read them): http://curl.haxx.se/changes.html
+
+	* configure.ac:
+	Improve checking for trunc and round
+
+	Fixes Issue#0000308
+	http://bugs.librdf.org/mantis/view.php?id=308
+
+2011-07-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c:
+	Condition protect more debug printfs
+
+	* src/raptor_avltree.c:
+	Fix losing node parents in deleting
+
+	(raptor_avltree_delete_internal, raptor_avltree_delete_internal2):
+	Fix parents when moving nodes during deletion.  Based on patch
+	from 'v-for-vandal' in notes of Issue#0000455
+	http://bugs.librdf.org/mantis/view.php?id=455
+	Thanks!
+
+	Fixes Issue#0000455
+	http://bugs.librdf.org/mantis/view.php?id=455
+
+	* src/raptor_avltree.c:
+	Add extra AVL Tree debugging
+
+	Based on patch in Issue #0000455
+	http://bugs.librdf.org/mantis/view.php?id=455 with code style
+	changes
+
+	* configure.ac, src/raptor_json.c:
+	Add YAJL V2 support
+
+	Note that YAJL V1 and V2 both install the same library name
+	'libyajl' even though they have different ABI & APIs.
+
+	Fixes Issue #0000456
+	http://bugs.librdf.org/mantis/view.php?id=456
+
+2011-07-11  Dave Beckett <dave@dajobe.org>
+
+	* tests/trig/bug451.out, tests/trig/bug451.trig: Make bug451.trig
+	legal.
+	Fixes Issue #000451
+	http://bugs.librdf.org/mantis/view.php?id=451
+
+	* src/turtle_lexer.l:
+	Allow = instead of := in TRiG
+
+	* tests/trig/Makefile.am, tests/trig/bug451.out,
+	tests/trig/bug451.trig, tests/trig/example2.trig:
+	Add tests for bug
+	451 - fixing TrIG to be legal
+
+2011-06-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.4
 
 	* Snapshotted raptor2_2_0_3 for 2.0.3 release (GIT
 	148879e3346d0976792b51bddf4d98db34263d07)
@@ -280,7 +380,8 @@
 	* src/turtle_parser.y:
 	(graph): Ensure $1 is NULLed out and ownership passed on
 
-	Fixes Issue#0000437 http://bugs.librdf.org/mantis/view.php?id=437
+	Fixes Issue #0000437
+	http://bugs.librdf.org/mantis/view.php?id=437
 
 	* src/raptor_statement.c:
 	(raptor_statement_print): Handle NULL terms.
@@ -365,7 +466,7 @@
 	* src/raptor_internal.h: Rename librdfa symbols for internal
 	linking of librdfa
 
-	Fixes Issue#0000416
+	Fixes Issue #0000416
 	http://bugs.librdf.org/mantis/view.php?id=416
 
 	* librdfa/rdfa.c, librdfa/rdfa_utils.c, librdfa/triple.c: Update
