@@ -505,10 +505,6 @@ raptor_free_parser(raptor_parser* rdf_parser)
 }
 
 
-/* Size of XML buffer to use when reading from a file */
-#define RAPTOR_READ_BUFFER_SIZE 4096
-
-
 /**
  * raptor_parser_parse_file_stream:
  * @rdf_parser: parser
@@ -527,10 +523,8 @@ raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
                                 FILE *stream, const char* filename,
                                 raptor_uri *base_uri)
 {
-  /* Read buffer */
-  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE+1];
   int rc = 0;
-  raptor_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator = &rdf_parser->locator;
 
   if(!stream || !base_uri)
     return 1;
@@ -542,10 +536,10 @@ raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
     return 1;
   
   while(!feof(stream)) {
-    int len = fread(buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
+    size_t len = fread(rdf_parser->buffer, 1, RAPTOR_READ_BUFFER_SIZE, stream);
     int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
-    buffer[len] = '\0';
-    rc = raptor_parser_parse_chunk(rdf_parser, buffer, len, is_end);
+    rdf_parser->buffer[len] = '\0';
+    rc = raptor_parser_parse_chunk(rdf_parser, rdf_parser->buffer, len, is_end);
     if(rc || is_end)
       break;
   }
@@ -628,7 +622,7 @@ raptor_parser_parse_uri_write_bytes(raptor_www* www,
                                     size_t size, size_t nmemb)
 {
   raptor_parse_bytes_context* rpbc = (raptor_parse_bytes_context*)userdata;
-  int len = size*nmemb;
+  size_t len = size * nmemb;
 
   if(!rpbc->started) {
     raptor_uri* base_uri = rpbc->base_uri;
@@ -1656,8 +1650,6 @@ int
 raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr,
                              raptor_uri *base_uri)
 {
-  /* Read buffer */
-  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE + 1];
   int rc = 0;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(rdf_parser, raptor_parser, 1);
@@ -1668,11 +1660,11 @@ raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr,
     return rc;
   
   while(!raptor_iostream_read_eof(iostr)) {
-    int len = raptor_iostream_read_bytes(buffer, 1, RAPTOR_READ_BUFFER_SIZE,
-                                         iostr);
+    size_t len = raptor_iostream_read_bytes(rdf_parser->buffer, 1,
+                                            RAPTOR_READ_BUFFER_SIZE, iostr);
     int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
 
-    rc = raptor_parser_parse_chunk(rdf_parser, buffer, len, is_end);
+    rc = raptor_parser_parse_chunk(rdf_parser, rdf_parser->buffer, len, is_end);
     if(rc || is_end)
       break;
   }

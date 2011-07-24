@@ -469,6 +469,14 @@ raptor_namespace** raptor_namespace_stack_to_array(raptor_namespace_stack *nstac
 #endif
 
 
+/* Size of buffer to use when reading from a file */
+#ifdef BUFSIZ
+#define RAPTOR_READ_BUFFER_SIZE BUFSIZ
+#else
+#define RAPTOR_READ_BUFFER_SIZE 4096
+#endif
+
+
 /*
  * Raptor parser object
  */
@@ -534,6 +542,9 @@ struct raptor_parser_s {
 
   /* internal data for lexers */
   void* lexer_user_data;
+
+  /* internal read buffer */
+  unsigned char buffer[RAPTOR_READ_BUFFER_SIZE + 1];
 };
 
 
