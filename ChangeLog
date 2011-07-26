@@ -1,5 +1,8 @@
 2011-07-25  Dave Beckett <dave@dajobe.org>
 
+	* Snapshotted raptor2_2_0_4 for 2.0.4 release (GIT
+	76194e074160848d6f690a62b395d5dd23aff728)
+
 	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
 	src/raptor2.h.in, src/raptor_internal.h, src/raptor_option.c,
 	src/raptor_parse.c, src/raptor_turtle_writer.c, src/raptor_www.c,
