@@ -11,9 +11,6 @@
 
 <h2 id="rel2_0_4"><a name="rel2_0_4">Raptor2 2.0.4 changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <p>Issues Fixed:</p>
 <ul>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=308">0000308</a>: undefined reference to round and trunc while cross compiling for mipsel</li>
@@ -27,7 +24,7 @@
 <h3>Parser class changes</h3>
 
 <p>The <code>raptor_option</code> enumeration gains values for
-setting SSL client side certifications:
+setting SSL client side certificates:
 <code>RAPTOR_OPTION_WWW_CERT_FILENAME</code> for the certificate
 filename, <code>RAPTOR_OPTION_WWW_CERT_TYPE</code> for the
 certificate type and <code>RAPTOR_OPTION_WWW_CERT_PASSPHRASE</code>
@@ -88,8 +85,9 @@ Patch from 'v-for-vandal'.  Thanks.
 blank node ID in legal form, replacing any letters not in the allowed
 set.</p>
 
-<p>Expanded GCC warnings and corrected a few internal uses of int
-when size_t was meant.  Others remain.
+<p>Expanded GCC warnings and corrected a few internal uses
+of <code>int</code> when <code>size_t</code> was meant.  Others
+remain.
 </p>
 
 <p>Reduced stack use of <code>raptor_www_file_handle_fetch()</code>
