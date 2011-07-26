@@ -722,6 +722,9 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
   int ret = 0;
   raptor_parse_bytes_context rpbc;
   char* ua = NULL;
+  char* cert_filename = NULL;
+  char* cert_type = NULL;
+  char* cert_passphrase = NULL;
   
   if(connection) {
     if(rdf_parser->www)
@@ -773,6 +776,16 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
   ua = RAPTOR_OPTIONS_GET_STRING(rdf_parser, RAPTOR_OPTION_WWW_HTTP_USER_AGENT);
   if(ua)
     raptor_www_set_user_agent(rdf_parser->www, ua);
+
+  cert_filename = RAPTOR_OPTIONS_GET_STRING(rdf_parser,
+                                            RAPTOR_OPTION_WWW_CERT_FILENAME);
+  cert_type = RAPTOR_OPTIONS_GET_STRING(rdf_parser,
+                                        RAPTOR_OPTION_WWW_CERT_TYPE);
+  cert_passphrase = RAPTOR_OPTIONS_GET_STRING(rdf_parser,
+                                              RAPTOR_OPTION_WWW_CERT_PASSPHRASE);
+  if(cert_filename || cert_type || cert_passphrase)
+    raptor_www_set_ssl_cert_options(rdf_parser->www, cert_filename,
+                                    cert_type, cert_passphrase);
   
   ret = raptor_www_fetch(rdf_parser->www, uri);
   

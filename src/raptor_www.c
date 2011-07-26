@@ -468,6 +468,32 @@ raptor_www_set_uri_filter(raptor_www* www,
 
 
 /**
+ * raptor_www_set_ssl_cert_options:
+ * @www: WWW object
+ * @cert_filename: SSL client certificate file
+ * @cert_type: SSL client certificate type (default is "PEM")
+ * @cert_passphrase: SSL client certificate password
+ * 
+ * Set SSL client certificate options (where supported)
+ *
+ * Return value: non-0 when setting options is not supported
+ **/
+int
+raptor_www_set_ssl_cert_options(raptor_www* www,
+                                const char* cert_filename,
+                                const char* cert_type,
+                                const char* cert_passphrase)
+{
+#ifdef RAPTOR_WWW_LIBCURL
+  return raptor_www_curl_set_ssl_cert_options(www, cert_filename, cert_type,
+                                              cert_passphrase);
+#else
+  return 1;
+#endif
+}
+
+
+/**
  * raptor_www_get_connection:
  * @www: #raptor_www object 
  *

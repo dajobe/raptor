@@ -397,6 +397,7 @@
 1.4.21	-	-	-	2.0.0	int	raptor_world_set_log_handler	(raptor_world *world, void *user_data, raptor_log_handler handler)	-
 1.4.21	-	-	-	2.0.0	int	raptor_syntax_description_validate	      (raptor_syntax_description* desc)	-
 2.0.3	-	-	-	2.0.4	int	raptor_bnodeid_ntriples_write	(const unsigned char *bnodeid, size_t len, raptor_iostream *iostr)	-
+2.0.3	-	-	-	2.0.4	int	raptor_www_set_ssl_cert_options	(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase)	-
 #
 # Types
 #

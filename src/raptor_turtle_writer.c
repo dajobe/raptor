@@ -726,6 +726,9 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
     /* WWW option */
     case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
+    case RAPTOR_OPTION_WWW_CERT_FILENAME:
+    case RAPTOR_OPTION_WWW_CERT_TYPE:
+    case RAPTOR_OPTION_WWW_CERT_PASSPHRASE:
       
     default:
       return -1;
@@ -844,6 +847,9 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
     /* WWW option */
     case RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL:
     case RAPTOR_OPTION_WWW_HTTP_USER_AGENT:
+    case RAPTOR_OPTION_WWW_CERT_FILENAME:
+    case RAPTOR_OPTION_WWW_CERT_TYPE:
+    case RAPTOR_OPTION_WWW_CERT_PASSPHRASE:
       
     default:
       break;

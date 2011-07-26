@@ -254,4 +254,27 @@ raptor_www_curl_fetch(raptor_www *www)
   return www->failed;
 }
 
+
+int
+raptor_www_curl_set_ssl_cert_options(raptor_www* www,
+                                     const char* cert_filename,
+                                     const char* cert_type,
+                                     const char* cert_passphrase)
+{
+  /* client certificate file name */
+  if(cert_filename)
+    curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERT, cert_filename);
+  
+  /* curl default is "PEM" */
+  if(cert_type)
+    curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERTTYPE, cert_type);
+  
+  /* passphrase */
+  if(cert_passphrase)
+    curl_easy_setopt(www->curl_handle, CURLOPT_KEYPASSWD, cert_passphrase);
+
+  return 0;
+}
+
+
 #endif /* RAPTOR_WWW_LIBCURL */

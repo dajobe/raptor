@@ -259,6 +259,24 @@ static const struct
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "strict",
     "Operate in strict conformance mode (otherwise lax)"
+  },
+  { RAPTOR_OPTION_WWW_CERT_FILENAME,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_STRING,
+    "wwwCertFilename",
+    "SSL client certificate filename"
+  },
+  { RAPTOR_OPTION_WWW_CERT_TYPE,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_STRING,
+    "wwwCertType",
+    "SSL client certificate type"
+  },
+  { RAPTOR_OPTION_WWW_CERT_PASSPHRASE,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_STRING,
+    "wwwCertPassphrase",
+    "SSL client certificate passphrase"
   }
 };
 

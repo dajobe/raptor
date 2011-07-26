@@ -431,6 +431,9 @@ typedef struct {
  * @RAPTOR_OPTION_ATOM_ENTRY_URI: Atom entry URI.  If given, generate an Atom Entry Document with the item having the given URI, otherwise generate an Atom Feed Document with any items found.
  * @RAPTOR_OPTION_PREFIX_ELEMENTS: Integer. If set, generate Atom/RSS1.0 documents with prefixed elements, otherwise unprefixed.
  * @RAPTOR_OPTION_STRICT: Boolean. If set, operate in strict conformance mode.
+ * @RAPTOR_OPTION_WWW_CERT_FILENAME: String. SSL client certificate filename
+ * @RAPTOR_OPTION_WWW_CERT_TYPE: String. SSL client certificate type
+ * @RAPTOR_OPTION_WWW_CERT_PASSPHRASE: String. SSL client certificate passphrase
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.
@@ -471,7 +474,10 @@ typedef enum {
   RAPTOR_OPTION_ATOM_ENTRY_URI,
   RAPTOR_OPTION_PREFIX_ELEMENTS,
   RAPTOR_OPTION_STRICT,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_STRICT
+  RAPTOR_OPTION_WWW_CERT_FILENAME,
+  RAPTOR_OPTION_WWW_CERT_TYPE,
+  RAPTOR_OPTION_WWW_CERT_PASSPHRASE,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_WWW_CERT_PASSPHRASE
 } raptor_option;
 
 
@@ -1264,6 +1270,8 @@ RAPTOR_API
 raptor_www* raptor_new_www_with_connection(raptor_world* world, void* connection);
 RAPTOR_API
 void raptor_free_www(raptor_www *www);
+RAPTOR_API
+int raptor_www_set_ssl_cert_options(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase);
 RAPTOR_API
 void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API
