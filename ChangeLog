@@ -1,4 +1,69 @@
+2011-07-25  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c:
+	Implement WWW feching SSL client certificate
+	options raptor_option gains: RAPTOR_OPTION_WWW_CERT_FILENAME,
+	RAPTOR_OPTION_WWW_CERT_TYPE and RAPTOR_OPTION_WWW_CERT_PASSPHRASE (raptor_www_set_ssl_cert_options): Added public API to set SSL
+	client certificates on WWW.  (raptor_www_curl_set_ssl_cert_options): Added for libcurl to
+	implement above.  (raptor_parser_parse_uri_with_connection): Use
+	raptor_www_set_ssl_cert_options() to turn the parser options into
+	settings on the WWW object.
+
 2011-07-24  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Calculate term_lengths only when
+	debugging. [-Wunused-but-set-variable]
+
+	* src/turtle_lexer.l: Disable input() for Turtle lexer - never
+	needed.
+
+	* src/turtle_parser.y:
+	(turtle_parse): Do not assign buffer which is unused
+	[-Wunused-but-set-variable]
+
+	* src/raptor_internal.h, src/raptor_parse.c: Move parser buffer
+	from stack to parser object (reducing call stack size)
+
+	RAPTOR_READ_BUFFER_SIZE internal define added.
+
+	raptor_parser gains a buffer of RAPTOR_READ_BUFFER_SIZE + 1 for
+	NUL.
+
+	(raptor_parser_parse_file_stream): Use parser object buffer not
+	stack.
+
+	(raptor_parser_parse_uri_write_bytes): Use size_t in len
+	calculation.
+
+	(raptor_parser_parse_iostream): Use parser object buffer not
+	stack.  Use size_t for read length.
+
+	* configure.ac: -Wno-sign-conversion for now
+
+	* src/raptor_internal.h, src/raptor_www.c: Reduce stack use of
+	raptor_www_file_handle_fetch
+
+	(raptor_www_file_handle_fetch): Use www->buffer for file buffer
+	for all builds not just www with libxml or libfetch.
+
+	* src/raptor_xml.c:
+	(raptor_valid_xml_ID): use size_t for strlen
+
+	* src/raptor_locator.c:
+	(raptor_locator_format): Cast calculated bufsize to int return.
+
+	* src/raptor_internal.h, src/raptor_www.c, src/raptor_www_curl.c:
+	Use a total_bytes for byte counts inside raptor_www
+
+	* src/snprintf.c:
+	(raptor_format_float): use a long for the intpart.
+
+	* configure.ac:
+	Expand (GCC) compiler warnings lots
 
 	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
 	src/raptor2.h.in, src/raptor_internal.h,

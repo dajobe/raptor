@@ -24,13 +24,78 @@
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=457">0000457</a>: raptor-2.0.3 fails to build with curl-7.21.7</li>
 </ul>
 
-<p>Added support for YAJL V2 support.  Note that YAJL V1 and V2 both
-install the same library name 'libyajl' even though they have
-different ABI & APIs.</p>
+<h3>Parser class changes</h3>
 
-<p>Added <code>raptor_bnodeid_ntriples_write()</code> to write a
-N-Triples blank node ID in legal form, replacing any letters
-not in the allowed set.</p>
+<p>The <code>raptor_option</code> enumeration gains values for
+setting SSL client side certifications:
+<code>RAPTOR_OPTION_WWW_CERT_FILENAME</code> for the certificate
+filename, <code>RAPTOR_OPTION_WWW_CERT_TYPE</code> for the
+certificate type and <code>RAPTOR_OPTION_WWW_CERT_PASSPHRASE</code>
+for the certificate passphrase.
+</p>
+
+<p><code>raptor_parser_parse_uri_with_connection()</code> (which is
+called by <code>raptor_parse_uri()</code>) now uses
+<code>raptor_www_set_ssl_cert_options()</code> to turn the parser
+options above into settings on the WWW object.
+</p>
+
+<p>RDF/JSON parser: Gains support for building with
+<a href="http://lloyd.github.com/yajl/">YAJL</a> V2.  Note that YAJL
+V1 and V2 both install the same library name 'libyajl' even though
+they have different ABI and APIs.</p>
+
+<p>TRiG parser: Fixed to support the legal <em>uri</em> <code>:
+{</code> ... <code>}</code> syntax naming a graph where the
+'<code>:</code>' is optional.
+</p>
+
+<p>Turtle parser: Modified to not include the internal
+<code>input()</code> function in the lexer which is never needed.
+</p>
+
+<h3>Serializer class changes</h3>
+
+<p>N-Triples and Turtle serializers: Now
+use <code>raptor_bnodeid_ntriples_write()</code> to always write
+legal blank node IDs.
+</p>
+
+<h3>WWW class changes</h3>
+
+<p>Added support for <code>raptor_www</code> to handle setting SSL
+client certificate options during WWW retrieval.
+</p>
+
+<p>Added <code>raptor_www_set_ssl_cert_options()</code> method to set
+the SSL client certificates on a WWW object.
+</p>
+
+<h3>Other changes</h3>
+
+<p>Make Raptor build against Curl 7.21.7 which removed a header file
+that was made an empty file in the libcurl source code on April 26
+2004 around version 7.12.0 which is now the minimum version Raptor
+supports..
+</p>
+
+<p>Fixed an AVL Tree issue during deletion that messes up some pointers.
+Patch from 'v-for-vandal'.  Thanks.
+</p>
+
+<p>Added a utility function
+<code>raptor_bnodeid_ntriples_write()</code> to write a N-Triples
+blank node ID in legal form, replacing any letters not in the allowed
+set.</p>
+
+<p>Expanded GCC warnings and corrected a few internal uses of int
+when size_t was meant.  Others remain.
+</p>
+
+<p>Reduced stack use of <code>raptor_www_file_handle_fetch()</code>
+and <code>raptor_parser_parse_iostream()</code> by moving I/O buffer
+to the www or parser objects respectively.
+</p>
 
 
 <h2 id="rel2_0_3"><a name="rel2_0_3">Raptor2 2.0.3 changes</a></h2>
@@ -88,7 +153,6 @@ were found:</p>
 <p>Bison 2.4 is required to build Raptor from GIT source with
 no pregenerated files.
 </p>
-
 
 
 <h2 id="rel2_0_2"><a name="rel2_0_2">Raptor2 2.0.2 changes</a></h2>
