@@ -984,7 +984,7 @@ raptor_grddl_run_grddl_transform_uri(raptor_parser* rdf_parser,
    */
   xpbc.xc = NULL;
   xpbc.rdf_parser = rdf_parser;
-  xpbc.base_uri = xslt_uri;
+  xpbc.base_uri = base_uri;
 
   old_locator_uri = locator->uri;
   locator->uri = xslt_uri;
