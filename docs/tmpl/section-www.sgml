@@ -226,6 +226,18 @@ chunks of byte content.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_www_set_ssl_cert_options ##### -->
+<para>
+
+</para>
+
+@www: 
+@cert_filename: 
+@cert_type: 
+@cert_passphrase: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_www_abort ##### -->
 <para>
 
