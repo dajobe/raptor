@@ -1,5 +1,15 @@
 2011-07-25  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_uri): Set base_uri for sheet URI
+	get.
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.5
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-www.sgml:
+	Update tmpls
+
 	* Snapshotted raptor2_2_0_4 for 2.0.4 release (GIT
 	76194e074160848d6f690a62b395d5dd23aff728)
 
