@@ -23,7 +23,7 @@
 
 
 # The name of the module.
-DOC_MODULE=raptor
+DOC_MODULE=raptor2
 
 # The top-level SGML file.
 DOC_MAIN_SGML_FILE=raptor-docs.xml
