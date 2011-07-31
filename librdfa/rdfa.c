@@ -134,7 +134,7 @@ static size_t rdfa_init_base(
 {
    char* head_end = NULL;
    size_t offset = context->wb_position;
-   int needed_size = (offset + bytes_read) - *working_buffer_size;
+   size_t needed_size = (offset + bytes_read) - *working_buffer_size;
 
    // search for the end of <head>, stop if <head> was found
 
@@ -1250,8 +1250,8 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
       // make sure that the end of the doctype declaration can be found
       if(doctype_end != NULL)
       {
-         int bytes_to_copy = 0;
-         int total_bytes = 0;
+         size_t bytes_to_copy = 0;
+         size_t total_bytes = 0;
 
          // create the new doctype buffer
          bytes_to_copy = doctype_position - doctype_buffer;
@@ -1293,8 +1293,8 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
 
       if(html_position != NULL)
       {
-         int bytes_to_copy = 0;
-         int total_bytes = 0;
+         size_t bytes_to_copy = 0;
+         size_t total_bytes = 0;
 
          // create the new doctype buffer
          bytes_to_copy = html_position - doctype_buffer;
