@@ -145,7 +145,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       {
          // append the host part and the URI part as-is, ensuring that a 
 	 // '/' exists at the end of the host part.
- 	 unsigned int tlen = strlen(tmp) - 1;
+ 	 size_t tlen = strlen(tmp) - 1;
          char* rval_copy;
 
 	 rval_copy = rdfa_replace_string(rval, tmp);
@@ -283,7 +283,7 @@ char* rdfa_resolve_curie(
             raptor_namespace *nspace;
             raptor_uri* ns_uri;
             nspace = raptor_namespaces_find_namespace(&context->sax2->namespaces,
-                                                      (const unsigned char*)prefix, strlen(prefix));
+                                                      (const unsigned char*)prefix, (int)strlen(prefix));
             if(nspace) {
                ns_uri = raptor_namespace_get_uri(nspace);
                if(ns_uri)
