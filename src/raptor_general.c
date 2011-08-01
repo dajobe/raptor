@@ -129,7 +129,7 @@ raptor_new_world_internal(unsigned int version_decimal)
     return NULL;
   }
   
-  world = (raptor_world*)RAPTOR_CALLOC(raptor_world, sizeof(*world), 1);
+  world = RAPTOR_CALLOC(raptor_world*, 1, sizeof(*world));
   if(world) {
     world->magic = RAPTOR2_WORLD_MAGIC;
     
@@ -226,7 +226,7 @@ raptor_free_world(raptor_world* world)
     return;
 
   if(world->default_generate_bnodeid_handler_prefix)
-    RAPTOR_FREE(cstring, world->default_generate_bnodeid_handler_prefix);
+    RAPTOR_FREE(char*, world->default_generate_bnodeid_handler_prefix);
 
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_finish(world);
@@ -302,7 +302,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
   else
     length += 5; /* strlen("genid") */
   
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length);
+  buffer = RAPTOR_MALLOC(unsigned char*, length);
   if(!buffer)
     return NULL;
 
@@ -379,7 +379,7 @@ raptor_world_set_generate_bnodeid_parameters(raptor_world* world,
   if(prefix) {
     length = strlen(prefix);
     
-    prefix_copy = (char*)RAPTOR_MALLOC(cstring, length + 1);
+    prefix_copy = RAPTOR_MALLOC(char*, length + 1);
     if(!prefix_copy)
       return;
 
@@ -387,7 +387,7 @@ raptor_world_set_generate_bnodeid_parameters(raptor_world* world,
   }
   
   if(world->default_generate_bnodeid_handler_prefix)
-    RAPTOR_FREE(cstring, world->default_generate_bnodeid_handler_prefix);
+    RAPTOR_FREE(char*, world->default_generate_bnodeid_handler_prefix);
 
   world->default_generate_bnodeid_handler_prefix = prefix_copy;
   world->default_generate_bnodeid_handler_prefix_length = length;
@@ -566,7 +566,7 @@ do { \
   if(len <= 0) \
     return NULL; \
    \
-  buffer = (char*)RAPTOR_MALLOC(cstring, len); \
+  buffer = RAPTOR_MALLOC(char*, len); \
   if(buffer) { \
     /* copy for re-use */ \
     va_copy(args_copy, arguments); \
@@ -581,7 +581,7 @@ do { \
   int size = 2; \
        \
   while(1) { \
-    buffer = (char*)RAPTOR_MALLOC(cstring, size+1); \
+    buffer = RAPTOR_MALLOC(char*, size + 1); \
     if(!buffer) \
       break; \
      \
@@ -599,7 +599,7 @@ do { \
     */ \
     if((len >= 0) && (buffer[len] == '\0')) \
       break; \
-    RAPTOR_FREE(cstring, buffer); \
+    RAPTOR_FREE(char*, buffer); \
     size += 4; \
   } \
 } while(0)
@@ -781,7 +781,7 @@ raptor_free_memory(void *ptr)
 void*
 raptor_alloc_memory(size_t size)
 {
-  return RAPTOR_MALLOC(void, size);
+  return RAPTOR_MALLOC(void*, size);
 }
 
 
@@ -808,7 +808,7 @@ raptor_alloc_memory(size_t size)
 void*
 raptor_calloc_memory(size_t nmemb, size_t size)
 {
-  return RAPTOR_CALLOC(void, nmemb, size);
+  return RAPTOR_CALLOC(void*, nmemb, size);
 }
 
 

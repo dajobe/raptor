@@ -75,8 +75,7 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
   if(term->type == RAPTOR_TERM_TYPE_UNKNOWN)
     return NULL;
 
-  node = (raptor_abbrev_node*)RAPTOR_CALLOC(raptor_abbrev_node, 1,
-                                            sizeof(*node));
+  node = RAPTOR_CALLOC(raptor_abbrev_node*, 1, sizeof(*node));
   if(node) {
     node->world = world;
     node->ref_count = 1;
@@ -191,8 +190,7 @@ static raptor_abbrev_node**
 raptor_new_abbrev_po(raptor_abbrev_node* predicate, raptor_abbrev_node* object)
 {
   raptor_abbrev_node** nodes = NULL;
-  nodes = (raptor_abbrev_node**)RAPTOR_CALLOC(raptor_abbrev_nodes, 2,
-                                              sizeof(raptor_abbrev_node*));
+  nodes = RAPTOR_CALLOC(raptor_abbrev_node**, 2, sizeof(raptor_abbrev_node*));
   if(!nodes)
     return NULL;
   
@@ -269,8 +267,7 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     return NULL;
   }  
   
-  subject = (raptor_abbrev_subject*)RAPTOR_CALLOC(raptor_subject, 1,
-                                                  sizeof(*subject));
+  subject = RAPTOR_CALLOC(raptor_abbrev_subject*, 1, sizeof(*subject));
 
   if(subject) {
     subject->node = node;
@@ -506,7 +503,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   if(subject->type) {
     obj = raptor_term_to_string(subject);
     fprintf(stderr,"[%s, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, %s]\n", subj, obj);      
-    RAPTOR_FREE(cstring, obj);
+    RAPTOR_FREE(char*, obj);
   }
   
   for(i = 0; i < raptor_sequence_size(subject->elements); i++) {
@@ -515,7 +512,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
     if(o) {
       obj = raptor_term_to_string(o);
       fprintf(stderr,"[%s, [rdf:_%d], %s]\n", subj, i, obj);      
-      RAPTOR_FREE(cstring, obj);
+      RAPTOR_FREE(char*, obj);
     }
     
   }
@@ -535,7 +532,7 @@ raptor_print_subject(raptor_abbrev_subject* subject)
   if(iter)
     raptor_free_avltree_iterator(iter);
   
-  RAPTOR_FREE(cstring, subj);
+  RAPTOR_FREE(char*, subj);
   
 }
 #endif
@@ -598,7 +595,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
     return NULL;
 
   ns_uri_string_len = uri_len - name_len;
-  ns_uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, ns_uri_string_len + 1);
+  ns_uri_string = RAPTOR_MALLOC(unsigned char*, ns_uri_string_len + 1);
   if(!ns_uri_string)
     return NULL;
   memcpy(ns_uri_string, (const char*)uri_string, ns_uri_string_len);
@@ -606,7 +603,7 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   
   ns_uri = raptor_new_uri_from_counted_string(node->world, ns_uri_string,
                                               ns_uri_string_len);
-  RAPTOR_FREE(cstring, ns_uri_string);
+  RAPTOR_FREE(char*, ns_uri_string);
   
   if(!ns_uri)
     return NULL;

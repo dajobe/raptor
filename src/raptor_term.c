@@ -67,7 +67,7 @@ raptor_new_term_from_uri(raptor_world* world, raptor_uri* uri)
   
   raptor_world_open(world);
 
-  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
+  t = RAPTOR_CALLOC(raptor_term*, 1, sizeof(*t));
   if(!t)
     return NULL;
 
@@ -190,7 +190,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     return NULL;
   
 
-  new_literal = (unsigned char*)RAPTOR_MALLOC(cstring, literal_len + 1);
+  new_literal = RAPTOR_MALLOC(unsigned char*, literal_len + 1);
   if(!new_literal)
     return NULL;
 
@@ -204,9 +204,9 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     *new_literal = '\0';
 
   if(language) {
-    new_language = (unsigned char*)RAPTOR_MALLOC(cstring, language_len + 1);
+    new_language = RAPTOR_MALLOC(unsigned char*, language_len + 1);
     if(!new_language) {
-      RAPTOR_FREE(cstring, new_literal);
+      RAPTOR_FREE(char*, new_literal);
       return NULL;
     }
     memcpy(new_language, language, language_len);
@@ -218,12 +218,12 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     datatype = raptor_uri_copy(datatype);
   
 
-  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
+  t = RAPTOR_CALLOC(raptor_term*, 1, sizeof(*t));
   if(!t) {
     if(new_literal)
-      RAPTOR_FREE(cstring, new_literal);
+      RAPTOR_FREE(char*, new_literal);
     if(new_language)
-      RAPTOR_FREE(cstring, new_language);
+      RAPTOR_FREE(char*, new_language);
     if(datatype)
       raptor_free_uri(datatype);
     return NULL;
@@ -313,7 +313,7 @@ raptor_new_term_from_counted_blank(raptor_world* world,
   raptor_world_open(world);
 
   if (blank) {
-    new_id = (unsigned char*)RAPTOR_MALLOC(cstring, length + 1);
+    new_id = RAPTOR_MALLOC(unsigned char*, length + 1);
     if(!new_id)
       return NULL;
     memcpy(new_id, blank, length);
@@ -323,9 +323,9 @@ raptor_new_term_from_counted_blank(raptor_world* world,
     length = strlen((const char*)new_id);
   }
 
-  t = (raptor_term*)RAPTOR_CALLOC(raptor_term, 1, sizeof(*t));
+  t = RAPTOR_CALLOC(raptor_term*, 1, sizeof(*t));
   if(!t) {
-    RAPTOR_FREE(cstring, new_id);
+    RAPTOR_FREE(char*, new_id);
     return NULL;
   }
 
@@ -415,14 +415,14 @@ raptor_free_term(raptor_term *term)
 
     case RAPTOR_TERM_TYPE_BLANK:
       if(term->value.blank.string) {
-        RAPTOR_FREE(cstring, (void*)term->value.blank.string);
+        RAPTOR_FREE(char*, term->value.blank.string);
         term->value.blank.string = NULL;
       }
       break;
       
     case RAPTOR_TERM_TYPE_LITERAL:
       if(term->value.literal.string) {
-        RAPTOR_FREE(cstring, (void*)term->value.literal.string);
+        RAPTOR_FREE(char*, term->value.literal.string);
         term->value.literal.string = NULL;
       }
 
@@ -432,7 +432,7 @@ raptor_free_term(raptor_term *term)
       }
       
       if(term->value.literal.language) {
-        RAPTOR_FREE(cstring, (void*)term->value.literal.language);
+        RAPTOR_FREE(char*, term->value.literal.language);
         term->value.literal.language = NULL;
       }
       break;
@@ -442,7 +442,7 @@ raptor_free_term(raptor_term *term)
       break;
   }
 
-  RAPTOR_FREE(term, (void*)term);
+  RAPTOR_FREE(term, term);
 }
 
 
@@ -481,7 +481,7 @@ raptor_term_to_counted_string(raptor_term *term, size_t* len_p)
   
   if(rc) {
     if(string) {
-      RAPTOR_FREE(cstring, string);
+      RAPTOR_FREE(char*, string);
       string = NULL;
     }
   }

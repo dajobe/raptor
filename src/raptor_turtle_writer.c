@@ -165,8 +165,8 @@ raptor_new_turtle_writer(raptor_world* world,
   
   raptor_world_open(world);
 
-  turtle_writer = (raptor_turtle_writer*)RAPTOR_CALLOC(raptor_turtle_writer, 1,
-                                                       sizeof(*turtle_writer));
+  turtle_writer = RAPTOR_CALLOC(raptor_turtle_writer*, 1,
+                                sizeof(*turtle_writer));
 
   if(!turtle_writer)
     return NULL;
@@ -340,7 +340,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
     raptor_string_ntriples_write(uri_str, length, '>', turtle_writer->iostr);
   raptor_iostream_write_byte('>', turtle_writer->iostr);
 
-  RAPTOR_FREE(cstring, uri_str);
+  RAPTOR_FREE(char*, uri_str);
 }
 
 

@@ -97,8 +97,7 @@ raptor_new_json_writer(raptor_world* world,
 {
   raptor_json_writer* json_writer;
 
-  json_writer = (raptor_json_writer*)RAPTOR_CALLOC(raptor_json_writer, 1, 
-                                                   sizeof(*json_writer));
+  json_writer = RAPTOR_CALLOC(raptor_json_writer*, 1, sizeof(*json_writer));
 
   if(!json_writer)
     return NULL;
@@ -227,7 +226,7 @@ raptor_json_writer_key_uri_value(raptor_json_writer* json_writer,
   else
     rc = raptor_json_writer_quoted(json_writer, value, value_len);
   
-  RAPTOR_FREE(cstring, value);
+  RAPTOR_FREE(char*, value);
 
   return rc;
 }

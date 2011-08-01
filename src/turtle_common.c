@@ -75,7 +75,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
   size_t i;
   const unsigned char *s;
   unsigned char *d;
-  unsigned char *string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  unsigned char *string = RAPTOR_MALLOC(unsigned char*, len + 1);
   
   if(!string)
     return -1;
@@ -103,7 +103,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         if(i+ulen > len) {
           error_handler(error_data,
                         "Turtle string error - \\%c over end of line", c);
-          RAPTOR_FREE(cstring, string);
+          RAPTOR_FREE(char*, string);
           return 1;
         }
         
@@ -112,7 +112,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           error_handler(error_data,
                         "Turtle string error - illegal Uncode escape '%c%s...'",
                         c, s);
-          RAPTOR_FREE(cstring, string);
+          RAPTOR_FREE(char*, string);
           return 1;
         }
 
@@ -123,7 +123,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           error_handler(error_data,
                         "Turtle string error - illegal Unicode character with code point #x%lX (max #x%lX).", 
                         unichar, raptor_unicode_max_codepoint);
-          RAPTOR_FREE(cstring, string);
+          RAPTOR_FREE(char*, string);
           return 1;
         }
           

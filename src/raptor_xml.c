@@ -67,8 +67,7 @@ raptor_new_xml_element(raptor_qname *name,
 {
   raptor_xml_element* xml_element;
 
-  xml_element = (raptor_xml_element*)RAPTOR_CALLOC(raptor_xml_element, 1,
-                                                   sizeof(*xml_element));
+  xml_element = RAPTOR_CALLOC(raptor_xml_element*, 1, sizeof(*xml_element));
   if(!xml_element)
     return NULL;
 
@@ -155,7 +154,7 @@ raptor_free_xml_element(raptor_xml_element *element)
     raptor_free_uri(element->base_uri);
 
   if(element->xml_language)
-    RAPTOR_FREE(cstring, (void*)element->xml_language);
+    RAPTOR_FREE(char*, element->xml_language);
 
   raptor_free_qname(element->name);
 
@@ -360,8 +359,8 @@ raptor_xml_element_write(raptor_xml_element *element,
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
-    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count,
-                                                     sizeof(struct nsd));
+    nspace_declarations = RAPTOR_CALLOC(struct nsd*, nspace_max_count,
+                                        sizeof(struct nsd));
   }
 
   if(element->name->nspace) {
@@ -459,7 +458,7 @@ raptor_xml_element_write(raptor_xml_element *element,
       raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
                                            nspace_declarations[i].length,
                                            iostr);
-      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+      RAPTOR_FREE(char*, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
 
       raptor_namespace_stack_start_namespace(nstack,
@@ -1051,7 +1050,7 @@ main(int argc, char *argv[])
       continue;
     }
       
-    xml_string = (unsigned char*)RAPTOR_MALLOC(cstring, xml_string_len+1);
+    xml_string = RAPTOR_MALLOC(unsigned char*, xml_string_len + 1);
     
     xml_string_len = raptor_xml_escape_string(world,
                                               utf8_string, utf8_string_len,
@@ -1078,7 +1077,7 @@ main(int argc, char *argv[])
     fprintf(stderr, "%s: raptor_xml_escape_string escaped string to '%s' ok\n",
             program, xml_string);
 #endif
-    RAPTOR_FREE(cstring, xml_string);
+    RAPTOR_FREE(char*, xml_string);
   }
 
 #if RAPTOR_DEBUG > 1    

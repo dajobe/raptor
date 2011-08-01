@@ -84,7 +84,7 @@ raptor_www_libxml_fetch(raptor_www *www)
       len += cc_len+2; /* \r\n */
     }
 
-    headers = (char*)RAPTOR_MALLOC(cstring, len+1);
+    headers = RAPTOR_MALLOC(char*, len + 1);
     if(!headers)
       return 1;
     
@@ -120,7 +120,7 @@ raptor_www_libxml_fetch(raptor_www *www)
                               0); /* input length - ilen */
 
   if(headers)
-    RAPTOR_FREE(cstring, headers);
+    RAPTOR_FREE(char*, headers);
 
   if(!www->ctxt)
     return 1;

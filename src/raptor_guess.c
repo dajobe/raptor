@@ -84,7 +84,7 @@ raptor_guess_parse_terminate(raptor_parser *rdf_parser)
   raptor_guess_parser_context *guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
 
   if(guess_parser->content_type)
-    RAPTOR_FREE(cstring, guess_parser->content_type);
+    RAPTOR_FREE(char*, guess_parser->content_type);
 
   if(guess_parser->parser)
     raptor_free_parser(guess_parser->parser);
@@ -106,7 +106,7 @@ raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser,
     else
       len = strlen(content_type);
     
-    guess_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
+    guess_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
     memcpy(guess_parser->content_type, content_type, len);
     guess_parser->content_type[len]='\0';
 

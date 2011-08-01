@@ -200,7 +200,7 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
 #define PREFIX "libxslt error: "
 #define PREFIX_LENGTH 15
   length = PREFIX_LENGTH + msg_len + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
     memcpy(nmsg, PREFIX, PREFIX_LENGTH);
     memcpy(nmsg + PREFIX_LENGTH, msg, msg_len + 1);
@@ -210,7 +210,7 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
 
   raptor_parser_error_varargs(rdf_parser, nmsg ? nmsg : msg, arguments);
   if(nmsg)
-    RAPTOR_FREE(cstring, nmsg);
+    RAPTOR_FREE(char*, nmsg);
 
   va_end(arguments);
 }
@@ -222,8 +222,7 @@ raptor_new_xml_context(raptor_world* world, raptor_uri* uri,
 {
   grddl_xml_context* xml_context;
 
-  xml_context = (grddl_xml_context*)RAPTOR_MALLOC(xml_context,
-                                                  sizeof(*xml_context));
+  xml_context = RAPTOR_MALLOC(grddl_xml_context*, sizeof(*xml_context));
   if(uri)
     uri = raptor_uri_copy(uri);
   if(base_uri)
@@ -354,7 +353,7 @@ raptor_grddl_parse_terminate(raptor_parser *rdf_parser)
   }
 
   if(grddl_parser->content_type)
-    RAPTOR_FREE(cstring, grddl_parser->content_type);
+    RAPTOR_FREE(char*, grddl_parser->content_type);
 
   if(grddl_parser->sb)
     raptor_free_stringbuffer(grddl_parser->sb);
@@ -724,7 +723,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    * url: (optional)
    *   http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl
    */
-  quoted_base_uri = (char*)RAPTOR_MALLOC(cstring, base_uri_len + 3);
+  quoted_base_uri = RAPTOR_MALLOC(char*, base_uri_len + 3);
   quoted_base_uri[0] = '\'';
   memcpy(quoted_base_uri + 1, (const char*)base_uri_string, base_uri_len);
   quoted_base_uri[base_uri_len + 1] = '\'';
@@ -828,7 +827,7 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
     xsltFreeTransformContext(userCtxt);
   
   if(quoted_base_uri)
-    RAPTOR_FREE(cstring, quoted_base_uri);
+    RAPTOR_FREE(char*, quoted_base_uri);
   
   if(doc_txt)    
     xmlFree(doc_txt);
@@ -929,7 +928,7 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
       raptor_www_set_http_accept(www, accept_h);
-      RAPTOR_FREE(cstring, accept_h);
+      RAPTOR_FREE(char*, accept_h);
     }
   }
   if(rdf_parser->uri_filter)
@@ -1153,7 +1152,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       char* buffer;
       size_t list_len = strlen((const char*)uri_string);
       
-      buffer = (char*)RAPTOR_MALLOC(cstring, list_len+1);
+      buffer = RAPTOR_MALLOC(char*, list_len + 1);
       memcpy(buffer, uri_string, list_len + 1);
       
       for(start = end = buffer; end; start = end+1) {
@@ -1183,7 +1182,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         xml_context = raptor_new_xml_context(rdf_parser->world, uri, base_uri);
         raptor_sequence_push(seq, xml_context);
       }
-      RAPTOR_FREE(cstring, buffer);
+      RAPTOR_FREE(char*, buffer);
     } else if(flags & MATCH_IS_HARDCODED) {
 #if RAPTOR_DEBUG
       RAPTOR_DEBUG2("Got hardcoded XSLT match for %s\n", xpathExpr);
@@ -1231,8 +1230,8 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
 
   len = strlen(content_type)+1;
   if(grddl_parser->content_type)
-    RAPTOR_FREE(cstring,grddl_parser->content_type);
-  grddl_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
+    RAPTOR_FREE(char*, grddl_parser->content_type);
+  grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
   memcpy(grddl_parser->content_type, content_type, len + 1);
 
   if(!strncmp(content_type, "application/rdf+xml", 19)) {
@@ -1330,7 +1329,7 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
       }      
     }
     
-    RAPTOR_FREE(cstring, ibuffer);
+    RAPTOR_FREE(char*, ibuffer);
     raptor_parser_save_content(grddl_parser->internal_parser, 0);
   }
 
@@ -1368,7 +1367,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   /* XML document DOM */
   xmlDocPtr doc;
   int expri;
-  const unsigned char* buffer = NULL;
+  unsigned char* buffer = NULL;
   size_t buffer_len = 0;
   int buffer_is_libxml = 0;
   int loop;
@@ -1408,10 +1407,10 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     return 0;
 
   buffer_len = raptor_stringbuffer_length(grddl_parser->sb);
-  buffer = (const unsigned char*)RAPTOR_MALLOC(cstring, buffer_len+1);
+  buffer = RAPTOR_MALLOC(unsigned char*, buffer_len + 1);
   if(buffer)
     raptor_stringbuffer_copy_to_string(grddl_parser->sb, 
-                                       (unsigned char*)buffer, buffer_len);
+                                       buffer, buffer_len);
   
 
   uri_string = raptor_uri_as_string(rdf_parser->base_uri);
@@ -1572,7 +1571,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       int blen;
       
       /* write the result of XML Include to buffer */
-      RAPTOR_FREE(cstring, buffer);
+      RAPTOR_FREE(char*, buffer);
       xmlDocDumpFormatMemory(doc, (xmlChar**)&buffer, &blen,
                              1 /* indent the result */);
       buffer_len = blen;
@@ -1880,7 +1879,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     if(buffer_is_libxml)
       xmlFree((xmlChar*)buffer);
     else
-      RAPTOR_FREE(cstring, buffer);
+      RAPTOR_FREE(char*, buffer);
   }
 
   if(grddl_parser->sb) {
@@ -1948,9 +1947,9 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
   if(content_type) {
     size_t len = strlen(content_type) + 1;
     if(grddl_parser->content_type)
-      RAPTOR_FREE(cstring,grddl_parser->content_type);
+      RAPTOR_FREE(char*, grddl_parser->content_type);
     
-    grddl_parser->content_type = (char*)RAPTOR_MALLOC(cstring, len+1);
+    grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
     memcpy(grddl_parser->content_type, content_type, len + 1);
   }
 }

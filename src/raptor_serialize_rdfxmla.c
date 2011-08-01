@@ -163,7 +163,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
   RAPTOR_DEBUG2("Emitting resource predicate URI %s\n",
                 raptor_uri_as_string(uri));
 
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+  attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
   if(!attrs)
     return 1;
     
@@ -181,7 +181,7 @@ raptor_rdfxmla_emit_resource_uri(raptor_serializer *serializer,
                                                         attr_value);
       
   if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_RELATIVE_URIS))
-    RAPTOR_FREE(cstring, attr_value);
+    RAPTOR_FREE(char*, attr_value);
 
   if(!attrs[0]) {
     RAPTOR_FREE(qnamearray, attrs);
@@ -267,7 +267,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   if(node->term->value.literal.language || node->term->value.literal.datatype) {
           
     attrs_count = 0;
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 2, sizeof(raptor_qname*));
+    attrs = RAPTOR_CALLOC(raptor_qname**, 2, sizeof(raptor_qname*));
     if(!attrs)
       return 1;
 
@@ -294,7 +294,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
       /* SJS Note: raptor_default_uri_as_string simply returns a
        * pointer to the string. Hope this is also true of alternate
        * uri implementations. */
-      /* RAPTOR_FREE(cstring, datatype_value); */
+      /* RAPTOR_FREE(char*, datatype_value); */
 
     }
 
@@ -372,7 +372,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
     unsigned char *attr_value = node->term->value.blank.string;
     raptor_qname **attrs;
 
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+    attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
     if(!attrs)
       return 1;
 
@@ -712,7 +712,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     goto oom;
   }
     
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+  attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
   if(!attrs)
     goto oom;
     
@@ -724,8 +724,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     attr_name = (unsigned char*)"about";
     if(context->is_xmp) {
       /* XML rdf:about value is always "" */
-      attr_value = (unsigned char *)RAPTOR_CALLOC(string, 1, 
-                                                  sizeof(unsigned char));
+      attr_value = RAPTOR_CALLOC(unsigned char*, 1, sizeof(unsigned char));
     } else if(RAPTOR_OPTIONS_GET_NUMERIC(serializer,
                                          RAPTOR_OPTION_RELATIVE_URIS))
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
@@ -753,7 +752,7 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
                                                           attr_value);
     
     if(subject_term->type != RAPTOR_TERM_TYPE_BLANK)
-      RAPTOR_FREE(cstring, attr_value);
+      RAPTOR_FREE(char*, attr_value);
     
     if(!attrs[0]) {
       RAPTOR_FREE(qnamearray, attrs);
@@ -1270,7 +1269,7 @@ raptor_rdfxmla_ensure_writen_header(raptor_serializer* serializer,
      RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_WRITE_BASE_URI)) {
     const unsigned char* base_uri_string;
 
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+    attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
     if(!attrs)
       goto oom;
 

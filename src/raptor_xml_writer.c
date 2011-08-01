@@ -192,8 +192,8 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     
-    nspace_declarations = (struct nsd*)RAPTOR_CALLOC(nsdarray, nspace_max_count,
-                                                     sizeof(struct nsd));
+    nspace_declarations = RAPTOR_CALLOC(struct nsd*, nspace_max_count,
+                                        sizeof(struct nsd));
     if(!nspace_declarations)
       return 1;
   }
@@ -299,7 +299,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
                                            nspace_declarations[i].length,
                                            iostr);
-      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+      RAPTOR_FREE(char*, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
 
       if(raptor_namespace_stack_start_namespace(nstack,
@@ -350,7 +350,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
 
   for(i = 0; i < nspace_declarations_count; i++) {
     if(nspace_declarations[i].declaration)
-      RAPTOR_FREE(cstring, nspace_declarations[i].declaration);
+      RAPTOR_FREE(char*, nspace_declarations[i].declaration);
   }
 
   if(nspace_declarations)
@@ -417,8 +417,7 @@ raptor_new_xml_writer(raptor_world* world,
   
   raptor_world_open(world);
 
-  xml_writer = (raptor_xml_writer*)RAPTOR_CALLOC(raptor_xml_writer, 1,
-                                                 sizeof(*xml_writer));
+  xml_writer = RAPTOR_CALLOC(raptor_xml_writer*, 1, sizeof(*xml_writer));
   if(!xml_writer)
     return NULL;
 
@@ -950,7 +949,7 @@ main(int argc, char *argv[])
                                    NULL, /* language */
                                    base_uri_copy);
 
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1, sizeof(raptor_qname*));
+  attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
   attrs[0] = raptor_new_qname(nstack, 
                               (const unsigned char*)"a",
                               (const unsigned char*)"b" /* attribute value */);

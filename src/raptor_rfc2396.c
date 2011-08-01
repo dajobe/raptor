@@ -69,9 +69,7 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   /* The extra +5 is for the 5 \0s that may be added for each component 
    * even if the entire URI is empty 
    */
-  ud = (raptor_uri_detail*)RAPTOR_CALLOC(raptor_uri_detail,
-                                       sizeof(*ud) + uri_len + 5 + 1,
-                                       1);
+  ud = RAPTOR_CALLOC(raptor_uri_detail*, 1, sizeof(*ud) + uri_len + 5 + 1);
   if(!ud)
     return NULL;
   ud->uri_len = uri_len;
@@ -205,7 +203,7 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
   if(len_p)
     *len_p=len;
   
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!buffer)
     return NULL;
 
@@ -372,7 +370,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.path_len += ref->path_len;
 
   /* the resulting path can be no longer than result.path_len */
-  path_buffer = (unsigned char*)RAPTOR_MALLOC(cstring, result.path_len+1);
+  path_buffer = RAPTOR_MALLOC(unsigned char*, result.path_len + 1);
   if(!path_buffer) {
     result_len = 0;
     goto resolve_tidy;
@@ -599,7 +597,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
 
   resolve_tidy:
   if(path_buffer)
-    RAPTOR_FREE(cstring, path_buffer);
+    RAPTOR_FREE(char*, path_buffer);
   if(base)
     raptor_free_uri_detail(base);
   if(ref)

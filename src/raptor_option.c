@@ -319,8 +319,8 @@ raptor_free_option_description(raptor_option_description* option_description)
     return;
 
   /* these are shared strings pointing to static data in raptor_options_list[] */
-  /* RAPTOR_FREE(cstring, option_description->name); */
-  /* RAPTOR_FREE(cstring, option_description->label); */
+  /* RAPTOR_FREE(char*, option_description->name); */
+  /* RAPTOR_FREE(char*, option_description->label); */
 
   if(option_description->uri)
     raptor_free_uri(option_description->uri);
@@ -369,7 +369,8 @@ raptor_world_get_option_description(raptor_world* world,
   if(i > RAPTOR_OPTION_LAST)
     return NULL;
   
-  option_description = (raptor_option_description*)RAPTOR_CALLOC(raptor_option_description, 1, sizeof(*option_description));
+  option_description = RAPTOR_CALLOC(raptor_option_description*, 1,
+                                     sizeof(*option_description));
   if(!option_description)
     return NULL;
 
@@ -528,7 +529,7 @@ raptor_object_options_copy_state(raptor_object_options* to,
       char* string = from->options[i].string;
       if(string) {
         size_t len = strlen(string);
-        to->options[i].string = (char*)RAPTOR_MALLOC(cstring, len + 1);
+        to->options[i].string = RAPTOR_MALLOC(char*, len + 1);
         if(to->options[i].string)
           memcpy(to->options[i].string, string, len + 1);
         else
@@ -568,7 +569,7 @@ raptor_object_options_clear(raptor_object_options* options)
       continue;
 
     if(options->options[i].string)
-      RAPTOR_FREE(cstring, options->options[i].string);
+      RAPTOR_FREE(char*, options->options[i].string);
   }
 }
 
@@ -656,7 +657,7 @@ raptor_object_options_set_option(raptor_object_options *options,
     
     if(string)
       len = strlen((const char*)string);
-    string_copy = (char*)RAPTOR_MALLOC(cstring, len + 1);
+    string_copy = RAPTOR_MALLOC(char*, len + 1);
     if(!string_copy)
       return 1;
   

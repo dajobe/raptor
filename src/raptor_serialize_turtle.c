@@ -677,7 +677,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       const unsigned char* genid = subject->node->term->value.blank.string;
       size_t len = strlen((const char*)genid);
       unsigned char* subject_str;
-      subject_str= (unsigned char *)RAPTOR_MALLOC(cstring, len+3);
+      subject_str= RAPTOR_MALLOC(unsigned char*, len + 3);
       if(!subject_str)
         return 1;
 
@@ -685,7 +685,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       subject_str[1]=':';
       memcpy(&subject_str[2], genid, len + 1);
       raptor_turtle_writer_raw(turtle_writer, subject_str);
-      RAPTOR_FREE(cstring, subject_str);
+      RAPTOR_FREE(char*, subject_str);
     }
   } 
 

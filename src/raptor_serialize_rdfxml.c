@@ -295,8 +295,7 @@ raptor_rdfxml_ensure_writen_header(raptor_serializer* serializer,
      RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_WRITE_BASE_URI)) {
     const unsigned char* base_uri_string;
 
-    attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 1,
-                                           sizeof(raptor_qname*));
+    attrs = RAPTOR_CALLOC(raptor_qname **, 1, sizeof(raptor_qname*));
     if(!attrs)
       goto tidy;
 
@@ -426,7 +425,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   if(!rdf_Description_element)
     goto oom;
 
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
+  attrs = RAPTOR_CALLOC(raptor_qname**, 3, sizeof(raptor_qname*));
   if(!attrs)
     goto oom;
   attrs_count = 0;
@@ -456,13 +455,13 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"about",  subject_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
-          RAPTOR_FREE(cstring, subject_uri_string);
+          RAPTOR_FREE(char*, subject_uri_string);
         goto oom;
       }
       attrs_count++;
 
       if(allocated)
-        RAPTOR_FREE(cstring, subject_uri_string);
+        RAPTOR_FREE(char*, subject_uri_string);
 
       break;
 
@@ -493,7 +492,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     goto oom;
 
   /* object */
-  attrs = (raptor_qname **)RAPTOR_CALLOC(qnamearray, 3, sizeof(raptor_qname*));
+  attrs = RAPTOR_CALLOC(raptor_qname**, 3, sizeof(raptor_qname*));
   if(!attrs)
     goto oom;
   attrs_count = 0;
@@ -592,13 +591,13 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
       if(!attrs[attrs_count]) {
         if(allocated)
-          RAPTOR_FREE(cstring, object_uri_string);
+          RAPTOR_FREE(char*, object_uri_string);
         goto oom;
       }
       attrs_count++;
 
       if(allocated)
-        RAPTOR_FREE(cstring, object_uri_string);
+        RAPTOR_FREE(char*, object_uri_string);
 
       raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
       attrs = NULL; /* attrs ownership transferred to element */
@@ -650,7 +649,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     raptor_free_namespace(predicate_ns);
 
   if(uri_string)
-    RAPTOR_FREE(cstring, uri_string);
+    RAPTOR_FREE(char*, uri_string);
 
   return rc;
 }

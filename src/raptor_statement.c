@@ -62,8 +62,7 @@ raptor_new_statement(raptor_world *world)
 
   raptor_world_open(world);
 
-  statement = (raptor_statement*)RAPTOR_CALLOC(raptor_statement,
-                                               1, sizeof(*statement));
+  statement = RAPTOR_CALLOC(raptor_statement*, 1, sizeof(*statement));
   if(!statement)
     return NULL;
   

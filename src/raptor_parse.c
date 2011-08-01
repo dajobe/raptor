@@ -172,8 +172,7 @@ raptor_world_register_parser_factory(raptor_world* world,
 {
   raptor_parser_factory *parser = NULL;
   
-  parser = (raptor_parser_factory*)RAPTOR_CALLOC(raptor_parser_factory, 1,
-                                                 sizeof(*parser));
+  parser = RAPTOR_CALLOC(raptor_parser_factory*, 1, sizeof(*parser));
   if(!parser)
     return NULL;
 
@@ -327,16 +326,14 @@ raptor_new_parser(raptor_world* world, const char *name)
   if(!factory)
     return NULL;
 
-  rdf_parser = (raptor_parser*)RAPTOR_CALLOC(raptor_parser, 1,
-                                             sizeof(*rdf_parser));
+  rdf_parser = RAPTOR_CALLOC(raptor_parser*, 1, sizeof(*rdf_parser));
   if(!rdf_parser)
     return NULL;
 
   rdf_parser->world = world;
   raptor_statement_init(&rdf_parser->statement, world);
   
-  rdf_parser->context = (char*)RAPTOR_CALLOC(raptor_parser_context, 1,
-                                             factory->context_length);
+  rdf_parser->context = RAPTOR_CALLOC(void*, 1, factory->context_length);
   if(!rdf_parser->context) {
     raptor_free_parser(rdf_parser);
     return NULL;
@@ -607,7 +604,7 @@ raptor_parser_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
   if(uri) {
     if(fh)
       fclose(fh);
-    RAPTOR_FREE(cstring, (void*)filename);
+    RAPTOR_FREE(char*, filename);
   }
   if(free_base_uri)
     raptor_free_uri(base_uri);
@@ -745,7 +742,7 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
     accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
       raptor_www_set_http_accept(rdf_parser->www, accept_h);
-      RAPTOR_FREE(cstring, accept_h);
+      RAPTOR_FREE(char*, accept_h);
     }
   }
 
@@ -1230,9 +1227,9 @@ raptor_world_guess_parser_name(raptor_world* world,
 
   raptor_world_open(world);
 
-  scores = (struct syntax_score*)RAPTOR_CALLOC(syntax_scores,
-                                               raptor_sequence_size(world->parsers),
-                                               sizeof(struct syntax_score));
+  scores = RAPTOR_CALLOC(struct syntax_score*,
+                         raptor_sequence_size(world->parsers),
+                         sizeof(struct syntax_score));
   if(!scores)
     return NULL;
   
@@ -1242,8 +1239,7 @@ raptor_world_guess_parser_name(raptor_world* world,
       unsigned char *from, *to;
 
       p++;
-      suffix = (unsigned char*)RAPTOR_MALLOC(cstring,
-                                             strlen((const char*)p) + 1);
+      suffix = RAPTOR_MALLOC(unsigned char*, strlen((const char*)p) + 1);
       if(!suffix)
         return NULL;
 
@@ -1251,7 +1247,7 @@ raptor_world_guess_parser_name(raptor_world* world,
         unsigned char c = *from++;
         /* discard the suffix if it wasn't '\.[a-zA-Z0-9]+$' */
         if(!isalpha(c) && !isdigit(c)) {
-          RAPTOR_FREE(cstring, suffix);
+          RAPTOR_FREE(char*, suffix);
           suffix = NULL;
           to = NULL;
           break;
@@ -1337,7 +1333,7 @@ raptor_world_guess_parser_name(raptor_world* world,
   }
 
   if(suffix)
-    RAPTOR_FREE(cstring, suffix);
+    RAPTOR_FREE(char*, suffix);
 
   RAPTOR_FREE(syntax_scores, scores);
   
@@ -1454,7 +1450,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
   
   /* 9 = strlen("\*\/\*;q=0.1") */
 #define ACCEPT_HEADER_LEN 9
-  accept_header = (char*)RAPTOR_MALLOC(cstring, len + ACCEPT_HEADER_LEN + 1);
+  accept_header = RAPTOR_MALLOC(char*, len + ACCEPT_HEADER_LEN + 1);
   if(!accept_header)
     return NULL;
 
@@ -1510,7 +1506,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
   
   /* 9 = strlen("\*\/\*;q=0.1") */
 #define ACCEPT_HEADER_LEN 9
-  accept_header = (char*)RAPTOR_MALLOC(cstring, len + ACCEPT_HEADER_LEN + 1);
+  accept_header = RAPTOR_MALLOC(char*, len + ACCEPT_HEADER_LEN + 1);
   if(!accept_header)
     return NULL;
 
@@ -1567,7 +1563,7 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
     return NULL;
   
   len = raptor_stringbuffer_length(rdf_parser->sb);
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!buffer)
     return NULL;
 
@@ -1745,7 +1741,7 @@ main(int argc, char *argv[])
             program);
     return 1;
   }
-  RAPTOR_FREE(cstring, s);
+  RAPTOR_FREE(char*, s);
 
   raptor_free_world(world);
   

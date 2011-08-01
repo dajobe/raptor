@@ -364,7 +364,7 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
     block->urls[offset] = uri;
   } else if(attribute_type == RSS_BLOCK_FIELD_TYPE_STRING) {
     size_t len = strlen(string);
-    block->strings[offset] = (char*)RAPTOR_MALLOC(cstring, len+1);
+    block->strings[offset] = RAPTOR_MALLOC(char*, len + 1);
     if(!block->strings[offset])
       return 1;
 
@@ -399,8 +399,7 @@ raptor_rss_start_element_handler(void *user_data,
   rdf_parser = (raptor_parser*)user_data;
   rss_parser = (raptor_rss_parser*)rdf_parser->context;
 
-  rss_element = (raptor_rss_element*)RAPTOR_CALLOC(raptor_rss_element, 1,
-                                                   sizeof(*rss_element));
+  rss_element = RAPTOR_CALLOC(raptor_rss_element*, 1, sizeof(*rss_element));
   if(!rss_element) {
     rdf_parser->failed = 1;
     return;
@@ -539,7 +538,7 @@ raptor_rss_start_element_handler(void *user_data,
 
     id = raptor_world_generate_bnodeid(rdf_parser->world);
     block_term = raptor_new_term_from_blank(rdf_parser->world, id);
-    RAPTOR_FREE(cstring, id);
+    RAPTOR_FREE(char*, id);
 
     block = raptor_new_rss_block(rdf_parser->world, block_type, block_term);
     raptor_free_term(block_term);
@@ -628,7 +627,7 @@ raptor_rss_start_element_handler(void *user_data,
             } else {
               size_t len = strlen((const char*)attrValue);
               RAPTOR_DEBUG2("    setting guid to string '%s'\n", attrValue);
-              field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+              field->value = RAPTOR_MALLOC(unsigned char*, len + 1);
               if(!field->value) {
                 rdf_parser->failed = 1;
                 return;
@@ -798,7 +797,7 @@ raptor_rss_end_element_handler(void *user_data,
       } else {
         RAPTOR_DEBUG4("Added text '%s' to field %s of type %s\n", cdata, raptor_rss_fields_info[rss_parser->current_field].name, raptor_rss_items_info[rss_parser->current_type].name);
         field->uri = NULL;
-        field->value = (unsigned char*)RAPTOR_MALLOC(cstring, cdata_len+1);
+        field->value = RAPTOR_MALLOC(unsigned char*, cdata_len + 1);
         if(!field->value) {
           rdf_parser->failed = 1;
           return;
@@ -953,7 +952,7 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
     if(!field)
       return 1;
     
-    field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+    field->value = RAPTOR_MALLOC(unsigned char*, len + 1);
     if(!field->value)
       return 1;
     
@@ -1047,7 +1046,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           /* need to make bnode */
           id = raptor_world_generate_bnodeid(rdf_parser->world);
           item->term = raptor_new_term_from_blank(rdf_parser->world, id);
-          RAPTOR_FREE(cstring, id);
+          RAPTOR_FREE(char*, id);
         }
       }
 
@@ -1100,7 +1099,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
         /* need to make bnode */
         id = raptor_world_generate_bnodeid(rdf_parser->world);
         item->term = raptor_new_term_from_blank(rdf_parser->world, id);
-        RAPTOR_FREE(cstring, id);
+        RAPTOR_FREE(char*, id);
       }
     }
     
@@ -1413,7 +1412,7 @@ raptor_rss_emit(raptor_parser* rdf_parser)
     
     /* make a new genid for the <rdf:Seq> node */
     items = raptor_new_term_from_blank(rdf_parser->world, id);
-    RAPTOR_FREE(cstring, id);
+    RAPTOR_FREE(char*, id);
 
     /* _:genid1 rdf:type rdf:Seq . */
     if(raptor_rss_emit_type_triple(rdf_parser, items,
@@ -1492,7 +1491,7 @@ raptor_rss_copy_field(raptor_rss_parser* rss_parser,
       /* Otherwise default action is to copy from_field value */
       len = strlen((const char*)item->fields[from_field]->value);
 
-      field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+      field->value = RAPTOR_MALLOC(unsigned char*, len + 1);
       if(!field->value)
         return 1;
       

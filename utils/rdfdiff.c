@@ -172,10 +172,10 @@ safe_strcmp(const char *s1, const char *s2)
 static rdfdiff_file*
 rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syntax)
 {
-  rdfdiff_file* file = (rdfdiff_file*)RAPTOR_CALLOC(rdfdiff_file, 1, sizeof(rdfdiff_file));
+  rdfdiff_file* file = RAPTOR_CALLOC(rdfdiff_file*, 1, sizeof(*file));
   if(file) {
     file->world = world;
-    file->name = (char*)RAPTOR_MALLOC(cstring, strlen((const char*)name)+1);
+    file->name = RAPTOR_MALLOC(char*, strlen((const char*)name) + 1);
     strcpy((char*)file->name, (const char*)name);
     
     file->parser = raptor_new_parser(world, syntax);
@@ -202,7 +202,7 @@ rdfdiff_free_file(rdfdiff_file* file)
   rdfdiff_blank *cur1, *next1;
   
   if(file->name)
-    RAPTOR_FREE(cstring, file->name);
+    RAPTOR_FREE(char*, file->name);
 
   if(file->parser)
     raptor_free_parser(file->parser);
@@ -228,11 +228,11 @@ rdfdiff_free_file(rdfdiff_file* file)
 static rdfdiff_blank *
 rdfdiff_new_blank(raptor_world* world, char *blank_id) 
 {
-  rdfdiff_blank *blank = (rdfdiff_blank *)RAPTOR_CALLOC(rdfdiff_blank, 1, sizeof(rdfdiff_blank));
+  rdfdiff_blank *blank = RAPTOR_CALLOC(rdfdiff_blank*, 1, sizeof(*blank));
 
   if(blank) {
     blank->world = world;
-    blank->blank_id = (char*)RAPTOR_MALLOC(cstring, strlen(blank_id)+1);
+    blank->blank_id = RAPTOR_MALLOC(char*, strlen(blank_id) + 1);
     strcpy((char*)blank->blank_id, (const char*)blank_id);
   }
   
@@ -246,7 +246,7 @@ rdfdiff_free_blank(rdfdiff_blank *blank)
   rdfdiff_link *cur, *next;
 
   if(blank->blank_id)
-    RAPTOR_FREE(cstring, blank->blank_id);
+    RAPTOR_FREE(char*, blank->blank_id);
 
   if(blank->owner)
     raptor_free_statement(blank->owner);
@@ -539,7 +539,7 @@ rdfdiff_add_blank_statement(rdfdiff_file* file,
   if(!blank)
     goto failed;
 
-  dlink = (rdfdiff_link *)RAPTOR_MALLOC(rdfdiff_link, sizeof(rdfdiff_link));
+  dlink = RAPTOR_MALLOC(rdfdiff_link*, sizeof(*dlink));
   if(!dlink)
     goto failed;
   
@@ -594,7 +594,7 @@ rdfdiff_add_statement(rdfdiff_file* file, raptor_statement *statement)
 {
   int rv = 0;
   
-  rdfdiff_link *dlink = (rdfdiff_link *)RAPTOR_MALLOC(rdfdiff_link, sizeof(rdfdiff_link));
+  rdfdiff_link *dlink = RAPTOR_MALLOC(rdfdiff_link*, sizeof(dlink));
 
   if(dlink) {
 

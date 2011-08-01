@@ -267,7 +267,7 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
 
   msg_len = strlen(msg);
   length = prefix_length + msg_len + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
     memcpy(nmsg, xml_warning_prefix, prefix_length); /* Do not copy NUL */
     memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
@@ -281,7 +281,7 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
                            nmsg ? nmsg : msg, 
                            args);
   if(nmsg)
-    RAPTOR_FREE(cstring,nmsg);
+    RAPTOR_FREE(char*, nmsg);
   va_end(args);
 }
 
@@ -319,7 +319,7 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
 
   msg_len = strlen(msg);
   length = prefix_length + msg_len + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
     memcpy(nmsg, prefix, prefix_length); /* Do not copy NUL */
     memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
@@ -341,7 +341,7 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
                              args);
   
   if(nmsg)
-    RAPTOR_FREE(cstring,nmsg);
+    RAPTOR_FREE(char*, nmsg);
 }
 
 
@@ -372,7 +372,7 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
 
   msg_len = strlen(msg);
   length = prefix_length + msg_len + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
     memcpy(nmsg, prefix, prefix_length); /* Do not copy NUL */
     memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
@@ -386,7 +386,7 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
                            args);
   
   if(nmsg)
-    RAPTOR_FREE(cstring,nmsg);
+    RAPTOR_FREE(char*, nmsg);
 
   va_end(args);
 }
@@ -431,7 +431,7 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 
   msg_len = strlen(msg);
   length = prefix_length + msg_len + 1;
-  nmsg = (char*)RAPTOR_MALLOC(cstring, length);
+  nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
     memcpy(nmsg, xml_validation_warning_prefix, prefix_length); /* Do not copy NUL */
     memcpy(nmsg + prefix_length, msg, msg_len + 1); /* Copy NUL */
@@ -445,7 +445,7 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
                            nmsg ? nmsg : msg, 
                            args);
   if(nmsg)
-    RAPTOR_FREE(cstring,nmsg);
+    RAPTOR_FREE(char*, nmsg);
   va_end(args);
 }
 

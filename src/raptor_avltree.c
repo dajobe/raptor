@@ -148,7 +148,7 @@ raptor_new_avltree(raptor_data_compare_handler compare_handler,
 {
   raptor_avltree* tree;
   
-  tree = (raptor_avltree*)RAPTOR_MALLOC(raptor_avltree, sizeof(*tree));
+  tree = RAPTOR_MALLOC(raptor_avltree*, sizeof(*tree));
   if(!tree)
     return NULL;
 
@@ -684,8 +684,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
   /* If grounded, add the node here, set the rebalance flag and return */
   if(!*node_pp) {
     RAPTOR_AVLTREE_DEBUG1("grounded. adding new node, setting rebalancing flag true\n");
-    *node_pp = (raptor_avltree_node*)RAPTOR_MALLOC(raptor_avltree_node,
-                                                   sizeof(**node_pp));
+    *node_pp = RAPTOR_MALLOC(raptor_avltree_node*, sizeof(**node_pp));
     if(!*node_pp) {
       if(tree->free_handler)
         tree->free_handler(p_data);
@@ -1286,8 +1285,7 @@ raptor_new_avltree_iterator(raptor_avltree* tree, void* range,
 {
   raptor_avltree_iterator* iterator;
 
-  iterator = (raptor_avltree_iterator*)RAPTOR_CALLOC(raptor_avltree_iterator,
-                                                     1, sizeof(*iterator));
+  iterator = RAPTOR_CALLOC(raptor_avltree_iterator*, 1, sizeof(*iterator));
   if(!iterator)
     return NULL;
 

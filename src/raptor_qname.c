@@ -112,7 +112,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   RAPTOR_DEBUG2("name %s\n", name);
 #endif  
 
-  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
+  qname = RAPTOR_CALLOC(raptor_qname*, 1, sizeof(*qname));
   if(!qname)
     return NULL;
   qname->world = nstack->world;
@@ -121,7 +121,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     int value_length = strlen((char*)value);
     unsigned char* new_value;
 
-    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
+    new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
@@ -142,7 +142,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     local_name_length = p-name;
 
     /* No : in the name */
-    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
+    new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -176,7 +176,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
     /* p now is at start of local_name */
     local_name_length = strlen((char*)p);
-    new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
+    new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -250,7 +250,7 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
 
   raptor_world_open(world);
 
-  qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
+  qname = RAPTOR_CALLOC(raptor_qname*, 1, sizeof(*qname));
   if(!qname)
     return NULL;
   qname->world = world;
@@ -259,7 +259,7 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
     int value_length = strlen((char*)value);
     unsigned char* new_value;
 
-    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
+    new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
@@ -270,7 +270,7 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
     qname->value_length = value_length;
   }
 
-  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, local_name_length + 1);
+  new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(qname);
     return NULL;
@@ -309,7 +309,7 @@ raptor_qname_copy(raptor_qname *qname)
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(qname, raptor_qname, NULL);
   
-  new_qname = (raptor_qname*)RAPTOR_CALLOC(raptor_qname, 1, sizeof(*qname));
+  new_qname = RAPTOR_CALLOC(raptor_qname*, 1, sizeof(*qname));
   if(!new_qname)
     return NULL;
   new_qname->world = qname->world;
@@ -318,7 +318,7 @@ raptor_qname_copy(raptor_qname *qname)
     int value_length = qname->value_length;
     unsigned char* new_value;
 
-    new_value = (unsigned char*)RAPTOR_MALLOC(cstring, value_length + 1);
+    new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
@@ -329,7 +329,7 @@ raptor_qname_copy(raptor_qname *qname)
     new_qname->value_length = value_length;
   }
 
-  new_name = (unsigned char*)RAPTOR_MALLOC(cstring, qname->local_name_length + 1);
+  new_name = RAPTOR_MALLOC(unsigned char*, qname->local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(new_qname);
     return NULL;
@@ -378,13 +378,13 @@ raptor_free_qname(raptor_qname* name)
     return;
 
   if(name->local_name)
-    RAPTOR_FREE(cstring, (void*)name->local_name);
+    RAPTOR_FREE(char*, name->local_name);
 
   if(name->uri && name->nspace)
     raptor_free_uri(name->uri);
 
   if(name->value)
-    RAPTOR_FREE(cstring, (void*)name->value);
+    RAPTOR_FREE(char*, name->value);
   RAPTOR_FREE(raptor_qname, name);
 }
 
@@ -552,7 +552,7 @@ raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
   if(length_p)
     *length_p=len;
   
-  s = (unsigned char*)RAPTOR_MALLOC(cstring, len+1);
+  s = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!s)
     return NULL;
 

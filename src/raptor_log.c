@@ -108,7 +108,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   
   raptor_log_error(world, level, locator, buffer);
 
-  RAPTOR_FREE(cstring, buffer);
+  RAPTOR_FREE(char*, buffer);
 }
 
 

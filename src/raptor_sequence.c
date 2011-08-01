@@ -126,8 +126,7 @@ raptor_sequence*
 raptor_new_sequence(raptor_data_free_handler free_handler,
                     raptor_data_print_handler print_handler)
 {
-  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
-                                                         sizeof(*seq));
+  raptor_sequence* seq = RAPTOR_CALLOC(raptor_sequence*, 1, sizeof(*seq));
   if(!seq)
     return NULL;
 
@@ -156,8 +155,7 @@ raptor_new_sequence_with_context(raptor_data_context_free_handler free_handler,
                                  raptor_data_context_print_handler print_handler,
                                  void *handler_context)
 {
-  raptor_sequence* seq = (raptor_sequence*)RAPTOR_CALLOC(raptor_sequence, 1, 
-                                                         sizeof(*seq));
+  raptor_sequence* seq = RAPTOR_CALLOC(raptor_sequence*, 1, sizeof(*seq));
   if(!seq)
     return NULL;
 
@@ -216,7 +214,7 @@ raptor_sequence_ensure(raptor_sequence *seq, int capacity, int grow_at_front)
   if(capacity < RAPTOR_SEQUENCE_MIN_CAPACITY)
     capacity = RAPTOR_SEQUENCE_MIN_CAPACITY;
 
-  new_sequence = (void**)RAPTOR_CALLOC(ptrarray, capacity, sizeof(void*));
+  new_sequence = RAPTOR_CALLOC(void**, capacity, sizeof(void*));
   if(!new_sequence)
     return 1;
 

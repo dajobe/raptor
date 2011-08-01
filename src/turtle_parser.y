@@ -170,7 +170,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 
 %destructor {
   if($$)
-    RAPTOR_FREE(cstring, $$);
+    RAPTOR_FREE(char*, $$);
 } STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
 
 %destructor {
@@ -648,7 +648,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   }
 
   if($2)
-    RAPTOR_FREE(cstring, $2);
+    RAPTOR_FREE(char*, $2);
   raptor_free_uri($3);
 
   if(!ns)
@@ -715,8 +715,8 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, NULL, $3);
-  RAPTOR_FREE(cstring, $1);
-  RAPTOR_FREE(cstring, $3);
+  RAPTOR_FREE(char*, $1);
+  RAPTOR_FREE(char*, $3);
   if(!$$)
     YYERROR;
 }
@@ -730,13 +730,13 @@ literal: STRING_LITERAL AT IDENTIFIER
     if($3) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(cstring, $3);
+      RAPTOR_FREE(char*, $3);
       $3 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, NULL);
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
@@ -754,13 +754,13 @@ literal: STRING_LITERAL AT IDENTIFIER
     if($3) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(cstring, $3);
+      RAPTOR_FREE(char*, $3);
       $3 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $5, NULL);
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     raptor_free_uri($5);
     if(!$$)
       YYERROR;
@@ -777,7 +777,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $3, NULL);
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -794,7 +794,7 @@ literal: STRING_LITERAL AT IDENTIFIER
   if($3) {
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                       $1, $3, NULL);
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -809,7 +809,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, NULL, NULL);
-  RAPTOR_FREE(cstring, $1);
+  RAPTOR_FREE(char*, $1);
   if(!$$)
     YYERROR;
 }
@@ -821,12 +821,12 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
   if(!uri) {
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
-  RAPTOR_FREE(cstring, $1);
+  RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
@@ -839,12 +839,12 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
   if(!uri) {
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
-  RAPTOR_FREE(cstring, $1);
+  RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
@@ -857,12 +857,12 @@ literal: STRING_LITERAL AT IDENTIFIER
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   if(!uri) {
-    RAPTOR_FREE(cstring, $1);
+    RAPTOR_FREE(char*, $1);
     YYERROR;
   }
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
-  RAPTOR_FREE(cstring, $1);
+  RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
     YYERROR;
@@ -953,7 +953,7 @@ blank: BLANK_LITERAL
     YYERROR;
 
   $$ = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world, id);
-  RAPTOR_FREE(cstring, id);
+  RAPTOR_FREE(char*, id);
 
   if(!$$)
     YYERROR;
@@ -971,7 +971,7 @@ blank: BLANK_LITERAL
   }
 
   $$ = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world, id);
-  RAPTOR_FREE(cstring, id);
+  RAPTOR_FREE(char*, id);
   if(!$$) {
     if($2)
       raptor_free_sequence($2);
@@ -1060,7 +1060,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
     blank = raptor_new_term_from_blank(((raptor_parser*)rdf_parser)->world,
                                        blank_id);
-    RAPTOR_FREE(cstring, blank_id);
+    RAPTOR_FREE(char*, blank_id);
     if(!blank)
       goto err_collection;
     
@@ -1432,7 +1432,8 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
 #endif
 
   if(len) {
-    turtle_parser->buffer = (char*)RAPTOR_REALLOC(cstring, turtle_parser->buffer, turtle_parser->buffer_length + len + 1);
+    turtle_parser->buffer = RAPTOR_REALLOC(char*, turtle_parser->buffer,
+                                           turtle_parser->buffer_length + len + 1);
     if(!turtle_parser->buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;

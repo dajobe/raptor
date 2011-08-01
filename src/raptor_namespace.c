@@ -144,9 +144,9 @@ raptor_namespaces_init(raptor_world* world,
   nstack->size = 0;
   
   nstack->table_size = RAPTOR_NAMESPACES_HASHTABLE_SIZE;
-  nstack->table = (raptor_namespace**)RAPTOR_CALLOC(raptor_namespaces,
-                                                    RAPTOR_NAMESPACES_HASHTABLE_SIZE,
-                                                    sizeof(raptor_namespace*));
+  nstack->table = RAPTOR_CALLOC(raptor_namespace**,
+                                RAPTOR_NAMESPACES_HASHTABLE_SIZE,
+                                sizeof(raptor_namespace*));
   if(!nstack->table)
     return -1;
 
@@ -210,8 +210,7 @@ raptor_new_namespaces(raptor_world* world, int defaults)
 
   raptor_world_open(world);
 
-  nstack = (raptor_namespace_stack *)RAPTOR_CALLOC(raptor_namespace_stack,
-                                                   1, sizeof(*nstack));
+  nstack = RAPTOR_CALLOC(raptor_namespace_stack*, 1, sizeof(*nstack));
   if(!nstack)
     return NULL;
                       
@@ -541,7 +540,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
   }
 
   /* Just one malloc for structure + namespace (maybe) + prefix (maybe)*/
-  ns = (raptor_namespace*)RAPTOR_CALLOC(raptor_namespace, 1, len);
+  ns = RAPTOR_CALLOC(raptor_namespace*, 1, len);
   if(!ns)
     return NULL;
 
@@ -754,7 +753,7 @@ raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
   if(length_p)
     *length_p = length;
 
-  buffer = (unsigned char*)RAPTOR_MALLOC(cstring, length+1);
+  buffer = RAPTOR_MALLOC(unsigned char*, length + 1);
   if(!buffer)
     return NULL;
   
@@ -880,7 +879,7 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
     if(!*string || string == t)
       return 1;
 
-    *prefix = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
+    *prefix = RAPTOR_MALLOC(unsigned char*, string - t + 1);
     if(!*prefix)
       return 1;
     memcpy(*prefix, t, string - t);
@@ -905,7 +904,7 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
     /* xmlns...="" */
     *uri_string = NULL;
   else {
-    *uri_string = (unsigned char*)RAPTOR_MALLOC(cstring, string - t + 1);
+    *uri_string = RAPTOR_MALLOC(unsigned char*, string - t + 1);
     if(!*uri_string)
       return 1;
     memcpy(*uri_string, t, string - t);
@@ -1003,8 +1002,8 @@ raptor_namespace_stack_to_array(raptor_namespace_stack *nstack,
   size_t size = 0;
   int bucket;
   
-  ns_list = (raptor_namespace**)RAPTOR_CALLOC(namespace_stack, nstack->size,
-                                              sizeof(raptor_namespace*));
+  ns_list = RAPTOR_CALLOC(raptor_namespace**, nstack->size,
+                          sizeof(raptor_namespace*));
   if(!ns_list)
     return NULL;
   

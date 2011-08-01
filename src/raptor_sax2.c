@@ -88,7 +88,7 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
   
   raptor_world_open(world);
 
-  sax2 = (raptor_sax2*)RAPTOR_CALLOC(raptor_sax2, 1, sizeof(*sax2));
+  sax2 = RAPTOR_CALLOC(raptor_sax2*, 1, sizeof(*sax2));
   if(!sax2)
     return NULL;
 
@@ -635,7 +635,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
                        sax2->locator, error_buffer);
-      RAPTOR_FREE(cstring, error_buffer);
+      RAPTOR_FREE(char*, error_buffer);
     } else
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
                        sax2->locator, "XML Parsing failed");
@@ -762,7 +762,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
     for(i = 0; atts[i]; i++) ;
     xml_atts_size = sizeof(unsigned char*) * i;
     if(xml_atts_size) {
-      xml_atts_copy = (unsigned char**)RAPTOR_MALLOC(cstringpointer,xml_atts_size);
+      xml_atts_copy = RAPTOR_MALLOC(unsigned char**, xml_atts_size);
       if(!xml_atts_copy)
         goto fail;
       memcpy(xml_atts_copy, atts, xml_atts_size);
@@ -803,7 +803,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         }
       } else if(!strcmp((char*)atts[i], "xml:lang")) {
         size_t lang_len = strlen((char*)atts[i+1]);
-        xml_language = (unsigned char*)RAPTOR_MALLOC(cstring, lang_len + 1);
+        xml_language = RAPTOR_MALLOC(unsigned char*, lang_len + 1);
         if(!xml_language) {
           raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_FATAL,
                            sax2->locator, "Out of memory");
@@ -859,9 +859,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
     int offset = 0;
 
     /* Allocate new array to hold namespaced-attributes */
-    named_attrs = (raptor_qname**)RAPTOR_CALLOC(raptor_qname_array, 
-                                              ns_attributes_count, 
-                                              sizeof(raptor_qname*));
+    named_attrs = RAPTOR_CALLOC(raptor_qname**, ns_attributes_count, 
+                                sizeof(raptor_qname*));
     if(!named_attrs) {
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_FATAL,
                        sax2->locator, "Out of memory");
@@ -914,7 +913,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   if(xml_base)
     raptor_free_uri(xml_base);
   if(xml_language)
-    RAPTOR_FREE(cstring, xml_language);
+    RAPTOR_FREE(char*, xml_language);
   if(xml_element)
     raptor_free_xml_element(xml_element);
 }

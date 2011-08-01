@@ -122,7 +122,7 @@ raptor_new_www_with_connection(raptor_world* world, void *connection)
 
   raptor_world_open(world);
 
-  www = (raptor_www* )RAPTOR_CALLOC(www, 1, sizeof(*www));
+  www = RAPTOR_CALLOC(raptor_www*, 1, sizeof(*www));
   if(!www)
     return NULL;
 
@@ -184,27 +184,27 @@ raptor_free_www(raptor_www* www)
   /* free context */
   if(www->type) {
     if(www->free_type)
-      RAPTOR_FREE(cstring, www->type);
+      RAPTOR_FREE(char*, www->type);
     www->type = NULL;
   }
   
   if(www->user_agent) {
-    RAPTOR_FREE(cstring, www->user_agent);
+    RAPTOR_FREE(char*, www->user_agent);
     www->user_agent = NULL;
   }
 
   if(www->cache_control) {
-    RAPTOR_FREE(cstring, www->cache_control);
+    RAPTOR_FREE(char*, www->cache_control);
     www->cache_control = NULL;
   }
 
   if(www->proxy) {
-    RAPTOR_FREE(cstring, www->proxy);
+    RAPTOR_FREE(char*, www->proxy);
     www->proxy = NULL;
   }
 
   if(www->http_accept) {
-    RAPTOR_FREE(cstring, www->http_accept);
+    RAPTOR_FREE(char*, www->http_accept);
     www->http_accept = NULL;
   }
 
@@ -289,7 +289,7 @@ raptor_www_set_user_agent(raptor_www* www, const char *user_agent)
   }
   
   ua_len = strlen(user_agent);
-  ua_copy = (char*)RAPTOR_MALLOC(cstring, ua_len + 1);
+  ua_copy = RAPTOR_MALLOC(char*, ua_len + 1);
   if(!ua_copy)
     return;
 
@@ -318,7 +318,7 @@ raptor_www_set_proxy(raptor_www* www, const char *proxy)
     return;
 
   proxy_len = strlen(proxy);
-  proxy_copy = (char*)RAPTOR_MALLOC(cstring, proxy_len + 1);
+  proxy_copy = RAPTOR_MALLOC(char*, proxy_len + 1);
   if(!proxy_copy)
     return;
 
@@ -348,7 +348,7 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
     len += 1 + value_len; /* " "+value */
   }
   
-  value_copy = (char*)RAPTOR_MALLOC(cstring, len);
+  value_copy = RAPTOR_MALLOC(char*, len);
   if(!value_copy)
     return;
   www->http_accept = value_copy;
@@ -410,7 +410,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
 
   if(www->cache_control) {
-    RAPTOR_FREE(cstring, www->cache_control);
+    RAPTOR_FREE(char*, www->cache_control);
     www->cache_control = NULL;
   }
 
@@ -422,7 +422,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   cc_len = strlen(cache_control);
   len = header_len + 1 + cc_len + 1; /* header+" "+cache_control+"\0" */
   
-  cache_control_copy = (char*)RAPTOR_MALLOC(cstring, len);
+  cache_control_copy = RAPTOR_MALLOC(char*, len);
   if(!cache_control_copy)
     return 1;
   
@@ -607,7 +607,7 @@ raptor_www_file_fetch(raptor_www* www)
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   if(!stat(filename, &buf) && S_ISDIR(buf.st_mode)) {
     raptor_www_error(www, "Cannot read from a directory '%s'", filename);
-    RAPTOR_FREE(cstring, filename);
+    RAPTOR_FREE(char*, filename);
     www->status_code = 404;
     return 1;
   }
@@ -617,7 +617,7 @@ raptor_www_file_fetch(raptor_www* www)
   if(!fh) {
     raptor_www_error(www, "file '%s' open failed - %s",
                      filename, strerror(errno));
-    RAPTOR_FREE(cstring, filename);
+    RAPTOR_FREE(char*, filename);
     www->status_code = (errno == EACCES) ? 403: 404;
     www->failed = 1;
     
@@ -627,7 +627,7 @@ raptor_www_file_fetch(raptor_www* www)
   raptor_www_file_handle_fetch(www, fh);
   fclose(fh);
 
-  RAPTOR_FREE(cstring, filename);
+  RAPTOR_FREE(char*, filename);
   
   return www->failed;
 }

@@ -249,7 +249,7 @@ EXPONENT [eE][+-]?[0-9]+
      
 		  BEGIN(INITIAL);
                   len = raptor_stringbuffer_length(turtle_parser->sb);
-                  turtle_parser_lval->string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+                  turtle_parser_lval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
                   if(!turtle_parser_lval->string)
                     TURTLE_LEXER_OOM();
                   raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
@@ -454,7 +454,7 @@ turtle_copy_token(unsigned char *text, size_t len)
   unsigned char *s;
   if(!len)
     len = strlen((const char*)text);
-  s = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  s = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(s) {
     memcpy(s, text, len);
     s[len] = '\0';
@@ -486,7 +486,7 @@ turtle_copy_string_token(raptor_parser* rdf_parser,
     len = raptor_stringbuffer_length(sb);
   }
   
-  string = (unsigned char *)RAPTOR_MALLOC(cstring, len+1);
+  string = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(string) {
     if(sb) 
       raptor_stringbuffer_copy_to_string(sb, string, len+1);
@@ -882,7 +882,7 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
     case BLANK_LITERAL:
     case IDENTIFIER:
       if(lval->string)
-        RAPTOR_FREE(cstring, lval->string);
+        RAPTOR_FREE(char*, lval->string);
       break;
 
     case URI_LITERAL:
@@ -949,7 +949,7 @@ main(int argc, char *argv[])
 
   uri_string = raptor_uri_filename_to_uri_string(filename);
   rdf_parser.base_uri = raptor_new_uri(world, uri_string);
-  RAPTOR_FREE(cstring, (void*)uri_string);
+  RAPTOR_FREE(char*, uri_string);
   
   while(1) {
     memset(&lval, 0, sizeof(YYSTYPE));

@@ -112,11 +112,11 @@ static void
 raptor_json_reset_term(raptor_json_parser_context *context)
 {
   if(context->term_value)
-    RAPTOR_FREE(cstring, context->term_value);
+    RAPTOR_FREE(char*, context->term_value);
   if(context->term_lang)
-    RAPTOR_FREE(cstring, context->term_lang);
+    RAPTOR_FREE(char*, context->term_lang);
   if(context->term_datatype)
-    RAPTOR_FREE(cstring, context->term_datatype);
+    RAPTOR_FREE(char*, context->term_datatype);
 
   context->term_value = NULL;
   context->term_lang = NULL;
@@ -128,7 +128,7 @@ raptor_json_reset_term(raptor_json_parser_context *context)
 static unsigned char*
 raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, unsigned int len)
 {
-  unsigned char *cstr = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+  unsigned char *cstr = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!cstr) {
     raptor_parser_fatal_error(rdf_parser, "Out of memory");
     return NULL;
@@ -154,7 +154,7 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
     if(!uri) {
       unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
       raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
-      RAPTOR_FREE(cstring, cstr);
+      RAPTOR_FREE(char*, cstr);
       return NULL;
     }
 
@@ -276,7 +276,7 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
           unsigned char * cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
           context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
           raptor_parser_error(rdf_parser, "Unknown term type: %s", cstr);
-          RAPTOR_FREE(cstring, cstr);
+          RAPTOR_FREE(char*, cstr);
         }
       break;
       case RAPTOR_JSON_ATTRIB_DATATYPE:
@@ -515,19 +515,19 @@ static int raptor_json_yajl_end_array(void * ctx)
 static void*
 raptor_json_yajl_malloc(void *ctx, unsigned int sz)
 {
-  return RAPTOR_MALLOC(cstring, sz);
+  return RAPTOR_MALLOC(void*, sz);
 }
 
 static void*
 raptor_json_yajl_realloc(void *ctx, void * ptr, unsigned int sz)
 {
-  return RAPTOR_REALLOC(cstring, ptr, sz);
+  return RAPTOR_REALLOC(void*, ptr, sz);
 }
 
 static void
 raptor_json_yajl_free(void *ctx, void * ptr)
 {
-  RAPTOR_FREE(cstring, ptr);
+  RAPTOR_FREE(char*, ptr);
 }
 
 static yajl_alloc_funcs raptor_json_yajl_alloc_funcs = {

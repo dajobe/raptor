@@ -307,7 +307,9 @@ raptor_rss_common_init(raptor_world* world) {
   if(world->rss_common_initialised++)
     return 0;
 
-  world->rss_namespaces_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_NAMESPACES_SIZE, sizeof(raptor_uri*));
+  world->rss_namespaces_info_uris = RAPTOR_CALLOC(raptor_uri**, 
+                                                  RAPTOR_RSS_NAMESPACES_SIZE,
+                                                  sizeof(raptor_uri*));
   if(!world->rss_namespaces_info_uris)
     return -1;
   for(i = 0; i < RAPTOR_RSS_NAMESPACES_SIZE;i++) {
@@ -319,7 +321,9 @@ raptor_rss_common_init(raptor_world* world) {
     }
   }
 
-  world->rss_types_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_COMMON_SIZE, sizeof(raptor_uri*));
+  world->rss_types_info_uris = RAPTOR_CALLOC(raptor_uri**,
+                                             RAPTOR_RSS_COMMON_SIZE,
+                                             sizeof(raptor_uri*));
   if(!world->rss_types_info_uris)
     return -1;
   for(i = 0; i< RAPTOR_RSS_COMMON_SIZE; i++) {
@@ -332,7 +336,9 @@ raptor_rss_common_init(raptor_world* world) {
     }
   }
 
-  world->rss_fields_info_uris = (raptor_uri**)RAPTOR_CALLOC(raptor_uri* array, RAPTOR_RSS_FIELDS_SIZE, sizeof(raptor_uri*));
+  world->rss_fields_info_uris = RAPTOR_CALLOC(raptor_uri**,
+                                              RAPTOR_RSS_FIELDS_SIZE,
+                                              sizeof(raptor_uri*));
   if(!world->rss_fields_info_uris)
     return -1;
   for(i = 0; i< RAPTOR_RSS_FIELDS_SIZE; i++) {
@@ -438,7 +444,7 @@ raptor_new_rss_item(raptor_world* world)
 {
   raptor_rss_item* item;
 
-  item = (raptor_rss_item*)RAPTOR_CALLOC(raptor_rss_item, 1, sizeof(*item));
+  item = RAPTOR_CALLOC(raptor_rss_item*, 1, sizeof(*item));
   if(!item)
     return NULL;
   
@@ -611,7 +617,7 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
                      raptor_term* block_term)
 {
   raptor_rss_block *block;
-  block = (raptor_rss_block*)RAPTOR_CALLOC(raptor_rss_block, 1, sizeof(*block));
+  block = RAPTOR_CALLOC(raptor_rss_block*, 1, sizeof(*block));
 
   if(block) {
     block->rss_type = type;
@@ -635,7 +641,7 @@ raptor_free_rss_block(raptor_rss_block *block)
 
   for(i = 0; i < RSS_BLOCK_MAX_STRINGS; i++) {
     if(block->strings[i])
-      RAPTOR_FREE(cstring, block->strings[i]);
+      RAPTOR_FREE(char*, block->strings[i]);
   }
 
   if(block->next)
@@ -651,8 +657,7 @@ raptor_free_rss_block(raptor_rss_block *block)
 raptor_rss_field*
 raptor_rss_new_field(raptor_world* world)
 {
-  raptor_rss_field* field = (raptor_rss_field*)RAPTOR_CALLOC(raptor_rss_field,
-                                                             1, sizeof(*field));
+  raptor_rss_field* field = RAPTOR_CALLOC(raptor_rss_field*, 1, sizeof(*field));
   if(field)
     field->world = world;
   return field;
@@ -663,7 +668,7 @@ void
 raptor_rss_field_free(raptor_rss_field* field)
 {
   if(field->value)
-    RAPTOR_FREE(cstring, field->value);
+    RAPTOR_FREE(char*, field->value);
   if(field->uri)
     raptor_free_uri(field->uri);
   if(field->next)
@@ -695,13 +700,13 @@ raptor_rss_set_date_field(raptor_rss_field* field, time_t unix_time)
   size_t len = RAPTOR_ISO_DATE_LEN;
   
   if(field->value)
-    RAPTOR_FREE(cstring, field->value);
-  field->value = (unsigned char*)RAPTOR_MALLOC(cstring, len + 1);
+    RAPTOR_FREE(char*, field->value);
+  field->value = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!field->value)
     return 1;
   
   if(raptor_rss_format_iso_date((char*)field->value, len, unix_time)) {
-    RAPTOR_FREE(cstring, field->value);
+    RAPTOR_FREE(char*, field->value);
     return 1;
   }
 

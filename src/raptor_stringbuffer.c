@@ -89,8 +89,10 @@ static int raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringb
 raptor_stringbuffer*
 raptor_new_stringbuffer(void) 
 {
-  return (raptor_stringbuffer*)RAPTOR_CALLOC(raptor_stringbuffer, 1, 
-                                             sizeof(raptor_stringbuffer));
+  raptor_stringbuffer* sb;
+  
+  sb = RAPTOR_CALLOC(raptor_stringbuffer*, 1, sizeof(*sb));
+  return sb;
 }
 
 
@@ -114,14 +116,14 @@ raptor_free_stringbuffer(raptor_stringbuffer *stringbuffer)
       raptor_stringbuffer_node *next = node->next;
       
       if(node->string)
-        RAPTOR_FREE(cstring, node->string);
+        RAPTOR_FREE(char*, node->string);
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       node = next;
     }
   }
 
   if(stringbuffer->string)
-    RAPTOR_FREE(cstring, stringbuffer->string);
+    RAPTOR_FREE(char*, stringbuffer->string);
 
   RAPTOR_FREE(raptor_stringbuffer, stringbuffer);
 }
@@ -158,17 +160,16 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
   if(!string || !length)
     return 0;
   
-  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node,
-                                                  sizeof(*node));
+  node = RAPTOR_MALLOC(raptor_stringbuffer_node*, sizeof(*node));
   if(!node) {
     if(!do_copy)
-      RAPTOR_FREE(cstring, string);
+      RAPTOR_FREE(char*, string);
     return 1;
   }
 
   if(do_copy) {
     /* Note this copy does not include the \0 character - not needed  */
-    node->string = (unsigned char*)RAPTOR_MALLOC(bytes, length);
+    node->string = RAPTOR_MALLOC(unsigned char*, length);
     if(!node->string) {
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
@@ -187,7 +188,7 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
   node->next = NULL;
 
   if(stringbuffer->string) {
-    RAPTOR_FREE(cstring, stringbuffer->string);
+    RAPTOR_FREE(char*, stringbuffer->string);
     stringbuffer->string = NULL;
   }
   stringbuffer->length += length;
@@ -328,7 +329,7 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
   /* adjust our length */
   stringbuffer->length += append->length;
   if(stringbuffer->string) {
-    RAPTOR_FREE(cstring, stringbuffer->string);
+    RAPTOR_FREE(char*, stringbuffer->string);
     stringbuffer->string = NULL;
   }
 
@@ -336,7 +337,7 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
   append->head = append->tail = NULL;
   append->length = 0;
   if(append->string) {
-    RAPTOR_FREE(cstring, append->string);
+    RAPTOR_FREE(char*, append->string);
     append->string = NULL;
   }
   
@@ -370,14 +371,13 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
 {
   raptor_stringbuffer_node *node;
 
-  node = (raptor_stringbuffer_node*)RAPTOR_MALLOC(raptor_stringbuffer_node, 
-                                                  sizeof(*node));
+  node = RAPTOR_MALLOC(raptor_stringbuffer_node*, sizeof(*node));
   if(!node)
     return 1;
 
   if(do_copy) {
     /* Note this copy does not include the \0 character - not needed  */
-    node->string = (unsigned char*)RAPTOR_MALLOC(bytes, length);
+    node->string = RAPTOR_MALLOC(unsigned char*, length);
     if(!node->string) {
       RAPTOR_FREE(raptor_stringbuffer_node, node);
       return 1;
@@ -395,7 +395,7 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
     stringbuffer->head = stringbuffer->tail = node;
 
   if(stringbuffer->string) {
-    RAPTOR_FREE(cstring, stringbuffer->string);
+    RAPTOR_FREE(char*, stringbuffer->string);
     stringbuffer->string = NULL;
   }
   stringbuffer->length += length;
@@ -491,7 +491,7 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
   if(stringbuffer->string)
     return stringbuffer->string;
 
-  stringbuffer->string = (unsigned char*)RAPTOR_MALLOC(cstring, stringbuffer->length+1);
+  stringbuffer->string = RAPTOR_MALLOC(unsigned char*, stringbuffer->length + 1);
   if(!stringbuffer->string)
     return NULL;
 
