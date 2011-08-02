@@ -41,6 +41,10 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+/* for ptrdiff_t */
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -117,7 +121,7 @@ raptor_new_uri_from_counted_string(raptor_world* world,
     memset(&key, 0, sizeof(key));
 
     key.string = (unsigned char*)uri_string;
-    key.length = length;
+    key.length = (unsigned int)length;
 
     /* if existing URI found in tree, return it */
     new_uri = (raptor_uri*)raptor_avltree_search(world->uris_tree, &key);
@@ -145,7 +149,7 @@ raptor_new_uri_from_counted_string(raptor_world* world,
     goto unlock;
 
   new_uri->world = world;
-  new_uri->length = length;
+  new_uri->length = (unsigned int)length;
 
   new_string = RAPTOR_MALLOC(unsigned char*, length + 1);
   if(!new_string) {
@@ -217,7 +221,7 @@ raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
                                    const unsigned char *local_name)
 {
-  int len;
+  size_t len;
   unsigned char *new_string;
   raptor_uri* new_uri;
   size_t local_name_length;
@@ -263,7 +267,7 @@ raptor_new_uri_relative_to_base(raptor_world* world,
                                 const unsigned char *uri_string) 
 {
   unsigned char *buffer;
-  int buffer_length;
+  size_t buffer_length;
   raptor_uri* new_uri;
   size_t actual_length;
   
@@ -312,7 +316,7 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
 {
   raptor_uri *new_uri;
   unsigned char *local_name;
-  int len;
+  size_t len;
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -358,8 +362,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   raptor_uri *new_uri;
   unsigned char *new_uri_string;
   const unsigned char *base_uri_string = raptor_rdf_namespace_uri;
-  unsigned int base_uri_string_len = (size_t)raptor_rdf_namespace_uri_len;
-  unsigned int new_uri_string_len;
+  size_t base_uri_string_len = raptor_rdf_namespace_uri_len;
+  size_t new_uri_string_len;
   size_t name_len;
   
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
@@ -1027,27 +1031,31 @@ raptor_uri_finish(raptor_world* world)
  * Return value: Length of the common base path
  **/
 
-static int
-raptor_uri_path_common_base_length(const unsigned char *first_path, size_t first_path_len,
-                                   const unsigned char *second_path, size_t second_path_len)
+static size_t
+raptor_uri_path_common_base_length(const unsigned char *first_path,
+                                   size_t first_path_len,
+                                   const unsigned char *second_path,
+                                   size_t second_path_len)
 {
-  int common_len = 0;
+  ptrdiff_t common_len = 0;
   const unsigned char *cur_ptr = first_path;
   const unsigned char *prev_ptr = first_path;
   
-  /* Compare each path component of first_path and second_path until there is
-     a mismatch. Then return the length from the start of the path to the last
-     successful match. */
+  /* Compare each path component of first_path and second_path until
+   * there is a mismatch. Then return the length from the start of
+   * the path to the last successful match. 
+   */
   while((cur_ptr = (const unsigned char*)memchr(cur_ptr, '/', first_path_len))) {
     cur_ptr++;
-    if(strncmp((const char*)first_path+common_len,
-               (const char*)second_path+common_len, cur_ptr-prev_ptr))
+    if(strncmp((const char*)first_path + common_len,
+               (const char*)second_path + common_len, cur_ptr - prev_ptr))
       break;
 
     first_path_len -= cur_ptr - prev_ptr;
     prev_ptr = cur_ptr;
     common_len = prev_ptr - first_path;
   }
+
   return prev_ptr - first_path;
 }
 
@@ -1073,12 +1081,13 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
                                    const unsigned char *suffix, size_t suffix_len,
                                    size_t *result_length_p)
 {
-  int common_len, cur_len, final_len, up_dirs = 0, to_dir_len = 0;
+  size_t common_len, cur_len, final_len, to_dir_len;
+  int up_dirs = 0;
   const unsigned char *cur_ptr, *prev_ptr;
   unsigned char *final_path, *final_path_cur;
 
   common_len = raptor_uri_path_common_base_length(from_path, from_path_len,
-                                                to_path, to_path_len);
+                                                  to_path, to_path_len);
   
   if(result_length_p)
     *result_length_p=0;
@@ -1358,7 +1367,7 @@ raptor_uri_to_relative_uri_string(raptor_uri *base_uri,
 int
 raptor_uri_print(const raptor_uri* uri, FILE *stream)
 {
-  int rc = 0;
+  size_t nwritten = 0;
   size_t len = 10;
   unsigned char *string = (unsigned char*)"(NULL URI)";
   raptor_world* world = NULL;
@@ -1368,12 +1377,12 @@ raptor_uri_print(const raptor_uri* uri, FILE *stream)
     string = raptor_uri_as_counted_string((raptor_uri*)uri, &len);
   }
 
-  rc = fwrite(string, 1, len, stream);
-  if(rc != (int)len)
+  nwritten = fwrite(string, 1, len, stream);
+  if(nwritten != len)
     raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR,
                                NULL, "fwrite failed - %s", strerror(errno));
 
-  return rc;
+  return (nwritten == len);
 }
 
 
