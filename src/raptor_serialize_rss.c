@@ -1958,7 +1958,8 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           raptor_xml_writer_empty_element(xml_writer, predicate);
         } else {
           raptor_xml_writer_start_element(xml_writer, predicate);
-          raptor_xml_writer_cdata_counted(xml_writer, ruri_string, len);
+          raptor_xml_writer_cdata_counted(xml_writer, ruri_string,
+                                          (unsigned int)len);
           raptor_xml_writer_end_element(xml_writer, predicate);
         }
         raptor_free_memory(ruri_string);
