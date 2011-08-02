@@ -110,7 +110,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
   
 #define CONTENT_TYPE_LEN 14
   if(!raptor_strncasecmp((char*)ptr, "Content-Type: ", CONTENT_TYPE_LEN)) {
-    int len = bytes - CONTENT_TYPE_LEN - 2; /* for \r\n */
+    size_t len = bytes - CONTENT_TYPE_LEN - 2; /* for \r\n */
     char *type_buffer = RAPTOR_MALLOC(char*, len + 1);
     memcpy(type_buffer, (char*)ptr + 14, len);
     type_buffer[len]='\0';
@@ -244,7 +244,8 @@ raptor_www_curl_fetch(raptor_www *www)
 
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
-      www->status_code = lstatus;
+      /* CURL status code will always fit in an int */
+      www->status_code = (int)lstatus;
 
   }
 
