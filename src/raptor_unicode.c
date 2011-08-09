@@ -32,6 +32,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #include <stdarg.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -843,4 +844,101 @@ raptor_unicode_check_utf8_string(const unsigned char *string, size_t length)
     length -= unichar_len;
   }
   return 1;
+}
+
+
+/**
+ * raptor_unicode_utf8_strlen:
+ * @string: buffer
+ * @length: buffer length
+ *
+ * Calculate the number of Unicode characters in the given UTF-8 encoded buffer
+ *
+ * Return value: number of characters or <0 if sequence is invalid
+ */
+int
+raptor_unicode_utf8_strlen(const unsigned char *string, size_t length)
+{
+  int unicode_length = 0;
+  
+  while(length > 0) {
+    int unichar_len;
+    unichar_len = raptor_unicode_utf8_string_get_char(string, length, NULL);
+    if(unichar_len < 0 || unichar_len > (int)length) {
+      unicode_length = -1;
+      break;
+    }
+    
+    string += unichar_len;
+    length -= unichar_len;
+
+    unicode_length++;
+  }
+
+  return unicode_length;
+}
+
+
+/**
+ * raptor_unicode_utf8_substr:
+ * @dest: destination string buffer to write to (or NULL)
+ * @dest_length_p: location to store actual destination length (or NULL)
+ * @src: source string
+ * @src_length: source length in bytes
+ * @startingLoc: starting location offset 0 for first Unicode character
+ * @length: number of Unicode characters to copy at offset @startingLoc (or < 0)
+ *
+ * Get a unicode (UTF-8) substring of an existing UTF-8 string
+ *
+ * If @dest is NULL, returns the number of bytes needed to write and
+ * does no work.
+ * 
+ * Return value: number of bytes used in destination string or 0 on failure
+ */
+size_t
+raptor_unicode_utf8_substr(unsigned char* dest, size_t* dest_length_p,
+                           const unsigned char* src, size_t src_length,
+                           int startingLoc, int length)
+{
+  size_t dest_length = 0; /* destination unicode characters count */
+  size_t dest_bytes = 0;  /* destination UTF-8 bytes count */
+  int dest_offset = 0; /* destination string unicode characters index */
+  unsigned char* p = dest;
+  
+  if(!src)
+    return 0;
+
+  while(src_length > 0) {
+    int unichar_len;
+
+    unichar_len = raptor_unicode_utf8_string_get_char(src, src_length, NULL);
+    if(unichar_len < 0 || unichar_len > (int)src_length)
+      break;
+
+    if(dest_offset >= startingLoc) {
+      if(p) {
+        /* copy 1 Unicode character to dest */
+        memcpy(p, src, (size_t)unichar_len);
+        p += unichar_len;
+      }
+      dest_bytes += unichar_len;
+
+      dest_length++;
+      if(length >= 0 && (int)dest_length == length)
+        break;
+    }
+
+    src += unichar_len;
+    src_length -= unichar_len;
+
+    dest_offset++;
+  }
+
+  if(p)
+    *p = '\0';
+
+  if(dest_length_p)
+    *dest_length_p = dest_length;
+
+  return dest_bytes;
 }

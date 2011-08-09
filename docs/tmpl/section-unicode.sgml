@@ -97,3 +97,27 @@ rules.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_unicode_utf8_strlen ##### -->
+<para>
+
+</para>
+
+@string: 
+@length: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_unicode_utf8_substr ##### -->
+<para>
+
+</para>
+
+@dest: 
+@dest_length_p: 
+@src: 
+@src_length: 
+@startingLoc: 
+@length: 
+@Returns: 
+
+

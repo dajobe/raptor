@@ -454,6 +454,8 @@ raptor_unicode_is_xml10_namestartchar
 raptor_unicode_is_xml11_namechar
 raptor_unicode_is_xml10_namechar
 raptor_unicode_check_utf8_string
+raptor_unicode_utf8_strlen
+raptor_unicode_utf8_substr
 </SECTION>
 
 <SECTION>
