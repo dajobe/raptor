@@ -447,7 +447,7 @@ struct raptor_namespace_s {
   /* NULL means is the default namespace */
   const unsigned char *prefix;
   /* needed to safely compare prefixed-names */
-  int prefix_length;
+  unsigned int prefix_length;
   /* URI of namespace or NULL for default */
   raptor_uri *uri;
   /* parsing depth that this ns was added.  It will
