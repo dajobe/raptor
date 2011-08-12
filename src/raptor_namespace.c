@@ -430,7 +430,7 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
     if(!prefix && !ns->prefix)
       break;
     
-    if(prefix_length == ns->prefix_length && 
+    if((unsigned int)prefix_length == ns->prefix_length && 
        !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
       break;
   }
@@ -509,8 +509,8 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
                               const unsigned char *prefix, 
                               raptor_uri* ns_uri, int depth)
 {
-  int prefix_length = 0;
-  int len;
+  unsigned int prefix_length = 0;
+  unsigned int len;
   raptor_namespace *ns;
   unsigned char *p;
 
@@ -535,7 +535,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
 
   len = sizeof(raptor_namespace);
   if(prefix) {
-    prefix_length = strlen((char*)prefix);
+    prefix_length = (unsigned int)strlen((char*)prefix);
     len += prefix_length + 1;
   }
 
