@@ -1617,9 +1617,10 @@ static const char* const turtle_uri_strings[2] = {
   NULL
 };
   
-#define TURTLE_TYPES_COUNT 5
+#define TURTLE_TYPES_COUNT 6
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
   /* first one is the default */
+  { "text/turtle", 11, 10},
   { "application/x-turtle", 20, 10},
   { "application/turtle", 18, 10},
   { "text/n3", 7, 3},
