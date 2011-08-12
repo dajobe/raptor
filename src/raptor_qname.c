@@ -105,8 +105,8 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   const unsigned char *p;
   raptor_namespace* ns;
   unsigned char* new_name;
-  int prefix_length;
-  int local_name_length = 0;
+  unsigned int prefix_length;
+  unsigned int local_name_length = 0;
 
 #if RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("name %s\n", name);
@@ -118,7 +118,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   qname->world = nstack->world;
 
   if(value) {
-    int value_length = strlen((char*)value);
+    size_t value_length = strlen((char*)value);
     unsigned char* new_value;
 
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
@@ -139,7 +139,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
 
   if(!*p) {
-    local_name_length = p-name;
+    local_name_length = (unsigned int)(p - name);
 
     /* No : in the name */
     new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
@@ -171,11 +171,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   } else {
     /* There is a namespace prefix */
 
-    prefix_length = p-name;
+    prefix_length = (unsigned int)(p - name);
     p++; 
 
     /* p now is at start of local_name */
-    local_name_length = strlen((char*)p);
+    local_name_length = (unsigned int)strlen((char*)p);
     new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
@@ -241,7 +241,7 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
 {
   raptor_qname* qname;
   unsigned char* new_name;
-  int local_name_length = strlen((char*)local_name);
+  unsigned int local_name_length = (unsigned int)strlen((char*)local_name);
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -256,7 +256,7 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
   qname->world = world;
 
   if(value) {
-    int value_length = strlen((char*)value);
+    unsigned int value_length = (unsigned int)strlen((char*)value);
     unsigned char* new_value;
 
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
@@ -315,7 +315,7 @@ raptor_qname_copy(raptor_qname *qname)
   new_qname->world = qname->world;
 
   if(qname->value) {
-    int value_length = qname->value_length;
+    size_t value_length = qname->value_length;
     unsigned char* new_value;
 
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
@@ -442,7 +442,7 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
   const unsigned char *p;
   const unsigned char *original_name = name;
   const unsigned char *local_name = NULL;
-  int local_name_length = 0;
+  unsigned int local_name_length = 0;
   raptor_namespace* ns;
 
   /* Empty string is default namespace URI */
@@ -460,21 +460,21 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
     
     /* If ends with :, it is the URI of a namespace */
     if(p-name == (int)(name_len-1)) {
-      ns = raptor_namespaces_find_namespace(nstack, name, name_len-1);
+      ns = raptor_namespaces_find_namespace(nstack, name, (unsigned int)(name_len - 1));
     } else {
       if(!*p) {
         local_name = name;
-        local_name_length = p-name;
+        local_name_length = (unsigned int)(p - name);
         
         /* pick up the default namespace if there is one */
         ns = raptor_namespaces_get_default_namespace(nstack);
       } else {
         /* There is a namespace prefix */
-        int prefix_length = p-name;
+        unsigned int prefix_length = (unsigned int)(p - name);
         p++;
 
         local_name = p;
-        local_name_length = strlen((char*)p);
+        local_name_length = (unsigned int)strlen((char*)p);
         
         /* Find the namespace */
         ns = raptor_namespaces_find_namespace(nstack, name, prefix_length);

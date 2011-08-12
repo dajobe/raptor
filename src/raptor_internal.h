@@ -787,7 +787,7 @@ struct raptor_qname_s {
   raptor_uri *uri;
   /* optional value - used when name is an attribute */
   const unsigned char *value;
-  unsigned int value_length;
+  size_t value_length;
 };
 
 
