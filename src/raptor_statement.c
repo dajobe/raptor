@@ -32,6 +32,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+/* for ptrdiff_t */
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif
 #include <stdarg.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -384,9 +388,15 @@ raptor_statement_compare(const raptor_statement *s1,
 {
   int d = 0;
 
-  if(!s1 || !s2)
+  if(!s1 || !s2) {
     /* If one or both are NULL, return a stable comparison order */
-    return (s2 - s1);
+    ptrdiff_t pd = (s2 - s1);
+    
+    /* copy the sign of the (unknown size) signed integer 'd' into an
+     * int result
+     */
+    return (pd > 0) - (pd < 0);
+  }
 
   d = raptor_term_compare(s1->subject, s2->subject);
   if(d)
