@@ -94,7 +94,7 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
 
   /* when no buffer given, return size */
   if(!output)
-    return size;
+    return (int)size; /* ok since size is in range 1..6 */
 
   if(size > length)
     return -1;
@@ -134,7 +134,7 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
       output[0] = (unsigned char)c;
   }
 
-  return size;
+  return (int)size; /* ok since size is in range 1..6 */
 }
 
 
@@ -186,7 +186,7 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
 
 
   if(!output)
-    return size;
+    return (int)size; /* ok since size is in range 1..6 */
 
   if(length < size)
     return -1;
@@ -254,7 +254,7 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
   if(c > raptor_unicode_max_codepoint)
     return -4;
 
-  return size;
+  return (int)size; /* ok since size is in range 1..6 */
 }
 
 
