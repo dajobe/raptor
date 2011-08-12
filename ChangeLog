@@ -1,3 +1,106 @@
+2011-08-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c, src/turtle_parser.y: Use turtle's
+	actual mime type text/turtle in syntax recognizing code.  This
+	should make guessing from the registered mime type accurate.
+
+2011-08-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	docs/tmpl/section-unicode.sgml, src/raptor2.h.in,
+	src/raptor_unicode.c: Added UTF-8 strlen and substr utility
+	functions
+
+	(raptor_unicode_utf8_strlen): Added (raptor_unicode_utf8_substr): Added
+
+2011-08-01  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: stddef.h for ptrdiff_t
+
+	* src/raptor_uri.c: code style - casts for lengths
+
+	(raptor_new_uri_from_counted_string,
+	(raptor_new_uri_from_counted_string): Cast size_t length from
+	strlen to unsigned int.
+
+	(raptor_new_uri_from_uri_local_name,
+	raptor_new_uri_relative_to_base, raptor_new_uri_from_id)
+	raptor_new_uri_for_rdf_concept): size_t for string and uri
+	lengths
+
+	(raptor_uri_path_common_base_length): Use size_t inside and return
+	size_t
+
+	(raptor_uri_path_make_relative_path): size_t for path lengths.
+
+	(raptor_uri_print): use size_t for number of objects fwrite prints
+
+	* src/raptor_serialize_rss.c: cast uri len to unsigned int
+
+	* src/raptor_www_curl.c:
+	size_t for len
+
+2011-07-31  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_libxml.c, src/raptor_log.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_stringbuffer.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libxml.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_common.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/rdfdiff.c: Code style change and
+	cleanup for alloc/free macros
+
+	Code style:
+	1. var = RAPTOR_CALLOC(type, count, size)
+	Prefering:
+	  var = RAPTOR_CALLOC(type, 1, sizeof(*var))
+	when count = 1
+
+	2. var = RAPTOR_MALLOC(type, size)
+
+	3. RAPTOR_FREE(type, var)
+
+	The consequence here is allocs that mostly fit into 1 line without
+	so much boilerplate and duplication of types.
+
+	The RAPTOR_MALLOC and RAPTOR_CALLOC now do the cast to the return
+	type.
+
+	RAPTOR_FREE takes the object type too but always casts arg to void
+	This certainly contains many wrong types to the arg but might be
+	used later in some kind of smart type-aware debugging allocator.
+
+	* librdfa/curie.c: Use size_t to compute sizes otherwise may
+	truncate on 64-bit systems
+
+	(rdfa_resolve_uri): Use size_t for strlen tmp
+
+	(rdfa_resolve_curie): cast for strlen when ifdef LIBRDFA_IN_RAPTOR
+
+	* librdfa/rdfa.c: Use size_t to compute sizes otherwise may
+	truncate on 64-bit systems
+
+2011-07-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore, docs/raptor-overrides.txt,
+	docs/raptor-sections.txt, docs/raptor.types,
+	docs/raptor2-overrides.txt, docs/raptor2-sections.txt,
+	docs/raptor2.types, docs/tmpl/.gitignore: More changes from
+	DOC_MODULE=raptor2
+
+	* docs/Makefile.am: Install raptor V2 docs in with doc module
+	raptor2 so they don't clash with raptor V1 docs
+
 2011-07-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c:
