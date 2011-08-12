@@ -284,7 +284,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
   raptor_world *world = (raptor_world*)user_data;
   int id;
   unsigned char *buffer;
-  int length;
+  unsigned int length;
   int tmpid;
 
   if(user_bnodeid)
@@ -298,7 +298,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
     length++;
 
   if(world->default_generate_bnodeid_handler_prefix)
-    length += world->default_generate_bnodeid_handler_prefix_length;
+    length += (unsigned int)world->default_generate_bnodeid_handler_prefix_length;
   else
     length += 5; /* strlen("genid") */
   
