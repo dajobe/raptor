@@ -74,6 +74,7 @@ extern "C" {
 #define access _access
 #define stricmp _stricmp
 #define strnicmp _strnicmp
+#define isnan(n) _isnan(n)
 
 /*#define HAVE_C99_VSNPRINTF */
 
