@@ -437,7 +437,8 @@ fi
 if test $need_libm = 1; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lm"
 fi
-
+AC_DEFINE([HAVE_TRUNC], 1, [Have trunc() available])
+AC_DEFINE([HAVE_ROUND], 1, [Have round() available])
 AC_SYS_LARGEFILE
 
 
