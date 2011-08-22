@@ -11,6 +11,10 @@
 #include <raptor_config.h>
 #endif
 
+#ifdef WIN32
+#include <win32_raptor_config.h>
+#endif
+
 #include "raptor2.h"
 #include "raptor_internal.h"
 
@@ -27,6 +31,24 @@
 /* trunc (C99): round x to the nearest integer, towards zero */
 #define trunc(x) (((x) < 0) ? ceil((x)) : floor((x)))
 #endif
+
+#ifndef HAVE_LROUND
+static long
+raptor_lround(double d)
+{
+  /* Add +/- 0.5 then then round towards zero.  */
+  d = floor(d);
+
+  if(isnan(d) || d > (double)LONG_MAX || d < (double)LONG_MIN) {
+    errno = ERANGE;
+    /* Undefined behaviour, so we could return anything.  */
+    /* return tmp > 0.0 ? LONG_MAX : LONG_MIN;  */
+  }
+  return (long)d;
+}
+#define lround(x) raptor_lround(x)
+#endif
+
 
 /* Convert a double to xsd:decimal representation.
  * Returned is a pointer to the first character of the number
