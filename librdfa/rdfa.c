@@ -1245,7 +1245,7 @@ static int rdfa_process_doctype(rdfacontext* context, size_t* bytes)
    {
       char* new_doctype_buffer = NULL;
       size_t new_doctype_buffer_length = 0;
-      char* doctype_end = index(doctype_position, '>');
+      char* doctype_end = strchr(doctype_position, '>');
 
       // make sure that the end of the doctype declaration can be found
       if(doctype_end != NULL)
