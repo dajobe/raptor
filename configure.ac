@@ -439,6 +439,23 @@ if test $need_libm = 1; then
 fi
 AC_DEFINE([HAVE_TRUNC], 1, [Have trunc() available])
 AC_DEFINE([HAVE_ROUND], 1, [Have round() available])
+
+AC_MSG_CHECKING([for lround])
+have_lround=0
+AC_RUN_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_MATH_H
+#include <math.h>
+#endif
+]], [[
+    long intpart = lround(654.321F);
+]])],
+     AC_MSG_RESULT(yes)
+     have_lround=1,
+     AC_MSG_RESULT(no))
+if test $have_lround = 1; then
+  AC_DEFINE(HAVE_LROUND, 1, [Have C99 lround() available])
+fi
+
 AC_SYS_LARGEFILE
 
 
