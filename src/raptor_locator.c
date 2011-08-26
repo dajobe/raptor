@@ -112,9 +112,18 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
     return -1;
 
   if(locator->line > 0) {
+#ifdef HAVE_C99_VSNPRINTF
     bufsize += snprintf(NULL, 0, ":%d", locator->line);
     if(locator->column >= 0)
       bufsize += snprintf(NULL, 0, " column %d", locator->column);
+#else
+    /* if the (v)snprintf is not C99 or we are checking at runtime
+     * (CHECK_VSNPRINTF_RUNTIME is defined) then assume it is not C99
+     * and cannot deal with NULL and computing the accurate length
+     * so pick a large enough value.
+     */
+    bufsize += 100;
+#endif
   }
   
   if(!buffer || !length || length < bufsize)
