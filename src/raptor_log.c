@@ -79,7 +79,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
                          raptor_locator* locator,
                          const char* message, va_list arguments)
 {
-  char *buffer;
+  char *buffer = NULL;
   size_t length;
   
   if(level == RAPTOR_LOG_LEVEL_NONE)
@@ -88,7 +88,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   if(world->internal_ignore_errors)
     return;
 
-  buffer = raptor_vsnprintf(message, arguments);
+  length = raptor_vasprintf(&buffer, message, arguments);
   if(!buffer) {
     if(locator && world) {
       raptor_locator_print(locator, stderr);
@@ -102,7 +102,6 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
     return;
   }
 
-  length = strlen(buffer);
   if(buffer[length-1] == '\n')
     buffer[length-1]='\0';
   

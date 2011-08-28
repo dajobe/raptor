@@ -356,7 +356,7 @@ raptor_json_writer_literal_datatype(raptor_json_writer* json_writer,
     } else if(raptor_uri_equals(datatype, json_writer->xsd_decimal_uri)) {
       double dnum = strtod((const char*)s, &endptr);
       if(endptr != (char*)s) {
-        snprintf(buf, 20, "%.1lf", dnum);
+        raptor_snprintf(buf, 20, "%.1lf", dnum);
         raptor_iostream_string_write(buf, json_writer->iostr);
         written = 1;
       }
