@@ -3183,7 +3183,7 @@ raptor_init_parser_rdfxml(raptor_world* world)
 }
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 void
 raptor_rdfxml_parser_stats_print(raptor_rdfxml_parser* rdf_xml_parser, 
                                  FILE *stream)

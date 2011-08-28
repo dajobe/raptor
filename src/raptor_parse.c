@@ -1170,7 +1170,7 @@ void
 raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
 {
 #ifdef RAPTOR_PARSER_RDFXML
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   if(!strcmp(rdf_parser->factory->desc.names[0], "rdfxml")) {
     raptor_rdfxml_parser *rdf_xml_parser = (raptor_rdfxml_parser*)rdf_parser->context;
     fputs("raptor parser stats\n  ", stream);
@@ -1320,7 +1320,7 @@ raptor_world_guess_parser_name(raptor_world* world,
 
     scores[i].score = score < 10 ? score : 10; 
     scores[i].factory = factory;
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Score %15s : %d\n", factory->desc.names[0], score);
 #endif
   }
@@ -1704,7 +1704,7 @@ main(int argc, char *argv[])
   if(!world || raptor_world_open(world))
     exit(1);
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Known options:\n", program);
 #endif
 
@@ -1718,7 +1718,7 @@ main(int argc, char *argv[])
     if(!od)
       continue;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, " %2d %-20s %s <%s>\n", i, od->name, od->label,
             (od->uri ? (const char*)raptor_uri_as_string(od->uri) : ""));
 #endif
@@ -1733,7 +1733,7 @@ main(int argc, char *argv[])
   }
 
   s = raptor_parser_get_accept_header_all(world);
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "Default HTTP accept header: '%s'\n", s);
 #endif
   if(!s) {

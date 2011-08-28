@@ -730,7 +730,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
 
         RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
 #endif
 
@@ -748,7 +748,7 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
     if(t) {
       raptor_sequence_push(rss_serializer->triples, t);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       fprintf(stderr,"Stored statement: ");
       raptor_statement_print_as_ntriples(s, stderr);
       fprintf(stderr,"\n");
@@ -809,7 +809,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
   rss_serializer = (raptor_rss10_serializer_context*)serializer->context;
   rss_model = &rss_serializer->model;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   if(1) {
     RAPTOR_DEBUG1("Processing statement\n  ");
     raptor_statement_print_as_ntriples(statement, stderr);
@@ -973,7 +973,7 @@ raptor_rss10_build_items(raptor_rss10_serializer_context *rss_serializer)
     if(!s)
       continue;
     
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG1("Processing statement\n  ");
     raptor_statement_print_as_ntriples(s, stderr);
     fputc('\n', stderr);

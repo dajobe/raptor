@@ -72,7 +72,7 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 
 
 /* Slow down the grammar operation and watch it work */
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
 #define YYDEBUG 1
 #endif
 
@@ -281,7 +281,7 @@ triples: subject propertyList
 {
   int i;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("statement 2\n subject=");
   if($1)
     raptor_term_print_as_ntriples($1, stdout);
@@ -301,7 +301,7 @@ triples: subject propertyList
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
       t2->subject = raptor_term_copy($1);
     }
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" after substitution propertyList=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
@@ -326,7 +326,7 @@ objectList: objectList COMMA object
 {
   raptor_statement *triple;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
   if($3) {
     printf(" object=\n");
@@ -355,7 +355,7 @@ objectList: objectList COMMA object
       YYERROR;
     }
     $$ = $1;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
     printf("\n\n");
@@ -366,7 +366,7 @@ objectList: objectList COMMA object
 {
   raptor_statement *triple;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 2\n");
   if($1) {
     printf(" object=\n");
@@ -397,7 +397,7 @@ objectList: objectList COMMA object
       $$ = NULL;
       YYERROR;
     }
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
     printf("\n\n");
@@ -410,7 +410,7 @@ itemList: itemList object
 {
   raptor_statement *triple;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
   if($2) {
     printf(" object=\n");
@@ -439,7 +439,7 @@ itemList: itemList object
       YYERROR;
     }
     $$ = $1;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
     printf("\n\n");
@@ -450,7 +450,7 @@ itemList: itemList object
 {
   raptor_statement *triple;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 2\n");
   if($1) {
     printf(" object=\n");
@@ -481,7 +481,7 @@ itemList: itemList object
       $$ = NULL;
       YYERROR;
     }
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" objectList is now ");
     raptor_sequence_print($$, stdout);
     printf("\n\n");
@@ -492,7 +492,7 @@ itemList: itemList object
 
 verb: predicate
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("verb predicate=");
   raptor_term_print_as_ntriples($1, stdout);
   printf("\n");
@@ -502,7 +502,7 @@ verb: predicate
 }
 | A
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
@@ -517,7 +517,7 @@ propertyList: propertyList SEMICOLON verb objectList
 {
   int i;
   
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("propertyList 1\n verb=");
   raptor_term_print_as_ntriples($3, stdout);
   printf("\n objectList=");
@@ -528,7 +528,7 @@ propertyList: propertyList SEMICOLON verb objectList
 #endif
   
   if($4 == NULL) {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" empty objectList not processed\n");
 #endif
   } else if($3 && $4) {
@@ -538,7 +538,7 @@ propertyList: propertyList SEMICOLON verb objectList
       t2->predicate = raptor_term_copy($3);
     }
   
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" after substitution objectList=");
     raptor_sequence_print($4, stdout);
     printf("\n");
@@ -546,7 +546,7 @@ propertyList: propertyList SEMICOLON verb objectList
   }
 
   if($1 == NULL) {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" empty propertyList not copied\n\n");
 #endif
   } else if($3 && $4 && $1) {
@@ -560,7 +560,7 @@ propertyList: propertyList SEMICOLON verb objectList
       }
     }
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" after appending objectList (reverse order)=");
     raptor_sequence_print($1, stdout);
     printf("\n\n");
@@ -577,7 +577,7 @@ propertyList: propertyList SEMICOLON verb objectList
 | verb objectList
 {
   int i;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("propertyList 2\n verb=");
   raptor_term_print_as_ntriples($1, stdout);
   if($2) {
@@ -594,7 +594,7 @@ propertyList: propertyList SEMICOLON verb objectList
       t2->predicate = raptor_term_copy($1);
     }
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" after substitution objectList=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
@@ -609,7 +609,7 @@ propertyList: propertyList SEMICOLON verb objectList
 | propertyList SEMICOLON
 {
   $$ = $1;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("propertyList 5\n trailing semicolon returning existing list ");
   raptor_sequence_print($$, stdout);
   printf("\n\n");
@@ -626,7 +626,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
   raptor_namespace *ns;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
 #endif
 
@@ -696,7 +696,7 @@ object: resource
 }
 | literal
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("object literal=");
   raptor_term_print_as_ntriples($1, stdout);
   printf("\n");
@@ -709,7 +709,7 @@ object: resource
 
 literal: STRING_LITERAL AT IDENTIFIER
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
@@ -722,7 +722,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
@@ -746,7 +746,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
 #endif
 
@@ -770,7 +770,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL HAT URI_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
 #endif
 
@@ -787,7 +787,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL HAT QNAME_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
 #endif
 
@@ -803,7 +803,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 }
 | STRING_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal string=\"%s\"\n", $1);
 #endif
 
@@ -816,7 +816,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | INTEGER_LITERAL
 {
   raptor_uri *uri;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource integer=%s\n", $1);
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
@@ -834,7 +834,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | FLOATING_LITERAL
 {
   raptor_uri *uri;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource double=%s\n", $1);
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
@@ -852,7 +852,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | DECIMAL_LITERAL
 {
   raptor_uri *uri;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
@@ -870,7 +870,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | TRUE_TOKEN
 {
   raptor_uri *uri;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean true\n", stderr);
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
@@ -885,7 +885,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 | FALSE_TOKEN
 {
   raptor_uri *uri;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean false\n", stderr);
 #endif
   uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
@@ -902,7 +902,7 @@ literal: STRING_LITERAL AT IDENTIFIER
 
 resource: URI_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
@@ -916,7 +916,7 @@ resource: URI_LITERAL
 }
 | QNAME_LITERAL
 {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource qname URI=<%s>\n", raptor_uri_as_string($1));
 #endif
 
@@ -944,7 +944,7 @@ propertyListOpt: propertyList
 blank: BLANK_LITERAL
 {
   const unsigned char *id;
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
   id = raptor_world_internal_generate_id(((raptor_parser*)rdf_parser)->world,
@@ -979,14 +979,14 @@ blank: BLANK_LITERAL
   }
 
   if($2 == NULL) {
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf("resource\n propertyList=");
     raptor_term_print_as_ntriples($$, stdout);
     printf("\n");
 #endif
   } else {
     /* non-empty property list, handle it  */
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf("resource\n propertyList=");
     raptor_sequence_print($2, stdout);
     printf("\n");
@@ -998,7 +998,7 @@ blank: BLANK_LITERAL
       raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
     }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     printf(" after substitution objectList=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
@@ -1025,7 +1025,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   raptor_term* object = NULL;
   raptor_term* blank = NULL;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("collection\n objectList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
@@ -1039,7 +1039,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     goto err_collection;
   
   /* non-empty property list, handle it  */
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource\n propertyList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
@@ -1085,7 +1085,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     blank = NULL;
   }
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf(" after substitution objectList=");
   raptor_sequence_print($2, stdout);
   printf("\n\n");
@@ -1122,7 +1122,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   raptor_world* world = ((raptor_parser*)rdf_parser)->world;
 
-#if RAPTOR_DEBUG > 1  
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("collection\n empty\n");
 #endif
 
@@ -1235,7 +1235,7 @@ static int
 turtle_push_parse(raptor_parser *rdf_parser, 
                   const char *string, size_t length)
 {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   raptor_world* world = rdf_parser->world;
 #endif
   raptor_turtle_parser* turtle_parser;
@@ -1272,7 +1272,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
     
     token = turtle_lexer_lex(&lval, turtle_parser->scanner);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     printf("token %s\n", turtle_token_print(world, token, &lval));
 #endif
 
@@ -1747,7 +1747,7 @@ main(int argc, char *argv[])
   const char *filename;
   int rc;
   
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   turtle_parser_debug = 1;
 #endif
 

@@ -1681,7 +1681,7 @@ main(int argc, char *argv[])
             program);
   else {
     sprintf((char*)uri_buffer, "file://%s/foo", dir);
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr,
             "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",
             program, dir, uri_buffer);

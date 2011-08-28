@@ -269,7 +269,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   unsigned char last_char;
   size_t result_len = 0;
   
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   RAPTOR_DEBUG4("base uri='%s', reference_uri='%s, buffer size %d\n",
                 (base_uri ? (const char*)base_uri : "NULL"),
                 (reference_uri ? (const char*)reference_uri : "NULL"),
@@ -642,7 +642,7 @@ check_resolve(const char *base_uri, const char *reference_uri,
               buffer, result_uri);
       return 1;
   }
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   fprintf(stderr,
           "%s: raptor_uri_resolve_uri_reference(%s, %s) OK giving '%s'\n",
           program, base_uri, reference_uri, 
@@ -661,7 +661,7 @@ check_parses(const char *uri_string) {
               program, uri_string);
       return 1;
   }
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   fprintf(stderr, "%s: raptor_new_uri_detail(%s) OK\n",
           program, uri_string);
 #endif
@@ -678,7 +678,7 @@ main(int argc, char *argv[])
 
   program = raptor_basename(argv[0]);
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Using base URI '%s'\n", program, base_uri);
 #endif
 

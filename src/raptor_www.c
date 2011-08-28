@@ -366,7 +366,7 @@ raptor_www_set_http_accept(raptor_www* www, const char *value)
     *value_copy = '\0';
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using Accept header: '%s'\n", www->http_accept);
 #endif
 }
@@ -441,7 +441,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
     *cache_control_copy = '\0';
   }
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using Cache-Control header: '%s'\n", www->cache_control);
 #endif
 

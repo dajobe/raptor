@@ -1073,14 +1073,14 @@ main(int argc, char *argv[])
       continue;
     }
 
-#if RAPTOR_DEBUG > 1    
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1    
     fprintf(stderr, "%s: raptor_xml_escape_string escaped string to '%s' ok\n",
             program, xml_string);
 #endif
     RAPTOR_FREE(char*, xml_string);
   }
 
-#if RAPTOR_DEBUG > 1    
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1    
   if(!failures)
     fprintf(stderr, "%s: raptor_xml_escape_string all tests OK\n", program);
 #endif

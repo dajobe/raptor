@@ -81,7 +81,7 @@ struct raptor_id_set_s
   /* start of trees, 1 per base URI */
   struct raptor_base_id_set_s* first;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   int hits;
   int misses;
 #endif
@@ -220,13 +220,13 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 
   /* if already there, error */
   if(item) {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     set->misses++;
 #endif
     return 1;
   }
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   set->hits++;
 #endif
   
@@ -240,7 +240,7 @@ raptor_id_set_add(raptor_id_set* set, raptor_uri *base_uri,
 }
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 void
 raptor_id_set_stats_print(raptor_id_set* set, FILE *stream) {
   fprintf(stream, "set hits: %d misses: %d\n", set->hits, set->misses);
@@ -272,7 +272,7 @@ main(int argc, char *argv[])
     
   base_uri = raptor_new_uri(world, (const unsigned char*)"http://example.org/base#");
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating set\n", program);
 #endif
 
@@ -286,7 +286,7 @@ main(int argc, char *argv[])
     size_t len = strlen(items[i]);
     int rc;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding set item '%s'\n", program, items[i]);
 #endif
   
@@ -302,7 +302,7 @@ if(rc) {
     size_t len = strlen(items[i]);
     int rc;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding duplicate set item '%s'\n", program, items[i]);
 #endif
 
@@ -314,11 +314,11 @@ if(rc) {
     }
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   raptor_id_set_stats_print(set, stderr);
 #endif
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing set\n", program);
 #endif
   raptor_free_id_set(set);

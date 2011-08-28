@@ -44,7 +44,7 @@ static void
 write_content_type(raptor_www* www,
                    void *userdata, const char *content_type) 
 {
-#if RAPTOR_DEBUG > 1    
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1    
   fprintf((FILE*)userdata, "Content Type: %s\n", content_type);
 #endif
 }
@@ -88,7 +88,7 @@ int main (int argc, char *argv[])
                                 &string, &string_length, malloc)) {
     fprintf(stderr, "%s: WWW fetch failed\n", program);
   } else {
-#if RAPTOR_DEBUG > 1    
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1    
     fprintf(stderr, "%s: HTTP response status %d\n",
             program, www->status_code);
     

@@ -673,7 +673,7 @@ main(int argc, char *argv[])
 #define COPY_STRING_BUFFER_SIZE 100
   unsigned char *copy_string;
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
 
@@ -689,7 +689,7 @@ main(int argc, char *argv[])
     int rc;
     len = strlen(items[i]);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding string buffer item '%s'\n", program, items[i]);
 #endif
   
@@ -720,7 +720,7 @@ main(int argc, char *argv[])
   
   /* test prepending */
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
 
@@ -734,7 +734,7 @@ main(int argc, char *argv[])
     int rc;
     len = strlen(items[i]);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Prepending string buffer item '%s'\n", program, items[i]);
 #endif
   
@@ -773,7 +773,7 @@ main(int argc, char *argv[])
     raptor_stringbuffer_append_string(isb, 
                                       (const unsigned char*)test_integer_string, 1);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding decimal integer %d to buffer\n", program, test_integers[i]);
 #endif
 
@@ -785,14 +785,14 @@ main(int argc, char *argv[])
               program, str, test_integer_results[i]);
       exit(1);
     }
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Freeing string buffer\n", program);
 #endif
     raptor_free_stringbuffer(isb);
   }
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Creating two stringbuffers to join\n", program);
 #endif
 
@@ -851,7 +851,7 @@ main(int argc, char *argv[])
     exit(1);
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Appended two stringbuffers\n", program);
 #endif
 
@@ -875,7 +875,7 @@ main(int argc, char *argv[])
   }
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Copying string buffer to string\n", program);
 #endif
 
@@ -893,7 +893,7 @@ main(int argc, char *argv[])
   free(copy_string);
   
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing string buffers\n", program);
 #endif
   raptor_free_stringbuffer(sb1);

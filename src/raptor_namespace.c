@@ -515,7 +515,7 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
   unsigned char *p;
 
 #ifndef STANDALONE
-#if RAPTOR_DEBUG >1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG4("namespace prefix %s uri %s depth %d\n",
                 prefix ? (char*)prefix : "(default)",
                 ns_uri ? (char*)raptor_uri_as_string(ns_uri) : "(none)",

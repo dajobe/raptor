@@ -51,7 +51,7 @@
 #include "raptor_internal.h"
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 #define RAPTOR_AVLTREE_DEBUG1(msg) RAPTOR_DEBUG1(msg)
 #else
 #define RAPTOR_AVLTREE_DEBUG1(msg)
@@ -255,14 +255,14 @@ raptor_avltree_add(raptor_avltree* tree, void* p_data)
 {
   int rebalancing = FALSE;
   int rv;
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Checking tree before adding\n");
   raptor_avltree_check(tree);
 #endif
 
   rv = raptor_avltree_sprout(tree, NULL, &tree->root, p_data,
                              &rebalancing);
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Checking tree after adding\n");
   raptor_avltree_check(tree);
 #endif
@@ -289,7 +289,7 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
   int rebalancing = FALSE;
   void* rdata;
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Checking tree before removing\n");
   raptor_avltree_dump(tree,stderr);
   raptor_avltree_check(tree);
@@ -299,7 +299,7 @@ raptor_avltree_remove(raptor_avltree* tree, void* p_data)
   if(rdata)
     tree->size--;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Checking tree after removing\n");
   raptor_avltree_dump(tree,stderr);
   raptor_avltree_check(tree);
@@ -482,7 +482,7 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
     case -1:
       /* left branch was already too long. rebalance */
       RAPTOR_AVLTREE_DEBUG1("LESS: case -1: rebalancing\n");
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree before rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
@@ -531,14 +531,14 @@ raptor_avltree_sprout_left(raptor_avltree* tree, raptor_avltree_node** node_pp,
         *node_pp = p2;
         (*node_pp)->parent = p_parent;
       } /* end else */
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree after rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
 
       (*node_pp)->balance = 0;
       *rebalancing_p = FALSE;
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       if(1) {
         unsigned int discard = 0;
         raptor_avltree_check_internal(tree, *node_pp, &discard);
@@ -589,7 +589,7 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
       RAPTOR_AVLTREE_DEBUG1("MORE: balance was off, need to rebalance\n");
       p1 = (*node_pp)->right;
       
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree before rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
@@ -638,13 +638,13 @@ raptor_avltree_sprout_right(raptor_avltree* tree,
         (*node_pp)->parent = p_parent;
       } /* end else */
       
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_AVLTREE_DEBUG1("Tree after rebalancing\n");
       raptor_avltree_dump(tree, stderr);
 #endif
       (*node_pp)->balance = 0;
       *rebalancing_p = FALSE;
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       if(1) {
         unsigned int discard = 0;
         raptor_avltree_check_internal(tree, *node_pp, &discard);
@@ -670,7 +670,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
 {
   int cmp;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_AVLTREE_DEBUG1("Enter\n");
   if ( *node_pp) { 
       raptor_avltree_print_node(*node_pp);
@@ -691,7 +691,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
       return RAPTOR_AVLTREE_ENOMEM;
     }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG2("Creating new node %p\n", *node_pp);
 #endif
     
@@ -704,7 +704,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
 
     tree->size++;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     raptor_avltree_check_node(tree, *node_pp, 0, 0);
 
     RAPTOR_AVLTREE_DEBUG1("Tree now looks this way\n");
@@ -715,7 +715,7 @@ raptor_avltree_sprout(raptor_avltree* tree, raptor_avltree_node* parent,
   }
 
   /* check node */
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   raptor_avltree_check_node(tree, *node_pp, 0, 0);
 #endif
   /* compare the data */
@@ -1570,7 +1570,7 @@ typedef struct
   int failed;
 } visit_state;
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 static int
 print_string(int depth, void* data, void *user_data) 
 {
@@ -1640,7 +1640,7 @@ main(int argc, char *argv[])
     int rc;
     void* node;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Adding tree item '%s'\n", program, items[i]);
 #endif
   
@@ -1665,7 +1665,7 @@ main(int argc, char *argv[])
     }
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Printing tree\n", program);
   vs.fh = stderr;
   vs.count = 0;
@@ -1680,7 +1680,7 @@ main(int argc, char *argv[])
   for(i = 0; delete_items[i]; i++) {
     int rc;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%s: Deleting tree item '%s'\n", program, delete_items[i]);
 #endif
   
@@ -1698,7 +1698,7 @@ main(int argc, char *argv[])
   }
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Walking tree forwards via iterator\n", program);
 #endif
   iter = raptor_new_avltree_iterator(tree, NULL, NULL, 1);
@@ -1710,7 +1710,7 @@ main(int argc, char *argv[])
               i, result, data);
       exit(1);
     }
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "%3d: Got '%s'\n", i, data);
 #endif
     if(raptor_avltree_iterator_next(iter))
@@ -1723,7 +1723,7 @@ main(int argc, char *argv[])
   raptor_free_avltree_iterator(iter);
 
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Checking tree\n", program);
 #endif
   vs.count = 0;
@@ -1752,7 +1752,7 @@ main(int argc, char *argv[])
   }
   
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing tree\n", program);
 #endif
   raptor_free_avltree(tree);

@@ -147,7 +147,7 @@ raptor_guess_parse_chunk(raptor_parser* rdf_parser,
       return 1;
     } else {
     
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("Guessed parser name '%s'\n", name);
 #endif
 

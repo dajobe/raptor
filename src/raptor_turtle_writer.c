@@ -1009,7 +1009,7 @@ main(int argc, char *argv[])
   
   count = raptor_iostream_tell(iostr);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Freeing iostream\n", program);
 #endif
   raptor_free_iostream(iostr);
@@ -1033,7 +1033,7 @@ main(int argc, char *argv[])
     return 1;
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Made Turtle string of %d bytes\n", program, (int)string_len);
   fputs("[[", stderr);
   (void)fwrite(string, 1, string_len, stderr);

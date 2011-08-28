@@ -489,7 +489,7 @@ raptor_grddl_add_transform_xml_context(raptor_grddl_parser_context* grddl_parser
   raptor_uri* uri = xml_context->uri;
   int size;
   
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Found document transformation URI '%s'\n",
                 raptor_uri_as_string(uri));
 #endif
@@ -499,7 +499,7 @@ raptor_grddl_add_transform_xml_context(raptor_grddl_parser_context* grddl_parser
     grddl_xml_context* xc;
     xc = (grddl_xml_context*)raptor_sequence_get_at(grddl_parser->doc_transform_uris, i);
     if(raptor_uri_equals(uri, xc->uri)) {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string(uri));
 #endif
       grddl_free_xml_context(grddl_parser->world, xml_context);
@@ -532,13 +532,13 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
      !statement->object->type == RAPTOR_TERM_TYPE_URI)
     return;
 
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   RAPTOR_DEBUG2("Parser %p: Relaying statement: ", rdf_parser);
   raptor_statement_print(statement, stderr);
   fputc('\n', stderr);
 #endif
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Parser %p: Checking against %d profile URIs\n", 
                 rdf_parser, raptor_sequence_size(grddl_parser->profile_uris));
 #endif
@@ -569,7 +569,7 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
        raptor_uri_equals(statement->predicate->value.uri, predicate_uri)) {
       raptor_uri* uri = statement->object->value.uri;
       
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Matches profile URI #%d '%s'\n",
                     rdf_parser, i, raptor_uri_as_string(profile_uri));
 #endif
@@ -578,7 +578,7 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
                                                rdf_parser->base_uri);
       raptor_grddl_add_transform_xml_context(grddl_parser, new_xml_context);
     } else {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG4("Parser %p: Failed to match profile URI #%d '%s'\n",
                     rdf_parser, i, raptor_uri_as_string(profile_uri));
 #endif
@@ -1085,7 +1085,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
 
   nodes = xpathObj->nodesetval;
   if(!nodes || xmlXPathNodeSetIsEmpty(nodes)) {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     RAPTOR_DEBUG3("No match found with XPath expression \"%s\" over '%s'\n",
                   xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
 #endif
@@ -1093,7 +1093,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     goto cleanup_xpath_match;
   }
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG3("Found match with XPath expression \"%s\" over '%s'\n",
                 xpathExpr, raptor_uri_as_string(rdf_parser->base_uri));
 #endif
@@ -1137,7 +1137,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     if(base_uri_string) {
       base_uri = raptor_new_uri(rdf_parser->world, base_uri_string);
       xmlFree(base_uri_string);
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("XML base URI of match is '%s'\n",
                     raptor_uri_as_string(base_uri));
 #endif

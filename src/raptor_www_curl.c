@@ -84,7 +84,7 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
   
   raptor_www_curl_update_status(www);
 
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   RAPTOR_DEBUG2("Got %d bytes\n", bytes);
 #endif
 
@@ -119,7 +119,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     www->type = type_buffer;
     www->free_type = 1;
 
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     RAPTOR_DEBUG3("Got content type header '%s' (%d bytes)\n", type_buffer, len);
 #endif
     if(www->content_type)
@@ -139,7 +139,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     www->final_uri = raptor_new_uri_from_counted_string(www->world, uri_str,
                                                         uri_len);
 
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     if(www->final_uri)
       RAPTOR_DEBUG2("Got content location header '%s'\n", 
                     raptor_uri_as_string(www->final_uri));
@@ -181,7 +181,7 @@ raptor_www_curl_init(raptor_www *www)
   /* Make it follow Location: headers */
   curl_easy_setopt(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
 
-#if RAPTOR_DEBUG > 2
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   curl_easy_setopt(www->curl_handle, CURLOPT_VERBOSE, (void*)1);
 #endif
 

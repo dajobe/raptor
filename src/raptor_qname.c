@@ -108,7 +108,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
   unsigned int prefix_length;
   unsigned int local_name_length = 0;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("name %s\n", name);
 #endif  
 
@@ -158,11 +158,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
       
       if(ns) {
         qname->nspace = ns;
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
         RAPTOR_DEBUG2("Found default namespace %s\n", raptor_uri_as_string(ns->uri));
 #endif
       } else {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
         RAPTOR_DEBUG1("No default namespace defined\n");
 #endif
       }
@@ -194,7 +194,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
       raptor_log_error_formatted(qname->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                  "The namespace prefix in \"%s\" was not declared.", name);
     } else {
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, raptor_uri_as_string(ns->uri));
 #endif
       qname->nspace = ns;

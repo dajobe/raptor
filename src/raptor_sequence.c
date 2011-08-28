@@ -665,7 +665,7 @@ main(int argc, char *argv[])
   
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 3);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: sequence after additions: ", program);
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
@@ -674,7 +674,7 @@ main(int argc, char *argv[])
   /* now made alphabetical i.e. first, second, third */
   raptor_sequence_sort(seq1, raptor_compare_strings);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: sequence after sort: ", program);
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
@@ -685,7 +685,7 @@ main(int argc, char *argv[])
 
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 2);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: sequence after pop: ", program);
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
@@ -696,7 +696,7 @@ main(int argc, char *argv[])
 
   assert_match_int(raptor_sequence_size, raptor_sequence_size(seq1), 1);
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: sequence after unshift: ", program);
   raptor_sequence_print(seq1, stderr);
   fputc('\n', stderr);
