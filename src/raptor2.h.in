@@ -1206,8 +1206,14 @@ int raptor_xml_name_check(const unsigned char *string, size_t length, int xml_ve
 
 
 /* portable vsnprintf utility function */
+RAPTOR_API RAPTOR_DEPRECATED
+char* raptor_vsnprintf(const char *format, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0); 
 RAPTOR_API
-char* raptor_vsnprintf(const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(1, 0);
+int raptor_vsnprintf2(char *buffer, size_t size, const char *format, va_list arguments) RAPTOR_PRINTF_FORMAT(3, 0);
+RAPTOR_API
+int raptor_snprintf(char *buffer, size_t size, const char *format, ...) RAPTOR_PRINTF_FORMAT(3, 4);
+RAPTOR_API
+int raptor_vasprintf(char **ret, const char *format, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
 
 /* RFC2396 URI resolving functions */
 RAPTOR_API
