@@ -324,6 +324,7 @@ raptor_vsnprintf(const char *format, va_list arguments)
  * @buffer: buffer (or NULL)
  * @size: bufer size (or 0)
  * @format: printf-style format string
+ * @Varargs: format arguments
  * 
  * Format output into an allocated sized buffer
  *
@@ -355,6 +356,7 @@ raptor_snprintf(char *buffer, size_t size, const char *format, ...)
  * raptor_vasprintf:
  * @ret: pointer to store buffer
  * @format: printf-style format string
+ * @arguments: format arguments list
  * 
  * Format output into a new buffer and return it
  *
