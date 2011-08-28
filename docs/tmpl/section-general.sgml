@@ -90,12 +90,47 @@ and various other utility functions.
 @statement: 
 
 
+<!-- ##### FUNCTION raptor_snprintf ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@size: 
+@format: 
+@Varargs: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_vasprintf ##### -->
+<para>
+
+</para>
+
+@ret: 
+@format: 
+@arguments: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_vsnprintf ##### -->
 <para>
 
 </para>
 
-@message: 
+@format: 
+@arguments: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_vsnprintf2 ##### -->
+<para>
+
+</para>
+
+@buffer: 
+@size: 
+@format: 
 @arguments: 
 @Returns: 
 
