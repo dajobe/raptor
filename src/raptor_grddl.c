@@ -1033,9 +1033,11 @@ raptor_grddl_seen_uri(raptor_grddl_parser_context* grddl_parser,
     }
   }
 
+#ifdef RAPTOR_DEBUG
   if(seen)
     RAPTOR_DEBUG2("Already seen URI '%s'\n", raptor_uri_as_string(uri));
-  
+#endif
+
   return seen;
 }
 
@@ -1165,9 +1167,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         if(start == end)
           continue;
         
-#if RAPTOR_DEBUG
         RAPTOR_DEBUG2("Got list match URI '%s'\n", start);
-#endif
         
         uri = raptor_new_uri_relative_to_base(rdf_parser->world,
                                                base_uri,
@@ -1184,16 +1184,12 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       }
       RAPTOR_FREE(char*, buffer);
     } else if(flags & MATCH_IS_HARDCODED) {
-#if RAPTOR_DEBUG
       RAPTOR_DEBUG2("Got hardcoded XSLT match for %s\n", xpathExpr);
-#endif
       /* return at first match, that's enough */
       break;
     } else {
       grddl_xml_context* xml_context;
-#if RAPTOR_DEBUG
       RAPTOR_DEBUG2("Got single match URI '%s'\n", uri_string);
-#endif
 
       uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
                                             uri_string);
