@@ -30,7 +30,10 @@ raptor_version_minor
 raptor_version_release
 raptor_version_decimal
 raptor_statement_handler
+raptor_snprintf
+raptor_vasprintf
 raptor_vsnprintf
+raptor_vsnprintf2
 raptor_log_handler
 raptor_log_message
 raptor_log_level

@@ -400,6 +400,9 @@
 2.0.3	-	-	-	2.0.4	int	raptor_www_set_ssl_cert_options	(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase)	-
 2.0.4	-	-	-	2.0.5	int	raptor_unicode_utf8_strlen	(const unsigned char *string, size_t length)	-
 2.0.4	-	-	-	2.0.5	size_t	raptor_unicode_utf8_substr	(unsigned char* dest, size_t* dest_length_p, const unsigned char* src, size_t src_length, int startingLoc, int length)	-
+2.0.4	-	-	-	2.0.5	int	raptor_vsnprintf2	(char *buffer, size_t size, const char *format, va_list arguments)	Deprecates raptor_vsnprintf()
+2.0.4	-	-	-	2.0.5	int	raptor_snprintf	(char *buffer, size_t size, const char *format, ...)	-
+2.0.4	-	-	-	2.0.5	int	raptor_vasprintf	(char **ret, const char *format, va_list arguments)	-
 #
 # Types
 #
