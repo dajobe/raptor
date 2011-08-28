@@ -15,6 +15,9 @@
 #include <win32_raptor_config.h>
 #endif
 
+#ifdef HAVE_VASPRINTF
+#define _GNU_SOURCE /* to get vasprintf() available */
+#endif
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
