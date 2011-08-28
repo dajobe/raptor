@@ -271,7 +271,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
   if(!s1 || !s2)
     return 0;
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "(rdfdiff_statement_equals) Comparing ");
   raptor_statement_print_as_ntriples(s1, stderr);
   fprintf(stderr, " to ");
@@ -351,7 +351,7 @@ rdfdiff_statement_equals(raptor_world *world, const raptor_statement *s1, const 
   rv = 1;
   done:
 
-#if RAPTOR_DEBUG > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, " : %s\n", (rv ? "equal" : "not equal"));
 #endif
   return rv;
