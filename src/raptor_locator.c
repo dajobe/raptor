@@ -97,43 +97,60 @@ int
 raptor_locator_format(char *buffer, size_t length, raptor_locator* locator) 
 {
   size_t bufsize = 0;
-  int count;
+  const char* label_str;
+  size_t label_len = 0;
+  const char* value_str = NULL;
+  size_t value_len;
   
   if(!locator)
     return -1;
 
+  #define URI_STR "URI "
+  #define URI_STR_LEN 4  /* strlen(URI_STR) */
+  #define FILE_STR "file "
+  #define FILE_STR_LEN 5  /* strlen(FILE_STR) */
+  #define COLUMN_STR " column "
+  #define COLUMN_STR_LEN 8  /* strlen(COLUMN_STR) */
+
   if(locator->uri) {
-    size_t uri_len;
-    (void)raptor_uri_as_counted_string(locator->uri, &uri_len);
-    bufsize = 4 + uri_len; /* 4 = "URI " */
-  } else if(locator->file)
-    bufsize = 5 + strlen(locator->file); /* 5 = "file " */
-  else
+    label_str = URI_STR;
+    label_len = URI_STR_LEN;
+    value_str = (const char*)raptor_uri_as_counted_string(locator->uri,
+                                                          &value_len);
+  } else if(locator->file) {
+    label_str = FILE_STR;
+    label_len = FILE_STR_LEN;
+    value_str = locator->file;
+    value_len = strlen(value_str);
+  } else
     return -1;
 
+  bufsize = label_len + value_len;
+
   if(locator->line > 0) {
-    bufsize += raptor_snprintf(NULL, 0, ":%d", locator->line);
+    bufsize += 1 + raptor_format_integer(NULL, 0, locator->line);
     if(locator->column >= 0)
-      bufsize += raptor_snprintf(NULL, 0, " column %d", locator->column);
+      bufsize += COLUMN_STR_LEN +
+                 raptor_format_integer(NULL, 0, locator->column);
   }
   
-  if(!buffer || !length || length < bufsize)
+  if(!buffer || !length || length < (bufsize + 1)) /* +1 for NUL */
     return (int)bufsize;
   
 
-  if(locator->uri)
-    count = sprintf(buffer, "URI %s", raptor_uri_as_string(locator->uri));
-  else if(locator->file)
-    count = sprintf(buffer, "file %s", locator->file);
-  else
-    return -1;
-
-  buffer+= count;
+  memcpy(buffer, label_str, label_len);
+  buffer += label_len;
+  memcpy(buffer, value_str, value_len);
+  buffer += value_len;
   
   if(locator->line > 0) {
-    count = sprintf(buffer, ":%d", locator->line);
-    if(locator->column >= 0)
-      sprintf(buffer + count, " column %d", locator->column);
+    *buffer ++ = ':';
+    buffer += raptor_format_integer(buffer, length, locator->line);
+    if(locator->column >= 0) {
+      memcpy(buffer, COLUMN_STR, COLUMN_STR_LEN);
+      buffer += COLUMN_STR_LEN;
+      (void)raptor_format_integer(buffer, length, locator->column);
+    }
   }
 
   return 0;
