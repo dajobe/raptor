@@ -390,3 +390,57 @@ raptor_vasprintf(char **ret, const char *format, va_list arguments)
 
   return length;
 }
+
+
+static const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+
+/**
+ * raptor_format_integer:
+ * @buffer: buffer (or NULL)
+ * @bufsize: size of above (or 0)
+ * @integer: integer value to format
+ *
+ * INTERNAL - Format an integer as a decimal into a buffer or
+ * calculate the size needed.
+ *
+ * Works Like the C99 snprintf() but just for integers.
+ *
+ * If @buffer is NULL or the @bufsize is too small, the number of
+ * bytes needed (excluding NUL) is returned and no formatting is done.
+ *
+ * Return value: number of bytes needed or written (excluding NUL)
+ */
+int
+raptor_format_integer(char* buffer, size_t bufsize, int integer)
+{
+  int len = 1;
+  char *p;
+  unsigned int value;
+  unsigned int base = 10;
+
+  if(integer < 0) {
+    value = -integer;
+    len++;
+  } else
+    value = (unsigned int)integer;
+  while(value /= base)
+    len++;
+
+  if(!buffer || (int)bufsize < (len + 1)) /* +1 for NUL */
+    return len;
+
+  if(integer < 0) {
+    value = -integer;
+    *buffer = '-';
+  } else
+    value = (unsigned int)integer;
+
+  p = &buffer[len];
+  *p-- = '\0';
+  while(value  > 0) {
+    *p-- = digits[value % base];
+    value /= base;
+  }
+
+  return len;
+}
