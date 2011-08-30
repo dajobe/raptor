@@ -1,4 +1,137 @@
+2011-08-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_locator.c:
+	(raptor_locator_format): Use raptor_format_integer to kill
+	snprintf
+
+	* src/raptor_internal.h, src/snprintf.c:
+	(raptor_format_integer): Added
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_literal_datatype): Remove unused code.
+
+2011-08-27  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Fix rdfdiff assumption that RAPTOR_DEBUG is
+	defined
+
+	* src/raptor_grddl.c: Fix a few more RAPTOR_DEBUG is defined
+	assumptions
+
+	* src/raptor_avltree.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_iostream.c, src/raptor_namespace.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_sequence.c, src/raptor_serialize_rss.c,
+	src/raptor_set.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_parser.y: Code style for
+	comparing a possibly undefined macro to a value
+
+	Use:
+	  #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > N
+	rather than:
+	  #if RAPTOR_DEBUG > N
+
+	* src/raptor_internal.h: Do not assume RAPTOR_DEBUG is defined
+
+	* src/snprintf.c: autodocs
+
+	* configure.ac: Do not enable debug messages by default for
+	--enable-maintainer-mode
+
+	This now requires the extra --enable-debug option to configure or
+	autogen.sh
+
+	* docs/tmpl/section-general.sgml:
+	updated doc tmpl
+
+	* configure.ac: Check for vasprintf once
+
+	* configure.ac, src/snprintf.c: Define -D_GNU_SOURCE to get
+	vasprintf()
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt: Add new
+	snprintf functions to docs
+
+	* src/raptor_json_writer.c, src/raptor_locator.c,
+	src/raptor_log.c: Use raptor_snprintf() and raptor_vasprintf()
+
+	In preference to raw snprintf() or doing strlen() on
+	raptor_vsnprintf().
+
+	* configure.ac, src/raptor2.h.in, src/raptor_general.c,
+	src/snprintf.c: Portability fixes to snprintf / vsnprintf /
+	vasprintf
+
+	(raptor_vsnprintf2): Added with actual vsnprintf() calling
+	contention, deprecating raptor_vsnprintf which doesn't
+
+	(raptor_snprintf): Added with snprintf() calling convention using
+	raptor_vsnprintf2() to provide a portable version.
+
+	(raptor_vasprintf): Added with vasprintf() calling convention
+	(GNU) using raptor_vsnprintf2() to implement it if not present.
+	Moved the formatted printing code all to src/snprintf.c
+
+2011-08-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_locator.c: Avoid snprintf(NULL, ) when there there is
+	no C99 vsnprintf()
+
+	(raptor_locator_format): Pick a large enough buffer size if
+	snprintf is likely not portable, when HAVE_C99_VSNPRINTF is not
+	defined.
+
+	Fixes Issue#0000465
+	http://bugs.librdf.org/mantis/view.php?id=465
+
+2011-08-21  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Switch deprecated index() to more portable
+	strchr()
+
+	* src/snprintf.c: Compile a local lround() if it is not present.
+
+	* configure.ac: Add check for lround()
+
+	* src/win32_raptor_config.h.in: Define isnan() macro around
+	_isnan()
+
+	* configure.ac: Define HAVE_TRUNC and HAVE_ROUND from configure
+
 2011-08-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_statement.c:
+	(raptor_statement_compare): Calculate pointer differences using
+	ptrdiff_t
+
+	* src/raptor_unicode.c: Casts for returning unicode char lengths
+
+	(raptor_unicode_utf8_string_put_char,
+	raptor_unicode_utf8_string_get_char): Cast small int return values.
+
+	* src/raptor_general.c:
+	(raptor_world_default_generate_bnodeid_handler): Use unsigned int
+	for ID lengths.
+
+	* src/raptor_internal.h, src/raptor_qname.c: Use size_t for qname
+	value length and unsigned int for name lengths.
+
+	raptor_qname_s changes value_length to size_t
+
+	(raptor_new_qname, raptor_new_qname_from_namespace_local_name,
+	raptor_qname_string_to_uri): unsigned ints for prefix and name
+	lengths.
+
+	* src/raptor_namespace.c: Use raptor_namespace prefix_length as
+	unsigned int; it's long enough.
+
+	(raptor_namespaces_find_namespace, raptor_new_namespace_from_uri):
+	Casts for unsigned int.
+
+	* src/raptor_internal.h: raptor_namespace prefix_length is
+	unsigned int
 
 	* src/raptor_serialize_turtle.c, src/turtle_parser.y: Use turtle's
 	actual mime type text/turtle in syntax recognizing code.  This
