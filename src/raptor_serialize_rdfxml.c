@@ -532,7 +532,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
         if(len)
           raptor_xml_writer_raw_counted(xml_writer,
                                         (const unsigned char*)statement->object->value.literal.string,
-                                        len);
+                                        RAPTOR_BAD_CAST(unsigned int, len));
       } else {
         if(statement->object->value.literal.datatype) {
           attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"datatype", raptor_uri_as_string(statement->object->value.literal.datatype));
@@ -549,7 +549,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
 
         if(len)
           raptor_xml_writer_cdata_counted(xml_writer,
-                                          statement->object->value.literal.string, len);
+                                          statement->object->value.literal.string,
+                                          RAPTOR_BAD_CAST(unsigned int, len));
       }
 
       raptor_xml_writer_end_element(xml_writer, predicate_element);

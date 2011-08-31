@@ -247,10 +247,10 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
 {
   raptor_sax2* sax2 = NULL;
   va_list args;
-  int prefix_length = strlen(xml_warning_prefix);
+  int prefix_length = RAPTOR_BAD_CAST(int, strlen(xml_warning_prefix));
   int length;
   char *nmsg;
-  size_t msg_len;
+  int msg_len;
 
   /* Work around libxml2 bug - sometimes the sax2->error
    * returns a ctx, sometimes the userdata
@@ -265,7 +265,7 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  msg_len = strlen(msg);
+  msg_len = RAPTOR_BAD_CAST(int, strlen(msg));
   length = prefix_length + msg_len + 1;
   nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
@@ -291,10 +291,10 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
                            const char *prefix, int is_fatal)
 {
   raptor_sax2* sax2 = NULL;
-  int prefix_length = strlen(prefix);
+  int prefix_length = RAPTOR_BAD_CAST(int, strlen(prefix));
   int length;
   char *nmsg;
-  size_t msg_len;
+  int msg_len;
   raptor_world* world = NULL;
   raptor_locator* locator = NULL;
 
@@ -317,7 +317,7 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
       raptor_libxml_update_document_locator(sax2, sax2->locator);
   }
 
-  msg_len = strlen(msg);
+  msg_len = RAPTOR_BAD_CAST(int, strlen(msg));
   length = prefix_length + msg_len + 1;
   nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
@@ -363,14 +363,14 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
   raptor_world* world = (raptor_world*)user_data;
   va_list args;
   const char* prefix = xml_generic_error_prefix;
-  int prefix_length = strlen(prefix);
+  int prefix_length = RAPTOR_BAD_CAST(int, strlen(prefix));
   int length;
   char *nmsg;
-  size_t msg_len;
+  int msg_len;
   
   va_start(args, msg);
 
-  msg_len = strlen(msg);
+  msg_len = RAPTOR_BAD_CAST(int, strlen(msg));
   length = prefix_length + msg_len + 1;
   nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {
@@ -420,16 +420,16 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
 {
   va_list args;
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-  int prefix_length = strlen(xml_validation_warning_prefix);
+  int prefix_length = RAPTOR_GOOD_CAST(int, strlen(xml_validation_warning_prefix));
   int length;
   char *nmsg;
-  size_t msg_len;
+  int msg_len;
   
   va_start(args, msg);
 
   raptor_libxml_update_document_locator(sax2, sax2->locator);
 
-  msg_len = strlen(msg);
+  msg_len = RAPTOR_BAD_CAST(int, strlen(msg));
   length = prefix_length + msg_len + 1;
   nmsg = RAPTOR_MALLOC(char*, length);
   if(nmsg) {

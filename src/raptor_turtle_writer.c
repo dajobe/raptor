@@ -461,10 +461,10 @@ raptor_string_python_write(const unsigned char *string,
 
       if(unichar < 0x10000) {
         raptor_iostream_counted_string_write("\\u", 2, iostr);
-        raptor_iostream_hexadecimal_write(unichar, 4, iostr);
+        raptor_iostream_hexadecimal_write(RAPTOR_GOOD_CAST(unsigned int, unichar), 4, iostr);
       } else {
         raptor_iostream_counted_string_write("\\U", 2, iostr);
-        raptor_iostream_hexadecimal_write(unichar, 8, iostr);
+        raptor_iostream_hexadecimal_write(RAPTOR_GOOD_CAST(unsigned int, unichar), 8, iostr);
       }
     }
     

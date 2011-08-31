@@ -157,7 +157,7 @@ static int
 raptor_sink_iostream_write_bytes(void *user_data, const void *ptr,
                                  size_t size, size_t nmemb)
 {
-  return size*nmemb; /* success */
+  return RAPTOR_BAD_CAST(int, size * nmemb); /* success */
 }
 
 static int
@@ -241,7 +241,7 @@ raptor_filename_iostream_read_bytes(void *user_data,
                                     void *ptr, size_t size, size_t nmemb)
 {
   FILE* handle = (FILE*)user_data;
-  return fread(ptr, size, nmemb, handle);
+  return RAPTOR_BAD_CAST(int, fread(ptr, size, nmemb, handle));
 }
 
 static int
@@ -437,7 +437,7 @@ raptor_write_string_iostream_write_bytes(void *user_data, const void *ptr,
   if(raptor_stringbuffer_append_counted_string(con->sb,
                                                (const unsigned char*)ptr, size * nmemb, 1))
     return 0; /* failure */
-  return size * nmemb; /* success */
+  return RAPTOR_BAD_CAST(int, size * nmemb); /* success */
 }
 
 static const raptor_iostream_handler raptor_iostream_write_string_handler = {
@@ -1042,14 +1042,14 @@ raptor_read_string_iostream_read_bytes(void *user_data, void *ptr,
   if(con->offset >= con->length)
     return 0;
 
-  avail = (int)((con->length-con->offset) / size);  
+  avail = (con->length - con->offset) / size;
   if(avail > nmemb)
     avail = nmemb;
   blen = (avail * size);
   memcpy(ptr, (char*)con->string + con->offset, blen);
-  con->offset+= blen;
+  con->offset += blen;
   
-  return avail;
+  return RAPTOR_BAD_CAST(int, avail);
 }
 
 static int

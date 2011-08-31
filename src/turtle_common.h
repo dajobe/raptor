@@ -46,7 +46,7 @@ struct raptor_turtle_parser_s {
   char *buffer;
 
   /* buffer length */
-  int buffer_length;
+  size_t buffer_length;
   
   /* static statement for use in passing to user code */
   raptor_statement statement;

@@ -767,7 +767,7 @@ raptor_rss_end_element_handler(void *user_data,
        (rss_parser->current_field == RAPTOR_RSS_FIELD_NONE ||
         rss_parser->current_field == RAPTOR_RSS_FIELD_UNKNOWN)) {
       unsigned char *p = cdata;
-      int i;
+      size_t i;
       for(i = cdata_len; i > 0 && *p; i--) {
         if(!isspace(*p))
           break;

@@ -203,10 +203,10 @@ vsnprintf_is_c99(void)
 
 #define VSNPRINTF_C99_BLOCK(len, buffer, size, format, arguments)      \
   do {                                                                 \
-    len = vsnprintf(buffer, size, format, arguments);                  \
+    len = (size_t)vsnprintf(buffer, size, format, arguments);          \
   } while(0)
 
-#define VSNPRINTF_NOT_C99_BLOCK(len, buffer, size, format, arguments)  \
+#define VSNPRINTF_NOT_C99_BLOCK(len, buffer, size, format, arguments)   \
   do {                                                                  \
     if(!buffer || !size) {                                              \
       /* This vsnprintf doesn't return number of bytes required */      \
@@ -232,7 +232,7 @@ vsnprintf_is_c99(void)
          * space is allocated and the while() loop retries.             \
          */                                                             \
         if((len >= 0) && (tmp_buffer[len] == '\0')) {                   \
-          len = (int)strlen(tmp_buffer);                                \
+          len = strlen(tmp_buffer);                                     \
           break;                                                        \
         }                                                               \
         RAPTOR_FREE(char*, tmp_buffer);                                 \
@@ -241,7 +241,7 @@ vsnprintf_is_c99(void)
     }                                                                   \
                                                                         \
     if(buffer)                                                          \
-      vsnprintf(buffer, (size_t)len, format, arguments);                \
+      vsnprintf(buffer, len, format, arguments);                        \
   } while(0)
 
 /**
@@ -265,7 +265,7 @@ int
 raptor_vsnprintf2(char *buffer, size_t size,
                   const char *format, va_list arguments)
 {
-  int len;
+  size_t len;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(format, char*, 0);
 
@@ -286,7 +286,7 @@ raptor_vsnprintf2(char *buffer, size_t size,
 
 #endif
   
-  return len;
+  return RAPTOR_BAD_CAST(int, len);
 }
 
 

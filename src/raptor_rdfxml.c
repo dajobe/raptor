@@ -2792,7 +2792,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
         case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_XML_LITERAL:
             {
               unsigned char *buffer;
-              unsigned int length;
+              size_t length;
               raptor_term* xmlliteral_term = NULL;
               
               if(rdf_xml_parser->xml_writer) {

@@ -509,7 +509,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     }
 
     xc = xmlCreatePushParserCtxt(&sax2->sax, sax2, /* user data */
-                                 (char*)buffer, len, 
+                                 (char*)buffer, RAPTOR_BAD_CAST(int, len),
                                  NULL);
     if(!xc)
       goto handle_error;
@@ -590,7 +590,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
   sax2->first_read = 0;
 #endif
     
-  rc = xmlParseChunk(xc, (char*)buffer, len, is_end);
+  rc = xmlParseChunk(xc, (char*)buffer, RAPTOR_BAD_CAST(int, len), is_end);
   if(rc && rc != XML_WAR_UNDECLARED_ENTITY) /* libxml: non 0 is failure */
     goto handle_error;
   if(is_end)

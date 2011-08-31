@@ -601,7 +601,7 @@ raptor_xml_escape_string_any(raptor_world *world,
                              char quote,
                              int xml_version)
 {
-  int l;
+  size_t l;
   size_t new_len = 0;
   const unsigned char *p;
   unsigned char *q;
@@ -621,7 +621,7 @@ raptor_xml_escape_string_any(raptor_world *world,
   for(l = len, p = string; l; p++, l--) {
     if(*p > 0x7f) {
       unichar_len = raptor_unicode_utf8_string_get_char(p, l, &unichar);
-      if(unichar_len < 0 || unichar_len > l) {
+      if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > l) {
         raptor_log_error(world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Bad UTF-8 encoding.");
         return -1;
@@ -667,7 +667,7 @@ raptor_xml_escape_string_any(raptor_world *world,
     return 0;
 
   if(!buffer)
-    return new_len;
+    return RAPTOR_BAD_CAST(int, new_len);
   
   for(l = len, p = string, q = buffer; l; p++, l--) {
     if(*p > 0x7f) {
@@ -730,7 +730,7 @@ raptor_xml_escape_string_any(raptor_world *world,
   /* Terminate new string */
   *q = '\0';
 
-  return new_len;
+  return RAPTOR_BAD_CAST(int, new_len);
 }
 
 
@@ -792,7 +792,7 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
                                     int xml_version,
                                     raptor_iostream* iostr)
 {
-  int l;
+  size_t l;
   const unsigned char *p;
 
   if(xml_version != 10)
@@ -807,7 +807,7 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
 
     if(*p > 0x7f) {
       unichar_len = raptor_unicode_utf8_string_get_char(p, l, &unichar);
-      if(unichar_len < 0 || unichar_len > l) {
+      if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > l) {
         raptor_log_error(raptor_iostream_get_world(iostr),
                          RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Bad UTF-8 encoding.");
@@ -847,7 +847,7 @@ raptor_xml_escape_string_any_write(const unsigned char *string,
 
         /* &#xX; */
         raptor_iostream_counted_string_write("&#x", 3, iostr);
-        raptor_iostream_hexadecimal_write(unichar, width, iostr);
+        raptor_iostream_hexadecimal_write(RAPTOR_GOOD_CAST(unsigned int, unichar), width, iostr);
         raptor_iostream_write_byte(';', iostr);
       }
     } else

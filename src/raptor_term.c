@@ -232,7 +232,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_LITERAL;
   t->value.literal.string = new_literal;
-  t->value.literal.string_len = literal_len;
+  t->value.literal.string_len = RAPTOR_LANG_LEN_FROM_INT(literal_len);
   t->value.literal.language = new_language;
   t->value.literal.language_len = language_len;
   t->value.literal.datatype = datatype;
@@ -333,7 +333,7 @@ raptor_new_term_from_counted_blank(raptor_world* world,
   t->world = world;
   t->type = RAPTOR_TERM_TYPE_BLANK;
   t->value.blank.string = new_id;
-  t->value.blank.string_len = length;
+  t->value.blank.string_len = RAPTOR_BAD_CAST(int, length);
 
   return t;
 }

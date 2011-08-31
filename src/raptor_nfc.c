@@ -202,7 +202,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
   size_t offset;
   
   raptor_nfc_code_flag prev_char_flag = (raptor_nfc_code_flag)0;
-  unsigned long prev_char = 0L;
+  raptor_unichar prev_char = 0L;
   int prev_class;
   
   is_start = 1;
@@ -219,7 +219,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
     if(unichar_len < 0 || unichar_len > (int)len) {
       /* UTF-8 encoding had an error or ended in the middle of a string */
       if(error)
-        *error=offset;
+        *error = RAPTOR_BAD_CAST(int, offset);
       RAPTOR_NFC_CHECK_FAIL(unichar, "UTF-8 decoding error");
       return 0;
     }
@@ -244,7 +244,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
          *   http://www.unicode.org/Public/UNIDATA/CompositionExclusions.txt
          */
         if(error)
-          *error=offset;
+          *error = RAPTOR_BAD_CAST(int, offset);
         RAPTOR_NFC_CHECK_FAIL(unichar, "forbidden combinations - HIGH, loww, NOFC");
         return 0;
         
@@ -252,7 +252,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
       case NoNo:
         /* character does not exist */
         if(error)
-          *error=offset;
+          *error = RAPTOR_BAD_CAST(int, offset);
         RAPTOR_NFC_CHECK_FAIL(unichar, "NoNo - character does not exist");
         return 0;
 
@@ -263,7 +263,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
         /* class > 0 are forbidden at start */
         if(is_start) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo at start");
           return 0;
         }
@@ -272,7 +272,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
         /* check 1 - previous class later than current, always an error */
         if(prev_class > combining_class) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and prev class > current");
           return 0;
         }
@@ -284,9 +284,10 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
          */
         if(prev_class < combining_class && 
            prev_char < 0x10000 && unichar < 0x10000 &&
-           !raptor_nfc_check_combiners(prev_char, unichar)) {
+           !raptor_nfc_check_combiners(RAPTOR_GOOD_CAST(u16, prev_char),
+                                       RAPTOR_GOOD_CAST(u16, unichar))) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "ReCo and combiners check failed");
           return 0;
         }
@@ -300,7 +301,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
         /* class > 0 are forbidden at start */
         if(is_start)  {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe at start");
           return 0;
         }
@@ -308,7 +309,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
         combining_class = raptor_nfc_get_class(unichar);
         if(prev_class > combining_class) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "NoRe and prev class > current");
           return 0;
         }
@@ -322,16 +323,17 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
         /* Composing characters forbidden at start */
         if(is_start)  {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB at start");
           return 0;
         }
         
         /* Only perform combining check when both are in range */
         if(prev_char < 0x10000 && unichar < 0x10000 && 
-           raptor_nfc_check_combiners(prev_char, unichar)) {
+           raptor_nfc_check_combiners(RAPTOR_GOOD_CAST(u16, prev_char),
+                                      RAPTOR_GOOD_CAST(u16, unichar))) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "COMB and combiners check failed");
           return 0;
         }
@@ -354,7 +356,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
          */
         if(is_start || prev_char_flag == Hang) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "hAng at start");
           return 0;
         }
@@ -370,7 +372,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
          */
         if(is_start || prev_char_flag == HAng) {
           if(error)
-            *error=offset;
+            *error = RAPTOR_BAD_CAST(int, offset);
           RAPTOR_NFC_CHECK_FAIL(unichar, "haNG at start");
           return 0;
         }

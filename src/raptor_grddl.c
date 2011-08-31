@@ -187,7 +187,7 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
   raptor_parser* rdf_parser = (raptor_parser*)user_data;
   va_list arguments;
   size_t msg_len;
-  int length;
+  size_t length;
   char *nmsg;
 
   if(!msg || *msg == '\n')
@@ -858,7 +858,7 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
                                  const void *ptr, size_t size, size_t nmemb)
 {
   raptor_grddl_xml_parse_bytes_context* xpbc;
-  int len = size*nmemb;
+  size_t len = size * nmemb;
   int rc = 0;
   
   xpbc = (raptor_grddl_xml_parse_bytes_context*)userdata;
@@ -867,7 +867,7 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
     xmlParserCtxtPtr xc;
     
     xc = xmlCreatePushParserCtxt(NULL, NULL,
-                                 (const char*)ptr, len,
+                                 (const char*)ptr, RAPTOR_BAD_CAST(int, len),
                                  (const char*)raptor_uri_as_string(xpbc->base_uri));
     if(!xc)
       rc = 1;
@@ -887,7 +887,7 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
     }
     xpbc->xc = xc;
   } else
-    rc = xmlParseChunk(xpbc->xc, (const char*)ptr, len, 0);
+    rc = xmlParseChunk(xpbc->xc, (const char*)ptr, RAPTOR_BAD_CAST(int, len), 0);
 
   if(rc)
     raptor_parser_error(xpbc->rdf_parser, "XML Parsing failed");
@@ -1428,7 +1428,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       /* try to create an XML parser context */
       grddl_parser->xml_ctxt = xmlCreatePushParserCtxt(NULL, NULL,
                                                        (const char*)buffer,
-                                                       buffer_len,
+                                                       RAPTOR_BAD_CAST(int, buffer_len),
                                                        (const char*)uri_string);
       if(!grddl_parser->xml_ctxt) {
         RAPTOR_DEBUG2("Parser %p: Creating an XML parser failed\n", rdf_parser);
@@ -1458,11 +1458,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
         RAPTOR_DEBUG2("Parser %p: Creating an HTML parser\n", rdf_parser);
 
-        enc = xmlDetectCharEncoding((const unsigned char*)buffer, buffer_len);
+        enc = xmlDetectCharEncoding((const unsigned char*)buffer,
+                                    RAPTOR_BAD_CAST(int, buffer_len));
         grddl_parser->html_ctxt = htmlCreatePushParserCtxt(/*sax*/ NULL, 
                                                            /*user_data*/ NULL,
                                                            (const char *)buffer,
-                                                           buffer_len,
+                                                           RAPTOR_BAD_CAST(int, buffer_len),
                                                            (const char *)uri_string,
                                                            enc);
         if(!grddl_parser->html_ctxt) {

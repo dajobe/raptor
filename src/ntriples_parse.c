@@ -66,9 +66,9 @@ struct raptor_ntriples_parser_context_s {
   /* current line */
   unsigned char *line;
   /* current line length */
-  int line_length;
+  size_t line_length;
   /* current char in line buffer */
-  int offset;
+  size_t offset;
 
   char last_char;
   
@@ -393,8 +393,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         
         p += unichar_len;
         (*lenp) -= unichar_len;
-        rdf_parser->locator.column += unichar_len;
-        rdf_parser->locator.byte += unichar_len;
+        rdf_parser->locator.column += RAPTOR_GOOD_CAST(int, unichar_len);
+        rdf_parser->locator.byte += RAPTOR_GOOD_CAST(int, unichar_len);
         continue;
       }
     } else if(!IS_ASCII_PRINT(c)) {
@@ -481,8 +481,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
         p += ulen;
         (*lenp) -= ulen;
-        rdf_parser->locator.column += ulen;
-        rdf_parser->locator.byte += ulen;
+        rdf_parser->locator.column += RAPTOR_GOOD_CAST(int, ulen);
+        rdf_parser->locator.byte += RAPTOR_GOOD_CAST(int, ulen);
         
         if(unichar > raptor_unicode_max_codepoint) {
           raptor_parser_error(rdf_parser,
@@ -590,8 +590,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   /* Check for terminating '.' */
   if(p[len-1] != '.') {
     /* Move current location to point to problem */
-    rdf_parser->locator.column += len-2;
-    rdf_parser->locator.byte += len-2;
+    rdf_parser->locator.column += RAPTOR_BAD_CAST(int, len - 2);
+    rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len - 2);
     raptor_parser_error(rdf_parser, "Missing . at end of line");
     return 0;
   }
@@ -842,7 +842,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                      object_literal_datatype,
                                      terms[3], term_types[3]);
 
-  rdf_parser->locator.byte += len;
+  rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len);
 
  cleanup:
 
@@ -950,7 +950,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 #endif
   }
 
-  ntriples_parser->offset = start-buffer;
+  ntriples_parser->offset = start - buffer;
 
   len = ntriples_parser->line_length - ntriples_parser->offset;
     

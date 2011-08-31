@@ -119,7 +119,7 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
                                            iostr);
       raptor_iostream_counted_string_write("<span class=\"value\"", 19, iostr);
       if(term->value.literal.language) {
-        len = (size_t)term->value.literal.language_len;
+        len = RAPTOR_LANG_LEN_TO_SIZE_T(term->value.literal.language_len);
         raptor_iostream_counted_string_write(" xml:lang=\"", 11, iostr);
         raptor_xml_escape_string_write(term->value.literal.language, len, '"',
                                        iostr);

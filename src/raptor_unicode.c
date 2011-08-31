@@ -912,19 +912,19 @@ raptor_unicode_utf8_substr(unsigned char* dest, size_t* dest_length_p,
     int unichar_len;
 
     unichar_len = raptor_unicode_utf8_string_get_char(src, src_length, NULL);
-    if(unichar_len < 0 || unichar_len > (int)src_length)
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > src_length)
       break;
 
     if(dest_offset >= startingLoc) {
       if(p) {
         /* copy 1 Unicode character to dest */
-        memcpy(p, src, (size_t)unichar_len);
+        memcpy(p, src, RAPTOR_GOOD_CAST(size_t, unichar_len));
         p += unichar_len;
       }
       dest_bytes += unichar_len;
 
       dest_length++;
-      if(length >= 0 && (int)dest_length == length)
+      if(length >= 0 && dest_length == RAPTOR_GOOD_CAST(size_t, length))
         break;
     }
 
