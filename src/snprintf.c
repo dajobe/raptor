@@ -210,7 +210,7 @@ vsnprintf_is_c99(void)
   do {                                                                  \
     if(!buffer || !size) {                                              \
       /* This vsnprintf doesn't return number of bytes required */      \
-      size = 2;                                                         \
+      size = 2 + strlen(format);                                        \
       len = -1;                                                         \
       while(1) {                                                        \
         va_list args_copy;                                              \
@@ -236,7 +236,7 @@ vsnprintf_is_c99(void)
           break;                                                        \
         }                                                               \
         RAPTOR_FREE(char*, tmp_buffer);                                 \
-        size += 4;                                                      \
+        size += (size >> 1);                                            \
       }                                                                 \
     }                                                                   \
                                                                         \
@@ -259,7 +259,7 @@ vsnprintf_is_c99(void)
  * If @buffer is NULL or size is 0 or the buffer size is too small,
  * returns the number of bytes that would be needed for buffer
  * 
- * Return value: number of bytes allocated (excluding NUL) or 0 on failure
+ * Return value: number of bytes allocated (excluding NUL) or <0 on failure
  **/
 int
 raptor_vsnprintf2(char *buffer, size_t size,
@@ -312,7 +312,7 @@ raptor_vsnprintf(const char *format, va_list arguments)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(format, char*, NULL);
 
   len = raptor_vasprintf(&buffer, format, arguments);
-  if(!len)
+  if(len < 0)
     return NULL;
   
   return buffer;
@@ -363,7 +363,7 @@ raptor_snprintf(char *buffer, size_t size, const char *format, ...)
  * This is a wrapper around the (GNU) vasprintf function that is not
  * always avaiable.
  * 
- * Return value: number of bytes allocated (excluding NUL) or <= 0 on failure
+ * Return value: number of bytes allocated (excluding NUL) or < 0 on failure
  **/
 int
 raptor_vasprintf(char **ret, const char *format, va_list arguments)
@@ -377,7 +377,7 @@ raptor_vasprintf(char **ret, const char *format, va_list arguments)
   length = vasprintf(ret, format, arguments);
 #else
   length = raptor_vsnprintf2(NULL, 0, format, arguments);
-  if(length <= 0) {
+  if(length < 0) {
     *ret = NULL;
     return length;
   }
