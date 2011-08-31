@@ -1423,6 +1423,17 @@ struct raptor_world_s {
 int raptor_www_init(raptor_world* world);
 void raptor_www_finish(raptor_world* world);
 
+
+
+#define RAPTOR_LANG_LEN_FROM_INT(len) (int)(len)
+#define RAPTOR_LANG_LEN_TO_SIZE_T(len) (size_t)(len)
+
+/* Safe casts: widening a value */
+#define RAPTOR_GOOD_CAST(t, v) (t)(v)
+
+/* Unsafe casts: narrowing a value */
+#define RAPTOR_BAD_CAST(t, v) (t)(v)
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
