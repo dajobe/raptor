@@ -917,26 +917,18 @@ int
 raptor_iostream_hexadecimal_write(unsigned int integer, int width,
                                   raptor_iostream* iostr)
 {
-  unsigned char *buf;
-  unsigned char *p;
+  char *buf;
   int rc;
 
-  if(width <1)
+  if(width < 1)
     return 1;
   
-  buf = RAPTOR_MALLOC(unsigned char*, width);
+  buf = RAPTOR_MALLOC(char*, width + 1);
   if(!buf)
     return 1;
   
-  p = buf+width-1;
-  do {
-    unsigned int digit = (integer & 15);
-    *p-- =(digit < 10) ? '0'+digit : 'A'+(digit-10);
-    integer >>= 4;
-  } while(integer);
-  while(p >= buf)
-    *p-- = '0';
-  
+  (void)raptor_format_hexadecimal(buf, width + 1, integer, width);
+
   rc = raptor_iostream_write_bytes(buf, 1, width, iostr);
   RAPTOR_FREE(char*, buf);
   return rc;

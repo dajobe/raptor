@@ -711,12 +711,13 @@ raptor_xml_escape_string_any(raptor_world *world,
                                    unichar);
       } else {
         /* &#xX; */
-        *q++='&';
-        *q++='#';
-        *q++='x';
-        sprintf((char*)q, "%X", (unsigned int)unichar);
-        q+= (unichar < 0x10) ? 1 : 2;
-        *q++=';';
+        *q++ = '&';
+        *q++ = '#';
+        *q++ = 'x';
+        q += raptor_format_hexadecimal((char*)q, 3, 
+                                       RAPTOR_GOOD_CAST(unsigned int, unichar), 
+                                       (unichar < 0x10) ? 2 : 3);
+        *q++ = ';';
       }
     } else {
       memcpy(q, p, unichar_len);

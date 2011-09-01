@@ -392,7 +392,7 @@ raptor_vasprintf(char **ret, const char *format, va_list arguments)
 }
 
 
-static const char digits[] = "0123456789abcdefghijklmnopqrstuvwxyz";
+static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 /**
  * raptor_format_integer:
@@ -444,3 +444,51 @@ raptor_format_integer(char* buffer, size_t bufsize, int integer)
 
   return len;
 }
+
+
+
+/**
+ * raptor_format_hexadecimal:
+ * @buffer: buffer (or NULL)
+ * @bufsize: size of above (or 0)
+ * @integer: unsigned integer value to format
+ * @width: width of output
+ *
+ * INTERNAL - Format an integer as uppercase hexadecimal into a
+ * buffer or calculate the size needed.
+ *
+ * Works Like the C99 snprintf() but just for hexadecimal integers and
+ * always writes @width hex digits.
+ *
+ * If @buffer is NULL or the @bufsize is too small, the number of
+ * bytes needed (excluding NUL) is returned and no formatting is done.
+ *
+ * Return value: number of bytes needed or written (excluding NUL)
+ */
+int
+raptor_format_hexadecimal(char* buffer, size_t bufsize, 
+                          unsigned int integer, int width)
+{
+  char *p;
+
+  if(width < 1)
+    return 1;
+
+  if(!buffer || bufsize < RAPTOR_GOOD_CAST(size_t, (width + 1))) /* for NUL */
+    return width;
+
+  p = &buffer[width];
+  *p-- = '\0';
+  do {
+    *p-- = digits[integer & 15];
+    integer >>= 4;
+  } while(integer);
+
+  while(p >= buffer)
+    *p-- = '0';
+  
+  return width;
+}
+
+
+
