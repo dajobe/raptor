@@ -1456,11 +1456,16 @@ raptor_uri_to_string(raptor_uri *uri)
 raptor_uri*
 raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
 {
-  /* 55 = strlen(rdf namespace URI) + _ + 10-digit number + \0 */
-  unsigned char uri_string[55];
-  memcpy(uri_string, raptor_rdf_namespace_uri, raptor_rdf_namespace_uri_len);
-  sprintf((char*)uri_string+raptor_rdf_namespace_uri_len, "_%d",
-          ordinal);
+  /* strlen(rdf namespace URI) + _ + decimal int number + \0 */
+  unsigned char uri_string[43 + 1 + MAX_ASCII_INT_SIZE + 1];
+  unsigned char *p = uri_string;
+
+  memcpy(p, raptor_rdf_namespace_uri, raptor_rdf_namespace_uri_len);
+  p += raptor_rdf_namespace_uri_len;
+  *p++ = '_';
+  (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*, p),
+                              MAX_ASCII_INT_SIZE + 1, ordinal);
+
   return raptor_new_uri(world, uri_string);
 }
 
