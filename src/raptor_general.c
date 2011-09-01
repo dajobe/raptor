@@ -284,35 +284,32 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
   raptor_world *world = (raptor_world*)user_data;
   int id;
   unsigned char *buffer;
-  unsigned int length;
-  int tmpid;
+  const char* prefix;
+  unsigned int prefix_length;
+  int id_length;
 
   if(user_bnodeid)
     return user_bnodeid;
 
   id = ++world->default_generate_bnodeid_handler_base;
 
-  tmpid = id;
-  length = 2; /* min length 1 + \0 */
-  while(tmpid /= 10)
-    length++;
+  id_length = raptor_format_integer(NULL, 0, id);
 
-  if(world->default_generate_bnodeid_handler_prefix)
-    length += (unsigned int)world->default_generate_bnodeid_handler_prefix_length;
-  else
-    length += 5; /* strlen("genid") */
-  
-  buffer = RAPTOR_MALLOC(unsigned char*, length);
+  if(world->default_generate_bnodeid_handler_prefix) {
+    prefix = world->default_generate_bnodeid_handler_prefix;
+    prefix_length = world->default_generate_bnodeid_handler_prefix_length;
+  } else {
+    prefix = "genid";
+    prefix_length = 5; /* strlen("genid") */
+  }
+
+  buffer = RAPTOR_MALLOC(unsigned char*, id_length + prefix_length + 1);
   if(!buffer)
     return NULL;
 
-  if(world->default_generate_bnodeid_handler_prefix) {
-    memcpy(buffer, world->default_generate_bnodeid_handler_prefix,
-           world->default_generate_bnodeid_handler_prefix_length);
-    sprintf((char*)buffer + world->default_generate_bnodeid_handler_prefix_length,
-            "%d", id);
-  } else 
-    sprintf((char*)buffer, "genid%d", id);
+  memcpy(buffer, prefix, prefix_length);
+  (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*, &buffer[prefix_length]),
+                              id_length + 1, id);
 
   return buffer;
 }

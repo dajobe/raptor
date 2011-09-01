@@ -1417,7 +1417,7 @@ struct raptor_world_s {
 
   int default_generate_bnodeid_handler_base;
   char *default_generate_bnodeid_handler_prefix;
-  size_t default_generate_bnodeid_handler_prefix_length;
+  unsigned int default_generate_bnodeid_handler_prefix_length;
 };
 
 /* raptor_www.c */
