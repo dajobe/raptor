@@ -216,7 +216,7 @@ raptor_nfc_check(const unsigned char* string, size_t len, int *error)
     raptor_nfc_code_flag flag;
     
     unichar_len = raptor_unicode_utf8_string_get_char(string, len, &unichar);
-    if(unichar_len < 0 || unichar_len > (int)len) {
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > len) {
       /* UTF-8 encoding had an error or ended in the middle of a string */
       if(error)
         *error = RAPTOR_BAD_CAST(int, offset);

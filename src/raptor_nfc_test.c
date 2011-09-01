@@ -96,7 +96,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
     
     u += raptor_unicode_utf8_string_put_char(c, u, (end-p));
     
-    if((u-utf8_string) > (int)utf8_string_length) {
+    if((u-utf8_string) > RAPTOR_GOOD_CAST(int, utf8_string_length)) {
       fprintf(stderr,
               "decode_to_utf8 overwote utf8_string buffer at byte %d\n",
               (u-utf8_string));
@@ -125,7 +125,7 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
       return;
     if(i)
       fputc(' ', stream);
-    fprintf(stream, "U+%04X", (int)c);
+    fprintf(stream, "U+%04X", RAPTOR_GOOD_CAST(int, c));
     input += size;
     i += size;
   }

@@ -368,13 +368,13 @@ raptor_world_set_generate_bnodeid_parameters(raptor_world* world,
                                              char *prefix, int base)
 {
   char *prefix_copy = NULL;
-  size_t length = 0;
+  unsigned int length = 0;
 
   if(--base < 0)
     base = 0;
 
   if(prefix) {
-    length = strlen(prefix);
+    length = RAPTOR_BAD_CAST(unsigned int, strlen(prefix));
     
     prefix_copy = RAPTOR_MALLOC(char*, length + 1);
     if(!prefix_copy)

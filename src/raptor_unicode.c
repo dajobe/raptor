@@ -94,7 +94,7 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
 
   /* when no buffer given, return size */
   if(!output)
-    return (int)size; /* ok since size is in range 1..6 */
+    return RAPTOR_GOOD_CAST(int, size); /* ok since size is in range 1..6 */
 
   if(size > length)
     return -1;
@@ -134,7 +134,7 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
       output[0] = (unsigned char)c;
   }
 
-  return (int)size; /* ok since size is in range 1..6 */
+  return RAPTOR_GOOD_CAST(int, size); /* ok since size is in range 1..6 */
 }
 
 
@@ -186,7 +186,7 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
 
 
   if(!output)
-    return (int)size; /* ok since size is in range 1..6 */
+    return RAPTOR_GOOD_CAST(int, size); /* ok since size is in range 1..6 */
 
   if(length < size)
     return -1;
@@ -254,7 +254,7 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
   if(c > raptor_unicode_max_codepoint)
     return -4;
 
-  return (int)size; /* ok since size is in range 1..6 */
+  return RAPTOR_GOOD_CAST(int, size); /* ok since size is in range 1..6 */
 }
 
 
@@ -834,7 +834,7 @@ raptor_unicode_check_utf8_string(const unsigned char *string, size_t length)
 
     int unichar_len;
     unichar_len = raptor_unicode_utf8_string_get_char(string, length, &unichar);
-    if(unichar_len < 0 || unichar_len > (int)length)
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > length)
       return 0;
 
     if(unichar > raptor_unicode_max_codepoint)
@@ -864,7 +864,7 @@ raptor_unicode_utf8_strlen(const unsigned char *string, size_t length)
   while(length > 0) {
     int unichar_len;
     unichar_len = raptor_unicode_utf8_string_get_char(string, length, NULL);
-    if(unichar_len < 0 || unichar_len > (int)length) {
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > length) {
       unicode_length = -1;
       break;
     }

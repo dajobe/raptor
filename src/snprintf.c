@@ -203,7 +203,7 @@ vsnprintf_is_c99(void)
 
 #define VSNPRINTF_C99_BLOCK(len, buffer, size, format, arguments)      \
   do {                                                                 \
-    len = (size_t)vsnprintf(buffer, size, format, arguments);          \
+    len = RAPTOR_GOOD_CAST(size_t, vsnprintf(buffer, size, format, arguments)); \
   } while(0)
 
 #define VSNPRINTF_NOT_C99_BLOCK(len, buffer, size, format, arguments)   \
@@ -426,7 +426,7 @@ raptor_format_integer(char* buffer, size_t bufsize, int integer)
   while(value /= base)
     len++;
 
-  if(!buffer || (int)bufsize < (len + 1)) /* +1 for NUL */
+  if(!buffer || bufsize < RAPTOR_GOOD_CAST(size_t, (len + 1))) /* +1 for NUL */
     return len;
 
   if(integer < 0) {

@@ -459,8 +459,9 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
       ;
     
     /* If ends with :, it is the URI of a namespace */
-    if(p-name == (int)(name_len-1)) {
-      ns = raptor_namespaces_find_namespace(nstack, name, (unsigned int)(name_len - 1));
+    if(RAPTOR_GOOD_CAST(size_t, p-name) == (name_len - 1)) {
+      ns = raptor_namespaces_find_namespace(nstack, name,
+                                            RAPTOR_BAD_CAST(int, (name_len - 1)));
     } else {
       if(!*p) {
         local_name = name;

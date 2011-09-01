@@ -127,7 +127,8 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 
   while(num_spaces > 0) {
     int count;
-    count = (num_spaces > (int)SPACES_BUFFER_SIZE) ? (int)SPACES_BUFFER_SIZE : num_spaces;
+    count = (num_spaces > RAPTOR_GOOD_CAST(int, SPACES_BUFFER_SIZE)) ? 
+            RAPTOR_GOOD_CAST(int, SPACES_BUFFER_SIZE) : num_spaces;
 
     raptor_iostream_counted_string_write(spaces_buffer, count, turtle_writer->iostr);
 
@@ -449,7 +450,7 @@ raptor_string_python_write(const unsigned char *string,
     /* It is unicode */
     
     unichar_len = raptor_unicode_utf8_string_get_char(string, len, NULL);
-    if(unichar_len < 0 || unichar_len > (int)len)
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
 

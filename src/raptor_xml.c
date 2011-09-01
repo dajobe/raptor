@@ -914,7 +914,7 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
 
     int unichar_len;
     unichar_len = raptor_unicode_utf8_string_get_char(string, length, &unichar);
-    if(unichar_len < 0 || unichar_len > (int)length)
+    if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > length)
       return 0;
 
     if(unichar > raptor_unicode_max_codepoint)

@@ -245,7 +245,7 @@ raptor_www_curl_fetch(raptor_www *www)
     /* Requires pointer to a long */
     if(curl_easy_getinfo(www->curl_handle, CURLINFO_RESPONSE_CODE, &lstatus) == CURLE_OK)
       /* CURL status code will always fit in an int */
-      www->status_code = (int)lstatus;
+      www->status_code = RAPTOR_GOOD_CAST(int, lstatus);
 
   }
 

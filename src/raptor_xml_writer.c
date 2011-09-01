@@ -141,7 +141,8 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
   
   while(num_spaces > 0) {
 
-    int count = (num_spaces > (int)SPACES_BUFFER_SIZE) ? (int)SPACES_BUFFER_SIZE : num_spaces;
+    int count = (num_spaces > RAPTOR_GOOD_CAST(int, SPACES_BUFFER_SIZE)) ?
+                 RAPTOR_GOOD_CAST(int, SPACES_BUFFER_SIZE) : num_spaces;
 
     raptor_iostream_counted_string_write(spaces_buffer, count,
                                          xml_writer->iostr);

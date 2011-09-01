@@ -135,7 +135,7 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   }
   
   if(!buffer || !length || length < (bufsize + 1)) /* +1 for NUL */
-    return (int)bufsize;
+    return RAPTOR_BAD_CAST(int, bufsize);
   
 
   memcpy(buffer, label_str, label_len);
