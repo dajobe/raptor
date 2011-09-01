@@ -612,8 +612,11 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(!ns) {
     /* The namespace was not declared, so create one */
     unsigned char prefix[2 + MAX_ASCII_INT_SIZE + 1];
-      *namespace_count = *namespace_count + 1;
-    sprintf((char *)prefix, "ns%d", *namespace_count);
+    (*namespace_count)++;
+    prefix[0] = 'n';
+    prefix[1] = 's';
+    (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*,&prefix[2]),
+                                MAX_ASCII_INT_SIZE + 1, *namespace_count);
 
     ns = raptor_new_namespace_from_uri(nstack, prefix, ns_uri, 0);
 
