@@ -594,7 +594,7 @@ rdfdiff_add_statement(rdfdiff_file* file, raptor_statement *statement)
 {
   int rv = 0;
   
-  rdfdiff_link *dlink = RAPTOR_MALLOC(rdfdiff_link*, sizeof(dlink));
+  rdfdiff_link *dlink = RAPTOR_MALLOC(rdfdiff_link*, sizeof(*dlink));
 
   if(dlink) {
 
