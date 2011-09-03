@@ -1,3 +1,90 @@
+2011-08-31  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_qname.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_www_curl.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c: Add more RAPTOR_GOOD_CAST
+	and RAPTOR_BAD_CAST and fix some.
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_rdf_ordinal): Use raptor_format_integer()
+
+	* src/raptor_general.c, src/raptor_internal.h: Use
+	raptor_format_integer() in generating bnode IDs
+
+	(raptor_world_default_generate_bnodeid_handler): Use
+	raptor_format_integer() and tidy code.  raptor_world field
+	default_generate_bnodeid_handler_prefix_length is an integer; long
+	enough.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Use raptor_format_integer()
+
+	* src/raptor_internal.h, src/raptor_iostream.c, src/raptor_xml.c,
+	src/snprintf.c:
+
+	(raptor_format_hexadecimal): Added for formatting uppercase hex in
+	a fixed width field.
+
+	(raptor_iostream_hexadecimal_write): Use
+	raptor_format_hexadecimal()
+
+	(raptor_xml_escape_string_any): Use raptor_format_hexadecimal() to
+	remove a sprintf for &#xXX.
+
+	* utils/rdfdiff.c:
+	(rdfdiff_add_statement): Malloc right size
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_iostream.c,
+	src/raptor_libxml.c, src/raptor_nfc.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_sax2.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_xml.c, src/snprintf.c, src/turtle_common.h: Use
+	RAPTOR_BAD_CAST and RAPTOR_GOOD_CAST
+
+	Some good uses: - narrowing a known, checked unicode char to a U16
+
+	Some 'bad' uses:
+	- only handing error messages, literal language, qname prefixes of
+	  a  max len constrained by int
+	- passing in data to libxml constrained by int max len
+	- locator column field constrained to int size
+
+	Some bad uses:
+	- iostream read_bytes and write-bytes methods return int but could
+	  easily return a lot more in the size_t range (compare to fread).
+	  API change needed.
+	- locator byte field constrained to int size.  should be size_t
+	- raptor_nfc_check returns int offset into a buffer that could be
+	  larger raptor_ntriples_parser_context changed line_length and
+	  offset to size_t raptor_turtle_parser changed buffer_length to
+	  size_t
+
+	* src/raptor_internal.h: Add macros for describing types of casts
+
+	RAPTOR_GOOD_CAST: code checks or logic ensures cast will not
+	truncate
+
+	RAPTOR_BAD_CAST: value may be truncated; may require API
+	change/break.  Might be unrealistic e.g. a >4G error message,
+	qname prefix.
+
+2011-08-30  Dave Beckett <dave@dajobe.org>
+
+	* src/snprintf.c: snprintf return code and size guessing fixes
+
+	vsnprintf_is_c99 macro: start guessing length from len
+	strlen(format) and grow size by 50% each loop to hopefully get big
+	enough faster.
+
+	(raptor_vsnprintf): Error out when raptor_vasprintf result < 0
+
+	(raptor_snprintf): Note error is < 0 response
+
+	(raptor_vasprintf): Error out when raptor_vsnprintf2 result is < 0
+
 2011-08-28  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_locator.c:
