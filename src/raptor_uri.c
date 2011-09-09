@@ -1464,7 +1464,8 @@ raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal)
   p += raptor_rdf_namespace_uri_len;
   *p++ = '_';
   (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*, p),
-                              MAX_ASCII_INT_SIZE + 1, ordinal);
+                              MAX_ASCII_INT_SIZE + 1, ordinal, /* base */ 10,
+                              -1, '\0');
 
   return raptor_new_uri(world, uri_string);
 }

@@ -1324,8 +1324,7 @@ int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer
 
 /* snprintf.c */
 char* raptor_format_float(char *buffer, size_t *currlen, size_t maxlen, double fvalue, unsigned int min, unsigned int max, int flags);
-int raptor_format_integer(char* buffer, size_t bufsize, int integer);
-int raptor_format_hexadecimal(char* buffer, size_t bufsize, unsigned int integer, int width);
+int raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned int base, int width, char padding);
 
 /* raptor_world structure */
 #define RAPTOR1_WORLD_MAGIC_1 0

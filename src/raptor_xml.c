@@ -714,9 +714,9 @@ raptor_xml_escape_string_any(raptor_world *world,
         *q++ = '&';
         *q++ = '#';
         *q++ = 'x';
-        q += raptor_format_hexadecimal((char*)q, 3, 
-                                       RAPTOR_GOOD_CAST(unsigned int, unichar), 
-                                       (unichar < 0x10) ? 2 : 3);
+        q += raptor_format_integer((char*)q, 3, 
+                                   RAPTOR_GOOD_CAST(unsigned int, unichar), 
+                                   /* base */ 16, -1, '\0');
         *q++ = ';';
       }
     } else {

@@ -128,10 +128,12 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   bufsize = label_len + value_len;
 
   if(locator->line > 0) {
-    bufsize += 1 + raptor_format_integer(NULL, 0, locator->line);
+    bufsize += 1 + raptor_format_integer(NULL, 0, locator->line, /* base */ 10,
+                                         -1, '\0');
     if(locator->column >= 0)
       bufsize += COLUMN_STR_LEN +
-                 raptor_format_integer(NULL, 0, locator->column);
+        raptor_format_integer(NULL, 0, locator->column, /* base */ 10,
+                              -1, '\0');
   }
   
   if(!buffer || !length || length < (bufsize + 1)) /* +1 for NUL */
@@ -145,11 +147,15 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   
   if(locator->line > 0) {
     *buffer ++ = ':';
-    buffer += raptor_format_integer(buffer, length, locator->line);
+    buffer += raptor_format_integer(buffer, length,
+                                    locator->line, /* base */ 10,
+                                    -1, '\0');
     if(locator->column >= 0) {
       memcpy(buffer, COLUMN_STR, COLUMN_STR_LEN);
       buffer += COLUMN_STR_LEN;
-      (void)raptor_format_integer(buffer, length, locator->column);
+      (void)raptor_format_integer(buffer, length, 
+                                  locator->column, /* base */ 10,
+                                  -1, '\0');
     }
   }
 

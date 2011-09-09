@@ -927,7 +927,8 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
   if(!buf)
     return 1;
   
-  (void)raptor_format_hexadecimal(buf, width + 1, integer, width);
+  (void)raptor_format_integer(buf, width + 1, integer, /* base */ 16,
+                              width, '0');
 
   rc = raptor_iostream_write_bytes(buf, 1, width, iostr);
   RAPTOR_FREE(char*, buf);

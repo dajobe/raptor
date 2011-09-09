@@ -293,7 +293,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
 
   id = ++world->default_generate_bnodeid_handler_base;
 
-  id_length = raptor_format_integer(NULL, 0, id);
+  id_length = raptor_format_integer(NULL, 0, id, /* base */ 10, -1, '\0');
 
   if(world->default_generate_bnodeid_handler_prefix) {
     prefix = world->default_generate_bnodeid_handler_prefix;
@@ -309,7 +309,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
 
   memcpy(buffer, prefix, prefix_length);
   (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*, &buffer[prefix_length]),
-                              id_length + 1, id);
+                              id_length + 1, id, /* base */ 10,-1, '\0');
 
   return buffer;
 }
