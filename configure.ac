@@ -400,68 +400,10 @@ int main(int argc, char* argv) {
     AC_DEFINE(CHECK_VSNPRINTF_RUNTIME, 1, [have to check C99 vsnprintf at runtime because cross compiling]))
 fi
 
-need_libm=no
-
 # Save LIBS 
 oLIBS="$LIBS"
 
 RAPTOR_LDFLAGS=
-
-dnl May need trunc and round for snprintf.c
-AC_MSG_CHECKING([for trunc and round in default libs])
-trunc_round_lib=none
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-]], [[
-double d = trunc(1.0F) + round(1.0F);
-]])],
-   AC_MSG_RESULT(yes)
-   trunc_round_lib=libc,
-   AC_MSG_RESULT(no),
-   trunc_round_lib=none)
-if test $trunc_round_lib = none; then
-  LIBS="$LIBS -lm"
-  AC_MSG_CHECKING([for trunc and round with -lm])
-  AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-]], [[
-double d = trunc(1.0F) + round(1.0F);
-]])],
-     AC_MSG_RESULT(yes)
-     need_libm=1
-     trunc_round_lib=libm,
-     AC_MSG_RESULT(no),
-     trunc_round_lib=none)
-  LIBS="$oLIBS"
-fi
-if test $trunc_round_lib = none; then
-  AC_MSG_ERROR([Could not find trunc and round in default libs or with -lm])
-fi
-if test $need_libm = 1; then
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lm"
-fi
-AC_DEFINE([HAVE_TRUNC], 1, [Have trunc() available])
-AC_DEFINE([HAVE_ROUND], 1, [Have round() available])
-
-AC_MSG_CHECKING([for lround])
-have_lround=0
-AC_RUN_IFELSE([AC_LANG_PROGRAM([[
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-]], [[
-    long intpart = lround(654.321F);
-]])],
-     AC_MSG_RESULT(yes)
-     have_lround=1,
-     AC_MSG_RESULT(no))
-if test $have_lround = 1; then
-  AC_DEFINE(HAVE_LROUND, 1, [Have C99 lround() available])
-fi
 
 AC_SYS_LARGEFILE
 
