@@ -603,8 +603,8 @@ raptor_json_parse_terminate(raptor_parser* rdf_parser)
 
 static int
 raptor_json_parse_chunk(raptor_parser* rdf_parser,
-                            const unsigned char *s, size_t len,
-                            int is_end)
+                        const unsigned char *s, size_t len,
+                        int is_end)
 {
   raptor_json_parser_context *context = (raptor_json_parser_context*)rdf_parser->context;
   yajl_status status;
@@ -612,7 +612,7 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
 
   if(len) {
     /* Parse the chunk passed to us */
-    status = yajl_parse(context->handle, s, len);
+    status = yajl_parse(context->handle, s, RAPTOR_BAD_CAST(int, len));
 
     if(status != yajl_status_ok 
 #ifdef HAVE_YAJL2
@@ -621,7 +621,7 @@ raptor_json_parse_chunk(raptor_parser* rdf_parser,
 #endif
     )
     {
-      unsigned char * str = yajl_get_error(context->handle, 1, s, len);
+      unsigned char * str = yajl_get_error(context->handle, 1, s, RAPTOR_BAD_CAST(int, len));
       raptor_parser_error(rdf_parser, "YAJL error: %s", (const char *) str);
       result = 1;
       yajl_free_error(context->handle, str);
