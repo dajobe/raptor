@@ -1,3 +1,26 @@
+2011-09-08  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_internal.h, src/snprintf.c: Removed
+	calls to trunc() and lround() and optional linking of libm
+
+	(raptor_format_float): Removed unused internal function and thus
+	removed the only need for trunc() and lround().
+
+	configure: Removed checks for trunc(), lround() in libc or libm.
+
+	* src/raptor_abbrev.c, src/raptor_general.c,
+	src/raptor_internal.h, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_uri.c, src/raptor_xml.c,
+	src/snprintf.c: Make raptor_format_integer handle hex too
+
+	(raptor_format_integer): Add base, width and padding fields
+
+	(raptor_format_hexadecimal): Deleted, replaced by above with base
+	= 16.  Updated all callers of above with new parameters.
+
+	* src/raptor_json.c:
+	(raptor_json_parse_chunk): bad cast size_t to len for yajl API
+
 2011-08-31  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c, src/raptor_iostream.c,
