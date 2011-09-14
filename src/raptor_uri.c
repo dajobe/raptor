@@ -624,6 +624,7 @@ raptor_uri_filename_to_uri_string(const char *filename)
     path = (char*)malloc(path_max);
     while(1) {
       /* malloc() failed or getcwd() succeeded */
+      errno = 0;
       if(!path || getcwd(path, path_max))
         break;
 
