@@ -1250,7 +1250,7 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
     reference_file_len = reference_detail->path_len -
                          (reference_file - reference_detail->path);
     
-    if(!strcmp((const char*)base_file, (const char*)reference_file)) {
+    if(!strcmp((const char*)base_detail->path, (const char*)reference_detail->path)) {
       /* If the file names are equal, don't put them in the relative URI */
       reference_file = NULL;
       reference_file_len = 0;
@@ -1741,6 +1741,7 @@ main(int argc, char *argv[])
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo/bar", "foo/bar");
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/foo#bar", "#bar");
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/bar#foo", "bar#foo");
+  failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/otherbase/foo", "../otherbase/foo");
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/otherbase/bar", "../otherbase/bar");
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example.com/base/#foo", ".#foo");
   failures += assert_uri_to_relative(world, "http://example.com/base/foo", "http://example2.com/base/bar", "http://example2.com/base/bar");
