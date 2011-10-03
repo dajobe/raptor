@@ -1,3 +1,22 @@
+2011-09-26  Dave Beckett <dave@dajobe.org>
+
+	* Merge GitHub pull request #2 from presbrey/master
+
+2011-09-26  Joe Presbrey <presbrey@csail.mit.edu>
+
+	* (raptor_uri_string_to_relative_uri_string): compare paths not
+	files.
+
+	Bugfix raptor_uri_string_to_relative_uri_string
+
+	Fixes Issue #0000472
+	http://bugs.librdf.org/mantis/view.php?id=472
+
+2011-09-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	set errno to 0
+
 2011-09-08  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac, src/raptor_internal.h, src/snprintf.c: Removed
