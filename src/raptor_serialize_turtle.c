@@ -1211,19 +1211,21 @@ raptor_term_to_turtle_string(raptor_term* term,
   raptor_iostream* iostr;
   unsigned char *s;
   int rc = 0;
+  raptor_qname* qname;
+  raptor_turtle_writer* turtle_writer;
   
   iostr = raptor_new_iostream_to_string(term->world,
                                         (void**)&s, NULL, malloc);
   if(!iostr)
     return NULL;
 
-  raptor_turtle_writer* turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack, iostr);
+  turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack, iostr);
   if(!turtle_writer) {
     raptor_free_iostream(iostr);
     return NULL;
   }
   
-  raptor_qname* qname = NULL;
+  qname = NULL;
   
   if(term->type == RAPTOR_TERM_TYPE_URI) {
     qname = raptor_new_qname_from_namespace_uri(nstack, term->value.uri, 10);
