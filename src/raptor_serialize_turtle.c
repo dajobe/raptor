@@ -1190,3 +1190,72 @@ raptor_init_serializer_turtle(raptor_world* world)
                                              &raptor_turtle_serializer_register_factory);
 }
 
+
+
+/**
+ * raptor_term_to_turtle_string:
+ * @t1: term
+ * @t2: namespace stack
+ * @t3: base URI
+ *
+ * Convert #raptor_term to a string.
+ * Caller has responsibility to free the string.
+ *
+ * Return value: NULL on failure
+ */
+unsigned char*
+raptor_term_to_turtle_string(raptor_term* term, 
+                             raptor_namespace_stack *nstack,
+                             raptor_uri *base_uri)
+{
+  raptor_iostream* iostr;
+  unsigned char *s;
+  int rc = 0;
+  
+  iostr = raptor_new_iostream_to_string(term->world,
+                                        (void**)&s, NULL, malloc);
+  if(!iostr)
+    return NULL;
+
+  raptor_turtle_writer* turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack, iostr);
+  if(!turtle_writer) {
+    raptor_free_iostream(iostr);
+    return NULL;
+  }
+  
+  raptor_qname* qname = NULL;
+  
+  if(term->type == RAPTOR_TERM_TYPE_URI) {
+    qname = raptor_new_qname_from_namespace_uri(nstack, term->value.uri, 10);
+    
+    /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
+    if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+      raptor_free_qname(qname);
+      qname = NULL;
+    }
+    
+    if(qname) {
+      raptor_turtle_writer_qname(turtle_writer, qname);
+      
+      raptor_free_qname(qname);
+    } else {
+      raptor_turtle_writer_reference(turtle_writer, term->value.uri);
+    }
+  } else if(term->type == RAPTOR_TERM_TYPE_LITERAL) {
+    raptor_turtle_writer_literal(turtle_writer, nstack,
+                                 term->value.literal.string,
+                                 term->value.literal.language, 
+                                 term->value.literal.datatype);
+  } else {
+    rc = 1;
+  }
+  
+  raptor_free_turtle_writer(turtle_writer);
+  raptor_free_iostream(iostr);
+  if(rc) {
+    free(s);
+    s = NULL;
+  }
+  
+  return s;
+}
