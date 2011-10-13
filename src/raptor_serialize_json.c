@@ -507,7 +507,7 @@ raptor_json_triples_serializer_register_factory(raptor_serializer_factory *facto
 static const char* const json_resource_names[2] = { "json", NULL};
 
 static const char* const json_resource_uri_strings[2] = {
-  "http://n2.talis.com/wiki/RDF_JSON_Specification",
+  "http://docs.api.talis.com/platform-api/output-types/rdf-json",
   NULL
 };
 
