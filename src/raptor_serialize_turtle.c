@@ -1208,21 +1208,51 @@ raptor_term_to_turtle_string(raptor_term* term,
                              raptor_namespace_stack *nstack,
                              raptor_uri *base_uri)
 {
+  int rc;
   raptor_iostream* iostr;
   unsigned char *s;
-  int rc = 0;
-  raptor_qname* qname;
-  raptor_turtle_writer* turtle_writer;
-  
   iostr = raptor_new_iostream_to_string(term->world,
                                         (void**)&s, NULL, malloc);
   if(!iostr)
     return NULL;
 
+  rc = raptor_term_write_turtle(iostr, term, nstack, base_uri);
+
+  raptor_free_iostream(iostr);
+  if(rc) {
+    free(s);
+    s = NULL;
+  }
+  
+  return s;
+}
+
+
+/**
+ * raptor_term_write_turtle:
+ * @t1: iostream for writing
+ * @t2: term
+ * @t3: namespace stack
+ * @t4: base URI
+ *
+ * Convert #raptor_term to a string.
+ * Caller has responsibility to free the string.
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_term_write_turtle(raptor_iostream* iostr,
+                         raptor_term* term, 
+                         raptor_namespace_stack *nstack,
+                         raptor_uri *base_uri)
+{
+  int rc = 0;
+  raptor_qname* qname;
+  raptor_turtle_writer* turtle_writer;
+  
   turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack, iostr);
   if(!turtle_writer) {
-    raptor_free_iostream(iostr);
-    return NULL;
+    return 1;
   }
   
   qname = NULL;
@@ -1249,15 +1279,10 @@ raptor_term_to_turtle_string(raptor_term* term,
                                  term->value.literal.language, 
                                  term->value.literal.datatype);
   } else {
-    rc = 1;
+    rc = 2;
   }
   
   raptor_free_turtle_writer(turtle_writer);
-  raptor_free_iostream(iostr);
-  if(rc) {
-    free(s);
-    s = NULL;
-  }
   
-  return s;
+  return rc;
 }
