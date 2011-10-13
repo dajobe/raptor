@@ -1522,7 +1522,8 @@ raptor_rdfxml_xmp_serializer_register_factory(raptor_serializer_factory *factory
 
 static const char* const rdfxmla_names[2] = { "rdfxml-abbrev", NULL};
 
-static const char* const rdfxml_uri_strings[2] = {
+static const char* const rdfxml_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/RDF_XML",
   "http://www.w3.org/TR/rdf-syntax-grammar",
   NULL
 };

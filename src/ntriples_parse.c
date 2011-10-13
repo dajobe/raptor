@@ -1097,7 +1097,8 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const ntriples_names[2] = { "ntriples", NULL };
 
-static const char* const ntriples_uri_strings[2] = {
+static const char* const ntriples_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/N-Triples",
   "http://www.w3.org/TR/rdf-testcases/#ntriples",
   NULL
 };
