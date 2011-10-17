@@ -1194,10 +1194,11 @@ raptor_init_serializer_turtle(raptor_world* world)
 
 /**
  * raptor_uri_write_turtle:
- * @t1: iostream for writing
- * @t2: uri
- * @t3: namespace stack
- * @t4: base URI
+ * @t1: world
+ * @t2: iostream for writing
+ * @t3: uri
+ * @t4: namespace stack
+ * @t5: base URI
  *
  * Write #raptor_uri to a stream in turtle syntax (using QNames).
  *
@@ -1286,9 +1287,10 @@ raptor_term_write_turtle(raptor_iostream* iostr,
 
 /**
  * raptor_uri_to_turtle_string:
- * @t1: uri
- * @t2: namespace stack
- * @t3: base URI
+ * @t1: world
+ * @t2: uri
+ * @t3: namespace stack
+ * @t4: base URI
  *
  * Convert #raptor_uri to a string.
  * Caller has responsibility to free the string.
