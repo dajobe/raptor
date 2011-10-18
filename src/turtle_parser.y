@@ -1612,7 +1612,8 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 #ifdef RAPTOR_PARSER_TURTLE
 static const char* const turtle_names[4] = { "turtle", "ntriples-plus", "n3", NULL };
 
-static const char* const turtle_uri_strings[2] = {
+static const char* const turtle_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/Turtle",
   "http://www.dajobe.org/2004/01/turtle/",
   NULL
 };
