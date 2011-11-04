@@ -600,10 +600,13 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   len--;
 
 
-  /* Must be triple */
+  /* Must be triple/quad */
 
   for(i = 0; i < max_terms; i++) {
     if(!len) {
+      /* context is optional in nquads */
+      if (i == 3)
+	break;
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
     }
