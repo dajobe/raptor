@@ -1,3 +1,41 @@
+2011-11-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/ntriples_parse.c:
+	(raptor_nquads_parse_recognise_syntax): Guess nquads over ntriples
+	since now ntriples parses fine on nquads parser
+
+2011-11-04  Lauri Aalto <laalto@iki.fi>
+
+	* tests/ntriples/Makefile.am,
+	tests/ntriples/testnq-optional-context.nq,
+	tests/ntriples/testnq-optional-context.out: added test case for
+	optional context node in nquads
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Make context optional for nquads.
+
+	Fixes Issue #0000479
+	http://bugs.librdf.org/mantis/view.php?id=479
+
+2011-10-18  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/turtle_parser.y: Added the W3C format URI for the Turtle
+	parser
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Added W3C Format URIs to the parser and serialiser syntax
+	descriptions.
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c, src/raptor_serialize_json.c:
+	Updated the URL
+	for RDF/JSON serialisation specification.
+
 2011-09-26  Dave Beckett <dave@dajobe.org>
 
 	* Merge GitHub pull request #2 from presbrey/master
