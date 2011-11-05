@@ -1020,7 +1020,7 @@ raptor_ntriples_parse_start(raptor_parser* rdf_parser)
 }
 
 
-#ifdef RAPTOR_PARSER_NTRIPLES
+#if defined RAPTOR_PARSER_NTRIPLES || defined RAPTOR_PARSER_NQUADS
 static int
 raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory, 
                                        const unsigned char *buffer, size_t len,
@@ -1157,6 +1157,7 @@ raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory,
                                      const char *mime_type)
 {
   int score = 0;
+  int ntriples_score;
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "nq"))
@@ -1177,7 +1178,11 @@ raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory,
       score += 2;
   }
   
-  /* Do not guess using content since it looks so similar to N-Triples */
+  /* ntriples is a subset of nquads, score higher than ntriples */
+  ntriples_score = raptor_ntriples_parse_recognise_syntax(factory, buffer, len, identifier, suffix, mime_type);
+  if(ntriples_score > 0) {
+    score += ntriples_score + 1;
+  }
 
   return score;
 }
