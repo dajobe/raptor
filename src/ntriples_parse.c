@@ -379,9 +379,9 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     if(allow_utf8) {
       if(c > 0x7f) {
         /* just copy the UTF-8 bytes through */
-        size_t unichar_len;
+        int unichar_len;
         unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
-        if(unichar_len > *lenp) {
+        if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
           raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
           /* UTF-8 encoding had an error or ended in the middle of a string */
           return 1;
@@ -393,8 +393,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         
         p += unichar_len;
         (*lenp) -= unichar_len;
-        rdf_parser->locator.column += RAPTOR_GOOD_CAST(int, unichar_len);
-        rdf_parser->locator.byte += RAPTOR_GOOD_CAST(int, unichar_len);
+        rdf_parser->locator.column += unichar_len;
+        rdf_parser->locator.byte += unichar_len;
         continue;
       }
     } else if(!IS_ASCII_PRINT(c)) {

@@ -672,6 +672,7 @@ raptor_xml_escape_string_any(raptor_world *world,
   for(l = len, p = string, q = buffer; l; p++, l--) {
     if(*p > 0x7f) {
       unichar_len = raptor_unicode_utf8_string_get_char(p, l, &unichar);
+      /* if the UTF-8 encoding is bad, we already did return -1 above */
     } else {
       unichar=*p;
       unichar_len = 1;

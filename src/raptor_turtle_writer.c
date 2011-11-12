@@ -459,6 +459,8 @@ raptor_string_python_write(const unsigned char *string,
       raptor_iostream_counted_string_write(string, unichar_len, iostr);
     } else {
       unichar_len = raptor_unicode_utf8_string_get_char(string, len, &unichar);
+      if(unichar_len < 0)
+        return 1;
 
       if(unichar < 0x10000) {
         raptor_iostream_counted_string_write("\\u", 2, iostr);

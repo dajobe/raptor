@@ -123,6 +123,7 @@ utf8_print(const unsigned char *input, int length, FILE *stream)
     int size = raptor_unicode_utf8_string_get_char(input, length - i, &c);
     if(size <= 0)
       return;
+
     if(i)
       fputc(' ', stream);
     fprintf(stream, "U+%04X", RAPTOR_GOOD_CAST(int, c));
