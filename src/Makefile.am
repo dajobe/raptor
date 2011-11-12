@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor libraptor
 #
-# Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
+# Copyright (C) 2000-2011, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -41,7 +41,8 @@ endif
 CLEANFILES=$(TESTS) \
 turtle_lexer_test turtle_parser_test \
 rdfdiff \
-*.plist
+*.plist \
+git-version.h
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
 turtle_parser.c turtle_parser.h turtle_parser.output
@@ -197,6 +198,13 @@ LEX=@LEX@
 YACC=@YACC@
 
 if MAINTAINER_MODE
+libraptor2_la_SOURCES += git-version.h
+
+# raptor_parse.c is the first source file so this ensures
+# git-version.h is created before it and before the actual file
+# dependencies are calculated as a side-effect of compilation
+raptor_parse.c: git-version.h
+
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/../scripts/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
@@ -283,6 +291,30 @@ raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 
 
 if MAINTAINER_MODE
+git-version.h: check-version
+
+# Always run this in maintainer mode but do not always change git-version.h
+.PHONY: check-version
+check-version:
+	@file="git-version.h" ; \
+	if test -d ../.git; then \
+	  git_version=`cd .. && git rev-parse HEAD`; \
+	else \
+	  git_version="unknown"; \
+	fi; \
+	$(RECHO) "GIT version $$git_version"; \
+	tmp="$$file.tmp"; \
+	$(RECHO) "#define GIT_VERSION \"$$git_version\"" > $$tmp; \
+        if test -f $$file; then \
+          if cmp $$file $$tmp >/dev/null 2>&1; then \
+	    rm $$tmp; \
+	  else \
+	    mv $$tmp $$file; \
+          fi; \
+	else \
+	  mv $$tmp $$file; \
+	fi
+
 # Run Clang static analyzer over sources.
 analyze: $(SOURCES)
 	@list='$(SOURCES)'; \

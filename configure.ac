@@ -1384,7 +1384,7 @@ if test "$debug_messages" = "yes"; then
 fi
 
 if test "$USE_MAINTAINER_MODE" = yes; then
-  CPPFLAGS="$MAINTAINER_CPPFLAGS $CPPFLAGS"
+  CPPFLAGS="-DMAINTAINER_MODE $MAINTAINER_CPPFLAGS $CPPFLAGS"
 fi
 
 

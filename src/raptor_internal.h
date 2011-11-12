@@ -36,6 +36,10 @@ extern "C" {
 
 #ifdef RAPTOR_INTERNAL
 
+#ifdef MAINTAINER_MODE
+#include <git-version.h>
+#endif
+
 /* for the memory allocation functions */
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
