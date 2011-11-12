@@ -1,7 +1,7 @@
-.DS_Store
-*~
 *.gz
 *.log
+*~
+.DS_Store
 .gdb_history
 .gdbinit
 INSTALL
@@ -21,6 +21,7 @@ config.log
 config.status
 configure
 dmalloc*
+git-version.h
 gtk-doc.make
 install-sh
 libtool
