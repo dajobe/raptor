@@ -40,7 +40,6 @@ endif
 
 CLEANFILES=$(TESTS) \
 turtle_lexer_test turtle_parser_test \
-rdfdiff \
 *.plist \
 git-version.h
 
