@@ -334,7 +334,9 @@
 	src/raptor_unicode.c: Added UTF-8 strlen and substr utility
 	functions
 
-	(raptor_unicode_utf8_strlen): Added (raptor_unicode_utf8_substr): Added
+	(raptor_unicode_utf8_strlen): Added
+
+	(raptor_unicode_utf8_substr): Added
 
 2011-08-01  Dave Beckett <dave@dajobe.org>
 
