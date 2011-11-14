@@ -1,4 +1,12 @@
-2011-11-12  Dave Beckett <dave@dajobe.org>
+2011-11-13  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore, docs/Makefile.am: docs fixes to use
+	raptor-fake.h
+
+	* docs/tmpl/section-general.sgml, src/snprintf.c,
+	src/raptor2.h.in: autodocs
+
+	* ChangeLog, NEWS.html, RELEASE.html: 2.0.5
 
 	* src/Makefile.am: no rdfdiff here
 
