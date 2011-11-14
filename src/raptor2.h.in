@@ -141,35 +141,97 @@ typedef struct raptor_uri_s raptor_uri;
 
 
 /* Public statics */
+
+/**
+ * raptor_short_copyright_string:
+ *
+ * Short copyright string (one line).
+ */
 RAPTOR_API
 extern const char * const raptor_short_copyright_string;
+
+/**
+ * raptor_copyright_string:
+ *
+ * Copyright string (multiple lines).
+ */
 RAPTOR_API
 extern const char * const raptor_copyright_string;
+
+/**
+ * raptor_version_string:
+ *
+ * Raptor version as a string.
+ */
 RAPTOR_API
 extern const char * const raptor_version_string;
+
+/**
+ * raptor_version_major:
+ *
+ * Raptor major version number.
+ */
 RAPTOR_API
 extern const unsigned int raptor_version_major;
+
+/**
+ * raptor_version_minor:
+ *
+ * Raptor minor version number.
+ */
 RAPTOR_API
 extern const unsigned int raptor_version_minor;
+
+/**
+ * raptor_version_release:
+ *
+ * Raptor release version number.
+ */
 RAPTOR_API
 extern const unsigned int raptor_version_release;
+
+/**
+ * raptor_version_decimal:
+ *
+ * Raptor version as a decimal number.
+ *
+ * Format: major * 10000 + minor * 100 + release
+ */
 RAPTOR_API
 extern const unsigned int raptor_version_decimal;
+
+/**
+ * raptor_license_string:
+ *
+ * Raptor license string.
+ */
 RAPTOR_API
 extern const char * const raptor_license_string;
+
+/**
+ * raptor_home_url_string:
+ *
+ * Raptor home page URL.
+ */
 RAPTOR_API
 extern const char * const raptor_home_url_string;
 
+/**
+ * raptor_xml_namespace_uri:
+ *
+ * XML Namespace (xml:) URI string.
+ */
 RAPTOR_API
 extern const unsigned char * const raptor_xml_namespace_uri;
+
+
+/**
+ * raptor_rdf_namespace_uri:
+ *
+ * RDF Namespace (rdf:) URI string.
+ */
 RAPTOR_API
 extern const unsigned char * const raptor_rdf_namespace_uri;
-RAPTOR_API
-extern const unsigned char * const raptor_rdf_schema_namespace_uri;
-RAPTOR_API
-extern const unsigned char * const raptor_xmlschema_datatypes_namespace_uri;
-RAPTOR_API
-extern const unsigned char * const raptor_owl_namespace_uri;
 
 /**
  * raptor_rdf_namespace_uri_len:
@@ -179,6 +241,35 @@ extern const unsigned char * const raptor_owl_namespace_uri;
 RAPTOR_API
 extern const unsigned int raptor_rdf_namespace_uri_len;
 
+/**
+ * raptor_rdf_schema_namespace_uri:
+ *
+ * RDF Schema (rdfs:) Namespace URI string.
+ */
+RAPTOR_API
+extern const unsigned char * const raptor_rdf_schema_namespace_uri;
+
+/**
+ * raptor_xmlschema_datatypes_namespace_uri:
+ *
+ * XML Schema datatypes (xsd:) namespace URI string.
+ */
+RAPTOR_API
+extern const unsigned char * const raptor_xmlschema_datatypes_namespace_uri;
+
+/**
+ * raptor_owl_namespace_uri:
+ *
+ * OWL (owl:) Namespace URI string.
+ */
+RAPTOR_API
+extern const unsigned char * const raptor_owl_namespace_uri;
+
+/**
+ * raptor_xml_literal_datatype_uri_string:
+ *
+ * XML Literal datatype (rdf:XMLLiteral) URI string.
+ */
 RAPTOR_API
 extern const unsigned char * const raptor_xml_literal_datatype_uri_string;
 
