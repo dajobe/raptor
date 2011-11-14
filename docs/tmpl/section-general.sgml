@@ -81,6 +81,72 @@ and various other utility functions.
 </para>
 
 
+<!-- ##### VARIABLE raptor_copyright_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_home_url_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_license_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_short_copyright_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_version_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_owl_namespace_uri ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_rdf_namespace_uri ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_rdf_schema_namespace_uri ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_xml_literal_datatype_uri_string ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_xml_namespace_uri ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### VARIABLE raptor_xmlschema_datatypes_namespace_uri ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### USER_FUNCTION raptor_statement_handler ##### -->
 <para>
 
@@ -98,7 +164,7 @@ and various other utility functions.
 @buffer: 
 @size: 
 @format: 
-@Varargs: 
+@...: 
 @Returns: 
 
 
