@@ -196,8 +196,11 @@ parsedate.y
 LEX=@LEX@
 YACC=@YACC@
 
+
+nodist_libraptor2_la_SOURCES =
+
 if MAINTAINER_MODE
-libraptor2_la_SOURCES += git-version.h
+nodist_libraptor2_la_SOURCES += git-version.h
 
 # raptor_parse.c is the first source file so this ensures
 # git-version.h is created before it and before the actual file
