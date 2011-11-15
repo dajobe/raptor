@@ -271,6 +271,10 @@ raptor_www_curl_set_ssl_cert_options(raptor_www* www,
     curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERTTYPE, cert_type);
   
   /* passphrase */
+  /* Removed in 7.16.4 */
+#if LIBCURL_VERSION_NUM < 0x071004
+#define CURLOPT_KEYPASSWD CURLOPT_SSLKEYPASSWD
+#endif
   if(cert_passphrase)
     curl_easy_setopt(www->curl_handle, CURLOPT_KEYPASSWD, cert_passphrase);
 
