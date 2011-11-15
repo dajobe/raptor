@@ -1,3 +1,8 @@
+2011-11-14  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_5 for 2.0.5 release (GIT
+	b286cc333996006f008a5ddd3ed116a7613a86bc)
+
 2011-11-13  Dave Beckett <dave@dajobe.org>
 
 	* docs/.gitignore, docs/Makefile.am: docs fixes to use
