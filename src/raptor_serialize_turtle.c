@@ -1274,6 +1274,8 @@ raptor_term_write_turtle(raptor_iostream* iostr,
                                  term->value.literal.string,
                                  term->value.literal.language, 
                                  term->value.literal.datatype);
+  } else if(term->type == RAPTOR_TERM_TYPE_BLANK) {
+    raptor_bnodeid_ntriples_write(term->value.blank.string, term->value.blank.string_len, iostr);
   } else {
     rc = 2;
   }

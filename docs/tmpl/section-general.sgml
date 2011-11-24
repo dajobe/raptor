@@ -98,7 +98,7 @@ and various other utility functions.
 @buffer: 
 @size: 
 @format: 
-@Varargs: 
+@...: 
 @Returns: 
 
 
