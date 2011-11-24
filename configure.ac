@@ -92,7 +92,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   FLEX_REC_VERSION=2.5.33
   AC_MSG_CHECKING(flex version)
   if test "X$LEX" != "X:"; then
-    FLEX_VERSION=`$LEX -V 2>&1 | awk '{print $NF}'`
+    FLEX_VERSION=`$LEX -V 2>&1 | $AWK '{print $NF}'`
     FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
     FLEX_MIN_VERSION_DEC=`echo $FLEX_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
@@ -633,8 +633,8 @@ if test "X$XML_CONFIG" != X; then
     have_libxml=1
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
     LIBXML_VERSION=`$XML_CONFIG --version`
-    libxml_version_dec=`echo $LIBXML_VERSION | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-    libxml_min_version_dec=`echo $libxml_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxml_version_dec=`echo $LIBXML_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxml_min_version_dec=`echo $libxml_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     AC_MSG_RESULT(yes - version $LIBXML_VERSION)
     if test $libxml_version_dec -lt $libxml_min_version_dec; then
        AC_MSG_WARN(Using libxml $LIBXML_VERSION is unsupported - $libxml_min_version or newer required.)
@@ -737,8 +737,8 @@ if test "X$XSLT_CONFIG" != X; then
     have_libxslt=1
     CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
     LIBXSLT_VERSION=`$XSLT_CONFIG --version`
-    libxslt_version_dec=`echo $LIBXSLT_VERSION | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-    libxslt_min_version_dec=`echo $libxslt_min_version | awk -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxslt_version_dec=`echo $LIBXSLT_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     AC_MSG_RESULT(yes - version $LIBXSLT_VERSION)
     if test $libxslt_version_dec -lt $libxslt_min_version_dec; then
        AC_MSG_WARN(Using libxslt $LIBXSLT_VERSION is unsupported - $libxslt_min_version or newer required.)
