@@ -609,6 +609,37 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 }
 
 
+/**
+ * raptor_sequence_reverse:
+ * @seq: sequence
+ * @start_index: starting index
+ * @length: number of elements to reverse
+ *
+ * Reverse a range of elements
+ *
+ * Return value: non-0 if arguments are out of range
+ */
+int
+raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length)
+{
+  int end_index = start_index + length - 1;
+
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
+
+  if(end_index >= seq->size || length == 1)
+    return 1;
+
+  while( (start_index != end_index) && (start_index != end_index + 1) ) {
+    void* tmp;
+    tmp = seq->sequence[start_index];
+    seq->sequence[start_index] = seq->sequence[end_index];
+    seq->sequence[end_index] = tmp;
+    start_index++; end_index--;
+  }
+
+  return 0;
+}
+
 #endif
 
 

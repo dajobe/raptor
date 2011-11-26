@@ -1518,13 +1518,14 @@ void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 
 RAPTOR_API
 void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare);
+RAPTOR_API
+int raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length);
 
 /* helper for printing sequences of strings */ 
 RAPTOR_API
 int raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
-
 
 /* Unicode and UTF8 */
 
