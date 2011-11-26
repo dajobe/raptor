@@ -551,7 +551,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
 
 
 #ifdef RAPTOR_XML_EXPAT
-  rc = XML_Parse(xp, (char*)buffer, len, is_end);
+  rc = XML_Parse(xp, (char*)buffer, RAPTOR_BAD_CAST(int, len), is_end);
   if(!rc) /* expat: 0 is failure */
     goto handle_error;
   if(is_end)
@@ -627,8 +627,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     char *error_buffer;
 
     error_length = strlen(error_message);
-    error_buffer = (char*)RAPTOR_MALLOC(cstring, 
-                                      ERROR_PREFIX_LEN + error_length+1);
+    error_buffer = RAPTOR_MALLOC(char*, ERROR_PREFIX_LEN + error_length + 1);
     if(error_buffer) {
       memcpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
       memcpy(error_buffer + ERROR_PREFIX_LEN, error_message, error_length + 1);
