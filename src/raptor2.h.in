@@ -1522,7 +1522,9 @@ RAPTOR_API
 int raptor_sequence_swap(raptor_sequence* seq, int i, int j);
 RAPTOR_API
 int raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length);
-
+RAPTOR_API
+int raptor_sequence_next_permutation(raptor_sequence *seq, raptor_data_compare_handler compare);
+  
 /* helper for printing sequences of strings */ 
 RAPTOR_API
 int raptor_sequence_print(raptor_sequence* seq, FILE* fh);

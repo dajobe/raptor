@@ -663,6 +663,78 @@ raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length)
   return 0;
 }
 
+
+/**
+ * raptor_sequence_next_permutation:
+ * @seq: int seq
+ * @compare: comparison function
+ *
+ * Get the next permutation of a sequence in lexicographic order
+ *
+ * Assumes the initial order of the items is lexicographically
+ * increasing.  This function alters the order of the items until the
+ * last permuatation is done at which point the contents is reset to
+ * the intial order.
+ *
+ * Algorithm used is described in
+ * <http://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order>
+ *
+ * The comparison function @compare is compatible with that used for
+ * qsort() and provides the addresses of pointers to the data that
+ * must be dereferenced to get to the stored sequence data.
+ * 
+ * Return value: non-0 at the last permutation
+ */
+RAPTOR_EXTERN_C
+int
+raptor_sequence_next_permutation(raptor_sequence *seq,
+                                 raptor_data_compare_handler compare)
+{
+  int k;
+  int l;
+  void* temp;
+  
+  if(seq->size < 2)
+    return 1;
+  
+  /* 1. Find the largest index k such that a[k] < a[k + 1]. If no such
+   * index exists, the permutation is the last permutation.
+   */
+  k = seq->size - 2;
+  while(k >= 0 && compare(seq->sequence[k], seq->sequence[k + 1]) >= 0)
+    k--;
+  
+  if(k == -1) {
+    /* done - reset to starting order */
+    raptor_sequence_reverse(seq, 0, seq->size);
+    return 1;
+  }
+  
+  /* 2. Find the largest index l such that a[k] < a[l]. Since k + 1
+   * is such an index, l is well defined and satisfies k < l.
+   */
+  l = seq->size - 1;
+  while( compare(seq->sequence[k], seq->sequence[l]) >= 0)
+    l--;
+  
+  /* 3. Swap a[k] with a[l]. */
+#if 1
+  temp = seq->sequence[k];
+  seq->sequence[k] = seq->sequence[l];
+  seq->sequence[l] = temp;
+#else
+  raptor_sequence_swap(seq, k, l);
+#endif
+
+  /* 4. Reverse the sequence from a[k + 1] up to and including the
+   * final element a[n].
+   */
+  raptor_sequence_reverse(seq, k + 1, seq->size - (k + 1));
+
+  return 0;
+}
+
+
 #endif
 
 
