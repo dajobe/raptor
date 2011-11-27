@@ -610,6 +610,32 @@ raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src)
 
 
 /**
+ * raptor_sequence_swap:
+ * @seq: sequence
+ * @i: first data index
+ * @j: second data index
+ *
+ * Swap a pair of elements in a sequence
+ *
+ * Return value: non-0 if arguments are out of range
+ */
+int
+raptor_sequence_swap(raptor_sequence* seq, int i, int j)
+{
+  if(i < 0 || i >= seq->size || j < 0 || j >= seq->size)
+    return 1;
+
+  if(i != j) {
+    void* tmp = seq->sequence[i];
+    seq->sequence[i] = seq->sequence[j];
+    seq->sequence[j] = tmp;
+  }
+  
+  return 0;
+}
+
+
+/**
  * raptor_sequence_reverse:
  * @seq: sequence
  * @start_index: starting index
@@ -626,14 +652,11 @@ raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length)
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
-  if(end_index >= seq->size || length == 1)
+  if(end_index >= seq->size || start_index < 1 || length <= 1)
     return 1;
 
   while( (start_index != end_index) && (start_index != end_index + 1) ) {
-    void* tmp;
-    tmp = seq->sequence[start_index];
-    seq->sequence[start_index] = seq->sequence[end_index];
-    seq->sequence[end_index] = tmp;
+    raptor_sequence_swap(seq, start_index, end_index);
     start_index++; end_index--;
   }
 

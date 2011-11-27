@@ -1519,6 +1519,8 @@ void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 RAPTOR_API
 void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare);
 RAPTOR_API
+int raptor_sequence_swap(raptor_sequence* seq, int i, int j);
+RAPTOR_API
 int raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length);
 
 /* helper for printing sequences of strings */ 

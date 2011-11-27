@@ -273,16 +273,18 @@ raptor_new_sequence
 raptor_new_sequence_with_context
 raptor_free_sequence
 raptor_sequence_delete_at
-raptor_sequence_size
-raptor_sequence_set_at
-raptor_sequence_push
-raptor_sequence_shift
 raptor_sequence_get_at
-raptor_sequence_pop
-raptor_sequence_unshift
-raptor_sequence_sort
-raptor_sequence_print
 raptor_sequence_join
+raptor_sequence_pop
+raptor_sequence_print
+raptor_sequence_push
+raptor_sequence_reverse
+raptor_sequence_set_at
+raptor_sequence_shift
+raptor_sequence_size
+raptor_sequence_sort
+raptor_sequence_swap
+raptor_sequence_unshift
 </SECTION>
 
 <SECTION>
