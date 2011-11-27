@@ -403,6 +403,9 @@
 2.0.4	-	-	-	2.0.5	int	raptor_vsnprintf2	(char *buffer, size_t size, const char *format, va_list arguments)	Deprecates raptor_vsnprintf()
 2.0.4	-	-	-	2.0.5	int	raptor_snprintf	(char *buffer, size_t size, const char *format, ...)	-
 2.0.4	-	-	-	2.0.5	int	raptor_vasprintf	(char **ret, const char *format, va_list arguments)	-
+2.0.5	-	-	-	2.0.6	int	raptor_sequence_swap	(raptor_sequence* seq, int i, int j)	-
+2.0.5	-	-	-	2.0.6	int	raptor_sequence_reverse	(raptor_sequence* seq, int start_index, int length)	-
+2.0.5	-	-	-	2.0.6	int	raptor_sequence_next_permutation	(raptor_sequence *seq, raptor_data_compare_handler compare)	-
 #
 # Types
 #
