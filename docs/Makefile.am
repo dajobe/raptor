@@ -121,6 +121,9 @@ upgrade-script.pl
 DISTCLEANFILES+= \
 raptor-fake.h
 
+$(builddir)/raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
+
 if MAINTAINER_MODE
 libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
 	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../scripts/fix-groff-xhtml $@
@@ -149,8 +152,5 @@ $(top_builddir)/scripts/build-formats:
 
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
-
-$(builddir)/raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
-	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif
