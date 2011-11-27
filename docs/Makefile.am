@@ -35,7 +35,7 @@ SCAN_OPTIONS= --deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
 DOC_SOURCE_DIR=../src
 
 # Used for dependencies
-HFILE_GLOB=$(srcdir)/raptor-fake.h
+HFILE_GLOB=$(builddir)/raptor-fake.h
 CFILE_GLOB=$(top_srcdir)/src/raptor_*.c
 
 IGNORE_CFILES= \
@@ -51,7 +51,7 @@ parsedate.c \
 strcasecmp.c
 
 # Use fixed version of raptor2.h
-EXTRA_HFILES=$(srcdir)/raptor-fake.h
+EXTRA_HFILES=$(builddir)/raptor-fake.h
 
 # Headers to ignore: yes raptor2.h is intended to be in this list
 # since it is added as a fixed file raptor-fake.h by EXTRA_HFILES above
@@ -150,7 +150,7 @@ $(top_builddir)/scripts/build-formats:
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
-raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+$(builddir)/raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
 	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif
