@@ -114,7 +114,12 @@ intseq_next_permutation(intseq *iseq)
   return raptor_sequence_next_permutation(iseq->seq, intseq_compare_at);
 }
 
-
+static int
+intseq_get_at(intseq *iseq, int idx)
+{       
+  return *(int*)(raptor_sequence_get_at(iseq->seq, idx));
+}
+       
 #define MAX_SIZE 5
 
 int expected_results_size5[120][5] = {
@@ -276,7 +281,7 @@ int main (int argc, char *argv[])
         int ok = 1;
         
         for(j = 0; j < size; j++) {
-          int actual = *(int*)(raptor_sequence_get_at(iseq->seq, j));
+          int actual = intseq_get_at(iseq, j);
           int expected = expected_result[j];
           if(actual != expected) {
             ok = 0;
