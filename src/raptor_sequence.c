@@ -676,8 +676,7 @@ raptor_sequence_reverse(raptor_sequence* seq, int start_index, int length)
  * last permuatation is done at which point the contents is reset to
  * the intial order.
  *
- * Algorithm used is described in
- * <http://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order>
+ * Algorithm used is described in http://en.wikipedia.org/wiki/Permutation
  *
  * The comparison function @compare is compatible with that used for
  * qsort() and provides the addresses of pointers to the data that

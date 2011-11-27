@@ -68,12 +68,73 @@ where the items are added and removed from the end.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_sequence_size ##### -->
+<!-- ##### FUNCTION raptor_sequence_get_at ##### -->
 <para>
 
 </para>
 
 @seq: 
+@idx: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_join ##### -->
+<para>
+
+</para>
+
+@dest: 
+@src: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_next_permutation ##### -->
+<para>
+
+</para>
+
+@seq: 
+@compare: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_pop ##### -->
+<para>
+
+</para>
+
+@seq: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_print ##### -->
+<para>
+
+</para>
+
+@seq: 
+@fh: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_push ##### -->
+<para>
+
+</para>
+
+@seq: 
+@data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_sequence_reverse ##### -->
+<para>
+
+</para>
+
+@seq: 
+@start_index: 
+@length: 
 @Returns: 
 
 
@@ -88,16 +149,6 @@ where the items are added and removed from the end.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_sequence_push ##### -->
-<para>
-
-</para>
-
-@seq: 
-@data: 
-@Returns: 
-
-
 <!-- ##### FUNCTION raptor_sequence_shift ##### -->
 <para>
 
@@ -108,26 +159,7 @@ where the items are added and removed from the end.
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_sequence_get_at ##### -->
-<para>
-
-</para>
-
-@seq: 
-@idx: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_sequence_pop ##### -->
-<para>
-
-</para>
-
-@seq: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_sequence_unshift ##### -->
+<!-- ##### FUNCTION raptor_sequence_size ##### -->
 <para>
 
 </para>
@@ -145,23 +177,23 @@ where the items are added and removed from the end.
 @compare: 
 
 
-<!-- ##### FUNCTION raptor_sequence_print ##### -->
+<!-- ##### FUNCTION raptor_sequence_swap ##### -->
 <para>
 
 </para>
 
 @seq: 
-@fh: 
+@i: 
+@j: 
 @Returns: 
 
 
-<!-- ##### FUNCTION raptor_sequence_join ##### -->
+<!-- ##### FUNCTION raptor_sequence_unshift ##### -->
 <para>
 
 </para>
 
-@dest: 
-@src: 
+@seq: 
 @Returns: 
 
 
