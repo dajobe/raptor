@@ -1,31 +1,22 @@
-2011-11-27  Dave Beckett <dave@dajobe.org>
+2011-11-27  Dave Beckett  <dave@dajobe.org>
 
-	* docs/raptor-1-to-2-map.tsv:
-	raptor_sequence swap, reverse and
+	* Snapshotted raptor2_2_0_6 for 2.0.6 release (GIT f9f3768e7080f1f132856b731c232c8cbeac1634)
+
+	* docs/raptor-1-to-2-map.tsv: raptor_sequence swap, reverse and
 	next_permutation
-
-2011-11-27  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor2-sections.txt:
 	raptor_sequence_next_permutation
 
-2011-11-27  Dave Beckett <dave@dajobe.org>
-
 	* src/raptor_permute_test.c:
 	(intseq_get_at): Add for testing clarity
-
-2011-11-27  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_permute_test.c: Add a proper value checking test for
 	permute size 5
 
-2011-11-27  Dave Beckett <dave@dajobe.org>
-
 	* src/Makefile.am, src/raptor_permute.c, src/raptor_permute_test.c:
 	raptor_permute_test.c is a pure test and never linked into
 	libraptor2
-
-2011-11-27  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_permute.c: Turn permute code into a test for sequence
 	raptor_sequence_next_permutation
