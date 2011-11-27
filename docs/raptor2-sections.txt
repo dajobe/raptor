@@ -275,6 +275,7 @@ raptor_free_sequence
 raptor_sequence_delete_at
 raptor_sequence_get_at
 raptor_sequence_join
+raptor_sequence_next_permutation
 raptor_sequence_pop
 raptor_sequence_print
 raptor_sequence_push
