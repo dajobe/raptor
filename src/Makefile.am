@@ -73,8 +73,7 @@ raptor_sequence.c raptor_stringbuffer.c raptor_iostream.c \
 raptor_xml.c raptor_xml_writer.c raptor_set.c turtle_common.c \
 raptor_turtle_writer.c raptor_avltree.c snprintf.c \
 raptor_json_writer.c raptor_memstr.c raptor_concepts.c \
-raptor_syntax_description.c \
-raptor_permute.c
+raptor_syntax_description.c
 if RAPTOR_PARSER_RDFXML
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c
@@ -187,6 +186,7 @@ libraptor2_la_LIBADD = @LTLIBOBJS@
 
 
 EXTRA_DIST=\
+raptor_permute_test.c \
 raptor_www_test.c \
 raptor_nfc_test.c \
 raptor_win32.c \
@@ -293,8 +293,8 @@ raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2.la
 raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c libraptor2.la $(LIBS)
 
-raptor_permute_test: $(srcdir)/raptor_permute.c libraptor2.la
-	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_permute.c libraptor2.la $(LIBS)
+raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_permute_test.c libraptor2.la $(LIBS)
 
 
 if MAINTAINER_MODE
