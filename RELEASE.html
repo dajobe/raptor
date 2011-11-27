@@ -14,6 +14,27 @@
 <p>Not yet released.
 </p>
 
+<p>Fixed expat support which was broken in 2.0.5</p>
+
+<p>Handle libCurl SSL options before 7.16.4 (that's 2007) since old
+libcurl is still around on Enterprise (that means old) linux systems.
+</p>
+
+<h3>Sequence Changes</h3>
+
+<p>Added utility functions to swap elements, reverse the sequence and
+generate permuations:</p>
+<pre>
+    int raptor_sequence_swap(raptor_sequence* seq,
+      int i, int j);
+
+    int raptor_sequence_reverse(raptor_sequence* seq,
+      int start_index, int length);
+
+    int raptor_sequence_next_permutation(raptor_sequence *seq,
+      raptor_data_compare_handler compare);
+</pre>
+
 
 <h2 id="rel2_0_5"><a name="rel2_0_5">Raptor2 2.0.5 changes</a></h2>
 

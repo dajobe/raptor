@@ -1,4 +1,72 @@
-2011-11-14  Dave Beckett  <dave@dajobe.org>
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv:
+	raptor_sequence swap, reverse and
+	next_permutation
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor2-sections.txt:
+	raptor_sequence_next_permutation
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_permute_test.c:
+	(intseq_get_at): Add for testing clarity
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_permute_test.c: Add a proper value checking test for
+	permute size 5
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_permute.c, src/raptor_permute_test.c:
+	raptor_permute_test.c is a pure test and never linked into
+	libraptor2
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_permute.c: Turn permute code into a test for sequence
+	raptor_sequence_next_permutation
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_next_permutation): Added based on int permute
+	code
+
+	* docs/raptor2-sections.txt, src/raptor2.h.in,
+	src/raptor_sequence.c:
+	(raptor_sequence_swap): Added pulled out of raptor_sequence_reverse
+
+2011-11-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_reverse): Added
+
+	* src/raptor_expat.c, src/raptor_sax2.c: Fix expat support
+
+2011-11-23  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_permute.c:
+	Add test permutations code
+
+	* configure.ac: Use AWK
+
+	* src/raptor_namespace.c: Explain namespace depth, starting and
+	scopes
+
+2011-11-15  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/Makefile.am: Made git-version.h a non-distributable source
+	file.
+
+2011-11-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_set_ssl_cert_options): Handle curl < 7.16.4
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.6
 
 	* Snapshotted raptor2_2_0_5 for 2.0.5 release (GIT
 	b286cc333996006f008a5ddd3ed116a7613a86bc)
