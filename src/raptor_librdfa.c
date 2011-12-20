@@ -324,7 +324,8 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const rdfa_names[2] = { "rdfa", NULL };
 
-static const char* const rdfa_uri_strings[2] = {
+static const char* const rdfa_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/RDFa",
   "http://www.w3.org/TR/rdfa/",
   NULL
 };

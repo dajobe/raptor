@@ -733,7 +733,7 @@ raptor_json_parse_recognise_syntax(raptor_parser_factory* factory,
 static const char* const json_names[2] = { "json", NULL };
 
 static const char* const json_uri_strings[2] = {
-  "http://n2.talis.com/wiki/RDF_JSON_Specification",
+  "http://docs.api.talis.com/platform-api/output-types/rdf-json",
   NULL
 };
   

@@ -35,7 +35,7 @@ SCAN_OPTIONS= --deprecated-guards="RAPTOR_DISABLE_DEPRECATED"
 DOC_SOURCE_DIR=../src
 
 # Used for dependencies
-HFILE_GLOB=$(srcdir)/raptor-fake.i
+HFILE_GLOB=$(builddir)/raptor-fake.h
 CFILE_GLOB=$(top_srcdir)/src/raptor_*.c
 
 IGNORE_CFILES= \
@@ -51,10 +51,10 @@ parsedate.c \
 strcasecmp.c
 
 # Use fixed version of raptor2.h
-EXTRA_HFILES=$(srcdir)/raptor-fake.i
+EXTRA_HFILES=$(builddir)/raptor-fake.h
 
 # Headers to ignore: yes raptor2.h is intended to be in this list
-# since it is added as a fixed file raptor-fake.i by EXTRA_HFILES above
+# since it is added as a fixed file raptor-fake.h by EXTRA_HFILES above
 IGNORE_HFILES= \
 	n3_common.h \
 	n3_lexer.h \
@@ -69,7 +69,8 @@ IGNORE_HFILES= \
 	turtle_common.h \
 	turtle_lexer.h \
 	turtle_parser.h \
-	win32_raptor_config.h
+	win32_raptor_config.h \
+	git-version.h
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed
 # if $(DOC_MODULE).types is non-empty.
@@ -118,7 +119,10 @@ version.xml.in \
 upgrade-script.pl
 
 DISTCLEANFILES+= \
-raptor-fake.i
+raptor-fake.h
+
+$(builddir)/raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
+	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 if MAINTAINER_MODE
 libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
@@ -148,8 +152,5 @@ $(top_builddir)/scripts/build-formats:
 
 upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
 	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
-
-raptor-fake.i: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
-	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
 
 endif

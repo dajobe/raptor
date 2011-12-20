@@ -83,9 +83,9 @@ void
 raptor_expat_update_document_locator(raptor_sax2* sax2,
                                      raptor_locator* locator)
 {
-  locator->line = XML_GetCurrentLineNumber(sax2->xp);
-  locator->column = XML_GetCurrentColumnNumber(sax2->xp);
-  locator->byte = XML_GetCurrentByteIndex(sax2->xp);
+  locator->line = RAPTOR_BAD_CAST(int, XML_GetCurrentLineNumber(sax2->xp));
+  locator->column = RAPTOR_BAD_CAST(int, XML_GetCurrentColumnNumber(sax2->xp));
+  locator->byte = RAPTOR_BAD_CAST(int, XML_GetCurrentByteIndex(sax2->xp));
 }
 
 /* end if RAPTOR_XML_EXPAT */

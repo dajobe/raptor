@@ -1,3 +1,136 @@
+2011-11-27  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_6 for 2.0.6 release (GIT f9f3768e7080f1f132856b731c232c8cbeac1634)
+
+	* docs/raptor-1-to-2-map.tsv: raptor_sequence swap, reverse and
+	next_permutation
+
+	* docs/raptor2-sections.txt:
+	raptor_sequence_next_permutation
+
+	* src/raptor_permute_test.c:
+	(intseq_get_at): Add for testing clarity
+
+	* src/raptor_permute_test.c: Add a proper value checking test for
+	permute size 5
+
+	* src/Makefile.am, src/raptor_permute.c, src/raptor_permute_test.c:
+	raptor_permute_test.c is a pure test and never linked into
+	libraptor2
+
+	* src/raptor_permute.c: Turn permute code into a test for sequence
+	raptor_sequence_next_permutation
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_next_permutation): Added based on int permute
+	code
+
+	* docs/raptor2-sections.txt, src/raptor2.h.in,
+	src/raptor_sequence.c:
+	(raptor_sequence_swap): Added pulled out of raptor_sequence_reverse
+
+2011-11-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_reverse): Added
+
+	* src/raptor_expat.c, src/raptor_sax2.c: Fix expat support
+
+2011-11-23  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_permute.c:
+	Add test permutations code
+
+	* configure.ac: Use AWK
+
+	* src/raptor_namespace.c: Explain namespace depth, starting and
+	scopes
+
+2011-11-15  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/Makefile.am: Made git-version.h a non-distributable source
+	file.
+
+2011-11-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_set_ssl_cert_options): Handle curl < 7.16.4
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.6
+
+	* Snapshotted raptor2_2_0_5 for 2.0.5 release (GIT
+	b286cc333996006f008a5ddd3ed116a7613a86bc)
+
+2011-11-13  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore, docs/Makefile.am: docs fixes to use
+	raptor-fake.h
+
+	* docs/tmpl/section-general.sgml, src/snprintf.c,
+	src/raptor2.h.in: autodocs
+
+	* ChangeLog, NEWS.html, RELEASE.html: 2.0.5
+
+	* src/Makefile.am: no rdfdiff here
+
+	* src/ntriples_parse.c, src/raptor_nfc_test.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c: Check for error
+	return for all raptor_unicode_utf8_string_get_char() calls
+
+	Fixes Issue #000481
+	http://bugs.librdf.org/mantis/view.php?id=481
+
+	* .gitignore: Ignore git-version.h
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bug-481.nq,
+	tests/ntriples/bug-481.out: Add test/results for Issue #481
+
+	* autogen.sh: update autogen.sh
+
+	* configure.ac, src/Makefile.am, src/raptor_general.c,
+	src/raptor_internal.h:
+	Generate GIT commit in version string when
+	compiling from GIT Approach copied from rasqal
+
+2011-11-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/ntriples_parse.c:
+	(raptor_nquads_parse_recognise_syntax): Guess nquads over ntriples
+	since now ntriples parses fine on nquads parser
+
+2011-11-04  Lauri Aalto <laalto@iki.fi>
+
+	* tests/ntriples/Makefile.am,
+	tests/ntriples/testnq-optional-context.nq,
+	tests/ntriples/testnq-optional-context.out: added test case for
+	optional context node in nquads
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Make context optional for nquads.
+
+	Fixes Issue #0000479
+	http://bugs.librdf.org/mantis/view.php?id=479
+
+2011-10-18  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/turtle_parser.y: Added the W3C format URI for the Turtle
+	parser
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Added W3C Format URIs to the parser and serialiser syntax
+	descriptions.
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c, src/raptor_serialize_json.c:
+	Updated the URL
+	for RDF/JSON serialisation specification.
+
 2011-09-26  Dave Beckett <dave@dajobe.org>
 
 	* Merge GitHub pull request #2 from presbrey/master
@@ -273,7 +406,9 @@
 	src/raptor_unicode.c: Added UTF-8 strlen and substr utility
 	functions
 
-	(raptor_unicode_utf8_strlen): Added (raptor_unicode_utf8_substr): Added
+	(raptor_unicode_utf8_strlen): Added
+
+	(raptor_unicode_utf8_substr): Added
 
 2011-08-01  Dave Beckett <dave@dajobe.org>
 

@@ -379,9 +379,9 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     if(allow_utf8) {
       if(c > 0x7f) {
         /* just copy the UTF-8 bytes through */
-        size_t unichar_len;
+        int unichar_len;
         unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
-        if(unichar_len > *lenp) {
+        if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
           raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
           /* UTF-8 encoding had an error or ended in the middle of a string */
           return 1;
@@ -393,8 +393,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         
         p += unichar_len;
         (*lenp) -= unichar_len;
-        rdf_parser->locator.column += RAPTOR_GOOD_CAST(int, unichar_len);
-        rdf_parser->locator.byte += RAPTOR_GOOD_CAST(int, unichar_len);
+        rdf_parser->locator.column += unichar_len;
+        rdf_parser->locator.byte += unichar_len;
         continue;
       }
     } else if(!IS_ASCII_PRINT(c)) {
@@ -600,10 +600,13 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   len--;
 
 
-  /* Must be triple */
+  /* Must be triple/quad */
 
   for(i = 0; i < max_terms; i++) {
     if(!len) {
+      /* context is optional in nquads */
+      if (i == 3)
+	break;
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
     }
@@ -1017,7 +1020,7 @@ raptor_ntriples_parse_start(raptor_parser* rdf_parser)
 }
 
 
-#ifdef RAPTOR_PARSER_NTRIPLES
+#if defined RAPTOR_PARSER_NTRIPLES || defined RAPTOR_PARSER_NQUADS
 static int
 raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory, 
                                        const unsigned char *buffer, size_t len,
@@ -1097,7 +1100,8 @@ raptor_ntriples_parse_recognise_syntax(raptor_parser_factory* factory,
 
 static const char* const ntriples_names[2] = { "ntriples", NULL };
 
-static const char* const ntriples_uri_strings[2] = {
+static const char* const ntriples_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/N-Triples",
   "http://www.w3.org/TR/rdf-testcases/#ntriples",
   NULL
 };
@@ -1153,6 +1157,7 @@ raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory,
                                      const char *mime_type)
 {
   int score = 0;
+  int ntriples_score;
   
   if(suffix) {
     if(!strcmp((const char*)suffix, "nq"))
@@ -1173,7 +1178,11 @@ raptor_nquads_parse_recognise_syntax(raptor_parser_factory* factory,
       score += 2;
   }
   
-  /* Do not guess using content since it looks so similar to N-Triples */
+  /* ntriples is a subset of nquads, score higher than ntriples */
+  ntriples_score = raptor_ntriples_parse_recognise_syntax(factory, buffer, len, identifier, suffix, mime_type);
+  if(ntriples_score > 0) {
+    score += ntriples_score + 1;
+  }
 
   return score;
 }

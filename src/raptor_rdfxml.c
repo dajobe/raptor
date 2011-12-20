@@ -3136,7 +3136,8 @@ raptor_rdfxml_parse_finish_factory(raptor_parser_factory* factory)
 
 static const char* const rdfxml_names[3] = { "rdfxml", "raptor", NULL};
 
-static const char* const rdfxml_uri_strings[2] = {
+static const char* const rdfxml_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/RDF_XML",
   "http://www.w3.org/TR/rdf-syntax-grammar",
   NULL
 };

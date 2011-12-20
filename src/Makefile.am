@@ -2,7 +2,7 @@
 #
 # Makefile.am - automake file for Raptor libraptor
 #
-# Copyright (C) 2000-2010, David Beckett http://www.dajobe.org/
+# Copyright (C) 2000-2011, David Beckett http://www.dajobe.org/
 # Copyright (C) 2000-2005, University of Bristol, UK http://www.bristol.ac.uk/
 # 
 # This package is Free Software and part of Redland http://librdf.org/
@@ -33,15 +33,16 @@ TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
-raptor_turtle_writer_test raptor_avltree_test raptor_term_test
+raptor_turtle_writer_test raptor_avltree_test raptor_term_test \
+raptor_permute_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
 
 CLEANFILES=$(TESTS) \
 turtle_lexer_test turtle_parser_test \
-rdfdiff \
-*.plist
+*.plist \
+git-version.h
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
 turtle_parser.c turtle_parser.h turtle_parser.output
@@ -185,6 +186,7 @@ libraptor2_la_LIBADD = @LTLIBOBJS@
 
 
 EXTRA_DIST=\
+raptor_permute_test.c \
 raptor_www_test.c \
 raptor_nfc_test.c \
 raptor_win32.c \
@@ -196,7 +198,17 @@ parsedate.y
 LEX=@LEX@
 YACC=@YACC@
 
+
+nodist_libraptor2_la_SOURCES =
+
 if MAINTAINER_MODE
+nodist_libraptor2_la_SOURCES += git-version.h
+
+# raptor_parse.c is the first source file so this ensures
+# git-version.h is created before it and before the actual file
+# dependencies are calculated as a side-effect of compilation
+raptor_parse.c: git-version.h
+
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/../scripts/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
@@ -281,8 +293,35 @@ raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2.la
 raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c libraptor2.la $(LIBS)
 
+raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_permute_test.c libraptor2.la $(LIBS)
+
 
 if MAINTAINER_MODE
+git-version.h: check-version
+
+# Always run this in maintainer mode but do not always change git-version.h
+.PHONY: check-version
+check-version:
+	@file="git-version.h" ; \
+	if test -d ../.git; then \
+	  git_version=`cd .. && git rev-parse HEAD`; \
+	else \
+	  git_version="unknown"; \
+	fi; \
+	$(RECHO) "GIT version $$git_version"; \
+	tmp="$$file.tmp"; \
+	$(RECHO) "#define GIT_VERSION \"$$git_version\"" > $$tmp; \
+        if test -f $$file; then \
+          if cmp $$file $$tmp >/dev/null 2>&1; then \
+	    rm $$tmp; \
+	  else \
+	    mv $$tmp $$file; \
+          fi; \
+	else \
+	  mv $$tmp $$file; \
+	fi
+
 # Run Clang static analyzer over sources.
 analyze: $(SOURCES)
 	@list='$(SOURCES)'; \

@@ -125,7 +125,7 @@ raptor_hash_ns_string(const unsigned char *str, int length)
  *
  * Initialise an existing namespaces stack object
  *
- * This sets up the stick optionally with some common RDF namespaces.
+ * This sets up the stack optionally with some common RDF namespaces.
  *
  * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
  * and XSD (RDQL uses this) or 3+ undefined.
@@ -501,7 +501,14 @@ raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack,
  * @depth: depth of namespace in the stack
  * 
  * Constructor - create a new namespace from a prefix and URI object.
+ *
+ * This declares but does not enable the namespace declaration (or 'start' it)
+ * Use raptor_namespaces_start_namespace() to make the namespace
+ * enabled and in scope for binding prefixes.
  * 
+ * Alternatively use raptor_namespaces_start_namespace_full() can construct
+ * and enable a namespace in one call.
+ *
  * Return value: a new #raptor_namespace or NULL on failure
  **/
 raptor_namespace*
@@ -582,8 +589,22 @@ raptor_new_namespace_from_uri(raptor_namespace_stack *nstack,
  * @ns_uri_string: namespace URI string
  * @depth: depth of namespace in the stack
  * 
- * Constructor - create a new namespace from a prefix and URI string.
+ * Constructor - create a new namespace from a prefix and URI string with a depth scope.
  * 
+ * This declares but does not enable the namespace declaration (or 'start' it)
+ * Use raptor_namespaces_start_namespace() to make the namespace
+ * enabled and in scope for binding prefixes.
+ *
+ * Alternatively use raptor_namespaces_start_namespace_full() can construct
+ * and enable a namespace in one call.
+ *
+ * The @depth is a way to use the stack of namespaces for providing scoped
+ * namespaces where inner scope namespaces override outer scope namespaces.
+ * This is primarily for RDF/XML and XML syntaxes that have hierarchical
+ * elements.  The main use of this is raptor_namespaces_end_for_depth()
+ * to disable ('end') all namespaces at a given depth.   Otherwise set this
+ * to 0.
+ *
  * Return value: a new #raptor_namespace or NULL on failure
  **/
 raptor_namespace*
@@ -620,6 +641,14 @@ raptor_new_namespace(raptor_namespace_stack *nstack,
  * Copy an existing namespace to a namespace stack with a new depth
  * and start it.
  * 
+ * The @depth is a way to use the stack of namespaces for providing scoped
+ * namespaces where inner scope namespaces override outer scope namespaces.
+ * This is primarily for RDF/XML and XML syntaxes that have hierarchical
+ * elements.  The main use of this is raptor_namespaces_end_for_depth()
+ * to disable ('end') all namespaces at a given depth.   If depths are
+ * not being needed it is unlikely this call is ever needed to copy an
+ * existing namespace at a new depth.
+ *
  * Return value: non-0 on failure
  **/
 int

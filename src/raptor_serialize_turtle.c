@@ -1143,7 +1143,8 @@ raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory)
 
 static const char* const turtle_names[2] = { "turtle", NULL};
 
-static const char* const turtle_uri_strings[2] = {
+static const char* const turtle_uri_strings[3] = {
+  "http://www.w3.org/ns/formats/Turtle",
   "http://www.dajobe.org/2004/01/turtle/",
   NULL
 };
