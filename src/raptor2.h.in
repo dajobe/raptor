@@ -1281,6 +1281,8 @@ RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
 RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
+RAPTOR_API
+char* raptor_uri_uri_string_as_filename(const unsigned char* uri_string, size_t uri_string_len, int* exists_p);
 
 
 /* XML utility functions */

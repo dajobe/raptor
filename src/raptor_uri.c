@@ -51,6 +51,9 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 /* Raptor includes */
 #include "raptor2.h"
@@ -1484,6 +1487,60 @@ raptor_world*
 raptor_uri_get_world(raptor_uri *uri)
 {
   return uri->world;
+}
+
+
+/**
+ * raptor_uri_uri_string_as_filename:
+ * @uri_string: uri string
+ * @uri_string_len: length of @uri_string or 0 to count it here
+ * @exists_p: returns < 0 on error, 0 if not a file, > 0 if is a file
+ *
+ * Turn a file-or-URI into a filename and check the file exists
+ *
+ * Return value: file path (if exists) or NULL if not a file
+ **/
+char*
+raptor_uri_uri_string_as_filename(const unsigned char* uri_string,
+                                  size_t uri_string_len,
+                                  int* exists_p)
+{
+  char *path = NULL;
+  int exists = -1;
+#ifdef HAVE_STAT
+  struct stat stat_buffer;
+#endif
+  
+  if(!uri_string)
+    return NULL;
+
+  if(!uri_string_len)
+    uri_string_len = strlen(RAPTOR_GOOD_CAST(const char*, uri_string));
+
+  path = raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
+  if(!path) {
+    path = RAPTOR_MALLOC(char*, uri_string_len + 1);
+    if(!path)
+      return NULL;
+    memcpy(path, uri_string, uri_string_len + 1);
+  }
+
+#ifdef HAVE_STAT
+  if(!stat(path, &stat_buffer))
+    exists = S_ISREG(stat_buffer.st_mode);
+#else
+  exists = (access(path, R_OK) < 0) ? -1 : 1
+#endif
+
+  if(exists > 0 && path) {
+    RAPTOR_FREE(char*, path);
+    path = NULL;
+  }
+  
+  if(exists_p)
+    *exists_p = exists;
+  
+  return path;
 }
 
 

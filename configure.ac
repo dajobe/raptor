@@ -259,7 +259,8 @@ MAINTAINER_CPPFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h stddef.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
+AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h stddef.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/stat.h sys/time.h setjmp.h)
+AC_CHECK_FUNCS(stat)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
