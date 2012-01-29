@@ -653,9 +653,11 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   www->locator.line= -1;
   www->locator.column= -1;
 
-  if(www->uri_filter)
-    if(www->uri_filter(www->uri_filter_user_data, uri))
-      return status;
+  if(www->uri_filter) {
+    int rc = www->uri_filter(www->uri_filter_user_data, uri);
+    if(rc)
+      return rc;
+  }
   
 #ifdef RAPTOR_WWW_NONE
   status = raptor_www_file_fetch(www);
