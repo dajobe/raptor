@@ -704,6 +704,7 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
       
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_NO_FILE:
 
     /* XML writer options */
     case RAPTOR_OPTION_RELATIVE_URIS:
@@ -825,6 +826,7 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
 
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_NO_FILE:
 
     /* XML writer options */
     case RAPTOR_OPTION_RELATIVE_URIS:

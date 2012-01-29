@@ -493,7 +493,7 @@ typedef struct {
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_OPTION_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_OPTION_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
- * @RAPTOR_OPTION_NO_NET: Deny network requests.
+ * @RAPTOR_OPTION_NO_NET: Deny network requests inside other requests.
  * @RAPTOR_OPTION_RESOURCE_BORDER: Border color of resource
  *   nodes for GraphViz DOT serializer.
  * @RAPTOR_OPTION_LITERAL_BORDER: Border color of literal nodes
@@ -525,6 +525,7 @@ typedef struct {
  * @RAPTOR_OPTION_WWW_CERT_FILENAME: String. SSL client certificate filename
  * @RAPTOR_OPTION_WWW_CERT_TYPE: String. SSL client certificate type
  * @RAPTOR_OPTION_WWW_CERT_PASSPHRASE: String. SSL client certificate passphrase
+ * @RAPTOR_OPTION_NO_FILE: Deny file reading requests inside other requests.
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.
@@ -568,7 +569,8 @@ typedef enum {
   RAPTOR_OPTION_WWW_CERT_FILENAME,
   RAPTOR_OPTION_WWW_CERT_TYPE,
   RAPTOR_OPTION_WWW_CERT_PASSPHRASE,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_WWW_CERT_PASSPHRASE
+  RAPTOR_OPTION_NO_FILE,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_NO_FILE
 } raptor_option;
 
 

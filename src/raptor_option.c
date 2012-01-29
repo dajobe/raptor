@@ -144,7 +144,7 @@ static const struct
     (raptor_option_area)(RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2),
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "noNet",
-    "Parsers and SAX2 XML Parser deny network requests."
+    "Parsers and SAX2 XML Parser deny internal network requests."
   },
   { RAPTOR_OPTION_RESOURCE_BORDER,
     RAPTOR_OPTION_AREA_SERIALIZER,
@@ -277,7 +277,13 @@ static const struct
     RAPTOR_OPTION_VALUE_TYPE_STRING,
     "wwwCertPassphrase",
     "SSL client certificate passphrase"
-  }
+  },
+  { RAPTOR_OPTION_NO_FILE,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2),
+    RAPTOR_OPTION_VALUE_TYPE_BOOL,
+    "noFile",
+    "Parsers and SAX2 deny internal file requests."
+  },
 };
 
 

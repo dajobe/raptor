@@ -245,10 +245,13 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
   for(n = 0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++)
     rss_parser->nspaces_seen[n] = 'N';
 
-  /* Optionally forbid network requests in the XML parser */
+  /* Optionally forbid internal network and file requests in the XML parser */
   raptor_sax2_set_option(rss_parser->sax2, 
                          RAPTOR_OPTION_NO_NET, NULL,
                          RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET));
+  raptor_sax2_set_option(rss_parser->sax2, 
+                         RAPTOR_OPTION_NO_FILE, NULL,
+                         RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_FILE));
   
   raptor_sax2_parse_start(rss_parser->sax2, uri);
 
