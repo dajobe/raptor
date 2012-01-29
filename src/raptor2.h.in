@@ -528,6 +528,7 @@ typedef struct {
  * @RAPTOR_OPTION_WWW_SSL_VERIFY_PEER:  Integer. SSL verify peer - non-0 to verify peer SSL certificate (default)
  * @RAPTOR_OPTION_WWW_SSL_VERIFY_HOST: Integer. SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
  * @RAPTOR_OPTION_NO_FILE: Deny file reading requests inside other requests.
+ * @RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES: When reading XML, load external entities.
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.
@@ -574,7 +575,8 @@ typedef enum {
   RAPTOR_OPTION_NO_FILE,
   RAPTOR_OPTION_WWW_SSL_VERIFY_PEER,
   RAPTOR_OPTION_WWW_SSL_VERIFY_HOST,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_WWW_SSL_VERIFY_HOST
+  RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES
 } raptor_option;
 
 

@@ -1,3 +1,20 @@
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, src/raptor2.h.in, src/raptor_libxml.c,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: CVE-2012-0037
+
+	Enforce entity loading policy in raptor_libxml_resolveEntity and
+	raptor_libxml_getEntity by checking for file URIs and network
+	URIs.
+
+	Add RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES / loadExternalEntities
+	for turning on loading of XML external entity loading, disabled by
+	default.
+
+	This affects all the parsers that use SAX2: rdfxml, rdfa,
+	rss-tag-soup (and aliases).
+
 2012-03-15  Dave Beckett <dave@dajobe.org>
 
 	* librdfa/rdfa.c: Pass on options NO_NET and NO_FILE to RDFA SAX2

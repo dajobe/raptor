@@ -295,6 +295,12 @@ static const struct
     RAPTOR_OPTION_VALUE_TYPE_INT,
     "wwwSslVerifyHost",
     "SSL verify host matching"
+  },
+  { RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_PARSER | RAPTOR_OPTION_AREA_SAX2),
+    RAPTOR_OPTION_VALUE_TYPE_BOOL,
+    "loadExternalEntities",
+    "Parsers and SAX2 should load external entities."
   }
 };
 

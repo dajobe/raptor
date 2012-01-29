@@ -11,8 +11,7 @@
 
 <h2 id="rel2_0_7"><a name="rel2_0_7">Raptor2 2.0.7 changes</a></h2>
 
-<p>Not yet released.
-</p>
+<p>CVE-2012-0037 fixed</p>
 
 <p>Issues Fixed:</p>
 <ul>
@@ -39,6 +38,10 @@ If ICU is not explicitly configured, no literal checking is done.</p>
   <dt><code>RAPTOR_OPTION_NO_FILE</code><br/></dt>
   <dd>Deny file requests during parsing.</dd>
 
+  <dt><code>RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES</code><br/></dt>
+  <dd>Deny loading of XML external entity loading. Disabled by
+  default.</dd>
+
   <dt><code>RAPTOR_OPTION_WWW_SSL_VERIFY_PEER</code><br/></dt>
   <dd>Controls verifying an SSL peer during parsing / WWW.  Takes an
   integer value: non-0 to verify peer SSL certificate (default
@@ -53,6 +56,10 @@ If ICU is not explicitly configured, no literal checking is done.</p>
 
 <h3>Parser class changes</h3>
 
+<p>The RDF/XML, RSS Tag Soup and RDFa parsers now pass on network,
+file and entity loading parser options to the internal SAX2 to enable
+enforcing of network, file and entity loading policy.</p>
+
 <p>RDF/JSON parser handles an API change between YAJL V1 and V2.
 </p>
 
@@ -64,11 +71,18 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=488">Issue #0000488</a>
 
 <h3>SAX2 class changes</h3>
 
-<p>
-Added <code>raptor_sax2_set_uri_filter()</code> to set a URI filter
-for any SAX2 calls that do internal lookups of URIs.
+<p>Added <code>raptor_sax2_set_uri_filter()</code> to set a URI
+filter for any SAX2 calls that do internal lookups of URIs.
 </p>
 
+<p>Control file and network loading inside SAX2.  Option
+<code>RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES</code> now enforces
+loading external XML entities and is by default enabled.  If enabled,
+<code>RAPTOR_OPTION_NO_FILE</code> and
+<code>RAPTOR_OPTION_NO_NET</code> are also checked.  All URIs loaded
+are also passed through any URI filter, if set by
+<code>raptor_sax2_set_uri_filter()</code>.
+</p>
 
 <h3>URI class changes</h3>
 

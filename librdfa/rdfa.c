@@ -1230,6 +1230,9 @@ int rdfa_parse_start(rdfacontext* context)
      raptor_sax2_set_option(context->sax2,
                             RAPTOR_OPTION_NO_FILE, NULL,
                             RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_FILE));
+     raptor_sax2_set_option(context->sax2,
+                            RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES, NULL,
+                            RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES));
      if(rdf_parser->uri_filter)
        raptor_sax2_set_uri_filter(context->sax2, rdf_parser->uri_filter,
                                   rdf_parser->uri_filter_user_data);
