@@ -1282,7 +1282,9 @@ unsigned char* raptor_uri_to_string(raptor_uri *uri);
 RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
 RAPTOR_API
-char* raptor_uri_uri_string_as_filename(const unsigned char* uri_string, size_t uri_string_len, int* exists_p);
+char* raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p);
+RAPTOR_API
+char* raptor_uri_uri_string_to_counted_filename(const unsigned char* uri_string, size_t uri_string_len, size_t* path_len_p, int* exists_p);
 
 
 /* XML utility functions */

@@ -701,23 +701,30 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
 
 /**
- * raptor_uri_uri_string_to_filename_fragment:
+ * raptor_uri_uri_string_to_counted_filename_fragment:
  * @uri_string: The file: URI to convert
+ * @len_p: address of filename length variable or NULL
  * @fragment_p: Address of pointer to store any URI fragment or NULL
+ * @fragment_len_p: address of length variable or NULL
  *
- * Convert a file: URI to a filename and fragment.
+ * Convert a file: URI to a counted filename and counted fragment.
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
  *
+ * If @len_p is present the length of the filename is returned
+ *
  * If @fragment_p is given, a new string containing the URI fragment
- * is returned, or NULL if none is present
+ * is returned, or NULL if none is present.  If @fragment_len_p is present
+ * the length is returned in it.
  * 
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
-                                           unsigned char **fragment_p) 
+raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string,
+                                                   size_t* len_p,
+                                                   unsigned char **fragment_p,
+                                                   size_t* fragment_len_p) 
 {
   char *filename;
   size_t len = 0;
@@ -865,6 +872,32 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
 
 
 /**
+ * raptor_uri_uri_string_to_filename_fragment:
+ * @uri_string: The file: URI to convert
+ * @fragment_p: Address of pointer to store any URI fragment or NULL
+ *
+ * Convert a file: URI to a filename and fragment.
+ * 
+ * Handles the OS-specific file: URIs to filename mappings.  Returns
+ * a new buffer containing the filename that the caller must free.
+ *
+ * If @fragment_p is given, a new string containing the URI fragment
+ * is returned, or NULL if none is present
+ * 
+ * See also raptor_uri_uri_string_to_counted_filename_fragment()
+ *
+ * Return value: A newly allocated string with the filename or NULL on failure
+ **/
+char *
+raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
+                                           unsigned char **fragment_p) 
+{
+  return raptor_uri_uri_string_to_counted_filename_fragment(uri_string, NULL,
+                                                            fragment_p, NULL);
+}
+
+
+/**
  * raptor_uri_uri_string_to_filename:
  * @uri_string: The file: URI to convert
  *
@@ -873,12 +906,15 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
  *
+ * See also raptor_uri_uri_string_to_counted_filename_fragment()
+ *
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
 raptor_uri_uri_string_to_filename(const unsigned char *uri_string) 
 {
-  return raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
+  return raptor_uri_uri_string_to_counted_filename_fragment(uri_string, NULL,
+                                                            NULL, NULL);
 }
 
 
@@ -891,11 +927,24 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
  * Return value: Non zero if URI string is a file: URI
  **/
 int
-raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
+raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string)
+{
+  int is_file;
+  char* path;
+
   if(!uri_string || !*uri_string)
     return 1;
 
-  return raptor_strncasecmp((const char*)uri_string, "file:", 5) == 0;
+  is_file = raptor_strncasecmp((const char*)uri_string, "file:", 5) == 0;
+  if(is_file)
+    return is_file;
+
+  path = raptor_uri_uri_string_to_counted_filename(uri_string, 0,
+                                                   NULL, &is_file);
+  if(path)
+    RAPTOR_FREE(char*, path);
+
+  return is_file;
 }
 
 
@@ -1491,19 +1540,21 @@ raptor_uri_get_world(raptor_uri *uri)
 
 
 /**
- * raptor_uri_uri_string_as_filename:
+ * raptor_uri_uri_string_to_counted_filename:
  * @uri_string: uri string
  * @uri_string_len: length of @uri_string or 0 to count it here
- * @exists_p: returns < 0 on error, 0 if not a file, > 0 if is a file
+ * @path_p: address of pointer to store filename length (or NULL)
+ * @exists_p: address of pointer to store file exists status (or NULL), returning < 0 on error, 0 if not a file, > 0 if is a file
  *
  * Turn a file-or-URI into a filename and check the file exists
  *
- * Return value: file path (if exists) or NULL if not a file
+ * Return value: newly allocated filename (if file exists) or NULL if not a file URI or file does not exist
  **/
 char*
-raptor_uri_uri_string_as_filename(const unsigned char* uri_string,
-                                  size_t uri_string_len,
-                                  int* exists_p)
+raptor_uri_uri_string_to_counted_filename(const unsigned char* uri_string,
+                                          size_t uri_string_len,
+                                          size_t* path_len_p,
+                                          int* exists_p)
 {
   char *path = NULL;
   int exists = -1;
@@ -1517,11 +1568,14 @@ raptor_uri_uri_string_as_filename(const unsigned char* uri_string,
   if(!uri_string_len)
     uri_string_len = strlen(RAPTOR_GOOD_CAST(const char*, uri_string));
 
-  path = raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
+  path = raptor_uri_uri_string_to_counted_filename_fragment(uri_string,
+                                                            path_len_p,
+                                                            NULL, NULL);
   if(!path) {
     path = RAPTOR_MALLOC(char*, uri_string_len + 1);
     if(!path)
       return NULL;
+
     memcpy(path, uri_string, uri_string_len + 1);
   }
 
