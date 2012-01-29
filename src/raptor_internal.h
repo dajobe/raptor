@@ -1122,6 +1122,9 @@ struct raptor_sax2_s {
 
   /* sax2 init failed - do not try to do anything with it */
   int failed;
+  
+  /* call SAX2 handlers if non-0 */
+  int enabled;
 };
 
 int raptor_sax2_init(raptor_world* world);
