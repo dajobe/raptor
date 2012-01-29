@@ -371,6 +371,24 @@ raptor_sax2_inscope_base_uri(raptor_sax2 *sax2)
 }
 
 
+/**
+ * raptor_sax2_set_uri_filter:
+ * @sax2: SAX2 object
+ * @filter: URI filter function
+ * @user_data: User data to pass to filter function
+ * 
+ * Set URI filter function for SAX2 internal retrievals.
+ **/
+void
+raptor_sax2_set_uri_filter(raptor_sax2* sax2, 
+                           raptor_uri_filter_func filter,
+                           void *user_data)
+{
+  sax2->uri_filter = filter;
+  sax2->uri_filter_user_data = user_data;
+}
+
+
 int
 raptor_sax2_get_depth(raptor_sax2 *sax2)
 {

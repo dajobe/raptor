@@ -1125,6 +1125,9 @@ struct raptor_sax2_s {
   
   /* call SAX2 handlers if non-0 */
   int enabled;
+
+  void* uri_filter_user_data;
+  raptor_uri_filter_func uri_filter;
 };
 
 int raptor_sax2_init(raptor_world* world);

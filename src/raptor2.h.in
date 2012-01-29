@@ -1977,6 +1977,8 @@ void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_
 RAPTOR_API
 void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
 RAPTOR_API
+void raptor_sax2_set_uri_filter(raptor_sax2* sax2, raptor_uri_filter_func filter, void *user_data);
+RAPTOR_API
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 RAPTOR_API
 int raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer, size_t len, int is_end);

@@ -1004,7 +1004,10 @@ raptor_rdfxml_parse_start(raptor_parser* rdf_parser)
   raptor_sax2_set_option(rdf_xml_parser->sax2, 
                          RAPTOR_OPTION_NO_FILE, NULL,
                          RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_FILE));
-  
+  if(rdf_parser->uri_filter)
+    raptor_sax2_set_uri_filter(rdf_xml_parser->sax2, rdf_parser->uri_filter,
+                               rdf_parser->uri_filter_user_data);
+
   raptor_sax2_parse_start(rdf_xml_parser->sax2, uri);
 
   /* Delete any existing id_set */
