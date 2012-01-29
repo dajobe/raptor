@@ -769,8 +769,8 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
   p = ud->path;
   /* remove leading slash from path if there is one */
   if(*p && p[0] == '/') {
-	  p++;
-	  len--;
+    p++;
+    len--;
   }
   /* handle case where path starts with drive letter */
   if(*p && (p[1] == '|' || p[1] == ':')) {
@@ -781,12 +781,12 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
      * giving device-relative path a:foo
      */
     if(p[2] == '.') {
-      p[2]=*p;
-      p[3]=':';
-      p+= 2;
-      len-= 2; /* remove 2 for ./ */
+      p[2] = *p;
+      p[3] = ':';
+      p += 2;
+      len -= 2; /* remove 2 for ./ */
     } else
-      p[1]=':';
+      p[1] = ':';
   }
 #endif
 
@@ -795,7 +795,7 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
   for(from = ud->path; *from ; from++) {
     len++;
     if(*from == '%')
-      from+= 2;
+      from += 2;
   }
 
 
@@ -810,7 +810,6 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
     raptor_free_uri_detail(ud);
     return NULL;
   }
-
 
   to = filename;
 
@@ -832,10 +831,10 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
 #endif
 
   while(*from) {
-    char c=*from++;
+    char c = *from++;
 #ifdef WIN32
     if(c == '/')
-      *to++ ='\\';
+      *to++ = '\\';
     else
 #endif
     if(c == '%') {
@@ -849,20 +848,27 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
         if(endptr == &hexbuf[2])
           *to++ = c;
       }
-      from+= 2;
+      from += 2;
     } else
-      *to++ =c;
+      *to++ = c;
   }
-  *to='\0';
+  *to = '\0';
+
+  if(len_p)
+    *len_p = len;
 
   if(fragment_p) {
+    size_t fragment_len = 0;
+
     if(ud->fragment) {
-      len = ud->fragment_len;
-      *fragment_p = RAPTOR_MALLOC(unsigned char*, len + 1);
+      fragment_len = ud->fragment_len;
+      *fragment_p = RAPTOR_MALLOC(unsigned char*, fragment_len + 1);
       if(*fragment_p)
-        memcpy(*fragment_p, ud->fragment, len + 1);
+        memcpy(*fragment_p, ud->fragment, fragment_len + 1);
     } else
       *fragment_p = NULL;
+    if(fragment_len_p)
+      *fragment_len_p = fragment_len;
   }
 
   raptor_free_uri_detail(ud);
