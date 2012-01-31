@@ -1091,30 +1091,17 @@ raptor_sax2_check_load_uri_string(raptor_sax2* sax2,
 {
   raptor_uri* abs_uri;
   const unsigned char* abs_uri_string;
-  char* path;
   int abs_uri_is_file;
   int load_uri = 0;
   
-  abs_uri = raptor_new_uri_relative_to_base(sax2->world, sax2->base_uri,
-                                            uri_string);
+  abs_uri = raptor_new_uri_from_uri_or_file_string(sax2->world, sax2->base_uri,
+                                                   uri_string);
+  if(!abs_uri)
+    return 1;
+
   abs_uri_string = raptor_uri_as_string(abs_uri);
-  path = raptor_uri_uri_string_to_counted_filename(abs_uri_string, 0,
-                                                   NULL, &abs_uri_is_file);
-  if(path) {
-    unsigned char* new_uri_string;
 
-    raptor_free_uri(abs_uri); abs_uri = NULL;
-    
-    /* new_uri_string is a string like "file://" + path */
-    new_uri_string = raptor_uri_filename_to_uri_string(path);
-    RAPTOR_FREE(char*, path); path = NULL;
-
-    abs_uri = raptor_new_uri(sax2->world, new_uri_string);
-    RAPTOR_FREE(char*, new_uri_string);
-
-    abs_uri_string = raptor_uri_as_string(abs_uri);
-  }
-  
+  abs_uri_is_file = raptor_uri_uri_string_is_file_uri(abs_uri_string);
   if(abs_uri_is_file)
     load_uri = !RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_FILE);
   else

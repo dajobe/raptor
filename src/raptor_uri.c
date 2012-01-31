@@ -394,6 +394,48 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 
 
 /**
+ * raptor_new_uri_from_uri_or_file_string:
+ * @world: raptor_world object
+ * @base_uri: existing base URI
+ * @uri_or_file_string: URI string or filename
+ * 
+ * Constructor - create a raptor URI from a string that is a relative or absolute URI or a filename
+ *
+ * If the @uri_or_file_string is a filename (file: or a file that exists),
+ * the resulting URI will be file://PATH
+ *
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_new_uri_from_uri_or_file_string(raptor_world* world,
+                                       raptor_uri* base_uri,
+                                       const unsigned char* uri_or_file_string)
+{
+  raptor_uri* new_uri;
+  const unsigned char* new_uri_string;
+  char* path;
+  
+  new_uri = raptor_new_uri_relative_to_base(world, base_uri,
+                                            uri_or_file_string);
+  new_uri_string = raptor_uri_as_string(new_uri);
+  path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string, 
+                                                            NULL, NULL, NULL);
+  if(path) {
+    raptor_free_uri(new_uri); new_uri = NULL;
+    
+    /* new_uri_string is a string like "file://" + path */
+    new_uri_string = raptor_uri_filename_to_uri_string(path);
+    RAPTOR_FREE(char*, path); path = NULL;
+
+    new_uri = raptor_new_uri(world, new_uri_string);
+    RAPTOR_FREE(char*, new_uri_string);
+  }
+
+  return new_uri;
+}
+
+
+/**
  * raptor_free_uri:
  * @uri: URI to destroy
  *
@@ -924,6 +966,7 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
 }
 
 
+
 /**
  * raptor_uri_uri_string_is_file_uri:
  * @uri_string: The URI string to check
@@ -935,22 +978,10 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
 int
 raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string)
 {
-  int is_file;
-  char* path;
-
   if(!uri_string || !*uri_string)
     return 1;
 
-  is_file = raptor_strncasecmp((const char*)uri_string, "file:", 5) == 0;
-  if(is_file)
-    return is_file;
-
-  path = raptor_uri_uri_string_to_counted_filename(uri_string, 0,
-                                                   NULL, &is_file);
-  if(path)
-    RAPTOR_FREE(char*, path);
-
-  return is_file;
+  return raptor_strncasecmp((const char*)uri_string, "file:", 5) == 0;
 }
 
 
@@ -1546,61 +1577,40 @@ raptor_uri_get_world(raptor_uri *uri)
 
 
 /**
- * raptor_uri_uri_string_to_counted_filename:
- * @uri_string: uri string
- * @uri_string_len: length of @uri_string or 0 to count it here
- * @path_p: address of pointer to store filename length (or NULL)
- * @exists_p: address of pointer to store file exists status (or NULL), returning < 0 on error, 0 if not a file, > 0 if is a file
+ * raptor_uri_file_exists:
+ * @uri: URI string
  *
- * Turn a file-or-URI into a filename and check the file exists
+ * Check if a file: URI is a file that exists
  *
- * Return value: newly allocated filename (if file exists) or NULL if not a file URI or file does not exist
+ * Return value: > 0 if file exists, 0 if does not exist, < 0 if not a file URI or error
  **/
-char*
-raptor_uri_uri_string_to_counted_filename(const unsigned char* uri_string,
-                                          size_t uri_string_len,
-                                          size_t* path_len_p,
-                                          int* exists_p)
+int
+raptor_uri_file_exists(raptor_uri* uri)
 {
-  char *path = NULL;
+  const unsigned char* uri_string;
+  const unsigned char *path = NULL;
   int exists = -1;
 #ifdef HAVE_STAT
   struct stat stat_buffer;
 #endif
   
-  if(!uri_string)
-    return NULL;
+  if(!uri)
+    return -1;
 
-  if(!uri_string_len)
-    uri_string_len = strlen(RAPTOR_GOOD_CAST(const char*, uri_string));
-
-  path = raptor_uri_uri_string_to_counted_filename_fragment(uri_string,
-                                                            path_len_p,
-                                                            NULL, NULL);
-  if(!path) {
-    path = RAPTOR_MALLOC(char*, uri_string_len + 1);
-    if(!path)
-      return NULL;
-
-    memcpy(path, uri_string, uri_string_len + 1);
-  }
+  uri_string = raptor_uri_as_string(uri);
+  if(!raptor_uri_uri_string_is_file_uri(uri_string))
+    return -1;
+  
+  path = uri_string + 6;
 
 #ifdef HAVE_STAT
-  if(!stat(path, &stat_buffer))
+  if(!stat((const char*)path, &stat_buffer))
     exists = S_ISREG(stat_buffer.st_mode);
 #else
   exists = (access(path, R_OK) < 0) ? -1 : 1
 #endif
 
-  if(exists > 0 && path) {
-    RAPTOR_FREE(char*, path);
-    path = NULL;
-  }
-  
-  if(exists_p)
-    *exists_p = exists;
-  
-  return path;
+  return exists;
 }
 
 

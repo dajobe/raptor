@@ -1252,6 +1252,8 @@ raptor_uri* raptor_new_uri_relative_to_base(raptor_world* world, raptor_uri *bas
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
+raptor_uri* raptor_new_uri_from_uri_or_file_string(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string);
+RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
@@ -1284,10 +1286,7 @@ unsigned char* raptor_uri_to_string(raptor_uri *uri);
 RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
 RAPTOR_API
-char* raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p);
-RAPTOR_API
-char* raptor_uri_uri_string_to_counted_filename(const unsigned char* uri_string, size_t uri_string_len, size_t* path_len_p, int* exists_p);
-
+int raptor_uri_file_exists(raptor_uri* uri);
 
 /* XML utility functions */
 RAPTOR_API
@@ -1327,6 +1326,8 @@ RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
 int raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb, const char* string, size_t length, int space_is_plus);
+RAPTOR_API
+char* raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p);
 
 
 /**
