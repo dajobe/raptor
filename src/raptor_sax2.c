@@ -1073,3 +1073,64 @@ raptor_sax2_external_entity_ref(void* user_data,
   /* Failed to handle external entity reference */
   return 0;
 }
+
+
+/**
+ * raptor_sax2_check_load_uri_string:
+ * @sax2: SAX2 object
+ * @uri_string: URI or file URI or file name string
+ *
+ * INTERNAL - Check URI loading policy
+ *
+ * Return value: non-0 if it is OK to load the URI
+*/
+int
+raptor_sax2_check_load_uri_string(raptor_sax2* sax2, 
+                                  const unsigned char* uri_string)
+{
+  raptor_uri* abs_uri;
+  const unsigned char* abs_uri_string;
+  char* path;
+  int abs_uri_is_file;
+  int load_uri = 0;
+  
+  abs_uri = raptor_new_uri_relative_to_base(sax2->world, sax2->base_uri,
+                                            uri_string);
+  abs_uri_string = raptor_uri_as_string(abs_uri);
+  path = raptor_uri_uri_string_to_counted_filename(abs_uri_string, 0,
+                                                   NULL, &abs_uri_is_file);
+  if(path) {
+    unsigned char* new_uri_string;
+
+    raptor_free_uri(abs_uri); abs_uri = NULL;
+    
+    /* new_uri_string is a string like "file://" + path */
+    new_uri_string = raptor_uri_filename_to_uri_string(path);
+    RAPTOR_FREE(char*, path); path = NULL;
+
+    abs_uri = raptor_new_uri(sax2->world, new_uri_string);
+    RAPTOR_FREE(char*, new_uri_string);
+
+    abs_uri_string = raptor_uri_as_string(abs_uri);
+  }
+  
+  if(abs_uri_is_file)
+    load_uri = !RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_FILE);
+  else
+    load_uri = !RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_NET);
+
+  if(sax2->uri_filter)  {
+    int rc = sax2->uri_filter(sax2->uri_filter_user_data, abs_uri);
+    if(rc)
+      load_uri = 0;
+  }
+
+  RAPTOR_DEBUG4("URI '%s' Is a file? %s  Load URI? %s\n", abs_uri_string, 
+                (abs_uri_is_file > 0) ? "YES" : "NO",
+                (load_uri > 0) ? "YES" : "NO");
+
+  if(abs_uri)
+    raptor_free_uri(abs_uri);
+
+  return load_uri;
+}

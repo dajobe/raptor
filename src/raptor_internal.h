@@ -1153,7 +1153,7 @@ void raptor_sax2_cdata(void* user_data, const unsigned char *s, int len);
 void raptor_sax2_comment(void* user_data, const unsigned char *s);
 void raptor_sax2_unparsed_entity_decl(void* user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
 int raptor_sax2_external_entity_ref(void* user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
-
+int raptor_sax2_check_load_uri_string(raptor_sax2* sax2, const unsigned char* uri_string);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;

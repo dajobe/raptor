@@ -288,7 +288,7 @@ rapper_free_namespace_decl(void* data) {
 static int 
 rapper_uri_trace(void *user_data, raptor_uri* uri)
 {
-  fprintf(stderr, "%s: Processing URI %s\n",
+  fprintf(stderr, "%s: Tracing retrieval of URI %s\n",
           program, raptor_uri_as_string(uri));
   return 0;
 }
