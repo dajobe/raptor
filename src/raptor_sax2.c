@@ -562,11 +562,12 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     rc = XML_Parse(xp, (char*)buffer, 0, 1);
     if(!rc) /* expat: 0 is failure */
       goto handle_error;
+    return 0;
 #endif
 #ifdef RAPTOR_XML_LIBXML
-    xmlParseChunk(xc, (char*)buffer, 0, 1);
+    rc = xmlParseChunk(xc, (char*)buffer, 0, 1);
+    return rc;
 #endif
-    return 0;
   }
 
 
@@ -617,7 +618,7 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     return 0;
 #endif
 
-  return 0;
+  return rc;
 
 #if defined(RAPTOR_XML_EXPAT) || defined(RAPTOR_XML_LIBXML)
   handle_error:
