@@ -159,7 +159,7 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
   } else {
     raptor_uri *uri = raptor_new_uri_from_counted_string(rdf_parser->world, str, len);
     if(!uri) {
-      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, RAPTOR_BAD_CAST(int, len));
       raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
       RAPTOR_FREE(char*, cstr);
       return NULL;
