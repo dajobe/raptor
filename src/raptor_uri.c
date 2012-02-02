@@ -401,8 +401,8 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
  * 
  * Constructor - create a raptor URI from a string that is a relative or absolute URI or a filename
  *
- * If the @uri_or_file_string is a filename (file: or a file that exists),
- * the resulting URI will be file://PATH
+ * If the @uri_or_file_string is a filename PATH that exists, the
+ * result will be a URI file://PATH
  *
  * Return value: a new #raptor_uri object or NULL on failure
  **/
@@ -411,17 +411,26 @@ raptor_new_uri_from_uri_or_file_string(raptor_world* world,
                                        raptor_uri* base_uri,
                                        const unsigned char* uri_or_file_string)
 {
-  raptor_uri* new_uri;
+  raptor_uri* new_uri = NULL;
   const unsigned char* new_uri_string;
   char* path;
-  
-  new_uri = raptor_new_uri_relative_to_base(world, base_uri,
+
+  if(raptor_uri_filename_exists(uri_or_file_string) > 0) {
+    /* uri_or_file_string is a file name, not a file: URI */
+    path = (char*)uri_or_file_string;
+  } else {
+    new_uri = raptor_new_uri_relative_to_base(world, base_uri,
                                             uri_or_file_string);
-  new_uri_string = raptor_uri_as_string(new_uri);
-  path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string, 
-                                                            NULL, NULL, NULL);
+    new_uri_string = raptor_uri_as_string(new_uri);
+    path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string, 
+                                                              NULL, NULL, NULL);
+  }
+  
   if(path) {
-    raptor_free_uri(new_uri); new_uri = NULL;
+    if(new_uri) {
+      raptor_free_uri(new_uri);
+      new_uri = NULL;
+    }
     
     /* new_uri_string is a string like "file://" + path */
     new_uri_string = raptor_uri_filename_to_uri_string(path);
