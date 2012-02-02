@@ -413,11 +413,11 @@ raptor_new_uri_from_uri_or_file_string(raptor_world* world,
 {
   raptor_uri* new_uri = NULL;
   const unsigned char* new_uri_string;
-  char* path;
+  const char* path;
 
   if(raptor_uri_filename_exists(uri_or_file_string) > 0) {
     /* uri_or_file_string is a file name, not a file: URI */
-    path = (char*)uri_or_file_string;
+    path = RAPTOR_GOOD_CAST(const char*, uri_or_file_string);
   } else {
     new_uri = raptor_new_uri_relative_to_base(world, base_uri,
                                             uri_or_file_string);
@@ -434,8 +434,8 @@ raptor_new_uri_from_uri_or_file_string(raptor_world* world,
     
     /* new_uri_string is a string like "file://" + path */
     new_uri_string = raptor_uri_filename_to_uri_string(path);
-    if(path != uri_or_file_string)
-      RAPTOR_FREE(char*, path);
+    if(path != RAPTOR_GOOD_CAST(const char*, uri_or_file_string))
+      RAPTOR_FREE(const char*, path);
 
     new_uri = raptor_new_uri(world, new_uri_string);
     RAPTOR_FREE(char*, new_uri_string);
