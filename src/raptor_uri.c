@@ -434,7 +434,8 @@ raptor_new_uri_from_uri_or_file_string(raptor_world* world,
     
     /* new_uri_string is a string like "file://" + path */
     new_uri_string = raptor_uri_filename_to_uri_string(path);
-    RAPTOR_FREE(char*, path); path = NULL;
+    if(path != uri_or_file_string)
+      RAPTOR_FREE(char*, path);
 
     new_uri = raptor_new_uri(world, new_uri_string);
     RAPTOR_FREE(char*, new_uri_string);
