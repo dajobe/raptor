@@ -1319,6 +1319,8 @@ size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const uns
 RAPTOR_API
 unsigned char* raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API
+int raptor_uri_filename_exists(const unsigned char* path);
+RAPTOR_API
 char* raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
 char* raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);

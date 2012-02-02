@@ -1577,6 +1577,36 @@ raptor_uri_get_world(raptor_uri *uri)
 
 
 /**
+ * raptor_uri_filename_exists:
+ * @path: file path
+ *
+ * Check if @path points to a file that exists
+ *
+ * Return value: > 0 if file exists, 0 if does not exist, < 0 on error
+ **/
+int
+raptor_uri_filename_exists(const unsigned char* path)
+{
+  int exists = -1;
+#ifdef HAVE_STAT
+  struct stat stat_buffer;
+#endif
+  
+  if(!path)
+    return -1;
+
+#ifdef HAVE_STAT
+  if(!stat((const char*)path, &stat_buffer))
+    exists = S_ISREG(stat_buffer.st_mode);
+#else
+  exists = (access(path, R_OK) < 0) ? -1 : 1
+#endif
+
+  return exists;
+}
+
+
+/**
  * raptor_uri_file_exists:
  * @uri: URI string
  *
@@ -1588,11 +1618,6 @@ int
 raptor_uri_file_exists(raptor_uri* uri)
 {
   const unsigned char* uri_string;
-  const unsigned char *path = NULL;
-  int exists = -1;
-#ifdef HAVE_STAT
-  struct stat stat_buffer;
-#endif
   
   if(!uri)
     return -1;
@@ -1600,17 +1625,8 @@ raptor_uri_file_exists(raptor_uri* uri)
   uri_string = raptor_uri_as_string(uri);
   if(!raptor_uri_uri_string_is_file_uri(uri_string))
     return -1;
-  
-  path = uri_string + 6;
 
-#ifdef HAVE_STAT
-  if(!stat((const char*)path, &stat_buffer))
-    exists = S_ISREG(stat_buffer.st_mode);
-#else
-  exists = (access(path, R_OK) < 0) ? -1 : 1
-#endif
-
-  return exists;
+  return raptor_uri_filename_exists(uri_string + 6);
 }
 
 

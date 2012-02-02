@@ -247,6 +247,7 @@ raptor_uri_print
 raptor_uri_get_world
 raptor_uri_write
 raptor_uri_file_exists
+raptor_uri_filename_exists
 </SECTION>
 
 <SECTION>
