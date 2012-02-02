@@ -1083,7 +1083,7 @@ raptor_sax2_external_entity_ref(void* user_data,
  *
  * INTERNAL - Check URI loading policy
  *
- * Return value: non-0 if it is OK to load the URI
+ * Return value: > 0 if it is OK to load the URI, 0 if not, < 0 on failure
 */
 int
 raptor_sax2_check_load_uri_string(raptor_sax2* sax2, 
@@ -1097,7 +1097,7 @@ raptor_sax2_check_load_uri_string(raptor_sax2* sax2,
   abs_uri = raptor_new_uri_from_uri_or_file_string(sax2->world, sax2->base_uri,
                                                    uri_string);
   if(!abs_uri)
-    return 1;
+    return -1;
 
   abs_uri_string = raptor_uri_as_string(abs_uri);
 
@@ -1117,8 +1117,7 @@ raptor_sax2_check_load_uri_string(raptor_sax2* sax2,
                 (abs_uri_is_file > 0) ? "YES" : "NO",
                 (load_uri > 0) ? "YES" : "NO");
 
-  if(abs_uri)
-    raptor_free_uri(abs_uri);
+  raptor_free_uri(abs_uri);
 
   return load_uri;
 }
