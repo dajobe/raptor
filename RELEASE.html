@@ -14,6 +14,72 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=448">0000448</a>: Turtle parser does not return error status from turtle_parse_chunk()</li>
+</ul>
+
+<p>Removed Expat support since expat has not had a release in years
+and libxml2 works well.  This allows some code simplification.
+Updated <code>configure</code> so that if Raptor is configured with
+no parser that requires an XML parser, libxml2 will not be required.
+</p>
+
+
+<h3>Parser class changes</h3>
+
+<p>RDF/JSON parser handles an API change between YAJL V1 and V2.
+</p>
+
+<p>Turtle parser now returns parser errors to
+<code>raptor_parse_chunk()</code>.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=488">Issue #0000488</a>
+</p>
+
+
+<h3>SAX2 class changes</h3>
+
+<p>
+Added <code>raptor_sax2_set_uri_filter()</code> to set a URI filter
+for any SAX2 calls that do internal lookups of URIs.
+</p>
+
+
+<h3>URI class changes</h3>
+
+<p>Added new URI constructor
+<code>raptor_new_uri_from_uri_or_file_string()</code>
+to build a URI from a URI string or a filename string, normalizing
+the result to a <code>file:</code> URI.
+</p>
+
+<p>Added
+<code>raptor_uri_uri_string_to_counted_filename_fragment()</code> to
+turn a URI string to a filename and URI fragment along with string
+output string counts.
+</p>
+
+<p>Added utility methods for checking if a file: URI or filename is a
+file that exists:
+<code>raptor_uri_file_exists()</code> and
+<code>raptor_uri_filename_exists()</code>
+</p>
+
+
+<h3>WWW class changes</h3>
+
+<p>The <code>raptor_www_fetch()</code> call now returns the status
+from any URI filter that returns a non-0 response.
+</p>
+
+
+<h3>Other changes</h3>
+
+<p>
+Added option <code>RAPTOR_OPTION_NO_FILE</code> to deny internal file
+requests.
+</p>
+
 
 <h2 id="rel2_0_6"><a name="rel2_0_6">Raptor2 2.0.6 changes</a></h2>
 
@@ -3921,7 +3987,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2011 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2012 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

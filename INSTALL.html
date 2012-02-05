@@ -68,11 +68,11 @@ dependency checking.  It is developed and built on x86 Linux
 and x86 OSX but is also tested on other systems occasionally.
 </p>
 
-<p>Raptor requires an XML parser - either libxml2
-(2.6.8 or newer) or expat.  It will optionally use libcurl, libxml2
-for retrieving URIs.  It will optionally use libxslt (requiring
-libxml2 also) to provide the XSLT functionality for the GRDDL and
-microformats parser.  It will also optionally use
+<p>Raptor optionally the libxml2 XML library (2.6.8 or newer) for
+parsing XML syntaxes.  It will optionally use libcurl, libxml2 or
+libfetch for retrieving URIs.  It will optionally use libxslt
+(requiring libxml2 also) to provide the XSLT functionality for the
+GRDDL and microformats parser.  It will also optionally use
 <a href="http://lloyd.github.com/yajl/">YAJL</a> to provide JSON
 parsers if it is available.
 </p>
@@ -144,12 +144,6 @@ which can be removed from the library with this option.  All NFC
 checks will succeed when this is disabled.
 </p></dd>
 
-<dt><tt>--with-expat-source=DIR</tt><br /></dt>
-<dd><p>Build against a statically compiled expat source tree in
-directory <em>DIR</em>.  This handles the older and newer style 
-expat source directory structures.
-</p></dd>
-
 <dt><code>--enable-debug</code><br /></dt>
 <dd><p>Enable debug messages (default not enabled).
 Maintainer mode automatically enables this.
@@ -191,27 +185,6 @@ API level using functions such as
 allocated with malloc() and released free(), a check is made that the
 memory was allocated in the same library.
 </p></dd>
-
-<dt><tt>--with-xml-parser=NAME</tt><br /></dt>
-<dd><p>Pick an XML parser to use - either <tt>libxml</tt> (default)
-minimum version 2.6.8 or <tt>expat</tt>.  If this option is not given,
-either will be used, with libxml preferred if both are present.
-These can either be installed system libraries or source
-trees in subdirectories of these sources named libxml, expat.
-</p>
-
-<p>Raptor has been tested with various combinations of these libraries
-including expat 1.95.1, 1.95.2, 1.95.7, 1.95.8 and libxml 2.6.8 onwards.
-</p>
-
-<p>libxml1 is not supported.
-</p>
-
-<p>The libxml2 on Apple OSX 10.3.X is quite broken - the headers do
-not match the libraries.  Install your own to get something
-coherent.
-</p>
-</dd>
 
 <dt><tt>--with-www=NAME</tt><br /></dt>
 <dd><p>Pick a WWW library to use - either <tt>curl</tt>, 
@@ -263,7 +236,7 @@ directory, use:
 <p>Append to the line any additional options you need like this:
 </p>
 <pre>
-   ./configure --prefix=/usr --with-xml-parser=expat
+   ./configure --prefix=/usr --enable-parsers=rdfxml
 </pre>
 
 
@@ -384,7 +357,7 @@ or read the HTML version in docs/rapper.html or on the
 
 <hr />
 
-<p>Copyright 2000-2011 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2000-2012 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

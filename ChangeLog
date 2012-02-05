@@ -1,3 +1,138 @@
+2012-02-04  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html, UPGRADING.html: 2011
+
+	* configure.ac: tidy xml parser message
+
+	* configure.ac, src/Makefile.am, src/raptor_expat.c,
+	src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_sax2.c:
+	Remove expat support
+
+	Update configure to properly let you build raptor without any XML
+	support either - it only needs it if a parser that requires XML is
+	configured.
+
+2012-02-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_check_load_uri_string): Failure returned
+
+	* src/raptor_uri.c: casts
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_uri_or_file_string): Never free
+	uri_or_file_string
+
+	* src/raptor_uri.c: Make raptor_new_uri_from_uri_or_file_string
+	check for files first.
+
+	(raptor_new_uri_from_uri_or_file_string): If the arg is a file
+	that exists, use that as the path.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_filename_exists): Added
+
+2012-02-01  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_parse_chunk): Return parse errors to caller.
+
+	Fixes part of Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+	* src/raptor_json.c:
+	(raptor_json_new_term_from_counted_string): RAPTOR_BAD_CAST for
+	shortening size_t -> int cast
+
+	* src/turtle_parser.y:
+	(turtle_parse,raptor_turtle_parse_chunk): Return parse error
+	status to caller
+
+	Fixes Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+2012-01-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_sax2.c, src/raptor_uri.c: More file
+	URI updates
+
+	(raptor_new_uri_from_uri_or_file_string): Added new constructor
+
+	(raptor_uri_uri_string_to_counted_filename): Removed
+
+	(raptor_sax2_check_load_uri_string): Use
+	raptor_new_uri_from_uri_or_file_string() and just check for file:
+
+	(raptor_uri_uri_string_is_file_uri): Just check for file:
+
+	(raptor_uri_file_exists): Check if URI is a file URI and the file
+	exists.
+
+	* src/raptor_internal.h, src/raptor_sax2.c, utils/rapper.c:
+	Consolidate URI policy checks and call SAX2 uri filter
+
+	(raptor_sax2_check_load_uri_string): add and use for policy
+	checks, making file URIs from canonical filename and calling URI
+	filter callback on SAX2.
+
+	rapper (rapper_uri_trace): Use trace word since it is not just
+	processing
+
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_sax2.c:
+	(raptor_sax2_set_uri_filter): Added to filter for SAX2
+
+	* src/raptor_www.c:
+	(raptor_www_fetch): Return status code from URI filter
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: Add RAPTOR_OPTION_NO_FILE to deny
+	internal file requests
+
+	* src/raptor_json.c:
+	Handle size changing between YAJL V1 and V2
+
+	Use RAPTOR_YAJL_LEN_TYPE macro to deal with the arg type change
+
+2012-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: code cleanup
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c: Rename file uri string to
+	match convention
+
+	(raptor_uri_uri_string_to_counted_filename_fragment): Added to
+	return count lengths
+
+	(raptor_uri_uri_string_is_file_uri): Use
+	raptor_uri_uri_string_to_counted_filename() after a simple URI
+	test.
+
+	(raptor_uri_uri_string_to_filename): Renamed from
+	raptor_uri_uri_string_as_filename and use above.
+
+	(raptor_uri_uri_string_to_counted_filename): Added using above and
+	returning count.
+
+	* configure.ac, docs/raptor-1-to-2-map.tsv,
+	docs/raptor2-sections.txt, src/raptor2.h.in, src/raptor_uri.c:
+	raptor_uri_uri_string_as_filename
+
+	* src/raptor_internal.h, src/raptor_sax2.c: Add internal SAX2
+	enabled flag for enabling/disabling callbacks
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac: Bumped version to 2.0.7
+
 2011-11-27  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_6 for 2.0.6 release (GIT f9f3768e7080f1f132856b731c232c8cbeac1634)
