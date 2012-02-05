@@ -1,5 +1,29 @@
 2012-02-04  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_option.c, src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_xml_writer.c:
+	(raptor_object_options_init): Move default option settings here
+
+	* RELEASE.html, docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c: Add options for controlling SSL certificate
+	verifying
+
+	Add options RAPTOR_OPTION_WWW_SSL_VERIFY_PEER for controlling
+	verifying an SSL peer.  Takes an integer value: non-0 to verify
+	peer SSL certificate (default 1)
+
+	Add option RAPTOR_OPTION_WWW_SSL_VERIFY_HOST for controlling
+	verifying an SSL host.  Takes an integer value: 0 none, 1 CN
+	match, 2 host match (default). Other values are ignored.
+
+	(raptor_www_set_ssl_verify_options): Added to set the verify
+	options on the raptor_www object.
+
+	Fixes Issue #0000469
+	http://bugs.librdf.org/mantis/view.php?id=469
+
 	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
 	RELEASE.html, TODO.html, UPGRADING.html: 2011
 

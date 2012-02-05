@@ -27,6 +27,25 @@ no parser that requires an XML parser, libxml2 will not be required.
 </p>
 
 
+<h3>Options changes</h3>
+
+<p>Added new options:</p>
+<dl>
+  <dt><code>RAPTOR_OPTION_NO_FILE</code><br/></dt>
+  <dd>Deny file requests during parsing.</dd>
+
+  <dt><code>RAPTOR_OPTION_WWW_SSL_VERIFY_PEER</code><br/></dt>
+  <dd>Controls verifying an SSL peer during parsing / WWW.  Takes an
+  integer value: non-0 to verify peer SSL certificate (default
+  1).</dd>
+
+  <dt><code>RAPTOR_OPTION_WWW_SSL_VERIFY_HOST</code><br/></dt>
+  <dd>Controls verifying an SSL host during parsing / WWW.  Takes an
+  integer value: 0 none, 1 CN match, 2 host match (default). Other
+  values are ignored.</dd>
+</dl>
+
+
 <h3>Parser class changes</h3>
 
 <p>RDF/JSON parser handles an API change between YAJL V1 and V2.
@@ -76,14 +95,6 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>
 
 <p>The <code>raptor_www_fetch()</code> call now returns the status
 from any URI filter that returns a non-0 response.
-</p>
-
-
-<h3>Other changes</h3>
-
-<p>
-Added option <code>RAPTOR_OPTION_NO_FILE</code> to deny internal file
-requests.
 </p>
 
 
