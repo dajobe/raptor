@@ -525,6 +525,8 @@ typedef struct {
  * @RAPTOR_OPTION_WWW_CERT_FILENAME: String. SSL client certificate filename
  * @RAPTOR_OPTION_WWW_CERT_TYPE: String. SSL client certificate type
  * @RAPTOR_OPTION_WWW_CERT_PASSPHRASE: String. SSL client certificate passphrase
+ * @RAPTOR_OPTION_WWW_SSL_VERIFY_PEER:  Integer. SSL verify peer - non-0 to verify peer SSL certificate (default)
+ * @RAPTOR_OPTION_WWW_SSL_VERIFY_HOST: Integer. SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
  * @RAPTOR_OPTION_NO_FILE: Deny file reading requests inside other requests.
  * @RAPTOR_OPTION_LAST: Internal
  *
@@ -570,7 +572,9 @@ typedef enum {
   RAPTOR_OPTION_WWW_CERT_TYPE,
   RAPTOR_OPTION_WWW_CERT_PASSPHRASE,
   RAPTOR_OPTION_NO_FILE,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_NO_FILE
+  RAPTOR_OPTION_WWW_SSL_VERIFY_PEER,
+  RAPTOR_OPTION_WWW_SSL_VERIFY_HOST,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_WWW_SSL_VERIFY_HOST
 } raptor_option;
 
 
@@ -1378,6 +1382,8 @@ RAPTOR_API
 void raptor_free_www(raptor_www *www);
 RAPTOR_API
 int raptor_www_set_ssl_cert_options(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase);
+RAPTOR_API
+int raptor_www_set_ssl_verify_options(raptor_www* www, int verify_peer, int verify_host);
 RAPTOR_API
 void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API

@@ -284,6 +284,18 @@ static const struct
     "noFile",
     "Parsers and SAX2 deny internal file requests."
   },
+  { RAPTOR_OPTION_WWW_SSL_VERIFY_PEER,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_INT,
+    "wwwSslVerifyPeer",
+    "SSL verify peer certficate"
+  },
+  { RAPTOR_OPTION_WWW_SSL_VERIFY_HOST,
+    RAPTOR_OPTION_AREA_PARSER,
+    RAPTOR_OPTION_VALUE_TYPE_INT,
+    "wwwSslVerifyHost",
+    "SSL verify host matching"
+  }
 };
 
 

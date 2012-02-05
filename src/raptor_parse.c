@@ -351,8 +351,14 @@ raptor_new_parser(raptor_world* world, const char *name)
   
   raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
-  /* Initialise default (lax) option values */
+  /* Initialise defaults */
+
+  /* lax (no strict) parsing */
   raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_STRICT, NULL, 0);
+  /* SSL verify peers */
+  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_WWW_SSL_VERIFY_PEER, NULL, 1);
+  /* SSL fully verify hosts */
+  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_WWW_SSL_VERIFY_HOST, NULL, 2);
 
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
@@ -722,7 +728,9 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
   char* cert_filename = NULL;
   char* cert_type = NULL;
   char* cert_passphrase = NULL;
-  
+  int ssl_verify_peer;
+  int ssl_verify_host;
+
   if(connection) {
     if(rdf_parser->www)
       raptor_free_www(rdf_parser->www);
@@ -784,6 +792,13 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
     raptor_www_set_ssl_cert_options(rdf_parser->www, cert_filename,
                                     cert_type, cert_passphrase);
   
+  ssl_verify_peer = RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser,
+                                               RAPTOR_OPTION_WWW_SSL_VERIFY_PEER);
+  ssl_verify_host = RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser,
+                                               RAPTOR_OPTION_WWW_SSL_VERIFY_HOST);
+  raptor_www_set_ssl_verify_options(rdf_parser->www, ssl_verify_peer,
+                                    ssl_verify_host);
+
   ret = raptor_www_fetch(rdf_parser->www, uri);
   
   if(!rpbc.started && !ret)

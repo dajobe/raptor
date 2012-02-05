@@ -411,6 +411,7 @@
 2.0.6	-	-	-	2.0.7	int	raptor_uri_filename_exists	(const unsigned char* path)	-
 2.0.6	-	-	-	2.0.7	raptor_uri*	raptor_new_uri_from_uri_or_file_string	(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string)	-
 2.0.6	-	-	-	2.0.7	void	raptor_sax2_set_uri_filter	(raptor_sax2* sax2, raptor_uri_filter_func filter, void *user_data)	-
+2.0.6	-	-	-	2.0.7	int	raptor_www_set_ssl_verify_options	(raptor_www* www, int verify_peer, int verify_host)	-
 #
 # Types
 #
@@ -557,3 +558,5 @@
 1.4.21	enum	-	-	2.0.0	enum	RAPTOR_OPTION_VALUE_TYPE_URI	-	-
 1.4.21	enum	-	-	2.0.0	enum	RAPTOR_OPTION_VALUE_TYPE_LAST	-	-
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_NO_FILE	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_PEER	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_HOST	-	-

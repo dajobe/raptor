@@ -17,6 +17,7 @@
 <p>Issues Fixed:</p>
 <ul>
   <li><a href="http://bugs.librdf.org/mantis/view.php?id=448">0000448</a>: Turtle parser does not return error status from turtle_parse_chunk()</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=469">0000469</a>: Allow rapper to bypass server SSL certs checks in libcurl</li>
 </ul>
 
 <p>Removed Expat support since expat has not had a release in years
@@ -67,6 +68,11 @@ file that exists:
 
 
 <h3>WWW class changes</h3>
+
+<p>Added <code>raptor_www_set_ssl_verify_options()</code> to set SSL
+verify options.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>.
+</p>
 
 <p>The <code>raptor_www_fetch()</code> call now returns the status
 from any URI filter that returns a non-0 response.
