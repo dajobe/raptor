@@ -379,11 +379,12 @@ main(int argc, char *argv[])
       case 'f':
         if(optarg) {
           if(!strcmp(optarg, "help")) {
+            int option_count = (int)raptor_option_get_count();
             int i;
             
             fprintf(stderr, "%s: Valid parser options are:\n",
                     program);
-            for(i = 0; i < (int)raptor_option_get_count(); i++) {
+            for(i = 0; i < option_count; i++) {
               raptor_option_description *od;
               
               od = raptor_world_get_option_description(world,
@@ -397,7 +398,7 @@ main(int argc, char *argv[])
             }
             fprintf(stderr, "%s: Valid serializer options are:\n",
                     program);
-            for(i = 0; i < (int)raptor_option_get_count(); i++) {
+            for(i = 0; i < option_count; i++) {
               raptor_option_description *od;
               
               od = raptor_world_get_option_description(world,
@@ -439,13 +440,14 @@ main(int argc, char *argv[])
 
             raptor_sequence_push(namespace_declarations, nd);
           } else {
+            int option_count = (int)raptor_option_get_count();
             int i;
             size_t arg_len = strlen(optarg);
             option_value* fv;
             int ok = 0;
             
             /* parser options */
-            for(i = 0; i < (int)raptor_option_get_count(); i++) {
+            for(i = 0; i < option_count; i++) {
               raptor_domain domain;
               raptor_option_description *od;
               size_t name_len;
