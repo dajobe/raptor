@@ -351,6 +351,10 @@ raptor_new_parser(raptor_world* world, const char *name)
   
   raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
+  /* set parsing strictness from default value */
+  raptor_parser_set_strict(rdf_parser, 
+                           RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_STRICT));
+
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
     return NULL;
