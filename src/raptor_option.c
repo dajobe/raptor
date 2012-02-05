@@ -574,6 +574,33 @@ raptor_object_options_init(raptor_object_options* options,
     else
       options->options[i].string = NULL;
   }
+
+  /* Initialise default options that are not 0 or NULL */
+
+  /* Emit @base directive or equivalent */
+  options->options[RAPTOR_OPTION_WRITE_BASE_URI].integer = 1;
+  
+  /* Emit relative URIs where possible */
+  options->options[RAPTOR_OPTION_RELATIVE_URIS].integer = 1;
+
+  /* XML 1.0 output */
+  options->options[RAPTOR_OPTION_WRITER_XML_VERSION].integer = 10;
+
+  /* Write XML declaration */
+  options->options[RAPTOR_OPTION_WRITER_XML_DECLARATION].integer = 1;
+
+  /* Indent 2 spaces */
+  options->options[RAPTOR_OPTION_WRITER_INDENT_WIDTH].integer = 2;
+
+  /* lax (no strict) parsing */
+  options->options[RAPTOR_OPTION_STRICT].integer = 0;
+
+  /* SSL verify peers */
+  options->options[RAPTOR_OPTION_WWW_SSL_VERIFY_PEER].integer = 1;
+
+  /* SSL fully verify hosts */
+  options->options[RAPTOR_OPTION_WWW_SSL_VERIFY_HOST].integer = 2;
+
 }
 
 

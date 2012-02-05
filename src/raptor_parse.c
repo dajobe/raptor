@@ -351,15 +351,6 @@ raptor_new_parser(raptor_world* world, const char *name)
   
   raptor_object_options_init(&rdf_parser->options, RAPTOR_OPTION_AREA_PARSER);
 
-  /* Initialise defaults */
-
-  /* lax (no strict) parsing */
-  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_STRICT, NULL, 0);
-  /* SSL verify peers */
-  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_WWW_SSL_VERIFY_PEER, NULL, 1);
-  /* SSL fully verify hosts */
-  raptor_parser_set_option(rdf_parser, RAPTOR_OPTION_WWW_SSL_VERIFY_HOST, NULL, 2);
-
   if(factory->init(rdf_parser, name)) {
     raptor_free_parser(rdf_parser);
     return NULL;
