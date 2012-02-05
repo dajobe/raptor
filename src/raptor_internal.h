@@ -170,17 +170,6 @@ void raptor_sign_free(void *ptr);
 #define MAX_ASCII_INT_SIZE 13
   
 /* XML parser includes */
-#ifdef RAPTOR_XML_EXPAT
-#ifdef HAVE_EXPAT_H
-#include <expat.h>
-#endif
-#ifdef HAVE_XMLPARSE_H
-#include <xmlparse.h>
-#endif
-#endif
-
-
-
 
 #ifdef RAPTOR_XML_LIBXML
 
@@ -205,21 +194,6 @@ void raptor_libxml_free(xmlParserCtxtPtr xc);
 extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
 
 /* end of libxml-only */
-#endif
-
-
-/* expat-only prototypes */
-
-#ifdef RAPTOR_XML_EXPAT
-/* raptor_expat.c exports */
-extern void raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri);
-extern void raptor_expat_update_document_locator(raptor_sax2* sax2, raptor_locator *locator);
-
-/* raptor_parse.c */
-void raptor_xml_unparsed_entity_decl_handler(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
-int raptor_xml_external_entity_ref_handler(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
-
-/* end of expat-only */
 #endif
 
 
@@ -728,7 +702,7 @@ void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_locato
 
 typedef struct raptor_rdfxml_parser_s raptor_rdfxml_parser;
 
-/* Prototypes for common expat/libxml parsing event-handling functions */
+/* Prototypes for common libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
@@ -1064,12 +1038,6 @@ struct raptor_sax2_s {
   raptor_world* world;
   void* user_data;
   
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#ifdef EXPAT_UTF8_BOM_CRASH
-  int tokens_count; /* used to see if trying to get location info is safe */
-#endif
-#endif
 #ifdef RAPTOR_XML_LIBXML
   /* structure holding sax event handlers */
   xmlSAXHandler sax;

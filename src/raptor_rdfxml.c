@@ -875,7 +875,7 @@ raptor_rdfxml_end_element_handler(void *user_data,
 
 
 /* cdata (and ignorable whitespace for libxml). 
- * s is not 0 terminated for expat, is for libxml - grrrr.
+ * s 0 terminated is for libxml
  */
 static void
 raptor_rdfxml_characters_handler(void *user_data, 
@@ -889,7 +889,7 @@ raptor_rdfxml_characters_handler(void *user_data,
 
 
 /* cdata (and ignorable whitespace for libxml). 
- * s is not 0 terminated for expat, is for libxml - grrrr.
+ * s is 0 terminated for libxml2
  */
 static void
 raptor_rdfxml_cdata_handler(void *user_data, raptor_xml_element* xml_element,

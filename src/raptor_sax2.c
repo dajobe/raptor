@@ -122,13 +122,6 @@ raptor_free_sax2(raptor_sax2 *sax2)
   if(!sax2)
     return;
 
-#ifdef RAPTOR_XML_EXPAT
-  if(sax2->xp) {
-    XML_ParserFree(sax2->xp);
-    sax2->xp = NULL;
-  }
-#endif
-
 #ifdef RAPTOR_XML_LIBXML
   if(sax2->xc) {
     raptor_libxml_free(sax2->xc);
@@ -457,15 +450,6 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   else
     sax2->base_uri = NULL;
 
-#ifdef RAPTOR_XML_EXPAT
-  if(sax2->xp) {
-    XML_ParserFree(sax2->xp);
-    sax2->xp = NULL;
-  }
-
-  raptor_expat_init(sax2, base_uri);
-#endif
-
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_sax_init(sax2);
 
@@ -506,22 +490,16 @@ int
 raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
                         size_t len, int is_end) 
 {
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp = sax2->xp;
-  int rc;
-#endif
 #ifdef RAPTOR_XML_LIBXML
   /* parser context */
   xmlParserCtxtPtr xc = sax2->xc;
   int rc;
-#endif
   
-#ifdef RAPTOR_XML_LIBXML
   if(!xc) {
     int libxml_options = 0;
 
     if(!len) {
-      /* no data given at all - emit a similar message to expat */
+      /* no data given at all */
       raptor_sax2_update_document_locator(sax2, sax2->locator);
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR, sax2->locator,
                        "XML Parsing failed - no element found");
@@ -555,31 +533,12 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     else
       return 0;
   }
-#endif
 
   if(!len) {
-#ifdef RAPTOR_XML_EXPAT
-    rc = XML_Parse(xp, (char*)buffer, 0, 1);
-    if(!rc) /* expat: 0 is failure */
-      goto handle_error;
-    return 0;
-#endif
-#ifdef RAPTOR_XML_LIBXML
     rc = xmlParseChunk(xc, (char*)buffer, 0, 1);
     return rc;
-#endif
   }
 
-
-#ifdef RAPTOR_XML_EXPAT
-  rc = XML_Parse(xp, (char*)buffer, RAPTOR_BAD_CAST(int, len), is_end);
-  if(!rc) /* expat: 0 is failure */
-    goto handle_error;
-  if(is_end)
-    return 0;
-#endif
-
-#ifdef RAPTOR_XML_LIBXML
 
   /* This works around some libxml versions that fail to work
    * if the buffer size is larger than the entire file
@@ -616,50 +575,10 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     goto handle_error;
   if(is_end)
     return 0;
-#endif
 
   return rc;
 
-#if defined(RAPTOR_XML_EXPAT) || defined(RAPTOR_XML_LIBXML)
   handle_error:
-#endif
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  if(sax2->tokens_count) {
-#endif
-    /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
-     * which dies here if the error is before <?xml?...
-     * The expat 1.95.1 source release version works fine.
-     */
-    if(sax2->locator)
-      raptor_sax2_update_document_locator(sax2, sax2->locator);
-#ifdef EXPAT_UTF8_BOM_CRASH
-  }
-#endif
-#endif /* EXPAT */
-
-#ifdef RAPTOR_XML_EXPAT
-  if(1) {
-    const char *error_prefix="XML Parsing failed - "; /* 21 chars */
-    #define ERROR_PREFIX_LEN 21
-    const char *error_message = XML_ErrorString(XML_GetErrorCode(xp));
-    size_t error_length;
-    char *error_buffer;
-
-    error_length = strlen(error_message);
-    error_buffer = RAPTOR_MALLOC(char*, ERROR_PREFIX_LEN + error_length + 1);
-    if(error_buffer) {
-      memcpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
-      memcpy(error_buffer + ERROR_PREFIX_LEN, error_message, error_length + 1);
-
-      raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
-                       sax2->locator, error_buffer);
-      RAPTOR_FREE(char*, error_buffer);
-    } else
-      raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
-                       sax2->locator, "XML Parsing failed");
-  }
 #endif
 
   return 1;
@@ -701,9 +620,6 @@ void
 raptor_sax2_update_document_locator(raptor_sax2* sax2, 
                                     raptor_locator* locator)
 {
-#ifdef RAPTOR_XML_EXPAT
-  raptor_expat_update_document_locator(sax2, locator);
-#endif
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_update_document_locator(sax2, locator);
 #endif
@@ -728,12 +644,6 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
 
   if(sax2->failed || !sax2->enabled)
     return;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
 
 #ifdef RAPTOR_XML_LIBXML
   if(atts) {
@@ -949,12 +859,6 @@ raptor_sax2_end_element(void* user_data, const unsigned char *name)
   if(sax2->failed || !sax2->enabled)
     return;
 
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
-
   xml_element = sax2->current_element;
   if(xml_element) {
 #ifdef RAPTOR_DEBUG_VERBOSE
@@ -998,12 +902,6 @@ void
 raptor_sax2_cdata(void* user_data, const unsigned char *s, int len)
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
 
   if(sax2->failed || !sax2->enabled)
     return;
