@@ -1105,9 +1105,9 @@ RAPTOR_LIBTOOLLIBS=libraptor2.la
 AC_SUBST(RAPTOR_LIBTOOLLIBS)
 
 
-xml_parser="none"
+xml_parser="none needed"
 if test $need_libxml = 1; then
-  xml_parser="$xml_parser libxml $LIBXML_VERSION"
+  xml_parser="libxml $LIBXML_VERSION"
 fi
 
 
@@ -1202,6 +1202,6 @@ Raptor build summary:
   RDF parsers enabled       :$rdf_parsers_enabled
   RDF serializers available : $rdf_serializers_available
   RDF serializers enabled   :$rdf_serializers_enabled
-  XML parser                :$xml_parser
+  XML parser                : $xml_parser
   WWW library               : $www_library
 ])
