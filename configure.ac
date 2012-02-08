@@ -29,7 +29,7 @@ AC_CONFIG_SRCDIR([src/raptor_general.c])
 AM_CONFIG_HEADER([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
-AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall])
+AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall -Wextra-portability])
 
 libxml_min_version=2.6.8
 
@@ -64,6 +64,7 @@ AC_SUBST(RPM_RELEASE)
 dnl Checks for programs.
 AC_CANONICAL_HOST
 AM_SANITY_CHECK
+AM_PROG_AR
 AC_PROG_CC
 AM_PROG_CC_C_O
 
