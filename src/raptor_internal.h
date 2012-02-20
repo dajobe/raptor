@@ -1302,7 +1302,7 @@ int raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer, rapt
 int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer, int value);
 
 /* snprintf.c */
-int raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned int base, int width, char padding);
+size_t raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned int base, int width, char padding);
 
 /* raptor_world structure */
 #define RAPTOR1_WORLD_MAGIC_1 0

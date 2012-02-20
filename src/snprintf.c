@@ -289,13 +289,13 @@ static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  * If @buffer is NULL or the @bufsize is too small, the number of
  * bytes needed (excluding NUL) is returned and no formatting is done.
  *
- * Return value: number of bytes needed or written (excluding NUL)
+ * Return value: number of bytes needed or written (excluding NUL) or 0 on failure
  */
-int
+size_t
 raptor_format_integer(char* buffer, size_t bufsize, int integer,
                       unsigned int base, int width, char padding)
 {
-  int len = 1;
+  size_t len = 1;
   char *p;
   unsigned int value;
 
