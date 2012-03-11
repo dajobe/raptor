@@ -64,7 +64,7 @@
  * @unicode_string: first char of string
  * @end: last char of unicode_string
  */
-static int
+static size_t
 decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
                const char *unicode_string, const char *end)
 {
@@ -98,7 +98,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
     
     if((u-utf8_string) > RAPTOR_GOOD_CAST(int, utf8_string_length)) {
       fprintf(stderr,
-              "decode_to_utf8 overwote utf8_string buffer at byte %d\n",
+              "decode_to_utf8 overwrote utf8_string buffer at byte %ld\n",
               (u-utf8_string));
       abort();
     }
@@ -114,9 +114,9 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 
 
 static void
-utf8_print(const unsigned char *input, int length, FILE *stream)
+utf8_print(const unsigned char *input, size_t length, FILE *stream)
 {
-  int i = 0;
+  size_t i = 0;
   
   while(i < length && *input) {
     unsigned long c;
