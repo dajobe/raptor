@@ -1,4 +1,65 @@
+2012-03-11  Dave Beckett <dave@dajobe.org>
+
+	* src/snprintf.c:
+	(raptor_format_integer): cast for comparing width to len
+
+	* INSTALL.html, configure.ac, src/Makefile.am,
+	src/raptor_internal.h, src/raptor_nfc.c, src/raptor_nfc.h,
+	src/raptor_nfc_data.c, src/raptor_nfc_icu.c, src/raptor_rdfxml.c,
+	src/raptor_unicode.c: Use ICU to check for Unicode NFC
+
+	This commit removes the built-in Raptor code for checking that
+	RDF/XML literals in Unicode NFC.  This is now provided by the ICU
+	library which is only linked in if configure is given the
+	--with-icu-config=PATH argument.
+
+	Advantages:
+	1. Removes a large compiled-in static dataset in the library and
+	makes raptor smaller.
+	2. Uses a library that is kept up to date for new Unicode
+	versions.
+	3. Should make RDF/XML parsing faster since it does not need to
+	check for NFC on every literal.
+
+	Disadvantages:
+	1. Removes an existing (but likely rarely used) feature
+
+	* src/raptor_nfc_test.c:
+	Run all tests, fix file decoding
+
+	* src/raptor_nfc_test.c: size_t
+
+2012-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/snprintf.c:
+	(raptor_format_integer): Return size_t for this internal function.
+
+2012-02-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-sax2.sgml,
+	docs/tmpl/section-uri.sgml: Update tmpls
+
+2012-02-13  Lauri Aalto <laalto@iki.fi>
+
+	* autogen.sh:
+	require automake 1.11.2+ for -Wextra-portability
+
+2012-02-08  Dave Beckett <dave@dajobe.org>
+
+	* build/.gitignore, configure.ac: Add automake option
+	-Wextra-portability and AM_PROG_AR to make it happy
+
 2012-02-04  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c:
+	Put raptor_option_get_count() out of the loops
+
+	* src/raptor_parse.c:
+	(raptor_new_parser): Set default strictness
+
+	* docs/raptor2-sections.txt: docs
+
+	* ChangeLog, RELEASE.html: 2.0.7
 
 	* src/raptor_option.c, src/raptor_parse.c, src/raptor_serialize.c,
 	src/raptor_xml_writer.c:
