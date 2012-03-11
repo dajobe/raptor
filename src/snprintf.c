@@ -308,7 +308,7 @@ raptor_format_integer(char* buffer, size_t bufsize, int integer,
   while(value /= base)
     len++;
 
-  if(width > 0 && width > len)
+  if(width > 0 && RAPTOR_GOOD_CAST(size_t, width) > len)
     len = width;
 
   if(!buffer || bufsize < RAPTOR_GOOD_CAST(size_t, (len + 1))) /* +1 for NUL */
