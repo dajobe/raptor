@@ -196,9 +196,6 @@ main (int argc, char *argv[])
     if(*p == '@' || *p == '#')
       continue;
 
-    if(line != 56)
-      continue;
-    
 
     /* skip column 1 */
     while(*p++ != ';')
@@ -210,10 +207,16 @@ main (int argc, char *argv[])
     while(*p++ != ';')
       ;
 
-    column2_len = decode_to_utf8(column2, UNISTR_SIZE, start, p-1);
+    column2_len = decode_to_utf8(column2, UNISTR_SIZE, start, p-2);
     if(column2_len > max_c2_len)
       max_c2_len = column2_len;
-    
+
+#if 0
+    fprintf(stderr, "UTF8 column 2 (%ld bytes) is: '", column2_len);
+    utf8_print(column2, column2_len, stderr);
+    fputs("'\n", stderr);
+#endif
+
     /* skip column 3 */
     while(*p++ != ';')
       ;
@@ -224,9 +227,15 @@ main (int argc, char *argv[])
     while(*p++ != ';')
       ;
 
-    column4_len = decode_to_utf8(column4, UNISTR_SIZE, start, p-1);
+    column4_len = decode_to_utf8(column4, UNISTR_SIZE, start, p-2);
     if(column4_len > max_c4_len)
       max_c4_len = column4_len;
+
+#if 0
+    fprintf(stderr, "UTF8 column 4 (%ld bytes) is: '", column4_len);
+    utf8_print(column4, column4_len, stderr);
+    fputs("'\n", stderr);
+#endif
 
     if(!raptor_unicode_check_utf8_string(column2, column2_len)) {
       fprintf(stderr, "%s:%d: UTF8 column 2 failed on: '", filename, line);
