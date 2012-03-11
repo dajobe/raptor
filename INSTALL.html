@@ -68,14 +68,18 @@ dependency checking.  It is developed and built on x86 Linux
 and x86 OSX but is also tested on other systems occasionally.
 </p>
 
-<p>Raptor optionally the libxml2 XML library (2.6.8 or newer) for
-parsing XML syntaxes.  It will optionally use libcurl, libxml2 or
-libfetch for retrieving URIs.  It will optionally use libxslt
-(requiring libxml2 also) to provide the XSLT functionality for the
-GRDDL and microformats parser.  It will also optionally use
-<a href="http://lloyd.github.com/yajl/">YAJL</a> to provide JSON
-parsers if it is available.
-</p>
+<p>Raptor has several optional libraries:</p>
+<ul>
+  <li>The libxml2 XML library (2.6.8 or newer) for parsing XML syntaxes.</li>
+  <li>Libcurl, libxml2 or libfetch for retrieving URIs.</li>
+  <li>libxslt (requiring libxml2 also) to provide the XSLT functionality for the
+    GRDDL and microformats parser.</li>
+  <li><a href="http://lloyd.github.com/yajl/">YAJL</a> to provide JSON
+    parsers if it is available.</li>
+  <li><a href="http://www.icu-project.org/">ICU</a> to provide
+    Unicode NFC checking only if enabled with
+    <code>--with-icu-config</code></li>
+</ul>
 
 <h3><a id="sec-create-configure" name="sec-create-configure"></a>2.1. Create <code>configure</code> program</h3>
 
@@ -194,14 +198,23 @@ memory was allocated in the same library.
 
 <dt><tt>--with-xml2-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the libxml xml2-config program.
+The default is to look for this on the PATH.
 </p></dd>
 
 <dt><tt>--with-xslt-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the libxslt xslt-config program.
+The default is to look for this on the PATH.
 </p></dd>
 
 <dt><tt>--with-curl-config=NAME</tt><br /></dt>
-<dd><p>Set the path to the <a href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program.
+<dd><p>Set the path to the <a
+href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program.
+The default is to look for this on the PATH.
+</p></dd>
+
+<dt><tt>--with-icu-config=NAME</tt><br /></dt>
+<dd><p>Set the path to the <a href="http://www.icu-project.org/">ICU</a>
+icu-config program. This will NOT be searched for on the PATH.
 </p></dd>
 
 <dt><tt>--with-libwww-config=NAME</tt><br /></dt>

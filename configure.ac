@@ -277,16 +277,6 @@ dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
 
-dnl for raptor_nfc.c
-AC_CHECK_TYPES([u8])
-AC_CHECK_TYPES([u16])
-
-AC_CHECK_SIZEOF(unsigned char, 1)
-AC_CHECK_SIZEOF(unsigned short, 2)
-AC_CHECK_SIZEOF(unsigned int, 4)
-AC_CHECK_SIZEOF(unsigned long, 4)
-  
-
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 version_major=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`
@@ -462,9 +452,19 @@ fi
 
 
 
-AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check        Turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
-AC_MSG_CHECKING(using Unicode NFC checking)
-AC_MSG_RESULT($nfc_check);
+AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config []], icu_config="$withval", icu_config="")
+
+have_icu=no
+AC_MSG_CHECKING(for ICU)
+if test "X$icu_config" != "X" ; then
+  ICU_CONFIG=$icu_config
+  ICU_VERSION=`$ICU_CONFIG --version`
+  have_icu=yes
+  AC_MSG_RESULT(yes - version $ICU_VERSION)
+else
+  AC_MSG_RESULT(no)
+fi
+dnl Note there is NO automated searching for icu-config
 
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
@@ -755,10 +755,10 @@ for parser in $parsers; do
   rdf_parsers_enabled="$rdf_parsers_enabled $parser"
 done
 
-nfc_needed=no
+use_nfc=no
 if test $rdfxml_parser = yes; then
   need_libxml=1
-  nfc_needed=yes
+  use_nfc=yes
 fi
 
 if test $rss_parser = yes; then
@@ -859,15 +859,13 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_NQUADS, test $nquads_serializer = yes)
 
 AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 
-dnl Enable NFC code only if needed and the check is enabled
-if test $nfc_needed = yes; then
-  if test $nfc_check != yes; then
-    nfc_needed=no
-  else
-    AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
-  fi
+dnl Enable NFC code only if enabled and used (rdfxml)
+need_icu=no
+if test $use_nfc = yes -a $have_icu = yes; then
+  need_icu=yes
+  AC_DEFINE([RAPTOR_ICU_NFC], 1, [Use ICU for Unicode NFC check])
 fi
-AM_CONDITIONAL(RAPTOR_NFC_CHECK, test $nfc_needed = yes)
+AM_CONDITIONAL(RAPTOR_ICU_NFC, test $need_icu = yes)
 
 
 
@@ -1004,6 +1002,17 @@ if test $need_libcurl = 1; then
 
 fi
 
+
+dnl ICU for NFC check
+AC_MSG_CHECKING(NFC library to use)
+nfc_library=none
+if test $need_icu = yes; then
+  CPPFLAGS="$CPPFLAGS `$ICU_CONFIG --cppflags-searchpath`"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$ICU_CONFIG --ldflags-searchpath` -licuuc"
+  AC_LIBOBJ(raptor_nfc_icu)
+  nfc_library="ICU $ICU_VERSION"
+fi
+AC_MSG_RESULT($nfc_library)
 
 
 have_lininn=no
@@ -1205,4 +1214,5 @@ Raptor build summary:
   RDF serializers enabled   :$rdf_serializers_enabled
   XML parser                : $xml_parser
   WWW library               : $www_library
+  NFC check library         : $nfc_library
 ])

@@ -152,9 +152,6 @@ endif
 if RAPTOR_SERIALIZER_JSON
 libraptor2_la_SOURCES += raptor_serialize_json.c
 endif
-if RAPTOR_NFC_CHECK
-libraptor2_la_SOURCES += raptor_nfc_data.c raptor_nfc.c raptor_nfc.h
-endif
 if STRCASECMP
 libraptor2_la_SOURCES += strcasecmp.c
 endif

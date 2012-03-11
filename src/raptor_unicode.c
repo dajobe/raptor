@@ -41,9 +41,6 @@
 /* Raptor includes */
 #include "raptor2.h"
 #include "raptor_internal.h"
-#ifdef RAPTOR_NFC_CHECK
-#include "raptor_nfc.h"
-#endif
 
 
 /* Unicode defines only the range U+0000 to U+10FFFF */
@@ -789,13 +786,15 @@ raptor_unicode_is_extender(long c)
  * raptor_unicode_check_utf8_nfc_string:
  * @input: UTF-8 string
  * @length: length of string
+ * @error: pointer to error flag (or NULL)
  *
  * INTERNAL - Check if a Unicode UTF-8 encoded string is in Unicode Normal Form C.
- * 
- * Return value: Non 0 if the string is NFC
+ *
+ * Return value: Non 0 if the string is in NFC (or an error)
  **/
 int
-raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length) 
+raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length,
+                                     int *error)
 {
   unsigned int i;
   int plain = 1;
@@ -809,9 +808,11 @@ raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length)
   if(plain)
     return 1;
 
-#ifdef RAPTOR_NFC_CHECK  
-  return raptor_nfc_check(input, length, NULL);
+#ifdef RAPTOR_NFC_ICU
+  return raptor_nfc_icu_check(input, length, error);
 #else
+  if(error)
+    *error = 1;
   return 1;
 #endif
 }
