@@ -290,7 +290,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
   unsigned char *buffer;
   const char* prefix;
   unsigned int prefix_length;
-  int id_length;
+  size_t id_length;
 
   if(user_bnodeid)
     return user_bnodeid;
