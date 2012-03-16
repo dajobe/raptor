@@ -1,4 +1,13 @@
+2012-03-15  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Pass on options NO_NET and NO_FILE to RDFA SAX2
+	object
+
 2012-03-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c:
+	(raptor_world_default_generate_bnodeid_handler): size_t for
+	id_length.
 
 	* src/snprintf.c:
 	(raptor_format_integer): cast for comparing width to len

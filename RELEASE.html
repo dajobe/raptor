@@ -26,6 +26,11 @@ Updated <code>configure</code> so that if Raptor is configured with
 no parser that requires an XML parser, libxml2 will not be required.
 </p>
 
+<p>Removed internal Unicode NFC checking code used for checking
+RDF/XML literals conformance which was expensive to check and a large
+of compiled-in static dataset that was rather out of date.  Replaced
+with optional compiled use of <a href="http://www.icu-project.org/">ICU</a>.
+If ICU is not explicitly configured, no literal checking is done.</p>
 
 <h3>Options changes</h3>
 
@@ -95,6 +100,18 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>
 
 <p>The <code>raptor_www_fetch()</code> call now returns the status
 from any URI filter that returns a non-0 response.
+</p>
+
+
+<h3>Build changes</h3>
+
+<p>Added <code>--with-icu-config=</code><em>PATH</em> option
+to enable use of ICU for NFC checking.</p>
+
+<p>Requires automake 1.11.2+ for <code>-Wextra-portability</code></p>
+
+<p><code>configure</code> uses <code>AM_PROG_AR</code> to make
+automake <code>-Wextra-portability</code> happy.
 </p>
 
 
@@ -212,7 +229,6 @@ libm.  Removed the checks for these functions from
 for <code>--enable-maintainer-mode</code> but now requires the
 <code>--enable-debug</code> option to be given.
 </p>
-
 
 <h3>Other changes</h3>
 
