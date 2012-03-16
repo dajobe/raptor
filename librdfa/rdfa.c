@@ -1218,6 +1218,23 @@ int rdfa_parse_start(rdfacontext* context)
    rdfa_init_context(context);
 
 #ifdef LIBRDFA_IN_RAPTOR
+   if(1) {
+     raptor_parser* rdf_parser = (raptor_parser*)context->callback_data;
+
+     /* Optionally forbid internal network and file requests in the
+      * XML parser
+      */
+     raptor_sax2_set_option(context->sax2,
+                            RAPTOR_OPTION_NO_NET, NULL,
+                            RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET));
+     raptor_sax2_set_option(context->sax2,
+                            RAPTOR_OPTION_NO_FILE, NULL,
+                            RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_FILE));
+     if(rdf_parser->uri_filter)
+       raptor_sax2_set_uri_filter(context->sax2, rdf_parser->uri_filter,
+                                  rdf_parser->uri_filter_user_data);
+   }
+   
    context->base_uri=raptor_new_uri(context->sax2->world, (const unsigned char*)context->base);
    raptor_sax2_parse_start(context->sax2, context->base_uri);
 #endif
