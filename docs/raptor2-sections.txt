@@ -316,7 +316,7 @@ raptor_www_fetch
 raptor_www_fetch_to_string
 raptor_www_get_connection
 raptor_www_set_ssl_cert_options
-raptor_www_set_ssl_verify_option
+raptor_www_set_ssl_verify_options
 raptor_www_abort
 </SECTION>
 

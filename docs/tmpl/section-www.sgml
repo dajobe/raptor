@@ -238,6 +238,17 @@ chunks of byte content.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_www_set_ssl_verify_options ##### -->
+<para>
+
+</para>
+
+@www: 
+@verify_peer: 
+@verify_host: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_www_abort ##### -->
 <para>
 
