@@ -738,7 +738,9 @@ raptor_rss_end_element_handler(void *user_data,
 
     if(rss_parser->current_block) {
       const raptor_rss_block_field_info *bfi;
+#ifdef RAPTOR_DEBUG
       int handled = 0;
+#endif
       /* in a block, maybe store the CDATA there */
 
       for(bfi = &raptor_rss_block_fields_info[0];
@@ -757,7 +759,9 @@ raptor_rss_end_element_handler(void *user_data,
           return;
         }
         
+#ifdef RAPTOR_DEBUG
         handled = 1;
+#endif
         break;
       }
 
