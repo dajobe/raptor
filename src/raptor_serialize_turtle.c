@@ -1289,28 +1289,31 @@ raptor_term_turtle_write(raptor_iostream* iostr,
 
 
 /**
- * raptor_uri_to_turtle_string:
+ * raptor_uri_to_turtle_counted_string:
  * @world: world
  * @uri: uri
  * @nstack: namespace stack
  * @base_uri: base URI
+ * @len_p: Pointer to location to store length of new string (if not NULL)
  *
  * Convert #raptor_uri to a string.
  * Caller has responsibility to free the string.
  *
- * Return value: NULL on failure
+ * Return value: the new string or NULL on failure.  The length of
+ * the new string is returned in *@len_p if len_p is not NULL.
  */
 unsigned char*
-raptor_uri_to_turtle_string(raptor_world *world,
+raptor_uri_to_turtle_counted_string(raptor_world *world,
                             raptor_uri* uri, 
                             raptor_namespace_stack *nstack,
-                            raptor_uri *base_uri)
+                            raptor_uri *base_uri,
+                            size_t *len_p)
 {
   int rc;
   raptor_iostream* iostr;
   unsigned char *s;
   iostr = raptor_new_iostream_to_string(world,
-                                        (void**)&s, NULL, malloc);
+                                        (void**)&s, len_p, malloc);
   if(!iostr)
     return NULL;
 
@@ -1325,29 +1328,53 @@ raptor_uri_to_turtle_string(raptor_world *world,
   return s;
 }
 
+/**
+ * raptor_uri_to_turtle_string:
+ * @world: world
+ * @uri: uri
+ * @nstack: namespace stack
+ * @base_uri: base URI
+ *
+ * Convert #raptor_uri to a string.
+ * Caller has responsibility to free the string.
+ *
+ * Return value: the new string or NULL on failure.
+ */
+unsigned char*
+raptor_uri_to_turtle_string(raptor_world *world,
+                            raptor_uri* uri, 
+                            raptor_namespace_stack *nstack,
+                            raptor_uri *base_uri)
+{
+  raptor_uri_to_turtle_counted_string(world, uri, nstack, base_uri, NULL);
+}
+
 
 
 /**
- * raptor_term_to_turtle_string:
+ * raptor_term_to_turtle_counted_string:
  * @term: term
  * @nstack: namespace stack
  * @base_uri: base URI
+ * @len_p: Pointer to location to store length of new string (if not NULL)
  *
  * Convert #raptor_term to a string.
  * Caller has responsibility to free the string.
  *
- * Return value: NULL on failure
+ * Return value: the new string or NULL on failure.  The length of
+ * the new string is returned in *@len_p if len_p is not NULL.
  */
 unsigned char*
-raptor_term_to_turtle_string(raptor_term* term, 
+raptor_term_to_turtle_counted_string(raptor_term* term, 
                              raptor_namespace_stack *nstack,
-                             raptor_uri *base_uri)
+                             raptor_uri *base_uri,
+                             size_t *len_p)
 {
   int rc;
   raptor_iostream* iostr;
   unsigned char *s;
   iostr = raptor_new_iostream_to_string(term->world,
-                                        (void**)&s, NULL, malloc);
+                                        (void**)&s, len_p, malloc);
   if(!iostr)
     return NULL;
 
@@ -1361,3 +1388,23 @@ raptor_term_to_turtle_string(raptor_term* term,
   
   return s;
 }
+
+/**
+ * raptor_term_to_turtle_string:
+ * @term: term
+ * @nstack: namespace stack
+ * @base_uri: base URI
+ *
+ * Convert #raptor_term to a string.
+ * Caller has responsibility to free the string.
+ *
+ * Return value: the new string or NULL on failure.
+ */
+unsigned char*
+raptor_term_to_turtle_string(raptor_term* term, 
+                             raptor_namespace_stack *nstack,
+                             raptor_uri *base_uri)
+{
+  raptor_term_to_turtle_counted_string(term, nstack, base_uri, NULL);
+}
+
