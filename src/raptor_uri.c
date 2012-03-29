@@ -1609,7 +1609,7 @@ raptor_uri_filename_exists(const unsigned char* path)
   if(!stat((const char*)path, &stat_buffer))
     exists = S_ISREG(stat_buffer.st_mode);
 #else
-  exists = (access(path, R_OK) < 0) ? -1 : 1
+  exists = (access(path, R_OK) < 0) ? -1 : 1;
 #endif
 
   return exists;
