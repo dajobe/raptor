@@ -1194,19 +1194,19 @@ raptor_init_serializer_turtle(raptor_world* world)
 
 
 /**
- * raptor_uri_write_turtle:
- * @t1: world
- * @t2: iostream for writing
- * @t3: uri
- * @t4: namespace stack
- * @t5: base URI
+ * raptor_uri_turtle_write:
+ * @world: world
+ * @iostr: iostream for writing
+ * @uri: uri
+ * @nstack: namespace stack
+ * @base_uri: base URI
  *
  * Write #raptor_uri to a stream in turtle syntax (using QNames).
  *
  * Return value: non-0 on failure
  */
 int
-raptor_uri_write_turtle(raptor_world *world,
+raptor_uri_turtle_write(raptor_world *world,
                         raptor_iostream* iostr,
                         raptor_uri* uri, 
                         raptor_namespace_stack *nstack,
@@ -1244,18 +1244,18 @@ raptor_uri_write_turtle(raptor_world *world,
 
 
 /**
- * raptor_term_write_turtle:
- * @t1: iostream for writing
- * @t2: term
- * @t3: namespace stack
- * @t4: base URI
+ * raptor_term_turtle_write:
+ * @iostr: iostream for writing
+ * @term: term
+ * @nstack: namespace stack
+ * @base_uri: base URI
  *
  * Write #raptor_term to a stream in turtle syntax (using QNames).
  *
  * Return value: non-0 on failure
  */
 int
-raptor_term_write_turtle(raptor_iostream* iostr,
+raptor_term_turtle_write(raptor_iostream* iostr,
                          raptor_term* term, 
                          raptor_namespace_stack *nstack,
                          raptor_uri *base_uri)
@@ -1269,7 +1269,7 @@ raptor_term_write_turtle(raptor_iostream* iostr,
   }
   
   if(term->type == RAPTOR_TERM_TYPE_URI) {
-    rc = raptor_uri_write_turtle(term->world, iostr, term->value.uri, nstack, base_uri);
+    rc = raptor_uri_turtle_write(term->world, iostr, term->value.uri, nstack, base_uri);
   } else if(term->type == RAPTOR_TERM_TYPE_LITERAL) {
     raptor_turtle_writer_literal(turtle_writer, nstack,
                                  term->value.literal.string,
@@ -1290,10 +1290,10 @@ raptor_term_write_turtle(raptor_iostream* iostr,
 
 /**
  * raptor_uri_to_turtle_string:
- * @t1: world
- * @t2: uri
- * @t3: namespace stack
- * @t4: base URI
+ * @world: world
+ * @uri: uri
+ * @nstack: namespace stack
+ * @base_uri: base URI
  *
  * Convert #raptor_uri to a string.
  * Caller has responsibility to free the string.
@@ -1314,7 +1314,7 @@ raptor_uri_to_turtle_string(raptor_world *world,
   if(!iostr)
     return NULL;
 
-  rc = raptor_uri_write_turtle(world, iostr, uri, nstack, base_uri);
+  rc = raptor_uri_turtle_write(world, iostr, uri, nstack, base_uri);
 
   raptor_free_iostream(iostr);
   if(rc) {
@@ -1329,9 +1329,9 @@ raptor_uri_to_turtle_string(raptor_world *world,
 
 /**
  * raptor_term_to_turtle_string:
- * @t1: term
- * @t2: namespace stack
- * @t3: base URI
+ * @term: term
+ * @nstack: namespace stack
+ * @base_uri: base URI
  *
  * Convert #raptor_term to a string.
  * Caller has responsibility to free the string.
@@ -1351,7 +1351,7 @@ raptor_term_to_turtle_string(raptor_term* term,
   if(!iostr)
     return NULL;
 
-  rc = raptor_term_write_turtle(iostr, term, nstack, base_uri);
+  rc = raptor_term_turtle_write(iostr, term, nstack, base_uri);
 
   raptor_free_iostream(iostr);
   if(rc) {
