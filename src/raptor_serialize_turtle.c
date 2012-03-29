@@ -1346,7 +1346,7 @@ raptor_uri_to_turtle_string(raptor_world *world,
                             raptor_namespace_stack *nstack,
                             raptor_uri *base_uri)
 {
-  raptor_uri_to_turtle_counted_string(world, uri, nstack, base_uri, NULL);
+  return raptor_uri_to_turtle_counted_string(world, uri, nstack, base_uri, NULL);
 }
 
 
@@ -1405,6 +1405,6 @@ raptor_term_to_turtle_string(raptor_term* term,
                              raptor_namespace_stack *nstack,
                              raptor_uri *base_uri)
 {
-  raptor_term_to_turtle_counted_string(term, nstack, base_uri, NULL);
+  return raptor_term_to_turtle_counted_string(term, nstack, base_uri, NULL);
 }
 
