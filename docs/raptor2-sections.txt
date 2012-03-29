@@ -221,6 +221,7 @@ raptor_uri
 raptor_new_uri
 raptor_new_uri_from_counted_string
 raptor_new_uri_from_uri_local_name
+raptor_new_uri_from_uri_or_file_string
 raptor_new_uri_relative_to_base
 raptor_new_uri_from_id
 raptor_new_uri_for_rdf_concept
@@ -240,10 +241,13 @@ raptor_uri_resolve_uri_reference
 raptor_uri_filename_to_uri_string
 raptor_uri_uri_string_to_filename
 raptor_uri_uri_string_to_filename_fragment
+raptor_uri_uri_string_to_counted_filename_fragment
 raptor_uri_uri_string_is_file_uri
 raptor_uri_print
 raptor_uri_get_world
 raptor_uri_write
+raptor_uri_file_exists
+raptor_uri_filename_exists
 </SECTION>
 
 <SECTION>
@@ -312,6 +316,7 @@ raptor_www_fetch
 raptor_www_fetch_to_string
 raptor_www_get_connection
 raptor_www_set_ssl_cert_options
+raptor_www_set_ssl_verify_options
 raptor_www_abort
 </SECTION>
 
@@ -372,6 +377,7 @@ raptor_sax2_set_comment_handler
 raptor_sax2_set_unparsed_entity_decl_handler
 raptor_sax2_set_external_entity_ref_handler
 raptor_sax2_set_namespace_handler
+raptor_sax2_set_uri_filter
 raptor_sax2_parse_start
 raptor_sax2_parse_chunk
 raptor_sax2_inscope_xml_language

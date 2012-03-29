@@ -80,6 +80,13 @@ typedef enum {
 } raptor_json_term_attrib;
 
 
+/* When YAJL V1 support is dropped, this can be removed */
+#ifdef HAVE_YAJL2
+#define RAPTOR_YAJL_LEN_TYPE size_t
+#else
+#define RAPTOR_YAJL_LEN_TYPE unsigned int
+#endif
+
 /*
  * JSON parser object
  */
@@ -126,7 +133,7 @@ raptor_json_reset_term(raptor_json_parser_context *context)
 }
 
 static unsigned char*
-raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, unsigned int len)
+raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, RAPTOR_YAJL_LEN_TYPE len)
 {
   unsigned char *cstr = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!cstr) {
@@ -141,7 +148,7 @@ raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigne
 }
 
 static raptor_term*
-raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, unsigned int len)
+raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, size_t len)
 {
   raptor_term *term = NULL;
 
@@ -152,7 +159,7 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
   } else {
     raptor_uri *uri = raptor_new_uri_from_counted_string(rdf_parser->world, str, len);
     if(!uri) {
-      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, RAPTOR_BAD_CAST(int, len));
       raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
       RAPTOR_FREE(char*, cstr);
       return NULL;
@@ -250,7 +257,7 @@ static int raptor_json_yajl_double(void * ctx, double d)
 }
 
 static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
-                           unsigned int len)
+                                   RAPTOR_YAJL_LEN_TYPE len)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
   raptor_json_parser_context *context;
@@ -295,7 +302,7 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
 }
 
 static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
-                            unsigned int len)
+                                    RAPTOR_YAJL_LEN_TYPE len)
 {
   raptor_parser* rdf_parser = (raptor_parser*)ctx;
   raptor_json_parser_context *context;
@@ -513,13 +520,13 @@ static int raptor_json_yajl_end_array(void * ctx)
 
 
 static void*
-raptor_json_yajl_malloc(void *ctx, unsigned int sz)
+raptor_json_yajl_malloc(void *ctx, RAPTOR_YAJL_LEN_TYPE sz)
 {
   return RAPTOR_MALLOC(void*, sz);
 }
 
 static void*
-raptor_json_yajl_realloc(void *ctx, void * ptr, unsigned int sz)
+raptor_json_yajl_realloc(void *ctx, void * ptr, RAPTOR_YAJL_LEN_TYPE sz)
 {
   return RAPTOR_REALLOC(void*, ptr, sz);
 }

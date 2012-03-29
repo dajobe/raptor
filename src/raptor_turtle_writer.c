@@ -704,6 +704,8 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
       
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_NO_FILE:
+    case RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES:
 
     /* XML writer options */
     case RAPTOR_OPTION_RELATIVE_URIS:
@@ -732,6 +734,8 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
     case RAPTOR_OPTION_WWW_CERT_FILENAME:
     case RAPTOR_OPTION_WWW_CERT_TYPE:
     case RAPTOR_OPTION_WWW_CERT_PASSPHRASE:
+    case RAPTOR_OPTION_WWW_SSL_VERIFY_PEER:
+    case RAPTOR_OPTION_WWW_SSL_VERIFY_HOST:
       
     default:
       return -1;
@@ -825,6 +829,8 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
 
     /* Shared */
     case RAPTOR_OPTION_NO_NET:
+    case RAPTOR_OPTION_NO_FILE:
+    case RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES:
 
     /* XML writer options */
     case RAPTOR_OPTION_RELATIVE_URIS:
@@ -853,6 +859,8 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
     case RAPTOR_OPTION_WWW_CERT_FILENAME:
     case RAPTOR_OPTION_WWW_CERT_TYPE:
     case RAPTOR_OPTION_WWW_CERT_PASSPHRASE:
+    case RAPTOR_OPTION_WWW_SSL_VERIFY_PEER:
+    case RAPTOR_OPTION_WWW_SSL_VERIFY_HOST:
       
     default:
       break;

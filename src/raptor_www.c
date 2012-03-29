@@ -494,6 +494,33 @@ raptor_www_set_ssl_cert_options(raptor_www* www,
 
 
 /**
+ * raptor_www_set_ssl_verify_options:
+ * @www: WWW object
+ * @verify_peer: SSL verify peer - non-0 to verify peer SSL certificate (default)
+ * @verify_host: SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
+ * 
+ * Set whether SSL verifies the authenticity of the peer's certificate
+ *
+ * These options correspond to setting the curl
+ * CURLOPT_SSL_VERIFYPEER and CURLOPT_SSL_VERIFYHOST options.
+ *
+ * Return value: non-0 on failure
+ **/
+int
+raptor_www_set_ssl_verify_options(raptor_www* www, int verify_peer,
+                                  int verify_host)
+{
+#ifdef RAPTOR_WWW_LIBCURL
+  return raptor_www_curl_set_ssl_verify_options(www, verify_peer,
+                                                verify_host);
+#else
+  return 1;
+#endif
+}
+
+
+
+/**
  * raptor_www_get_connection:
  * @www: #raptor_www object 
  *
@@ -653,9 +680,11 @@ raptor_www_fetch(raptor_www *www, raptor_uri *uri)
   www->locator.line= -1;
   www->locator.column= -1;
 
-  if(www->uri_filter)
-    if(www->uri_filter(www->uri_filter_user_data, uri))
-      return status;
+  if(www->uri_filter) {
+    int rc = www->uri_filter(www->uri_filter_user_data, uri);
+    if(rc)
+      return rc;
+  }
   
 #ifdef RAPTOR_WWW_NONE
   status = raptor_www_file_fetch(www);

@@ -493,7 +493,7 @@ typedef struct {
  *   for each indent level when serializing with auto indent.
  * @RAPTOR_OPTION_WRITER_XML_VERSION: Integer XML version XML 1.0 (10) or XML 1.1 (11)
  * @RAPTOR_OPTION_WRITER_XML_DECLARATION: Write XML 1.0 or 1.1 declaration.
- * @RAPTOR_OPTION_NO_NET: Deny network requests.
+ * @RAPTOR_OPTION_NO_NET: Deny network requests inside other requests.
  * @RAPTOR_OPTION_RESOURCE_BORDER: Border color of resource
  *   nodes for GraphViz DOT serializer.
  * @RAPTOR_OPTION_LITERAL_BORDER: Border color of literal nodes
@@ -525,6 +525,10 @@ typedef struct {
  * @RAPTOR_OPTION_WWW_CERT_FILENAME: String. SSL client certificate filename
  * @RAPTOR_OPTION_WWW_CERT_TYPE: String. SSL client certificate type
  * @RAPTOR_OPTION_WWW_CERT_PASSPHRASE: String. SSL client certificate passphrase
+ * @RAPTOR_OPTION_WWW_SSL_VERIFY_PEER:  Integer. SSL verify peer - non-0 to verify peer SSL certificate (default)
+ * @RAPTOR_OPTION_WWW_SSL_VERIFY_HOST: Integer. SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
+ * @RAPTOR_OPTION_NO_FILE: Deny file reading requests inside other requests.
+ * @RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES: When reading XML, load external entities.
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.
@@ -568,7 +572,11 @@ typedef enum {
   RAPTOR_OPTION_WWW_CERT_FILENAME,
   RAPTOR_OPTION_WWW_CERT_TYPE,
   RAPTOR_OPTION_WWW_CERT_PASSPHRASE,
-  RAPTOR_OPTION_LAST = RAPTOR_OPTION_WWW_CERT_PASSPHRASE
+  RAPTOR_OPTION_NO_FILE,
+  RAPTOR_OPTION_WWW_SSL_VERIFY_PEER,
+  RAPTOR_OPTION_WWW_SSL_VERIFY_HOST,
+  RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES,
+  RAPTOR_OPTION_LAST = RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES
 } raptor_option;
 
 
@@ -1258,6 +1266,8 @@ raptor_uri* raptor_new_uri_relative_to_base(raptor_world* world, raptor_uri *bas
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
+raptor_uri* raptor_new_uri_from_uri_or_file_string(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string);
+RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
@@ -1289,7 +1299,8 @@ RAPTOR_API
 unsigned char* raptor_uri_to_string(raptor_uri *uri);
 RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
-
+RAPTOR_API
+int raptor_uri_file_exists(raptor_uri* uri);
 
 /* XML utility functions */
 RAPTOR_API
@@ -1322,6 +1333,8 @@ size_t raptor_uri_resolve_uri_reference(const unsigned char *base_uri, const uns
 RAPTOR_API
 unsigned char* raptor_uri_filename_to_uri_string(const char *filename);
 RAPTOR_API
+int raptor_uri_filename_exists(const unsigned char* path);
+RAPTOR_API
 char* raptor_uri_uri_string_to_filename(const unsigned char *uri_string);
 RAPTOR_API
 char* raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string, unsigned char **fragment_p);
@@ -1329,6 +1342,8 @@ RAPTOR_API
 int raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string);
 RAPTOR_API
 int raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb, const char* string, size_t length, int space_is_plus);
+RAPTOR_API
+char* raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p);
 
 
 /**
@@ -1377,6 +1392,8 @@ RAPTOR_API
 void raptor_free_www(raptor_www *www);
 RAPTOR_API
 int raptor_www_set_ssl_cert_options(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase);
+RAPTOR_API
+int raptor_www_set_ssl_verify_options(raptor_www* www, int verify_peer, int verify_host);
 RAPTOR_API
 void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API
@@ -1978,6 +1995,8 @@ RAPTOR_API
 void raptor_sax2_set_external_entity_ref_handler(raptor_sax2* sax2, raptor_sax2_external_entity_ref_handler handler);
 RAPTOR_API
 void raptor_sax2_set_namespace_handler(raptor_sax2* sax2, raptor_namespace_handler handler);
+RAPTOR_API
+void raptor_sax2_set_uri_filter(raptor_sax2* sax2, raptor_uri_filter_func filter, void *user_data);
 RAPTOR_API
 void raptor_sax2_parse_start(raptor_sax2 *sax2, raptor_uri *base_uri);
 RAPTOR_API

@@ -100,6 +100,8 @@ raptor_new_sax2(raptor_world *world, raptor_locator *locator,
   sax2->locator = locator;
   sax2->user_data = user_data;
 
+  sax2->enabled = 1;
+
   raptor_object_options_init(&sax2->options, RAPTOR_OPTION_AREA_SAX2);
   
   return sax2;
@@ -119,13 +121,6 @@ raptor_free_sax2(raptor_sax2 *sax2)
 
   if(!sax2)
     return;
-
-#ifdef RAPTOR_XML_EXPAT
-  if(sax2->xp) {
-    XML_ParserFree(sax2->xp);
-    sax2->xp = NULL;
-  }
-#endif
 
 #ifdef RAPTOR_XML_LIBXML
   if(sax2->xc) {
@@ -369,6 +364,24 @@ raptor_sax2_inscope_base_uri(raptor_sax2 *sax2)
 }
 
 
+/**
+ * raptor_sax2_set_uri_filter:
+ * @sax2: SAX2 object
+ * @filter: URI filter function
+ * @user_data: User data to pass to filter function
+ * 
+ * Set URI filter function for SAX2 internal retrievals.
+ **/
+void
+raptor_sax2_set_uri_filter(raptor_sax2* sax2, 
+                           raptor_uri_filter_func filter,
+                           void *user_data)
+{
+  sax2->uri_filter = filter;
+  sax2->uri_filter_user_data = user_data;
+}
+
+
 int
 raptor_sax2_get_depth(raptor_sax2 *sax2)
 {
@@ -437,15 +450,6 @@ raptor_sax2_parse_start(raptor_sax2* sax2, raptor_uri *base_uri)
   else
     sax2->base_uri = NULL;
 
-#ifdef RAPTOR_XML_EXPAT
-  if(sax2->xp) {
-    XML_ParserFree(sax2->xp);
-    sax2->xp = NULL;
-  }
-
-  raptor_expat_init(sax2, base_uri);
-#endif
-
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_sax_init(sax2);
 
@@ -486,22 +490,16 @@ int
 raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
                         size_t len, int is_end) 
 {
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp = sax2->xp;
-  int rc;
-#endif
 #ifdef RAPTOR_XML_LIBXML
   /* parser context */
   xmlParserCtxtPtr xc = sax2->xc;
   int rc;
-#endif
   
-#ifdef RAPTOR_XML_LIBXML
   if(!xc) {
     int libxml_options = 0;
 
     if(!len) {
-      /* no data given at all - emit a similar message to expat */
+      /* no data given at all */
       raptor_sax2_update_document_locator(sax2, sax2->locator);
       raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR, sax2->locator,
                        "XML Parsing failed - no element found");
@@ -535,30 +533,12 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     else
       return 0;
   }
-#endif
 
   if(!len) {
-#ifdef RAPTOR_XML_EXPAT
-    rc = XML_Parse(xp, (char*)buffer, 0, 1);
-    if(!rc) /* expat: 0 is failure */
-      goto handle_error;
-#endif
-#ifdef RAPTOR_XML_LIBXML
-    xmlParseChunk(xc, (char*)buffer, 0, 1);
-#endif
-    return 0;
+    rc = xmlParseChunk(xc, (char*)buffer, 0, 1);
+    return rc;
   }
 
-
-#ifdef RAPTOR_XML_EXPAT
-  rc = XML_Parse(xp, (char*)buffer, RAPTOR_BAD_CAST(int, len), is_end);
-  if(!rc) /* expat: 0 is failure */
-    goto handle_error;
-  if(is_end)
-    return 0;
-#endif
-
-#ifdef RAPTOR_XML_LIBXML
 
   /* This works around some libxml versions that fail to work
    * if the buffer size is larger than the entire file
@@ -595,50 +575,10 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     goto handle_error;
   if(is_end)
     return 0;
-#endif
 
-  return 0;
+  return rc;
 
-#if defined(RAPTOR_XML_EXPAT) || defined(RAPTOR_XML_LIBXML)
   handle_error:
-#endif
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  if(sax2->tokens_count) {
-#endif
-    /* Work around a bug with the expat 1.95.1 shipped with RedHat 7.2
-     * which dies here if the error is before <?xml?...
-     * The expat 1.95.1 source release version works fine.
-     */
-    if(sax2->locator)
-      raptor_sax2_update_document_locator(sax2, sax2->locator);
-#ifdef EXPAT_UTF8_BOM_CRASH
-  }
-#endif
-#endif /* EXPAT */
-
-#ifdef RAPTOR_XML_EXPAT
-  if(1) {
-    const char *error_prefix="XML Parsing failed - "; /* 21 chars */
-    #define ERROR_PREFIX_LEN 21
-    const char *error_message = XML_ErrorString(XML_GetErrorCode(xp));
-    size_t error_length;
-    char *error_buffer;
-
-    error_length = strlen(error_message);
-    error_buffer = RAPTOR_MALLOC(char*, ERROR_PREFIX_LEN + error_length + 1);
-    if(error_buffer) {
-      memcpy(error_buffer, error_prefix, ERROR_PREFIX_LEN);
-      memcpy(error_buffer + ERROR_PREFIX_LEN, error_message, error_length + 1);
-
-      raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
-                       sax2->locator, error_buffer);
-      RAPTOR_FREE(char*, error_buffer);
-    } else
-      raptor_log_error(sax2->world, RAPTOR_LOG_LEVEL_ERROR,
-                       sax2->locator, "XML Parsing failed");
-  }
 #endif
 
   return 1;
@@ -680,9 +620,6 @@ void
 raptor_sax2_update_document_locator(raptor_sax2* sax2, 
                                     raptor_locator* locator)
 {
-#ifdef RAPTOR_XML_EXPAT
-  raptor_expat_update_document_locator(sax2, locator);
-#endif
 #ifdef RAPTOR_XML_LIBXML
   raptor_libxml_update_document_locator(sax2, locator);
 #endif
@@ -705,14 +642,8 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   unsigned char *xml_language = NULL;
   raptor_uri *xml_base = NULL;
 
-  if(sax2->failed)
+  if(sax2->failed || !sax2->enabled)
     return;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
 
 #ifdef RAPTOR_XML_LIBXML
   if(atts) {
@@ -925,14 +856,8 @@ raptor_sax2_end_element(void* user_data, const unsigned char *name)
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
   raptor_xml_element* xml_element;
 
-  if(sax2->failed)
+  if(sax2->failed || !sax2->enabled)
     return;
-
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
 
   xml_element = sax2->current_element;
   if(xml_element) {
@@ -963,7 +888,11 @@ void
 raptor_sax2_characters(void* user_data, const unsigned char *s, int len)
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-  if(!sax2->failed && sax2->characters_handler)
+
+  if(sax2->failed || !sax2->enabled)
+    return;
+
+  if(sax2->characters_handler)
     sax2->characters_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
@@ -973,13 +902,11 @@ void
 raptor_sax2_cdata(void* user_data, const unsigned char *s, int len)
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-#ifdef RAPTOR_XML_EXPAT
-#ifdef EXPAT_UTF8_BOM_CRASH
-  sax2->tokens_count++;
-#endif
-#endif
 
-  if(!sax2->failed && sax2->cdata_handler)
+  if(sax2->failed || !sax2->enabled)
+    return;
+
+  if(sax2->cdata_handler)
     sax2->cdata_handler(sax2->user_data, sax2->current_element, s, len);
 }
 
@@ -989,7 +916,11 @@ void
 raptor_sax2_comment(void* user_data, const unsigned char *s)
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-  if(!sax2->failed && sax2->comment_handler)
+
+  if(sax2->failed || !sax2->enabled)
+    return;
+
+  if(sax2->comment_handler)
     sax2->comment_handler(sax2->user_data, sax2->current_element, s);
 }
 
@@ -1004,7 +935,11 @@ raptor_sax2_unparsed_entity_decl(void* user_data,
                                  const unsigned char* notationName)
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
-  if(!sax2->failed && sax2->unparsed_entity_decl_handler)
+
+  if(sax2->failed || !sax2->enabled)
+    return;
+
+  if(sax2->unparsed_entity_decl_handler)
     sax2->unparsed_entity_decl_handler(sax2->user_data,
                                        entityName, base, systemId, 
                                        publicId, notationName);
@@ -1021,7 +956,7 @@ raptor_sax2_external_entity_ref(void* user_data,
 {
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
 
-  if(sax2->failed)
+  if(sax2->failed || !sax2->enabled)
     return 0;
 
   if(sax2->external_entity_ref_handler)
@@ -1036,4 +971,51 @@ raptor_sax2_external_entity_ref(void* user_data,
   
   /* Failed to handle external entity reference */
   return 0;
+}
+
+
+/**
+ * raptor_sax2_check_load_uri_string:
+ * @sax2: SAX2 object
+ * @uri_string: URI or file URI or file name string
+ *
+ * INTERNAL - Check URI loading policy
+ *
+ * Return value: > 0 if it is OK to load the URI, 0 if not, < 0 on failure
+*/
+int
+raptor_sax2_check_load_uri_string(raptor_sax2* sax2, 
+                                  const unsigned char* uri_string)
+{
+  raptor_uri* abs_uri;
+  const unsigned char* abs_uri_string;
+  int abs_uri_is_file;
+  int load_uri = 0;
+  
+  abs_uri = raptor_new_uri_from_uri_or_file_string(sax2->world, sax2->base_uri,
+                                                   uri_string);
+  if(!abs_uri)
+    return -1;
+
+  abs_uri_string = raptor_uri_as_string(abs_uri);
+
+  abs_uri_is_file = raptor_uri_uri_string_is_file_uri(abs_uri_string);
+  if(abs_uri_is_file)
+    load_uri = !RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_FILE);
+  else
+    load_uri = !RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_NET);
+
+  if(sax2->uri_filter)  {
+    int rc = sax2->uri_filter(sax2->uri_filter_user_data, abs_uri);
+    if(rc)
+      load_uri = 0;
+  }
+
+  RAPTOR_DEBUG4("URI '%s' Is a file? %s  Load URI? %s\n", abs_uri_string, 
+                (abs_uri_is_file > 0) ? "YES" : "NO",
+                (load_uri > 0) ? "YES" : "NO");
+
+  raptor_free_uri(abs_uri);
+
+  return load_uri;
 }

@@ -61,6 +61,17 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_uri_from_uri_or_file_string ##### -->
+<para>
+
+</para>
+
+@world: 
+@base_uri: 
+@uri_or_file_string: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_uri_relative_to_base ##### -->
 <para>
 
@@ -247,6 +258,18 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_uri_uri_string_to_counted_filename_fragment ##### -->
+<para>
+
+</para>
+
+@uri_string: 
+@len_p: 
+@fragment_p: 
+@fragment_len_p: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_uri_uri_string_is_file_uri ##### -->
 <para>
 
@@ -282,6 +305,24 @@ current access to internals of URIs such as URI scheme, path, authority.
 
 @uri: 
 @iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_file_exists ##### -->
+<para>
+
+</para>
+
+@uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_filename_exists ##### -->
+<para>
+
+</para>
+
+@path: 
 @Returns: 
 
 

@@ -194,6 +194,16 @@ and XML base support.
 @handler: 
 
 
+<!-- ##### FUNCTION raptor_sax2_set_uri_filter ##### -->
+<para>
+
+</para>
+
+@sax2: 
+@filter: 
+@user_data: 
+
+
 <!-- ##### FUNCTION raptor_sax2_parse_start ##### -->
 <para>
 

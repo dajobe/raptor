@@ -24,12 +24,12 @@ dnl
 
 
 AC_PREREQ(2.62)
-AC_INIT(Raptor RDF Parser and Serializer library, 2.0.7, http://bugs.librdf.org/, raptor2)
+AC_INIT(Raptor RDF Parser and Serializer library, 2.0.8, http://bugs.librdf.org/, raptor2)
 AC_CONFIG_SRCDIR([src/raptor_general.c])
 AM_CONFIG_HEADER([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
-AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall])
+AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall -Wextra-portability])
 
 libxml_min_version=2.6.8
 
@@ -64,6 +64,7 @@ AC_SUBST(RPM_RELEASE)
 dnl Checks for programs.
 AC_CANONICAL_HOST
 AM_SANITY_CHECK
+AM_PROG_AR
 AC_PROG_CC
 AM_PROG_CC_C_O
 
@@ -259,7 +260,8 @@ MAINTAINER_CPPFLAGS="$warning_cflags"
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h stddef.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
+AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h stddef.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/stat.h sys/time.h setjmp.h)
+AC_CHECK_FUNCS(stat)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
@@ -274,16 +276,6 @@ AC_CHECK_HEADERS(fetch.h,,,
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
-
-dnl for raptor_nfc.c
-AC_CHECK_TYPES([u8])
-AC_CHECK_TYPES([u16])
-
-AC_CHECK_SIZEOF(unsigned char, 1)
-AC_CHECK_SIZEOF(unsigned short, 2)
-AC_CHECK_SIZEOF(unsigned int, 4)
-AC_CHECK_SIZEOF(unsigned long, 4)
-  
 
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
@@ -409,144 +401,6 @@ AC_SYS_LARGEFILE
 
 
 dnl Checks for XML parsers
-have_expat=0
-have_expat_lib=0
-have_expat_source=0
-need_expat=0
-need_expat_source=0
-expat_source_dir=
-expat_obj_dir=
-
-AC_ARG_WITH(expat-source, [  --with-expat-source=PATH  Location of expat source tree (default=auto)], expat_source="$withval", expat_source="auto")
-
-
-AC_MSG_CHECKING(for expat sources)
-if test "$expat_source" != "auto"; then
-  have_expat_source=1
-  have_expat=1
-  expat_source_dir=$expat_source
-  expat_obj_dir=$expat_source
-  AC_MSG_RESULT(yes - $expat_source)
-elif test -d $srcdir/expat; then
-  expat_source=local
-  have_expat_source=1
-  have_expat=1
-  expat_source_dir="\$(top_srcdir)/expat"
-  expat_obj_dir="\$(top_builddir)/expat"
-  AC_MSG_RESULT(yes - local source)
-else
-  expat_source=
-  AC_MSG_RESULT(no)
-fi
-
-if test "X$expat_source" = X; then
-  expat_source=auto
-else
-  if test -d "$expat_source_dir/xmlparse"; then
-    # old expat
-    CPPFLAGS="-I$expat_source_dir/xmlparse $CPPFLAGS"
-  else
-    # new expat
-    CPPFLAGS="-I$expat_source_dir/lib $CPPFLAGS"
-  fi
-fi
-
-AC_CHECK_HEADERS(expat.h xmlparse.h)
-
-
-AC_CHECK_LIB(xmltok, main, xmlt=1, xmlt=0)
-
-# Raptor needs XML_ParserCreate expat function (not namespace one)
-AC_CHECK_LIB(xmlparse, XML_ParserCreate, xmlp=1, xmlp=0, -lxmltok)
-
-LIBS="$oLIBS"
-AC_CHECK_LIB(expat, XML_ParserCreate, libexpat=1, libexpat=0)
-
-LIBS="$oLIBS"
-AC_MSG_CHECKING(for working expat in libxmlparse and libxmltok)
-if test $xmlp = 1 -a $xmlt = 1 -a  $ac_cv_header_xmlparse_h = yes; then
-  LIBS="$LIBS -lxmlparse -lxmltok"
-  AC_TRY_RUN([#include <stdio.h>
-	     main() {XML_ParserCreate(NULL); return(0);}],
-             worked=yes, worked=no, worked=no)
-  if test $worked = yes; then
-    # Old expat
-    have_expat_lib=1
-    have_expat=1
-    expat_libs="-lxmlparse -lxmltok"
-
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-  fi
-else
-  AC_MSG_RESULT(no)
-fi
-
-LIBS="$oLIBS"
-
-AC_MSG_CHECKING(for working expat in libexpat)
-if test $libexpat = 1 -a $ac_cv_header_expat_h = yes ; then
-  LIBS="$LIBS -lexpat"
-  AC_TRY_RUN([#include <stdio.h>
-             main() {XML_ParserCreate(NULL); return(0);}],
-             worked=yes, worked=no, worked=no)
-  if test $worked = yes; then
-    # New expat - expat-1.95.0 or later
-    have_expat_lib=1
-    have_expat=1
-    expat_libs="-lexpat"
-
-    AC_MSG_RESULT(yes)
-
-    AC_MSG_CHECKING(for expat support of UTF-8 BOM)
-    AC_TRY_RUN([
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
-
-#ifdef HAVE_EXPAT_H
-#include <expat.h>
-#else
-#ifdef HAVE_XMLPARSE_H
-#include <xmlparse.h>
-#endif
-#endif
-
-int main(int argc, char **argv) {
-  const char *xml_buffer=
-     /* UTF-8 BOM */
-     "\xef\xbb\xbf<?xml version='1.0' encoding='UTF-8'?><tag/>";
-  XML_Parser xp=XML_ParserCreate(NULL);
-  int  len=strlen(xml_buffer);
-  
-  /* This might cause an error on expat 1.95.1 */
-  int rc=XML_Parse(xp, xml_buffer, len, 1);
-
-  /* if expat gives an error ... */
-  if(!rc) {
-    /* then the next line will crash in normal_updatePosition  */
-    int line=XML_GetCurrentLineNumber(xp);
-  }
-  XML_ParserFree(xp);
-
-  return 0;
-}
-],
-            AC_MSG_RESULT(yes),
-            AC_DEFINE(EXPAT_UTF8_BOM_CRASH, 1, [does expat crash when it sees an initial UTF8 BOM?])
-            AC_MSG_RESULT(no)
-            AC_MSG_WARN(The available expat crashes on XML UTF-8 BOM in documents)
-            AC_MSG_WARN(Fix either by using libxml or expat 1.95.2+))
-
-  else
-    AC_MSG_RESULT(no)
-  fi
-else
-  AC_MSG_RESULT(no)
-fi
-
-LIBS="$oLIBS"
 
 AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH   Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
 
@@ -598,9 +452,19 @@ fi
 
 
 
-AC_ARG_ENABLE(nfc-check, [  --disable-nfc-check        Turn off Unicode NFC checking (default enabled).  ], nfc_check="no", nfc_check="yes")	
-AC_MSG_CHECKING(using Unicode NFC checking)
-AC_MSG_RESULT($nfc_check);
+AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config []], icu_config="$withval", icu_config="")
+
+have_icu=no
+AC_MSG_CHECKING(for ICU)
+if test "X$icu_config" != "X" ; then
+  ICU_CONFIG=$icu_config
+  ICU_VERSION=`$ICU_CONFIG --version`
+  have_icu=yes
+  AC_MSG_RESULT(yes - version $ICU_VERSION)
+else
+  AC_MSG_RESULT(no)
+fi
+dnl Note there is NO automated searching for icu-config
 
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
@@ -611,17 +475,7 @@ fi
 
 
 have_libxml=0
-have_libxml_lib=0
-have_libxml_source=0
 need_libxml=0
-need_libxml_source=0
-AC_MSG_CHECKING(for libxml sources)
-if test -d $srcdir/libxml -a -r $srcdir/libxml/libxml.spec ; then
-  have_libxml_source=1
-  AC_MSG_RESULT(yes)
-else
-  AC_MSG_RESULT(no)
-fi
 
 oCPPFLAGS="$CPPFLAGS"
 if test "X$XML_CONFIG" != X; then
@@ -629,7 +483,6 @@ if test "X$XML_CONFIG" != X; then
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
   AC_MSG_CHECKING(for system (GNOME) libxml library)
   if test $have_xmlCreatePushParserCtxt = yes; then
-    have_libxml_lib=1
     have_libxml=1
     CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
     LIBXML_VERSION=`$XML_CONFIG --version`
@@ -638,7 +491,6 @@ if test "X$XML_CONFIG" != X; then
     AC_MSG_RESULT(yes - version $LIBXML_VERSION)
     if test $libxml_version_dec -lt $libxml_min_version_dec; then
        AC_MSG_WARN(Using libxml $LIBXML_VERSION is unsupported - $libxml_min_version or newer required.)
-       have_libxml_lib=0
        have_libxml=0
     fi
   else
@@ -655,7 +507,6 @@ if test "X$XML_CONFIG" != X; then
 
   if test "$ac_cv_header_libxml_parser_h" = no -a "$ac_cv_header_gnome_xml_parser_h" = no; then
     AC_MSG_WARN(libxml library found but not headers - disabling)
-    have_libxml_lib=0
     have_libxml=0
   else
     AC_MSG_CHECKING(if libxml xmlEntity has name_length field)
@@ -761,69 +612,6 @@ CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
 
 
-AC_ARG_WITH(xml-parser, [  --with-xml-parser=NAME    Use XML parser - libxml (default), expat], xml_parser="$withval", xml_parser="libxml") 
-
-for xml_parser_name in $xml_parser libxml expat; do
-  case $xml_parser_name in
-    expat)
-      if test "$expat_source" != "auto"; then
-	need_expat=1
-	need_expat_source=1
-      elif test $have_expat_lib = 1; then
-	need_expat=1
-      elif test $have_expat_source = 1; then
-	need_expat=1
-	need_expat_source=1
-      fi
-      if test $need_expat = 1; then
-	AC_DEFINE(RAPTOR_XML_EXPAT, 1, [Use expat XML parser])
-        break
-      fi
-      ;;
-
-    libxml)
-      if test $have_libxml_lib = 1; then
-	need_libxml=1
-      elif test $have_libxml_source = 1; then
-	need_libxml=1
-	need_libxml_source=1
-      fi
-      if test $need_libxml = 1; then
-	AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
-        break
-      fi
-      ;;
-
-    *)
-      AC_MSG_ERROR(No such XML parser $xml_parser_name)
-      ;;
-esac
-done
-
-AM_CONDITIONAL(RAPTOR_XML_EXPAT, test $need_expat = 1)
-AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
-
-
-AC_MSG_CHECKING(XML parser to use)
-result=
-if test $need_libxml = 1; then
-  if test $need_libxml_source = 1; then
-    result="$result libxml(source)"
-  else
-    result="$result libxml(system)"
-  fi
-elif test $need_expat = 1; then
-  if test $need_expat_source = 1; then
-    result="$result expat(source in $expat_source_dir)"
-  else
-    result="$result expat(system)"
-  fi
-else
-  AC_MSG_ERROR(No XML parser available - please install expat or libxml)
-fi
-AC_MSG_RESULT($result)
-
-
 dnl Check for JSON library
 
 AC_ARG_WITH(yajl, [  --with-yajl=DIR  YAJL installation directory or 'no' to disable (default=auto)], yajl_prefix="$withval", yajl_prefix="none")
@@ -883,7 +671,7 @@ trig_parser=no
 rss_parser=no
 grddl_parser=no
 guess_parser=yes
-rdfa_parser=yes
+rdfa_parser=no
 json_parser=no
 nquads_parser=no
 
@@ -893,7 +681,7 @@ rdf_parsers_enabled=
 
 grddl_parser_ok=no
 AC_MSG_CHECKING(GRDDL parser requirements)
-if test $need_libxml = 1 -a $have_libxslt = 1; then
+if test $have_libxml = 1 -a $have_libxslt = 1; then
   AC_MSG_RESULT(yes)
   grddl_parser_ok=yes
   rdf_parsers_available="$rdf_parsers_available grddl"
@@ -967,18 +755,25 @@ for parser in $parsers; do
   rdf_parsers_enabled="$rdf_parsers_enabled $parser"
 done
 
-nfc_needed=no
+use_nfc=no
 if test $rdfxml_parser = yes; then
-  nfc_needed=yes
+  need_libxml=1
+  use_nfc=yes
+fi
+
+if test $rss_parser = yes; then
+  need_libxml=1
 fi
 
 need_libxslt=0
 if test $grddl_parser = yes; then
+  need_libxml=1
   need_libxslt=1
 fi
 
 need_librdfa=no
 if test $rdfa_parser = yes; then
+  need_libxml=1
   need_librdfa=yes
 fi
 
@@ -1064,15 +859,13 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_NQUADS, test $nquads_serializer = yes)
 
 AM_CONDITIONAL(RAPTOR_RSS_COMMON, test $rss_1_0_serializer = yes -o $rss_parser = yes)
 
-dnl Enable NFC code only if needed and the check is enabled
-if test $nfc_needed = yes; then
-  if test $nfc_check != yes; then
-    nfc_needed=no
-  else
-    AC_DEFINE([RAPTOR_NFC_CHECK], 1, [Provide a Unicode NFC check])
-  fi
+dnl Enable NFC code only if enabled and used (rdfxml)
+need_icu=no
+if test $use_nfc = yes -a $have_icu = yes; then
+  need_icu=yes
+  AC_DEFINE([RAPTOR_ICU_NFC], 1, [Use ICU for Unicode NFC check])
 fi
-AM_CONDITIONAL(RAPTOR_NFC_CHECK, test $nfc_needed = yes)
+AM_CONDITIONAL(RAPTOR_ICU_NFC, test $need_icu = yes)
 
 
 
@@ -1173,11 +966,7 @@ if test $have_libcurl = 1; then
   www_libraries_available="$www_libraries_available libcurl $LIBCURL_VERSION"
 fi
 if test $have_libxml = 1; then
-  if test $need_libxml_source = 1; then
-    www_libraries_available="$www_libraries_available libxml(source)"
-  else
-    www_libraries_available="$www_libraries_available libxml(system $LIBXML_VERSION)"
-  fi
+  www_libraries_available="$www_libraries_available libxml $LIBXML_VERSION"
 fi
 if test $have_libfetch = 1; then
   www_libraries_available="$www_libraries_available libfetch"
@@ -1192,11 +981,7 @@ if test $need_libcurl = 1; then
   www_library="libcurl $LIBCURL_VERSION"
   RAPTOR_WWW_LIBRARY=libcurl
 elif test $need_libxml_www = 1; then
-  if test $need_libxml_source = 1; then
-    www_library="libxml(source)"
-  else
-    www_library="libxml(system $LIBXML_VERSION)"
-  fi
+  www_library="libxml $LIBXML_VERSION"
   RAPTOR_WWW_LIBRARY=libxml
 elif test $need_libfetch = 1; then
   www_library="libfetch"
@@ -1216,6 +1001,18 @@ if test $need_libcurl = 1; then
   AC_LIBOBJ(raptor_www_curl)
 
 fi
+
+
+dnl ICU for NFC check
+AC_MSG_CHECKING(NFC library to use)
+nfc_library=none
+if test $need_icu = yes; then
+  CPPFLAGS="$CPPFLAGS `$ICU_CONFIG --cppflags-searchpath`"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$ICU_CONFIG --ldflags-searchpath` -licuuc"
+  AC_LIBOBJ(raptor_nfc_icu)
+  nfc_library="ICU $ICU_VERSION"
+fi
+AC_MSG_RESULT($nfc_library)
 
 
 have_lininn=no
@@ -1286,41 +1083,20 @@ fi
 
 RAPTOR_XML_PARSER=none
 if test $need_libxml = 1; then
-
+  if test $have_libxml = 1; then
+    AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
+  else
+    AC_MSG_ERROR(libxml2 is not available - please get it from http://xmlsoft.org/)
+  fi
   if test $need_libxml_www = 1; then
     AC_LIBOBJ(raptor_www_libxml)
   fi
-  if test $need_libxml_source = 1; then
-    SD="$SD libxml"
-    (cd libxml && ./configure --cache=../config.cache --enable-shared=no)
-    CPPFLAGS="-I$srcdir/libxml $CPPFLAGS"
-    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -Llibxml -llibxml"
-  else
-    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
-    CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
-  fi
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
+  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   RAPTOR_XML_PARSER=libxml
 fi
+AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
 
-
-if test $need_expat = 1; then
-  if test $need_expat_source = 1; then
-    # Only build local copy if it is needed
-    if test "X$expat_source" = local; then
-      SD="$SD expat"
-    fi
-    if test -d "$expat_source_dir/xmlparse"; then
-      # old expat
-      RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_obj_dir/xmlparse/xmlparse.o $expat_obj_dir/xmlparse/hashtable.o $expat_obj_dir/xmltok/xmlrole.o $expat_obj_dir/xmltok/xmltok.o"
-    else
-      # new expat
-      RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_obj_dir/lib/xmlparse.o $expat_obj_dir/lib/xmlrole.o $expat_obj_dir/lib/xmltok.o"
-    fi
-  else
-    RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $expat_libs"
-  fi
-  RAPTOR_XML_PARSER=expat
-fi
 
 if test $need_libxslt = 1; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XSLT_CONFIG --libs`"
@@ -1339,24 +1115,9 @@ RAPTOR_LIBTOOLLIBS=libraptor2.la
 AC_SUBST(RAPTOR_LIBTOOLLIBS)
 
 
-xml_parsers_available=
+xml_parser="none needed"
 if test $need_libxml = 1; then
-  if test $need_libxml_source = 1; then
-    xml_parsers_available="$xml_parsers_available libxml(source)"
-  else
-    xml_parsers_available="$xml_parsers_available libxml(system $LIBXML_VERSION)"
-  fi
-fi
-if test $need_expat = 1; then
-  if test $need_expat_source = 1; then
-    xml_parsers_available="$xml_parsers_available expat(source in $expat_source_dir)"
-  else
-    if test $libexpat = 1; then
-      xml_parsers_available="$xml_parsers_available expat(system libexpat)"
-    else
-      xml_parsers_available="$xml_parsers_available expat(system libxmlparse,libxmltok)"
-    fi
-  fi
+  xml_parser="libxml $LIBXML_VERSION"
 fi
 
 
@@ -1451,6 +1212,7 @@ Raptor build summary:
   RDF parsers enabled       :$rdf_parsers_enabled
   RDF serializers available : $rdf_serializers_available
   RDF serializers enabled   :$rdf_serializers_enabled
-  XML parser                :$xml_parsers_available
+  XML parser                : $xml_parser
   WWW library               : $www_library
+  NFC check library         : $nfc_library
 ])

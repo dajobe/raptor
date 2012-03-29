@@ -1,3 +1,254 @@
+2012-03-22  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_7 for 2.0.7 release (GIT
+	a676f235309a59d4aa78eeffd2574ae5d341fcb0)
+
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, src/raptor2.h.in, src/raptor_libxml.c,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: CVE-2012-0037
+
+	Enforce entity loading policy in raptor_libxml_resolveEntity and
+	raptor_libxml_getEntity by checking for file URIs and network
+	URIs.
+
+	Add RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES / loadExternalEntities
+	for turning on loading of XML external entity loading, disabled by
+	default.
+
+	This affects all the parsers that use SAX2: rdfxml, rdfa,
+	rss-tag-soup (and aliases).
+
+2012-03-15  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Pass on options NO_NET and NO_FILE to RDFA SAX2
+	object
+
+2012-03-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c:
+	(raptor_world_default_generate_bnodeid_handler): size_t for
+	id_length.
+
+	* src/snprintf.c:
+	(raptor_format_integer): cast for comparing width to len
+
+	* INSTALL.html, configure.ac, src/Makefile.am,
+	src/raptor_internal.h, src/raptor_nfc.c, src/raptor_nfc.h,
+	src/raptor_nfc_data.c, src/raptor_nfc_icu.c, src/raptor_rdfxml.c,
+	src/raptor_unicode.c: Use ICU to check for Unicode NFC
+
+	This commit removes the built-in Raptor code for checking that
+	RDF/XML literals in Unicode NFC.  This is now provided by the ICU
+	library which is only linked in if configure is given the
+	--with-icu-config=PATH argument.
+
+	Advantages:
+	1. Removes a large compiled-in static dataset in the library and
+	makes raptor smaller.
+	2. Uses a library that is kept up to date for new Unicode
+	versions.
+	3. Should make RDF/XML parsing faster since it does not need to
+	check for NFC on every literal.
+
+	Disadvantages:
+	1. Removes an existing (but likely rarely used) feature
+
+	* src/raptor_nfc_test.c:
+	Run all tests, fix file decoding
+
+	* src/raptor_nfc_test.c: size_t
+
+2012-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/snprintf.c:
+	(raptor_format_integer): Return size_t for this internal function.
+
+2012-02-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-sax2.sgml,
+	docs/tmpl/section-uri.sgml: Update tmpls
+
+2012-02-13  Lauri Aalto <laalto@iki.fi>
+
+	* autogen.sh:
+	require automake 1.11.2+ for -Wextra-portability
+
+2012-02-08  Dave Beckett <dave@dajobe.org>
+
+	* build/.gitignore, configure.ac: Add automake option
+	-Wextra-portability and AM_PROG_AR to make it happy
+
+2012-02-04  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c:
+	Put raptor_option_get_count() out of the loops
+
+	* src/raptor_parse.c:
+	(raptor_new_parser): Set default strictness
+
+	* docs/raptor2-sections.txt: docs
+
+	* ChangeLog, RELEASE.html: 2.0.7
+
+	* src/raptor_option.c, src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_xml_writer.c:
+	(raptor_object_options_init): Move default option settings here
+
+	* RELEASE.html, docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c: Add options for controlling SSL certificate
+	verifying
+
+	Add options RAPTOR_OPTION_WWW_SSL_VERIFY_PEER for controlling
+	verifying an SSL peer.  Takes an integer value: non-0 to verify
+	peer SSL certificate (default 1)
+
+	Add option RAPTOR_OPTION_WWW_SSL_VERIFY_HOST for controlling
+	verifying an SSL host.  Takes an integer value: 0 none, 1 CN
+	match, 2 host match (default). Other values are ignored.
+
+	(raptor_www_set_ssl_verify_options): Added to set the verify
+	options on the raptor_www object.
+
+	Fixes Issue #0000469
+	http://bugs.librdf.org/mantis/view.php?id=469
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html, UPGRADING.html: 2011
+
+	* configure.ac: tidy xml parser message
+
+	* configure.ac, src/Makefile.am, src/raptor_expat.c,
+	src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_sax2.c:
+	Remove expat support
+
+	Update configure to properly let you build raptor without any XML
+	support either - it only needs it if a parser that requires XML is
+	configured.
+
+2012-02-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_check_load_uri_string): Failure returned
+
+	* src/raptor_uri.c: casts
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_uri_or_file_string): Never free
+	uri_or_file_string
+
+	* src/raptor_uri.c: Make raptor_new_uri_from_uri_or_file_string
+	check for files first.
+
+	(raptor_new_uri_from_uri_or_file_string): If the arg is a file
+	that exists, use that as the path.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_filename_exists): Added
+
+2012-02-01  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_parse_chunk): Return parse errors to caller.
+
+	Fixes part of Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+	* src/raptor_json.c:
+	(raptor_json_new_term_from_counted_string): RAPTOR_BAD_CAST for
+	shortening size_t -> int cast
+
+	* src/turtle_parser.y:
+	(turtle_parse,raptor_turtle_parse_chunk): Return parse error
+	status to caller
+
+	Fixes Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+2012-01-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_sax2.c, src/raptor_uri.c: More file
+	URI updates
+
+	(raptor_new_uri_from_uri_or_file_string): Added new constructor
+
+	(raptor_uri_uri_string_to_counted_filename): Removed
+
+	(raptor_sax2_check_load_uri_string): Use
+	raptor_new_uri_from_uri_or_file_string() and just check for file:
+
+	(raptor_uri_uri_string_is_file_uri): Just check for file:
+
+	(raptor_uri_file_exists): Check if URI is a file URI and the file
+	exists.
+
+	* src/raptor_internal.h, src/raptor_sax2.c, utils/rapper.c:
+	Consolidate URI policy checks and call SAX2 uri filter
+
+	(raptor_sax2_check_load_uri_string): add and use for policy
+	checks, making file URIs from canonical filename and calling URI
+	filter callback on SAX2.
+
+	rapper (rapper_uri_trace): Use trace word since it is not just
+	processing
+
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_sax2.c:
+	(raptor_sax2_set_uri_filter): Added to filter for SAX2
+
+	* src/raptor_www.c:
+	(raptor_www_fetch): Return status code from URI filter
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: Add RAPTOR_OPTION_NO_FILE to deny
+	internal file requests
+
+	* src/raptor_json.c:
+	Handle size changing between YAJL V1 and V2
+
+	Use RAPTOR_YAJL_LEN_TYPE macro to deal with the arg type change
+
+2012-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: code cleanup
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c: Rename file uri string to
+	match convention
+
+	(raptor_uri_uri_string_to_counted_filename_fragment): Added to
+	return count lengths
+
+	(raptor_uri_uri_string_is_file_uri): Use
+	raptor_uri_uri_string_to_counted_filename() after a simple URI
+	test.
+
+	(raptor_uri_uri_string_to_filename): Renamed from
+	raptor_uri_uri_string_as_filename and use above.
+
+	(raptor_uri_uri_string_to_counted_filename): Added using above and
+	returning count.
+
+	* configure.ac, docs/raptor-1-to-2-map.tsv,
+	docs/raptor2-sections.txt, src/raptor2.h.in, src/raptor_uri.c:
+	raptor_uri_uri_string_as_filename
+
+	* src/raptor_internal.h, src/raptor_sax2.c: Add internal SAX2
+	enabled flag for enabling/disabling callbacks
+
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac: Bumped version to 2.0.7
+
 2011-11-27  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_6 for 2.0.6 release (GIT f9f3768e7080f1f132856b731c232c8cbeac1634)

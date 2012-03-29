@@ -282,4 +282,19 @@ raptor_www_curl_set_ssl_cert_options(raptor_www* www,
 }
 
 
+int
+raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
+                                       int verify_host)
+{
+  if(verify_peer)
+    verify_peer = 1;
+  curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, verify_peer);
+
+  if(verify_host >= 0 && verify_host <= 2)
+    curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
+
+  return 0;
+}
+
+
 #endif /* RAPTOR_WWW_LIBCURL */

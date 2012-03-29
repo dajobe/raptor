@@ -170,17 +170,6 @@ void raptor_sign_free(void *ptr);
 #define MAX_ASCII_INT_SIZE 13
   
 /* XML parser includes */
-#ifdef RAPTOR_XML_EXPAT
-#ifdef HAVE_EXPAT_H
-#include <expat.h>
-#endif
-#ifdef HAVE_XMLPARSE_H
-#include <xmlparse.h>
-#endif
-#endif
-
-
-
 
 #ifdef RAPTOR_XML_LIBXML
 
@@ -205,21 +194,6 @@ void raptor_libxml_free(xmlParserCtxtPtr xc);
 extern void raptor_libxml_update_document_locator(raptor_sax2* sax2, raptor_locator* locator);
 
 /* end of libxml-only */
-#endif
-
-
-/* expat-only prototypes */
-
-#ifdef RAPTOR_XML_EXPAT
-/* raptor_expat.c exports */
-extern void raptor_expat_init(raptor_sax2* sax2, raptor_uri *base_uri);
-extern void raptor_expat_update_document_locator(raptor_sax2* sax2, raptor_locator *locator);
-
-/* raptor_parse.c */
-void raptor_xml_unparsed_entity_decl_handler(void *user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
-int raptor_xml_external_entity_ref_handler(void *user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
-
-/* end of expat-only */
 #endif
 
 
@@ -728,7 +702,7 @@ void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_locato
 
 typedef struct raptor_rdfxml_parser_s raptor_rdfxml_parser;
 
-/* Prototypes for common expat/libxml parsing event-handling functions */
+/* Prototypes for common libxml parsing event-handling functions */
 extern void raptor_xml_start_element_handler(void *user_data, const unsigned char *name, const unsigned char **atts);
 extern void raptor_xml_end_element_handler(void *user_data, const unsigned char *name);
 /* s is not 0 terminated. */
@@ -761,8 +735,8 @@ int raptor_check_ordinal(const unsigned char *name);
 #endif
 
 
-/* raptor_nfc.c */
-int raptor_nfc_check (const unsigned char* string, size_t len, int *error);
+/* raptor_nfc_icu.c */
+int raptor_nfc_icu_check (const unsigned char* string, size_t len, int *error);
 
 
 /* raptor_namespace.c */
@@ -924,7 +898,7 @@ extern const raptor_unichar raptor_unicode_max_codepoint;
 
 int raptor_unicode_is_namestartchar(raptor_unichar c);
 int raptor_unicode_is_namechar(raptor_unichar c);
-int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length);
+int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length, int* error);
 
 /* raptor_www*.c */
 #ifdef RAPTOR_WWW_LIBXML
@@ -1013,6 +987,7 @@ void raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
 int raptor_www_curl_fetch(raptor_www *www);
 int raptor_www_curl_set_ssl_cert_options(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase);
+int raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer, int verify_host);
 
 void raptor_www_libfetch_init(raptor_www *www);
 void raptor_www_libfetch_free(raptor_www *www);
@@ -1064,12 +1039,6 @@ struct raptor_sax2_s {
   raptor_world* world;
   void* user_data;
   
-#ifdef RAPTOR_XML_EXPAT
-  XML_Parser xp;
-#ifdef EXPAT_UTF8_BOM_CRASH
-  int tokens_count; /* used to see if trying to get location info is safe */
-#endif
-#endif
 #ifdef RAPTOR_XML_LIBXML
   /* structure holding sax event handlers */
   xmlSAXHandler sax;
@@ -1122,6 +1091,12 @@ struct raptor_sax2_s {
 
   /* sax2 init failed - do not try to do anything with it */
   int failed;
+  
+  /* call SAX2 handlers if non-0 */
+  int enabled;
+
+  void* uri_filter_user_data;
+  raptor_uri_filter_func uri_filter;
 };
 
 int raptor_sax2_init(raptor_world* world);
@@ -1147,7 +1122,7 @@ void raptor_sax2_cdata(void* user_data, const unsigned char *s, int len);
 void raptor_sax2_comment(void* user_data, const unsigned char *s);
 void raptor_sax2_unparsed_entity_decl(void* user_data, const unsigned char* entityName, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId, const unsigned char* notationName);
 int raptor_sax2_external_entity_ref(void* user_data, const unsigned char* context, const unsigned char* base, const unsigned char* systemId, const unsigned char* publicId);
-
+int raptor_sax2_check_load_uri_string(raptor_sax2* sax2, const unsigned char* uri_string);
 
 /* turtle_parser.y and turtle_lexer.l */
 typedef struct raptor_turtle_parser_s raptor_turtle_parser;
@@ -1327,7 +1302,7 @@ int raptor_rdfxmla_serialize_set_single_node(raptor_serializer* serializer, rapt
 int raptor_rdfxmla_serialize_set_write_typed_nodes(raptor_serializer* serializer, int value);
 
 /* snprintf.c */
-int raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned int base, int width, char padding);
+size_t raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned int base, int width, char padding);
 
 /* raptor_world structure */
 #define RAPTOR1_WORLD_MAGIC_1 0

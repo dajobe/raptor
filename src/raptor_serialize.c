@@ -326,21 +326,6 @@ raptor_new_serializer(raptor_world* world, const char *name)
   raptor_object_options_init(&rdf_serializer->options,
                              RAPTOR_OPTION_AREA_SERIALIZER);
 
-  /* Default options (that are not 0 or NULL) */
-  /* Emit @base directive or equivalent */
-  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer, RAPTOR_OPTION_WRITE_BASE_URI, 1);
-  
-  /* Emit relative URIs where possible */
-  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer, RAPTOR_OPTION_RELATIVE_URIS, 1);
-
-  /* XML 1.0 output */
-  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer,
-                             RAPTOR_OPTION_WRITER_XML_VERSION, 10);
-
-  /* Write XML declaration */
-  RAPTOR_OPTIONS_SET_NUMERIC(rdf_serializer,
-                             RAPTOR_OPTION_WRITER_XML_DECLARATION, 1);
-
   if(factory->init(rdf_serializer, name)) {
     raptor_free_serializer(rdf_serializer);
     return NULL;

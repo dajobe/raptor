@@ -406,6 +406,12 @@
 2.0.5	-	-	-	2.0.6	int	raptor_sequence_swap	(raptor_sequence* seq, int i, int j)	-
 2.0.5	-	-	-	2.0.6	int	raptor_sequence_reverse	(raptor_sequence* seq, int start_index, int length)	-
 2.0.5	-	-	-	2.0.6	int	raptor_sequence_next_permutation	(raptor_sequence *seq, raptor_data_compare_handler compare)	-
+2.0.6	-	-	-	2.0.7	char*	raptor_uri_uri_string_to_counted_filename_fragment	(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p)	-
+2.0.6	-	-	-	2.0.7	int	raptor_uri_file_exists	(raptor_uri* uri)	-
+2.0.6	-	-	-	2.0.7	int	raptor_uri_filename_exists	(const unsigned char* path)	-
+2.0.6	-	-	-	2.0.7	raptor_uri*	raptor_new_uri_from_uri_or_file_string	(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string)	-
+2.0.6	-	-	-	2.0.7	void	raptor_sax2_set_uri_filter	(raptor_sax2* sax2, raptor_uri_filter_func filter, void *user_data)	-
+2.0.6	-	-	-	2.0.7	int	raptor_www_set_ssl_verify_options	(raptor_www* www, int verify_peer, int verify_host)	-
 #
 # Types
 #
@@ -551,3 +557,7 @@
 1.4.21	enum	-	-	2.0.0	enum	RAPTOR_OPTION_VALUE_TYPE_STRING	-	-
 1.4.21	enum	-	-	2.0.0	enum	RAPTOR_OPTION_VALUE_TYPE_URI	-	-
 1.4.21	enum	-	-	2.0.0	enum	RAPTOR_OPTION_VALUE_TYPE_LAST	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_NO_FILE	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_PEER	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_HOST	-	-
+2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES	-	-

@@ -245,10 +245,19 @@ raptor_rss_parse_start(raptor_parser *rdf_parser)
   for(n = 0; n < RAPTOR_RSS_NAMESPACES_SIZE; n++)
     rss_parser->nspaces_seen[n] = 'N';
 
-  /* Optionally forbid network requests in the XML parser */
+  /* Optionally forbid internal network and file requests in the XML parser */
   raptor_sax2_set_option(rss_parser->sax2, 
                          RAPTOR_OPTION_NO_NET, NULL,
                          RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET));
+  raptor_sax2_set_option(rss_parser->sax2, 
+                         RAPTOR_OPTION_NO_FILE, NULL,
+                         RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_FILE));
+  raptor_sax2_set_option(rss_parser->sax2, 
+                         RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES, NULL,
+                         RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES));
+  if(rdf_parser->uri_filter)
+    raptor_sax2_set_uri_filter(rss_parser->sax2, rdf_parser->uri_filter,
+                               rdf_parser->uri_filter_user_data);
   
   raptor_sax2_parse_start(rss_parser->sax2, uri);
 
@@ -729,7 +738,9 @@ raptor_rss_end_element_handler(void *user_data,
 
     if(rss_parser->current_block) {
       const raptor_rss_block_field_info *bfi;
+#ifdef RAPTOR_DEBUG
       int handled = 0;
+#endif
       /* in a block, maybe store the CDATA there */
 
       for(bfi = &raptor_rss_block_fields_info[0];
@@ -748,7 +759,9 @@ raptor_rss_end_element_handler(void *user_data,
           return;
         }
         
+#ifdef RAPTOR_DEBUG
         handled = 1;
+#endif
         break;
       }
 

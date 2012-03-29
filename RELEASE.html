@@ -9,9 +9,129 @@
 <h1 style="text-align:center">Raptor RDF Syntax Library - Release Notes</h1>
 
 
-<h2 id="rel2_0_7"><a name="rel2_0_7">Raptor2 2.0.7 changes</a></h2>
+<h2 id="rel2_0_8"><a name="rel2_0_8">Raptor2 2.0.8 changes</a></h2>
 
 <p>Not yet released.
+</p>
+
+
+<h2 id="rel2_0_7"><a name="rel2_0_7">Raptor2 2.0.7 changes</a></h2>
+
+<p>CVE-2012-0037 fixed</p>
+
+<p>Issues Fixed:</p>
+<ul>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=448">0000448</a>: Turtle parser does not return error status from turtle_parse_chunk()</li>
+  <li><a href="http://bugs.librdf.org/mantis/view.php?id=469">0000469</a>: Allow rapper to bypass server SSL certs checks in libcurl</li>
+</ul>
+
+<p>Removed Expat support since expat has not had a release in years
+and libxml2 works well.  This allows some code simplification.
+Updated <code>configure</code> so that if Raptor is configured with
+no parser that requires an XML parser, libxml2 will not be required.
+</p>
+
+<p>Removed internal Unicode NFC checking code used for checking
+RDF/XML literals conformance which was expensive to check and a large
+of compiled-in static dataset that was rather out of date.  Replaced
+with optional compiled use of <a href="http://www.icu-project.org/">ICU</a>.
+If ICU is not explicitly configured, no literal checking is done.</p>
+
+<h3>Options changes</h3>
+
+<p>Added new options:</p>
+<dl>
+  <dt><code>RAPTOR_OPTION_NO_FILE</code><br/></dt>
+  <dd>Deny file requests during parsing.  Enabled by default.</dd>
+
+  <dt><code>RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES</code><br/></dt>
+  <dd>Allow loading of XML external entity loading. Disabled by
+  default.</dd>
+
+  <dt><code>RAPTOR_OPTION_WWW_SSL_VERIFY_PEER</code><br/></dt>
+  <dd>Controls verifying an SSL peer during parsing / WWW.  Takes an
+  integer value: non-0 to verify peer SSL certificate (default
+  1).</dd>
+
+  <dt><code>RAPTOR_OPTION_WWW_SSL_VERIFY_HOST</code><br/></dt>
+  <dd>Controls verifying an SSL host during parsing / WWW.  Takes an
+  integer value: 0 none, 1 CN match, 2 host match (default). Other
+  values are ignored.</dd>
+</dl>
+
+
+<h3>Parser class changes</h3>
+
+<p>The RDF/XML, RSS Tag Soup and RDFa parsers now pass on network,
+file and entity loading parser options to the internal SAX2 to enable
+enforcing of network, file and entity loading policy.</p>
+
+<p>RDF/JSON parser handles an API change between YAJL V1 and V2.
+</p>
+
+<p>Turtle parser now returns parser errors to
+<code>raptor_parse_chunk()</code>.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=488">Issue #0000488</a>
+</p>
+
+
+<h3>SAX2 class changes</h3>
+
+<p>Added <code>raptor_sax2_set_uri_filter()</code> to set a URI
+filter for any SAX2 calls that do internal lookups of URIs.
+</p>
+
+<p>Control file and network loading inside SAX2.  Option
+<code>RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES</code> now enforces
+loading external XML entities and is by default enabled.  If enabled,
+<code>RAPTOR_OPTION_NO_FILE</code> and
+<code>RAPTOR_OPTION_NO_NET</code> are also checked.  All URIs loaded
+are also passed through any URI filter, if set by
+<code>raptor_sax2_set_uri_filter()</code>.
+</p>
+
+<h3>URI class changes</h3>
+
+<p>Added new URI constructor
+<code>raptor_new_uri_from_uri_or_file_string()</code>
+to build a URI from a URI string or a filename string, normalizing
+the result to a <code>file:</code> URI.
+</p>
+
+<p>Added
+<code>raptor_uri_uri_string_to_counted_filename_fragment()</code> to
+turn a URI string to a filename and URI fragment along with string
+output string counts.
+</p>
+
+<p>Added utility methods for checking if a file: URI or filename is a
+file that exists:
+<code>raptor_uri_file_exists()</code> and
+<code>raptor_uri_filename_exists()</code>
+</p>
+
+
+<h3>WWW class changes</h3>
+
+<p>Added <code>raptor_www_set_ssl_verify_options()</code> to set SSL
+verify options.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>.
+</p>
+
+<p>The <code>raptor_www_fetch()</code> call now returns the status
+from any URI filter that returns a non-0 response.
+</p>
+
+
+<h3>Build changes</h3>
+
+<p>Added <code>--with-icu-config=</code><em>PATH</em> option
+to enable use of ICU for NFC checking.</p>
+
+<p>Requires automake 1.11.2+ for <code>-Wextra-portability</code></p>
+
+<p><code>configure</code> uses <code>AM_PROG_AR</code> to make
+automake <code>-Wextra-portability</code> happy.
 </p>
 
 
@@ -129,7 +249,6 @@ libm.  Removed the checks for these functions from
 for <code>--enable-maintainer-mode</code> but now requires the
 <code>--enable-debug</code> option to be given.
 </p>
-
 
 <h3>Other changes</h3>
 
@@ -3921,7 +4040,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2011 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2012 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

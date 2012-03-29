@@ -51,6 +51,9 @@
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
 
 /* Raptor includes */
 #include "raptor2.h"
@@ -391,6 +394,58 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 
 
 /**
+ * raptor_new_uri_from_uri_or_file_string:
+ * @world: raptor_world object
+ * @base_uri: existing base URI
+ * @uri_or_file_string: URI string or filename
+ * 
+ * Constructor - create a raptor URI from a string that is a relative or absolute URI or a filename
+ *
+ * If the @uri_or_file_string is a filename PATH that exists, the
+ * result will be a URI file://PATH
+ *
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_new_uri_from_uri_or_file_string(raptor_world* world,
+                                       raptor_uri* base_uri,
+                                       const unsigned char* uri_or_file_string)
+{
+  raptor_uri* new_uri = NULL;
+  const unsigned char* new_uri_string;
+  const char* path;
+
+  if(raptor_uri_filename_exists(uri_or_file_string) > 0) {
+    /* uri_or_file_string is a file name, not a file: URI */
+    path = RAPTOR_GOOD_CAST(const char*, uri_or_file_string);
+  } else {
+    new_uri = raptor_new_uri_relative_to_base(world, base_uri,
+                                            uri_or_file_string);
+    new_uri_string = raptor_uri_as_string(new_uri);
+    path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string, 
+                                                              NULL, NULL, NULL);
+  }
+  
+  if(path) {
+    if(new_uri) {
+      raptor_free_uri(new_uri);
+      new_uri = NULL;
+    }
+    
+    /* new_uri_string is a string like "file://" + path */
+    new_uri_string = raptor_uri_filename_to_uri_string(path);
+    if(path != RAPTOR_GOOD_CAST(const char*, uri_or_file_string))
+      RAPTOR_FREE(const char*, path);
+
+    new_uri = raptor_new_uri(world, new_uri_string);
+    RAPTOR_FREE(char*, new_uri_string);
+  }
+
+  return new_uri;
+}
+
+
+/**
  * raptor_free_uri:
  * @uri: URI to destroy
  *
@@ -698,23 +753,30 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
 
 /**
- * raptor_uri_uri_string_to_filename_fragment:
+ * raptor_uri_uri_string_to_counted_filename_fragment:
  * @uri_string: The file: URI to convert
+ * @len_p: address of filename length variable or NULL
  * @fragment_p: Address of pointer to store any URI fragment or NULL
+ * @fragment_len_p: address of length variable or NULL
  *
- * Convert a file: URI to a filename and fragment.
+ * Convert a file: URI to a counted filename and counted fragment.
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
  *
+ * If @len_p is present the length of the filename is returned
+ *
  * If @fragment_p is given, a new string containing the URI fragment
- * is returned, or NULL if none is present
+ * is returned, or NULL if none is present.  If @fragment_len_p is present
+ * the length is returned in it.
  * 
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
-raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
-                                           unsigned char **fragment_p) 
+raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string,
+                                                   size_t* len_p,
+                                                   unsigned char **fragment_p,
+                                                   size_t* fragment_len_p) 
 {
   char *filename;
   size_t len = 0;
@@ -759,8 +821,8 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   p = ud->path;
   /* remove leading slash from path if there is one */
   if(*p && p[0] == '/') {
-	  p++;
-	  len--;
+    p++;
+    len--;
   }
   /* handle case where path starts with drive letter */
   if(*p && (p[1] == '|' || p[1] == ':')) {
@@ -771,12 +833,12 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
      * giving device-relative path a:foo
      */
     if(p[2] == '.') {
-      p[2]=*p;
-      p[3]=':';
-      p+= 2;
-      len-= 2; /* remove 2 for ./ */
+      p[2] = *p;
+      p[3] = ':';
+      p += 2;
+      len -= 2; /* remove 2 for ./ */
     } else
-      p[1]=':';
+      p[1] = ':';
   }
 #endif
 
@@ -785,7 +847,7 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
   for(from = ud->path; *from ; from++) {
     len++;
     if(*from == '%')
-      from+= 2;
+      from += 2;
   }
 
 
@@ -800,7 +862,6 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
     raptor_free_uri_detail(ud);
     return NULL;
   }
-
 
   to = filename;
 
@@ -822,10 +883,10 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
 #endif
 
   while(*from) {
-    char c=*from++;
+    char c = *from++;
 #ifdef WIN32
     if(c == '/')
-      *to++ ='\\';
+      *to++ = '\\';
     else
 #endif
     if(c == '%') {
@@ -839,25 +900,58 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
         if(endptr == &hexbuf[2])
           *to++ = c;
       }
-      from+= 2;
+      from += 2;
     } else
-      *to++ =c;
+      *to++ = c;
   }
-  *to='\0';
+  *to = '\0';
+
+  if(len_p)
+    *len_p = len;
 
   if(fragment_p) {
+    size_t fragment_len = 0;
+
     if(ud->fragment) {
-      len = ud->fragment_len;
-      *fragment_p = RAPTOR_MALLOC(unsigned char*, len + 1);
+      fragment_len = ud->fragment_len;
+      *fragment_p = RAPTOR_MALLOC(unsigned char*, fragment_len + 1);
       if(*fragment_p)
-        memcpy(*fragment_p, ud->fragment, len + 1);
+        memcpy(*fragment_p, ud->fragment, fragment_len + 1);
     } else
       *fragment_p = NULL;
+    if(fragment_len_p)
+      *fragment_len_p = fragment_len;
   }
 
   raptor_free_uri_detail(ud);
 
   return filename;
+}
+
+
+/**
+ * raptor_uri_uri_string_to_filename_fragment:
+ * @uri_string: The file: URI to convert
+ * @fragment_p: Address of pointer to store any URI fragment or NULL
+ *
+ * Convert a file: URI to a filename and fragment.
+ * 
+ * Handles the OS-specific file: URIs to filename mappings.  Returns
+ * a new buffer containing the filename that the caller must free.
+ *
+ * If @fragment_p is given, a new string containing the URI fragment
+ * is returned, or NULL if none is present
+ * 
+ * See also raptor_uri_uri_string_to_counted_filename_fragment()
+ *
+ * Return value: A newly allocated string with the filename or NULL on failure
+ **/
+char *
+raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
+                                           unsigned char **fragment_p) 
+{
+  return raptor_uri_uri_string_to_counted_filename_fragment(uri_string, NULL,
+                                                            fragment_p, NULL);
 }
 
 
@@ -870,13 +964,17 @@ raptor_uri_uri_string_to_filename_fragment(const unsigned char *uri_string,
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
  *
+ * See also raptor_uri_uri_string_to_counted_filename_fragment()
+ *
  * Return value: A newly allocated string with the filename or NULL on failure
  **/
 char *
 raptor_uri_uri_string_to_filename(const unsigned char *uri_string) 
 {
-  return raptor_uri_uri_string_to_filename_fragment(uri_string, NULL);
+  return raptor_uri_uri_string_to_counted_filename_fragment(uri_string, NULL,
+                                                            NULL, NULL);
 }
+
 
 
 /**
@@ -888,7 +986,8 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
  * Return value: Non zero if URI string is a file: URI
  **/
 int
-raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string) {
+raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string)
+{
   if(!uri_string || !*uri_string)
     return 1;
 
@@ -1484,6 +1583,60 @@ raptor_world*
 raptor_uri_get_world(raptor_uri *uri)
 {
   return uri->world;
+}
+
+
+/**
+ * raptor_uri_filename_exists:
+ * @path: file path
+ *
+ * Check if @path points to a file that exists
+ *
+ * Return value: > 0 if file exists, 0 if does not exist, < 0 on error
+ **/
+int
+raptor_uri_filename_exists(const unsigned char* path)
+{
+  int exists = -1;
+#ifdef HAVE_STAT
+  struct stat stat_buffer;
+#endif
+  
+  if(!path)
+    return -1;
+
+#ifdef HAVE_STAT
+  if(!stat((const char*)path, &stat_buffer))
+    exists = S_ISREG(stat_buffer.st_mode);
+#else
+  exists = (access(path, R_OK) < 0) ? -1 : 1
+#endif
+
+  return exists;
+}
+
+
+/**
+ * raptor_uri_file_exists:
+ * @uri: URI string
+ *
+ * Check if a file: URI is a file that exists
+ *
+ * Return value: > 0 if file exists, 0 if does not exist, < 0 if not a file URI or error
+ **/
+int
+raptor_uri_file_exists(raptor_uri* uri)
+{
+  const unsigned char* uri_string;
+  
+  if(!uri)
+    return -1;
+
+  uri_string = raptor_uri_as_string(uri);
+  if(!raptor_uri_uri_string_is_file_uri(uri_string))
+    return -1;
+
+  return raptor_uri_filename_exists(uri_string + 6);
 }
 
 

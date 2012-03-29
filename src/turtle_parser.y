@@ -1205,6 +1205,7 @@ static int
 turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  int rc;
   
   if(!string || !*string)
     return 0;
@@ -1220,12 +1221,12 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
   (void)turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
 
-  turtle_parser_parse(rdf_parser);
+  rc = turtle_parser_parse(rdf_parser);
 
   turtle_lexer_lex_destroy(turtle_parser->scanner);
   turtle_parser->scanner_set = 0;
 
-  return 0;
+  return rc;
 }
 #endif
 
@@ -1424,6 +1425,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
 {
   char *ptr;
   raptor_turtle_parser *turtle_parser;
+  int rc;
 
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   
@@ -1465,10 +1467,10 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     return 0;
 
 #ifdef TURTLE_PUSH_PARSE
-  turtle_push_parse(rdf_parser, 
-                    turtle_parser->buffer, turtle_parser->buffer_length);
+  rc = turtle_push_parse(rdf_parser, 
+			 turtle_parser->buffer, turtle_parser->buffer_length);
 #else
-  turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
+  rc = turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->buffer_length);
 #endif  
 
   if(rdf_parser->emitted_default_graph) {
@@ -1476,7 +1478,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     raptor_parser_end_graph(rdf_parser, NULL, 0);
     rdf_parser->emitted_default_graph--;
   }
-  return 0;
+  return rc;
 }
 
 
