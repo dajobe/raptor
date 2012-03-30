@@ -213,6 +213,41 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_term_to_turtle_counted_string ##### -->
+<para>
+
+</para>
+
+@term: 
+@nstack: 
+@base_uri: 
+@len_p: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_to_turtle_string ##### -->
+<para>
+
+</para>
+
+@term: 
+@nstack: 
+@base_uri: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_turtle_write ##### -->
+<para>
+
+</para>
+
+@iostr: 
+@term: 
+@nstack: 
+@base_uri: 
+@Returns: 
+
+
 <!-- ##### STRUCT raptor_statement ##### -->
 <para>
 

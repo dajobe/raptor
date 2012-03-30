@@ -412,6 +412,12 @@
 2.0.6	-	-	-	2.0.7	raptor_uri*	raptor_new_uri_from_uri_or_file_string	(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string)	-
 2.0.6	-	-	-	2.0.7	void	raptor_sax2_set_uri_filter	(raptor_sax2* sax2, raptor_uri_filter_func filter, void *user_data)	-
 2.0.6	-	-	-	2.0.7	int	raptor_www_set_ssl_verify_options	(raptor_www* www, int verify_peer, int verify_host)	-
+2.0.7	-	-	-	2.0.8	int	raptor_uri_turtle_write	(raptor_world *world, raptor_iostream* iostr, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri)	-
+2.0.7	-	-	-	2.0.8	int	raptor_term_turtle_write	(raptor_iostream* iostr, raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri)	-
+2.0.7	-	-	-	2.0.8	unsigned char*	raptor_uri_to_turtle_counted_string	(raptor_world *world, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri, size_t *len_p)	-
+2.0.7	-	-	-	2.0.8	unsigned char*	raptor_uri_to_turtle_string	(raptor_world *world, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri)	-
+2.0.7	-	-	-	2.0.8	unsigned char*	raptor_term_to_turtle_counted_string	(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri, size_t *len_p)	-
+2.0.7	-	-	-	2.0.8	unsigned char*	raptor_term_to_turtle_string	(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri)	-
 #
 # Types
 #

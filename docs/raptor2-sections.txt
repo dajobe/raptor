@@ -103,6 +103,9 @@ raptor_free_term
 raptor_term_to_counted_string
 raptor_term_to_string
 raptor_term_ntriples_write
+raptor_term_to_turtle_counted_string
+raptor_term_to_turtle_string
+raptor_term_turtle_write
 raptor_statement
 raptor_new_statement
 raptor_new_statement_from_nodes
@@ -248,6 +251,9 @@ raptor_uri_get_world
 raptor_uri_write
 raptor_uri_file_exists
 raptor_uri_filename_exists
+raptor_uri_to_turtle_counted_string
+raptor_uri_to_turtle_string
+raptor_uri_turtle_write
 </SECTION>
 
 <SECTION>
