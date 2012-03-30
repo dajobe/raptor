@@ -1090,6 +1090,18 @@ RAPTOR_API
 unsigned char* raptor_term_to_string(raptor_term *term);
 RAPTOR_API
 int raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr);
+RAPTOR_API
+int raptor_uri_turtle_write(raptor_world *world, raptor_iostream* iostr, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri);
+RAPTOR_API
+int raptor_term_turtle_write(raptor_iostream* iostr, raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri);
+RAPTOR_API
+unsigned char* raptor_uri_to_turtle_counted_string(raptor_world *world, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri, size_t *len_p);
+RAPTOR_API
+unsigned char* raptor_uri_to_turtle_string(raptor_world *world, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri);
+RAPTOR_API
+unsigned char* raptor_term_to_turtle_counted_string(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri, size_t *len_p);
+RAPTOR_API
+unsigned char* raptor_term_to_turtle_string(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri);
 
 
 /* Statement Class */
