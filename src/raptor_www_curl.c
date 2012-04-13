@@ -136,8 +136,9 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     if(www->final_uri)
       raptor_free_uri(www->final_uri);
 
-    www->final_uri = raptor_new_uri_from_counted_string(www->world, uri_str,
-                                                        uri_len);
+    www->final_uri = raptor_new_uri_relative_to_base_counted(www->world,
+                                                             www->uri,
+                                                             uri_str, uri_len);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     if(www->final_uri)
