@@ -255,19 +255,21 @@ raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
 
 
 /**
- * raptor_new_uri_relative_to_base:
+ * raptor_new_uri_relative_to_base_counted:
  * @world: raptor_world object
  * @base_uri: existing base URI
  * @uri_string: relative URI string
+ * @uri_len: length of URI string (or 0)
  * 
- * Constructor - create a raptor URI from a base URI and a relative URI string.
+ * Constructor - create a raptor URI from a base URI and a relative counted URI string.
  * 
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
 raptor_uri*
-raptor_new_uri_relative_to_base(raptor_world* world,
-                                raptor_uri *base_uri, 
-                                const unsigned char *uri_string) 
+raptor_new_uri_relative_to_base_counted(raptor_world* world,
+                                        raptor_uri *base_uri, 
+                                        const unsigned char *uri_string,
+                                        size_t uri_len)
 {
   unsigned char *buffer;
   size_t buffer_length;
@@ -279,6 +281,9 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   if(!base_uri || !uri_string)
     return NULL;
 
+  if(!uri_len)
+    uri_len = strlen(RAPTOR_GOOD_CAST(const char*, uri_string));
+
   raptor_world_open(world);
 
   /* If URI string is empty, just copy base URI */
@@ -286,7 +291,7 @@ raptor_new_uri_relative_to_base(raptor_world* world,
     return raptor_uri_copy(base_uri);
   
   /* +1 for adding any missing URI path '/' */
-  buffer_length = base_uri->length + strlen((const char*)uri_string) + 1;
+  buffer_length = base_uri->length + uri_len + 1;
   buffer = RAPTOR_MALLOC(unsigned char*, buffer_length + 1);
   if(!buffer)
     return NULL;
@@ -297,6 +302,28 @@ raptor_new_uri_relative_to_base(raptor_world* world,
   new_uri = raptor_new_uri_from_counted_string(world, buffer, actual_length);
   RAPTOR_FREE(char*, buffer);
   return new_uri;
+}
+
+
+/**
+ * raptor_new_uri_relative_to_base:
+ * @world: raptor_world object
+ * @base_uri: existing base URI
+ * @uri_string: relative URI string
+ * 
+ * Constructor - create a raptor URI from a base URI and a relative URI string.
+ *
+ * Use raptor_new_uri_relative_to_base_counted() if the URI string length is known
+ *
+ * Return value: a new #raptor_uri object or NULL on failure.
+ **/
+raptor_uri*
+raptor_new_uri_relative_to_base(raptor_world* world,
+                                raptor_uri *base_uri, 
+                                const unsigned char *uri_string)
+{
+  return raptor_new_uri_relative_to_base_counted(world, base_uri, 
+                                                 uri_string, 0);
 }
 
 

@@ -1268,6 +1268,8 @@ raptor_uri* raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *
 RAPTOR_API
 raptor_uri* raptor_new_uri_relative_to_base(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string);
 RAPTOR_API
+raptor_uri* raptor_new_uri_relative_to_base_counted(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string, size_t uri_len);
+RAPTOR_API
 raptor_uri* raptor_new_uri_from_id(raptor_world* world, raptor_uri *base_uri, const unsigned char *id);
 RAPTOR_API
 raptor_uri* raptor_new_uri_from_uri_or_file_string(raptor_world* world, raptor_uri* base_uri, const unsigned char* uri_or_file_string);
