@@ -101,6 +101,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
 {
   raptor_www* www = (raptor_www*)userdata;
   size_t bytes = size * nmemb;
+  int c;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer
@@ -131,14 +132,18 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
   if(!raptor_strncasecmp((char*)ptr, "Content-Location: ", 
                          CONTENT_LOCATION_LEN)) {
     size_t uri_len = bytes - CONTENT_LOCATION_LEN - 2; /* for \r\n */
-    const unsigned char* uri_str = (const unsigned char*)ptr + CONTENT_LOCATION_LEN;
+    unsigned char* uri_str = (unsigned char*)ptr + CONTENT_LOCATION_LEN;
 
     if(www->final_uri)
       raptor_free_uri(www->final_uri);
 
+    /* Ensure it is NUL terminated */
+    c = uri_str[uri_len];
+    uri_str[uri_len] = '\0';
     www->final_uri = raptor_new_uri_relative_to_base_counted(www->world,
                                                              www->uri,
                                                              uri_str, uri_len);
+    uri_str[uri_len] = c;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     if(www->final_uri)
