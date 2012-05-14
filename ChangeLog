@@ -1,4 +1,52 @@
-2012-03-22  Dave Beckett  <dave@dajobe.org>
+2012-04-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_header_callback): Do not send CRNL to URI
+	constructor.
+
+	* src/raptor_www_curl.c: Interpret Content-Location header as
+	absolute or relative URI
+
+	(raptor_www_curl_header_callback): Use
+	raptor_new_uri_relative_to_base_counted to construct URI relative
+	to current base.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_new_uri_relative_to_base_counted): Added
+
+2012-03-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-uri.sgml: Update
+	api docs for turtle write fns
+
+	* Merge pull request #3 from Anchakor/node_rw_turtle_string
+	turtle uri and term writing/tostring functions
+
+2012-03-29  Jiří Procházka <ojirio@gmail.com>
+
+	* src/raptor2.h.in, src/raptor_serialize_turtle.c: add counted
+	string versions
+
+	* src/raptor2.h.in, src/raptor_serialize_turtle.c: style and docs
+	changes
+
+	* Merge remote-tracking branch 'dajobe/master' into
+	node_rw_turtle_string
+
+2012-03-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor2-sections.txt, docs/tmpl/section-www.sgml: Add
+	raptor_www_set_ssl_verify_option to docs - missing 's' in sections
+
+	* RELEASE.html:
+	RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES words
+
+2012-03-22  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.8
 
 	* Snapshotted raptor2_2_0_7 for 2.0.7 release (GIT
 	a676f235309a59d4aa78eeffd2574ae5d341fcb0)
