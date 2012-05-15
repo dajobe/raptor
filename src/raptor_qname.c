@@ -538,7 +538,7 @@ raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr)
  * 
  * Get the string form of a QName name
  * 
- * Return value: string or NULL on failure
+ * Return value: new string name or NULL on failure
  **/
 unsigned char*
 raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
