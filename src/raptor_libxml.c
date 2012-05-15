@@ -150,7 +150,7 @@ raptor_libxml_resolveEntity(void* user_data,
   raptor_sax2* sax2 = (raptor_sax2*)user_data;
   xmlParserCtxtPtr ctxt = sax2->xc;
   const unsigned char *uri_string = NULL;
-  xmlParserInputPtr entity_input;
+  xmlParserInputPtr entity_input = NULL;
   int load_entity = 0;
 
   if(ctxt->input)
