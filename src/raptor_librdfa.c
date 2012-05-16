@@ -115,6 +115,14 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     return;
   }
   
+  if(triple->predicate[0] == '_') {
+    raptor_parser_warning(parser, 
+                          "Ignoring RDFa triple with blank node predicate %s.",
+                          triple->predicate);
+    rdfa_free_triple(triple);
+    return;
+  }
+  
   if(triple->object_type == RDF_TYPE_NAMESPACE_PREFIX) {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Triple has namespace object type\n");
