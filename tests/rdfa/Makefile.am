@@ -102,6 +102,9 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	  baseuri=$(BASE_URI)$$test; \
 	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
 	  status1=$$?; \
+	  if test $$status1 = 2; then \
+	    status1=0; \
+	  fi; \
 	  $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
 	  status2=$$?; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
@@ -136,6 +139,9 @@ check-unapproved-rdfa: build-rdfdiff build-rapper $(TEST_UNAPPROVED_FILES)
 	  baseuri=$(BASE_URI)$$test; \
 	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
 	  status1=$$?; \
+	  if test $$status1 = 2; then \
+	    status1=0; \
+	  fi; \
 	  $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
 	  status2=$$?; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
