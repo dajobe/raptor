@@ -85,36 +85,38 @@ static curie_t rdfa_get_curie_type(const char* uri)
 char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
 {
    char* rval = NULL;
+   char* path_start = NULL;
    size_t base_length = strlen(context->base);
    
    if(strlen(uri) < 1)
    {
-      // if a blank URI is given, use the base context
+      /* if a blank URI is given, use the base context */
       rval = rdfa_replace_string(rval, context->base);
    }
    else if(strstr(uri, ":") != NULL)
    {
-      // if a IRI is given, don't concatenate
+      /* if a IRI is given, don't concatenate */
       rval = rdfa_replace_string(rval, uri);
    }
-   else if(uri[0] == '#')
+   else if(uri[0] == '#' || uri[0] == '?')
    {
-      // if a fragment ID is given, concatenate it with the base URI
+      /* if a fragment ID or start of a query parameter is given,
+       * concatenate it with the base URI */
       rval = rdfa_join_string(context->base, uri);
    }
    else if(uri[0] == '/')
    {
-      // if a relative URI is given, but it starts with a '/', use the
-      // host part concatenated to the given URI
+      /* if a relative URI is given, but it starts with a '/', use the
+       * host part concatenated to the given URI */
       char* tmp = NULL;
       char* end_index = NULL;
 
-      // initialize the working-set data
+      /* initialize the working-set data */
       tmp = rdfa_replace_string(tmp, context->base);
       end_index = strchr(tmp, '/');
 
 
-      // find the final '/' character after the host part of the context base.
+      /* find the final '/' character after the host part of the context base. */
       if(end_index != NULL)
       {
 	 end_index = strchr(end_index + 1, '/');
@@ -125,26 +127,26 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
          }
       }
 
-      // if the '/' character after the host part was found, copy the host
-      // part and append the given URI to the URI, otherwise, append the
-      // host part and the URI part as-is, ensuring that a '/' exists at the
-      // end of the host part.
+      /* if the '/' character after the host part was found, copy the host
+       * part and append the given URI to the URI, otherwise, append the
+       * host part and the URI part as-is, ensuring that a '/' exists at the
+       * end of the host part. */
       if(end_index != NULL)
       {
          char* rval_copy;
 
 	 *end_index = '\0';
 	 
-	 // if the '/' character after the host part was found, copy the host
-	 // part and append the given URI to the URI.
+	 /* if the '/' character after the host part was found, copy the host
+	  * part and append the given URI to the URI. */
 	 rval_copy = rdfa_replace_string(rval, tmp);
 	 rval = rdfa_join_string(rval_copy, uri);
          free(rval_copy);
       }
       else
       {
-         // append the host part and the URI part as-is, ensuring that a 
-	 // '/' exists at the end of the host part.
+	 /* append the host part and the URI part as-is, ensuring that a
+	  * '/' exists at the end of the host part. */
  	 size_t tlen = strlen(tmp) - 1;
          char* rval_copy;
 
@@ -164,13 +166,13 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
    {
       if((char)context->base[base_length - 1] == '/')
       {
-         // if the base URI already ends in /, concatenate
+         /* if the base URI already ends in /, concatenate */
          rval = rdfa_join_string(context->base, uri);
       }
       else
       {
-         // if we have a relative URI, chop off the name of the file
-         // and replace it with the relative pathname
+         /* if we have a relative URI, chop off the name of the file
+          * and replace it with the relative pathname */
          char* end_index = strrchr(context->base, '/');
 
          if(end_index != NULL)
@@ -187,6 +189,152 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
             free(tmpstr);
          }
       }
+   }
+
+   /* Find the start of a scheme-based URL path */
+   path_start = (char*)strstr(rval, "://");
+   if(path_start != NULL)
+   {
+      if(strstr(path_start, "/.") != NULL)
+      {
+         path_start += 3;
+         path_start = strstr(path_start, "/");
+      }
+      else
+      {
+         path_start = NULL;
+      }
+   }
+
+   /* remove any dot-segments that remain in the URL for URLs w/ schemes */
+   if(path_start != NULL)
+   {
+      size_t rlen = strlen(rval) + 1;
+      size_t hlen = path_start - rval;
+      char* src = (char*)malloc(rlen + 4);
+      char* sptr = src + hlen;
+      char* dest = (char*)malloc(rlen + 1);
+      char* dptr = dest + hlen;
+      char* dfence = dptr;
+
+      memset(src, 0, rlen + 4);
+      strcpy(src, rval);
+      strncpy(dest, rval, hlen);
+
+      /* Process the path portion of the IRI */
+      while(sptr[0] != '?' && sptr[0] != '\0')
+      {
+         if(sptr[0] == '.' && sptr[1] == '.' && sptr[2] == '/')
+         {
+            /* A.  If the input buffer begins with a prefix of "../",
+             * then remove that prefix from the input buffer; otherwise,
+             */
+            sptr += 3;
+         }
+         else if(sptr[0] == '.' && sptr[1] == '/')
+         {
+            /* A.  If the input buffer begins with a prefix of "./",
+             * then remove that prefix from the input buffer; otherwise,
+             */
+            sptr += 2;
+         }
+         else if(sptr[0] == '/' && sptr[1] == '.' && sptr[2] == '/')
+         {
+            /* B.  if the input buffer begins with a prefix of "/./",
+             * then replace that prefix with "/" in the input buffer;
+             * otherwise,
+             */
+            sptr += 2;
+         }
+         else if(sptr[0] == '/' && sptr[1] == '.' && sptr[2] == '\0')
+         {
+            /* B.  if the input buffer begins with a prefix of "/.",
+             * where "." is a complete path segment, then replace that
+             * prefix with "/" in the input buffer; otherwise,
+             */
+            sptr += 1;
+            *sptr = '/';
+         }
+         else if(sptr[0] == '/' && sptr[1] == '.' && sptr[2] == '.' &&
+            ((sptr[3] == '/') || (sptr[3] == '\0')))
+         {
+            /* C.  if the input buffer begins with a prefix of "/../",
+             * then replace that prefix with "/" in the input buffer and
+             * remove the last segment and its preceding "/" (if any) from
+             * the output buffer; otherwise,
+             */
+            if(sptr[3] == '/')
+            {
+               sptr += 3;
+            }
+            else if(sptr[3] == '\0')
+            {
+               sptr += 2;
+               *sptr = '/';
+            }
+
+            /* remove the last segment and the preceding '/' */
+            if(dptr > dfence)
+            {
+               dptr--;
+               if(dptr[0] == '/')
+               {
+                  dptr--;
+               }
+            }
+            while(dptr >= dfence && dptr[0] != '/')
+            {
+               dptr--;
+            }
+            if(dptr >= dfence)
+            {
+               dptr[0] = '\0';
+            }
+            else
+            {
+               dptr = dfence;
+               dptr[0] = '\0';
+            }
+         }
+         else if(sptr[0] == '.' && sptr[1] == '\0')
+         {
+            /* D. if the input buffer consists only of ".", then remove
+             * that from the input buffer; otherwise,
+             */
+            sptr++;
+
+         }
+         else if(sptr[0] == '.' && sptr[1] == '.' && sptr[1] == '\0')
+         {
+            /* D. if the input buffer consists only of "..", then remove
+             * that from the input buffer; otherwise,
+             */
+            sptr += 2;
+         }
+         else
+         {
+            /* Copy the path segment */
+            do
+            {
+               *dptr++ = *sptr++;
+               *dptr = '\0';
+            } while(sptr[0] != '/' && sptr[0] != '?' && sptr[0] != '\0');
+         }
+      }
+
+      /* Copy the remaining query parameters */
+      if(sptr[0] == '?')
+      {
+         strcpy(dptr, sptr);
+      }
+      else
+      {
+         dptr[0] = '\0';
+      }
+
+      free(rval);
+      free(src);
+      rval = dest;
    }
 
    return rval;
