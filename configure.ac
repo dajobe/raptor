@@ -347,7 +347,10 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(gettimeofday getopt getopt_long stricmp strcasecmp vsnprintf isascii setjmp)
+AC_CHECK_FUNCS(gettimeofday getopt getopt_long stricmp strcasecmp vsnprintf isascii setjmp strtok_r)
+
+dnl librdfa
+AM_CONDITIONAL([NEED_STRTOK_R], [test "$ac_cv_func_strtok_r" = "no"])
 
 dnl Check for GNU extension functions
 oCPPFLAGS="$CPPFLAGS"
