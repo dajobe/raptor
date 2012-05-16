@@ -134,7 +134,12 @@ static size_t rdfa_init_base(
 {
    char* head_end = NULL;
    size_t offset = context->wb_position;
-   size_t needed_size = (offset + bytes_read) - *working_buffer_size;
+   size_t needed_size = 0;
+
+   if((offset + bytes_read) > *working_buffer_size)
+   {
+      needed_size = (offset + bytes_read) - *working_buffer_size;
+   }
 
    // search for the end of <head>, stop if <head> was found
 
