@@ -19,6 +19,10 @@
  *
  * The language module is used to determine and set the current language.
  */
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -32,18 +36,18 @@
  */
 void rdfa_update_language(rdfacontext* context, const char* lang)
 {
-   // the [current element] is parsed for any language information,
-   // and [language] is set in the [current evaluation context];
+   /* the [current element] is parsed for any language information,
+    * and [language] is set in the [current evaluation context]; */
    if(lang != NULL)   
    {
       if(strlen(lang) > 0)
       {
-         // if a language was specified, set it
+         /* if a language was specified, set it */
          context->language = rdfa_replace_string(context->language, lang);
       }
       else
       {
-         // if a blank language was specified, clear the language context
+         /* if a blank language was specified, clear the language context */
          free(context->language);
          context->language = NULL;
       }

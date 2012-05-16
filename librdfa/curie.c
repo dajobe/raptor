@@ -22,26 +22,22 @@
  *
  * @author Manu Sporny
  */
-#include "stdlib.h"
-#include "string.h"
-#include "stdio.h"
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#include <stdlib.h>
+#include <string.h>
+#include <strings.h>
+#include <stdio.h>
+#include <ctype.h>
 #include "rdfa_utils.h"
 #include "rdfa.h"
+#include "strtok_r.h"
 
-// These are all of the @rel/@rev reserved words in XHTML 1.1 that
-// should generate triples.
-#define XHTML_RELREV_RESERVED_WORDS_SIZE 24
-static const char* const g_relrev_reserved_words[XHTML_RELREV_RESERVED_WORDS_SIZE] =
-{
-   "alternate", "appendix", "bookmark", "chapter", "cite", "contents",
-   "copyright", "first", "glossary", "help", "icon", "index",
-   "meta", "next", "p3pv1", "prev", "role",  "section",  "stylesheet",
-   "subsection",  "start", "license", "up", "last"
-};
-
-// The base XHTML vocab URL is used to resolve URIs that are reserved
-// words. Any reserved listed above is appended to the URL below to
-// form a complete IRI.
+/* The base XHTML vocab URL is used to resolve URIs that are reserved
+ * words. Any reserved listed above is appended to the URL below to
+ * form a complete IRI. */
 #define XHTML_VOCAB_URI "http://www.w3.org/1999/xhtml/vocab#"
 #define XHTML_VOCAB_URI_SIZE 35
 
@@ -62,19 +58,19 @@ static curie_t rdfa_get_curie_type(const char* uri)
 
       if((uri[0] == '[') && (uri[uri_length - 1] == ']'))
       {
-         // a safe curie starts with [ and ends with ]
+         /* a safe curie starts with [ and ends with ] */
          rval = CURIE_TYPE_SAFE;
       }
       else if(strstr(uri, ":") != NULL)
       {
-         // at this point, it is unknown whether or not the CURIE is
-         // an IRI or an unsafe CURIE
+         /* at this point, it is unknown whether or not the CURIE is
+          * an IRI or an unsafe CURIE */
          rval = CURIE_TYPE_IRI_OR_UNSAFE;
       }
       else
       {
-         // if none of the above match, then the CURIE is probably a
-         // relative IRI
+         /* if none of the above match, then the CURIE is probably a
+          * relative IRI */
          rval = CURIE_TYPE_IRI_OR_UNSAFE;
       }
    }
@@ -352,23 +348,54 @@ char* rdfa_resolve_curie(
    }
    else if((ctype == CURIE_TYPE_IRI_OR_UNSAFE) &&
            ((mode == CURIE_PARSE_HREF_SRC) ||
-            (mode == CURIE_PARSE_ABOUT_RESOURCE)))
+            (context->rdfa_version == RDFA_VERSION_1_0 &&
+               mode == CURIE_PARSE_ABOUT_RESOURCE)))
    {
-      // If we are parsing something that can take either a CURIE or a
-      // URI, and the type is either IRI or UNSAFE, assume that it is
-      // an IRI
+      /* If we are parsing something that can take either a CURIE or a
+       * URI, and the type is either IRI or UNSAFE, assume that it is
+       * an IRI */
       rval = rdfa_resolve_uri(context, uri);
    }
 
-   // if we are processing a safe CURIE OR
-   // if we are parsing an unsafe CURIE that is an @type_of,
-   // @datatype, @property, @rel, or @rev attribute, treat the curie
-   // as not an IRI, but an unsafe CURIE
-   if((ctype == CURIE_TYPE_SAFE) ||
+   /*
+    * Check to see if the value is a term.
+    */
+   if(ctype == CURIE_TYPE_IRI_OR_UNSAFE && mode == CURIE_PARSE_PROPERTY)
+   {
+      const char* term_iri;
+      term_iri = (const char*)rdfa_get_mapping(context->term_mappings, uri);
+      if(term_iri != NULL)
+      {
+         rval = strdup(term_iri);
+      }
+      else if(context->default_vocabulary == NULL && strstr(uri, ":") == NULL)
+      {
+         /* Generate the processor warning if this is a missing term */
+#define FORMAT_1 "The use of the '%s' term was unrecognized by the RDFa processor because it is not a valid term for the current Host Language."
+
+#ifdef LIBRDFA_IN_RAPTOR
+         raptor_parser_warning((raptor_parser*)context->callback_data, 
+                               FORMAT_1, uri);
+#else
+         char msg[1024];
+         snprintf(msg, 1024, FORMAT_1, uri);
+
+         rdfa_processor_triples(context, RDFA_PROCESSOR_WARNING, msg);
+#endif
+      }
+   }
+
+   /* if we are processing a safe CURIE OR
+    * if we are parsing an unsafe CURIE that is an @type_of,
+    * @datatype, @property, @rel, or @rev attribute, treat the curie
+    * as not an IRI, but an unsafe CURIE */
+   if(rval == NULL && ((ctype == CURIE_TYPE_SAFE) ||
          ((ctype == CURIE_TYPE_IRI_OR_UNSAFE) &&
           ((mode == CURIE_PARSE_INSTANCEOF_DATATYPE) ||
            (mode == CURIE_PARSE_PROPERTY) ||
-           (mode == CURIE_PARSE_RELREV))))
+           (mode == CURIE_PARSE_RELREV) ||
+           (context->rdfa_version == RDFA_VERSION_1_1 &&
+              mode == CURIE_PARSE_ABOUT_RESOURCE)))))
    {
       char* working_copy = NULL;
       char* wcptr = NULL;
@@ -377,26 +404,26 @@ char* rdfa_resolve_curie(
       const char* expanded_prefix = NULL;
 
       working_copy = (char*)malloc(strlen(uri) + 1);
-      strcpy(working_copy, uri);//rdfa_replace_string(working_copy, uri);
+      strcpy(working_copy, uri);/*rdfa_replace_string(working_copy, uri);*/
 
-      // if this is a safe CURIE, chop off the beginning and the end
+      /* if this is a safe CURIE, chop off the beginning and the end */
       if(ctype == CURIE_TYPE_SAFE)
       {
          prefix = strtok_r(working_copy, "[:]", &wcptr);
          if(wcptr)
-            curie_reference = strtok_r(NULL, "[:]", &wcptr);
+            curie_reference = strtok_r(NULL, "[]", &wcptr);
       }
       else if(ctype == CURIE_TYPE_IRI_OR_UNSAFE)
       {
          prefix = strtok_r(working_copy, ":", &wcptr);
          if(wcptr)
-            curie_reference = strtok_r(NULL, ":", &wcptr);
+            curie_reference = strtok_r(NULL, "", &wcptr);
       }
 
-      // fully resolve the prefix and get it's length
+      /* fully resolve the prefix and get its length */
 
-      // if a colon was found, but no prefix, use the XHTML vocabulary URI
-      // as the expanded prefix 
+      /* if a colon was found, but no prefix, use the XHTML vocabulary URI
+       * as the expanded prefix */
       if((uri[0] == ':') || (strcmp(uri, "[:]") == 0))
       {
          expanded_prefix = XHTML_VOCAB_URI;
@@ -405,28 +432,26 @@ char* rdfa_resolve_curie(
       }
       else if(uri[0] == ':')
       {
-         // FIXME: This looks like a bug - don't know why this code is
-         // in here. I think it's for the case where ":next" is
-         // specified, but the code's not checking that -- manu
+         /* FIXME: This looks like a bug - don't know why this code is
+          * in here. I think it's for the case where ":next" is
+          * specified, but the code's not checking that -- manu */
          expanded_prefix = context->base;
          curie_reference = prefix;
          prefix = NULL;
       }
       else if(prefix != NULL)
       {
-         if(strcmp(prefix, "_") == 0)
+         if((mode != CURIE_PARSE_PROPERTY) &&
+            (mode != CURIE_PARSE_RELREV) &&
+            strcmp(prefix, "_") == 0)
          {
-            // if the prefix specifies this as a blank node, then we
-            // use the blank node prefix
+            /* if the prefix specifies this as a blank node, then we
+             * use the blank node prefix */
             expanded_prefix = "_";
          }
-         //else if(strcmp(prefix, "rdf") == 0)
-         //{
-         //   expanded_prefix = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-         //}
          else
          {
-            // if the prefix was defined, get it from the set of URI mappings.
+            /* if the prefix was defined, get it from the set of URI mappings. */
 #ifdef LIBRDFA_IN_RAPTOR
             if(strcmp(prefix, "xml"))
             {
@@ -444,14 +469,30 @@ char* rdfa_resolve_curie(
 #else
             expanded_prefix =
                rdfa_get_mapping(context->uri_mappings, prefix);
+
+            /* Generate the processor warning if the prefix was not found */
+            if(expanded_prefix == NULL && strstr(uri, ":") != NULL &&
+               strstr(uri, "://") == NULL)
+            {
+#define FORMAT_2 "The '%s' prefix was not found. You may want to check that it is declared before it is used, or that it is a valid prefix string."
+#ifdef LIBRDFA_IN_RAPTOR
+              raptor_parser_warning((raptor_parser*)context->callback_data, 
+                                    FORMAT_2, prefix);
+#else
+              char msg[1024];
+              snprintf(msg, 1024, FORMAT_2, prefix);
+
+               rdfa_processor_triples(context, RDFA_PROCESSOR_WARNING, msg);
+#endif
+            }
 #endif
          }
       }
 
       if((expanded_prefix != NULL) && (curie_reference != NULL))
       {
-         // if the expanded prefix and the reference exist, generate the
-         // full IRI.
+         /* if the expanded prefix and the reference exist, generate the
+          * full IRI. */
          if(strcmp(expanded_prefix, "_") == 0)
          {
             rval = rdfa_join_string("_:", curie_reference);
@@ -464,31 +505,51 @@ char* rdfa_resolve_curie(
       else if((expanded_prefix != NULL) && (expanded_prefix[0] != '_') && 
          (curie_reference == NULL))
       {
-         // if the expanded prefix exists, but the reference is null, 
-	 // generate the CURIE because a reference-less CURIE is still
-         // valid
+         /* if the expanded prefix exists, but the reference is null,
+          * generate the CURIE because a reference-less CURIE is still
+          * valid */
  	 rval = rdfa_join_string(expanded_prefix, "");
       }
 
       free(working_copy);
    }
 
-   // if we're NULL at this point, the CURIE might be the special
-   // unnamed bnode specified by _:
-   if((rval == NULL) &&
-      ((strcmp(uri, "[_:]") == 0) ||
-       (strcmp(uri, "_:") == 0)))
+   if(rval == NULL)
    {
-      if(context->underscore_colon_bnode_name == NULL)
+      /* if we're NULL at this point, the CURIE might be the special
+       * unnamed bnode specified by _: */
+      if((strcmp(uri, "[_:]") == 0) || (strcmp(uri, "_:") == 0))
       {
-         context->underscore_colon_bnode_name = rdfa_create_bnode(context);
+         if(context->underscore_colon_bnode_name == NULL)
+         {
+            context->underscore_colon_bnode_name = rdfa_create_bnode(context);
+         }
+         rval = rdfa_replace_string(rval, context->underscore_colon_bnode_name);
       }
-      rval = rdfa_replace_string(rval, context->underscore_colon_bnode_name);
+      /* if we're NULL at this point and the IRI isn't [], then this might be
+       * an IRI */
+      else if(context->rdfa_version == RDFA_VERSION_1_1 &&
+         (strcmp(uri, "[]") != 0))
+      {
+         if((context->default_vocabulary != NULL) &&
+            ((mode == CURIE_PARSE_PROPERTY) || (mode == CURIE_PARSE_RELREV) ||
+               (mode == CURIE_PARSE_INSTANCEOF_DATATYPE)) &&
+            (strstr(uri, ":") == NULL))
+         {
+            rval = rdfa_join_string(context->default_vocabulary, uri);
+         }
+         else if(((mode == CURIE_PARSE_PROPERTY) ||
+            (mode == CURIE_PARSE_ABOUT_RESOURCE)) &&
+            (strstr(uri, "_:") == NULL) && (strstr(uri, "[_:") == NULL))
+         {
+            rval = rdfa_resolve_uri(context, uri);
+         }
+      }
    }
    
-   // even though a reference-only CURIE is valid, it does not
-   // generate a triple in XHTML+RDFa. If we're NULL at this point,
-   // the given value wasn't valid in XHTML+RDFa.
+   /* even though a reference-only CURIE is valid, it does not
+    * generate a triple in XHTML+RDFa. If we're NULL at this point,
+    * the given value wasn't valid in XHTML+RDFa. */
    
    return rval;
 }
@@ -508,33 +569,61 @@ char* rdfa_resolve_curie(
 char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
 {
    char* rval = NULL;
-   int i = 0;
    const char* resource = uri;
 
-   // check to make sure the URI doesn't have an empty prefix
+   /* check to make sure the URI doesn't have an empty prefix */
    if(uri[0] == ':')
    {
       resource++;
    }
 
-   // search all of the XHTML @rel/@rev reserved words for a
-   // case-insensitive match against the given URI
-   for(i = 0; i < XHTML_RELREV_RESERVED_WORDS_SIZE; i++)
+   /* override reserved words if there is a default vocab defined
+    * NOTE: Don't have to check for RDFa 1.1 mode because vocab is only defined
+    * in RDFa 1.1 */
+   if(context->default_vocabulary != NULL)
    {
-      if(strcasecmp(g_relrev_reserved_words[i], resource) == 0)
+      rval = rdfa_resolve_curie(context, uri, CURIE_PARSE_RELREV);
+   }
+   else if(context->host_language == HOST_LANGUAGE_XHTML1)
+   {
+      /* search all of the XHTML @rel/@rev reserved words for a
+       * case-insensitive match against the given URI */
+      char* term = strdup(resource);
+      char* ptr = NULL;
+
+      for(ptr = term; *ptr; ptr++)
       {
-         // since the URI is a reserved word for @rel/@rev, generate
-         // the full IRI and stop the loop.
-         rval = rdfa_join_string(XHTML_VOCAB_URI, g_relrev_reserved_words[i]);
-         i = XHTML_RELREV_RESERVED_WORDS_SIZE;
+         *ptr = tolower(*ptr);
+      }
+
+      rval = (char*)rdfa_get_mapping(context->term_mappings, term);
+      if(rval != NULL)
+      {
+         rval = strdup(rval);
+      }
+      free(term);
+   }
+   else
+   {
+      /* Search the term mappings for a match */
+      rval = (char*)rdfa_get_mapping(context->term_mappings, resource);
+      if(rval != NULL)
+      {
+         rval = strdup(rval);
       }
    }
 
-   // if none of the XHTML @rel/@rev reserved words were found,
-   // attempt to resolve the value as a standard CURIE
+   /* if a search against the registered terms failed,
+    * attempt to resolve the value as a standard CURIE */
    if(rval == NULL)
    {
       rval = rdfa_resolve_curie(context, uri, CURIE_PARSE_RELREV);
+   }
+
+   /* if a CURIE wasn't found, attempt to resolve the value as an IRI */
+   if(rval == NULL && (context->rdfa_version == RDFA_VERSION_1_1))
+   {
+      rval = rdfa_resolve_uri(context, uri);
    }
    
    return rval;
@@ -549,7 +638,7 @@ rdfalist* rdfa_resolve_curie_list(
    char* ctoken = NULL;
    working_uris = rdfa_replace_string(working_uris, uris);
 
-   // go through each item in the list of CURIEs and resolve each
+   /* go through each item in the list of CURIEs and resolve each */
    ctoken = strtok_r(working_uris, RDFA_WHITESPACE, &uptr);
    
    while(ctoken != NULL)
@@ -569,7 +658,7 @@ rdfalist* rdfa_resolve_curie_list(
             rdfa_resolve_relrev_curie(rdfa_context, ctoken);
       }
 
-      // add the CURIE if it was a valid one
+      /* add the CURIE if it was a valid one */
       if(resolved_curie != NULL)
       {
          rdfa_add_item(rval, resolved_curie, RDFALIST_FLAG_TEXT);

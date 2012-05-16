@@ -20,11 +20,16 @@
  * You should have received a copy of the GNU Lesser General Public
  * License along with librdfa. If not, see <http://www.gnu.org/licenses/>.
  */
-#include "stdlib.h"
-#include "string.h"
-#include "stdio.h"
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "rdfa_utils.h"
 #include "rdfa.h"
+#include "strtok_r.h"
 
 #define RDFA_WHITESPACE_CHARACTERS " \a\b\t\n\v\f\r"
 
@@ -37,7 +42,6 @@ char* rdfa_join_string(const char* prefix, const char* suffix)
 
    memcpy(rval, prefix, prefix_size);
    memcpy(rval+prefix_size, suffix, suffix_size + 1);
-
 
    return rval;
 }
@@ -59,10 +63,10 @@ char* rdfa_replace_string(char* old_string, const char* new_string)
 
    if(new_string != NULL)
    {
-      // free the memory associated with the old string
+      /* free the memory associated with the old string */
       free(old_string);
 
-      // copy the new string
+      /* copy the new string */
       rval = strdup(new_string);
    }
 
@@ -79,7 +83,7 @@ char* rdfa_canonicalize_string(const char* str)
 
    working_string = rdfa_replace_string(working_string, str);
 
-   // split on any whitespace character that we may find
+   /* split on any whitespace character that we may find */
    token = strtok_r(working_string, RDFA_WHITESPACE_CHARACTERS, &wptr);
    while(token != NULL)
    {
@@ -109,46 +113,72 @@ rdfalist* rdfa_create_list(size_t size)
 
    rval->max_items = size;
    rval->num_items = 0;
-   rval->items = (rdfalistitem**)malloc(sizeof(rdfalistitem) * rval->max_items);
+   rval->items = (rdfalistitem**)malloc(
+      sizeof(rdfalistitem*) * rval->max_items);
+
+   return rval;
+}
+
+rdfalist* rdfa_replace_list(rdfalist* old_list, rdfalist* new_list)
+{
+   rdfalist* rval = NULL;
+
+   if(new_list != NULL)
+   {
+      /* free the memory associated with the old list */
+      rdfa_free_list(old_list);
+
+      /* copy the new list */
+      rval = rdfa_copy_list(new_list);
+   }
 
    return rval;
 }
 
 rdfalist* rdfa_copy_list(rdfalist* list)
 {
-   rdfalist* rval = (rdfalist*)malloc(sizeof(rdfalist));
-   unsigned int i;
+   rdfalist* rval = NULL;
 
-   // copy the base list variables over
-   rval->max_items = list->max_items;
-   rval->num_items = list->num_items;
-   rval->items = (rdfalistitem**)malloc(sizeof(void*) * rval->max_items);
-
-   // copy the data of every list member along with all of the flags
-   // for each list member.
-   for(i = 0; i < list->max_items; i++)
+   if(list != NULL)
    {
-      if(i < list->num_items)
-      {
-         rval->items[i] = (rdfalistitem*)malloc(sizeof(rdfalistitem));
-         rval->items[i]->data = NULL;
-         rval->items[i]->flags = list->items[i]->flags;
+      unsigned int i;
+      rval = rdfa_create_list(list->max_items);
 
-         // copy specific data type
-         if(list->items[i]->flags & RDFALIST_FLAG_TEXT)
-         {
-            rval->items[i]->data = (char*)rdfa_replace_string(
-               NULL, (const char*)list->items[i]->data);
-         }
-         /*
-         else if(flags & RDFALIST_FLAG_CONTEXT)
-         {
-            // TODO: Implement the copy for context, if it is needed.
-         }*/
-      }
-      else
+      /* copy the base list variables over */
+      rval->num_items = list->num_items;
+      rval->user_data = list->user_data;
+
+      /* copy the data of every list member along with all of the flags
+       * for each list member. */
+      for(i = 0; i < list->max_items; i++)
       {
-         rval->items[i] = NULL;
+         if(i < list->num_items)
+         {
+            rval->items[i] = (rdfalistitem*)malloc(sizeof(rdfalistitem));
+            rval->items[i]->data = NULL;
+            rval->items[i]->flags = list->items[i]->flags;
+
+            /* copy specific data type */
+            if(list->items[i]->flags & RDFALIST_FLAG_TEXT)
+            {
+               rval->items[i]->data = strdup((char*)list->items[i]->data);
+            }
+            else if(list->items[i]->flags & RDFALIST_FLAG_TRIPLE)
+            {
+               rdftriple* t = (rdftriple*)list->items[i]->data;
+               rval->items[i]->data =
+                  rdfa_create_triple(t->subject, t->predicate, t->object,
+                     t->object_type, t->datatype, t->language);
+            }
+            else if(list->items[i]->flags & RDFALIST_FLAG_CONTEXT)
+            {
+               /* TODO: Implement the copy for context, if it is needed. */
+            }
+         }
+         else
+         {
+            rval->items[i] = NULL;
+         }
       }
    }
 
@@ -174,6 +204,32 @@ void rdfa_print_list(rdfalist* list)
    printf(" ]\n");
 }
 
+void rdfa_print_triple_list(rdfalist* list)
+{
+   unsigned int i;
+
+   if(list != NULL)
+   {
+      printf("[ ");
+
+      for(i = 0; i < list->num_items; i++)
+      {
+         if(i != 0)
+         {
+            printf(", ");
+         }
+
+         rdfa_print_triple((rdftriple*)list->items[i]->data);
+      }
+
+      printf(" ]\n");
+   }
+   else
+   {
+      printf("NULL\n");
+   }
+}
+
 void rdfa_free_list(rdfalist* list)
 {
    if(list != NULL)
@@ -181,7 +237,16 @@ void rdfa_free_list(rdfalist* list)
       unsigned int i;
       for(i = 0; i < list->num_items; i++)
       {
-         free(list->items[i]->data);
+         if(list->items[i]->flags & RDFALIST_FLAG_TEXT)
+         {
+            free(list->items[i]->data);
+         }
+         else if(list->items[i]->flags & RDFALIST_FLAG_TRIPLE)
+         {
+            rdftriple* t = (rdftriple*)list->items[i]->data;
+            rdfa_free_triple(t);
+         }
+
          free(list->items[i]);
       }
 
@@ -216,7 +281,7 @@ void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
 
    item->data = NULL;
 
-   if(flags & RDFALIST_FLAG_CONTEXT)
+   if((flags & RDFALIST_FLAG_CONTEXT) || (flags & RDFALIST_FLAG_TRIPLE))
    {
       item->data = data;
    }
@@ -232,20 +297,19 @@ void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
    {
       list->max_items = 1 + (list->max_items * 2);
       list->items = (rdfalistitem**)realloc(
-         list->items, sizeof(rdfalistitem) * list->max_items);
+         list->items, sizeof(rdfalistitem*) * list->max_items);
    }
 
    list->items[list->num_items] = item;
    ++list->num_items;
 }
 
-#ifndef LIBRDFA_IN_RAPTOR
-char** rdfa_create_mapping(size_t elements)
+void** rdfa_create_mapping(size_t elements)
 {
-   size_t mapping_size = sizeof(char*) * MAX_URI_MAPPINGS * 2;
-   char** mapping = malloc(mapping_size);
+   size_t mapping_size = sizeof(void*) * MAX_URI_MAPPINGS * 2;
+   void** mapping = (void**)malloc(mapping_size);
 
-   // only initialize the mapping if it is null.
+   /* only initialize the mapping if it is not null. */
    if(mapping != NULL)
    {
       memset(mapping, 0, mapping_size);
@@ -254,20 +318,68 @@ char** rdfa_create_mapping(size_t elements)
    return mapping;
 }
 
-char** rdfa_copy_mapping(char** mapping)
+void rdfa_create_list_mapping(
+   rdfacontext* context, void** mapping,
+   const char* subject, const char* key)
 {
-   size_t mapping_size = sizeof(char*) * MAX_URI_MAPPINGS * 2;
-   char** rval = malloc(mapping_size);
-   char** mptr = mapping;
-   char** rptr = rval;
+   char* realkey = NULL;
+   size_t str_size;
+   rdfalist* value = NULL;
+   char* list_bnode;
+   rdftriple* triple;
 
-   // initialize the mapping
-   memset(rval, 0, mapping_size);
+   /* Attempt to find the list mapping */
+   value = (rdfalist*)rdfa_get_list_mapping(mapping, subject, key);
 
-   // copy each element of the old mapping to the new mapping.
+   if(value == NULL)
+   {
+      /* create the mapping */
+      value = rdfa_create_list(MAX_LIST_ITEMS);
+      value->user_data = context->depth;
+
+      /* build the real key to use when updating the mapping */
+      str_size = strlen(subject);
+      realkey = strdup(subject);
+      realkey = rdfa_n_append_string(realkey, &str_size, " ", 1);
+      realkey = rdfa_n_append_string(realkey, &str_size, key, strlen(key));
+      rdfa_update_mapping(mapping, realkey, value,
+         (update_mapping_value_fp)rdfa_replace_list);
+      free(realkey);
+      rdfa_free_list(value);
+
+      /* add the first item in the list as the bnode for the list */
+      list_bnode = rdfa_create_bnode(context);
+      triple = rdfa_create_triple(
+         list_bnode, list_bnode, list_bnode, RDF_TYPE_IRI, NULL, NULL);
+      rdfa_append_to_list_mapping(mapping, subject, key, (void*)triple);
+      free(list_bnode);
+   }
+}
+
+void rdfa_append_to_list_mapping(
+   void** mapping, const char* subject, const char* key, void* value)
+{
+   rdfalist* list = (rdfalist*)rdfa_get_list_mapping(mapping, subject, key);
+   rdfa_add_item(list, value, RDFALIST_FLAG_TRIPLE);
+}
+
+void** rdfa_copy_mapping(
+   void** mapping, copy_mapping_value_fp copy_mapping_value)
+{
+   void** rval = (void**)calloc(MAX_URI_MAPPINGS * 2, sizeof(void*));
+   void** mptr = mapping;
+   void** rptr = rval;
+
+   /* copy each element of the old mapping to the new mapping. */
    while(*mptr != NULL)
    {
-      *rptr = rdfa_replace_string(*rptr, *mptr);
+      /* copy the key */
+      *rptr = rdfa_replace_string((char*)*rptr, (const char*)*mptr);
+      rptr++;
+      mptr++;
+
+      /* copy the value */
+      *rptr = copy_mapping_value(*rptr, *mptr);
       rptr++;
       mptr++;
    }
@@ -275,19 +387,19 @@ char** rdfa_copy_mapping(char** mapping)
    return rval;
 }
 
-void rdfa_update_mapping(char** mapping, const char* key, const char* value)
+void rdfa_update_mapping(void** mapping, const char* key, const void* value,
+   update_mapping_value_fp update_mapping_value)
 {
    int found = 0;
-   char** mptr = mapping;
+   void** mptr = mapping;
 
-   // search the current mapping to see if the namespace
-   // prefix exists in the mapping
-   while(*mptr != NULL)
+   /* search the current mapping to see if the key exists in the mapping */
+   while(!found && (*mptr != NULL))
    {
-      if(strcmp(*mptr, key) == 0)
+      if(strcmp((char*)*mptr, key) == 0)
       {
          mptr++;
-         *mptr = rdfa_replace_string(*mptr, value);
+         *mptr = update_mapping_value(*mptr, value);
          found = 1;
       }
       else
@@ -297,22 +409,22 @@ void rdfa_update_mapping(char** mapping, const char* key, const char* value)
       mptr++;
    }
 
-   // if we made it through the entire URI mapping and the key was not
-   // found, create a new key-value pair.
+   /* if we made it through the entire URI mapping and the key was not
+    * found, create a new key-value pair. */
    if(!found)
    {
-      *mptr = rdfa_replace_string(*mptr, key);
+     *mptr = rdfa_replace_string((char*)*mptr, key);
       mptr++;
-      *mptr = rdfa_replace_string(*mptr, value);
+      *mptr = update_mapping_value(*mptr, value);
    }
 }
 
-const char* rdfa_get_mapping(char** mapping, const char* key)
+const void* rdfa_get_mapping(void** mapping, const char* key)
 {
-   const char* rval = NULL;
-   char** mptr = mapping;
+   const void* rval = NULL;
+   char** mptr = (char**)mapping;
 
-   // search the current mapping to see if the key exists in the mapping.
+   /* search the current mapping to see if the key exists in the mapping. */
    while(*mptr != NULL)
    {
       if(strcmp(*mptr, key) == 0)
@@ -330,30 +442,49 @@ const char* rdfa_get_mapping(char** mapping, const char* key)
    return rval;
 }
 
-void rdfa_next_mapping(char** mapping, char** key, char** value)
+const void* rdfa_get_list_mapping(
+   void** mapping, const char* subject, const char* key)
+{
+   void* rval;
+   char* realkey = NULL;
+   size_t str_size = strlen(subject);
+
+   /* generate the real list mapping key and retrieve it from the mapping */
+   realkey = strdup(subject);
+   realkey = rdfa_n_append_string(realkey, &str_size, " ", 1);
+   realkey = rdfa_n_append_string(realkey, &str_size, key, strlen(key));
+   rval = (void*)rdfa_get_mapping(mapping, realkey);
+   free(realkey);
+
+   return (const void*)rval;
+}
+
+void rdfa_next_mapping(void** mapping, char** key, void** value)
 {
    *key = NULL;
    *value = NULL;
 
    if(*mapping != NULL)
    {
-      *key = *mapping++;
+      *key = *(char**)mapping++;
       *value = *mapping++;
    }
 }
 
-void rdfa_print_mapping(char** mapping)
+void rdfa_print_mapping(void** mapping, print_mapping_value_fp print_value)
 {
-   char** mptr = mapping;
+   void** mptr = mapping;
    printf("{\n");
    while(*mptr != NULL)
    {
       char* key;
-      char* value;
-      key = *mptr++;
+      void* value;
+      key = (char*)*mptr++;
       value = *mptr++;
 
-      printf("   %s : %s", key, value);
+      printf("   %s : ", key);
+      print_value(value);
+
       if(*mptr != NULL)
       {
          printf(",\n");
@@ -366,20 +497,27 @@ void rdfa_print_mapping(char** mapping)
    printf("}\n");
 }
 
-void rdfa_free_mapping(char** mapping)
+void rdfa_print_string(const char* str)
 {
-   char** mptr = mapping;
+   printf("%s", str);
+}
+
+void rdfa_free_mapping(void** mapping, free_mapping_value_fp free_value)
+{
+   void** mptr = mapping;
 
    if(mapping != NULL)
    {
-      // free all of the memory in the mapping
+      /* free all of the memory in the mapping */
       while(*mptr != NULL)
       {
          free(*mptr);
+         mptr++;
+         free_value(*mptr);
          mptr++;
       }
 
       free(mapping);
    }
 }
-#endif
+

@@ -119,7 +119,7 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	  name=`basename $$test .xml` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  baseuri=$(BASE_URI)$$test; \
-	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
+	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
 	  status1=$$?; \
 	  if test $$status1 = 2; then \
 	    status1=0; \
@@ -131,7 +131,7 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	  else \
 	    $(RECHO) "FAILED"; \
 	    $(RECHO) "Triple counts: expected: `wc -l < $(srcdir)/$$name.out` got: `wc -l < $$name-res.nt` "; \
-	    $(RECHO) $(top_builddir)/utils/rapper -f noNet -q -i rdfa -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
+	    $(RECHO) $(top_builddir)/utils/rapper -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
 	    $(RECHO) $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt '>' $$name.res; \
 	    cat $$name.err $$name.res; \
 	    failures="$$failures $$test"; \

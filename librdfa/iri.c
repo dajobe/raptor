@@ -19,6 +19,10 @@
  *
  * The iri module is used to process IRIs.
  */
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -38,26 +42,26 @@ char* rdfa_iri_get_base(const char* iri)
    char* rval = NULL;
    const char* eindex = 0;
 
-   // search to see if there is iquery separator
+   /* search to see if there is iquery separator */
    eindex = strchr(iri, '?');
    if(eindex == NULL)
    {
-      // if there is no iquery separator, check to see if there is an
-      // ifragment separator
+      /* if there is no iquery separator, check to see if there is an
+       * ifragment separator */
       eindex = strchr(iri, '#');
    }
 
-   // check to see if the output string needs to be different from the
-   // input string
+   /* check to see if the output string needs to be different from the
+    * input string */
    if(eindex == NULL)
    {
-      // there was no iquery or ifragment in the input string, so there is
-      // no need to reformat the string
+      /* there was no iquery or ifragment in the input string, so there is
+       * no need to reformat the string */
       rval = strdup(iri);
    }
    else
    {
-      // the output string should be concatenated
+      /* the output string should be concatenated */
       unsigned int length = (unsigned int)(eindex - iri);
       rval = (char*)malloc(length + 1);
       rval = strncpy(rval, iri, length);

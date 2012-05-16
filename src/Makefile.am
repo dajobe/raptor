@@ -162,15 +162,23 @@ endif
 
 if LIBRDFA
 libraptor2_la_SOURCES += \
+$(top_srcdir)/librdfa/context.c \
 $(top_srcdir)/librdfa/curie.c \
 $(top_srcdir)/librdfa/iri.c \
-$(top_srcdir)/librdfa/language.c\
+$(top_srcdir)/librdfa/language.c \
+$(top_srcdir)/librdfa/lists.c \
 $(top_srcdir)/librdfa/rdfa.c \
 $(top_srcdir)/librdfa/rdfa_utils.c \
 $(top_srcdir)/librdfa/subject.c \
 $(top_srcdir)/librdfa/triple.c \
 $(top_srcdir)/librdfa/rdfa.h \
 $(top_srcdir)/librdfa/rdfa_utils.h 
+
+if NEED_STRTOK_R
+libraptor2_la_SOURCES += \
+$(top_srcdir)/librdfa/strtok_r.c \
+$(top_srcdir)/librdfa/strtok_r.h
+endif
 
 AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 endif

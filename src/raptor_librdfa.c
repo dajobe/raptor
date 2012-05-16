@@ -49,6 +49,7 @@
 #include "rdfa_utils.h"
 
 
+#define RAPTOR_DEFAULT_RDFA_VERSION 11
 
 /*
  * RDFA parser object
@@ -59,6 +60,9 @@ struct raptor_librdfa_parser_context_s {
   
   /* static statement for use in passing to user code */
   raptor_statement statement;
+
+  /* 10 for 1.0  11 for 1.1 or otherwise is default (== 1.1) */
+  int rdfa_version;
 };
 
 
@@ -68,8 +72,20 @@ typedef struct raptor_librdfa_parser_context_s raptor_librdfa_parser_context;
 static int
 raptor_librdfa_parse_init(raptor_parser* rdf_parser, const char *name)
 {
-  raptor_statement_init(&rdf_parser->statement, rdf_parser->world);
+  raptor_librdfa_parser_context *librdfa_parser;
+  int rdfa_version = RAPTOR_DEFAULT_RDFA_VERSION;
+
+  librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
   
+  raptor_statement_init(&rdf_parser->statement, rdf_parser->world);
+
+  if(!strcmp(name, "rdfa11"))
+    rdfa_version = 11;
+  else if(!strcmp(name, "rdfa10"))
+    rdfa_version = 10;
+
+  librdfa_parser->rdfa_version = rdfa_version;
+
   return 0;
 }
 
@@ -275,6 +291,8 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
   /* returns RDFa Processing Graph error triples - not used by raptor */
   rdfa_set_processor_graph_triple_handler(librdfa_parser->context, NULL);
 
+  librdfa_parser->context->raptor_rdfa_version = librdfa_parser->rdfa_version;
+
   rc = rdfa_parse_start(librdfa_parser->context);
   if(rc != RDFA_PARSE_SUCCESS)
     return 1;
@@ -330,7 +348,7 @@ raptor_librdfa_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static const char* const rdfa_names[2] = { "rdfa", NULL };
+static const char* const rdfa_names[4] = { "rdfa", "rdfa11", "rdfa10", NULL };
 
 static const char* const rdfa_uri_strings[3] = {
   "http://www.w3.org/ns/formats/RDFa",

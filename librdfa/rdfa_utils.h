@@ -63,12 +63,44 @@ typedef enum
 typedef enum
 {
    RDFALIST_FLAG_NONE = 0,
-   RDFALIST_FLAG_FORWARD = (1 << 1),
-   RDFALIST_FLAG_REVERSE = (1 << 2),
-   RDFALIST_FLAG_TEXT = (1 << 3),
-   RDFALIST_FLAG_CONTEXT = (1 << 4),
-   RDFALIST_FLAG_LAST = (1 << 5)
+   RDFALIST_FLAG_DIR_NONE = (1 << 1),
+   RDFALIST_FLAG_DIR_FORWARD  = (1 << 2),
+   RDFALIST_FLAG_DIR_REVERSE = (1 << 3),
+   RDFALIST_FLAG_TEXT = (1 << 4),
+   RDFALIST_FLAG_CONTEXT = (1 << 5),
+   RDFALIST_FLAG_TRIPLE = (1 << 6),
+   RDFALIST_FLAG_LAST = (1 << 7)
 } liflag_t;
+
+/*
+ *  RDFa processor graph reporting types
+ */
+#define RDFA_PROCESSOR_INFO "http://www.w3.org/ns/rdfa#Info"
+#define RDFA_PROCESSOR_WARNING "http://www.w3.org/ns/rdfa#Warning"
+#define RDFA_PROCESSOR_ERROR "http://www.w3.org/ns/rdfa#Error"
+
+/* key establishing a deleted mapping entry */
+#define RDFA_MAPPING_DELETED_KEY "<DELETED-KEY>"
+
+/**
+ * A function pointer that will be used to copy mapping values.
+ */
+typedef void* (*copy_mapping_value_fp)(void*, void*);
+
+/**
+ * A function pointer that will be used to update mapping values.
+ */
+typedef void* (*update_mapping_value_fp)(const void*, const void*);
+
+/**
+ * A function pointer that will be used to print mapping values.
+ */
+typedef void (*print_mapping_value_fp)(void*);
+
+/**
+ * A function pointer that will be used to free memory associated with values.
+ */
+typedef void (*free_mapping_value_fp)(void*);
 
 /**
  * Initializes a mapping given the number of elements the mapping is
@@ -77,9 +109,48 @@ typedef enum
  * @param elements the maximum number of elements the mapping is
  *                 supposed to hold.
  *
- * @return an initialized char**, with all of the elements set to NULL.
+ * @return an initialized void**, with all of the elements set to NULL.
  */
-char** rdfa_create_mapping(size_t elements);
+void** rdfa_create_mapping(size_t elements);
+
+/**
+ * Adds a list to a mapping given a key to create. The result will be a
+ * zero-item list associated with the given key in the mapping.
+ *
+ * @param context the current active context.
+ * @param mapping the mapping to modify.
+ * @param subject the current active subject.
+ * @param key the key to add to the mapping.
+ * @param user_data the user-defined data to store with the list information.
+ */
+void rdfa_create_list_mapping(
+   rdfacontext* context, void** mapping, const char* subject, const char* key);
+
+/**
+ * Adds an item to the end of the list that is associated with the given
+ * key in the mapping.
+ *
+ * @param mapping the mapping to modify.
+ * @param subject the current active subject.
+ * @param key the key to use when looking up the list value.
+ * @param value the value to append to the end of the list.
+ */
+void rdfa_append_to_list_mapping(
+   void** mapping, const char* subject, const char* key, void* value);
+
+/**
+ * Gets the value for a given list mapping when presented with a subject
+ * and a key. If the subject-key combo doesn't exist in the mapping,
+ * NULL is returned.
+ *
+ * @param mapping the mapping to search.
+ * @param subject the current active subject.
+ * @param key the key.
+ *
+ * @return value the value in the mapping for the given key.
+ */
+const void* rdfa_get_list_mapping(
+   void** mapping, const char* subject, const char* key);
 
 /**
  * Copies the entire contents of a mapping verbatim and returns a
@@ -91,7 +162,8 @@ char** rdfa_create_mapping(size_t elements);
  *         allocated. You MUST free the returned mapping when you are
  *         done with it.
  */
-char** rdfa_copy_mapping(char** mapping);
+void** rdfa_copy_mapping(
+   void** mapping, copy_mapping_value_fp copy_mapping_value);
 
 /**
  * Updates the given mapping when presented with a key and a value. If
@@ -100,8 +172,11 @@ char** rdfa_copy_mapping(char** mapping);
  * @param mapping the mapping to update.
  * @param key the key.
  * @param value the value.
+ * @param replace_mapping_value a pointer to a function that will replace the
+ *    old
  */
-void rdfa_update_mapping(char** mapping, const char* key, const char* value);
+void rdfa_update_mapping(void** mapping, const char* key, const void* value,
+   update_mapping_value_fp update_mapping_value);
 
 /**
  * Gets the value for a given mapping when presented with a key. If
@@ -112,7 +187,7 @@ void rdfa_update_mapping(char** mapping, const char* key, const char* value);
  *
  * @return value the value in the mapping for the given key.
  */
-const char* rdfa_get_mapping(char** mapping, const char* key);
+const void* rdfa_get_mapping(void** mapping, const char* key);
 
 /**
  * Gets the current mapping for the given mapping and increments the
@@ -124,21 +199,23 @@ const char* rdfa_get_mapping(char** mapping, const char* key);
  * @param value the value that is associated with the key. NULL if the
  *              mapping is blank or you are at the end of the mapping.
  */
-void rdfa_next_mapping(char** mapping, char** key, char** value);
+void rdfa_next_mapping(void** mapping, char** key, void** value);
 
 /**
  * Prints the mapping to the screen in a human-readable way.
  *
  * @param mapping the mapping to print to the screen.
+ * @param print_value the function pointer to use to print the mapping values.
  */
-void rdfa_print_mapping(char** mapping);
+void rdfa_print_mapping(void** mapping, print_mapping_value_fp print_value);
 
 /**
  * Frees all memory associated with a mapping.
  *
  * @param mapping the mapping to free.
+ * @param free_value the function to free mapping values.
  */
-void rdfa_free_mapping(char** mapping);
+void rdfa_free_mapping(void** mapping, free_mapping_value_fp free_value);
 
 /**
  * Creates a list and initializes it to the given size.
@@ -156,6 +233,20 @@ rdfalist* rdfa_create_list(size_t size);
  *         the returned list once you are done with it.
  */
 rdfalist* rdfa_copy_list(rdfalist* list);
+
+/**
+ * Replaced the old_list by free'ing the memory associated with it. A
+ * copy is made of the new list and then returned.
+ *
+ * @param old_list the list to replace. The memory associated with this list
+ *                 is freed.
+ * @param new_list the new list to copy in replacement of the old list. A
+ *                 deep copy is performed on the new list.
+ *
+ * @return the copied list. You MUST free the memory associated with
+ *         the returned list once you are done with it.
+ */
+rdfalist* rdfa_replace_list(rdfalist* old_list, rdfalist* new_list);
 
 /**
  * Adds an item to the end of the list.
@@ -243,6 +334,14 @@ char* rdfa_n_append_string(
 char* rdfa_join_string(const char* prefix, const char* suffix);
 
 /**
+ * Prints a string to stdout. This function is used by the rdfa_print_mapping
+ * function.
+ *
+ * @param str the string to print to stdout.
+ */
+void rdfa_print_string(const char* str);
+
+/**
  * Canonicalizes a given string by condensing all whitespace to single
  * spaces and stripping leading and trailing whitespace.
  *
@@ -278,6 +377,13 @@ rdftriple* rdfa_create_triple(const char* subject, const char* predicate,
  * @triple the triple to display.
  */
 void rdfa_print_triple(rdftriple* triple);
+
+/**
+ * Prints a list of triples in a human readable form.
+ *
+ * @triple the triple to display.
+ */
+void rdfa_print_triple_list(rdfalist* list);
 
 /**
  * Frees the memory associated with a triple.
@@ -331,25 +437,46 @@ void rdfa_update_language(rdfacontext* context, const char* lang);
 
 char* rdfa_create_bnode(rdfacontext* context);
 
-// All functions that rdfa.c needs.
+/* All functions that rdfa.c needs. */
 void rdfa_update_uri_mappings(rdfacontext* context, const char* attr, const char* value);
-void rdfa_establish_new_subject(
+void rdfa_establish_new_1_0_subject(
    rdfacontext* context, const char* name, const char* about, const char* src,
    const char* resource, const char* href, const rdfalist* type_of);
-void rdfa_establish_new_subject_with_relrev(
+void rdfa_establish_new_1_1_subject(
+   rdfacontext* context, const char* name, const char* about, const char* src,
+   const char* resource, const char* href, const rdfalist* type_of,
+   const rdfalist* property, const char* content, const char* datatype);
+void rdfa_establish_new_1_0_subject_with_relrev(
+   rdfacontext* context, const char* name, const char* about, const char* src,
+   const char* resource, const char* href, const rdfalist* type_of);
+void rdfa_establish_new_1_1_subject_with_relrev(
    rdfacontext* context, const char* name, const char* about, const char* src,
    const char* resource, const char* href, const rdfalist* type_of);
 void rdfa_complete_incomplete_triples(rdfacontext* context);
+void rdfa_save_incomplete_list_triples(
+   rdfacontext* context, const rdfalist* rel);
 void rdfa_complete_type_triples(rdfacontext* context, const rdfalist* type_of);
 void rdfa_complete_relrev_triples(
    rdfacontext* context, const rdfalist* rel, const rdfalist* rev);
 void rdfa_save_incomplete_triples(
    rdfacontext* context, const rdfalist* rel, const rdfalist* rev);
 void rdfa_complete_object_literal_triples(rdfacontext* context);
+void rdfa_complete_current_property_value_triples(rdfacontext* context);
 
-/* triple.c - needed by namespace.c */
+/* Declarations needed by namespace.c */
 void rdfa_generate_namespace_triple(
    rdfacontext* context, const char* prefix, const char* iri);
+void rdfa_processor_triples(
+   rdfacontext* context, const char* type, const char* msg);
+
+/* Declarations needed by rdfa.c */
+void rdfa_setup_initial_context(rdfacontext* context);
+void rdfa_establish_new_inlist_triples(
+   rdfacontext* context, rdfalist* predicates, const char* object,
+   rdfresource_t object_type);
+void rdfa_complete_list_triples(rdfacontext* context);
+rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack);
+void rdfa_free_context_stack(rdfacontext* context);
 
 #ifdef __cplusplus
 }

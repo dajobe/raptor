@@ -74,8 +74,9 @@
 #ifndef _LIBRDFA_RDFA_H_
 #define _LIBRDFA_RDFA_H_
 #include <stdlib.h>
+#include <libxml/SAX2.h>
 
-// Activate the stupid Windows DLL exporting mechanism if we're building for Windows
+/* Activate the stupid Windows DLL exporting mechanism if we're building for Windows */
 #ifdef WIN32
 #define DLLEXPORT __declspec(dllexport)
 #else
@@ -92,9 +93,7 @@
 #endif
 #include "raptor2.h"
 #include "raptor_internal.h"
-#else
-#include <expat.h>
-#endif
+#endif /* LIBRDFA_IN_RAPTOR */
 
 #ifdef __cplusplus
 extern "C"
@@ -103,16 +102,34 @@ extern "C"
 
 #define DEBUG 0
 
+/* RDFa version numbers */
+#define RDFA_VERSION_1_0 1
+#define RDFA_VERSION_1_1 2
+
+/* parse process return types */
 #define RDFA_PARSE_WARNING -2
 #define RDFA_PARSE_FAILED -1
 #define RDFA_PARSE_UNKNOWN 0
 #define RDFA_PARSE_SUCCESS 1
 
-#define MAX_URI_MAPPINGS 512
-#define MAX_INCOMPLETE_TRIPLES 1024
+/* maximum list lengths */
+#define MAX_LOCAL_LIST_MAPPINGS 32
+#define MAX_LIST_MAPPINGS 48
+#define MAX_LIST_ITEMS 16
+#define MAX_TERM_MAPPINGS 64
+#define MAX_URI_MAPPINGS 128
+#define MAX_INCOMPLETE_TRIPLES 128
 
+/* host language definitions */
+#define HOST_LANGUAGE_NONE 0
+#define HOST_LANGUAGE_XML1 1
+#define HOST_LANGUAGE_XHTML1 2
+#define HOST_LANGUAGE_HTML 3
+
+/* default mapping key for xmlns */
 #define XMLNS_DEFAULT_MAPPING "XMLNS_DEFAULT"
 
+/* whitespace characters for RDFa Core 1.1 */
 #define RDFA_WHITESPACE " \t\n\v\f\r"
 
 /**
@@ -178,6 +195,7 @@ typedef struct rdfalist
    rdfalistitem** items;
    size_t num_items;
    size_t max_items;
+   unsigned int user_data;
 } rdfalist;
 
 /**
@@ -187,15 +205,21 @@ typedef struct rdfalist
  */
 typedef struct rdfacontext
 {
+   unsigned char rdfa_version;
    char* base;
    char* parent_subject;
    char* parent_object;
+   char* default_vocabulary;
 #ifndef LIBRDFA_IN_RAPTOR
-   char** uri_mappings;
+   void** uri_mappings;
 #endif
+   void** term_mappings;
+   void** list_mappings;
+   void** local_list_mappings;
    rdfalist* incomplete_triples;
    rdfalist* local_incomplete_triples;
    char* language;
+   unsigned char host_language;
 
    triple_handler_fp default_graph_triple_callback;
    buffer_filler_fp buffer_filler_callback;
@@ -206,9 +230,17 @@ typedef struct rdfacontext
    char* new_subject;
    char* current_object_resource;
 
+   char* about;
+   char* typed_resource;
+   char* resource;
+   char* href;
+   char* src;
    char* content;
    char* datatype;
    rdfalist* property;
+   unsigned char inlist_present;
+   unsigned char rel_present;
+   unsigned char rev_present;
    char* plain_literal;
    size_t plain_literal_size;
    char* xml_literal;
@@ -233,13 +265,15 @@ typedef struct rdfacontext
    raptor_sax2* sax2;
    raptor_namespace_handler namespace_handler;
    void* namespace_handler_user_data;
+   int raptor_rdfa_version; /* 10 or 11 or otherwise default */
 #else
-   XML_Parser parser;
+   xmlParserCtxtPtr parser;
 #endif
    int done;
    rdfalist* context_stack;
    size_t wb_preread;
    int preread;
+   int depth;
 } rdfacontext;
 
 /**
