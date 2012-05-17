@@ -68,10 +68,10 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
   size_t size = 0;
   
   /* check for illegal code positions:
-   * U+D800 to U+DFFF (UTF-16 surrogates)
+   * [ U+D800 to U+DFFF (UTF-16 surrogates) - now allowed ]
    * U+FFFE and U+FFFF
    */
-  if((c > 0xD7FF && c < 0xE000) || c == 0xFFFE || c == 0xFFFF)
+  if(c == 0xFFFE || c == 0xFFFF)
     return -1;
 
   if      (c < 0x00000080)
@@ -242,10 +242,10 @@ raptor_unicode_utf8_string_get_char(const unsigned char *input, size_t length,
 
 
   /* check for illegal code positions:
-   * U+D800 to U+DFFF (UTF-16 surrogates)
+   * [ U+D800 to U+DFFF (UTF-16 surrogates) - now allowed ]
    * U+FFFE and U+FFFF
    */
-  if((c > 0xD7FF && c < 0xE000) || c == 0xFFFE || c == 0xFFFF)
+  if(c == 0xFFFE || c == 0xFFFF)
     return -3;
 
   if(c > raptor_unicode_max_codepoint)
