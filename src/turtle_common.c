@@ -98,7 +98,8 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         size_t ulen = (c == 'u') ? 4 : 8;
         unsigned long unichar = 0;
         int n;
-        
+        int unichar_width;
+
         s++; i++;
         if(i+ulen > len) {
           error_handler(error_data,
@@ -127,7 +128,16 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           return 1;
         }
           
-        d += raptor_unicode_utf8_string_put_char(unichar, d, len-(d-string));
+        unichar_width = raptor_unicode_utf8_string_put_char(unichar, d, 
+                                                            len-(d-string));
+        if(unichar_width < 0) {
+          error_handler(error_data,
+                        "Turtle string error - illegal Unicode character with code point #x%lX.", 
+                        unichar);
+          RAPTOR_FREE(char*, string);
+          return 1;
+        }
+        d += (size_t)unichar_width;
 
       } else {
         /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */

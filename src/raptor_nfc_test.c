@@ -80,6 +80,7 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
   while(p < end) {
     unsigned long c = 0;
     char *endptr;
+    int unicode_width;
 
     if(*p == ' ') {
       p++;
@@ -94,7 +95,15 @@ decode_to_utf8(unsigned char *utf8_string, size_t utf8_string_length,
 
     p = (const char*)endptr;
     
-    u += raptor_unicode_utf8_string_put_char(c, u, (end-p));
+    unichar_width = raptor_unicode_utf8_string_put_char(c, u, (end-p));
+    if(unichar_width < 0) {
+      fprintf(stderr,
+              "decode_to_utf8 Illegal Unicode character with code point #x%lX.", 
+              unichar);
+      break;
+    }
+
+    u += (size_t)unichar_width;
     
     if((u-utf8_string) > RAPTOR_GOOD_CAST(int, utf8_string_length)) {
       fprintf(stderr,

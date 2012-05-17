@@ -369,6 +369,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
+    int unichar_width;
+
     c = *p;
 
     p++;
@@ -491,13 +493,21 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
           break;
         }
 
+        unichar_width = raptor_unicode_utf8_string_put_char(unichar, dest, 4);
+        if(unichar_width < 0) {
+          raptor_parser_error(rdf_parser,
+                              "Illegal Unicode character with code point #x%lX.", 
+                              unichar);
+          break;
+        }
+
         /* The destination length is set here to 4 since we know that in 
          * all cases, the UTF-8 encoded output sequence is always shorter
          * than the input sequence, and the buffer is edited in place.
          *   \uXXXX: 6 bytes input - UTF-8 max 3 bytes output
          *   \uXXXXXXXX: 10 bytes input - UTF-8 max 4 bytes output
          */
-        dest += raptor_unicode_utf8_string_put_char(unichar, dest, 4);
+        dest += (int)unichar_width;
         break;
 
       default:
