@@ -235,7 +235,8 @@ EXPONENT [eE][+-]?[0-9]+
 
 \"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!turtle_parser_lval->string)
-                                  YY_FATAL_ERROR_EOF("turtle_copy_string_token failed");
+                                  yyterminate();
+
                                 return STRING_LITERAL; }
 
 \"\"\"				{ BEGIN(LITERAL); 
