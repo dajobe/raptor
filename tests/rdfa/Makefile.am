@@ -65,7 +65,7 @@ TEST_FILES= \
 0131.xml 0134.xml 0140.xml 0147.xml 0172.xml 0173.xml 0174.xml \
 0181.xml 0197.xml 0201.xml 0202.xml 0203.xml 0207.xml 0209.xml \
 0210.xml 0211.xml 0212.xml 0215.xml 0258.xml 0262.xml 0291.xml \
-0294.xml
+0294.xml 0304.xml
 
 TEST_OUT_FILES = \
 0001.out 0006.out 0007.out 0008.out 0009.out 0010.out 0012.out \
@@ -85,15 +85,16 @@ TEST_OUT_FILES = \
 0131.out 0134.out 0140.out 0147.out 0172.out 0173.out 0174.out \
 0181.out 0197.out 0201.out 0202.out 0203.out 0207.out 0209.out \
 0210.out 0211.out 0212.out 0215.out 0258.out 0262.out 0291.out \
-0294.out
+0294.out 0304.out
 
 ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
 # Expected test failures:
-#  0202.xml - @xml:base support in SVG...
-#  0203.xml - @xml:base in non-root in SVG...
+#  0202.xml - @xml:base support in SVG
+#  0203.xml - @xml:base in non-root in SVG
+#  0304.xml - embedded rdf/xml in SVG
 # (Add a space to the start of this string)
 EXPECTED_FAILURES=" 0202.xml 0203.xml"
 
