@@ -94,9 +94,8 @@ ALL_TEST_FILES= \
 # Expected test failures:
 #  0202.xml - @xml:base support in SVG...
 #  0203.xml - @xml:base in non-root in SVG...
-#  0294.xml - xml: namespace is always declared so curie has a value
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0202.xml 0203.xml 0294.xml"
+EXPECTED_FAILURES=" 0202.xml 0203.xml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
