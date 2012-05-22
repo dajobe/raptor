@@ -44,7 +44,7 @@
 # include <sys/time.h>
 #endif
 
-#if HAVE_STDLIB_H
+#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
 
@@ -73,11 +73,11 @@
    host does not conform to Posix.  */
 #define ISDIGIT(c) ((unsigned) (c) - '0' <= 9)
 
-#if defined (STDC_HEADERS) || defined (USG)
+#ifdef HAVE_STRING_H
 # include <string.h>
 #endif
 
-#if __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
+#if !defined(__GNUC__) || __GNUC__ < 2 || (__GNUC__ == 2 && __GNUC_MINOR__ < 7)
 # define __attribute__(x)
 #endif
 
@@ -903,7 +903,7 @@ LookupWord (YYSTYPE *lvalp, char *buff)
       }
 
   /* Strip off any plural and try the units table again. */
-  i = strlen (buff) - 1;
+  i = RAPTOR_BAD_CAST(int, strlen(buff)) - 1;
   if(buff[i] == 's')
     {
       buff[i] = '\0';
