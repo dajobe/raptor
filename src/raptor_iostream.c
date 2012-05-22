@@ -54,7 +54,7 @@ struct raptor_iostream_s
   
   void *user_data;
   const raptor_iostream_handler* handler;
-  unsigned long offset;
+  size_t offset;
   unsigned int mode;
   int flags;
 };
@@ -1135,7 +1135,7 @@ raptor_new_iostream_from_string(raptor_world *world,
 unsigned long
 raptor_iostream_tell(raptor_iostream *iostr)
 {
-  return iostr->offset;
+  return RAPTOR_BAD_CAST(unsigned long, iostr->offset);
 }
 
 
