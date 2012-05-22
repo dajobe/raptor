@@ -2163,6 +2163,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
               
               raptor_parser_error(rdf_parser, "rdf:bagID is forbidden on property element '%s' with an rdf:resource or rdf:parseType attribute.", el_name);
               /* prevent this being used later either */
+              RAPTOR_FREE(char*, element->rdf_attr[RDF_NS_bagID]);
               element->rdf_attr[RDF_NS_bagID] = NULL;
             } else {
               unsigned char* bag_id;
@@ -2877,6 +2878,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               /* Finish the xml writer iostream for parseType="Literal" */
               if(rdf_xml_parser->xml_writer) {
                 raptor_free_xml_writer(rdf_xml_parser->xml_writer);
+                rdf_xml_parser->xml_writer = NULL;
                 RAPTOR_FREE(char*, rdf_xml_parser->xml_content);
                 rdf_xml_parser->xml_content = NULL;
                 rdf_xml_parser->xml_content_length = 0;
