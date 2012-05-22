@@ -41,6 +41,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef WIN32
+#include <io.h>
+#endif
 
 /* many places for getopt */
 #ifdef HAVE_GETOPT_H
