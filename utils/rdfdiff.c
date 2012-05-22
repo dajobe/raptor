@@ -62,6 +62,12 @@
 #define RAPTOR_DEBUG 2
 #endif
 
+#ifndef RAPTOR_INTERNAL
+#define RAPTOR_MALLOC(type, size)		(type)malloc(size)
+#define RAPTOR_CALLOC(type, nmemb, size)	(type)calloc(nmemb, size)
+#define RAPTOR_FREE(type, ptr)			free((void*)ptr)
+#endif
+
 #ifdef NEED_OPTIND_DECLARATION
 extern int optind;
 extern char *optarg;
