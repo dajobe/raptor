@@ -91,7 +91,7 @@ extern "C" {
  */
 
 /* Release version as a decimal */
-#define RAPTOR_VERSION @RAPTOR_VERSION_DECIMAL@
+#define RAPTOR_VERSION_DECIMAL @RAPTOR_VERSION_DECIMAL@
 
 /* Version number of package */
 #define RAPTOR_VERSION_STRING "@VERSION@"
