@@ -102,7 +102,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
     return;
   }
 
-  if(buffer[length-1] == '\n')
+  if(length >= 1 && buffer[length-1] == '\n')
     buffer[length-1]='\0';
   
   raptor_log_error(world, level, locator, buffer);
