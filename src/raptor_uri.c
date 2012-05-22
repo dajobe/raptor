@@ -60,11 +60,6 @@
 #include "raptor_internal.h"
 
 
-#ifdef WIN32_URI_TEST
-#define WIN32
-#endif
-
-
 /* Symbian OS uses similar path mappings as Windows but does not necessarily have the WIN32 flag defined */
 #if defined(__SYMBIAN32__) && !defined(WIN32)
 #define WIN32
@@ -83,6 +78,8 @@ struct raptor_uri_s {
   int usage;
 };
 
+
+#ifndef STANDALONE
 
 /**
  * raptor_new_uri_from_counted_string:
@@ -1666,6 +1663,8 @@ raptor_uri_file_exists(raptor_uri* uri)
   return raptor_uri_filename_exists(uri_string + 6);
 }
 
+#endif /* !STANDALONE */
+
 
 #ifdef STANDALONE
 
@@ -1959,4 +1958,4 @@ main(int argc, char *argv[])
   return failures ;
 }
 
-#endif
+#endif /* STANDALONE */
