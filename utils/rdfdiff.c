@@ -585,7 +585,10 @@ rdfdiff_add_blank_statement_owner(rdfdiff_file* file,
                                (char*)statement->object->value.blank.string);
   if(!blank)
     goto failed;
-  
+
+  if(blank->owner)
+    raptor_free_statement(blank->owner);
+
   blank->owner = raptor_statement_copy(statement);
   if(!blank->owner)
     goto failed;
