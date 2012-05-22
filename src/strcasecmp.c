@@ -60,17 +60,11 @@ raptor_strncasecmp(const char* s1, const char* s2, size_t n)
 
 #ifdef STANDALONE
 
-#include <stdio.h>
-
-/* one more prototype */
-int main(int argc, char *argv[]);
-
-
 
 static int
 assert_strcasecmp (const char *s1, const char *s2, int expected)
 {
-  int result = strcasecmp(s1, s2);
+  int result = raptor_strcasecmp(s1, s2);
   result = (result > 0) ? 1 : ((result <0) ? -1 : 0);
 
   if(result != expected)
@@ -86,7 +80,7 @@ assert_strcasecmp (const char *s1, const char *s2, int expected)
 static int
 assert_strncasecmp (const char *s1, const char *s2, size_t size, int expected)
 {
-  int result = strncasecmp(s1, s2, size);
+  int result = raptor_strncasecmp(s1, s2, size);
   result = (result > 0) ? 1 : ((result <0) ? -1 : 0);
 
   if(result != expected)
