@@ -1526,11 +1526,8 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   if(rss_serializer->rss_triples_mode == 2) {
     /* raptor_rdfxmla_serialize_set_write_typed_nodes(ser, 0); */
   }
-  
-  if(base_uri)
-    base_uri = raptor_uri_copy(base_uri);
 
-  /* after this call, ser owns (this copy of) base_uri and does
+  /* after this call, ser does
    * NOT own serializer->iostream and will not destroy it
    * when raptor_free_serializer(ser) is called.
    */
@@ -1611,13 +1608,15 @@ raptor_rss10_ensure_atom_feed_valid(raptor_rss10_serializer_context *rss_seriali
   int i;
   raptor_rss_item* item;
   raptor_rss_model* rss_model;
-  struct timeval tv;
   time_t now = 0;
   int size;
   
 #ifdef HAVE_GETTIMEOFDAY
+  struct timeval tv;
   if(!gettimeofday(&tv, NULL))
     now = tv.tv_sec;
+#else
+  now = time(NULL);
 #endif
   
   is_atom = rss_serializer->is_atom;
@@ -1888,12 +1887,12 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
     for(field = item->fields[f]; field; field = field->next) {
       raptor_xml_element* predicate;
 
-      base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
-      predicate = raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_fields_info_qnames[f]), NULL, base_uri_copy);
-
       /* Use atom:summary in preference */
       if(is_atom && f == RAPTOR_RSS_FIELD_DESCRIPTION)
         continue;
+
+      base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
+      predicate = raptor_new_xml_element(raptor_qname_copy(serializer->world->rss_fields_info_qnames[f]), NULL, base_uri_copy);
 
       if(is_atom && field->uri) {
         unsigned char* ruri_string;
@@ -2254,6 +2253,9 @@ raptor_rss10_serialize_end(raptor_serializer* serializer)
     }
   }
 
+
+  if(entry_uri)
+    raptor_free_uri(entry_uri);
 
   raptor_xml_writer_end_element(xml_writer, rss_serializer->root_element);
 
