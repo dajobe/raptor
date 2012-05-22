@@ -65,7 +65,7 @@ const char * const raptor_home_url_string = "http://librdf.org/raptor/";
  *
  * See also #raptor_version_decimal.
  */
-const char * const raptor_version_string = VERSION
+const char * const raptor_version_string = RAPTOR_VERSION_STRING
 #ifdef GIT_VERSION
 " GIT " GIT_VERSION
 #endif
