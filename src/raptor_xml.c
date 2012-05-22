@@ -1035,7 +1035,7 @@ main(int argc, char *argv[])
 
   for(i = 0; (t=&test_values[i]) && t->string; i++) {
     const unsigned char *utf8_string = (const unsigned char*)t->string;
-    int quote = t->quote;
+    char quote = t->quote;
     size_t utf8_string_len = strlen((const char*)utf8_string);
     unsigned char *xml_string;
     int xml_string_len = 0;
