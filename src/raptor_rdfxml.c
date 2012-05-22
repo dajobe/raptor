@@ -1061,6 +1061,21 @@ raptor_rdfxml_parse_terminate(raptor_parser *rdf_parser)
     rdf_xml_parser->id_set = NULL;
   }
 
+  if (rdf_xml_parser->xml_writer) {
+    raptor_free_xml_writer(rdf_xml_parser->xml_writer);
+    rdf_xml_parser->xml_writer = NULL;
+  }
+
+  if (rdf_xml_parser->iostream) {
+    raptor_free_iostream(rdf_xml_parser->iostream);
+    rdf_xml_parser->iostream = NULL;
+  }
+
+  if (rdf_xml_parser->xml_content) {
+    RAPTOR_FREE(char*, rdf_xml_parser->xml_content);
+    rdf_xml_parser->xml_content = NULL;
+    rdf_xml_parser->xml_content_length = 0;
+  }
 }
 
 
