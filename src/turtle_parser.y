@@ -1219,7 +1219,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 #endif
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  (void)turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
+  (void)turtle_lexer__scan_bytes((char *)string, (int)length, turtle_parser->scanner);
 
   rc = turtle_parser_parse(rdf_parser);
 
