@@ -52,6 +52,9 @@
 #include <alloca.h>
 #endif
 
+#include "raptor2.h"
+#include "raptor_internal.h"
+
 #if defined (STDC_HEADERS) || (!defined (isascii) && !defined (HAVE_ISASCII))
 # define IN_CTYPE_DOMAIN(c) 1
 #else
@@ -94,7 +97,6 @@
 
 /* Prototypes */ 
 static int raptor_parsedate_error(const char *msg);
-time_t raptor_parse_date(const char *p, time_t *now);
 
 
 #define EPOCH		1970
