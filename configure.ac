@@ -374,25 +374,31 @@ AC_TRY_LINK([#ifdef HAVE_GETOPT_H
 
 
 if test $ac_cv_func_vsnprintf = yes; then
-  AC_MSG_CHECKING(vsnprintf has C99 compatible return value)
-  AC_TRY_RUN([#include <stdarg.h>
-int is_c99(char *s, ...) {
-  char buffer[32];
+  AC_MSG_CHECKING([whether vsnprintf has C99 compatible return value])
+  AC_TRY_RUN([#include <stdio.h>
+#ifdef HAVE_STDLIB_H
+#include <stdlib.h>
+#endif
+#include <stdarg.h>
+
+static int is_c99(char *buf, char *s, ...) {
   va_list args;
   int r;
   va_start(args, s);
-  r = vsnprintf(buffer, 5, s, args);
+  r = vsnprintf(buf, buf ? 5 : 0, s, args);
   va_end(args);
 
   return (r == 7);
 }
 
-int main(int argc, char* argv) {
-  return is_c99("1234567");
-}], AC_MSG_RESULT(no),
-    AC_DEFINE(HAVE_C99_VSNPRINTF, 1, [vsnprint has C99 compatible return value])
-    AC_MSG_RESULT(yes),
-    AC_DEFINE(CHECK_VSNPRINTF_RUNTIME, 1, [have to check C99 vsnprintf at runtime because cross compiling]))
+int main(void) {
+  char buffer[32];
+  return (is_c99(NULL,   "1234567") ? 0 : 10)
+       + (is_c99(buffer, "1234567") ? 0 :  1);
+}], [AC_DEFINE([HAVE_C99_VSNPRINTF], [1], [vsnprintf has C99 compatible return value])
+     AC_MSG_RESULT([yes])],
+    [AC_MSG_RESULT([no])],
+    [AC_DEFINE([CHECK_VSNPRINTF_RUNTIME], [1], [have to check C99 vsnprintf at runtime because cross compiling])])
 fi
 
 # Save LIBS 
