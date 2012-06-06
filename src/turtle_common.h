@@ -73,7 +73,7 @@ struct raptor_turtle_parser_s {
   raptor_term* graph_name;
 
   /* Allow TRIG extensions */
-  int trig : 1;
+  int trig;
 };
 
 
