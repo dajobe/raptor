@@ -57,13 +57,12 @@
 static int vsnprintf_checked = -1;
 
 static int
-vsnprintf_check_is_c99(const char *s, ...)
+vsnprintf_check_is_c99(char *buf, const char *s, ...)
 {
-  char buffer[32];
   va_list args;
   int r;
   va_start(args, s);
-  r = vsnprintf(buffer, 5, s, args);
+  r = vsnprintf(buf, buf ? 5 : 0, s, args);
   va_end(args);
 
   return (r == 7);
@@ -72,11 +71,16 @@ vsnprintf_check_is_c99(const char *s, ...)
 static int
 vsnprintf_is_c99(void)
 {
-  if(vsnprintf_checked < 0)
-    vsnprintf_checked = vsnprintf_check_is_c99("1234567");
+  if(vsnprintf_checked < 0) {
+    char buffer[32];
+    vsnprintf_checked = (vsnprintf_check_is_c99(NULL,   "1234567") &&
+                         vsnprintf_check_is_c99(buffer, "1234567"))
+                        ? 1 : 0;
+  }
+
   return vsnprintf_checked;
 }
-#endif
+#endif /* CHECK_VSNPRINTF_RUNTIME */
 
 
 #define VSNPRINTF_C99_BLOCK(len, buffer, size, format, arguments)      \
@@ -86,7 +90,6 @@ vsnprintf_is_c99(void)
 
 #define VSNPRINTF_NOT_C99_BLOCK(len, buffer, size, format, arguments)   \
   do {                                                                  \
-    len = -1;                                                           \
     if(!buffer || !size) {                                              \
       /* This vsnprintf doesn't return number of bytes required */      \
       size = 2 + strlen(format);                                        \
@@ -109,8 +112,11 @@ vsnprintf_is_c99(void)
          * the string returned is terminated - otherwise more buffer    \
          * space is allocated and the while() loop retries.             \
          */                                                             \
-        if((len >= 0) && (tmp_buffer[len] == '\0')) {                   \
-          len = RAPTOR_BAD_CAST(int, strlen(tmp_buffer));		\
+        if((len >= 0) &&                                                \
+           (RAPTOR_GOOD_CAST(size_t, len) < size) &&                    \
+           (tmp_buffer[len] == '\0')) {                                 \
+          len = RAPTOR_BAD_CAST(int, strlen(tmp_buffer));               \
+          RAPTOR_FREE(char*, tmp_buffer);                               \
           break;                                                        \
         }                                                               \
         RAPTOR_FREE(char*, tmp_buffer);                                 \
@@ -119,7 +125,7 @@ vsnprintf_is_c99(void)
     }                                                                   \
                                                                         \
     if(buffer)                                                          \
-      vsnprintf(buffer, size, format, arguments);                       \
+      len = vsnprintf(buffer, size, format, arguments);                 \
   } while(0)
 
 /**
@@ -143,9 +149,9 @@ int
 raptor_vsnprintf2(char *buffer, size_t size,
                   const char *format, va_list arguments)
 {
-  int len;
+  int len = -1;
 
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(format, char*, 0);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(format, char*, -1);
 
 #ifdef CHECK_VSNPRINTF_RUNTIME
 
@@ -247,6 +253,9 @@ int
 raptor_vasprintf(char **ret, const char *format, va_list arguments)
 {
   int length;
+#ifndef HAVE_VASPRINTF
+  va_list args_copy;
+#endif
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(ret, char**, -1);
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(format, char*, -1);
@@ -254,7 +263,9 @@ raptor_vasprintf(char **ret, const char *format, va_list arguments)
 #ifdef HAVE_VASPRINTF
   length = vasprintf(ret, format, arguments);
 #else
-  length = raptor_vsnprintf2(NULL, 0, format, arguments);
+  va_copy(args_copy, arguments);
+  length = raptor_vsnprintf2(NULL, 0, format, args_copy);
+  va_end(args_copy);
   if(length < 0) {
     *ret = NULL;
     return length;
@@ -263,7 +274,9 @@ raptor_vasprintf(char **ret, const char *format, va_list arguments)
   if(!*ret)
     return -1;
 
-  length = raptor_vsnprintf2(*ret, length, format, arguments);
+  va_copy(args_copy, arguments);
+  length = raptor_vsnprintf2(*ret, length + 1, format, args_copy);
+  va_end(args_copy);
 #endif
 
   return length;
