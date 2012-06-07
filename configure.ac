@@ -414,50 +414,56 @@ dnl Checks for XML parsers
 
 AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH   Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
 
-if test "X$xml2_config" != "X" ; then
-  AC_MSG_CHECKING(for $xml2_config)
+if test "X$xml2_config" != "Xno" ; then
+  if test "X$xml2_config" != "X" ; then
+    AC_MSG_CHECKING(for $xml2_config)
 
-  if test -f $xml2_config ; then
-    XML_CONFIG=$xml2_config
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no - searching PATH)
+    if test -f $xml2_config ; then
+      XML_CONFIG=$xml2_config
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no - searching PATH)
+    fi
   fi
-fi
-if test "X$XML_CONFIG" = "X"; then
-  AC_CHECK_PROGS(XML_CONFIG, xml2-config)
+  if test "X$XML_CONFIG" = "X" ; then
+    AC_CHECK_PROGS(XML_CONFIG, xml2-config)
+  fi
 fi
 
 AC_ARG_WITH(xslt-config, [  --with-xslt-config=PATH   Location of libxslt xslt-config []], xslt_config="$withval", xslt_config="")
 
-if test "X$xslt_config" != "X" ; then
-  AC_MSG_CHECKING(for $xslt_config)
+if test "X$xslt_config" != "Xno" ; then
+  if test "X$xslt_config" != "X" ; then
+    AC_MSG_CHECKING(for $xslt_config)
 
-  if test -f $xslt_config ; then
-    XSLT_CONFIG=$xslt_config
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no - searching PATH)
+    if test -f $xslt_config ; then
+      XSLT_CONFIG=$xslt_config
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no - searching PATH)
+    fi
   fi
-fi
-if test "X$XSLT_CONFIG" = "X"; then
-  AC_CHECK_PROGS(XSLT_CONFIG, xslt-config)
+  if test "X$XSLT_CONFIG" = "X" ; then
+    AC_CHECK_PROGS(XSLT_CONFIG, xslt-config)
+  fi
 fi
 
 AC_ARG_WITH(curl-config, [  --with-curl-config=PATH   Location of libcurl curl-config []], curl_config="$withval", curl_config="")
 
-if test "X$curl_config" != "X" ; then
-  AC_MSG_CHECKING(for $curl_config)
+if test "X$curl_config" != "Xno" ; then
+  if test "X$curl_config" != "X" ; then
+    AC_MSG_CHECKING(for $curl_config)
 
-  if test -f $curl_config ; then
-    CURL_CONFIG=$curl_config
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no - searching PATH)
+    if test -f $curl_config ; then
+      CURL_CONFIG=$curl_config
+      AC_MSG_RESULT(yes)
+    else
+      AC_MSG_RESULT(no - searching PATH)
+    fi
   fi
-fi
-if test "X$CURL_CONFIG" = "X"; then
-  AC_CHECK_PROGS(CURL_CONFIG, curl-config)
+  if test "X$CURL_CONFIG" = "X" ; then
+    AC_CHECK_PROGS(CURL_CONFIG, curl-config)
+  fi
 fi
 
 
@@ -466,7 +472,7 @@ AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config [
 
 have_icu=no
 AC_MSG_CHECKING(for ICU)
-if test "X$icu_config" != "X" ; then
+if test "X$icu_config" != "Xno" -a "X$icu_config" != "X" ; then
   ICU_CONFIG=$icu_config
   ICU_VERSION=`$ICU_CONFIG --version`
   have_icu=yes
@@ -479,7 +485,7 @@ dnl Note there is NO automated searching for icu-config
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
 
-if test "X$libwww_config" != "X" ; then
+if test "X$libwww_config" != "Xno" -a "X$libwww_config" != "X" ; then
   AC_MSG_WARN(libwww is no longer supported)
 fi
 
@@ -957,7 +963,7 @@ for www_name in $www curl xml libfetch none; do
       fi
       ;;
 
-    none)
+    none|no)
       need_libcurl=0
       need_libxml_www=0
       AC_DEFINE([RAPTOR_WWW_NONE], 1, [No WWW library])
