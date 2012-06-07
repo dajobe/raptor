@@ -23,12 +23,11 @@
 
 
 bin_PROGRAMS = rapper
-EXTRA_PROGRAMS = rdfdiff
+noinst_PROGRAMS = rdfdiff
 
 man_MANS = rapper.1
 
-CLEANFILES=rdfdiff \
-*.plist
+CLEANFILES = *.plist
 
 # Memory debugging
 MEM=@MEM@
