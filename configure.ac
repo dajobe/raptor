@@ -1148,7 +1148,7 @@ CPPFLAGS="-DRAPTOR_INTERNAL=1 $CPPFLAGS"
 AC_ARG_WITH(memory-signing, [  --with-memory-signing     Sign allocated memory (default=no)], use_memory_signing="$withval", use_memory_signing="no") 
 AC_MSG_CHECKING(using memory signing)
 AC_MSG_RESULT($use_memory_signing);
-if test $use_memory_signing = yes; then
+if test "$use_memory_signing" = yes; then
   MEM=-DRAPTOR_MEMORY_SIGN=1
   MEM_LIBS=
 fi
