@@ -46,6 +46,8 @@ endif
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
+if MAINTAINER_MODE
+
 # Create some text files from HTML sources
 LYNX=lynx
 HTML_TO_TEXT=TERM=vt100 $(LYNX) -dump -nolist
@@ -58,16 +60,10 @@ SUFFIXES = .html .txt
 README: README.html
 	$(HTML_TO_TEXT) $< > $@
 
-NEWS: NEWS.html
+$(srcdir)/NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
+
+endif
 
 # Some people need a little help ;-)
 test: check
-
-dist-hook: README NEWS
-	@for file in README NEWS; do \
-          if test -r $(srcdir)/$$file; then \
-	    rm -f $(distdir)/$$file; \
-	    cp -p $(srcdir)/$$file $(distdir)/$$file; \
-	  fi; \
-	done
