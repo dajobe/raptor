@@ -276,6 +276,7 @@ AC_CHECK_HEADERS(fetch.h,,,
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_BIGENDIAN
+AC_C_INLINE
 
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
@@ -359,7 +360,7 @@ AC_CHECK_FUNCS(vasprintf)
 CPPFLAGS="$oCPPFLAGS"
 
 
-AM_CONDITIONAL(STRCASECMP, test $ac_cv_func_stricmp = no -a $ac_cv_func_stricmp = no)
+AM_CONDITIONAL(STRCASECMP, test $ac_cv_func_strcasecmp = no -a $ac_cv_func_stricmp = no)
 AM_CONDITIONAL(GETOPT, test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no)
 
 
@@ -1146,15 +1147,17 @@ if test $use_memory_signing = yes; then
   MEM_LIBS=
 fi
 
-debug_messages=no
+debugging=no
 
-AC_ARG_ENABLE(debug, [  --enable-debug          Enable debug messages (default no).  ], debug_messages=$enableval)	
-if test "$debug_messages" = "yes"; then
-  CPPFLAGS="-g -DRAPTOR_DEBUG=1 $CPPFLAGS"
+AC_ARG_ENABLE(debug, [  --enable-debug          Enable debug messages and symbols (default no).  ], debugging=$enableval)	
+if test "$debugging" = "yes"; then
+  CFLAGS="$CFLAGS -g"
+  AC_DEFINE([RAPTOR_DEBUG], [1], [Define to 1 if debug messages and symbols are enabled.])
 fi
 
 if test "$USE_MAINTAINER_MODE" = yes; then
-  CPPFLAGS="-DMAINTAINER_MODE $MAINTAINER_CPPFLAGS $CPPFLAGS"
+  AC_DEFINE([MAINTAINER_MODE], [1], [Define to 1 if maintainer mode is enabled.])
+  CPPFLAGS="$MAINTAINER_CPPFLAGS $CPPFLAGS"
 fi
 
 
