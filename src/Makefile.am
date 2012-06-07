@@ -61,6 +61,7 @@ ANALYZE_COMMAND = $(ANALYZE) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) \
 	$(ANALYZE_FLAGS)
 
+BUILT_SOURCES = turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h
 
 libraptor2_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_log.c raptor_locator.c \
@@ -198,10 +199,6 @@ turtle_lexer.l turtle_parser.y \
 parsedate.y
 
 
-LEX=@LEX@
-YACC=@YACC@
-
-
 nodist_libraptor2_la_SOURCES =
 
 if MAINTAINER_MODE
@@ -213,16 +210,20 @@ nodist_libraptor2_la_SOURCES += git-version.h
 raptor_parse.c: git-version.h
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(srcdir)/../scripts/fix-flex
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
-	$(PERL) $(srcdir)/../scripts/fix-flex $@ > turtle_lexer.t
-	mv turtle_lexer.t $@
+	$(PERL) $(top_srcdir)/scripts/fix-flex $@ > turtle_lexer.t || rm -f $@
+	mv -f turtle_lexer.t $@
 
-turtle_parser.c: $(srcdir)/turtle_parser.y $(srcdir)/../scripts/fix-bison
+turtle_lexer.h: turtle_lexer.c ; @exit 0
+
+turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison
 	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
-	$(PERL) $(srcdir)/../scripts/fix-bison turtle_parser.tab.c > $@
-	mv turtle_parser.tab.h turtle_parser.h
+	$(PERL) $(top_srcdir)/scripts/fix-bison turtle_parser.tab.c > $@
+	mv -f turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
+
+turtle_parser.h: turtle_parser.c ; @exit 0
 
 endif
 
@@ -245,7 +246,7 @@ parsedate.c: $(srcdir)/parsedate.y
 # Some people need a little help ;-)
 test: check
 
-raptor_parse_test: $(srcdir)/raptor_general.c libraptor2.la
+raptor_parse_test: $(srcdir)/raptor_parse.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor2.la $(LIBS)
 
 raptor_rfc2396_test: $(srcdir)/raptor_rfc2396.c libraptor2.la
