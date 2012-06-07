@@ -73,11 +73,15 @@ endif
 
 check-local: build-rapper $(FEED_TESTS)
 
+if MAINTAINER_MODE
+check_rdfxml_to_turtle_deps = $(TEST_IN_RDF_ATOMS)
+endif
+
 # Parse from RDF/XML and Serialize to Turtle
-check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
+check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing RDF/XML to Turtle"; \
-	for test in $?; do \
+	for test in $(TEST_IN_RDF_ATOMS); do \
 	  parser=rdfxml; \
 	  name=`basename $$test .rdf` ; \
 	  turtle="$$name.ttl"; \
@@ -110,11 +114,15 @@ check-rdfxml-to-turtle: $(TEST_IN_RDF_ATOMS)
 	done; \
 	set -e; exit $$result
 
+if MAINTAINER_MODE
+check_atom_to_turtle_deps = $(TEST_IN_ATOMS)
+endif
+
 # Parser from Atom and Serialize to Turtle
-check-atom-to-turtle: $(TEST_IN_ATOMS)
+check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Atom to Turtle"; \
-	for test in $?; do \
+	for test in $(TEST_IN_ATOMS); do \
 	  parser=rss-tag-soup; \
 	  name=`basename $$test .atom` ; \
 	  turtle="$$name.ttl"; \
@@ -192,6 +200,7 @@ check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	@set +e; result=0; \
 	$(RECHO) "Validating Atom XML with RelaxNG"; \
 	for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
+	  test -f $$atom || atom=$(srcdir)/$$atom; \
 	  $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
 	  jing $(srcdir)/atom.rng $$atom > errors.log 2>&1; \
 	  status=$$?; \
