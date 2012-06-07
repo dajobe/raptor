@@ -208,7 +208,8 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
       nmsg[length-1] = '\0';
   }
 
-  raptor_parser_error_varargs(rdf_parser, nmsg ? nmsg : msg, arguments);
+  raptor_parser_log_error_varargs(rdf_parser, RAPTOR_LOG_LEVEL_ERROR,
+                                  nmsg ? nmsg : msg, arguments);
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
 

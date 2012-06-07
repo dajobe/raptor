@@ -852,32 +852,35 @@ raptor_parser_error(raptor_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  raptor_parser_error_varargs(parser, message, arguments);
+  raptor_parser_log_error_varargs(parser, RAPTOR_LOG_LEVEL_ERROR,
+                                  message, arguments);
   
   va_end(arguments);
 }
 
 
 /**
- * raptor_parser_error_varargs:
- * @parser: parser
+ * raptor_parser_log_error_varargs:
+ * @parser: parser (or NULL)
+ * @level: log level
  * @message: error format message
  * @arguments: varargs for message
  *
  * Error from a parser - Internal.
  */  
 void  
-raptor_parser_error_varargs(raptor_parser* parser, const char *message,  
-                            va_list arguments)
+raptor_parser_log_error_varargs(raptor_parser* parser,
+                                raptor_log_level level,
+                                const char *message, va_list arguments)
 {
   if(parser)
     raptor_log_error_varargs(parser->world,
-                             RAPTOR_LOG_LEVEL_ERROR,
+                             level,
                              &parser->locator,
                              message, arguments);
   else
     raptor_log_error_varargs(NULL,
-                             RAPTOR_LOG_LEVEL_ERROR,
+                             level,
                              NULL,
                              message, arguments);
 }

@@ -688,7 +688,7 @@ int raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri);
 void raptor_parser_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-void raptor_parser_error_varargs(raptor_parser* parser, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+void raptor_parser_log_error_varargs(raptor_parser* parser, raptor_log_level level, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(3, 0);
 void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* logging */
