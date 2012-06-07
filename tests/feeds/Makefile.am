@@ -47,6 +47,9 @@ CLEANFILES = $(OUT_ATOMS) $(OUT_TTLS) errors.log
 
 RAPPER = $(top_builddir)/utils/rapper
 
+# http://www.thaiopensource.com/relaxng/trang.html
+TRANG = trang
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -183,7 +186,7 @@ if MAINTAINER_MODE
 SUFFIXES = .rng .rnc
 
 .rnc.rng:
-	trang $? $@
+	$(TRANG) $< $@
 
 check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	@set +e; result=0; \
