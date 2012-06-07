@@ -1177,7 +1177,8 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
   va_start(arguments, message);
   
-  raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
+  raptor_parser_log_error_varargs(((raptor_parser*)rdf_parser),
+                                  RAPTOR_LOG_LEVEL_ERROR, message, arguments);
 
   va_end(arguments);
 

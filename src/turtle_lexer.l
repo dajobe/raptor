@@ -140,23 +140,23 @@ static void turtle_lexer_cleanup(yyscan_t yyscanner);
 static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 
 /* fatal error handler declaration */
-#define YY_FATAL_ERROR(msg) do {		\
-    turtle_lexer_fatal_error(msg, yyscanner);   \
-    longjmp(turtle_lexer_fatal_error_longjmp_env, 1);        \
+#define YY_FATAL_ERROR(msg) do {                                 \
+    turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg); \
+    longjmp(turtle_lexer_fatal_error_longjmp_env, 1);            \
 } while(0)
 #else
-#define YY_FATAL_ERROR(msg) do {		\
-    turtle_lexer_fatal_error(msg, yyscanner);   \
-    abort();                                    \
+#define YY_FATAL_ERROR(msg) do {                                  \
+    turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg);    \
+    abort();                                                      \
 } while(0)
 #endif
  
-static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner);
+static void turtle_lexer_error(yyscan_t yyscanner, raptor_log_level level, yyconst char *message, ...) RAPTOR_PRINTF_FORMAT(3, 4);
 
 /* Fatal error handler that returns EOF instead of abort()/longjmp()
  * so that parser can clean up properly */
 #define YY_FATAL_ERROR_EOF(msg) do { \
-    turtle_lexer_fatal_error(msg, yyscanner); \
+    turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, "%s", msg);   \
     yyterminate(); \
 } while(0)
 
@@ -308,8 +308,11 @@ EXPONENT [eE][+-]?[0-9]+
                           return BLANK_LITERAL; }
 
 {QNAME}	{ turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-          if(!turtle_parser_lval->uri)
-            YY_FATAL_ERROR_EOF("turtle_qname_to_uri failed");
+          if(!turtle_parser_lval->uri) {
+            turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, "Failed to convert qname %s to URI", yytext);
+            yyterminate();
+          }
+
                           return QNAME_LITERAL; }
 
 [-+]?{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
@@ -393,8 +396,11 @@ EXPONENT [eE][+-]?[0-9]+
                 yytext[yyleng] = '\0';
 
                 turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                if(!turtle_parser_lval->uri)
-                  YY_FATAL_ERROR_EOF("turtle_qname_to_uri failed");
+                if(!turtle_parser_lval->uri) {
+                  turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, "Failed to convert qname %s to URI", yytext);
+                  yyterminate();
+                }
+
                 return GRAPH_NAME_LEFT_CURLY; }
 
 {QUOTEDURI}   { if(yyleng == 2) 
@@ -514,33 +520,37 @@ turtle_lexer_syntax_error(void* ctx, const char *message, ...)
 #endif
 
   va_start(arguments, message);
-  raptor_parser_error_varargs(((raptor_parser*)rdf_parser), message, arguments);
+  raptor_parser_log_error_varargs(((raptor_parser*)rdf_parser),
+                                  RAPTOR_LOG_LEVEL_ERROR, message, arguments);
 
   va_end(arguments);
 }
 
 
 /*
- * turtle_lexer_fatal_error:
- * @msg:
- * @yyscanner:
+ * turtle_lexer_error:
+ * @yyscanner: scanner object
+ * @level: log level RAPTOR_LOG_LEVEL_FATAL otherwise error
+ * @message: erro message
  *
  * INTERNAL - replacement for the generated error handler.
  */
-static void turtle_lexer_fatal_error(yyconst char *msg, yyscan_t yyscanner)
+static void turtle_lexer_error(yyscan_t yyscanner,
+                               raptor_log_level level,
+                               yyconst char *message, ...)
 {
   raptor_parser *rdf_parser = NULL;
+  va_list arguments;
+
+  va_start(arguments, message);
 
   if(yyscanner)
-    rdf_parser = (raptor_parser *)turtle_lexer_get_extra(yyscanner);
+    rdf_parser = (raptor_parser*)turtle_lexer_get_extra(yyscanner);
 
-  if(rdf_parser)
-    /* avoid "format not a string literal and no format arguments" warning with %s */
-    raptor_parser_fatal_error(rdf_parser, "%s", msg); 
-  else {
-    fputs(msg, stderr);
-    fputc('\n', stderr);
-  }
+  /* This handles NULL rdf_parser properly */
+  raptor_parser_log_error_varargs(rdf_parser, level, message, arguments);
+
+  va_end(arguments);
 }
 
 
