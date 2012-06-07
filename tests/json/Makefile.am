@@ -38,8 +38,10 @@ EXTRA_DIST = \
 	$(TEST_OUT_FILES) \
 	$(JSON_BAD_TEST_FILES)
 
+RAPPER = $(top_builddir)/utils/rapper
+
 build-rapper:
-	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 if RAPTOR_PARSER_JSON
 check-local: build-rapper check-json check-bad-json
@@ -47,14 +49,18 @@ else
 check-local:
 endif
 
-check-json: build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_json_deps = $(TEST_FILES)
+endif
+
+check-json: build-rapper $(check_json_deps)
 	@result=0; \
 	$(RECHO) "Testing legal JSON"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i json -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i json -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
@@ -73,14 +79,18 @@ check-json: build-rapper $(TEST_FILES)
 	done; \
 	exit $$result
 
-check-bad-json: build-rapper $(JSON_BAD_TEST_FILES)
+if MAINTAINER_MODE
+check_bad_json_deps = $(JSON_BAD_TEST_FILES)
+endif
+
+check-bad-json: build-rapper $(check_bad_json_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad JSON fails"; \
 	for test in $(JSON_BAD_TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$name.json; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i json -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i json -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \

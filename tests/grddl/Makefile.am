@@ -34,6 +34,8 @@ ALL_TEST_FILES= \
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
+RAPPER = $(top_builddir)/utils/rapper
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -43,13 +45,17 @@ else
 check-local:
 endif
 
-check-grddl: build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_grddl_deps = $(TEST_FILES)
+endif
+
+check-grddl: build-rapper $(check_grddl_deps)
 	@result=0; \
 	$(RECHO) "Testing GRDDL"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .html` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(RAPPER) -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \

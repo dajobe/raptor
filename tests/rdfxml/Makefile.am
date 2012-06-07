@@ -111,6 +111,9 @@ EXTRA_DIST = \
 	$(RDF_SERIALIZE_OUT_FILES) \
 	$(RDF_HACK_OUT_FILES)
 
+RAPPER  = $(top_builddir)/utils/rapper
+RDFDIFF = $(top_builddir)/utils/rdfdiff
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -122,7 +125,16 @@ check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
 check-rdfdiff check-rdfxml check-rdfxmla
 
-check-rdf: build-rapper $(RDF_TEST_FILES)
+## Some non-GNU Make programs modify variables that appear in a target's
+## dependencies by prepending VPATH to filenames. We don't want this, so
+## we only specify the dependencies in maintainer mode, when GNU Make is
+## likely being used.
+##
+if MAINTAINER_MODE
+check_rdf_deps = $(RDF_TEST_FILES)
+endif
+
+check-rdf: build-rapper $(check_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
@@ -141,7 +153,7 @@ check-rdf: build-rapper $(RDF_TEST_FILES)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
@@ -159,14 +171,18 @@ check-rdf: build-rapper $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
+if MAINTAINER_MODE
+check_assume_rdf_deps = $(RDF_ASSUME_TEST_FILES)
+endif
+
+check-assume-rdf: build-rapper $(check_assume_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml known by context"; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
@@ -177,14 +193,18 @@ check-assume-rdf: build-rapper $(RDF_ASSUME_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
+if MAINTAINER_MODE
+check_scan_rdf_deps = $(RDF_SCAN_TEST_FILES)
+endif
+
+check-scan-rdf: build-rapper $(check_scan_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml inside other XML"; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
+	  $(RAPPER) -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
@@ -195,14 +215,18 @@ check-scan-rdf: build-rapper $(RDF_SCAN_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
+if MAINTAINER_MODE
+check_mayfail_xml_rdf_deps = $(RDF_MAYFAIL_XML_TEST_FILES)
+endif
+
+check-mayfail-xml-rdf: build-rapper $(check_mayfail_xml_rdf_deps)
 	@set +e; \
 	$(RECHO) "Testing rdf/xml (may fail due to XML parser bugs)"; \
 	for test in $(RDF_MAYFAIL_XML_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; \
@@ -220,14 +244,18 @@ check-mayfail-xml-rdf: build-rapper $(RDF_MAYFAIL_XML_TEST_FILES)
 	done; \
 	set -e; exit 0
 
-check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
+if MAINTAINER_MODE
+check_bad_rdf_deps = $(RDF_BAD_TEST_FILES)
+endif
+
+check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad rdf/xml fails"; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
@@ -245,14 +273,18 @@ check-bad-rdf: build-rapper $(RDF_BAD_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
+if MAINTAINER_MODE
+check_bad_nfc_rdf_deps = $(RDF_BAD_NFC_TEST_FILES)
+endif
+
+check-bad-nfc-rdf: build-rapper $(check_bad_nfc_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
 	for test in $(RDF_BAD_NFC_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
@@ -270,14 +302,18 @@ check-bad-nfc-rdf: build-rapper $(RDF_BAD_NFC_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
+if MAINTAINER_MODE
+check_warn_rdf_deps = $(RDF_WARN_TEST_FILES)
+endif
+
+check-warn-rdf: build-rapper $(check_warn_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml with warnings"; \
 	for test in $(RDF_WARN_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "FAILED - parsing failed when should have warned"; \
@@ -297,13 +333,17 @@ check-warn-rdf: build-rapper $(RDF_WARN_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
+if MAINTAINER_MODE
+check_rdfdiff_deps = $(RDF_TEST_FILES)
+endif
+
+check-rdfdiff: build-rdfdiff $(check_rdfdiff_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfdiff with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(RDFDIFF) $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
@@ -315,14 +355,18 @@ check-rdfdiff: build-rdfdiff $(RDF_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
+if MAINTAINER_MODE
+check_rdfxml_deps = $(RDF_SERIALIZE_TEST_FILES)
+endif
+
+check-rdfxml: build-rapper $(check_rdfxml_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfxml serialization with legal rdf/xml"; \
 	for test in $(RDF_SERIALIZE_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$name-rdfxml.rdf 2> $$name.err; \
+	  $(RAPPER) -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$name-rdfxml.rdf 2> $$name.err; \
 	  if cmp $(srcdir)/$$name.rdf $$name-rdfxml.rdf >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
@@ -333,29 +377,33 @@ check-rdfxml: build-rapper $(RDF_SERIALIZE_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-rdfxmla: build-rdfdiff build-rapper $(RDF_TEST_FILES)
+if MAINTAINER_MODE
+check_rdfxmla_deps = $(RDF_TEST_FILES)
+endif
+
+check-rdfxmla: build-rdfdiff build-rapper $(check_rdfxmla_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
+	  $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
 	  status1=$$?; \
 	  if test $$test = ex-38.rdf; then \
 	    diff $(srcdir)/ex-38-rdfxmla.out $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
 	    status2=$$?; \
 	  else \
-	    $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	    $(RDFDIFF) $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
 	    status2=$$?; \
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    echo $(top_builddir)/utils/rapper -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \
+	    echo $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \
 	  status1=$$?; \
-	    echo $(top_builddir)/utils/rdfdiff $(srcdir)/$$test $$name-rdfxmla.rdf '>' $$name.res; \
+	    echo $(RDFDIFF) $(srcdir)/$$test $$name-rdfxmla.rdf '>' $$name.res; \
 	    echo "rapper + rdfdiff output:"; cat $$name.err; result=1; \
 	  fi; \
 	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \

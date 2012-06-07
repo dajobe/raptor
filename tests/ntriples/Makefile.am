@@ -43,19 +43,25 @@ EXTRA_DIST = \
 	$(NQ_OUT_FILES)
 
 
+RAPPER = $(top_builddir)/utils/rapper
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 check-local: build-rapper \
 check-nt check-bad-nt check-nq
 
-check-nt: build-rapper $(NT_TEST_FILES)
+if MAINTAINER_MODE
+check_nt_deps = $(NT_TEST_FILES)
+endif
+
+check-nt: build-rapper $(check_nt_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing N-Triples"; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
@@ -66,14 +72,18 @@ check-nt: build-rapper $(NT_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
+if MAINTAINER_MODE
+check_bad_nt_deps = $(NT_BAD_TEST_FILES)
+endif
+
+check-bad-nt: build-rapper $(check_bad_nt_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad N-Triples fails"; \
 	for test in $(NT_BAD_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=$(BASE_URI)$$name.nt; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i ntriples -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
@@ -91,13 +101,17 @@ check-bad-nt: build-rapper $(NT_BAD_TEST_FILES)
 	done; \
 	set -e; exit $$result
 
-check-nq: build-rapper $(NQ_TEST_FILES)
+if MAINTAINER_MODE
+check_nq_deps = $(NQ_TEST_FILES)
+endif
+
+check-nq: build-rapper $(check_nq_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing N-Quads"; \
 	for test in $(NQ_TEST_FILES); do \
 	  name=`basename $$test .nq` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \

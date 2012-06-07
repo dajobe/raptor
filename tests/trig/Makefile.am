@@ -33,19 +33,25 @@ EXTRA_DIST = \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
+RAPPER = $(top_builddir)/utils/rapper
+
 build-rapper:
-	@(cd $(top_builddir)/utils ; $(MAKE) rapper)
+	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
 check-local: check-trig
 
-check-trig: build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_trig_deps = $(TEST_FILES)
+endif
+
+check-trig: build-rapper $(check_trig_deps)
 	@result=0; \
 	$(RECHO) "Testing legal TRiG"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .trig` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i trig -o nquads $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i trig -o nquads $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \

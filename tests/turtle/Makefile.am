@@ -94,6 +94,9 @@ ALL_TEST_FILES= README.txt \
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
+RAPPER  = $(top_builddir)/utils/rapper
+RDFDIFF = $(top_builddir)/utils/rdfdiff
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -104,18 +107,22 @@ check-local: check-rdf check-bad-rdf check-turtle-serialize \
 check-turtle-serialize-syntax check-turtle-parse-ntriples \
 check-turtle-serialize-rdf check-warn-rdf
 
-check-rdf: build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_rdf_deps = $(TEST_FILES)
+endif
+
+check-rdf: build-rapper $(check_rdf_deps)
 	@result=0; \
 	$(RECHO) "Testing legal Turtle"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) "FAILED returned status $$status"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
@@ -125,7 +132,7 @@ check-rdf: build-rapper $(TEST_FILES)
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    diff $(srcdir)/$$name.out $$name.res; \
 	  fi; \
@@ -133,28 +140,32 @@ check-rdf: build-rapper $(TEST_FILES)
 	done; \
 	exit $$result
 
-check-bad-rdf: build-rapper $(TEST_BAD_FILES)
+if MAINTAINER_MODE
+check_bad_rdf_deps = $(TEST_BAD_FILES)
+endif
+
+check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing bad Turtle fails"; \
 	for test in $(TEST_BAD_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning";  result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; grep Warning $$name.err; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    cat $$name.res; \
 	  fi; \
@@ -162,24 +173,28 @@ check-bad-rdf: build-rapper $(TEST_BAD_FILES)
 	done; \
 	set -e; exit $$result
 
-check-warn-rdf: build-rapper $(TEST_WARN_FILES)
+if MAINTAINER_MODE
+check_warn_rdf_deps = $(TEST_WARN_FILES)
+endif
+
+check-warn-rdf: build-rapper $(check_warn_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Turtle with warnings"; \
 	for test in $(TEST_WARN_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "FAILED - parsing failed when should have warned"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; grep Error $$name.err; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    cat $$name.res; \
 	  fi; \
@@ -187,7 +202,11 @@ check-warn-rdf: build-rapper $(TEST_WARN_FILES)
 	done; \
 	set -e; exit $$result
 
-check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_turtle_serialize_deps = $(TEST_FILES)
+endif
+
+check-turtle-serialize: build-rdfdiff build-rapper $(check_turtle_serialize_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing turtle serialization with legal turtle"; \
 	for test in $(TEST_FILES); do \
@@ -200,23 +219,27 @@ check-turtle-serialize: build-rdfdiff build-rapper $(TEST_FILES)
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
 	  status1=$$?; \
-	  $(top_builddir)/utils/rdfdiff -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
+	  $(RDFDIFF) -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
 	  status2=$$?; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
-	    $(RECHO) $(top_builddir)/utils/rdfdiff -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $$name-turtle.ttl '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
+	    $(RECHO) $(RDFDIFF) -f turtle -u $$baseuri -t turtle $(srcdir)/$$test $$name-turtle.ttl '>' $$name.res; \
 	    cat $$name-turtle.ttl; cat $$name.err; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.res $$name.err; \
 	done; \
 	set -e; exit $$result
 
-check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
+if MAINTAINER_MODE
+check_turtle_serialize_syntax_deps = $(TEST_SERIALIZE_FILES)
+endif
+
+check-turtle-serialize-syntax: build-rapper $(check_turtle_serialize_syntax_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing turtle exact serialization output"; \
 	for test in $(TEST_SERIALIZE_FILES); do \
@@ -231,14 +254,14 @@ check-turtle-serialize-syntax: build-rapper $(TEST_SERIALIZE_FILES)
 	    baseuri=$(BASE_URI)$$test; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
 	  cmp -s $(srcdir)/$$name-out.ttl $$name-turtle.ttl; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
 	    cat $$name.err; \
 	    diff -a -u $(srcdir)/$$name-out.ttl $$name-turtle.ttl; \
 	  fi; \
@@ -254,13 +277,13 @@ check-turtle-parse-ntriples: build-rapper
 	  name=`basename $$test .nt` ; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  test_expected=$(srcdir)/$(NTRIPLES_DIR)/$$name.out; \
 	  if cmp $$test_expected $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED";  result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    diff $$test_expected $$name.res; \
 	  fi; \
@@ -276,21 +299,21 @@ check-turtle-serialize-rdf: build-rdfdiff build-rapper
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
+	  $(RAPPER) -q -o turtle $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
 	  status1=$$?; \
 	  if test $$test = "$(RDFXML_DIR)/ex-38.rdf"; then \
 	    diff $(srcdir)/ex-38-turtle.out $$name-turtle.ttl > $$name.res 2> $$name.err; \
 	    status2=$$?; \
 	  else \
-	    $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
+	    $(RDFDIFF) -t turtle $(srcdir)/$$test $$name-turtle.ttl > $$name.res 2> $$name.err; \
 	    status2=$$?; \
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(top_builddir)/utils/rapper -q -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
-	    $(RECHO) $(top_builddir)/utils/rdfdiff -t turtle $(srcdir)/$$test $$name-turtle.ttl '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -q -o turtle $(srcdir)/$$test $$baseuri '>' $$name-turtle.ttl; \
+	    $(RECHO) $(RDFDIFF) -t turtle $(srcdir)/$$test $$name-turtle.ttl '>' $$name.res; \
 	    cat $$name.err; \
 	  fi; \
 	  rm -f $$name-turtle.ttl $$name.res $$name.err; \

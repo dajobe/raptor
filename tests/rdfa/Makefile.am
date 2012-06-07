@@ -100,6 +100,9 @@ EXPECTED_FAILURES=" 0202.xml 0203.xml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
+RAPPER  = $(top_builddir)/utils/rapper
+RDFDIFF = $(top_builddir)/utils/rdfdiff
+
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
 
@@ -112,27 +115,31 @@ else
 check-local:
 endif
 
-check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
+if MAINTAINER_MODE
+check_rdfa_deps = $(TEST_FILES)
+endif
+
+check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	@set +e; result=0; failures=; failure_count=0; \
 	$(RECHO) "Testing RDFa 1.0"; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .xml` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  baseuri=$(BASE_URI)$$test; \
-	  $(top_builddir)/utils/rapper -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
+	  $(RAPPER) -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
 	  status1=$$?; \
 	  if test $$status1 = 2; then \
 	    status1=0; \
 	  fi; \
-	  $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
+	  $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
 	  status2=$$?; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
 	    $(RECHO) "Triple counts: expected: `wc -l < $(srcdir)/$$name.out` got: `wc -l < $$name-res.nt` "; \
-	    $(RECHO) $(top_builddir)/utils/rapper -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
-	    $(RECHO) $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt '>' $$name.res; \
+	    $(RECHO) $(RAPPER) -f noNet -q -i rdfa10 -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
+	    $(RECHO) $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt '>' $$name.res; \
 	    cat $$name.err $$name.res; \
 	    failures="$$failures $$test"; \
 	    failure_count=`expr $$failure_count + 1`; \
