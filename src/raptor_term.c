@@ -275,7 +275,7 @@ raptor_new_term_from_literal(raptor_world* world,
     literal_len = strlen(RAPTOR_GOOD_CAST(const char*, literal));
 
   if(language)
-    language_len = RAPTOR_GOOD_CAST(unsigned char, strlen(RAPTOR_GOOD_CAST(const char*, language)));
+    language_len = RAPTOR_GOOD_CAST(unsigned char, strlen(RAPTOR_BAD_CAST(const char*, language)));
 
   return raptor_new_term_from_counted_literal(world, literal, literal_len,
                                               datatype, language, language_len);
