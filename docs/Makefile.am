@@ -121,28 +121,28 @@ upgrade-script.pl
 DISTCLEANFILES+= \
 raptor-fake.h
 
-$(builddir)/raptor-fake.h: $(top_srcdir)/src/raptor2.h $(srcdir)/../scripts/fix-gtkdoc-header.pl
-	$(PERL) $(srcdir)/../scripts/fix-gtkdoc-header.pl < $< > $@
+raptor-fake.h: $(top_builddir)/src/raptor2.h $(top_srcdir)/scripts/fix-gtkdoc-header.pl
+	$(PERL) $(top_srcdir)/scripts/fix-gtkdoc-header.pl < $< > $@
 
 if MAINTAINER_MODE
-libraptor2.html: $(srcdir)/libraptor2.3 $(srcdir)/../scripts/fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../scripts/fix-groff-xhtml $@
+libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(top_srcdir)/scripts/fix-groff-xhtml $@
 
-rdfcat.c: $(srcdir)/../examples/rdfcat.c
+rdfcat.c: $(top_srcdir)/examples/rdfcat.c
 	$(install_sh_DATA) $? $@
 
-rdfprint.c: $(srcdir)/../examples/rdfprint.c
+rdfprint.c: $(top_srcdir)/examples/rdfprint.c
 	$(install_sh_DATA) $? $@
 
-rdfserialize.c: $(srcdir)/../examples/rdfserialize.c
+rdfserialize.c: $(top_srcdir)/examples/rdfserialize.c
 	$(install_sh_DATA) $? $@
 
 raptor-tutorial-parsing.xml: rdfcat.c
 
 raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
-raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(srcdir)/../scripts/process-changes.pl
-	$(PERL) $(srcdir)/../scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
+raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(top_srcdir)/scripts/process-changes.pl
+	$(PERL) $(top_srcdir)/scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
 raptor-formats.xml: $(top_builddir)/scripts/build-formats
 	$(top_builddir)/scripts/build-formats > $@
@@ -150,7 +150,9 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats
 $(top_builddir)/scripts/build-formats:
 	cd $(top_builddir)/scripts && $(MAKE) build-formats
 
-upgrade-script.pl: $(srcdir)/../scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
-	$(PERL) $(srcdir)/../scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
+upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
+	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
 
 endif
+
+dist-hook-local: docs
