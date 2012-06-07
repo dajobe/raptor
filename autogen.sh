@@ -12,6 +12,11 @@
 #  programs that would be run.
 #   e.g. DRYRUN=1 ./autogen.sh
 #
+# NOCONFIGURE
+#  If set to any value it will generate all files but not invoke the
+#  generated configure script.
+#   e.g. NOCONFIGURE=1 ./autogen.sh
+#
 # AUTOMAKE ACLOCAL AUTOCONF AUTOHEADER LIBTOOLIZE GTKDOCIZE
 #  If set (named after program) then this overrides any searching for
 #  the programs on the current PATH.
@@ -369,17 +374,19 @@ AUTOCONF=$autoconf
 ACLOCAL=$aclocal
 export AUTOMAKE AUTOCONF ACLOCAL
 
-echo " "
-if test -z "$*"; then
-  echo "$program: WARNING: Running \`configure' with no arguments."
-  echo "If you wish to pass any to it, please specify them on the"
-  echo "\`$program' command line."
-fi
+if test "X$NOCONFIGURE" = X; then
+  echo " "
+  if test -z "$*"; then
+    echo "$program: WARNING: Running \`configure' with no arguments."
+    echo "If you wish to pass any to it, please specify them on the"
+    echo "\`$program' command line."
+  fi
 
-echo "$program: Running ./configure $configure_args $@"
-if test "X$DRYRUN" = X; then
-  $DRYRUN ./configure $configure_args "$@" \
-  && echo "$program: Now type \`make' to compile this package" || exit 1
-else
-  $DRYRUN ./configure $configure_args "$@"
+  echo "$program: Running ./configure $configure_args $@"
+  if test "X$DRYRUN" = X; then
+    $DRYRUN ./configure $configure_args "$@" \
+    && echo "$program: Now type \`make' to compile this package" || exit 1
+  else
+    $DRYRUN ./configure $configure_args "$@"
+  fi
 fi
