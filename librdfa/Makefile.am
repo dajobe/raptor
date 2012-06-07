@@ -11,7 +11,8 @@ rdfa_utils.c \
 subject.c \
 triple.c \
 rdfa.h \
-rdfa_utils.h
+rdfa_utils.h \
+config.h
 
 # Do not need:
 #   mingw32_utils.c
