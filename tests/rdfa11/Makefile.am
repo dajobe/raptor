@@ -141,8 +141,12 @@ check-rdfa: build-rdfdiff build-rapper $(TEST_FILES)
 	  if test $$status1 = 2; then \
 	    status1=0; \
 	  fi; \
-	  $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
-	  status2=$$?; \
+	  if cmp $(srcdir)/$$name.out $$name-res.nt >/dev/null 2>&1; then \
+	    status2=0; \
+	  else \
+	    $(top_builddir)/utils/rdfdiff -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
