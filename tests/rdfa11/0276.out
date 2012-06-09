@@ -1,1 +1,1 @@
-_:bnodeid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0276.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "00:00:00Z"^^<http://www.w3.org/2001/XMLSchema#time> .
