@@ -356,8 +356,11 @@ raptor_format_integer(char* buffer, size_t bufsize, int integer,
 
 
 int main(int argc, char *argv[]);
+static int test_snprintf_real(int len_ref, const char *format, va_list arguments) RAPTOR_PRINTF_FORMAT(2, 0);
+static int test_snprintf(size_t len_ref, const char *format, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 static const char* program;
+
 
 static int
 test_snprintf_real(int len_ref, const char *format, va_list arguments)
