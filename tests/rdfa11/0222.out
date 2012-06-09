@@ -1,0 +1,5 @@
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0222.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnodeid2 .
+_:bnodeid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnodeid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:bnodeid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnodeid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:bnodeid1 .

@@ -1,0 +1,3 @@
+<http://example.org/base> <http://schema.org/name> "Gregg Kellogg" .
+<http://example.org/base> <http://schema.org/uri> <http://example.orb/val1> .
+<http://example.org/base> <http://xmlns.com/foaf/0.1/homepage> <http://greggkellogg.net/> .

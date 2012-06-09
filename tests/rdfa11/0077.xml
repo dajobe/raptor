@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <title>Test 0077</title>
+   </head>
+   <body>
+       <p>
+         <span about="http://example.org/alternate" rev="alternate"
+               href="0077.xml">alternate</span>
+         <span about="http://example.org/appendix" rev="appendix"
+               href="0077.xml">appendix</span>
+         <span about="http://example.org/bookmark" rev="bookmark"
+               href="0077.xml">bookmark</span>
+         <span about="http://example.org/cite" rev="cite"
+               href="0077.xml">cite</span>
+         <span about="http://example.org/chapter" rev="chapter"
+               href="0077.xml">chapter</span>
+         <span about="http://example.org/contents" rev="contents"
+               href="0077.xml">contents</span>
+         <span about="http://example.org/copyright" rev="copyright"
+               href="0077.xml">copyright</span>
+         <span about="http://example.org/glossary" rev="glossary"
+               href="0077.xml">glossary</span>
+         <span about="http://example.org/help" rev="help"
+               href="0077.xml">help</span>
+         <span about="http://example.org/icon" rev="icon"
+               href="0077.xml">icon</span>
+         <span about="http://example.org/index" rev="index"
+               href="0077.xml">index</span>
+         <span about="http://example.org/first" rev="first"
+               href="0077.xml">first</span>
+         <span about="http://example.org/last" rev="last"
+               href="0077.xml">last</span>
+         <span about="http://example.org/license" rev="license"
+               href="0077.xml">license</span>
+         <span about="http://example.org/meta" rev="meta"
+               href="0077.xml">meta</span>
+         <span about="http://example.org/next" rev="next"
+               href="0077.xml">next</span>
+         <span about="http://example.org/p3pv1" rev="p3pv1"
+               href="0077.xml">p3pv1</span>
+         <span about="http://example.org/prev" rev="prev"
+               href="0077.xml">prev</span>
+         <span about="http://example.org/role" rev="role"
+               href="0077.xml">role</span>
+         <span about="http://example.org/section" rev="section"
+               href="0077.xml">section</span>
+         <span about="http://example.org/subsection" rev="subsection"
+               href="0077.xml">subsection</span>
+         <span about="http://example.org/start" rev="start"
+               href="0077.xml">start</span>
+		<span about="http://example.org/stylesheet" rev="stylesheet"
+               href="0077.xml">stylesheet</span>			   
+         <span about="http://example.org/up" rev="up"
+               href="0077.xml">up</span>
+      </p>
+   </body>
+</html>
