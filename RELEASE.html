@@ -14,6 +14,117 @@
 <p>Not yet released.
 </p>
 
+<h3>Parser class changes</h3>
+
+<p>RDFa parser: Updated librdfa to latest GIT supporting RDFa 1.1.  Made
+several resilience and crash fixes.  Updated RDFa 1.0 test suite to
+latest tests and made fixes.  The RDFa parser now accepts 
+aliases 'rdfa10', 'rdfa11' and the default 'rdfa' is RDFa 1.1
+</p>
+
+<p>RSS tag soup parser: Use <code>time()</code> when
+<code>gettimeofday()</code> is not available.  Fix several reference
+leaks.
+</p>
+
+<p>RDF/XML parser: The range of RDF/XML entity recognizing heuristic was
+broadened to allow recognition of documents produced by Stanford's
+Protege software (and possibly others).  Fixed some parser memory
+leaks / double frees.
+</p>
+
+<p>Turtle parser: Do not report multiple errors for Turtle string decoding
+problems.  When a Turtle qname cannot be found, a fatal error is no
+longer generated but a regular error message giving information on
+the qname that failed (usually due to unknown prefix).
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=507">Issue #0000507</a>
+</p>
+
+<h3>Term class changes</h3>
+
+<p>Added <code>raptor_term_to_turtle_counted_string()</code> counted
+string form of <code>raptor_term_to_turtle_string</code>.
+</p>
+
+<h3>Unicode class changes</h3>
+
+<p><code>raptor_unicode_utf8_string_put_char()</code> and
+<code>raptor_unicode_utf8_string_get_char()</code>
+now allow reading / writing U+D800 to U+DFFF (UTF-16 surrogates).
+rather than returning failure.  BOMs remain forbidden - definitely not UTF-8.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=505">Issue #0000505</a>
+</p>
+
+<h3>URI class changes</h3>
+
+<p>Added <code>raptor_new_uri_relative_to_base_counted()</code>
+to construct URI relative to current base.
+</p>
+
+<p>Added <code>raptor_uri_to_turtle_counted_string()</code> counted
+string form of <code>raptor_uri_to_turtle_string</code>.
+</p>
+
+<h3>WWW class changes</h3>
+
+<p>The Curl WWW implementation now interprets
+<code>Content-Location</code>code> header as absolute or relative URI.
+</p>
+
+
+<h3>Configuration and build changes</h3>
+
+<p>All configure --with-foo options now handle --without-foo (and
+--with-foo=no) to disable attempting to find the value in the PATH.
+This can be used with --with-xml2-config, --with-xslt-config,
+--with-curl-config, --with-icu-config and --with-libwww-config where
+the value 'no' or --without-foo can be used to disable it and prevent
+automatic searches for the config script in the PATH.
+</p>
+
+<p>The <code>-DRAPTOR_DEBUG</code> and <code>-DMAINTAINER_MODE</code>
+flags are now written to the config header instead of added to
+CPPFLAGS.
+</p>
+
+<p>The <code>-g</code> flag is no longer added to CFLAGS or CPPFLAGS
+with <code>--enable-debug</code>.</p>
+
+<p>The existing <code>--disable-release</code> (default) now
+correctly removes -O options in flag variables for the maintainer.
+</p>
+
+<p>README and NEWS building is now only for maintainer.
+</p>
+
+<p><code>autogen.sh</code> now supports NOCONFIGURE variable to
+prevent it running configure at the end of the run.
+</p>
+
+<p>The <code>configure</code> vsnprintf() check was more
+comprehensive.
+</p>
+
+
+<h3>Other changes</h3>
+
+<p>Multiple portability improvements to vsnprintf code and macros.
+Also fixed uninitialized variable problems in non-c99 variant of
+raptor_vsnprintf2(). Thanks to John Emmas for reporting.
+</p>
+
+<p>Multiple portability fixes for building out of the source tree.
+Out of source tree 'make check' and 'make dist' should both work.
+</p>
+
+<p>Multiple portability fixes for building on old Solaris versions.
+</p>
+
+<p>Multiple portability fixes for building on Windows including
+strcasecmp(), windows headers, configuration fixes, parsedate code,
+URI test builds, vsnprintf building.
+</p>
+
 
 <h2 id="rel2_0_7"><a name="rel2_0_7">Raptor2 2.0.7 changes</a></h2>
 
