@@ -113,7 +113,7 @@ ALL_TEST_FILES= \
 
 # Expected test failures:
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0061.xml 0062.xml 0076.xml 0077.xml 0114.xml 0134.xml 0173.xml 0176.xml 0178.xml 0179.xml 0180.xml 0182.xml 0183.xml 0186.xml 0187.xml 0188.xml 0189.xml 0190.xml 0197.xml 0198.xml 0201.xml 0202.xml 0203.xml 0213.xml 0216.xml 0218.xml 0220.xml 0221.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0251.xml 0252.xml 0253.xml 0254.xml 0255.xml 0256.xml 0257.xml 0258.xml 0259.xml 0260.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0283.xml 0284.xml 0285.xml 0286.xml 0287.xml 0293.xml 0295.xml 0296.xml 0297.xml 0301.xml 0302.xml 0303.xml 0304.xml"
+EXPECTED_FAILURES=" 0061.xml 0062.xml 0076.xml 0077.xml 0114.xml 0134.xml 0173.xml 0179.xml 0180.xml 0182.xml 0186.xml 0187.xml 0188.xml 0189.xml 0190.xml 0197.xml 0198.xml 0201.xml 0202.xml 0203.xml 0213.xml 0218.xml 0220.xml 0221.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0251.xml 0252.xml 0253.xml 0254.xml 0255.xml 0256.xml 0257.xml 0258.xml 0259.xml 0260.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0283.xml 0284.xml 0285.xml 0286.xml 0287.xml 0293.xml 0296.xml 0297.xml 0301.xml 0302.xml 0303.xml 0304.xml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
