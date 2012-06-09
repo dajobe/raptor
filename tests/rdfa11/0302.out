@@ -1,3 +1,4 @@
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0302.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://schema.org/> .
 <http://openspring.net/scor#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://schema.org/Person> .
 <http://openspring.net/scor#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
 <http://openspring.net/scor#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/dc/terms/Agent> .
