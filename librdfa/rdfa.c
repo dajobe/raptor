@@ -549,15 +549,8 @@ static void start_element(void *parser_context, const char* name,
                      saveptr++;
                   }
                   iri = strtok_r(NULL, RDFA_WHITESPACE, &saveptr);
-                  if(!saveptr)
-                    break;
-
-                  while((*saveptr == ' ' || *saveptr == '\n' ||
-                     *saveptr == '\r' || *saveptr == '\t' || *saveptr == '\f' ||
-                     *saveptr == '\v') && *saveptr != '\0')
-                  {
-                     saveptr++;
-                  }
+                  if(!iri)
+                      break;
 
                   /* update the prefix mappings */
 #ifdef LIBRDFA_IN_RAPTOR
@@ -572,6 +565,16 @@ static void start_element(void *parser_context, const char* name,
 #else
                   rdfa_update_uri_mappings(context, atprefix, iri);
 #endif
+
+                  if(!saveptr)
+                      break;
+
+                  while((*saveptr == ' ' || *saveptr == '\n' ||
+                     *saveptr == '\r' || *saveptr == '\t' || *saveptr == '\f' ||
+                     *saveptr == '\v') && *saveptr != '\0')
+                  {
+                     saveptr++;
+                  }
 
                   /* get the next prefix to process */
                   atprefix = strtok_r(NULL, ":", &saveptr);
