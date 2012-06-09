@@ -227,9 +227,9 @@
 	variant. Thanks to John Emmas for reporting.
 
 	- Compute len internally using int, not size_t as standard
-	vsnprintf() returns ints anyway. This fixes for negative value
-	comparison. Cast from size_t to int required for strlen() return
-	value.
+	  vsnprintf() returns ints anyway. This fixes for negative value
+	  comparison. Cast from size_t to int required for strlen() return
+	  value.
 	- Initialize len earlier
 	- Use passed in size if a buffer is given
 
@@ -280,8 +280,7 @@
 	* src/raptor_term.c:
 	(raptor_new_term_from_literal): size_t and char casts.
 
-	* src/raptor_serialize_rss.c:
-	Fix reference leaks for rss tag soup
+	* src/raptor_serialize_rss.c: Fix reference leaks for rss tag soup
 	parser.
 
 	(raptor_rss10_emit_rdfxml_item_triples): Don't make a copy of
@@ -290,8 +289,10 @@
 
 	(raptor_rss10_ensure_atom_feed_valid): Use time() instead of
 	gettimeofday() with struct timeval when HAVE_GETTIMEOFDAY is not
-	defined (raptor_rss10_emit_item): Moved the "atom:summary"
-	short-circuit up to prevent a potential memory leak ("predicate")
+	defined.
+
+	(raptor_rss10_emit_item): Moved the "atom:summary" short-circuit
+	up to prevent a potential memory leak ("predicate")
 
 	(raptor_rss10_serialize_end): Don't leak entry_uri
 
@@ -303,8 +304,7 @@
 	(raptor_rdfxml_end_element_grammar): Fixed a double-free() by
 	setting a pointer to NULL
 
-	* src/raptor_rdfxml.c:
-	Broaden range of RDF/XML entity recognizing
+	* src/raptor_rdfxml.c: Broaden range of RDF/XML entity recognizing
 	heuristic
 
 	(raptor_rdfxml_parse_recognise_syntax): Removed angle brackets
@@ -566,11 +566,10 @@
 
 2012-03-29  Jiří Procházka <ojirio@gmail.com>
 
-	* src/raptor2.h.in, src/raptor_serialize_turtle.c: add counted
-	string versions
-
-	* src/raptor2.h.in, src/raptor_serialize_turtle.c: style and docs
-	changes
+	* src/raptor2.h.in, src/raptor_serialize_turtle.c:
+	(raptor_uri_to_turtle_counted_string,
+	raptor_term_to_turtle_counted_string): add counted string
+	versions. style and docs changes
 
 	* Merge remote-tracking branch 'dajobe/master' into
 	node_rw_turtle_string
