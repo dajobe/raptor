@@ -1153,12 +1153,11 @@ if test "$use_memory_signing" = yes; then
   MEM_LIBS=
 fi
 
-debugging=no
+debug_messages=no
 
-AC_ARG_ENABLE(debug, [  --enable-debug          Enable debug messages and symbols (default no).  ], debugging=$enableval)	
-if test "$debugging" = "yes"; then
-  CFLAGS="$CFLAGS -g"
-  AC_DEFINE([RAPTOR_DEBUG], [1], [Define to 1 if debug messages and symbols are enabled.])
+AC_ARG_ENABLE(debug, [  --enable-debug          Enable debug messages (default no).  ], debug_messages=$enableval)	
+if test "$debug_messages" = "yes"; then
+  AC_DEFINE([RAPTOR_DEBUG], [1], [Define to 1 if debug messages are enabled.])
 fi
 
 if test "$USE_MAINTAINER_MODE" = yes; then
