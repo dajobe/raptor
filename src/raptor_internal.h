@@ -864,6 +864,7 @@ void raptor_terminate_parser_grddl_common(raptor_world *world);
 #define rdfa_setup_initial_context raptor_librdfa_rdfa_setup_initial_context
 #define rdfa_update_language raptor_librdfa_rdfa_update_language
 #define rdfa_update_mapping raptor_librdfa_rdfa_update_mapping
+#define rdfa_update_uri_mappings raptor_librdfa_rdfa_update_uri_mappings
 #define rdfa_uri_strings raptor_librdfa_rdfa_uri_strings
 #endif
 
