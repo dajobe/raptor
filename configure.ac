@@ -498,12 +498,12 @@ need_libxml=0
 
 oCPPFLAGS="$CPPFLAGS"
 if test "X$XML_CONFIG" != X; then
+  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   LIBS="$LIBS `$XML_CONFIG --libs`"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
   AC_MSG_CHECKING(for system (GNOME) libxml library)
   if test $have_xmlCreatePushParserCtxt = yes; then
     have_libxml=1
-    CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
     LIBXML_VERSION=`$XML_CONFIG --version`
     libxml_version_dec=`echo $LIBXML_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     libxml_min_version_dec=`echo $libxml_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
@@ -600,12 +600,12 @@ have_libxslt=0
 
 oCPPFLAGS="$CPPFLAGS"
 if test "X$XSLT_CONFIG" != X; then
+  CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
   LIBS="$LIBS `$XSLT_CONFIG --libs`"
   AC_CHECK_FUNC(xsltSaveResultToString, have_xsltSaveResultToString=yes, have_xsltSaveResultToString=no)
   AC_MSG_CHECKING(for system libxslt library)
   if test $have_xsltSaveResultToString = yes; then
     have_libxslt=1
-    CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
     LIBXSLT_VERSION=`$XSLT_CONFIG --version`
     libxslt_version_dec=`echo $LIBXSLT_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
