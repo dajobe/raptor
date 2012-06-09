@@ -225,7 +225,6 @@ void rdfa_complete_list_triples(rdfacontext* context)
          }
 
          /* Free the first list item and empty the list */
-         triple = (rdftriple*)list->items[0]->data;
          free(list->items[0]);
          list->items[0] = NULL;
          list->num_items = 0;
