@@ -1,0 +1,1124 @@
+2011-11-27  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac: Bumped version to 2.0.7
+
+2011-11-27  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_6 for 2.0.6 release (GIT f9f3768e7080f1f132856b731c232c8cbeac1634)
+
+	* docs/raptor-1-to-2-map.tsv: raptor_sequence swap, reverse and
+	next_permutation
+
+	* docs/raptor2-sections.txt:
+	raptor_sequence_next_permutation
+
+	* src/raptor_permute_test.c:
+	(intseq_get_at): Add for testing clarity
+
+	* src/raptor_permute_test.c: Add a proper value checking test for
+	permute size 5
+
+	* src/Makefile.am, src/raptor_permute.c, src/raptor_permute_test.c:
+	raptor_permute_test.c is a pure test and never linked into
+	libraptor2
+
+	* src/raptor_permute.c: Turn permute code into a test for sequence
+	raptor_sequence_next_permutation
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_next_permutation): Added based on int permute
+	code
+
+	* docs/raptor2-sections.txt, src/raptor2.h.in,
+	src/raptor_sequence.c:
+	(raptor_sequence_swap): Added pulled out of raptor_sequence_reverse
+
+2011-11-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in, src/raptor_sequence.c:
+	(raptor_sequence_reverse): Added
+
+	* src/raptor_expat.c, src/raptor_sax2.c: Fix expat support
+
+2011-11-23  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor_permute.c:
+	Add test permutations code
+
+	* configure.ac: Use AWK
+
+	* src/raptor_namespace.c: Explain namespace depth, starting and
+	scopes
+
+2011-11-15  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/Makefile.am: Made git-version.h a non-distributable source
+	file.
+
+2011-11-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_set_ssl_cert_options): Handle curl < 7.16.4
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.6
+
+	* Snapshotted raptor2_2_0_5 for 2.0.5 release (GIT
+	b286cc333996006f008a5ddd3ed116a7613a86bc)
+
+2011-11-13  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore, docs/Makefile.am: docs fixes to use
+	raptor-fake.h
+
+	* docs/tmpl/section-general.sgml, src/snprintf.c,
+	src/raptor2.h.in: autodocs
+
+	* ChangeLog, NEWS.html, RELEASE.html: 2.0.5
+
+	* src/Makefile.am: no rdfdiff here
+
+	* src/ntriples_parse.c, src/raptor_nfc_test.c,
+	src/raptor_turtle_writer.c, src/raptor_xml.c: Check for error
+	return for all raptor_unicode_utf8_string_get_char() calls
+
+	Fixes Issue #000481
+	http://bugs.librdf.org/mantis/view.php?id=481
+
+	* .gitignore: Ignore git-version.h
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bug-481.nq,
+	tests/ntriples/bug-481.out: Add test/results for Issue #481
+
+	* autogen.sh: update autogen.sh
+
+	* configure.ac, src/Makefile.am, src/raptor_general.c,
+	src/raptor_internal.h:
+	Generate GIT commit in version string when
+	compiling from GIT Approach copied from rasqal
+
+2011-11-05  Lauri Aalto <laalto@iki.fi>
+
+	* src/ntriples_parse.c:
+	(raptor_nquads_parse_recognise_syntax): Guess nquads over ntriples
+	since now ntriples parses fine on nquads parser
+
+2011-11-04  Lauri Aalto <laalto@iki.fi>
+
+	* tests/ntriples/Makefile.am,
+	tests/ntriples/testnq-optional-context.nq,
+	tests/ntriples/testnq-optional-context.out: added test case for
+	optional context node in nquads
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Make context optional for nquads.
+
+	Fixes Issue #0000479
+	http://bugs.librdf.org/mantis/view.php?id=479
+
+2011-10-18  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/turtle_parser.y: Added the W3C format URI for the Turtle
+	parser
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/ntriples_parse.c, src/raptor_librdfa.c, src/raptor_rdfxml.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Added W3C Format URIs to the parser and serialiser syntax
+	descriptions.
+
+2011-10-13  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_json.c, src/raptor_serialize_json.c:
+	Updated the URL
+	for RDF/JSON serialisation specification.
+
+2011-09-26  Dave Beckett <dave@dajobe.org>
+
+	* Merge GitHub pull request #2 from presbrey/master
+
+2011-09-26  Joe Presbrey <presbrey@csail.mit.edu>
+
+	* (raptor_uri_string_to_relative_uri_string): compare paths not
+	files.
+
+	Bugfix raptor_uri_string_to_relative_uri_string
+
+	Fixes Issue #0000472
+	http://bugs.librdf.org/mantis/view.php?id=472
+
+2011-09-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	set errno to 0
+
+2011-09-08  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_internal.h, src/snprintf.c: Removed
+	calls to trunc() and lround() and optional linking of libm
+
+	(raptor_format_float): Removed unused internal function and thus
+	removed the only need for trunc() and lround().
+
+	configure: Removed checks for trunc(), lround() in libc or libm.
+
+	* src/raptor_abbrev.c, src/raptor_general.c,
+	src/raptor_internal.h, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_uri.c, src/raptor_xml.c,
+	src/snprintf.c: Make raptor_format_integer handle hex too
+
+	(raptor_format_integer): Add base, width and padding fields
+
+	(raptor_format_hexadecimal): Deleted, replaced by above with base
+	= 16.  Updated all callers of above with new parameters.
+
+	* src/raptor_json.c:
+	(raptor_json_parse_chunk): bad cast size_t to len for yajl API
+
+2011-08-31  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c, src/raptor_iostream.c,
+	src/raptor_locator.c, src/raptor_nfc.c, src/raptor_nfc_test.c,
+	src/raptor_qname.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_www_curl.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c: Add more RAPTOR_GOOD_CAST
+	and RAPTOR_BAD_CAST and fix some.
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_rdf_ordinal): Use raptor_format_integer()
+
+	* src/raptor_general.c, src/raptor_internal.h: Use
+	raptor_format_integer() in generating bnode IDs
+
+	(raptor_world_default_generate_bnodeid_handler): Use
+	raptor_format_integer() and tidy code.  raptor_world field
+	default_generate_bnodeid_handler_prefix_length is an integer; long
+	enough.
+
+	* src/raptor_abbrev.c:
+	(raptor_new_qname_from_resource): Use raptor_format_integer()
+
+	* src/raptor_internal.h, src/raptor_iostream.c, src/raptor_xml.c,
+	src/snprintf.c:
+
+	(raptor_format_hexadecimal): Added for formatting uppercase hex in
+	a fixed width field.
+
+	(raptor_iostream_hexadecimal_write): Use
+	raptor_format_hexadecimal()
+
+	(raptor_xml_escape_string_any): Use raptor_format_hexadecimal() to
+	remove a sprintf for &#xXX.
+
+	* utils/rdfdiff.c:
+	(rdfdiff_add_statement): Malloc right size
+
+	* src/ntriples_parse.c, src/raptor_grddl.c, src/raptor_iostream.c,
+	src/raptor_libxml.c, src/raptor_nfc.c, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_sax2.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_xml.c, src/snprintf.c, src/turtle_common.h: Use
+	RAPTOR_BAD_CAST and RAPTOR_GOOD_CAST
+
+	Some good uses: - narrowing a known, checked unicode char to a U16
+
+	Some 'bad' uses:
+	- only handing error messages, literal language, qname prefixes of
+	  a  max len constrained by int
+	- passing in data to libxml constrained by int max len
+	- locator column field constrained to int size
+
+	Some bad uses:
+	- iostream read_bytes and write-bytes methods return int but could
+	  easily return a lot more in the size_t range (compare to fread).
+	  API change needed.
+	- locator byte field constrained to int size.  should be size_t
+	- raptor_nfc_check returns int offset into a buffer that could be
+	  larger raptor_ntriples_parser_context changed line_length and
+	  offset to size_t raptor_turtle_parser changed buffer_length to
+	  size_t
+
+	* src/raptor_internal.h: Add macros for describing types of casts
+
+	RAPTOR_GOOD_CAST: code checks or logic ensures cast will not
+	truncate
+
+	RAPTOR_BAD_CAST: value may be truncated; may require API
+	change/break.  Might be unrealistic e.g. a >4G error message,
+	qname prefix.
+
+2011-08-30  Dave Beckett <dave@dajobe.org>
+
+	* src/snprintf.c: snprintf return code and size guessing fixes
+
+	vsnprintf_is_c99 macro: start guessing length from len
+	strlen(format) and grow size by 50% each loop to hopefully get big
+	enough faster.
+
+	(raptor_vsnprintf): Error out when raptor_vasprintf result < 0
+
+	(raptor_snprintf): Note error is < 0 response
+
+	(raptor_vasprintf): Error out when raptor_vsnprintf2 result is < 0
+
+2011-08-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_locator.c:
+	(raptor_locator_format): Use raptor_format_integer to kill
+	snprintf
+
+	* src/raptor_internal.h, src/snprintf.c:
+	(raptor_format_integer): Added
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_literal_datatype): Remove unused code.
+
+2011-08-27  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Fix rdfdiff assumption that RAPTOR_DEBUG is
+	defined
+
+	* src/raptor_grddl.c: Fix a few more RAPTOR_DEBUG is defined
+	assumptions
+
+	* src/raptor_avltree.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_iostream.c, src/raptor_namespace.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_sequence.c, src/raptor_serialize_rss.c,
+	src/raptor_set.c, src/raptor_stringbuffer.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_parser.y: Code style for
+	comparing a possibly undefined macro to a value
+
+	Use:
+	  #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > N
+	rather than:
+	  #if RAPTOR_DEBUG > N
+
+	* src/raptor_internal.h: Do not assume RAPTOR_DEBUG is defined
+
+	* src/snprintf.c: autodocs
+
+	* configure.ac: Do not enable debug messages by default for
+	--enable-maintainer-mode
+
+	This now requires the extra --enable-debug option to configure or
+	autogen.sh
+
+	* docs/tmpl/section-general.sgml:
+	updated doc tmpl
+
+	* configure.ac: Check for vasprintf once
+
+	* configure.ac, src/snprintf.c: Define -D_GNU_SOURCE to get
+	vasprintf()
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt: Add new
+	snprintf functions to docs
+
+	* src/raptor_json_writer.c, src/raptor_locator.c,
+	src/raptor_log.c: Use raptor_snprintf() and raptor_vasprintf()
+
+	In preference to raw snprintf() or doing strlen() on
+	raptor_vsnprintf().
+
+	* configure.ac, src/raptor2.h.in, src/raptor_general.c,
+	src/snprintf.c: Portability fixes to snprintf / vsnprintf /
+	vasprintf
+
+	(raptor_vsnprintf2): Added with actual vsnprintf() calling
+	contention, deprecating raptor_vsnprintf which doesn't
+
+	(raptor_snprintf): Added with snprintf() calling convention using
+	raptor_vsnprintf2() to provide a portable version.
+
+	(raptor_vasprintf): Added with vasprintf() calling convention
+	(GNU) using raptor_vsnprintf2() to implement it if not present.
+	Moved the formatted printing code all to src/snprintf.c
+
+2011-08-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_locator.c: Avoid snprintf(NULL, ) when there there is
+	no C99 vsnprintf()
+
+	(raptor_locator_format): Pick a large enough buffer size if
+	snprintf is likely not portable, when HAVE_C99_VSNPRINTF is not
+	defined.
+
+	Fixes Issue#0000465
+	http://bugs.librdf.org/mantis/view.php?id=465
+
+2011-08-21  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Switch deprecated index() to more portable
+	strchr()
+
+	* src/snprintf.c: Compile a local lround() if it is not present.
+
+	* configure.ac: Add check for lround()
+
+	* src/win32_raptor_config.h.in: Define isnan() macro around
+	_isnan()
+
+	* configure.ac: Define HAVE_TRUNC and HAVE_ROUND from configure
+
+2011-08-12  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_statement.c:
+	(raptor_statement_compare): Calculate pointer differences using
+	ptrdiff_t
+
+	* src/raptor_unicode.c: Casts for returning unicode char lengths
+
+	(raptor_unicode_utf8_string_put_char,
+	raptor_unicode_utf8_string_get_char): Cast small int return values.
+
+	* src/raptor_general.c:
+	(raptor_world_default_generate_bnodeid_handler): Use unsigned int
+	for ID lengths.
+
+	* src/raptor_internal.h, src/raptor_qname.c: Use size_t for qname
+	value length and unsigned int for name lengths.
+
+	raptor_qname_s changes value_length to size_t
+
+	(raptor_new_qname, raptor_new_qname_from_namespace_local_name,
+	raptor_qname_string_to_uri): unsigned ints for prefix and name
+	lengths.
+
+	* src/raptor_namespace.c: Use raptor_namespace prefix_length as
+	unsigned int; it's long enough.
+
+	(raptor_namespaces_find_namespace, raptor_new_namespace_from_uri):
+	Casts for unsigned int.
+
+	* src/raptor_internal.h: raptor_namespace prefix_length is
+	unsigned int
+
+	* src/raptor_serialize_turtle.c, src/turtle_parser.y: Use turtle's
+	actual mime type text/turtle in syntax recognizing code.  This
+	should make guessing from the registered mime type accurate.
+
+2011-08-09  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	docs/tmpl/section-unicode.sgml, src/raptor2.h.in,
+	src/raptor_unicode.c: Added UTF-8 strlen and substr utility
+	functions
+
+	(raptor_unicode_utf8_strlen): Added
+
+	(raptor_unicode_utf8_substr): Added
+
+2011-08-01  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: stddef.h for ptrdiff_t
+
+	* src/raptor_uri.c: code style - casts for lengths
+
+	(raptor_new_uri_from_counted_string,
+	(raptor_new_uri_from_counted_string): Cast size_t length from
+	strlen to unsigned int.
+
+	(raptor_new_uri_from_uri_local_name,
+	raptor_new_uri_relative_to_base, raptor_new_uri_from_id)
+	raptor_new_uri_for_rdf_concept): size_t for string and uri
+	lengths
+
+	(raptor_uri_path_common_base_length): Use size_t inside and return
+	size_t
+
+	(raptor_uri_path_make_relative_path): size_t for path lengths.
+
+	(raptor_uri_print): use size_t for number of objects fwrite prints
+
+	* src/raptor_serialize_rss.c: cast uri len to unsigned int
+
+	* src/raptor_www_curl.c:
+	size_t for len
+
+2011-07-31  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_abbrev.c, src/raptor_avltree.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_internal.h, src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_libxml.c, src/raptor_log.c,
+	src/raptor_namespace.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_qname.c, src/raptor_rdfxml.c, src/raptor_rfc2396.c,
+	src/raptor_rss.c, src/raptor_rss_common.c, src/raptor_sax2.c,
+	src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_stringbuffer.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libxml.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/turtle_common.c, src/turtle_lexer.l,
+	src/turtle_parser.y, utils/rdfdiff.c: Code style change and
+	cleanup for alloc/free macros
+
+	Code style:
+	1. var = RAPTOR_CALLOC(type, count, size)
+	Prefering:
+	  var = RAPTOR_CALLOC(type, 1, sizeof(*var))
+	when count = 1
+
+	2. var = RAPTOR_MALLOC(type, size)
+
+	3. RAPTOR_FREE(type, var)
+
+	The consequence here is allocs that mostly fit into 1 line without
+	so much boilerplate and duplication of types.
+
+	The RAPTOR_MALLOC and RAPTOR_CALLOC now do the cast to the return
+	type.
+
+	RAPTOR_FREE takes the object type too but always casts arg to void
+	This certainly contains many wrong types to the arg but might be
+	used later in some kind of smart type-aware debugging allocator.
+
+	* librdfa/curie.c: Use size_t to compute sizes otherwise may
+	truncate on 64-bit systems
+
+	(rdfa_resolve_uri): Use size_t for strlen tmp
+
+	(rdfa_resolve_curie): cast for strlen when ifdef LIBRDFA_IN_RAPTOR
+
+	* librdfa/rdfa.c: Use size_t to compute sizes otherwise may
+	truncate on 64-bit systems
+
+2011-07-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/.gitignore, docs/raptor-overrides.txt,
+	docs/raptor-sections.txt, docs/raptor.types,
+	docs/raptor2-overrides.txt, docs/raptor2-sections.txt,
+	docs/raptor2.types, docs/tmpl/.gitignore: More changes from
+	DOC_MODULE=raptor2
+
+	* docs/Makefile.am: Install raptor V2 docs in with doc module
+	raptor2 so they don't clash with raptor V1 docs
+
+2011-07-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_uri): Set base_uri for sheet URI
+	get.
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.5
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-www.sgml:
+	Update tmpls
+
+	* Snapshotted raptor2_2_0_4 for 2.0.4 release (GIT
+	76194e074160848d6f690a62b395d5dd23aff728)
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c:
+	Implement WWW feching SSL client certificate
+	options raptor_option gains: RAPTOR_OPTION_WWW_CERT_FILENAME,
+	RAPTOR_OPTION_WWW_CERT_TYPE and RAPTOR_OPTION_WWW_CERT_PASSPHRASE (raptor_www_set_ssl_cert_options): Added public API to set SSL
+	client certificates on WWW.  (raptor_www_curl_set_ssl_cert_options): Added for libcurl to
+	implement above.  (raptor_parser_parse_uri_with_connection): Use
+	raptor_www_set_ssl_cert_options() to turn the parser options into
+	settings on the WWW object.
+
+2011-07-24  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Calculate term_lengths only when
+	debugging. [-Wunused-but-set-variable]
+
+	* src/turtle_lexer.l: Disable input() for Turtle lexer - never
+	needed.
+
+	* src/turtle_parser.y:
+	(turtle_parse): Do not assign buffer which is unused
+	[-Wunused-but-set-variable]
+
+	* src/raptor_internal.h, src/raptor_parse.c: Move parser buffer
+	from stack to parser object (reducing call stack size)
+
+	RAPTOR_READ_BUFFER_SIZE internal define added.
+
+	raptor_parser gains a buffer of RAPTOR_READ_BUFFER_SIZE + 1 for
+	NUL.
+
+	(raptor_parser_parse_file_stream): Use parser object buffer not
+	stack.
+
+	(raptor_parser_parse_uri_write_bytes): Use size_t in len
+	calculation.
+
+	(raptor_parser_parse_iostream): Use parser object buffer not
+	stack.  Use size_t for read length.
+
+	* configure.ac: -Wno-sign-conversion for now
+
+	* src/raptor_internal.h, src/raptor_www.c: Reduce stack use of
+	raptor_www_file_handle_fetch
+
+	(raptor_www_file_handle_fetch): Use www->buffer for file buffer
+	for all builds not just www with libxml or libfetch.
+
+	* src/raptor_xml.c:
+	(raptor_valid_xml_ID): use size_t for strlen
+
+	* src/raptor_locator.c:
+	(raptor_locator_format): Cast calculated bufsize to int return.
+
+	* src/raptor_internal.h, src/raptor_www.c, src/raptor_www_curl.c:
+	Use a total_bytes for byte counts inside raptor_www
+
+	* src/snprintf.c:
+	(raptor_format_float): use a long for the intpart.
+
+	* configure.ac:
+	Expand (GCC) compiler warnings lots
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: Make sure N-Triples and Turtle
+	serialize legal blank node IDs
+
+	Fixes Issue #0000449
+	http://bugs.librdf.org/mantis/view.php?id=449
+
+	(raptor_bnodeid_ntriples_write): Added to write a N-Triples blank
+	node ID in legal form, replacing any letters not in the allowed
+	set.
+
+	(raptor_turtle_writer_bnodeid): Added internal method for Turtle
+	writer to do this too.
+
+	(raptor_turtle_emit_blank): Use above.
+
+	* configure.ac:
+	Enforce libcurl earliest version supported 7.12.0
+
+	See previous commit for Issue#0000457
+	http://bugs.librdf.org/mantis/view.php?id=457 and curl GIT commit
+	https://github.com/bagder/curl/commit/ffc5fa3a2be787c8198eb68836a45c440876c1bd
+
+	* src/raptor_internal.h:
+	Remove curl/types.h
+
+	Fixes Issue#0000457
+	http://bugs.librdf.org/mantis/view.php?id=457
+
+	Was made a blank file over 7 years ago.
+
+	curl GIT commit ffc5fa3a2be787c8198eb68836a45c440876c1bd
+	  Date: Mon Apr 26 14:06:51 2004 +0000
+	  "typedef CURL in the curl.h file instead of only having a single
+	  useful typedef in the separate types.h"
+
+	Which is 7.11.2 but it wasn't mentioned in the release notes (even
+	if I'd read them): http://curl.haxx.se/changes.html
+
+	* configure.ac:
+	Improve checking for trunc and round
+
+	Fixes Issue#0000308
+	http://bugs.librdf.org/mantis/view.php?id=308
+
+2011-07-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c:
+	Condition protect more debug printfs
+
+	* src/raptor_avltree.c:
+	Fix losing node parents in deleting
+
+	(raptor_avltree_delete_internal, raptor_avltree_delete_internal2):
+	Fix parents when moving nodes during deletion.  Based on patch
+	from 'v-for-vandal' in notes of Issue#0000455
+	http://bugs.librdf.org/mantis/view.php?id=455
+	Thanks!
+
+	Fixes Issue#0000455
+	http://bugs.librdf.org/mantis/view.php?id=455
+
+	* src/raptor_avltree.c:
+	Add extra AVL Tree debugging
+
+	Based on patch in Issue #0000455
+	http://bugs.librdf.org/mantis/view.php?id=455 with code style
+	changes
+
+	* configure.ac, src/raptor_json.c:
+	Add YAJL V2 support
+
+	Note that YAJL V1 and V2 both install the same library name
+	'libyajl' even though they have different ABI & APIs.
+
+	Fixes Issue #0000456
+	http://bugs.librdf.org/mantis/view.php?id=456
+
+2011-07-11  Dave Beckett <dave@dajobe.org>
+
+	* tests/trig/bug451.out, tests/trig/bug451.trig: Make bug451.trig
+	legal.
+	Fixes Issue #000451
+	http://bugs.librdf.org/mantis/view.php?id=451
+
+	* src/turtle_lexer.l:
+	Allow = instead of := in TRiG
+
+	* tests/trig/Makefile.am, tests/trig/bug451.out,
+	tests/trig/bug451.trig, tests/trig/example2.trig:
+	Add tests for bug
+	451 - fixing TrIG to be legal
+
+2011-06-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.4
+
+	* Snapshotted raptor2_2_0_3 for 2.0.3 release (GIT
+	148879e3346d0976792b51bddf4d98db34263d07)
+
+2011-05-31  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv: Fix API change typos; there are no
+	raptor_term_as.*string() functions
+
+	* src/turtle_lexer.l: Cleanup stringbuffer if EOF happens in a
+	literal
+
+	* docs/tmpl/section-general.sgml: doc tmpls
+
+2011-05-30  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: More fixups for going back to pull parser
+
+	bison's yacc.c skeleton output does not support %lex-param so use
+	#define YYLEX_PARAM again
+
+	* src/turtle_parser.y:
+	(turtle_parser_error): Remove yy_init_globals call.
+
+2011-05-22  Dave Beckett <dave@dajobe.org>
+
+	* utils/Makefile.am: CLEANFILES cleans *.plist from clang output
+
+	* utils/rdfdiff.c:
+	(rdfdiff_statement_equals): Return different if object URIs
+	differ.
+	[CLANG]
+
+	* utils/Makefile.am: ANALYZE
+
+	* src/Makefile.am: all SOURCES
+
+	* src/Makefile.am: analyze for maintainer only
+
+	* src/Makefile.am: CLEANFILES cleans *.plist from clang output
+
+	* librdfa/triple.c:
+	Fixes from clang --analyze
+
+	(rdfa_complete_object_literal_triples): Remove assignment of
+	'current_object_literal' that always assigns the existing value.
+
+	* librdfa/rdfa.c:
+	Fixes from clang --analyze
+
+	(start_element): Remove unused (attribute) 'value' var Remove
+	usless assignment of 'insert_xmlns_definition' at end of block it
+	is scoped to.
+
+	* librdfa/curie.c:
+	Fixes from clang --analyze
+
+	(rdfa_resolve_uri): use rval_copy to alter final char from '/' not
+	rval, which is always NULL.
+
+	(rdfa_resolve_curie): Remove unused var 'expanded_prefix_length'
+
+	* src/raptor_xml_writer.c:
+	(raptor_new_xml_writer): Remove useless assignment to 'nstack'.
+	[CLANG]
+
+	* src/raptor_uri.c:
+	Fixes [CLANG]
+	(raptor_uri_print): Initialize 'world' carefully and check if it is
+	NULL when calling raptor_log_error_formatted.
+
+	* src/raptor_unicode.c: Fixes [CLANG]
+	(raptor_unicode_utf8_string_get_char): Do not uslessly increment
+	'input' pointer at end of function.
+
+	* src/raptor_turtle_writer.c: Fixes [CLANG]
+	(raptor_new_turtle_writer): Remove useless assignment to 'nstack'.
+
+	(raptor_turtle_writer_quoted_counted_string): Initialize 'rc' and
+	use it to return faiure from raptor_string_python_write()
+
+	* src/raptor_serialize_turtle.c: Fixes [CLANG]
+	(raptor_turtle_emit_subject_collection_items)
+
+	(raptor_turtle_emit_subject_properties): Return 'rv' on error.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_statement): Return failure on not handled
+	[CLANG]
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_emit_subject_properties): Return 'rv' on error
+	[CLANG].
+
+	* src/raptor_serialize_rdfxml.c:
+	Fixes [CLANG]
+
+	(raptor_rdfxml_serialize_statement): Remove
+	'end_predicate_element' assignemnts that are immediately
+	overwritten.  Use 'attrs_count' in writing a URI - be consistent
+	with other emitting even know we know in all cases what the values
+	will be.
+
+	* src/raptor_rss.c:
+	Fixes [CLANG]
+
+	(raptor_rss_start_element_handler): Remove unused 'attribute_type'
+	var.
+
+	(raptor_rss_insert_identifiers): Initialize 'new_uri' to NULL and
+	check for failures of it and term construction.
+
+	* src/raptor_rfc2396.c:
+	Fixes [CLANG]
+
+	(raptor_uri_resolve_uri_reference): Remove assignment to
+	'last_char' never needed - loop continue action overwrites it.
+
+	* src/raptor_rdfxml.c:
+	Fixes [CLANG]
+
+	(raptor_rdfxml_start_element_handler): Check element->parent is
+	not NULL before using pointer.
+
+	(raptor_rdfxml_generate_statement): Remove unused rdf_xml_parser
+	var.  (raptor_rdfxml_start_element_grammar): Remove assignments to
+	'finished' that are immediately re-assigned.
+
+	* src/raptor_nfc.c:
+	(raptor_nfc_check): Remove unused 'start' var [CLANG]
+
+	* src/raptor_namespace.c:
+	(raptor_namespace_format_as_xml): Do not increment p at end [CLANG]
+
+	* src/raptor_memstr.c:
+	(raptor_memstr): Remove unused 'c' var [CLANG]
+
+	* src/raptor_libxml.c:
+	Fixes [CLANG]
+
+	(raptor_libxml_error_common): Set world and locator to NULL and
+	carefully assign and check use.
+
+	(raptor_libxml_xmlStructuredError_handler_parsing): Turn
+	assignment into something that does work.  Hints that the
+	workaround for an ancient libxml2 context error pointer bug are no
+	longer needed since anyone using such an old libxml would have
+	crashed at this point when an error happened.  Could bump minimum
+	libxml2 version.
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_parse_init): Remove unused librdfa_parser [CLANG]
+
+	* src/raptor_json_writer.c:
+	Fixes [CLANG]
+
+	(raptor_json_writer_quoted): Initialize rc and set it to value of
+	any raptor_string_python_write error return.  Return rc.
+
+	(raptor_json_writer_key_uri_value): Return error rc
+
+	* src/raptor_grddl.c:
+	Fixes [CLANG]
+
+	(raptor_grddl_run_grddl_transform_doc): Initialize userCtxt
+
+	(raptor_grddl_run_grddl_transform_uri): Remove unused grddl_parser
+
+	(raptor_grddl_parse_chunk): Remove assigning rc a value never read
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): Initialize term fields in all
+	cases[CLANG]
+
+	* src/.gitignore: .gitignore
+
+	* src/Makefile.am: 'analyze' target fixes
+
+	* src/Makefile.am: Added 'analyze' target to invoke clang over
+	sources
+
+2011-05-19  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: lets have bison debugging with push parser
+	too
+
+	* src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_www_curl.c: Fixes for building in RAPTOR_DEBUG > 2 mode
+
+	* src/raptor_qname.c: docs
+
+2011-05-12  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Ensure Bison 2.4+ is used
+
+2011-05-11  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l:
+	Make TRiG lexer recognize URI/qname (ws)*
+
+	(:-)? (ws)* { Add new rule to recognize QNAME as the graph name.
+	Adjust it to skip over extra optional tokens.  Adjust existing
+	rule to handle all whitespace around optional ':-'
+
+2011-05-10  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Handle trig graph name and start in lexer
+	(GRAPH_NAME_LEFT_CURLY): Added returning URI for <uri> { with
+	optional ':-'
+
+	* src/turtle_parser.y: Fix calls to
+	raptor_term_print_as_ntriples() to raptor 2 API form
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Handle printing partial statements for
+	debugging.
+
+	* src/.gitignore: ignore raptor2.h
+
+	* src/turtle_parser.y:
+	(turtle_push_parse): world only if very debuggy
+
+	* src/turtle_parser.y:
+	(turtle_push_parse): print token on very debug only.
+
+2011-04-27  Dave Beckett <dave@dajobe.org>
+
+	* docs/libraptor2.3, examples/grapper.c, examples/raptor_abort.c,
+	examples/rdfcat.c, examples/rdfguess.c, examples/rdfprint.c,
+	examples/rdfserialize.c, scripts/build-formats.c, tests/empty.c:
+	Use raptor2.h header
+
+2011-04-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/Makefile.am:
+	Make docs use raptor2.h
+
+	* configure.ac, docs/tmpl/section-general.sgml, librdfa/rdfa.h,
+	src/.gitignore, src/Makefile.am, src/ntriples_parse.c,
+	src/raptor.h, src/raptor.h.in, src/raptor2.h.in,
+	src/raptor_abbrev.c, src/raptor_avltree.c, src/raptor_concepts.c,
+	src/raptor_expat.c, src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_guess.c, src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_log.c,
+	src/raptor_memstr.c, src/raptor_namespace.c, src/raptor_nfc.c,
+	src/raptor_nfc_data.c, src/raptor_nfc_test.c, src/raptor_option.c,
+	src/raptor_parse.c, src/raptor_qname.c, src/raptor_rdfxml.c,
+	src/raptor_rfc2396.c, src/raptor_rss.c, src/raptor_rss_common.c,
+	src/raptor_sax2.c, src/raptor_sequence.c, src/raptor_serialize.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c,
+	src/raptor_set.c, src/raptor_statement.c,
+	src/raptor_stringbuffer.c, src/raptor_syntax_description.c,
+	src/raptor_term.c, src/raptor_turtle_writer.c,
+	src/raptor_unicode.c, src/raptor_uri.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c, src/turtle_common.c,
+	src/turtle_lexer.l, src/turtle_parser.y, utils/rapper.c,
+	utils/rdfdiff.c: Switch to raptor2.h as main header. raptor.h
+	includes it
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.3
+
+2011-04-15  Nicholas J Humfrey <njh@aelius.com>
+
+	* docs/Makefile.am: Set DISTCLEANFILES to empty before including
+	gtk-doc.make
+
+	* docs/Makefile.am: Moved raptor-fake.i from CLEANFILES to
+	DISTCLEANFILES.
+
+2011-04-05  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y:
+	(graph): Ensure $1 is NULLed out and ownership passed on
+
+	Fixes Issue #0000437
+	http://bugs.librdf.org/mantis/view.php?id=437
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Handle NULL terms.
+
+	* src/turtle_parser.y: Fix extra debugging use of
+	raptor_term_print_as_ntriples
+
+2011-03-27  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Use %option extra-type to set type of extra
+	arg.
+
+2011-03-20  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_2 for 2.0.2 release (GIT
+	4d782df45fd4b3e11243008c4dc221effcaad591)
+
+	* configure.ac, src/raptor_general.c: Error out when calling
+	library presents a too old header
+
+	(raptor_new_world_internal): Switch to checking for too old, not
+	exact match.
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.2
+
+	* src/raptor_term.c: autodocs
+
+	* Snapshotted raptor2_2_0_1 for 2.0.1 release (GIT
+	6f1655f985df370999a92897726d359946c1dbd9)
+
+2011-03-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor.h.in, src/raptor_parse.c: autodocs
+
+2011-03-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c: Autodocs - mention UTF-8 encodings in
+	args/returns for raptor_term docs
+
+2011-02-27  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl:
+	Update to latest process-changes.pl
+
+2011-02-14  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl:
+	Update to latest process-changes.pl
+
+	* tests/turtle/Makefile.am, tests/turtle/test-36.out,
+	tests/turtle/test-36.ttl, tests/turtle/test-37.out,
+	tests/turtle/test-37.ttl: Add tests for long literal with dups and
+	lang
+
+2011-02-07  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.11, Makefile.am:
+	Add ChangeLog.11 for 2010
+
+2011-02-06  Dave Beckett <dave@dajobe.org>
+
+	* LICENSE.html: Make GPL V2 or newer explicit.
+
+2011-02-01  Dave Beckett <dave@dajobe.org>
+
+	* raptor2.spec.in: fix Source:
+
+2011-01-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Remove get_curie_type rename for librdfa
+	- now static
+
+	* librdfa/curie.c, librdfa/rdfa_utils.h: Update to librda GIT
+	commit 3838bb11fb155bbae200a2388096cbe6804a7551 No longer exports
+	get_curie_type.
+
+	* NEWS.html, RELEASE.html, configure.ac: Bumped version to 2.0.1
+
+2011-01-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Rename librdfa symbols for internal
+	linking of librdfa
+
+	Fixes Issue #0000416
+	http://bugs.librdf.org/mantis/view.php?id=416
+
+	* librdfa/rdfa.c, librdfa/rdfa_utils.c, librdfa/triple.c: Update
+	to librdfa GIT commit aeebd00d68ab7292cae35ebfbcb638f3a2625f39
+
+2011-01-24  Nicholas J Humfrey <njh@aelius.com>
+
+	* src/raptor_serialize_ntriples.c, tests/ntriples/testnq-1.out,
+	tests/trig/bug370.out, tests/trig/example1.out,
+	tests/trig/example2.out, tests/trig/example3.out: Fixed the nquads
+	serialiser to output the graph name in the fourth column, instead
+	of repeating the object
+
+2011-01-21  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_abbrev.c, src/raptor_librdfa.c,
+	src/raptor_serialize_dot.c, src/raptor_serialize_html.c,
+	src/raptor_serialize_json.c, src/raptor_serialize_ntriples.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c,
+	src/raptor_uri.c: Replace all RAPTOR_FATAL with error log messages
+	in user builds
+
+	All RAPTOR_FATAL calls are now only called inside RAPTOR_DEBUG
+	blocks.
+
+	* src/raptor_abbrev.c, src/raptor_internal.h:
+	(raptor_new_abbrev_subject): Made static to this module
+
+	* src/raptor_statement.c:
+	(raptor_statement_init): Init statement to NULL pointers
+
+2011-01-03  Dave Beckett <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_0 for 2.0.0 release (GIT
+	8ba659697c83891eb6ae9b47ce0e0ce8bb070e40)
+
+	* docs/raptor-docs.xml: shorter title
+
+	* NEWS.html, RELEASE.html: 2.0.0
+
+	* librdfa/rdfa.c: Revert upstream
+	62d939ec1e3756a69eef48a50be0ab0624e2d4ad
+
+	* librdfa/triple.c:
+	(rdfa_generate_namespace_triple): Protect
+	processor_graph_triple_callback
+
+	* examples/grapper.c, librdfa/iri.c, librdfa/rdfa.c,
+	src/raptor_general.c: Casts for C++
+
+	* examples/grapper.c:
+	Use raptor_term_to_string in final 2.0.0 API
+
+	* docs/raptor-sections.txt:
+	Added raptor_syntax_description_validate
+
+	* docs/raptor-1-to-2-map.tsv: Added
+	raptor_syntax_description_validate
+
+	* docs/raptor-1-to-2-map.tsv: Update for older API change:
+	raptor_term_to_.*string not _as_
+
+	* src/.gitignore:
+	Ignore generated win32_raptor_config.h
+
+	* src/win32_raptor_config.h.in:
+	Insert generated @symbols
+
+	* src/win32_raptor_config.h, src/win32_raptor_config.h.in: Rename
+	win32_raptor_config.h to win32_raptor_config.h.in
+
+	* configure.ac:
+	generate src/win32_raptor_config.h
