@@ -309,7 +309,7 @@ EXPONENT [eE][+-]?[0-9]+
 
 {QNAME}	{ turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
           if(!turtle_parser_lval->uri) {
-            turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, "Failed to convert qname %s to URI", yytext);
+            turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_ERROR, "Failed to convert qname %s to URI", yytext);
             yyterminate();
           }
 
@@ -397,7 +397,7 @@ EXPONENT [eE][+-]?[0-9]+
 
                 turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
                 if(!turtle_parser_lval->uri) {
-                  turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, "Failed to convert qname %s to URI", yytext);
+                  turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_ERROR, "Failed to convert qname %s to URI", yytext);
                   yyterminate();
                 }
 
