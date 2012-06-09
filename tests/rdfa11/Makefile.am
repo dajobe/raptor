@@ -33,12 +33,12 @@ BASE_URI=http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/
 # Query to return RDFa 1.1 tests that must return False:
 # roqet -r csv -D https://raw.github.com/rdfa/rdfa-website/master/manifest.ttl -e 'select * where {?s <http://www.w3.org/2006/03/test-description#expectedResults> false; <http://rdfa.info/vocabs/rdfa-test#rdfaVersion> "rdfa1.1"}'
 #
-http://rdfa.info/test-suite/test-cases/0107
-http://rdfa.info/test-suite/test-cases/0122
-http://rdfa.info/test-suite/test-cases/0140
-http://rdfa.info/test-suite/test-cases/0180
-http://rdfa.info/test-suite/test-cases/0235
-http://rdfa.info/test-suite/test-cases/0258
+# http://rdfa.info/test-suite/test-cases/0107
+# http://rdfa.info/test-suite/test-cases/0122
+# http://rdfa.info/test-suite/test-cases/0140
+# http://rdfa.info/test-suite/test-cases/0180
+# http://rdfa.info/test-suite/test-cases/0235
+# http://rdfa.info/test-suite/test-cases/0258
 #
 # These all expect 0 ntriples - failure is >0 triples or ERROR
 
