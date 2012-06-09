@@ -692,7 +692,11 @@ static void start_element(void *parser_context, const char* name,
             }
          }
 #ifdef LIBRDFA_IN_RAPTOR
-         /* Raptor handles xml:lang itself */
+         /* Raptor handles xml:lang itself but not 'lang' */
+         else if((attrns == NULL && strcmp(attr, "lang") == 0))
+         {
+           xml_lang = value; /* shared pointer */
+         }
 #else
          else if((attrns == NULL && strcmp(attr, "lang") == 0) ||
             (attrns != NULL && strcmp(attrns, "xml") == 0 &&
@@ -707,7 +711,7 @@ static void start_element(void *parser_context, const char* name,
    }
 
 #ifdef LIBRDFA_IN_RAPTOR
-   if(context->sax2) {
+   if(context->sax2 && !xml_lang) {
       xml_lang = (char*)raptor_sax2_inscope_xml_language(context->sax2);
       if(!xml_lang)
         xml_lang = (char*)"";
