@@ -6,6 +6,7 @@
 EXTRA_DIST = \
 curie.c \
 language.c \
+namespace.c \
 rdfa.c \
 rdfa_utils.c \
 subject.c \
