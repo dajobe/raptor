@@ -549,6 +549,9 @@ static void start_element(void *parser_context, const char* name,
                      saveptr++;
                   }
                   iri = strtok_r(NULL, RDFA_WHITESPACE, &saveptr);
+                  if(!saveptr)
+                    break;
+
                   while((*saveptr == ' ' || *saveptr == '\n' ||
                      *saveptr == '\r' || *saveptr == '\t' || *saveptr == '\f' ||
                      *saveptr == '\v') && *saveptr != '\0')
