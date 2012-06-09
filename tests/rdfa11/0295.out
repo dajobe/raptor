@@ -1,0 +1,494 @@
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> <http://www.blogger.com/profile/1109404> .
+<http://www.blogger.com/profile/1109404> <http://xmlns.com/foaf/0.1/img> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> <http://www.blogger.com/profile/1109404> .
+<http://www.blogger.com/profile/1109404> <http://xmlns.com/foaf/0.1/img> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/title> "Portrait of Mark" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#license> <http://creativecommons.org/licenses/by-nc-nd/2.5/> .
+<http://example.org/foo> <http://example.org/bar> "10"^^<http://www.w3.org/2001/XMLSchema#integer> .
+_:a <http://xmlns.com/foaf/0.1/name> "Manu Sporny" .
+_:a <http://xmlns.com/foaf/0.1/knows> _:b .
+_:b <http://xmlns.com/foaf/0.1/name> "Ralph Swick" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> <http://www.blogger.com/profile/1109404> .
+<mailto:manu.sporny@digitalbazaar.com> <http://xmlns.com/foaf/0.1/knows> <mailto:michael.hausenblas@joanneum.at> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ben Adida" .
+<http://internet-apps.blogspot.com/> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://internet-apps.blogspot.com/> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://example.org/foo> <http://purl.org/dc/terms/creator> "Mark Birbeck"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#license> <http://creativecommons.org/licenses/by-nc-nd/2.5/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#wtw> <http://purl.org/dc/terms/identifier> <urn:ISBN:0752820907> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#wtw> <http://purl.org/dc/terms/identifier> <urn:ISBN:0752820907> .
+_:bnode0 <http://xmlns.com/foaf/0.1/name> "Ben Adida" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> _:bnode0 .
+<http://sw-app.org/mic.xhtml#i> <http://xmlns.com/foaf/0.1/img> <http://sw-app.org/img/mic_2007_01.jpg> .
+<http://sw-app.org/mic.xhtml#i> <http://xmlns.com/foaf/0.1/img> <http://sw-app.org/img/mic_2006_03.jpg> .
+<http://sw-app.org/mic.xhtml#i> <http://xmlns.com/foaf/0.1/img> <http://sw-app.org/img/mic_2006_03.jpg> .
+<http://sw-app.org/mic.xhtml#i> <http://xmlns.com/foaf/0.1/img> <http://sw-app.org/mic.xhtml#photo> .
+<http://sw-app.org/img/mic_2007_01.jpg> <http://xmlns.com/foaf/0.1/depicts> <http://sw-app.org/mic.xhtml#i> .
+<http://sw-app.org/img/mic_2006_03.jpg> <http://xmlns.com/foaf/0.1/depicts> <http://sw-app.org/mic.xhtml#i> .
+<http://sw-app.org/img/mic_2006_03.jpg> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/alternate> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> .
+<http://sw-app.org/mic.xhtml#photo> <http://xmlns.com/foaf/0.1/depicts> <http://sw-app.org/mic.xhtml#i> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://xmlns.com/foaf/0.1/img> <http://sw-app.org/img/mic_2007_01.jpg> .
+_:bnode3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://xmlns.com/foaf/0.1/maker> _:bnode3 .
+_:bnode3 <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://xmlns.com/foaf/0.1/maker> <http://www.example.org/#me> .
+<http://www.example.org/#me> <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode4 <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://www.example.org/#me> <http://xmlns.com/foaf/0.1/knows> _:bnode4 .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#me> <http://xmlns.com/foaf/0.1/name> "John Doe" .
+_:bnode5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode5 <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://xmlns.com/foaf/0.1/topic> "John Doe" .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#me> <http://xmlns.com/foaf/0.1/name> "John Doe" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> "Fabien Gandon" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/publisher> "Fabien Gandon" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://www-sop.inria.fr/acacia/fabien/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/publisher> <http://www-sop.inria.fr/acacia/fabien/> .
+<http://www.example.org/#ben> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#mark> <http://xmlns.com/foaf/0.1/name> "Mark Birbeck" .
+<http://www.example.org/#ben> <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#mark> .
+<http://www.example.org/#mark> <http://xmlns.com/foaf/0.1/name> "Mark Birbeck" .
+<http://www.example.org/#ben> <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#mark> .
+<http://www.example.org/#ivan> <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://www.example.org/#ben> <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#ivan> .
+_:bnode9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode8 <http://xmlns.com/foaf/0.1/name> _:bnode9 .
+<http://www.example.org/#ben> <http://xmlns.com/foaf/0.1/knows> _:bnode8 .
+_:bnode10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode8 <http://xmlns.com/foaf/0.1/name> _:bnode10 .
+<http://www.example.org/#ben> <http://xmlns.com/foaf/0.1/knows> _:bnode8 .
+<http://www.example.org/#manu> <http://xmlns.com/foaf/0.1/name> "Manu Sporny" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://www.example.org/#manu> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/publisher> <http://www.example.org/#manu> .
+<http://www.example.org/#fabien> <http://xmlns.com/foaf/0.1/name> "Fabien Gandon" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://www.example.org/#fabien> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/publisher> <http://www.example.org/#fabien> .
+<http://www.example.org/#matsumoto-kimiko> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#matsumoto-kimiko> <http://xmlns.com/foaf/0.1/name> "\u677E\u672C \u540E\u5B50" .
+_:michael <http://xmlns.com/foaf/0.1/knows> <http://digitalbazaar.com/people/manu> .
+_:manu <http://xmlns.com/foaf/0.1/mbox> <mailto:manu.sporny@digitalbazaar.com> .
+_:manu <http://xmlns.com/foaf/0.1/knows> _:michael .
+_:michael <http://xmlns.com/foaf/0.1/mbox> <mailto:michael.hausenblas@joanneum.at> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0067.xml> <http://purl.org/dc/terms/title> "Test 0067" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#next> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0070.xml> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#prev> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0069.xml> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#license> <http://creativecommons.org/licenses/by-nd/3.0/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/faq> <http://purl.org/dc/terms/title> "Example FAQ" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/jane> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/jane> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://creativecommons.org/licenses/by-nd/3.0/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/alternate> <http://example.org/alternate> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/appendix> <http://example.org/appendix> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/bookmark> <http://example.org/bookmark> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/cite> <http://example.org/cite> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/chapter> <http://example.org/chapter> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/contents> <http://example.org/contents> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/copyright> <http://example.org/copyright> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/glossary> <http://example.org/glossary> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/help> <http://example.org/help> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/icon> <http://example.org/icon> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/index> <http://example.org/index> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/last> <http://example.org/last> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://example.org/license> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/meta> <http://example.org/meta> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/next> <http://example.org/next> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/p3pv1> <http://example.org/p3pv1> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/prev> <http://example.org/prev> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#role> <http://example.org/role> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/section> <http://example.org/section> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/subsection> <http://example.org/subsection> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/start> <http://example.org/start> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/stylesheet> <http://example.org/stylesheet> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/up> <http://example.org/up> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/alternate> <http://example.org/alternate> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/appendix> <http://example.org/appendix> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/bookmark> <http://example.org/bookmark> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/cite> <http://example.org/cite> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/chapter> <http://example.org/chapter> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/contents> <http://example.org/contents> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/copyright> <http://example.org/copyright> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/glossary> <http://example.org/glossary> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/help> <http://example.org/help> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/icon> <http://example.org/icon> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/index> <http://example.org/index> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/first> <http://example.org/first> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/last> <http://example.org/last> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://example.org/license> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/meta> <http://example.org/meta> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/next> <http://example.org/next> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/p3pv1> <http://example.org/p3pv1> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/prev> <http://example.org/prev> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://www.w3.org/1999/xhtml/vocab#role> <http://example.org/role> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/section> <http://example.org/section> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/subsection> <http://example.org/subsection> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/start> <http://example.org/start> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/stylesheet> <http://example.org/stylesheet> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0077.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/up> <http://example.org/up> .
+_:bnode12 <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode12 .
+_:bnode12 <http://xmlns.com/foaf/0.1/mailbox> <mailto:ivan@w3.org> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode12 .
+_:bnode13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode12 <http://xmlns.com/foaf/0.1/name> _:bnode13 .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode12 .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://www.ivan-herman.org/Ivan_Herman> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://www.w3.org/People/Berners-Lee/card#i> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://danbri.org/foaf.rdf#danbri> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://danbri.org/foaf.rdf#danbri> .
+_:bnode16 <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+_:bnode16 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode16 <http://xmlns.com/foaf/0.1/mailbox> <mailto:ivan@w3.org> .
+_:bnode16 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode16 <http://xmlns.com/foaf/0.1/name> _:bnode17 .
+_:bnode16 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode18 <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode18 .
+_:bnode18 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode18 <http://xmlns.com/foaf/0.1/mailbox> <mailto:ivan@w3.org> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode18 .
+_:bnode18 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+_:bnode18 <http://xmlns.com/foaf/0.1/name> _:bnode19 .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode18 .
+_:bnode18 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode20 <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode20 .
+_:bnode20 <http://xmlns.com/foaf/0.1/mailbox> <mailto:ivan@w3.org> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode20 .
+<http://danbri.org/foaf.rdf#danbri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://danbri.org/foaf.rdf#danbri> <http://xmlns.com/foaf/0.1/name> "Dan Brickley" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://danbri.org/foaf.rdf#danbri> .
+_:bnode21 <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode21 .
+_:bnode21 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode21 <http://xmlns.com/foaf/0.1/mailbox> <mailto:ivan@w3.org> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode21 .
+_:bnode21 <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+<http://danbri.org/foaf.rdf#danbri> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://danbri.org/foaf.rdf#danbri> <http://xmlns.com/foaf/0.1/name> "Dan Brickley" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> <http://danbri.org/foaf.rdf#danbri> .
+<http://danbri.org/foaf.rdf#danbri> <http://xmlns.com/foaf/0.1/knows> <http://www.example.org/#somebody> .
+_:bnode22 <http://xmlns.com/foaf/0.1/knows> <http://www.ivan-herman.org/Ivan_Herman> .
+_:bnode22 <http://xmlns.com/foaf/0.1/knows> <http://www.w3.org/People/Berners-Lee/card#i> .
+_:bnode22 <http://xmlns.com/foaf/0.1/knows> <http://danbri.org/foaf.rdf#danbri> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode22 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#alternate> <http://example.org/alternate> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#appendix> <http://example.org/appendix> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#bookmark> <http://example.org/bookmark> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#cite> <http://example.org/cite> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#chapter> <http://example.org/chapter> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#contents> <http://example.org/contents> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#copyright> <http://example.org/copyright> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#glossary> <http://example.org/glossary> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#help> <http://example.org/help> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#icon> <http://example.org/icon> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#index> <http://example.org/index> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#first> <http://example.org/first> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#last> <http://example.org/last> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://example.org/license> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#meta> <http://example.org/meta> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#next> <http://example.org/next> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#p3pv1> <http://example.org/p3pv1> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#prev> <http://example.org/prev> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#role> <http://example.org/role> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#section> <http://example.org/section> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#subsection> <http://example.org/subsection> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#start> <http://example.org/start> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#stylesheet> <http://example.org/stylesheet> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#up> <http://example.org/up> .
+_:bnode25 <http://xmlns.com/foaf/0.1/name> "Dan Brickley" .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode25 .
+_:bnode25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
+<http://www.example.org/#somebody> <http://xmlns.com/foaf/0.1/knows> _:bnode25 .
+<http://example.org/example.png> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Image> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://creativecommons.org/licenses/by-nc-sa/2.0/> .
+_:human <http://www.w3.org/1999/xhtml/vocab#definition> "a bi-pedal primate" .
+_:human <http://www.w3.org/1999/xhtml/vocab#note> "confused animal" .
+_:human <http://www.w3.org/1999/xhtml/vocab#foo> "Milky Way" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> "Albert Einstein" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/title> "E = mc2: The Most Urgent Problem of Our Time"^^<http://example.org/XMLLiteral> .
+<http://www.cwi.nl/~steven/> <http://example.org/likes> "\n    We put thirty spokes together and call it a wheel;\n    But it is on the space where there is nothing that the usefulness of the wheel depends.\n    We turn clay to make a vessel;\n    But it is on the space where there is nothing that the usefulness of the vessel depends.\n    We pierce doors and windows to make a house;\n    And it is on these spaces where there is nothing that the usefulness of the house depends.\n    Therefore just as we take advantage of what is, we should recognize the usefulness of what is not.\n\n    Lao Tzu: Tao Te Ching" .
+_:bnode26 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "17" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#interfenestration> <http://example.org/size> _:bnode26 .
+_:bnode26 <http://example.org/unit> "character" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#interfenestration> <http://example.org/size> _:bnode26 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> _:bnode27 .
+<http://example.org/node> <http://example.org/property> "\u03B5\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03CC\n\u03AC\u03C3\u03C0\u03C1\u03BF   \u03B4\u03B9\u03AC\u03C3\u03C4\u03B7\u03BC\u03B1\n"@el .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/title> "Test 0109" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#next> _:bnode29 .
+_:bnode31 <http://www.w3.org/1999/xhtml/vocab#next> _:bnode32 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#next> _:bnode31 .
+<http://example.org/node> <http://example.org/property> "not an XML Literal,\nwhitespace     preserved\n" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#a> <http://purl.org/dc/terms/title> "" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#b> <http://purl.org/dc/terms/title> "" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#index> <http://rdfa.info/test-suite/#> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#next> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0115.xml> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#up> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#attributionURL> <http://rdfa.info/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/vocabs/rdfa-test#cornerCase1> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/vocabs/rdfa-test#cornerCase2> <http://example.org/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/vocabs/rdfa-test#cornerCase3> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/...> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/vocabs/rdfa-test#cornerCase4> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml?foo=bar../baz> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/vocabs/rdfa-test#cornerCase5> <http://rdfa.info/test-suite/test-cases/.../.htaccess> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/entity1> ">" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/entity2> "Ben & Co." .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/entity3> "@" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/entity4> "@" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/contributor> "Mark Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/creator> "Ben" .
+<http://example.org/> <http://purl.org/dc/terms/title> "Example Website" .
+<http://www.w3.org/1999/xhtml/vocab#> <http://purl.org/dc/terms/title> "The XHTML Vocabulary Document" .
+<http://example.org/> <http://purl.org/dc/terms/title> "Test Case 0121" .
+<http://example.org/> <http://purl.org/dc/terms/contributor> "Shane McCarron" .
+<http://www.example.org/#article> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
+<http://www.example.org/#article> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfs.org/sioc/ns#Post> .
+<http://www.example.org/#article> <http://purl.org/dc/terms/title> "My article" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/test> "Test" .
+<http://example.org/jd> <http://www.w3.org/2006/vcard/ns#fn> "John Doe" .
+_:gregg <http://xmlns.com/foaf/0.1/name> "Gregg Kellogg" .
+_:manu <http://xmlns.com/foaf/0.1/mbox> <mailto:manu.sporny@digitalbazaar.com> .
+_:manu <http://xmlns.com/foaf/0.1/knows> _:gregg .
+_:gregg <http://xmlns.com/foaf/0.1/knows> _:manu .
+_:gregg <http://xmlns.com/foaf/0.1/mbox> <mailto:gregg@kellogg-assoc.com> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/dc/terms/Agent> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://xmlns.com/foaf/0.1/name> "A particular agent" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://www.example.com/wrong/foaf/uriname> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://www.w3.org/1999/xhtml/vocab#name> "Ivan Herman" .
+<http://www.example.org/software> <http://www.w3.org/1999/xhtml/vocab#license> <http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/dc/terms/Agent> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://example.org/wrong/foaf/uri/name> "A particular agent" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://purl.org/dc/terms/Agent> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#this> <http://xmlns.com/foaf/0.1/name> "A particular agent" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://xmlns.com/foaf/0.1/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://example.org/wrong/foaf/uri/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://xmlns.com/foaf/0.1/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://xmlns.com/foaf/0.1/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://www.example.org/vocab#> .
+<http://www.example.org/software> <http://www.example.org/vocab#license> <http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231> .
+<http://www.example.org/software> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/liCeNse> <http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231> .
+<http://www.example.org> <http://example.org/xmllit> "This is an XMLLiteral"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+<http://www.example.org> <http://example.org/plainlit> "This is a plain literal" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/name> "Gregg Kellogg" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/language> "Ruby" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/rel> <http://kellogg-assoc.com/> .
+<http://github.org/gkellogg/rdf_context> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/rev> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#mark> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#mark> <http://example.org/wrong/foaf/uri/firstName> "Mark" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#mark> <http://example.org/wrong/foaf/uri/surname> "Birbeck" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#mark> <http://example.org/wrong/foaf/uri/name> "<span xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:air=\"http://www.daml.org/2001/10/html/airport-ont#\" xmlns:bio=\"http://vocab.org/bio/0.1/\" xmlns:cal=\"http://www.w3.org/2002/12/cal/icaltzd#\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:cert=\"http://www.w3.org/ns/auth/cert#\" xmlns:contact=\"http://www.w3.org/2000/10/swap/pim/contact#\" xmlns:dc=\"http://purl.org/dc/terms/\" xmlns:dct=\"http://purl.org/dc/terms/\" xmlns:earl=\"http://www.w3.org/ns/earl#\" xmlns:ex=\"http://example.org/\" xmlns:example=\"http://example.org/\" xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" xmlns:google=\"http://rdf.data-vocabulary.org/#\" xmlns:ical=\"http://www.w3.org/2002/12/cal/icaltzd#\" xmlns:openid=\"http://xmlns.openid.net/auth#\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfatest=\"http://rdfa.info/vocabs/rdfa-test#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:rel=\"http://vocab.org/relationship/\" xmlns:rsa=\"http://www.w3.org/ns/auth/rsa#\" xmlns:rss=\"http://web.resource.org/rss/1.0/\" xmlns:sioc=\"http://rdfs.org/sioc/ns#\" xmlns:v=\"http://www.w3.org/2006/vcard/ns#\" xmlns:wot=\"http://xmlns.com/wot/0.1/\" xmlns:xhv=\"http://www.w3.org/1999/xhtml/vocab#\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\" property=\"foaf:firstName\">Mark</span> <span xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:air=\"http://www.daml.org/2001/10/html/airport-ont#\" xmlns:bio=\"http://vocab.org/bio/0.1/\" xmlns:cal=\"http://www.w3.org/2002/12/cal/icaltzd#\" xmlns:cc=\"http://creativecommons.org/ns#\" xmlns:cert=\"http://www.w3.org/ns/auth/cert#\" xmlns:contact=\"http://www.w3.org/2000/10/swap/pim/contact#\" xmlns:dc=\"http://purl.org/dc/terms/\" xmlns:dct=\"http://purl.org/dc/terms/\" xmlns:earl=\"http://www.w3.org/ns/earl#\" xmlns:ex=\"http://example.org/\" xmlns:example=\"http://example.org/\" xmlns:foaf=\"http://xmlns.com/foaf/0.1/\" xmlns:google=\"http://rdf.data-vocabulary.org/#\" xmlns:ical=\"http://www.w3.org/2002/12/cal/icaltzd#\" xmlns:openid=\"http://xmlns.openid.net/auth#\" xmlns:owl=\"http://www.w3.org/2002/07/owl#\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" xmlns:rdfatest=\"http://rdfa.info/vocabs/rdfa-test#\" xmlns:rdfs=\"http://www.w3.org/2000/01/rdf-schema#\" xmlns:rel=\"http://vocab.org/relationship/\" xmlns:rsa=\"http://www.w3.org/ns/auth/rsa#\" xmlns:rss=\"http://web.resource.org/rss/1.0/\" xmlns:sioc=\"http://rdfs.org/sioc/ns#\" xmlns:v=\"http://www.w3.org/2006/vcard/ns#\" xmlns:wot=\"http://xmlns.com/wot/0.1/\" xmlns:xhv=\"http://www.w3.org/1999/xhtml/vocab#\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema#\" property=\"foaf:surname\">Birbeck</span>"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+<http://www.w3.org/2001/XMLSchema#maxExclusive> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/07/owl#DatatypeProperty> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2002/12/cal/icaltzd#Vevent> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/2002/12/cal/icaltzd#summary> "Weekend off in Iona" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/2002/12/cal/icaltzd#dtstart> "2006-10-21"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/2002/12/cal/icaltzd#dtend> "2006-10-23"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/2002/12/cal/icaltzd#url> <http://freetime.example.org/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#event1> <http://www.w3.org/2002/12/cal/icaltzd#location> "Iona, UK" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://example.org/wrong/foaf/uri/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://www.example.com/wrong/foaf/uri/name> "Ivan Herman" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://xmlns.com/foaf/0.1/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://example.org/wrong/foaf/uri/name> "Ivan Herman" .
+<http://www.example.org/> <http://purl.org/dc/terms/title> "E = mc2: The Most Urgent Problem of Our Time" .
+<http://www.example.org/> <http://purl.org/dc/terms/title> "E = mc2: The Most Urgent Problem of Our Time" .
+<http://www.ivan-herman.net/foaf#me> <http://example.org/wrong/foaf/uri/name> "Iv\u00E1n" .
+<http://www.ivan-herman.net/foaf#me> <http://example.org/wrong/foaf/uri/name> "Iv\u00E1n" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://xmlns.com/foaf/0.1/> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Gregg Kellogg" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:bnode36 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode36 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode36 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode37 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode37 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode37 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode38 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode38 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:bnode39 .
+_:bnode39 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode39 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode38 .
+_:bnode39 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode39 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:bnode40 .
+_:bnode40 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnode40 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode39 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Baz" .
+_:bnode40 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode40 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:bnode41 .
+_:bnode41 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnode41 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode40 .
+_:bnode41 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode41 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:bnode42 .
+_:bnode42 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/bar> .
+_:bnode42 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode41 .
+_:bnode42 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode42 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode42 .
+_:bnode43 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnode43 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode43 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#inlist> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/res> .
+_:bnode45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnode45 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/res> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode45 .
+_:bnode44 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode44 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode44 .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#inlist> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/res> .
+_:bnode48 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Bar" .
+_:bnode48 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/res> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode48 .
+_:bnode46 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "Foo" .
+_:bnode46 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode46 .
+<http://sw-app.org/img/mic_2006_03.jpg> <http://www.w3.org/1999/xhtml/vocab#alternate> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/wrong/foaf/uri/img> <http://sw-app.org/img/mic_2007_01.jpg> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://creativecommons.org/licenses/by-nc-sa/2.0/> .
+<http://example.org/example.png> <http://www.w3.org/1999/xhtml/vocab#license> <http://creativecommons.org/licenses/by-nc-sa/2.0/> .
+_:bnode50 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/wrong/foaf/uri/maker> _:bnode50 .
+_:bnode50 <http://example.org/wrong/foaf/uri/name> "John Doe" .
+<http://www.example.org/#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/wrong/foaf/uri/maker> <http://www.example.org/#me> .
+<http://www.example.org/#me> <http://example.org/wrong/foaf/uri/name> "John Doe" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#describedby> <http://example.org/describedby> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> <http://example.org/license> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#role> <http://example.org/role> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/title> "rdfagraph" .
+<http://example.org/node> <http://example.org/property> "\u03B5\u03BB\u03BB\u03B7\u03BD\u03B9\u03BA\u03CC\n\u03AC\u03C3\u03C0\u03C1\u03BF   \u03B4\u03B9\u03AC\u03C3\u03C4\u03B7\u03BC\u03B1\n" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#a> <http://purl.org/dc/terms/title> "" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/earl#testcase> _:test .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2003/g/data-view#> "GRDDL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/ma-ont#> "MA" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2002/07/owl#> "OWL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "RDF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#> "RDFa" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2000/01/rdf-schema#> "RDFS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/rif#> "RIF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2004/02/skos/core#> "SKOS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2008/05/skos-xl#> "SKOS-XL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder#> "WDR" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/ns/void#> "VOID" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#> "WDRS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#> "XHV" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <xml:> "XML" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2001/XMLSchema#> "XSD" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#> "CC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://commontag.org/ns#> "CTAG" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/> "DC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/> "DCTERMS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/wrong/foaf/uri/> "FOAF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/goodrelations/v1#> "GR" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2002/12/cal/icaltzd#> "ICAL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://ogp.me/ns#> "OG" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/stuff/rev#> "REV" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/sioc/ns#> "SIOC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2006/vcard/ns#> "V" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2006/vcard/ns#> "VCARD" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://schema.org/> "Schema" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#describedby> "DescribedBy" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> "License" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#role> "Role" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/alternate> "alternate" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/appendix> "appendix" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/cite> "cite" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/bookmark> "bookmark" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/contents> "contents" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/chapter> "chapter" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/copyright> "copyright" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/first> "first" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/glossary> "glossary" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/help> "help" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/icon> "icon" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/index> "index" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/last> "last" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#license> "license" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/meta> "meta" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/next> "next" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/prev> "prev" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/previous> "previous" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/section> "section" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/start> "start" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/stylesheet> "stylesheet" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/subsection> "subsection" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/top> "top" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/up> "up" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/p3pv1> "p3pv1" .
+<http://www.example.org> <http://example.org/xmllit> "This is\nan XMLLiteral"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/photo1.jpg> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
+<http://www.ivan-herman.net/foaf#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
+<http://www.w3.org/Person/Ivan#me> <http://www.w3.org/2002/07/owl#sameAs> <http://www.ivan-herman.net/foaf#me> .
+<http://www.ivan-herman.net/foaf#me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
+<http://www.w3.org/Person/Ivan#me> <http://www.w3.org/2002/07/owl#sameAs> <http://www.ivan-herman.net/foaf#me> .
+<http://www.ivan-herman.net/Images/me2003-small.png> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Image> .
+<http://www.ivan-herman.net/foaf#me> <http://example.org/wrong/foaf/uri/depiction> <http://www.ivan-herman.net/Images/me2003-small.png> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "18 March 2012" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "midnight" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "18 March 2012 at midnight" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "2012-03-18Z" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "00:00:00Z" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "2012-03-18T00:00:00Z" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "not this" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "18 March 2012 at midnight"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "2011 years 6 months 28 days" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "Two Thousand Twelve" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "March, Two Thousand Twelve" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> " 2012-03-18Z" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> " 2012-03-18Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "\n    Non matching lexical value with language.\n  " .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "I came, I saw, I conquered" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "18 March 2012 at midnight in San Francisco" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "" .
+<http://example.org/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value" .
+<http://example.org/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value" .
+<http://example.net/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value" .
+<http://example.net/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value two" .
+<http://example.net/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value one" .
+<http://www.example.org> <http://example.org/column:test> "Test" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2003/g/data-view#> "GRDDL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/ma-ont#> "MA" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2002/07/owl#> "OWL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "RDF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/ns/rdfa#> "RDFa" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2000/01/rdf-schema#> "RDFS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/rif#> "RIF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2004/02/skos/core#> "SKOS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2008/05/skos-xl#> "SKOS-XL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder#> "WDR" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/ns/void#> "VOID" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#> "WDRS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#> "XHV" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <xml:> "XML" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2001/XMLSchema#> "XSD" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#> "CC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://commontag.org/ns#> "CTAG" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/> "DC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/> "DCTERMS" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://example.org/wrong/foaf/uri/> "FOAF" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/goodrelations/v1#> "GR" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2002/12/cal/icaltzd#> "ICAL" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://ogp.me/ns#> "OG" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/stuff/rev#> "REV" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/sioc/ns#> "SIOC" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2006/vcard/ns#> "V" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2006/vcard/ns#> "VCARD" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://schema.org/> "Schema" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#describedby> "DescribedBy" .
