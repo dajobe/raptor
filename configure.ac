@@ -46,13 +46,16 @@ release_version=no
 AC_ARG_ENABLE(release, [  --enable-release        Turn on optimizations (for maintainer).  ], \
  if test "$enableval" = "yes"; then \
 	  release_version=yes
-fi;)	
+fi;)
 
 AM_CONDITIONAL(RELEASE_VERSION, test $release_version = yes)
 if test "$USE_MAINTAINER_MODE" = yes -a $release_version = no; then 
+  dnl need to change quotes to allow square brackets
+  changequote(<<, >>)dnl
   CFLAGS=`echo $CFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
   CXXFLAGS=`echo $CXXFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
   CPPFLAGS=`echo $CPPFLAGS | sed -e "s/-O[A-Za-z0-9]*//"`
+  changequote([, ])dnl
 fi
 RPM_RELEASE=SNAP
 if test "$release_version" = "yes"; then
