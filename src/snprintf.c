@@ -128,6 +128,8 @@ vsnprintf_is_c99(void)
       len = vsnprintf(buffer, size, format, arguments);                 \
   } while(0)
 
+#ifndef STANDALONE
+
 /**
  * raptor_vsnprintf2:
  * @buffer: buffer (or NULL)
@@ -348,3 +350,92 @@ raptor_format_integer(char* buffer, size_t bufsize, int integer,
 
   return len;
 }
+
+
+#else /* STANDALONE */
+
+
+int main(int argc, char *argv[]);
+
+static const char* program;
+
+static int
+test_snprintf_real(int len_ref, const char *format, va_list arguments)
+{
+  int len = -2;
+  size_t size = 0;
+
+  VSNPRINTF_NOT_C99_BLOCK(len, NULL, size, format, arguments);
+
+  if(len != len_ref) {
+    fprintf(stderr,
+            "%s: VSNPRINTF_NOT_C99_BLOCK(len=%d, size=%d, format=\"%s\") failed : expected %d, got %d\n",
+            program, len, (int)size, format, (int)len_ref, (int)len);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+test_snprintf(size_t len_ref, const char *format, ...)
+{
+  va_list arguments;
+  int rc;
+
+  va_start(arguments, format);
+  rc = test_snprintf_real(RAPTOR_BAD_CAST(int, len_ref), format, arguments);
+  va_end(arguments);
+
+  return rc;
+}
+
+
+#define FMT_LEN_MAX 128
+#define ARG_LEN_MAX 128
+
+int
+main(int argc, char *argv[])
+{
+  char fmt[FMT_LEN_MAX + 1];
+  char arg[ARG_LEN_MAX + 1];
+  size_t x, y;
+  int errors = 0;
+
+  program = raptor_basename(argv[0]);
+
+  for(x = 2; x < FMT_LEN_MAX; x++) {
+    for(y = 0; y < ARG_LEN_MAX; y++) {
+      size_t len_ref = x + y - 2;
+
+      /* fmt = "xxxxxxxx%s"
+       * (number of 'x' characters varies)
+       */
+      memset(fmt, 'x', x - 2);
+      fmt[x - 2] = '%';
+      fmt[x - 1] = 's';
+      fmt[x] = '\0';
+
+      /* arg = "yyyyyyyy"
+       * (number of 'y' characters varies)
+       */
+      memset(arg, 'y', y);
+      arg[y] = '\0';
+
+      /* assert(strlen(fmt) == x); */
+      /* assert(strlen(arg) == y); */
+
+      /* len_ref = sprintf(buf_ref, fmt, arg);
+         assert((size_t)len_ref == x + y - 2); */
+
+      if(test_snprintf(len_ref, fmt, arg))
+        errors++;
+    }
+  }
+
+  return errors;
+}
+
+
+#endif /* STANDALONE */

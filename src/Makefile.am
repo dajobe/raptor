@@ -34,7 +34,7 @@ raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
 raptor_turtle_writer_test raptor_avltree_test raptor_term_test \
-raptor_permute_test
+raptor_permute_test raptor_snprintf_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -299,6 +299,9 @@ raptor_term_test: $(srcdir)/raptor_term.c libraptor2.la
 
 raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_permute_test.c libraptor2.la $(LIBS)
+
+raptor_snprintf_test: $(srcdir)/snprintf.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/snprintf.c libraptor2.la $(LIBS)
 
 
 if MAINTAINER_MODE
