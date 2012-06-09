@@ -49,7 +49,7 @@
 #include "rdfa_utils.h"
 
 
-#define RAPTOR_DEFAULT_RDFA_VERSION 11
+#define RAPTOR_DEFAULT_RDFA_VERSION 0
 
 /*
  * RDFA parser object
