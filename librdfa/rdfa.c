@@ -229,6 +229,14 @@ static void start_element(void *parser_context, const char* name,
    const char* datatype_curie = NULL;
    char* datatype = NULL;
 
+#ifdef LIBRDFA_IN_RAPTOR
+   if(1) {
+        raptor_parser* rdf_parser = (raptor_parser*)context->callback_data;
+        raptor_sax2_update_document_locator(context->sax2,
+                                            &rdf_parser->locator);
+    }
+#endif
+
    rdfa_push_item(context_stack, context, RDFALIST_FLAG_CONTEXT);
 
    if(DEBUG)
