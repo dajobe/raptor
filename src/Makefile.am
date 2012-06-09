@@ -168,6 +168,7 @@ $(top_srcdir)/librdfa/curie.c \
 $(top_srcdir)/librdfa/iri.c \
 $(top_srcdir)/librdfa/language.c \
 $(top_srcdir)/librdfa/lists.c \
+$(top_srcdir)/librdfa/namespace.c \
 $(top_srcdir)/librdfa/rdfa.c \
 $(top_srcdir)/librdfa/rdfa_utils.c \
 $(top_srcdir)/librdfa/subject.c \
