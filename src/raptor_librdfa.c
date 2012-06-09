@@ -265,8 +265,8 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
   
   librdfa_parser = (raptor_librdfa_parser_context*)rdf_parser->context;
 
-  locator->line = 1;
-  locator->column = 0;
+  locator->line = -1;
+  locator->column = -1;
   locator->byte = 0;
 
   if(rdf_parser->base_uri)
