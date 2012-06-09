@@ -549,22 +549,9 @@ static void start_element(void *parser_context, const char* name,
                      saveptr++;
                   }
                   iri = strtok_r(NULL, RDFA_WHITESPACE, &saveptr);
-                  if(!iri)
-                      break;
 
                   /* update the prefix mappings */
-#ifdef LIBRDFA_IN_RAPTOR
-                  if(1) {
-                     raptor_namespace_stack* nstack;
-                     nstack = &context->sax2->namespaces;
-                     raptor_namespaces_start_namespace_full(nstack,
-                         (const unsigned char*)atprefix,
-                         (const unsigned char*)iri,
-                          0);
-                  }
-#else
                   rdfa_update_uri_mappings(context, atprefix, iri);
-#endif
 
                   if(!saveptr)
                       break;
