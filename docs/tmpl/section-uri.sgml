@@ -83,6 +83,18 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_uri_relative_to_base_counted ##### -->
+<para>
+
+</para>
+
+@world: 
+@base_uri: 
+@uri_string: 
+@uri_len: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_new_uri_from_id ##### -->
 <para>
 
