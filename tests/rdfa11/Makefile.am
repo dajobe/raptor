@@ -127,7 +127,7 @@ ALL_TEST_FILES= \
 # 0285 - @datatime not supported??
 # 0286 - fails to pass on @lang value
 # 0287 - datatype (@datetime etc.) attribute value is not used
-# 0295 - ???
+# 0295 - ??? non-ascii data???
 # 0296 - ???
 # 0297 - librdfa does not seem to handle @about=[] or assign the lit value
 # 0302 - librdfa fails to generate [] a dc:Agent triple
