@@ -121,15 +121,15 @@ ALL_TEST_FILES= \
 # 0134 - predicate is wrong in RDFa 1.1 mode, works with RDFa 1.0
 # 0190 - predicate is wrong in RDFa 1.1 mode, works with RDFa 1.0
 # 0197-0239 - ???
-# 0256 - librdfa gets the wrong language code "hu" instead of "fr" why???
+# 0256 - librdfa failure: wrong language code "hu" instead of "fr" why???
 # 0259 - ???
-# 0260 - librdfa gets this wrong; wrong host language/detection ???
+# 0260 - librdfa failure: ??? wrong host language/detection ???
 # 0272-0285 - datatype (@datetime etc.) attribute value is not used
-# 0286 - fails to pass on @lang value
+# 0286 - librdfa failure: fails to let @value override @content in data
 # 0287 - datatype (@datetime etc.) attribute value is not used
 # 0295 - ??? non-ascii data???
-# 0297 - librdfa does not seem to handle @about=[] or assign the lit value
-# 0302 - librdfa fails to generate [] a dc:Agent triple
+# 0297 - librdfa failure: does not handle @about=[] or assign the lit value
+# 0302 - librdfa failure: does not generate [] a dc:Agent triple
 # 0303 - ???
 # 0304 - requires running an RDF/XML parse for metadata in SVG <metadata>
 #
