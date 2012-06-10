@@ -130,7 +130,7 @@ ALL_TEST_FILES= \
 # 0295 - ??? non-ascii data???
 # 0297 - librdfa failure: does not handle @about=[] or assign the lit value
 # 0302 - librdfa failure: does not generate [] a dc:Agent triple
-# 0303 - ???
+# 0303 - librdfa failure: does not remove @rel/@rev terms if @property exists
 # 0304 - requires running an RDF/XML parse for metadata in SVG <metadata>
 #
 # (Add a space to the start of this string)
