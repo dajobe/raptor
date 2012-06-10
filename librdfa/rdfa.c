@@ -478,6 +478,15 @@ static void start_element(void *parser_context, const char* name,
       }
    }
 
+#ifdef LIBRDFA_IN_RAPTOR
+   if(context->sax2) 
+   {
+       /* Raptor handles xml:lang itself but not 'lang' */
+       xml_lang = (char*)raptor_sax2_inscope_xml_language(context->sax2);
+       xml_lang = rdfa_replace_string(NULL, xml_lang);
+   }
+#endif
+
    /* prepare all of the RDFa-specific attributes we are looking for.
     * scan all of the attributes for the RDFa-specific attributes */
    if(attributes != NULL)
@@ -686,32 +695,16 @@ static void start_element(void *parser_context, const char* name,
                   CURIE_PARSE_INSTANCEOF_DATATYPE);
             }
          }
-#ifdef LIBRDFA_IN_RAPTOR
-         /* Raptor handles xml:lang itself but not 'lang' */
-         else if((attrns == NULL && strcmp(attr, "lang") == 0))
-         {
-           xml_lang = value; /* shared pointer */
-         }
-#else
          else if((attrns == NULL && strcmp(attr, "lang") == 0) ||
             (attrns != NULL && strcmp(attrns, "xml") == 0 &&
                strcmp(attr, "lang") == 0))
          {
             xml_lang = rdfa_replace_string(xml_lang, value);
          }
-#endif
 
          free(value);
       }
    }
-
-#ifdef LIBRDFA_IN_RAPTOR
-   if(context->sax2 && !xml_lang) {
-      xml_lang = (char*)raptor_sax2_inscope_xml_language(context->sax2);
-      if(!xml_lang)
-        xml_lang = (char*)"";
-   }
-#endif
 
    /* The root element has an implicit @about declaration */
    if(context->depth == 1 && about == NULL && resource == NULL &&
@@ -962,11 +955,7 @@ static void start_element(void *parser_context, const char* name,
    rdfa_free_list(type_of);
    rdfa_free_list(rel);
    rdfa_free_list(rev);
-#ifdef LIBRDFA_IN_RAPTOR
-   /* This is a SHARED pointer in raptor */
-#else
    free(xml_lang);
-#endif
    free(content);
    free(resource);
    free(href);
