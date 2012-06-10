@@ -319,8 +319,12 @@ raptor_xml_element_is_empty(raptor_xml_element* xml_element)
  * @sax2: SAX2 object
  * 
  * Get the in-scope XML language
+ *
+ * The result is a language string which may be "" if xml:lang="" is
+ * given.  NULL is returned only if there is no xml:lang in any outer
+ * scope.
  * 
- * Return value: the XML language or NULL if none is in scope.
+ * Return value: shared pointer to the XML language or NULL if none is in scope.
  */
 const unsigned char*
 raptor_sax2_inscope_xml_language(raptor_sax2 *sax2)
@@ -329,14 +333,11 @@ raptor_sax2_inscope_xml_language(raptor_sax2 *sax2)
   
   for(xml_element = sax2->current_element;
       xml_element; 
-      xml_element = xml_element->parent)
-    if(xml_element->xml_language) {
-      if(!*xml_element->xml_language)
-        return NULL;
+      xml_element = xml_element->parent) {
+    if(xml_element->xml_language)
       return xml_element->xml_language;
-    }
-  
-    
+  }
+
   return NULL;
 }
 
