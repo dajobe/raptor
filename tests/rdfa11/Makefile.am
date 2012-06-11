@@ -112,17 +112,20 @@ ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
-# Expected test failures (38):
+# Expected test failures (33):
 # Test  Problem    Description
 # ----------------------------
 # 0114  raptor???  bizarre relative URI expected
 # 0134  librdfa    fails mixed-case reserved words generate triples.
 # 0190  librdfa    fails term case insensitivity 
-# 0197-0239
+# 0198  raptor???  XML canonicalization
+# 0202  librdfa    ensure @xml:base in SVG and XHTML5
+# 0203  librdfa    ensure @, XML+RDFa in non-root elements in SVG and XHTML5
+# 0234 0235 0236 0237 0238 0239
 #       ???        ???
 # 0256  librdfa    wrong language code "hu" instead of "fr"
 # 0259  raptor???  sends predicate URI 'xml:'
-# 0272-0282 
+# 0272 0273 0274 0275 0276 0277 0278 0279 0280 0281 0282
 #       librdfa    datatype support
 # 0285  librdfa    time element with @datetime an invalid datatype ...
 # 0286  librdfa    fails to let @value override @content in data
@@ -134,7 +137,7 @@ ALL_TEST_FILES= \
 # 0304  ???        requires running RDF/XML parse for SVG metadata
 #
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0114.xml 0134.xml 0190.xml 0197.xml 0198.xml 0201.xml 0202.xml 0203.xml 0218.xml 0220.xml 0221.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0259.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0295.xml 0297.xml 0302.xml 0303.xml 0304.xml"
+EXPECTED_FAILURES=" 0114.xml 0134.xml 0190.xml 0198.xml 0202.xml 0203.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0259.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0295.xml 0297.xml 0302.xml 0303.xml 0304.xml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
