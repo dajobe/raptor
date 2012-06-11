@@ -1,3 +1,4 @@
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0220.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnodeid1 .
-_:bnodeid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
-_:bnodeid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0220.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/foo> .
+_:bnode0 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0220.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:bnode0 .
