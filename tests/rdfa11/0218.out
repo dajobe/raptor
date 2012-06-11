@@ -1,1 +1,1 @@
-_:s <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0218.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
