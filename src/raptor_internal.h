@@ -686,6 +686,7 @@ void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) 
 void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_log_error_varargs(raptor_parser* parser, raptor_log_level level, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(3, 0);
 void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+void raptor_parser_log_error_varargs(raptor_parser* parser, raptor_log_level level, const char *message, va_list arguments);
 
 /* logging */
 void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
@@ -818,8 +819,8 @@ void raptor_terminate_parser_grddl_common(raptor_world *world);
 #define rdfa_establish_new_1_1_subject raptor_librdfa_ablish_new_1_1_subject
 #define rdfa_establish_new_1_1_subject_with_relrev raptor_librdfa_ablish_new_1_1_subject_with_relrev
 #define rdfa_establish_new_inlist_triples raptor_librdfa_ablish_new_inlist_triples
-#define rdfa_free_context raptor_librdfa_e_context
-#define rdfa_free_context_stack raptor_librdfa_e_context_stack
+#define rdfa_free_context raptor_librdfa_free_context
+#define rdfa_free_context_stack raptor_librdfa_free_context_stack
 #define rdfa_free_list raptor_librdfa_rdfa_free_list
 #define rdfa_free_mapping raptor_librdfa_rdfa_free_mapping
 #define rdfa_free_triple raptor_librdfa_rdfa_free_triple
