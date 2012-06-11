@@ -4,10 +4,10 @@
 <head>
   <title>Test 0226</title>
 </head>
-<body>
+<body prefix="ex: http://www.example.org/">
   <div about="">
     <p property="rdf:value" inlist="">Foo</p>
-    <span rel="rdf:inlist" resource="res">
+    <span rel="ex:inlist" resource="res">
       <p property="rdf:value" inlist="">Bar</p>
     </span>
   </div>
