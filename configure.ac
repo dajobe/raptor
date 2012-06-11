@@ -914,7 +914,7 @@ if test "X$CURL_CONFIG" != X; then
   if test $have_curl_easy_init = yes -a "$ac_cv_header_curl_curl_h" = yes; then
     LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
     libcurl_vernum=`$CURL_CONFIG --vernum`
-    if test $libcurl_vernum -lt $libcurl_min_vernum; then
+    if test $libcurl_vernum '<' $libcurl_min_vernum; then
       AC_MSG_WARN(Using libcurl $LIBCURL_VERSION is unsupported - $libcurl_min_version or newer required.)
       AC_MSG_RESULT(no - version $LIBCURL_VERSION is too old)
     else
