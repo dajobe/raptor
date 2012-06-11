@@ -265,7 +265,7 @@ raptor_new_term_from_literal(raptor_world* world,
                              const unsigned char* language)
 {
   size_t literal_len = 0;
-  unsigned char language_len = 0;
+  size_t language_len = 0;
   
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -275,10 +275,11 @@ raptor_new_term_from_literal(raptor_world* world,
     literal_len = strlen(RAPTOR_GOOD_CAST(const char*, literal));
 
   if(language)
-    language_len = RAPTOR_GOOD_CAST(unsigned char, strlen(RAPTOR_BAD_CAST(const char*, language)));
+    language_len = strlen(RAPTOR_GOOD_CAST(const char*, language));
 
   return raptor_new_term_from_counted_literal(world, literal, literal_len,
-                                              datatype, language, language_len);
+                                              datatype, language,
+                                              RAPTOR_BAD_CAST(unsigned char, language_len));
 }
 
 
