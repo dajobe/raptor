@@ -1174,7 +1174,10 @@ raptor_parser_parse_abort(raptor_parser *rdf_parser)
 raptor_locator*
 raptor_parser_get_locator(raptor_parser *rdf_parser)
 {
-  return &rdf_parser->locator;
+  if(rdf_parser->factory->get_locator)
+    return rdf_parser->factory->get_locator(rdf_parser);
+  else
+    return &rdf_parser->locator;
 }
 
 

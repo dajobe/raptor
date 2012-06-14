@@ -571,6 +571,9 @@ struct raptor_parser_factory_s {
 
   /* get the current graph (OPTIONAL) - if not implemented, the current graph is always the default (NULL) and start/end graph marks are synthesised */
   raptor_uri* (*get_graph)(raptor_parser* rdf_parser);
+
+  /* get the locator (OPTIONAL) */
+  raptor_locator* (*get_locator)(raptor_parser* rdf_parser);
 };
 
 

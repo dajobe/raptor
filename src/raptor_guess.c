@@ -217,6 +217,19 @@ raptor_guess_guess_get_description(raptor_parser* rdf_parser)
 }
 
 
+static raptor_locator *
+raptor_guess_guess_get_locator(raptor_parser *rdf_parser)
+{
+  raptor_guess_parser_context *guess_parser;
+  guess_parser = (raptor_guess_parser_context*)rdf_parser->context;
+
+  if(guess_parser && guess_parser->parser)
+    return raptor_parser_get_locator(guess_parser->parser);
+  else
+    return &rdf_parser->locator;
+}
+
+
 static const char* const guess_names[2] = { "guess", NULL };
 
 static int
@@ -240,6 +253,7 @@ raptor_guess_parser_register_factory(raptor_parser_factory *factory)
   factory->accept_header = raptor_guess_accept_header;
   factory->get_name = raptor_guess_guess_get_name;
   factory->get_description = raptor_guess_guess_get_description;
+  factory->get_locator = raptor_guess_guess_get_locator;
 
   return 0;
 }
