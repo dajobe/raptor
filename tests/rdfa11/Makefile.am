@@ -112,7 +112,7 @@ ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
-# Expected test failures (32):
+# Expected test failures (31):
 # Test  Problem    Description
 # ----------------------------
 # 0114  raptor???  bizarre relative URI expected
@@ -129,14 +129,13 @@ ALL_TEST_FILES= \
 # 0285  librdfa    time element with @datetime an invalid datatype ...
 # 0286  librdfa    fails to let @value override @content in data
 # 0287  librdfa    datatype (@datetime etc.) attribute value
-# 0295  raptor???  ??? test runner with non-ascii data???
 # 0297  librdfa    does not handle @about=[] or assign the lit value
 # 0302  librdfa    does not generate [] a dc:Agent triple
 # 0303  librdfa    does not remove @rel/@rev terms if @property exists
 # 0304  ???        requires running RDF/XML parse for SVG metadata
 #
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0114.xml 0134.xml 0190.xml 0198.xml 0202.xml 0203.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0295.xml 0297.xml 0302.xml 0303.xml 0304.xml"
+EXPECTED_FAILURES=" 0114.xml 0134.xml 0190.xml 0198.xml 0202.xml 0203.xml 0234.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0297.xml 0302.xml 0303.xml 0304.xml"
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
