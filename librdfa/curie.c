@@ -453,7 +453,11 @@ char* rdfa_resolve_curie(
          {
             /* if the prefix was defined, get it from the set of URI mappings. */
 #ifdef LIBRDFA_IN_RAPTOR
-            if(strcmp(prefix, "xml"))
+            if(!strcmp(prefix, "xml"))
+            {
+               expanded_prefix = RAPTOR_GOOD_CAST(const char*, raptor_xml_namespace_uri);
+            }
+            else
             {
                raptor_namespace *nspace;
                raptor_uri* ns_uri;
