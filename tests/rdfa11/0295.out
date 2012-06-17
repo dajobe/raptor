@@ -389,7 +389,7 @@ _:bnode50 <http://xmlns.com/foaf/0.1/name> "John Doe" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/ns/void#> "VOID" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#> "WDRS" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#> "XHV" .
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <xml:> "XML" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/XML/1998/namespace> "XML" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2001/XMLSchema#> "XSD" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#> "CC" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://commontag.org/ns#> "CTAG" .
@@ -453,8 +453,8 @@ _:bnode50 <http://xmlns.com/foaf/0.1/name> "John Doe" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "March, Two Thousand Twelve" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> " 2012-03-18Z" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> " 2012-03-18Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "\n    Non matching lexical value with language.\n  "@D-Day .
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "I came, I saw, I conquered"@ .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "\n    Non matching lexical value with language.\n  "@en .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "I came, I saw, I conquered"@lat .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "18 March 2012 at midnight in San Francisco" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "" .
 <http://example.org/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "value" .
@@ -476,7 +476,7 @@ _:bnode50 <http://xmlns.com/foaf/0.1/name> "John Doe" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfs.org/ns/void#> "VOID" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2007/05/powder-s#> "WDRS" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/xhtml/vocab#> "XHV" .
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <xml:> "XML" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/XML/1998/namespace> "XML" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/2001/XMLSchema#> "XSD" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#> "CC" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://commontag.org/ns#> "CTAG" .
