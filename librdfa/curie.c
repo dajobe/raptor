@@ -346,6 +346,9 @@ char* rdfa_resolve_curie(
    char* rval = NULL;
    curie_t ctype = rdfa_get_curie_type(uri);
 
+   if(!uri)
+      return NULL;
+
    if(ctype == CURIE_TYPE_INVALID)
    {
       rval = NULL;
