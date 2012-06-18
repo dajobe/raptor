@@ -664,6 +664,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(rc)
       return rc;
     blank = 0;
+    collection = 0;
     
   } else if(subject->node->term->type == RAPTOR_TERM_TYPE_BLANK) {
     if((subject->node->count_as_subject == 1 && 
