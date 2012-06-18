@@ -320,7 +320,7 @@ raptor_qname_copy(raptor_qname *qname)
 
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
-      RAPTOR_FREE(raptor_qname, qname);
+      RAPTOR_FREE(raptor_qname, new_qname);
       return NULL;
     } 
 
