@@ -427,12 +427,14 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
   const int bucket = hash % (nstack->table_size);
 
   for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
-    if(!prefix && !ns->prefix)
-      break;
-    
-    if((unsigned int)prefix_length == ns->prefix_length && 
-       !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
-      break;
+    if(!prefix) {
+      if(!ns->prefix)
+        break;
+    } else {
+      if((unsigned int)prefix_length == ns->prefix_length && 
+         !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
+        break;
+    }
   }
 
   return ns;
