@@ -377,23 +377,28 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   }
   result.path = path_buffer;
   *path_buffer = '\0';
-  
-  for(p = base->path + base->path_len-1; p > base->path && *p != '/'; p--)
-    ;
 
-  if(p >= base->path) {
-    result.path_len = p-base->path+1;
-
-    /* Found a /, copy everything before that to path_buffer */
+  if(!ref->path) {
+    /* If there is no reference path, copy the full base over */
+    result.path_len = base->path_len;
     memcpy(path_buffer, base->path, result.path_len);
-    path_buffer[result.path_len]='\0';
-  }
+  } else {
+    /** Otherwise copy base path up to previous / and append ref path */
+    for(p = base->path + base->path_len - 1; p > base->path && *p != '/'; p--)
+      ;
 
-  if(ref->path) {
+    if(p >= base->path) {
+      result.path_len = p-base->path + 1;
+
+      /* Found a /, copy everything before that to path_buffer */
+      memcpy(path_buffer, base->path, result.path_len);
+      path_buffer[result.path_len] = '\0';
+    }
+
     memcpy(path_buffer + result.path_len, ref->path, ref->path_len + 1);
     result.path_len += ref->path_len;
-    path_buffer[result.path_len]='\0';
   }
+  path_buffer[result.path_len] = '\0';
 
 
   /* remove all "./" path components */
@@ -698,7 +703,7 @@ main(int argc, char *argv[])
   failures += check_resolve(base_uri, "gpath/", "http://example.org/bpath/cpath/gpath/");
   failures += check_resolve(base_uri, "/gpath", "http://example.org/gpath");
   failures += check_resolve(base_uri, "//gpath", "http://gpath");
-  failures += check_resolve(base_uri, "?y", "http://example.org/bpath/cpath/?y");
+  failures += check_resolve(base_uri, "?y", "http://example.org/bpath/cpath/d;p?y");
   failures += check_resolve(base_uri, "gpath?y", "http://example.org/bpath/cpath/gpath?y");
   failures += check_resolve(base_uri, "#s", "http://example.org/bpath/cpath/d;p?querystr#s");
   failures += check_resolve(base_uri, "gpath#s", "http://example.org/bpath/cpath/gpath#s");
@@ -779,6 +784,11 @@ main(int argc, char *argv[])
 
   /* Issue#000177 http://bugs.librdf.org/mantis/view.php?id=177 */
   failures += check_resolve("foo:1234", "9999", "foo:9999");
+
+  /* RDFa 1.1 test 0114 */
+  failures += check_resolve("http://example.org/file",
+                            "?foo=bar../baz",
+                            "http://example.org/file?foo=bar../baz");
 
   return failures;
 }
