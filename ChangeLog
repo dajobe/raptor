@@ -1,5 +1,32 @@
 2012-06-17  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_serialize_turtle.c: Do not emit a Turtle (...)
+	collection if the list item is a URI
+
+	Fixes Issue #0000381
+	http://bugs.librdf.org/mantis/view.php?id=381
+
+	* tests/rdfa11/Makefile.am: 29 failures - 0114 passes
+
+	* tests/rdfa11/0114.out: Correct expected result based on original
+	sparql
+
+	* src/raptor_rfc2396.c:
+	Fix URI resolving with reference uri '?y'
+
+	(raptor_uri_resolve_uri_reference): When reference uri has no path,
+	copy the base path over.
+
+	(main): Correct the test case expected result for '?y' following
+	RFC3986 section 5.4.1 Normal examples.  Add test case based on
+	RDFa 1.1 test 0114
+
+	* tests/rdfa11/Makefile.am: 30 failures - 0234 passes
+
+	* tests/rdfa11/0234.out: Fix test URI
+
+	* tests/rdfa11/Makefile.am: notes
+
 	* tests/rdfa11/Makefile.am: 32 failures - 0295 passes
 
 	* tests/rdfa11/0295.out: Update XML ns; remove non-ascii junk
