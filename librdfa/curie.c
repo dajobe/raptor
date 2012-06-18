@@ -187,6 +187,10 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       }
    }
 
+   /* It is possible that rval may be NULL here in OOM scenarios */
+   if(!rval)
+     return NULL;
+
    /* Find the start of a scheme-based URL path */
    path_start = (char*)strstr(rval, "://");
    if(path_start != NULL)
