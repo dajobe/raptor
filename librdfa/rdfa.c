@@ -1074,7 +1074,7 @@ static void end_element(void* parser_context, const char* name,
       }
 
       /* update the plain literal if the XML Literal is an empty string */
-      if(strlen(context->xml_literal) == 0)
+      if(context->xml_literal != NULL && strlen(context->xml_literal) == 0)
       {
          context->plain_literal =
             rdfa_replace_string(context->plain_literal, "");
