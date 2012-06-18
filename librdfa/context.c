@@ -41,7 +41,7 @@ rdfacontext* rdfa_create_context(const char* base)
       /* malloc and init whole context to NULL */
       rval = (rdfacontext*)malloc(sizeof(rdfacontext));
       if(!rval)
-        return NULL;
+         return NULL;
 
       memset(rval, 0, sizeof(rdfacontext));
 
@@ -362,6 +362,9 @@ rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack)
    rdfacontext* parent_context = (rdfacontext*)
       context_stack->items[context_stack->num_items - 1]->data;
    rdfacontext* rval = rdfa_create_context(parent_context->base);
+
+   if(!rval)
+      return NULL;
 
    /* * Otherwise, the values are: */
 
