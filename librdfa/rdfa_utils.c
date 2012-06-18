@@ -277,7 +277,12 @@ void* rdfa_pop_item(rdfalist* stack)
 
 void rdfa_add_item(rdfalist* list, void* data, liflag_t flags)
 {
-   rdfalistitem* item = (rdfalistitem*)malloc(sizeof(rdfalistitem));
+   rdfalistitem* item;
+
+   if(!list)
+      return;
+
+   item = (rdfalistitem*)malloc(sizeof(rdfalistitem));
 
    item->data = NULL;
 
