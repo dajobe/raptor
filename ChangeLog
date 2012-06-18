@@ -1,5 +1,35 @@
 2012-06-17  Dave Beckett <dave@dajobe.org>
 
+	* librdfa/rdfa_utils.c:
+	(rdfa_add_item): Protect NULL list lookup [clang]
+
+	* librdfa/curie.c:
+	(rdfa_resolve_curie): Protect NULL uri lookup [clang]
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_find_namespace): No NULL prefix for strcmp
+	[clang]
+
+	* librdfa/context.c:
+	(rdfa_create_new_element_context): Return NULL on OOM [clang]
+
+	* librdfa/context.c: librdfa in raptor: do not print to stdout on
+	failure
+
+	(rdfa_create_context): Remove printf with hardcoded message.  if
+	malloc fails return NULL
+
+	* librdfa/rdfa.c:
+	(end_element): Protect for NULL xml_literal before strlen [clang]
+
+	* librdfa/curie.c:
+	(rdfa_resolve_uri): empty rval check for OOM [clang]
+
+	* src/raptor_qname.c:
+	(raptor_qname_copy): Free new_qname on OOM [clang]
+
+	* NEWS.html, RELEASE.html: 2.0.8
+
 	* src/raptor_serialize_turtle.c: Do not emit a Turtle (...)
 	collection if the list item is a URI
 
