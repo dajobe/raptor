@@ -14,7 +14,17 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=381">0000381</a>: Raptor incorrectly serializes turtle lists when list nodes are URIs.</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=505">0000505</a>: Parsing certain escaped unicode strings in Turtle cases an error</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=507">0000507</a>: Turtle parse error causes fatal error</li>
+</ul>
+
 <h3>Parser class changes</h3>
+
+<p>Guess parser: now returns location information from inner parser.
+</p>
 
 <p>RDFa parser: Updated librdfa to latest GIT supporting RDFa 1.1.  Made
 several resilience and crash fixes.  Updated RDFa 1.0 test suite to
@@ -40,11 +50,29 @@ the qname that failed (usually due to unknown prefix).
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=507">Issue #0000507</a>
 </p>
 
+
+<h3>SAX2 API changes</h3>
+
+<p><code>raptor_sax2_inscope_xml_language()</code> will now return ""
+for explicit no language (<code>xml:lang=""</code>) as well as NULL
+for undefined language (no <code>xml:lang</code> present).
+</p>
+
+
+<h3>Serializer class changes</h3>
+
+<p>Turtle: Do not emit a Turtle <code>(...)</code> collection if the
+list item is a URI.  This fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=381">Issue #0000381</a>.
+</p>
+
+
 <h3>Term class changes</h3>
 
 <p>Added <code>raptor_term_to_turtle_counted_string()</code> counted
 string form of <code>raptor_term_to_turtle_string</code>.
 </p>
+
 
 <h3>Unicode class changes</h3>
 
@@ -55,7 +83,13 @@ rather than returning failure.  BOMs remain forbidden - definitely not UTF-8.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=505">Issue #0000505</a>
 </p>
 
+
 <h3>URI class changes</h3>
+
+<p>Fixed URI resolving with reference (relative) URIs that are bare
+queries like '?y' with no path.  Now matches the specification
+RFC3986 section 5.4.1 Normal Examples.
+</p>
 
 <p>Added <code>raptor_new_uri_relative_to_base_counted()</code>
 to construct URI relative to current base.
@@ -64,6 +98,7 @@ to construct URI relative to current base.
 <p>Added <code>raptor_uri_to_turtle_counted_string()</code> counted
 string form of <code>raptor_uri_to_turtle_string</code>.
 </p>
+
 
 <h3>WWW class changes</h3>
 
