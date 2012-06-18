@@ -23,12 +23,16 @@
 
 <h3>Parser class changes</h3>
 
-<p>Guess parser: now returns location information from inner parser.
+<p>Guess parser: now returns error file and line location information
+from the guessed parser.
 </p>
 
-<p>RDFa parser: Updated librdfa to latest GIT supporting RDFa 1.1.  Made
-several resilience and crash fixes.  Updated RDFa 1.0 test suite to
-latest tests and made fixes.  The RDFa parser now accepts 
+<p>RDFa parser: Updated <a href="https://github.com/rdfa/librdfa">librdfa</a>
+to the latest GIT supporting 
+<a href="http://www.w3.org/TR/2012/REC-rdfa-core-20120607/">RDFa 1.1</a>
+with 30 tests still not passing - mostly issues in the core librdfa.
+Made several resilience and crash fixes.  Updated the RDFa 1.0 test
+suite to latest tests and made fixes.  The RDFa parser now accepts
 aliases 'rdfa10', 'rdfa11' and the default 'rdfa' is RDFa 1.1
 </p>
 
@@ -129,14 +133,12 @@ with <code>--enable-debug</code>.</p>
 correctly removes -O options in flag variables for the maintainer.
 </p>
 
-<p>README and NEWS building is now only for maintainer.
+<p><code>autogen.sh</code> now looks for the environment variable
+<code>NOCONFIGURE</code> to prevent it running configure at the end
+of the auto generation run.
 </p>
 
-<p><code>autogen.sh</code> now supports NOCONFIGURE variable to
-prevent it running configure at the end of the run.
-</p>
-
-<p>The <code>configure</code> vsnprintf() check was more
+<p>The <code>configure</code> vsnprintf() check was made more
 comprehensive.
 </p>
 
