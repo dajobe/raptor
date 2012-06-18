@@ -40,6 +40,9 @@ rdfacontext* rdfa_create_context(const char* base)
 
       /* malloc and init whole context to NULL */
       rval = (rdfacontext*)malloc(sizeof(rdfacontext));
+      if(!rval)
+        return NULL;
+
       memset(rval, 0, sizeof(rdfacontext));
 
       /* clean and initialize base */
@@ -49,8 +52,11 @@ rdfacontext* rdfa_create_context(const char* base)
    }
    else
    {
+#ifdef LIBRDFA_IN_RAPTOR
+#else
       printf("librdfa error: Failed to create a parsing context, "
          "base IRI was not specified!\n");
+#endif
    }
 
    return rval;
