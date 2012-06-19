@@ -1210,7 +1210,7 @@ compare_syntax_score(const void *a, const void *b) {
   return ((struct syntax_score*)b)->score - ((struct syntax_score*)a)->score;
 }
 
-#define RAPTOR_MIN_GUESS_SCORE 5  
+#define RAPTOR_MIN_GUESS_SCORE 2
 
 /**
  * raptor_world_guess_parser_name:
