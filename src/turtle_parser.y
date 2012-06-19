@@ -1578,18 +1578,20 @@ raptor_trig_parse_recognise_syntax(raptor_parser_factory* factory,
 #ifndef RAPTOR_PARSER_TURTLE
     if(!strcmp((const char*)suffix, "ttl"))
       score = 8;
-#endif
     if(!strcmp((const char*)suffix, "n3"))
       score = 3;
+#endif
   }
   
   if(mime_type) {
+    if(strstr((const char*)mime_type, "trig"))
+      score = 6;
 #ifndef RAPTOR_PARSER_TURTLE
     if(strstr((const char*)mime_type, "turtle"))
       score += 6;
-#endif
     if(strstr((const char*)mime_type, "n3"))
       score += 3;
+#endif
   }
 
 #ifndef RAPTOR_PARSER_TURTLE
