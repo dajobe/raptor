@@ -1,10 +1,11 @@
+*.exe
+*.o
 .deps
 .libs
-raptor_abort
-grapper
 TAGS
-*.o
-*.exe
+grapper
+raptor_abort
 rdfcat
+rdfguess
 rdfprint
 rdfserialize
