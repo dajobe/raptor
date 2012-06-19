@@ -1209,7 +1209,8 @@ static int
 compare_syntax_score(const void *a, const void *b) {
   return ((struct syntax_score*)b)->score - ((struct syntax_score*)a)->score;
 }
-  
+
+#define RAPTOR_MIN_GUESS_SCORE 5  
 
 /**
  * raptor_world_guess_parser_name:
@@ -1225,6 +1226,8 @@ compare_syntax_score(const void *a, const void *b) {
  * Find a parser by scoring recognition of the syntax by a block of
  * characters, the content identifier or a mime type.  The content
  * identifier is typically a filename or URI or some other identifier.
+ *
+ * If the guessing finds only low scores, NULL will be returned.
  * 
  * Return value: a parser name or NULL if no guess could be made
  **/
@@ -1294,7 +1297,7 @@ raptor_world_guess_parser_name(raptor_world* world,
       if(type_q)
         score = type_q->q;
     }
-    /* mime type match has high Q - return result */
+    /* mime type match has high Q - return factory as result */
     if(score >= 10)
       break;
     
@@ -1310,7 +1313,7 @@ raptor_world_guess_parser_name(raptor_world* world,
           break;
       }
       if(factory_uri_string)
-        /* got an exact match syntax for URI - return result */
+        /* got an exact match syntax for URI - return factory as result */
         break;
     }
     
@@ -1342,9 +1345,10 @@ raptor_world_guess_parser_name(raptor_world* world,
   }
   
   if(!factory) {
-    /* sort the scores and pick a factory */
+    /* sort the scores and pick a factory if score is good enough */
     qsort(scores, i, sizeof(struct syntax_score), compare_syntax_score);
-    if(scores[0].score >= 0)
+
+    if(scores[0].score >= RAPTOR_MIN_GUESS_SCORE)
       factory = scores[0].factory;
   }
 
