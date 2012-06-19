@@ -152,8 +152,12 @@ check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	done; \
 	set -e; exit $$result
 
+if MAINTAINER_MODE
+check_serialize_atom_deps = $(OUT_RDF_TTLS)
+endif
+
 # Parser from Turtle and Serialize to Atom
-check-serialize-atom: $(OUT_RDF_TTLS)
+check-serialize-atom: $(check_serialize_atom_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Turtle to Atom XML"; \
 	for test in $(OUT_RDF_TTLS); do \
