@@ -23,9 +23,17 @@
 
 <h3>Parser class changes</h3>
 
-<p>Guess parser: now returns error file and line location information
-from the guessed parser.
+<p>Guessing a parser with
+<code>raptor_world_guess_parser_name()</code> now returns NULL failure
+when the guess is very poor, rather just return the first bad result.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=487">Issue #0000487</a>
+which was reported in <a href="http://librdf.org/">Redland librdf</a> but
+is implemented here.
 </p>
+
+<p>Guess parser: now returns error file and line location information
+from the guessed parser.</p>
 
 <p>RDFa parser: Updated <a href="https://github.com/rdfa/librdfa">librdfa</a>
 to the latest GIT supporting 
@@ -161,6 +169,9 @@ Out of source tree 'make check' and 'make dist' should both work.
 strcasecmp(), windows headers, configuration fixes, parsedate code,
 URI test builds, vsnprintf building.
 </p>
+
+<p>Updated the example <code>rdfguess</code> to accept a file called
+or no arguments to read from stdin.</p>
 
 
 <h2 id="rel2_0_7"><a name="rel2_0_7">Raptor2 2.0.7 changes</a></h2>
