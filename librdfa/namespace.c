@@ -122,7 +122,7 @@ void rdfa_update_uri_mappings(
                             FORMAT_2, attr);
 #else
       char msg[1024];
-      snprintf(msg, 1024, FORMAT_1, attr);
+      snprintf(msg, 1024, FORMAT_1);
       rdfa_processor_triples(context, RDFA_PROCESSOR_WARNING, msg);
 #endif
    }
