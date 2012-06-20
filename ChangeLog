@@ -1,4 +1,42 @@
+2012-06-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c: Lower min syntax guess score to 2 (Q 0.3)
+
+	* src/turtle_parser.y: If Turtle and Trig are both present, make
+	guessing prefer Turtle
+
+	Also score higher for Trig if 'trig' is in mime type
+
+	* examples/.gitignore: ignore rdfguess
+
+	* examples/rdfguess.c: Update rdfguess example code to read from
+	stdin or a file called '-'
+
+	(rdfguess_guess_name): Added and alter to accept file called '-'
+	as reading from FILE* stdin.
+
+	(main): Call above to support reading from stdin.  Do something
+	with -h/--help
+
+	* src/raptor_parse.c: Be conservative in guessing syntax - scoring
+	too low is a failure.
+
+	(raptor_world_guess_parser_name): Set min guess core to 5 (Q
+	0.6). this value isn't exposed or user configurable.
+	Addresses Issue #0000487
+	http://bugs.librdf.org/mantis/view.php?id=487
+
+	* tests/feeds/Makefile.am: Fix output turtle files for out of
+	source tree 'make check'
+
+2012-06-18  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, README.html, RELEASE.html: 2.0.8
+
 2012-06-17  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/curie.c:
+	(rdfa_resolve_curie): Protect NULL uri lookup [clang]
 
 	* librdfa/rdfa_utils.c:
 	(rdfa_add_item): Protect NULL list lookup [clang]
