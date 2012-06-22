@@ -1305,6 +1305,8 @@ static void raptor_rdfa_start_element(void *user_data,
                 nb_attributes,
                 nb_defaulted,
                 (const char**)attr);
+  if(attr)
+    free(attr);
   raptor_free_memory(localname);
 }
 
