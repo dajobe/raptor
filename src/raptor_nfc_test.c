@@ -52,7 +52,6 @@
 /* Raptor includes */
 #include "raptor2.h"
 #include "raptor_internal.h"
-#include "raptor_nfc.h"
 
 
 #undef RAPTOR_NFC_DECODE_DEBUG
