@@ -156,7 +156,7 @@ do {                                                                    \
     raptor_namespace_stack* nstack = &context->sax2->namespaces;        \
     raptor_namespace* ns = raptor_new_namespace(nstack,                 \
       (const unsigned char *)prefix, (const unsigned char*)value, 0);   \
-    raptor_namespace_stack_start_namespace(nstack, ns, 0);              \
+    raptor_namespaces_start_namespace(nstack, ns);                      \
     } while(0)
 #else
 #define DECLARE_URI_MAPPING(context, prefix, value)                     \
