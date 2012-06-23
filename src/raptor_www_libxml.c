@@ -44,6 +44,7 @@
 void
 raptor_www_libxml_init(raptor_www *www)
 {
+  xmlNanoHTTPInit();
   www->ctxt = NULL;
 }
 
@@ -51,6 +52,7 @@ raptor_www_libxml_init(raptor_www *www)
 void
 raptor_www_libxml_free(raptor_www *www)
 {
+  xmlNanoHTTPCleanup();
 }
 
 
