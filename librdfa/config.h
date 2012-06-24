@@ -1,3 +1,2 @@
-/* Fake librdfa config.h - all values needed here are actually
- * provided by raptor2.h and raptor_internal.h
- */
+/* Fake librdfa config.h - reads configuration from Raptor's config header */
+#include <raptor_config.h>

@@ -24,6 +24,10 @@
  * It is also very fast and can operate on hundreds of gigabytes of XML
  * data without breaking a sweat.
  */
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #include <string.h>
 #include "rdfa_utils.h"
 #include "rdfa.h"
