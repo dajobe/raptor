@@ -83,9 +83,7 @@
 #define DLLEXPORT
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
+#ifdef LIBRDFA_IN_RAPTOR
 #include "raptor2.h"
 #include "raptor_internal.h"
 #endif /* LIBRDFA_IN_RAPTOR */
