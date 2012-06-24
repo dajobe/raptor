@@ -1,3 +1,43 @@
+2012-06-24  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/config.h, librdfa/rdfa.h: Fix fake librdfa config.h
+
+	* librdfa/config.h, librdfa/context.c, librdfa/lists.c,
+	librdfa/rdfa.h: librdfa config.h now includes raptor_config.h
+	directly
+
+2012-06-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_libxml.c:
+	Init / cleanup libxml nano HTTP library
+
+	(raptor_www_libxml_init, raptor_www_libxml_free): Call
+	xmlNanoHTTPInit and xmlNanoHTTPCleanup respectively.
+
+2012-06-22  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/context.c: DECLARE_URI_MAPPING - start new namespace, do
+	not make a new one Call raptor_namespaces_start_namespace()
+	instead of raptor_namespace_stack_start_namespace() which copies
+	the namespace to the stack and then starts it.
+
+	* tests/rdfa11/Makefile.am: Update rapper and rdfdiff use like
+	already done for 'rdfa' tests
+
+	* librdfa/rdfa.c:
+	(raptor_rdfa_start_element): Free attr if allocated
+
+	* src/raptor_nfc_test.c: Remove include of raptor_nfc.h
+
+2012-06-20  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html: 2.0.8
+
+	* librdfa/curie.c, librdfa/namespace.c, librdfa/rdfa.c: Build
+	fixes from Daniel Richard G.
+
+	* RELEASE.html: 2.0.8
+
 2012-06-19  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_parse.c: Lower min syntax guess score to 2 (Q 0.3)
