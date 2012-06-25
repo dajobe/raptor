@@ -1,4 +1,7 @@
-2012-06-24  Dave Beckett <dave@dajobe.org>
+2012-06-24  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_8 for 2.0.8 release (GIT
+	dbdb2f9e4aee4e93383fe62751b52349be64187b)
 
 	* librdfa/config.h, librdfa/rdfa.h: Fix fake librdfa config.h
 
