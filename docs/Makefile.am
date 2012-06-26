@@ -116,7 +116,8 @@ libraptor2.html \
 raptor1-eol.html \
 $(man_MANS) \
 version.xml.in \
-upgrade-script.pl
+upgrade-script.pl \
+raptor-1-to-2-map.tsv
 
 DISTCLEANFILES+= \
 raptor-fake.h
