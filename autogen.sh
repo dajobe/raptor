@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# autogen.sh - Generates initial makefiles from a pristine CVS tree
+# autogen.sh - Generates initial makefiles from a pristine source tree
 #
 # USAGE:
 #   autogen.sh [configure options]
@@ -298,12 +298,12 @@ if test -f $GITMODULES ; then
   $DRYRUN git submodule update
 fi
 
-
 for coin in `find $SRCDIR -name configure.ac -print | grep -v /releases/`
 do 
+  status=0
   dir=`dirname $coin`
   if test -f "$dir/NO-AUTO-GEN"; then
-    echo $program: Skipping $dir -- flagged as no auto-gen
+    echo "$program: Skipping $dir -- flagged as no auto-generation"
   else
     echo " "
     echo $program: Processing directory $dir
@@ -344,12 +344,25 @@ do
       echo "$program: Running $libtoolize $libtoolize_args"
       $DRYRUN rm -f ltmain.sh libtool
       eval $DRYRUN $libtoolize $libtoolize_args
+      status=$?
+      if test $status != 0; then
+	  break
+      fi
 
       if grep "^GTK_DOC_CHECK" configure.ac >/dev/null; then
         # gtkdocize junk
         $DRYRUN rm -rf gtk-doc.make
         echo "$program: Running $gtkdocize $gtkdocize_args"
         $DRYRUN $gtkdocize $gtkdocize_args
+        status=$?
+	if test $status != 0; then
+	    break
+	fi
+      fi
+
+      if test ! -f NEWS; then
+        echo "$program: Creating empty NEWS file to allow configure to work"
+        $DRYRUN touch -t 200001010000 NEWS
       fi
 
       echo "$program: Running $aclocal $aclocal_args"
@@ -357,14 +370,34 @@ do
       if grep "^AM_CONFIG_HEADER" configure.ac >/dev/null; then
 	echo "$program: Running $autoheader"
 	$DRYRUN $autoheader
+        status=$?
+	if test $status != 0; then
+	    break
+	fi
       fi
       echo "$program: Running $automake $automake_args"
       $DRYRUN $automake $automake_args $automake_args
+      status=$?
+      if test $status != 0; then
+	  break
+      fi
+
       echo "$program: Running $autoconf"
       $DRYRUN $autoconf $autoconf_args
+      status=$?
+      if test $status != 0; then
+	  break
+      fi
     )
   fi
+
+  if test $status != 0; then
+    echo "$program: FAILED to configure $dir"
+    exit $status
+  fi
+
 done
+
 
 
 rm -f config.cache
@@ -390,3 +423,5 @@ if test "X$NOCONFIGURE" = X; then
     $DRYRUN ./configure $configure_args "$@"
   fi
 fi
+
+exit $status
