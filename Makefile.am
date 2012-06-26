@@ -47,6 +47,8 @@ endif
 
 DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
+if MAINTAINER_MODE
+
 # Create some text files from HTML sources
 LYNX=lynx
 HTML_TO_TEXT=TERM=vt100 $(LYNX) -dump -nolist
@@ -56,11 +58,13 @@ SUFFIXES = .html .txt
 .html.txt:
 	$(HTML_TO_TEXT) $< > $@
 
-README: $(srcdir)/README.html
+README: README.html
 	$(HTML_TO_TEXT) $< > $@
 
-NEWS: $(srcdir)/NEWS.html
+$(srcdir)/NEWS: NEWS.html
 	$(HTML_TO_TEXT) $< > $@
+
+endif
 
 # Some people need a little help ;-)
 test: check
