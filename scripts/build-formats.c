@@ -315,7 +315,7 @@ sort_type_syntax_by_mime_type(const void *a, const void *b)
 
   if(!mime_type_a || !mime_type_b) {
     if(!mime_type_a && !mime_type_b)
-      return mime_type_b - mime_type_a;
+      return (int)(mime_type_b - mime_type_a);
     return (mime_type_a) ? 1 : -1;
   }
   
