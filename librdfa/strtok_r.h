@@ -11,5 +11,5 @@
 
 #ifdef NEED_RDFA_STRTOK_R
 char *rdfa_strtok_r(char *str, const char *delim, char **saveptr);
-#  define strtok_r(s,d,p) rdfa_strtok_s(s,d,p)
+#  define strtok_r(s,d,p) rdfa_strtok_r(s,d,p)
 #endif
