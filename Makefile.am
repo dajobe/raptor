@@ -28,10 +28,10 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor2.pc
 
 EXTRA_DIST=\
-ChangeLog ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
+ChangeLog.1 ChangeLog.2 ChangeLog.3 ChangeLog.4 ChangeLog.5 \
 ChangeLog.6 ChangeLog.7 ChangeLog.8 ChangeLog.9 ChangeLog.10 ChangeLog.11 \
 ChangeLog.12 \
-README      NEWS      LICENSE.txt \
+README                LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 RELEASE.html \
 LICENSE-2.0.txt NOTICE \
