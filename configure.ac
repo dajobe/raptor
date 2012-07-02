@@ -29,7 +29,7 @@ AC_CONFIG_SRCDIR([src/raptor_general.c])
 AM_CONFIG_HEADER([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
-AM_INIT_AUTOMAKE([1.11 check-news std-options -Wall -Wextra-portability])
+AM_INIT_AUTOMAKE([1.11 check-news std-options -Wobsolete -Wportability -Wsyntax -Wunsupported -Wextra-portability])
 
 libxml_min_version=2.6.8
 
@@ -196,10 +196,11 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 #
 # Too noisy:
 #  -Wconversion
-#  -Wunused-parameter : variables can be marked  __attribute__('unused')
-#  -Wmissing-noreturn : functions can be marked with __attribute__((__noreturn__))
-#  -Wformat-nonliteral : variables are used in raptor_rdfxml.c for format strings: fixable with code change
+#  -Wformat-nonliteral : variables for format strings
+#  -Wmissing-field-initializers : too noisy in raptor_rss_common.c
+#  -Wsystem-headers   : not debugging system
 #  -Wsign-conversion: : many int / unsigned int / size_t
+#  -Wunused-parameter : variables can be marked  __attribute__('unused')
 #
 # Apple gcc specific (probably): -Wshorten-64-to-32
 possible_warnings="\
@@ -241,8 +242,9 @@ possible_warnings="\
 -Wshorten-64-to-32
 \
 -Wno-conversion \
--Wno-sign-conversion \
+-Wno-format-nonliteral \
 -Wno-missing-field-initializers \
+-Wno-sign-conversion \
 -Wno-system-headers \
 -Wno-unused-parameter \
 "
