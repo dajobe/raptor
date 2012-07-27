@@ -96,7 +96,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   FLEX_REC_VERSION=2.5.33
   AC_MSG_CHECKING(flex version)
   if test "X$LEX" != "X:"; then
-    FLEX_VERSION=`$LEX -V 2>&1 | $AWK '{print $NF}'`
+    FLEX_VERSION=`$LEX -V 2>&1 | $AWK '{print $2}'`
     FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
     FLEX_MIN_VERSION_DEC=`echo $FLEX_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
