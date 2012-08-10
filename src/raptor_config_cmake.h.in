@@ -1,0 +1,131 @@
+/* raptor_config.h */
+
+#define RAPTOR_VERSION_DECIMAL		@RAPTOR_VERSION_DECIMAL@
+#define RAPTOR_MIN_VERSION_DECIMAL	@RAPTOR_MIN_VERSION_DECIMAL@
+
+#cmakedefine HAVE_ERRNO_H
+#cmakedefine HAVE_FCNTL_H
+#cmakedefine HAVE_GETOPT_H
+#cmakedefine HAVE_LIMITS_H
+#cmakedefine HAVE_MATH_H
+#cmakedefine HAVE_SETJMP_H
+#cmakedefine HAVE_STDDEF_H
+#cmakedefine HAVE_STDLIB_H
+#cmakedefine HAVE_STRING_H
+#cmakedefine HAVE_UNISTD_H
+#cmakedefine HAVE_SYS_PARAM_H
+#cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_STAT_H
+#cmakedefine HAVE_SYS_TIME_H
+
+#cmakedefine TIME_WITH_SYS_TIME
+
+#cmakedefine HAVE_ACCESS
+#cmakedefine HAVE__ACCESS
+#cmakedefine HAVE_GETOPT
+#cmakedefine HAVE_GETOPT_LONG
+#cmakedefine HAVE_GETTIMEOFDAY
+#cmakedefine HAVE_ISASCII
+#cmakedefine HAVE_SETJMP
+#cmakedefine HAVE_SNPRINTF
+#cmakedefine HAVE__SNPRINTF
+#cmakedefine HAVE_STAT
+#cmakedefine HAVE_STRCASECMP
+#cmakedefine HAVE_STRICMP
+#cmakedefine HAVE__STRICMP
+#cmakedefine HAVE_STRTOK_R
+#cmakedefine HAVE_VASPRINTF
+#cmakedefine HAVE_VSNPRINTF
+#cmakedefine HAVE__VSNPRINTF
+
+#define SIZEOF_UNSIGNED_CHAR		@SIZEOF_UNSIGNED_CHAR@
+#define SIZEOF_UNSIGNED_SHORT		@SIZEOF_UNSIGNED_SHORT@
+#define SIZEOF_UNSIGNED_INT		@SIZEOF_UNSIGNED_INT@
+#define SIZEOF_UNSIGNED_LONG		@SIZEOF_UNSIGNED_LONG@
+#define SIZEOF_UNSIGNED_LONG_LONG	@SIZEOF_UNSIGNED_LONG_LONG@
+
+#cmakedefine HAVE_XMLCTXTUSEOPTIONS
+#cmakedefine HAVE_XMLSAX2INTERNALSUBSET
+#cmakedefine RAPTOR_LIBXML_ENTITY_ETYPE
+#cmakedefine RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+#cmakedefine RAPTOR_LIBXML_HTML_PARSE_NONET
+#cmakedefine RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
+#cmakedefine RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
+#cmakedefine RAPTOR_LIBXML_XML_PARSE_NONET
+
+#cmakedefine RAPTOR_STATIC
+#cmakedefine HAVE_RAPTOR_PARSE_DATE
+#define @RAPTOR_WWW_DEFINE@
+#define @RAPTOR_XML_DEFINE@
+#cmakedefine RAPTOR_XML_1_1
+
+#cmakedefine RAPTOR_PARSER_RDFXML
+#cmakedefine RAPTOR_PARSER_NTRIPLES
+#cmakedefine RAPTOR_PARSER_TURTLE
+#cmakedefine RAPTOR_PARSER_TRIG
+#cmakedefine RAPTOR_PARSER_RSS
+#cmakedefine RAPTOR_PARSER_GRDDL
+#cmakedefine RAPTOR_PARSER_GUESS
+#cmakedefine RAPTOR_PARSER_RDFA
+#cmakedefine RAPTOR_PARSER_JSON
+#cmakedefine RAPTOR_PARSER_NQUADS
+
+#cmakedefine RAPTOR_SERIALIZER_RDFXML
+#cmakedefine RAPTOR_SERIALIZER_NTRIPLES
+#cmakedefine RAPTOR_SERIALIZER_RDFXML_ABBREV
+#cmakedefine RAPTOR_SERIALIZER_TURTLE
+#cmakedefine RAPTOR_SERIALIZER_RSS_1_0
+#cmakedefine RAPTOR_SERIALIZER_ATOM
+#cmakedefine RAPTOR_SERIALIZER_DOT
+#cmakedefine RAPTOR_SERIALIZER_HTML
+#cmakedefine RAPTOR_SERIALIZER_JSON
+#cmakedefine RAPTOR_SERIALIZER_NQUADS
+
+#ifdef WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  define _CRT_NONSTDC_NO_DEPRECATE
+#  define _CRT_SECURE_NO_DEPRECATE
+
+#  ifdef _MSC_VER
+#    if _MSC_VER >= 1300
+#      define __func__		__FUNCTION__
+#    else
+       /* better than nothing */
+#      define raptor_str(s)	#s
+#      define __func__		"func@" __FILE__ ":" raptor_str(__LINE__)
+#    endif
+#  endif
+
+#  define RAPTOR_INLINE	__inline
+
+#  define S_ISTYPE(mode, mask)	(((mode) & _S_IFMT) == (mask))
+#  define S_ISDIR(mode)		S_ISTYPE((mode), _S_IFDIR)
+#  define S_ISREG(mode)		S_ISTYPE((mode), _S_IFREG)
+
+   /* Mode bits for access() */
+#  define R_OK 04
+#  define W_OK 02
+
+#  if !defined(HAVE_ACCESS) && defined(HAVE__ACCESS)
+#    define access(p,m)		_access(p,m)
+#  endif
+#  ifndef HAVE_STRCASECMP
+#    if defined(HAVE__STRICMP)
+#      define strcasecmp(a,b)	_stricmp(a,b)
+#    elif defined(HAVE_STRICMP)
+#      define strcasecmp(a,b)	stricmp(a,b)
+#    endif
+#  endif
+#  if !defined(HAVE_SNPRINTF) && defined(HAVE__SNPRINTF)
+#    define snprintf		_snprintf
+#  endif
+#  if !defined(HAVE_VSNPRINTF) && defined(HAVE__VSNPRINTF)
+#    define vsnprintf		_vsnprintf
+#  endif
+
+   /* These prevent parsedate.c from declaring malloc() and free() */
+#  define YYMALLOC malloc
+#  define YYFREE   free
+#endif
+
+/* end raptor_config.h */

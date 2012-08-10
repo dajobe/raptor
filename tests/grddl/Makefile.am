@@ -32,7 +32,9 @@ ALL_TEST_FILES= \
 	$(TEST_OUT_FILES) \
 	$(TEST_DATA_FILES)
 
-EXTRA_DIST = $(ALL_TEST_FILES)
+EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
+
+CLEANFILES = CMakeTests.txt
 
 RAPPER = $(top_builddir)/utils/rapper
 
@@ -52,6 +54,7 @@ endif
 check-grddl: build-rapper $(check_grddl_deps)
 	@result=0; \
 	$(RECHO) "Testing GRDDL"; \
+	printf 'IF(RAPTOR_PARSER_GRDDL)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .html` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
@@ -72,5 +75,11 @@ check-grddl: build-rapper $(check_grddl_deps)
 	  if test $$status != 1 ; then \
 	    rm -f $$name.res $$name.err; \
 	  fi; \
+	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
+		grddl.$$name \
+		"\$${RAPPER} -f noNet -q -i grddl -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_PARSER_GRDDL)\n\n' >>CMakeTests.txt; \
 	exit $$result

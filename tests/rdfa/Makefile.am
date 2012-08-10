@@ -45,6 +45,7 @@ BASE_URI=http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/
 # These all expect 0 ntriples - failure is >0 triples or ERROR
 
 CLEANFILES= \
+CMakeTests.txt \
 *-res.nt
 
 TEST_FILES= \
@@ -98,7 +99,7 @@ ALL_TEST_FILES= \
 # (Add a space to the start of this string)
 EXPECTED_FAILURES=" 0202.xml 0203.xml"
 
-EXTRA_DIST = $(ALL_TEST_FILES)
+EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
 RAPPER  = $(top_builddir)/utils/rapper
 RDFDIFF = $(top_builddir)/utils/rdfdiff
@@ -122,6 +123,7 @@ endif
 check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	@set +e; result=0; failures=; failure_count=0; \
 	$(RECHO) "Testing RDFa 1.0"; \
+	printf 'IF(RAPTOR_PARSER_RDFA)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .xml` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
@@ -145,7 +147,14 @@ check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	    failure_count=`expr $$failure_count + 1`; \
 	  fi; \
 	  rm -f $$name-res.nt $$name.res $$name.err; \
+	  printf '\tRAPPER_RDFDIFF_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t"%s"\n\t)\n\n' \
+		rdfa.$$name \
+		"\$${RAPPER} -f noNet -q -i rdfa10 -I $$baseuri -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
+		$$name-res.nt \
+		"\$${RDFDIFF} -f ntriples -u $$baseuri -t ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out $$name-res.nt" \
+		>>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_PARSER_RDFA)\n\n' >>CMakeTests.txt; \
 	if test "X$$failures" != X; then \
 	  echo "$$failure_count tests FAILED: $$failures"; \
 	  if test "$$failures" = $(EXPECTED_FAILURES); then \

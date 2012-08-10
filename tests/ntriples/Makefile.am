@@ -36,12 +36,14 @@ NQ_OUT_FILES=testnq-1.out testnq-optional-context.out bug-481.out
 BASE_URI=http://librdf.org/raptor/tests/
 
 EXTRA_DIST = \
+	CMakeLists.txt \
 	$(NT_TEST_FILES) \
 	$(NT_OUT_FILES) \
 	$(NT_BAD_TEST_FILES) \
 	$(NQ_TEST_FILES) \
 	$(NQ_OUT_FILES)
 
+CLEANFILES = CMakeTests.txt CMakeTmp.txt
 
 RAPPER = $(top_builddir)/utils/rapper
 
@@ -69,6 +71,11 @@ check-nt: build-rapper $(check_nt_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		ntriples.$$name \
+		"\$${RAPPER} -q -i ntriples -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $(BASE_URI)$$test" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
@@ -98,7 +105,15 @@ check-bad-nt: build-rapper $(check_bad_nt_deps)
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
+		ntriples.$$name \
+		"\$${RAPPER} -q -i ntriples -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
+	  printf '\t%s\n' ntriples.$$name >>CMakeTmp.txt; \
 	done; \
+	(printf '\nSET_TESTS_PROPERTIES(\n'; \
+	 cat CMakeTmp.txt; \
+	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
+	rm -f CMakeTmp.txt; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -119,6 +134,11 @@ check-nq: build-rapper $(check_nq_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		ntriples.$$name \
+		"\$${RAPPER} -q -i nquads -o nquads file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $(BASE_URI)$$test" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 

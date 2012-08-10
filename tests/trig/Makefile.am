@@ -30,10 +30,13 @@ example1.out example2.out example3.out bug370.out bug451.out
 BASE_URI=http://example.librdf.org/
 
 EXTRA_DIST = \
+	CMakeLists.txt \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
 RAPPER = $(top_builddir)/utils/rapper
+
+CLEANFILES = CMakeTests.txt
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
@@ -66,5 +69,10 @@ check-trig: build-rapper $(check_trig_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		trig.$$name \
+		"\$${RAPPER} -q -i trig -o nquads \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	exit $$result

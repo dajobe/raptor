@@ -191,6 +191,8 @@ libraptor2_la_LIBADD = @LTLIBOBJS@
 
 
 EXTRA_DIST=\
+CMakeLists.txt \
+raptor_config_cmake.h.in \
 raptor_permute_test.c \
 raptor_www_test.c \
 raptor_nfc_test.c \

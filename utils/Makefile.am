@@ -47,6 +47,7 @@ ANALYZE_COMMAND = $(ANALYZE) \
 
 
 EXTRA_DIST= \
+CMakeLists.txt \
 rapper.html \
 $(man_MANS)
 

@@ -34,11 +34,14 @@ bad-10.json bad-11.json bad-12.json bad-13.json
 BASE_URI=http://example.librdf.org/
 
 EXTRA_DIST = \
+	CMakeLists.txt \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES) \
 	$(JSON_BAD_TEST_FILES)
 
 RAPPER = $(top_builddir)/utils/rapper
+
+CLEANFILES = CMakeTests.txt CMakeTmp.txt
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
@@ -56,6 +59,7 @@ endif
 check-json: build-rapper $(check_json_deps)
 	@result=0; \
 	$(RECHO) "Testing legal JSON"; \
+	printf 'IF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$test; \
@@ -76,7 +80,13 @@ check-json: build-rapper $(check_json_deps)
 	    diff $(srcdir)/$$name.nt $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
+	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
+		json.$$name \
+		"\$${RAPPER} -q -i json -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.nt" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
 	exit $$result
 
 if MAINTAINER_MODE
@@ -86,6 +96,7 @@ endif
 check-bad-json: build-rapper $(check_bad_json_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad JSON fails"; \
+	printf 'IF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
 	for test in $(JSON_BAD_TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$name.json; \
@@ -105,6 +116,15 @@ check-bad-json: build-rapper $(check_bad_json_deps)
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	  printf '\tADD_TEST(%s %s) # WILL_FAIL\n' \
+		json.$$name \
+		"\$${RAPPER} -q -i json -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
+	  printf '\t\t%s\n' json.$$name >>CMakeTmp.txt; \
 	done; \
+	(printf '\n\tSET_TESTS_PROPERTIES(\n'; \
+	 cat CMakeTmp.txt; \
+	 printf '\t\tPROPERTIES\n\t\tWILL_FAIL TRUE\n\t)\n\n'; \
+	 printf 'ENDIF(RAPTOR_PARSER_JSON)\n\n') >>CMakeTests.txt; \
+	rm -f CMakeTmp.txt; \
 	set -e; exit $$result
 

@@ -23,6 +23,7 @@
  */
 
 
+#if 0 /**** obsolescent ****/
 #ifndef WIN32_CONFIG_H
 #define WIN32_CONFIG_H
 
@@ -166,3 +167,4 @@ extern "C" {
 #endif
 
 #endif
+#endif /**** obsolescent ****/

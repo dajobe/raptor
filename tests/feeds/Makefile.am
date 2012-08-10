@@ -39,11 +39,12 @@ OUT_TTLS = $(OUT_RDF_TTLS) $(OUT_ATOM_TTLS)
 OUT_ATOMS = $(OUT_RDF_ATOMS)
 
 EXTRA_DIST = \
+CMakeLists.txt \
 $(TEST_IN_RDF_ATOMS) $(TEST_IN_ATOMS) \
 $(EXPECTED_TTLS) $(EXPECTED_ATOMS) \
 atom.rng atom.rnc
 
-CLEANFILES = $(OUT_ATOMS) $(OUT_TTLS) errors.log
+CLEANFILES = $(OUT_ATOMS) $(OUT_TTLS) CMakeTests.txt errors.log
 
 RAPPER = $(top_builddir)/utils/rapper
 
@@ -81,6 +82,7 @@ endif
 check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing RDF/XML to Turtle"; \
+	printf 'IF(RAPTOR_PARSER_RDFXML)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_IN_RDF_ATOMS); do \
 	  parser=rdfxml; \
 	  name=`basename $$test .rdf` ; \
@@ -111,7 +113,13 @@ check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
+	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
+		feeds.$$test \
+		"\$${RAPPER} $$opts file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
+		$$turtle \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_PARSER_RDFXML)\n\n' >>CMakeTests.txt; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -122,6 +130,7 @@ endif
 check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Atom to Turtle"; \
+	printf 'IF(RAPTOR_PARSER_RSS)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_IN_ATOMS); do \
 	  parser=rss-tag-soup; \
 	  name=`basename $$test .atom` ; \
@@ -149,7 +158,13 @@ check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
+	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
+		feeds.$$test \
+		"\$${RAPPER} $$opts file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
+		$$turtle \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_PARSER_RSS)\n\n' >>CMakeTests.txt; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -160,6 +175,7 @@ endif
 check-serialize-atom: $(check_serialize_atom_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Turtle to Atom XML"; \
+	printf 'IF(RAPTOR_SERIALIZER_ATOM)\n\n' >>CMakeTests.txt; \
 	for test in $(OUT_RDF_TTLS); do \
 	  name=`basename $$test .ttl` ; \
 	  atom="$$name.atom"; \
@@ -190,7 +206,13 @@ check-serialize-atom: $(check_serialize_atom_deps)
 	    diff -u $(srcdir)/$$expected $$atom; result=1; \
 	  fi; \
 	  rm -f errors.log ; \
+	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
+		feeds.$$test \
+		"\$${RAPPER} $$opts file:$$test" \
+		$$atom \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(RAPTOR_SERIALIZER_ATOM)\n\n' >>CMakeTests.txt; \
 	set -e; exit $$result
 
 
@@ -203,6 +225,7 @@ SUFFIXES = .rng .rnc
 check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	@set +e; result=0; \
 	$(RECHO) "Validating Atom XML with RelaxNG"; \
+	printf 'IF(HAVE_JING)\n' >>CMakeTests.txt; \
 	for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
 	  test -f $$atom || atom=$(srcdir)/$$atom; \
 	  $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
@@ -215,9 +238,13 @@ check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	    result=1 ; \
 	  else \
 	    $(RECHO) "ok"; \
-          fi; \
-          rm -f errors.log; \
+	  fi; \
+	  rm -f errors.log; \
+	  printf '\tADD_TEST(%s %s)\n' \
+		feeds.jing-$$atom \
+		"\$${JING} \$${CMAKE_CURRENT_SOURCE_DIR}/atom.rng $$atom" >>CMakeTests.txt; \
 	done; \
+	printf 'ENDIF(HAVE_JING)\n\n' >>CMakeTests.txt; \
 	set -e; exit $$result
 
 endif

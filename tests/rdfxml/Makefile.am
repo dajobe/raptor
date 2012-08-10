@@ -95,6 +95,7 @@ DAML_OIL_DOC_URI="http://www.daml.org/2001/03/daml+oil"
 OWL_WINE_URI="http://www.w3.org/TR/owl-guide/wine.rdf"
 
 EXTRA_DIST = \
+	CMakeLists.txt \
 	$(RDF_TEST_FILES) \
 	$(RDF_MAYFAIL_XML_TEST_FILES) \
 	$(RDF_ASSUME_TEST_FILES) \
@@ -113,6 +114,8 @@ EXTRA_DIST = \
 
 RAPPER  = $(top_builddir)/utils/rapper
 RDFDIFF = $(top_builddir)/utils/rdfdiff
+
+CLEANFILES = CMakeTests.txt CMakeTmp.txt
 
 build-rapper:
 	@(cd $(top_builddir)/utils ; $(MAKE) rapper$(EXEEXT))
@@ -168,6 +171,11 @@ check-rdf: build-rapper $(check_rdf_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
@@ -190,6 +198,11 @@ check-assume-rdf: build-rapper $(check_assume_rdf_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
@@ -212,6 +225,11 @@ check-scan-rdf: build-rapper $(check_scan_rdf_deps)
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res ; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -f scanForRDF -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
@@ -241,6 +259,11 @@ check-mayfail-xml-rdf: build-rapper $(check_mayfail_xml_rdf_deps)
 	    diff $(srcdir)/$$name.out $$name.res; \
 	  fi; \
 	  rm -f $$name.res $$name.err; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit 0
 
@@ -270,7 +293,15 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
+	  printf '\t%s\n' rdfxml.$$name >>CMakeTmp.txt; \
 	done; \
+	(printf '\nSET_TESTS_PROPERTIES(\n'; \
+	 cat CMakeTmp.txt; \
+	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
+	rm -f CMakeTmp.txt; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -299,7 +330,15 @@ check-bad-nfc-rdf: build-rapper $(check_bad_nfc_rdf_deps)
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -m strict -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
+	  printf '\t%s\n' rdfxml.$$name >>CMakeTmp.txt; \
 	done; \
+	(printf '\nSET_TESTS_PROPERTIES(\n'; \
+	 cat CMakeTmp.txt; \
+	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
+	rm -f CMakeTmp.txt; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -330,6 +369,11 @@ check-warn-rdf: build-rapper $(check_warn_rdf_deps)
 	    cat $$name.res; result=1; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
@@ -374,6 +418,11 @@ check-rdfxml: build-rapper $(check_rdfxml_deps)
 	    diff $(srcdir)/$$name.rdf $$name-rdfxml.rdf; result=1; \
 	  fi; \
 	  rm -f $$name-rdfxml.rdf $$name.res $$name.err; \
+	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
+		rdfxml.$$name \
+		"\$${RAPPER} -q -i ntriples -o rdfxml \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
+		$$name-rdfxml.rdf \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.rdf" >>CMakeTests.txt; \
 	done; \
 	set -e; exit $$result
 
