@@ -1,4 +1,73 @@
-2012-06-24  Dave Beckett  <dave@dajobe.org>
+2012-08-10  Dave Beckett <dave@dajobe.org>
+
+	* win32/Makefile.am:
+	README.md in dist replacing README.txt
+
+2012-08-10  Daniel Richard G <oss@teragram.com>
+
+	* CMakeLists.txt, Makefile.am, librdfa/config.h,
+	src/CMakeLists.txt, src/Makefile.am, src/raptor_config_cmake.h.in,
+	src/win32_raptor_config.h.in, tests/feeds/CMakeLists.txt,
+	tests/feeds/Makefile.am, tests/grddl/CMakeLists.txt,
+	tests/grddl/Makefile.am, tests/json/CMakeLists.txt,
+	tests/json/Makefile.am, tests/ntriples/CMakeLists.txt,
+	tests/ntriples/Makefile.am, tests/rdfa/CMakeLists.txt,
+	tests/rdfa/Makefile.am, tests/rdfa11/CMakeLists.txt,
+	tests/rdfa11/Makefile.am, tests/rdfxml/CMakeLists.txt,
+	tests/rdfxml/Makefile.am, tests/trig/CMakeLists.txt,
+	tests/trig/Makefile.am, utils/CMakeLists.txt, utils/Makefile.am,
+	win32/README.md, win32/README.txt: CMake build framework for
+	Raptor - win32
+
+	This commit is based on the email with patch that
+	Daniel Richard G.  sent to redland-dev on 5th July 2012
+	  http://lists.librdf.org/pipermail/redland-dev/2012-July/002502.htmlI
+	lightly edited the email to fit into 80 chars and make more it
+	markdowny and turn it into win32/README.md -- Dave Beckett
+
+2012-07-27  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Fix for flex version message from OSX
+
+2012-07-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in:
+	Protect macro checks for __GNUC__ are defined
+
+2012-07-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: Add RAPTOR_NORETURN
+
+	* configure.ac:
+	Set automake -W and gcc -W to same as librdf
+
+2012-06-26  Dave Beckett <dave@dajobe.org>
+
+	* Makefile.am: EXTRA_DIST: Remove ChangeLog NEWS since they are in
+	dist by default
+
+	* scripts/build-formats.c:
+	(sort_type_syntax_by_mime_type): Add explicit cast for ordering mime
+	types
+
+	* Makefile.am:
+	Restore NEWS building to maintainer mode.
+
+	Reverts 979af117bb40de4e8391656b3e18f47f7096d1fc but requires
+	autogen.sh to touch NEWS after a GIT checkout so that automake can
+	run.
+
+	* autogen.sh:
+	autogen.sh updates
+	- Abort run if a configuring program fails.
+	- Generate NEWS with old timestamp if missing so automake can run
+	- small doc and message updates
+
+	* librdfa/strtok_r.h: Fix strtok_r typo
+
+	* docs/Makefile.am: Added raptor-1-to-2-map.tsv to EXTRA_DIST
+
+2012-06-24  Dave Beckett <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_8 for 2.0.8 release (GIT
 	dbdb2f9e4aee4e93383fe62751b52349be64187b)
