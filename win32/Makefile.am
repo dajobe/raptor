@@ -1,4 +1,4 @@
-EXTRA_DIST=README.txt \
+EXTRA_DIST=README.md \
 raptor.dsp raptor.dsw \
 rapper.dsp \
 raptortest.cpp raptortest.dsp \
