@@ -250,9 +250,16 @@ raptor_libxml_getEntity(void* user_data, const xmlChar *name)
     
     ret->owner = 1;
 
+#if LIBXML_VERSION >= 20627
+    /* Checked field was released in 2.6.27 on 2006-10-25
+     * http://git.gnome.org/browse/libxml2/commit/?id=a37a6ad91a61d168ecc4b29263def3363fff4da6
+     *
+     */
+
     /* Mark this entity as having been checked - never do this again */
     if(!ret->checked)
       ret->checked = 1;
+#endif
   }
 
   return ret;
