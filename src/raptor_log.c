@@ -131,7 +131,7 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
 {
   raptor_log_handler handler;
   
-  memset(&world->message, '\0', sizeof(&world->message));
+  memset(&world->message, '\0', sizeof(world->message));
   world->message.code = -1;
   world->message.domain = RAPTOR_DOMAIN_NONE;
   world->message.level = level;
