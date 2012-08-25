@@ -3,10 +3,11 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@/@PACKAGE@
 
-Name: Raptor RDF Parsing Library
-Description: RDF Parser Toolkit Library
+Name: Raptor RDF Syntax Library
+Description: RDF Syntax Library
 Version: @VERSION@
 Libs: -L${libdir} -lraptor2
 Libs.private: @RAPTOR_LDFLAGS@
 Cflags: -I${includedir}
+Requires:@PKG_CONFIG_REQUIRES@
 

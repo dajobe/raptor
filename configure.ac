@@ -415,8 +415,11 @@ RAPTOR_LDFLAGS=
 AC_SYS_LARGEFILE
 
 
-dnl Checks for XML parsers
+AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
 
+PKG_CONFIG_REQUIRES=
+
+dnl libxml - required
 AC_ARG_WITH(xml2-config, [  --with-xml2-config=PATH   Location of libxml xml2-config []], xml2_config="$withval", xml2_config="")
 
 if test "X$xml2_config" != "Xno" ; then
@@ -435,6 +438,36 @@ if test "X$xml2_config" != "Xno" ; then
   fi
 fi
 
+libxml_source=no
+if test "X$XML_CONFIG" != "X"; then
+  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
+  LIBS="$LIBS `$XML_CONFIG --libs`"
+  AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
+
+  AC_MSG_CHECKING(for libxml via xml2-config)
+  if test $have_xmlCreatePushParserCtxt = yes; then
+    libxml_source="xml2-config"
+    LIBXML_VERSION=`$XML_CONFIG --version`
+  fi
+  CPPFLAGS="$oCPPFLAGS"
+  LIBS="$oLIBS"
+else
+  AC_MSG_CHECKING(for libxml via pkg-config)
+  XML_CONFIG="$PKG_CONFIG libxml-2.0"
+  if $XML_CONFIG --exists; then
+    LIBXML_VERSION=`$XML_CONFIG --modversion 2>/dev/null`
+    libxml_source="pkg-config"
+  fi
+fi
+
+if test "$libxml_source" != "no"; then
+  AC_MSG_RESULT(yes - $LIBXML_VERSION)
+else
+  AC_MSG_RESULT(no - not found)
+fi
+
+
+dnl xslt
 AC_ARG_WITH(xslt-config, [  --with-xslt-config=PATH   Location of libxslt xslt-config []], xslt_config="$withval", xslt_config="")
 
 if test "X$xslt_config" != "Xno" ; then
@@ -453,6 +486,7 @@ if test "X$xslt_config" != "Xno" ; then
   fi
 fi
 
+dnl curl
 AC_ARG_WITH(curl-config, [  --with-curl-config=PATH   Location of libcurl curl-config []], curl_config="$withval", curl_config="")
 
 if test "X$curl_config" != "Xno" ; then
@@ -471,6 +505,34 @@ if test "X$curl_config" != "Xno" ; then
   fi
 fi
 
+libcurl_source=no
+if test "X$CURL_CONFIG" != "X"; then
+  CPPFLAGS="`$CURL_CONFIG --cflags` $CPPFLAGS"
+  LIBS="$LIBS `$CURL_CONFIG --libs`"
+  AC_CHECK_HEADER(curl/curl.h)
+  AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
+
+  AC_MSG_CHECKING(for libcurl via curl-config)
+  if test $have_curl_easy_init = yes; then
+    libcurl_source="curl-config"
+    LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
+  fi
+  CPPFLAGS="$oCPPFLAGS"
+  LIBS="$oLIBS"
+else
+  AC_MSG_CHECKING(for libcurl via pkg-config)
+  CURL_CONFIG="$PKG_CONFIG libcurl"
+  if $CURL_CONFIG --exists; then
+    LIBCURL_VERSION=`$CURL_CONFIG --modversion 2>/dev/null`
+    libcurl_source="pkg-config"
+  fi
+fi
+
+if test "$libcurl_source" = "no"; then
+  AC_MSG_RESULT(no - not found)
+else
+  AC_MSG_RESULT(yes - $LIBCURL_VERSION)
+fi
 
 
 AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config []], icu_config="$withval", icu_config="")
@@ -503,10 +565,9 @@ if test "X$XML_CONFIG" != X; then
   CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
   LIBS="$LIBS `$XML_CONFIG --libs`"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
-  AC_MSG_CHECKING(for system (GNOME) libxml library)
+  AC_MSG_CHECKING(libxml library)
   if test $have_xmlCreatePushParserCtxt = yes; then
     have_libxml=1
-    LIBXML_VERSION=`$XML_CONFIG --version`
     libxml_version_dec=`echo $LIBXML_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     libxml_min_version_dec=`echo $libxml_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     AC_MSG_RESULT(yes - version $LIBXML_VERSION)
@@ -600,7 +661,6 @@ LIBS="$oLIBS"
 
 have_libxslt=0
 
-oCPPFLAGS="$CPPFLAGS"
 if test "X$XSLT_CONFIG" != X; then
   CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
   LIBS="$LIBS `$XSLT_CONFIG --libs`"
@@ -658,8 +718,6 @@ if test "x$yajl_prefix" != "xno" ; then
     AC_MSG_RESULT(not found. Get it from http://lloyd.github.com/yajl/ and use --with-yajl=DIR if necessary to configure the installation directory.)
   else
     AC_MSG_RESULT($yajl_prefix)
-    CPPFLAGS="$oCPPFLAGS"
-    LIBS="$oLIBS"
 
     if test "$yajl_prefix" = "/usr"; then
       yajl_prefix=
@@ -678,10 +736,10 @@ if test "x$yajl_prefix" != "xno" ; then
       AC_DEFINE_UNQUOTED(HAVE_YAJL2, 1, [YAJL has API version 2])
     fi
 
-    CPPFLAGS="$oCPPFLAGS"
-    LIBS="$oLIBS"
   fi
 fi
+CPPFLAGS="$oCPPFLAGS"
+LIBS="$oLIBS"
 
 
 dnl RDF Parsers
@@ -904,29 +962,29 @@ need_libcurl=0
 need_libxml_www=0
 need_libfetch=0
 
-oCPPFLAGS="$CPPFLAGS"
 if test "X$CURL_CONFIG" != X; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   LIBS="$LIBS `$CURL_CONFIG --libs`"
   AC_CHECK_HEADER(curl/curl.h)
   AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
-  LIBS="$oLIBS"
-  CPPFLAGS="$oCPPFLAGS"
+
   AC_MSG_CHECKING(for libcurl library)
   if test $have_curl_easy_init = yes -a "$ac_cv_header_curl_curl_h" = yes; then
-    LIBCURL_VERSION=`$CURL_CONFIG --version | sed -e 's/^libcurl *//'`
-    libcurl_vernum=`$CURL_CONFIG --vernum`
-    if test $libcurl_vernum '<' $libcurl_min_vernum; then
+    libcurl_min_version_dec=`echo $libcurl_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libcurl_version_dec=`echo $LIBCURL_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    if test $libcurl_version_dec -lt $libcurl_min_version_dec; then
       AC_MSG_WARN(Using libcurl $LIBCURL_VERSION is unsupported - $libcurl_min_version or newer required.)
       AC_MSG_RESULT(no - version $LIBCURL_VERSION is too old)
     else
       have_libcurl=1
-      AC_MSG_RESULT(yes - version $LIBCURL_VERSION)
+      AC_MSG_RESULT(yes - version $LIBCURL_VERSION via $libcurl_source)
     fi
   else
     AC_MSG_RESULT(no)
   fi
 fi
+LIBS="$oLIBS"
+CPPFLAGS="$oCPPFLAGS"
 
 
 if test "X$ac_cv_header_curl_curl_h" = Xyes; then
@@ -999,10 +1057,10 @@ AC_MSG_CHECKING(WWW library to use)
 www_library=
 RAPTOR_WWW_LIBRARY=none
 if test $need_libcurl = 1; then
-  www_library="libcurl $LIBCURL_VERSION"
+  www_library="libcurl $LIBCURL_VERSION via $libcurl_source"
   RAPTOR_WWW_LIBRARY=libcurl
 elif test $need_libxml_www = 1; then
-  www_library="libxml $LIBXML_VERSION"
+  www_library="libxml $LIBXML_VERSION via $libxml_source"
   RAPTOR_WWW_LIBRARY=libxml
 elif test $need_libfetch = 1; then
   www_library="libfetch"
@@ -1019,8 +1077,12 @@ fi
 if test $need_libcurl = 1; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$CURL_CONFIG --libs`"
-  AC_LIBOBJ(raptor_www_curl)
+  if test "X$PKG_CONFIG_REQUIRES" != X; then
+    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+  fi
+  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $LIBCURL_MIN_VERSION"
 
+  AC_LIBOBJ(raptor_www_curl)
 fi
 
 
@@ -1114,6 +1176,10 @@ if test $need_libxml = 1; then
   fi
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
   CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
+  if test "X$PKG_CONFIG_REQUIRES" != X; then
+    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+  fi
+  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libxml-2.0 >= $LIBXML_MIN_VERSION"
   RAPTOR_XML_PARSER=libxml
 fi
 AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
@@ -1138,7 +1204,7 @@ AC_SUBST(RAPTOR_LIBTOOLLIBS)
 
 xml_parser="none needed"
 if test $need_libxml = 1; then
-  xml_parser="libxml $LIBXML_VERSION"
+  xml_parser="libxml $LIBXML_VERSION via $libxml_source"
 fi
 
 
@@ -1172,6 +1238,8 @@ fi
 
 
 AC_SUBST(RAPTOR_LDFLAGS)
+
+AC_SUBST(PKG_CONFIG_REQUIRES)
 
 AC_SUBST(MEM)
 AC_SUBST(MEM_LIBS)
