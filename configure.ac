@@ -1080,7 +1080,7 @@ if test $need_libcurl = 1; then
   if test "X$PKG_CONFIG_REQUIRES" != X; then
     PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
   fi
-  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $LIBCURL_MIN_VERSION"
+  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $libcurl_min_version"
 
   AC_LIBOBJ(raptor_www_curl)
 fi
@@ -1179,7 +1179,7 @@ if test $need_libxml = 1; then
   if test "X$PKG_CONFIG_REQUIRES" != X; then
     PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
   fi
-  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libxml-2.0 >= $LIBXML_MIN_VERSION"
+  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libxml-2.0 >= $libxml_min_version"
   RAPTOR_XML_PARSER=libxml
 fi
 AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
