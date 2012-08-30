@@ -27,10 +27,6 @@
 #include <raptor_config.h>
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
-
 #ifdef RAPTOR_WWW_LIBCURL
 
 #include <stdio.h>

@@ -27,7 +27,7 @@ lib_LTLIBRARIES = libraptor2.la
 pkginclude_HEADERS = raptor.h
 nodist_pkginclude_HEADERS = raptor2.h
 
-noinst_HEADERS = raptor_internal.h win32_raptor_config.h
+noinst_HEADERS = raptor_internal.h
 
 TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \

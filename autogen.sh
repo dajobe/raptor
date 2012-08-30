@@ -84,8 +84,8 @@ swig_min_vers=010324
 
 # Default program arguments
 automake_args="--gnu --add-missing --force --copy -Wall"
-aclocal_args=
-autoconf_args=
+aclocal_args="-Wall"
+autoconf_args="-Wall"
 libtoolize_args="--force --copy --automake $ltdl_args"
 gtkdocize_args="--copy"
 # --enable-gtk-doc does no harm if it's not available
@@ -376,7 +376,7 @@ do
 	fi
       fi
       echo "$program: Running $automake $automake_args"
-      $DRYRUN $automake $automake_args $automake_args
+      $DRYRUN $automake $automake_args
       status=$?
       if test $status != 0; then
 	  break

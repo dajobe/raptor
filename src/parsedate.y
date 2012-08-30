@@ -31,10 +31,6 @@
 #include <raptor_config.h>
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
-
 #include <stdio.h>
 #include <sys/types.h>
 #include <time.h>
