@@ -23,10 +23,10 @@ dnl
 dnl 
 
 
-AC_PREREQ(2.62)
-AC_INIT(Raptor RDF Parser and Serializer library, 2.0.9, http://bugs.librdf.org/, raptor2)
+AC_PREREQ([2.68])
+AC_INIT([Raptor RDF Parser and Serializer library], [2.0.9], [http://bugs.librdf.org/], [raptor2])
 AC_CONFIG_SRCDIR([src/raptor_general.c])
-AM_CONFIG_HEADER([src/raptor_config.h])
+AC_CONFIG_HEADERS([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
 AM_INIT_AUTOMAKE([1.11 check-news std-options -Wobsolete -Wportability -Wsyntax -Wunsupported -Wextra-portability])
@@ -75,7 +75,7 @@ m4_undefine([AC_PROG_CXX])
 m4_defun([AC_PROG_CXX],[])
 m4_undefine([AC_PROG_F77])
 m4_defun([AC_PROG_F77],[])
-AC_PROG_LIBTOOL
+LT_INIT
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
@@ -370,18 +370,18 @@ AM_CONDITIONAL(GETOPT, test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long =
 
 
 AC_MSG_CHECKING(whether need to declare optind)
-AC_TRY_LINK([#ifdef HAVE_GETOPT_H
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[#ifdef HAVE_GETOPT_H
 #include <getopt.h>
-#endif], [int x=optind;],
-            AC_MSG_RESULT(no),
-            AC_DEFINE(NEED_OPTIND_DECLARATION, 1, [need 'extern int optind' declaration?])
-            AC_MSG_RESULT(yes))
+#endif]], [[int x=optind;]])],
+            [AC_MSG_RESULT(no)],
+            [AC_DEFINE([NEED_OPTIND_DECLARATION], [1], [need 'extern int optind' declaration?])
+            AC_MSG_RESULT(yes)])
 
 
 
 if test $ac_cv_func_vsnprintf = yes; then
   AC_MSG_CHECKING([whether vsnprintf has C99 compatible return value])
-  AC_TRY_RUN([#include <stdio.h>
+  AC_RUN_IFELSE([AC_LANG_SOURCE([[#include <stdio.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
@@ -401,7 +401,8 @@ int main(void) {
   char buffer[32];
   return (is_c99(NULL,   "1234567") ? 0 : 10)
        + (is_c99(buffer, "1234567") ? 0 :  1);
-}], [AC_DEFINE([HAVE_C99_VSNPRINTF], [1], [vsnprintf has C99 compatible return value])
+}]])],
+    [AC_DEFINE([HAVE_C99_VSNPRINTF], [1], [vsnprintf has C99 compatible return value])
      AC_MSG_RESULT([yes])],
     [AC_MSG_RESULT([no])],
     [AC_DEFINE([CHECK_VSNPRINTF_RUNTIME], [1], [have to check C99 vsnprintf at runtime because cross compiling])])
@@ -592,66 +593,66 @@ if test "X$XML_CONFIG" != X; then
     have_libxml=0
   else
     AC_MSG_CHECKING(if libxml xmlEntity has name_length field)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
-], [xmlEntity foo; foo.name_length=0],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_ENTITY_NAME_LENGTH,1,[does libxml struct xmlEntity have a field name_length]),
-		AC_MSG_RESULT(no))
+]], [[xmlEntity foo; foo.name_length=0]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_ENTITY_NAME_LENGTH], [1], [does libxml struct xmlEntity have a field name_length])],
+		[AC_MSG_RESULT(no)])
 
     AC_MSG_CHECKING(if libxml xmlEntity has etype field)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
-], [xmlEntity foo; foo.etype=0],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_ENTITY_ETYPE, 1, [does libxml struct xmlEntity have a field etype]),
-		AC_MSG_RESULT(no))
+]], [[xmlEntity foo; foo.etype=0]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_ENTITY_ETYPE], [1], [does libxml struct xmlEntity have a field etype])],
+		[AC_MSG_RESULT(no)])
 
     AC_MSG_CHECKING(if libxml xmlSAXHandler has initialized field)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
-], [xmlSAXHandler foo; foo.initialized=0],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED, 1, [does libxml xmlSAXHandler have initialized field]),
-		AC_MSG_RESULT(no))
+]], [[xmlSAXHandler foo; foo.initialized=0]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED], [1], [does libxml xmlSAXHandler have initialized field])],
+		[AC_MSG_RESULT(no)])
 
     AC_MSG_CHECKING(if libxml xmlSAXHandler has externalSubset field)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
-], [xmlSAXHandler foo; foo.externalSubset=NULL],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET, 1, [does libxml xmlSAXHandler have externalSubset field]),
-		AC_MSG_RESULT(no))
+]], [[xmlSAXHandler foo; foo.externalSubset=NULL]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET], [1], [does libxml xmlSAXHandler have externalSubset field])],
+		[AC_MSG_RESULT(no)])
 
     AC_CHECK_FUNCS(xmlSAX2InternalSubset xmlCtxtUseOptions)
 
     AC_MSG_CHECKING(if libxml has parser option XML_PARSE_NONET)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_PARSER_H
 #include <libxml/parser.h>
 #endif
-], [xmlParserOption foo; foo = XML_PARSE_NONET],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_XML_PARSE_NONET, 1, [does libxml have XML_PARSE_NONET]),
-		AC_MSG_RESULT(no))
+]], [[xmlParserOption foo; foo = XML_PARSE_NONET]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_XML_PARSE_NONET], [1], [does libxml have XML_PARSE_NONET])],
+		[AC_MSG_RESULT(no)])
     AC_CHECK_HEADERS(libxml/HTMLparser.h)
     AC_MSG_CHECKING(if libxml has parser option HTML_PARSE_NONET)
-    AC_TRY_LINK([
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef HAVE_LIBXML_HTMLPARSER_H
 #include <libxml/HTMLparser.h>
 #endif
-], [htmlParserOption foo; foo = HTML_PARSE_NONET],
-                AC_MSG_RESULT(yes)
-		AC_DEFINE(RAPTOR_LIBXML_HTML_PARSE_NONET, 1, [does libxml have HTML_PARSE_NONET]),
-		AC_MSG_RESULT(no))
+]], [[htmlParserOption foo; foo = HTML_PARSE_NONET]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_HTML_PARSE_NONET], [1], [does libxml have HTML_PARSE_NONET])],
+		[AC_MSG_RESULT(no)])
   fi
 
 fi
@@ -1115,7 +1116,7 @@ if test $ac_cv_header_libinn_h = yes; then
   AC_CHECK_LIB(inn, HashMessageID, have_libinn=yes)
 
   AC_MSG_CHECKING(parsedate in libinn)
-  AC_TRY_LINK([
+  AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #ifdef TIME_WITH_SYS_TIME
 # include <sys/time.h>
 # include <time.h>
@@ -1127,11 +1128,11 @@ if test $ac_cv_header_libinn_h = yes; then
 # endif
 #endif
 #include <libinn.h>
-], [ parsedate("Sun Jun 12 00:04:09 BST 2005", NULL) ],
-    AC_DEFINE(HAVE_INN_PARSEDATE, 1, [INN parsedate function present])
-    have_inn_parsedate=yes
-    AC_MSG_RESULT(yes),
-    AC_MSG_RESULT(no))
+]], [[ parsedate("Sun Jun 12 00:04:09 BST 2005", NULL) ]])],
+    [AC_DEFINE([HAVE_INN_PARSEDATE], [1], [INN parsedate function present])
+     have_inn_parsedate=yes
+     AC_MSG_RESULT(yes)],
+    [AC_MSG_RESULT(no)])
 fi
 CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
