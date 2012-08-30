@@ -1288,7 +1288,6 @@ tests/rdfxml/Makefile
 tests/turtle/Makefile
 tests/trig/Makefile
 utils/Makefile
-win32/Makefile
 librdfa/Makefile
 raptor2.pc])
 
