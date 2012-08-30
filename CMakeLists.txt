@@ -19,6 +19,8 @@ PROJECT(Raptor2 C)
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.7)
 
+SET(CMAKE_INCLUDE_CURRENT_DIR 1)
+
 ################################################################
 
 # Third-party libraries
