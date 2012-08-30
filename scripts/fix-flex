@@ -18,10 +18,6 @@ print <<'EOT';
 #include <raptor_config.h>
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
-
 EOT
 $line_offset += 8; # added 8 lines to output
 

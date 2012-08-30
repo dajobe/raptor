@@ -28,11 +28,6 @@
 #endif
 
 #ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
-
-
-#ifdef WIN32
 
 /* Only on WIN32 systems */
 
