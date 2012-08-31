@@ -75,6 +75,7 @@ fi
 # Some dependencies for autotools:
 # automake 1.13 requires autoconf 2.65
 # automake 1.12 requires autoconf 2.62
+# automake 1.11 requires autoconf 2.62 (needed for AM_SILENT_RULES)
 automake_min_vers=011102
 aclocal_min_vers=$automake_min_vers
 autoconf_min_vers=026200
