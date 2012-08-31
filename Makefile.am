@@ -22,7 +22,7 @@
 # 
 
 
-SUBDIRS= src utils docs data tests win32 examples librdfa scripts
+SUBDIRS = src utils docs data tests examples librdfa scripts
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor2.pc
@@ -34,6 +34,7 @@ ChangeLog.6 ChangeLog.7 ChangeLog.8 ChangeLog.9 ChangeLog.10 ChangeLog.11 \
 ChangeLog.12 \
 README                LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
+README-cmake.md \
 RELEASE.html \
 LICENSE-2.0.txt NOTICE \
 UPGRADING.html \

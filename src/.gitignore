@@ -32,4 +32,3 @@ turtle_lexer.h
 turtle_parser.c
 turtle_parser.h
 turtle_parser.output
-win32_raptor_config.h

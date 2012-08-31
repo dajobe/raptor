@@ -69,7 +69,6 @@ IGNORE_HFILES= \
 	turtle_common.h \
 	turtle_lexer.h \
 	turtle_parser.h \
-	win32_raptor_config.h \
 	git-version.h
 
 # CFLAGS and LDFLAGS for compiling scan program. Only needed

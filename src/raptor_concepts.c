@@ -26,10 +26,6 @@
 #include <raptor_config.h>
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#endif
-
 /* Raptor includes */
 #include "raptor2.h"
 #include "raptor_internal.h"
