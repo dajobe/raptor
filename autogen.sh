@@ -382,7 +382,7 @@ do
 	  break
       fi
 
-      echo "$program: Running $autoconf"
+      echo "$program: Running $autoconf $autoconf_args"
       $DRYRUN $autoconf $autoconf_args
       status=$?
       if test $status != 0; then
