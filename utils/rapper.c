@@ -707,7 +707,6 @@ main(int argc, char *argv[])
     puts(HELP_TEXT("f OPTION(=VALUE)", "feature OPTION(=VALUE)", HELP_PAD "Set parser or serializer options" HELP_PAD "Use `-f help' for a list of valid options"));
     puts(HELP_TEXT("g", "guess           ", "Guess the input syntax (same as -i guess)"));
     puts(HELP_TEXT("h", "help            ", "Print this help, then exit"));
-    puts(HELP_TEXT("m MODE", "mode MODE  ", "Set parser mode - 'lax' (default) or 'strict'"));
     puts(HELP_TEXT("q", "quiet           ", "No extra information messages"));
     puts(HELP_TEXT("r", "replace-newlines", "Replace newlines with spaces in literals"));
 #ifdef SHOW_GRAPHS_FLAG
