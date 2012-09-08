@@ -1,4 +1,110 @@
+2012-09-07  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c:
+	Remove -m MODE from help
+
+	This option was removed in commit
+	f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54
+	2010 -0700 as part of the Raptor V2 work.
+
+2012-08-31  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Update autogen.sh
+
+	* autogen.sh: Echo autoconf args
+
+	Merge pull request #4 from iskunk/drg-win32 win32 and
+	autoconf-related changes
+
+2012-08-30  Daniel Richard G <danielg@teragram.com>
+
+	* CMakeLists.txt, src/CMakeLists.txt: Simplify CMake usage with
+	CMAKE_INCLUDE_CURRENT_DIR
+
+	* configure.ac, docs/Makefile.am, examples/grapper.c,
+	examples/raptor_abort.c, scripts/fix-flex, src/.gitignore,
+	src/Makefile.am, src/ntriples_parse.c, src/parsedate.y,
+	src/raptor_abbrev.c, src/raptor_avltree.c, src/raptor_concepts.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_log.c,
+	src/raptor_memstr.c, src/raptor_namespace.c, src/raptor_nfc_icu.c,
+	src/raptor_nfc_test.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_permute_test.c, src/raptor_qname.c,
+	src/raptor_rdfxml.c, src/raptor_rfc2396.c, src/raptor_rss.c,
+	src/raptor_rss_common.c, src/raptor_sax2.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_syntax_description.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_uri.c, src/raptor_win32.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c, src/strcasecmp.c,
+	src/turtle_common.c, src/turtle_lexer.l, src/turtle_parser.y,
+	src/win32_raptor_config.h.in, utils/rapper.c, utils/rdfdiff.c:
+	Remove all traces of win32_raptor_config.h
+
+	Remove the file itself, all #include uses of it, and all
+	references to it, as this file is no longer needed.
+
+	* Makefile.am, README-cmake.md, configure.ac, win32/Makefile.am,
+	win32/README.md, win32/rapper.dsp, win32/rapper.vcproj,
+	win32/raptor.dsp, win32/raptor.dsw, win32/raptor.sln,
+	win32/raptor.vcproj, win32/raptortest.cpp, win32/raptortest.dsp,
+	win32/raptortest.vcproj: Delete win32/ subdirectory
+
+	The MSVC6 and MSVC7.1 project files in win32/ fail to build
+	current versions of Raptor, require external projects for Curl and
+	Expat which do not appear to be publicly available, are unlikely
+	to get the extensive work they need in the near future due to John
+	Barstow's busy schedule, and are redundant now that Raptor can be
+	built on Windows using CMake. Thus, out they go.
+
+	win32/README.md: Moved up to README-cmake.md, as this information
+	is useful, and CMake build support is not limited to Win32
+
+2012-08-25  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	fix PKG_CONFIG_REQUIRES version vars
+
+	* configure.ac, raptor2.pc.in: Allow xml2-config and curl-config
+	to work for libxml and libcurl
+
+	- report on source of xml, curl libraries in status
+	- remove extra oCPPFLAGS assignements
+	- substitute pkgconfig dependencies into raptor2.pc
+
+2012-08-20  Dave Beckett <dave@zite.com>
+
+	* src/raptor_log.c:
+	(raptor_log_error): sizeof should take size of field not pointer
+
+2012-08-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c: Handle ret->checked field not being present
+
+	The entities checked field was added 2006-10-10 in
+	http://git.gnome.org/browse/libxml2/commit/?id=a37a6ad91a61d168ecc4b29263def3363fff4da6and
+	released in libxml2 2.6.27 on 2006-10-25
+
+	Fixes Issue #0000520
+	http://bugs.librdf.org/mantis/view.php?id=520
+
+2012-08-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_element_content_type_as_string): LAST is not valid
+
 2012-08-10  Dave Beckett <dave@dajobe.org>
+
+	* RELEASE.html: 2.0.9
 
 	* win32/Makefile.am:
 	README.md in dist replacing README.txt
