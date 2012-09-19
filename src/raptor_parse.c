@@ -1319,6 +1319,9 @@ raptor_world_guess_parser_name(raptor_world* world,
        * RDF/XML examples
        */
 #define FIRSTN 1024
+#if FIRSTN > RAPTOR_READ_BUFFER_SIZE
+#error "RAPTOR_READ_BUFFER_SIZE is not large enough"
+#endif
       if(buffer && len && len > FIRSTN) {
         c = buffer[FIRSTN];
         ((char*)buffer)[FIRSTN] = '\0';

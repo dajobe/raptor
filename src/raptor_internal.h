@@ -444,7 +444,7 @@ raptor_namespace** raptor_namespace_stack_to_array(raptor_namespace_stack *nstac
 
 
 /* Size of buffer to use when reading from a file */
-#ifdef BUFSIZ
+#if defined(BUFSIZ) && BUFSIZ > 4096
 #define RAPTOR_READ_BUFFER_SIZE BUFSIZ
 #else
 #define RAPTOR_READ_BUFFER_SIZE 4096
