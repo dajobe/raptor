@@ -1,3 +1,29 @@
+2012-09-19  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #5 from iskunk/drg-win32-2
+	Win32 parser-guess and DLL linkage fixes
+
+2012-09-19  Daniel Richard G <danielg@teragram.com>
+
+	* src/raptor_internal.h, src/turtle_common.h: Fix DLL export
+	linkage for internal functions needed by the test programs
+
+	This allows the test programs to be linked against a DLL build of
+	Raptor.
+
+	* src/raptor_internal.h, src/raptor_parse.c: Ensure that a small
+	system BUFSIZ does not affect parser guessing
+
+	raptor_internal.h: Ensure that RAPTOR_READ_BUFFER_SIZE is never
+	smaller than 4096. (It really only needs to be as large as FIRSTN
+	in raptor_parse.c, i.e. 1024, but 4kB isn't all that much nowadays
+	anyway)
+
+	(raptor_world_guess_parser_name): Added a compile-time check to
+	ensure that RAPTOR_READ_BUFFER_SIZE is at least as large as
+	FIRSTN, because otherwise the guesser sees fewer than FIRSTN bytes
+	from the document.
+
 2012-09-07  Dave Beckett <dave@dajobe.org>
 
 	* utils/rapper.c:
@@ -8,6 +34,8 @@
 	2010 -0700 as part of the Raptor V2 work.
 
 2012-08-31  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh, configure.ac: Require autoconf 2.62 again
 
 	* autogen.sh: Update autogen.sh
 
