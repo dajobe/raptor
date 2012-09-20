@@ -42,6 +42,11 @@ extern "C" {
 #undef HAVE_STDLIB_H
 #endif
 
+/* Some internal functions are needed by the test programs */
+#ifndef RAPTOR_INTERNAL_API
+#define RAPTOR_INTERNAL_API RAPTOR_API
+#endif
+
 /* Can be over-ridden or undefined in a config.h file or -Ddefine */
 #ifndef RAPTOR_INLINE
 #define RAPTOR_INLINE inline
@@ -444,7 +449,7 @@ raptor_namespace** raptor_namespace_stack_to_array(raptor_namespace_stack *nstac
 
 
 /* Size of buffer to use when reading from a file */
-#ifdef BUFSIZ
+#if defined(BUFSIZ) && BUFSIZ > 4096
 #define RAPTOR_READ_BUFFER_SIZE BUFSIZ
 #else
 #define RAPTOR_READ_BUFFER_SIZE 4096
@@ -676,24 +681,24 @@ unsigned char* raptor_world_internal_generate_id(raptor_world *world, unsigned c
 #ifdef RAPTOR_DEBUG
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
-const char* raptor_basename(const char *name);
+RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
 /* raptor_parse.c */
 raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, const char *name);  
 void raptor_delete_parser_factories(void);
-const char* raptor_parser_get_accept_header_all(raptor_world* world);
+RAPTOR_INTERNAL_API const char* raptor_parser_get_accept_header_all(raptor_world* world);
 int raptor_parser_set_uri_filter_no_net(void *user_data, raptor_uri* uri);
 void raptor_parser_parse_uri_write_bytes(raptor_www* www, void *userdata, const void *ptr, size_t size, size_t nmemb);
 void raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 void raptor_parser_error(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-void raptor_parser_log_error_varargs(raptor_parser* parser, raptor_log_level level, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(3, 0);
+RAPTOR_INTERNAL_API void raptor_parser_log_error_varargs(raptor_parser* parser, raptor_log_level level, const char *message, va_list arguments) RAPTOR_PRINTF_FORMAT(3, 0);
 void raptor_parser_warning(raptor_parser* parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* logging */
 void raptor_world_internal_set_ignore_errors(raptor_world* world, int flag);
 void raptor_log_error_varargs(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, va_list arguments) RAPTOR_PRINTF_FORMAT(4, 0);
-void raptor_log_error_formatted(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, ...) RAPTOR_PRINTF_FORMAT(4, 5);
+RAPTOR_INTERNAL_API void raptor_log_error_formatted(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message, ...) RAPTOR_PRINTF_FORMAT(4, 5);
 void raptor_log_error(raptor_world* world, raptor_log_level level, raptor_locator* locator, const char* message);
 
 
@@ -883,8 +888,8 @@ int raptor_init_serializer_atom(raptor_world* world);
 extern const unsigned char * const raptor_atom_namespace_uri;
 
 /* raptor_rfc2396.c */
-raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
-void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
+RAPTOR_INTERNAL_API raptor_uri_detail* raptor_new_uri_detail(const unsigned char *uri_string);
+RAPTOR_INTERNAL_API void raptor_free_uri_detail(raptor_uri_detail* uri_detail);
 unsigned char* raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p);
 
 /* serializers */
@@ -1015,9 +1020,9 @@ void raptor_www_libfetch_free(raptor_www *www);
 int raptor_www_libfetch_fetch(raptor_www *www);
 
 /* raptor_set.c */
-raptor_id_set* raptor_new_id_set(raptor_world* world);
-void raptor_free_id_set(raptor_id_set* set);
-int raptor_id_set_add(raptor_id_set* set, raptor_uri* base_uri, const unsigned char *item, size_t item_len);
+RAPTOR_INTERNAL_API raptor_id_set* raptor_new_id_set(raptor_world* world);
+RAPTOR_INTERNAL_API void raptor_free_id_set(raptor_id_set* set);
+RAPTOR_INTERNAL_API int raptor_id_set_add(raptor_id_set* set, raptor_uri* base_uri, const unsigned char *item, size_t item_len);
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 void raptor_id_set_stats_print(raptor_id_set* set, FILE *stream);
 #endif
@@ -1210,7 +1215,7 @@ typedef void (*raptor_simple_message_handler)(void *user_data, const char *messa
 
 
 /* turtle_common.c */
-int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, const unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
+RAPTOR_INTERNAL_API int raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer, const unsigned char *text, size_t len, int delim, raptor_simple_message_handler error_handler, void *error_data);
 
 
 /* raptor_abbrev.c */
@@ -1272,21 +1277,21 @@ raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor
 typedef struct raptor_turtle_writer_s raptor_turtle_writer;
 
 /* Turtle Writer Class (raptor_turtle_writer) */
-raptor_turtle_writer* raptor_new_turtle_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr);
-void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
-void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
-void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
+RAPTOR_INTERNAL_API raptor_turtle_writer* raptor_new_turtle_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr);
+RAPTOR_INTERNAL_API void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
 void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri);
-void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
-void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
-void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
-void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
-int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, const unsigned char *s, const unsigned char* lang, raptor_uri* datatype);
-void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
-int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, const unsigned char *s, const unsigned char* lang, raptor_uri* datatype);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
 void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
-int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_option option, int value);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_option option, int value);
 int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
 int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
 const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
@@ -1337,7 +1342,7 @@ size_t raptor_format_integer(char* buffer, size_t bufsize, int integer, unsigned
   } while(0)  
     
 
-int raptor_check_world_internal(raptor_world* world, const char* name);
+RAPTOR_INTERNAL_API int raptor_check_world_internal(raptor_world* world, const char* name);
 
 
 
