@@ -1,3 +1,8 @@
+2012-09-23  Dave Beckett <dave@dajobe.org>
+
+	* manifest.pl:
+	Remove ancient manifest.pl moved to testing project
+
 2012-09-19  Dave Beckett <dave@dajobe.org>
 
 	* Merge pull request #5 from iskunk/drg-win32-2
@@ -109,7 +114,7 @@
 	- remove extra oCPPFLAGS assignements
 	- substitute pkgconfig dependencies into raptor2.pc
 
-2012-08-20  Dave Beckett <dave@zite.com>
+2012-08-20  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_log.c:
 	(raptor_log_error): sizeof should take size of field not pointer
