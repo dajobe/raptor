@@ -93,6 +93,31 @@
         mf:action [ qt:data   <bad-18.ttl> ] ;
      ]
 
+     [  mf:name      "bad-19" ;
+        rdfs:comment "Bad () in predicate position" ;
+        mf:action [ qt:data   <bad-19.ttl> ] ;
+     ]
+
+     [  mf:name      "bad-20" ;
+        rdfs:comment "Escape end-of-file" ;
+        mf:action [ qt:data   <bad-20.ttl> ] ;
+     ]
+
+     [  mf:name      "bad-21" ;
+        rdfs:comment "Turtle spec does not allow . in namespace prefix (token prefixName)" ;
+        mf:action [ qt:data   <bad-21.ttl> ] ;
+     ]
+
+     [  mf:name      "bad-22" ;
+        rdfs:comment "Turtle spec does not allow . in namespace name (token name)" ;
+        mf:action [ qt:data   <bad-22.ttl> ] ;
+     ]
+
+     [  mf:name      "bad-23" ;
+        rdfs:comment "Bad terminating long literal" ;
+        mf:action [ qt:data   <bad-23.ttl> ] ;
+     ]
+
 
     # End of tests
    ).
