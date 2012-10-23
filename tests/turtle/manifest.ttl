@@ -193,6 +193,54 @@
         mf:result  <test-30.out>
      ]
 
+     [  mf:name      "test-31" ;
+        rdfs:comment "RSS test" ;
+        mf:action [ qt:data   <test-31.ttl> ] ;
+        mf:result  <test-31-out.ttl>
+     ]
+
+     [  mf:name      "test-32" ;
+        rdfs:comment "RDF Value" ;
+        mf:action [ qt:data   <test-32.ttl> ] ;
+        mf:result  <test-32-out.ttl>
+     ]
+
+     [  mf:name      "test-33" ;
+        rdfs:comment "Long literal ending in escaped slash" ;
+        mf:action [ qt:data   <test-33.ttl> ] ;
+        mf:result  <test-33.out>
+     ]
+
+     [  mf:name      "test-34" ;
+        rdfs:comment "URI ending in period character" ;
+        mf:action [ qt:data   <test-34.ttl> ] ;
+        mf:result  <test-34-out.ttl>
+     ]
+
+     [  mf:name      "test-35" ;
+        rdfs:comment "XMLLiteral with lang tag" ;
+        mf:action [ qt:data   <test-35.ttl> ] ;
+        mf:result  <test-35.out>
+     ]
+
+     [  mf:name      "test-36" ;
+        rdfs:comment "Test long literal twice to ensure it does not over-quote" ;
+        mf:action [ qt:data   <test-36.ttl> ] ;
+        mf:result  <test-36.out>
+     ]
+
+     [  mf:name      "test-37" ;
+        rdfs:comment "Test long literal with lang tag" ;
+        mf:action [ qt:data   <test-37.ttl> ] ;
+        mf:result  <test-37.out>
+     ]
+
+     [  mf:name      "test-38" ;
+        rdfs:comment "Unicode surrogates in literal" ;
+        mf:action [ qt:data   <test-38.ttl> ] ;
+        mf:result  <test-38.out>
+     ]
+
      [  mf:name      "rdf-schema" ;
         rdfs:comment "RDF Namespace document converted into Turtle" ;
         mf:action [ qt:data   <rdf-schema.ttl> ] ;
