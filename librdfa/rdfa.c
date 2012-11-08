@@ -1264,6 +1264,8 @@ static void raptor_rdfa_start_element(void *user_data,
   int nb_defaulted = 0;
   char** attr = NULL;
   int i;
+  const char* ns_name = NULL;
+  const char* ns_uri = NULL;
 
   if(nb_attributes > 0) {
     /* Everything written into 'attr' is a shared pointer into
@@ -1297,9 +1299,14 @@ static void raptor_rdfa_start_element(void *user_data,
  * @attributes:  pointer to the array of (localname/prefix/URI/value/end)
  *               attribute values.
  */
+  if(qname_ns) {
+    ns_name = (const char*)raptor_namespace_get_prefix(qname_ns);
+    ns_uri = (const char*)raptor_uri_as_string(qname_ns->uri);
+  }
+
   start_element(user_data, (const char*)localname,
-                (const char*)raptor_namespace_get_prefix(qname_ns),
-                (const char*)raptor_uri_as_string(qname_ns->uri),
+                ns_name,
+                ns_uri,
                 nb_namespaces,
                 (const char**)namespaces,
                 nb_attributes,
