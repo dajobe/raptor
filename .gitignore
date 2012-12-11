@@ -34,3 +34,4 @@ raptor2.spec
 releases
 run*
 setup.sh
+CMakeTests.txt
