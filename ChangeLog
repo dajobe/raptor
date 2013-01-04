@@ -48,8 +48,7 @@
 
 2012-09-07  Dave Beckett <dave@dajobe.org>
 
-	* utils/rapper.c:
-	Remove -m MODE from help
+	* utils/rapper.c: Remove -m MODE from help
 
 	This option was removed in commit
 	f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54

@@ -14,15 +14,57 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=520">0000520</a>: compilation failure</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=521">0000521</a>: Python RDF 1.0.14.1 segfault when one tries to parse xhtml+rdf using the RDFa parser</li>
+</ul>
+
+
+<h3>Parser class changes</h3>
+
+<p>Handle non-namespaced elements without crash in RDFa.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=521">Issue #0000521</a>
+</p>
+
 <h3>Configuration and build changes</h3>
 
-<p>Initial CMake build framework for building Raptor on Microsoft
-Windows.  Contributed by Daniel Richard G. for Teragram Inc.
+<p>Added CMake build framework for building Raptor on Microsoft
+Windows.  Removed the old win32/ area and win32_raptor_config.h
+references.  Contributed by Daniel Richard G. for Teragram Inc.
 </p>
+
+<p>Ensure that a small system BUFSIZ does not affect parser guessing
+Patch from Daniel Richard G for Teragram Inc.</p>
+
+<p>Added a compile-time check for
+<code>raptor_world_guess_parser_name()</code> to ensure that
+<code>RAPTOR_READ_BUFFER_SIZE</code> is at least as large as FIRSTN,
+because otherwise the guesser sees fewer than FIRSTN bytes from the
+document. Patch from Daniel Richard G for Teragram Inc.
+</p>
+
+<p>Update <code>configure</code> to allow xml2-config and curl-config
+to work for libxml and libcurl.  It now report on the source of xml, curl
+libraries in the configuration status.</p>
 
 <p>autogen.sh updates to abort the run if a configuring program
 fails, Generate NEWS with old timestamp if missing so automake can
 run.</p>
+
+<p>Handle the libxml2 <code>ret->checked</code> field not being
+present in older libxml2 versions.  The entities checked field was
+added 2006-10-10 in <a href="http://git.gnome.org/browse/libxml2/commit/?id=a37a6ad91a61d168ecc4b29263def3363fff4da6and">libxml2 GIT commit a37a6ad91a61d168ecc4b29263def3363fff4da6and</a>
+released in libxml2 2.6.27 on 2006-10-25.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
+</p>
+
+<h3>Other changes</h3>
+
+<p>Remove -m MODE from rapper help message, removed in commit
+f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
+-0700 as part of the Raptor V2 work.
+</p>
 
 
 <h2 id="rel2_0_8"><a name="rel2_0_8">Raptor2 2.0.8 changes</a></h2>
@@ -4216,7 +4258,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2012 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2013 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
