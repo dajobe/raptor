@@ -141,12 +141,12 @@ void rdfa_print_triple(rdftriple* triple)
          {
             if((triple->datatype != NULL) && (triple->language != NULL))
             {
-               printf("      \"%s\"@%s^^%s",
+               printf("      \"%s\"@%s^^<%s>",
                   triple->object, triple->language, triple->datatype);
             }
             else if(triple->datatype != NULL)
             {
-               printf("      \"%s\"^^%s", triple->object, triple->datatype);
+               printf("      \"%s\"^^<%s>", triple->object, triple->datatype);
             }
          }
          else
