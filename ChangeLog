@@ -1,3 +1,15 @@
+2013-01-23  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/triple.c:
+	Output correct literal datatypes ^^<uri>
+
+	librdfa commit f3d10545bc2dd4a7aa940dd11dfcb6c6035e23a4
+
+2013-01-03  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, LICENSE.html, NEWS.html, README.html, RELEASE.html:
+	2.0.9 and 2013
+
 2012-12-11  Dave Beckett <dave@dajobe.org>
 
 	* .gitignore: Ignore CMakeTests.txt
