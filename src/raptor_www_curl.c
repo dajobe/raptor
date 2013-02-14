@@ -292,8 +292,19 @@ raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
     verify_peer = 1;
   curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, verify_peer);
 
-  if(verify_host >= 0 && verify_host <= 2)
-    curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
+  /* curl 7.28.1 removed the value 1 from being legal:
+   * http://daniel.haxx.se/blog/2012/10/25/libcurl-claimed-to-be-dangerous/
+   *
+   * CURL GIT commit da82f59b697310229ccdf66104d5d65a44dfab98
+   * Sat Oct 27 12:31:39 2012 +0200
+   *
+   * Legal values are:
+   * 0 to disable host verifying
+   * 2 (default) to enable host verifyinging
+   */
+  if(verify_host)
+    verify_host = 2;
+  curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
 
   return 0;
 }
