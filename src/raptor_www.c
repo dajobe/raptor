@@ -493,7 +493,7 @@ raptor_www_set_ssl_cert_options(raptor_www* www,
  * raptor_www_set_ssl_verify_options:
  * @www: WWW object
  * @verify_peer: SSL verify peer - non-0 to verify peer SSL certificate (default)
- * @verify_host: SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
+ * @verify_host: SSL verify host - 0 none, non-0 to require a CN match (default).
  * 
  * Set whether SSL verifies the authenticity of the peer's certificate
  *
