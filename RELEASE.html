@@ -18,6 +18,7 @@
 <ul>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=520">0000520</a>: compilation failure</li>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=521">0000521</a>: Python RDF 1.0.14.1 segfault when one tries to parse xhtml+rdf using the RDFa parser</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=526">0000526</a>: Document how to find gtkdocize in INSTALL.html</li>
 </ul>
 
 
@@ -60,6 +61,10 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
 </p>
 
 <h3>Other changes</h3>
+
+<p><code>raptor_www_set_ssl_verify_options()</code>: Support Curl
+7.28.1 removal of <code>CURLOPT_SSL_VERIFYHOST</code> with a value of
+2. Now <code>verify_host</code> non-0 is verify CN.</p>
 
 <p>Remove -m MODE from rapper help message, removed in commit
 f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
