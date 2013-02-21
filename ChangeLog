@@ -1,3 +1,27 @@
+2013-02-18  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html: Document how to find gtkdocize
+	Fixes Issue #0000526
+	http://bugs.librdf.org/mantis/view.php?id=526
+
+2013-02-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c: Never use CURLOPT_SSL_VERIFYHOST with a
+	value of 2
+
+	(raptor_www_curl_set_ssl_verify_options): curl 7.28.1 removed the
+	value 1 from being legal:
+	http://daniel.haxx.se/blog/2012/10/25/libcurl-claimed-to-be-dangerous/CURL
+	GIT commit da82f59b697310229ccdf66104d5d65a44dfab98
+	Sat Oct 27 12:31:39 2012 +0200
+
+	Legal values are: 0 to disable host verifying 2 (default) to
+	enable host verifyinging
+
+2013-01-24  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog: 2.0.9 and 2013
+
 2013-01-23  Dave Beckett <dave@dajobe.org>
 
 	* librdfa/triple.c:
