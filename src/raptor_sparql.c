@@ -64,8 +64,10 @@ typedef enum {
  * and % must be followed by two characters in the set:
  *   "A-Fa-f0-9"
  *
- * See also raptor_unicode_is_xml11_namestartchar() and
- * raptor_unicode_is_xml11_namechar() for what XML 1.1 allows.
+ * See also raptor_xml_name_check(),
+ * raptor_unicode_is_xml11_namestartchar() and
+ * raptor_unicode_is_xml11_namechar() which check what XML 1.1 allows
+ * in names.
  *
  * Return value: <0 on error (such as invalid @check_type or empty string), 0 if invalid, >0 if valid
  */
