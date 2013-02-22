@@ -1,6 +1,6 @@
 /* -*- Mode: c; c-basic-offset: 2 -*-
  *
- * raptor_name.c - Raptor name checking utilities
+ * raptor_sparql.c - Raptor SPARQL / Turtle name checking utilities
  *
  * Copyright (C) 2013, David Beckett http://www.dajobe.org/
  * 
