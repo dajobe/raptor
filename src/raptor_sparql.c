@@ -80,6 +80,7 @@ raptor_sparql_name_check(unsigned char *string, size_t length,
   raptor_unichar unichar = 0;
   int unichar_len = 0;
   int escaping = 0;
+  int hexing = 0; /* 0: not in hex. 1, 2: at hex digit */
 
   if(check_type == RAPTOR_SPARQL_NAME_CHECK_VARNAME)
     check_bits = RAPTOR_SPARQL_NAME_CHECK_ALLOW_UL_09_FIRST;
@@ -119,6 +120,17 @@ raptor_sparql_name_check(unsigned char *string, size_t length,
 
     /* checks for anywhere in name */
 
+    if(hexing) {
+      if(!(unichar >= '0' && unichar <= '9') ||
+          (unichar >= 'a' && unichar <= 'f') ||
+          (unichar >= 'F' && unichar <= 'F')) {
+        goto done;
+      }
+      if(hexing++ == 3)
+        hexing = 0;
+      continue;
+    }
+    
     /* This is NOT allowed by XML */
     if(escaping) {
       if(!(check_bits & RAPTOR_SPARQL_NAME_CHECK_ALLOW_COLON_HEX_BS))
@@ -148,8 +160,10 @@ raptor_sparql_name_check(unsigned char *string, size_t length,
 
     /* This is NOT allowed by XML */
     if(unichar == '%') {
-      if(check_bits & RAPTOR_SPARQL_NAME_CHECK_ALLOW_COLON_HEX_BS)
+      if(check_bits & RAPTOR_SPARQL_NAME_CHECK_ALLOW_COLON_HEX_BS) {
+        hexing = 1;
         continue;
+      }
       goto done;
     }
 
