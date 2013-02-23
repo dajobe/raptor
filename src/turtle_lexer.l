@@ -2,7 +2,7 @@
  *
  * turtle_lexer.l - Raptor Turtle lexer - making tokens for turtle grammar generator
  *
- * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2013, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -165,21 +165,22 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
 %}
 
-/* Tokens from SPARQL spec, adjusted for Turtle */
-LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
-NCCHAR1 [A-Za-z\\\x80-\xff]
-NCCHAR {NCCHAR1}|"-"|"_"|[0-9]
-/* SPARQL allows . in prefix after first position.   Would be:
-   NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
-*/
-NCNAME_PREFIX {NCCHAR1}{NCCHAR}*
-/* SPARQL allows . in name after first position.  Would be:
-  NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
-*/
-NCNAME ("_"|{NCCHAR1}){NCCHAR}*
-QNAME {NCNAME_PREFIX}?":"{NCNAME}?
-BNAME "_:"{NCNAME}
+/* Tokens from Turtle 2013 spec - lex-ifyed to remove unicode ranges */
+PN_CHARS_BASE [A-Za-z\\\x80-\xff]
+PN_CHARS {PN_CHARS_BASE}|"_"|"-"|[0-9]
+BS_ESCAPES [-_~.!$&\'()*+,;=/?#@%]
+HEX [0-9A-Fa-f]
+PLX ("%"{HEX}{HEX})|("\\"{BS_ESCAPES})
 
+/* suffix of LANGTAG */
+LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
+
+BN_LABEL  ({PN_CHARS_BASE}|"_"|[0-9])(({PN_CHARS}|".")*({PN_CHARS}))*
+PN_PREFIX ({PN_CHARS_BASE})(({PN_CHARS}|".")*({PN_CHARS}))*
+PN_LOCAL  ({PN_CHARS_BASE}|"_"|[0-9]|":"|PLX)(({PN_CHARS}|"."|":"|PLX)*({PN_CHARS}|":"|PLX))*
+
+QNAME {PN_PREFIX}?":"{PN_LOCAL}?
+  
 /* similar to SPARQL but no need for <= check here */
 QUOTEDURI \<[^\>]*\>
 
@@ -298,7 +299,7 @@ EXPONENT [eE][+-]?[0-9]+
                     yyterminate();
 }
     
-{BNAME}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
+"_:"{BN_LABEL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!turtle_parser_lval->string)
             YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return BLANK_LITERAL; }
@@ -329,7 +330,7 @@ EXPONENT [eE][+-]?[0-9]+
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>{NCNAME_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+<PREF>{PN_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                             if(!turtle_parser_lval->string)
                               YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           BEGIN(INITIAL);
