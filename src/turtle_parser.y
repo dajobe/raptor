@@ -2,7 +2,7 @@
  *
  * turtle_parser.y - Raptor Turtle / TRIG / N3 parsers - over tokens from turtle grammar lexer
  *
- * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2013, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -123,7 +123,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
-%expect 2
+%expect 4
 
 
 /* others */
@@ -161,8 +161,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blank collection
-%type <sequence> objectList itemList propertyList propertyListOpt
+%type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
+%type <sequence> objectList itemList predicateObjectList predicateObjectListOpt
 
 /* tidy up tokens after errors */
 
@@ -179,12 +179,12 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blank collection
+} subject predicate object verb literal resource blankNode collection
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList propertyList propertyListOpt
+} objectList itemList predicateObjectList predicateObjectListOpt
 
 %%
 
@@ -275,22 +275,22 @@ statement: directive
 | triples
 ;
 
-triples: subject propertyList
+triples: subject predicateObjectList
 {
   int i;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("statement 2\n subject=");
+  printf("triples 1\n subject=");
   if($1)
     raptor_term_print_as_ntriples($1, stdout);
   else
     fputs("NULL", stdout);
   if($2) {
-    printf("\n propertyList (reverse order to syntax)=");
+    printf("\n predicateObjectList (reverse order to syntax)=");
     raptor_sequence_print($2, stdout);
     printf("\n");
   } else     
-    printf("\n and empty propertyList\n");
+    printf("\n and empty predicateObjectList\n");
 #endif
 
   if($1 && $2) {
@@ -300,7 +300,48 @@ triples: subject propertyList
       t2->subject = raptor_term_copy($1);
     }
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf(" after substitution propertyList=");
+    printf(" after substitution predicateObjectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n\n");
+#endif
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
+      raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
+    }
+  }
+
+  if($2)
+    raptor_free_sequence($2);
+
+  if($1)
+    raptor_free_term($1);
+}
+| blankNodePropertyList predicateObjectListOpt
+{
+  int i;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+  printf("triples 2\n blankNodePropertyList=");
+  if($1)
+    raptor_term_print_as_ntriples($1, stdout);
+  else
+    fputs("NULL", stdout);
+  if($2) {
+    printf("\n predicateObjectListOpt (reverse order to syntax)=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+  } else     
+    printf("\n and empty predicateObjectListOpt\n");
+#endif
+
+  if($1 && $2) {
+    /* have subject and non-empty predicate object list, handle it  */
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
+      t2->subject = raptor_term_copy($1);
+    }
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+    printf(" after substitution predicateObjectListOpt=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
 #endif
@@ -511,16 +552,16 @@ verb: predicate
 ;
 
 
-propertyList: propertyList SEMICOLON verb objectList
+predicateObjectList: predicateObjectList SEMICOLON verb objectList
 {
   int i;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 1\n verb=");
+  printf("predicateObjectList 1\n verb=");
   raptor_term_print_as_ntriples($3, stdout);
   printf("\n objectList=");
   raptor_sequence_print($4, stdout);
-  printf("\n propertyList=");
+  printf("\n predicateObjectList=");
   raptor_sequence_print($1, stdout);
   printf("\n\n");
 #endif
@@ -545,7 +586,7 @@ propertyList: propertyList SEMICOLON verb objectList
 
   if($1 == NULL) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf(" empty propertyList not copied\n\n");
+    printf(" empty predicateObjectList not copied\n\n");
 #endif
   } else if($3 && $4 && $1) {
     while(raptor_sequence_size($4)) {
@@ -576,7 +617,7 @@ propertyList: propertyList SEMICOLON verb objectList
 {
   int i;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 2\n verb=");
+  printf("predicateObjectList 2\n verb=");
   raptor_term_print_as_ntriples($1, stdout);
   if($2) {
     printf("\n objectList=");
@@ -604,11 +645,11 @@ propertyList: propertyList SEMICOLON verb objectList
 
   $$ = $2;
 }
-| propertyList SEMICOLON
+| predicateObjectList SEMICOLON
 {
   $$ = $1;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 5\n trailing semicolon returning existing list ");
+  printf("predicateObjectList 5\n trailing semicolon returning existing list ");
   raptor_sequence_print($$, stdout);
   printf("\n\n");
 #endif
@@ -713,7 +754,11 @@ subject: resource
 {
   $$ = $1;
 }
-| blank
+| blankNode
+{
+  $$ = $1;
+}
+| collection
 {
   $$ = $1;
 }
@@ -731,7 +776,15 @@ object: resource
 {
   $$ = $1;
 }
-| blank
+| blankNode
+{
+  $$ = $1;
+}
+| collection
+{
+  $$ = $1;
+}
+| blankNodePropertyList
 {
   $$ = $1;
 }
@@ -972,7 +1025,7 @@ resource: URI_LITERAL
 ;
 
 
-propertyListOpt: propertyList
+predicateObjectListOpt: predicateObjectList
 {
   $$ = $1;
 }
@@ -982,7 +1035,7 @@ propertyListOpt: propertyList
 }
 
 
-blank: BLANK_LITERAL
+blankNode: BLANK_LITERAL
 {
   const unsigned char *id;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -999,7 +1052,9 @@ blank: BLANK_LITERAL
   if(!$$)
     YYERROR;
 }
-| LEFT_SQUARE propertyListOpt RIGHT_SQUARE
+;
+
+blankNodePropertyList: LEFT_SQUARE predicateObjectListOpt RIGHT_SQUARE
 {
   int i;
   const unsigned char *id;
@@ -1021,14 +1076,14 @@ blank: BLANK_LITERAL
 
   if($2 == NULL) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf("resource\n propertyList=");
+    printf("resource\n predicateObjectList=");
     raptor_term_print_as_ntriples($$, stdout);
     printf("\n");
 #endif
   } else {
     /* non-empty property list, handle it  */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf("resource\n propertyList=");
+    printf("resource\n predicateObjectList=");
     raptor_sequence_print($2, stdout);
     printf("\n");
 #endif
@@ -1049,10 +1104,6 @@ blank: BLANK_LITERAL
 
   }
   
-}
-| collection
-{
-  $$ = $1;
 }
 ;
 
@@ -1081,7 +1132,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   
   /* non-empty property list, handle it  */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("resource\n propertyList=");
+  printf("resource\n predicateObjectList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
 #endif
