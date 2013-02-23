@@ -219,7 +219,10 @@ EXPONENT [eE][+-]?[0-9]+
 "["       { return LEFT_SQUARE; }
 "]"       { return RIGHT_SQUARE; }
 "@prefix" { BEGIN(PREF); return PREFIX; }
+[Pp][Rr][Ee][Ff][Ii][Xx] { BEGIN(PREF);
+		return SPARQL_PREFIX; }
 "@base"   { return BASE; }
+[Bb][Aa][Ss][Ee] { return SPARQL_BASE; }
 "@"       { return AT; }
 "^^"      { return HAT; }
 "("       { return LEFT_ROUND; }

@@ -144,6 +144,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token FALSE_TOKEN "false"
 %token PREFIX "@prefix"
 %token BASE "@base"
+%token SPARQL_PREFIX "PREFIX"
+%token SPARQL_BASE "BASE"
 
 /* literals */
 %token <string> STRING_LITERAL "string literal"
@@ -623,7 +625,41 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   raptor_namespace *ns;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
+  printf("directive PREFIX %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
+#endif
+
+  if(prefix) {
+    size_t len = strlen((const char*)prefix);
+    if(prefix[len-1] == ':') {
+      if(len == 1)
+         /* declaring default namespace prefix PREFIX : ... */
+        prefix = NULL;
+      else
+        prefix[len-1]='\0';
+    }
+  }
+
+  ns = raptor_new_namespace_from_uri(&turtle_parser->namespaces, prefix, $3, 0);
+  if(ns) {
+    raptor_namespaces_start_namespace(&turtle_parser->namespaces, ns);
+    raptor_parser_start_namespace((raptor_parser*)rdf_parser, ns);
+  }
+
+  if($2)
+    RAPTOR_FREE(char*, $2);
+  raptor_free_uri($3);
+
+  if(!ns)
+    YYERROR;
+}
+| SPARQL_PREFIX IDENTIFIER URI_LITERAL
+{
+  unsigned char *prefix = $2;
+  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_namespace *ns;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+  printf("directive @prefix %s %s.\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
 #endif
 
   if(prefix) {
@@ -656,8 +692,17 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 base: BASE URI_LITERAL DOT
 {
   raptor_uri *uri=$2;
-  /*raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);*/
   raptor_parser* parser = (raptor_parser*)rdf_parser;
+
+  if(parser->base_uri)
+    raptor_free_uri(parser->base_uri);
+  parser->base_uri = uri;
+}
+| SPARQL_BASE URI_LITERAL
+{
+  raptor_uri *uri=$2;
+  raptor_parser* parser = (raptor_parser*)rdf_parser;
+
   if(parser->base_uri)
     raptor_free_uri(parser->base_uri);
   parser->base_uri = uri;
