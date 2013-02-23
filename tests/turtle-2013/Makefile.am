@@ -23,16 +23,55 @@
 RDFXML_DIR = ../rdfxml
 NTRIPLES_DIR = ../ntriples
 
-TEST_FILES= turtle-subm-01.ttl turtle-subm-02.ttl	\
-  turtle-subm-03.ttl turtle-subm-04.ttl turtle-subm-05.ttl		\
-  turtle-subm-06.ttl turtle-subm-07.ttl turtle-subm-08.ttl		\
-  turtle-subm-09.ttl turtle-subm-10.ttl turtle-subm-11.ttl		\
-  turtle-subm-12.ttl turtle-subm-13.ttl turtle-subm-14.ttl		\
-  turtle-subm-15.ttl turtle-subm-16.ttl turtle-subm-17.ttl		\
-  turtle-subm-18.ttl turtle-subm-19.ttl turtle-subm-20.ttl		\
-  turtle-subm-21.ttl turtle-subm-22.ttl turtle-subm-23.ttl		\
-  turtle-subm-24.ttl turtle-subm-25.ttl turtle-subm-26.ttl		\
+TEST_FILES = turtle-subm-01.ttl turtle-subm-02.ttl		\
+  turtle-subm-03.ttl turtle-subm-04.ttl turtle-subm-05.ttl	\
+  turtle-subm-06.ttl turtle-subm-07.ttl turtle-subm-08.ttl	\
+  turtle-subm-09.ttl turtle-subm-10.ttl turtle-subm-11.ttl	\
+  turtle-subm-12.ttl turtle-subm-13.ttl turtle-subm-14.ttl	\
+  turtle-subm-15.ttl turtle-subm-16.ttl turtle-subm-17.ttl	\
+  turtle-subm-18.ttl turtle-subm-19.ttl turtle-subm-20.ttl	\
+  turtle-subm-21.ttl turtle-subm-22.ttl turtle-subm-23.ttl	\
+  turtle-subm-24.ttl turtle-subm-25.ttl turtle-subm-26.ttl	\
   turtle-subm-27.ttl
+
+TEST_SYNTAX_FILES = turtle-eval-struct-01.ttl			\
+  turtle-eval-struct-02.ttl turtle-syntax-base-01.ttl		\
+  turtle-syntax-base-02.ttl turtle-syntax-base-03.ttl		\
+  turtle-syntax-base-04.ttl turtle-syntax-bnode-01.ttl		\
+  turtle-syntax-bnode-02.ttl turtle-syntax-bnode-03.ttl		\
+  turtle-syntax-bnode-04.ttl turtle-syntax-bnode-05.ttl		\
+  turtle-syntax-bnode-06.ttl turtle-syntax-bnode-07.ttl		\
+  turtle-syntax-bnode-08.ttl turtle-syntax-bnode-09.ttl		\
+  turtle-syntax-bnode-10.ttl turtle-syntax-datatypes-01.ttl	\
+  turtle-syntax-datatypes-02.ttl turtle-syntax-file-01.ttl	\
+  turtle-syntax-file-02.ttl turtle-syntax-file-03.ttl		\
+  turtle-syntax-kw-01.ttl turtle-syntax-kw-02.ttl			\
+  turtle-syntax-kw-03.ttl turtle-syntax-lists-01.ttl		\
+  turtle-syntax-lists-02.ttl turtle-syntax-lists-03.ttl		\
+  turtle-syntax-lists-04.ttl turtle-syntax-lists-05.ttl		\
+  turtle-syntax-number-01.ttl turtle-syntax-number-02.ttl		\
+  turtle-syntax-number-03.ttl turtle-syntax-number-04.ttl		\
+  turtle-syntax-number-05.ttl turtle-syntax-number-06.ttl		\
+  turtle-syntax-number-07.ttl turtle-syntax-number-08.ttl		\
+  turtle-syntax-number-09.ttl turtle-syntax-number-10.ttl		\
+  turtle-syntax-number-11.ttl turtle-syntax-pname-esc-01.ttl	\
+  turtle-syntax-pname-esc-02.ttl turtle-syntax-pname-esc-03.ttl	\
+  turtle-syntax-prefix-01.ttl turtle-syntax-prefix-02.ttl		\
+  turtle-syntax-prefix-03.ttl turtle-syntax-prefix-04.ttl		\
+  turtle-syntax-prefix-05.ttl turtle-syntax-prefix-06.ttl		\
+  turtle-syntax-prefix-07.ttl turtle-syntax-prefix-08.ttl		\
+  turtle-syntax-prefix-09.ttl turtle-syntax-str-esc-01.ttl	\
+  turtle-syntax-str-esc-02.ttl turtle-syntax-str-esc-03.ttl	\
+  turtle-syntax-string-01.ttl turtle-syntax-string-02.ttl		\
+  turtle-syntax-string-03.ttl turtle-syntax-string-04.ttl		\
+  turtle-syntax-string-05.ttl turtle-syntax-string-06.ttl		\
+  turtle-syntax-string-07.ttl turtle-syntax-string-08.ttl		\
+  turtle-syntax-string-09.ttl turtle-syntax-string-10.ttl		\
+  turtle-syntax-string-11.ttl turtle-syntax-struct-01.ttl		\
+  turtle-syntax-struct-02.ttl turtle-syntax-struct-03.ttl		\
+  turtle-syntax-struct-04.ttl turtle-syntax-struct-05.ttl		\
+  turtle-syntax-uri-01.ttl turtle-syntax-uri-02.ttl		\
+  turtle-syntax-uri-03.ttl turtle-syntax-uri-04.ttl
 
 TEST_BAD_FILES = turtle-eval-bad-01.ttl turtle-eval-bad-02.ttl		\
   turtle-eval-bad-03.ttl turtle-eval-bad-04.ttl			\
@@ -77,7 +116,6 @@ TEST_BAD_FILES = turtle-eval-bad-01.ttl turtle-eval-bad-02.ttl		\
   turtle-syntax-bad-uri-03.ttl turtle-syntax-bad-uri-04.ttl		\
   turtle-syntax-bad-uri-05.ttl
 
-
 TEST_OUT_FILES = turtle-subm-01.nt	\
   turtle-subm-02.nt turtle-subm-03.nt turtle-subm-04.nt	\
   turtle-subm-05.nt turtle-subm-06.nt turtle-subm-07.nt	\
@@ -100,6 +138,7 @@ RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
 ALL_TEST_FILES= README.txt \
 	$(TEST_FILES) \
+	$(TEST_SYNTAX_FILES) \
 	$(TEST_BAD_FILES) \
 	$(TEST_OUT_FILES) \
 	$(TEST_MANIFEST_FILES)
@@ -115,7 +154,7 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
-check-local: check-rdf check-bad-rdf 
+check-local: check-rdf check-bad-rdf  check-syntax-rdf
 
 if MAINTAINER_MODE
 check_rdf_deps = $(TEST_FILES)
@@ -180,5 +219,32 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	    cat $$name.res; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
+	done; \
+	set -e; exit $$result
+
+
+if MAINTAINER_MODE
+check_syntax_rdf_deps = $(TEST_SYNTAX_FILES)
+endif
+
+check-syntax-rdf: build-rapper $(check_syntax_rdf_deps)
+	@set +e; result=0; \
+	$(RECHO) "Testing good Turtle passes"; \
+	for test in $(TEST_SYNTAX_FILES); do \
+	  name=`basename $$test .ttl` ; \
+	  baseuri=$(BASE_URI)$$test; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  status=$$?; \
+	  if test $$status != 0 -a $$status != 2 ; then \
+	    $(RECHO) "FAILED returned status $$status"; result=1; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
+	    cat $$name.err; \
+	  elif test $$status = 2 ; then \
+	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	  else \
+	    $(RECHO) "ok"; \
+	  fi; \
+	  rm -f $$name.res $$name.err; \
 	done; \
 	set -e; exit $$result
