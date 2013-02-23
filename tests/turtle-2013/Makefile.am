@@ -32,10 +32,10 @@ TEST_FILES = turtle-subm-01.ttl turtle-subm-02.ttl		\
   turtle-subm-18.ttl turtle-subm-19.ttl turtle-subm-20.ttl	\
   turtle-subm-21.ttl turtle-subm-22.ttl turtle-subm-23.ttl	\
   turtle-subm-24.ttl turtle-subm-25.ttl turtle-subm-26.ttl	\
-  turtle-subm-27.ttl
+  turtle-subm-27.ttl \
+  turtle-eval-struct-01.ttl turtle-eval-struct-02.ttl
 
-TEST_SYNTAX_FILES = turtle-eval-struct-01.ttl			\
-  turtle-eval-struct-02.ttl turtle-syntax-base-01.ttl		\
+TEST_SYNTAX_FILES = turtle-syntax-base-01.ttl		\
   turtle-syntax-base-02.ttl turtle-syntax-base-03.ttl		\
   turtle-syntax-base-04.ttl turtle-syntax-bnode-01.ttl		\
   turtle-syntax-bnode-02.ttl turtle-syntax-bnode-03.ttl		\
@@ -125,7 +125,8 @@ TEST_OUT_FILES = turtle-subm-01.nt	\
   turtle-subm-17.nt turtle-subm-18.nt turtle-subm-19.nt	\
   turtle-subm-20.nt turtle-subm-21.nt turtle-subm-22.nt	\
   turtle-subm-23.nt turtle-subm-24.nt turtle-subm-25.nt	\
-  turtle-subm-26.nt turtle-subm-27.nt
+  turtle-subm-26.nt turtle-subm-27.nt \
+  turtle-eval-struct-01.nt turtle-eval-struct-02.nt
 
 TEST_MANIFEST_FILES=manifest.ttl
 
@@ -224,13 +225,13 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 
 
 if MAINTAINER_MODE
-check_syntax_rdf_deps = $(TEST_SYNTAX_FILES)
+check_syntax_rdf_deps = $(TEST_FILES) $(TEST_SYNTAX_FILES)
 endif
 
 check-syntax-rdf: build-rapper $(check_syntax_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing good Turtle passes"; \
-	for test in $(TEST_SYNTAX_FILES); do \
+	for test in $(TEST_FILES) $(TEST_SYNTAX_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
