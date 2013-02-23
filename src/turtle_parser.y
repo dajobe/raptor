@@ -1259,6 +1259,9 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   va_list arguments;
 
+  if(!turtle_parser)
+    return 1;
+
   if(turtle_parser->error_count++)
     return 0;
 
@@ -1282,6 +1285,9 @@ raptor_uri*
 turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
 {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+
+  if(!turtle_parser)
+    return NULL;
 
   rdf_parser->locator.line = turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
