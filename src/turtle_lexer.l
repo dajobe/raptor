@@ -166,18 +166,18 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 %}
 
 /* Tokens from Turtle 2013 spec - lex-ifyed to remove unicode ranges */
-PN_CHARS_BASE [A-Za-z\\\x80-\xff]
+PN_CHARS_BASE [A-Za-z\x80-\xff]
 PN_CHARS {PN_CHARS_BASE}|"_"|"-"|[0-9]
 BS_ESCAPES [-_~.!$&\'()*+,;=/?#@%]
 HEX [0-9A-Fa-f]
-PLX ("%"{HEX}{HEX})|("\\"{BS_ESCAPES})
+PLX "%"{HEX}{HEX})|("\\"{BS_ESCAPES}
 
-/* suffix of LANGTAG */
-LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
+LANGTAG "@"[A-Za-z][-A-Z_a-z0-9]*
 
+/* flex: only 1 level of definition expansion so have to expand PLX */
 BN_LABEL  ({PN_CHARS_BASE}|"_"|[0-9])(({PN_CHARS}|".")*({PN_CHARS}))*
 PN_PREFIX ({PN_CHARS_BASE})(({PN_CHARS}|".")*({PN_CHARS}))*
-PN_LOCAL  ({PN_CHARS_BASE}|"_"|[0-9]|":"|PLX)(({PN_CHARS}|"."|":"|PLX)*({PN_CHARS}|":"|PLX))*
+PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_CHARS}|":"|{PLX}))*
 
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
   
