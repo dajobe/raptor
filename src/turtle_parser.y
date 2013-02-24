@@ -69,6 +69,7 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 
 /* Slow down the grammar operation and watch it work */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
+#undef YYDEBUG 1
 #define YYDEBUG 1
 #endif
 
@@ -1314,6 +1315,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
@@ -1353,6 +1355,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
@@ -1552,7 +1555,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("buffer buffer now '%s' (%d bytes)\n", 
+    RAPTOR_DEBUG3("buffer buffer now '%s' (%ld bytes)\n", 
                   turtle_parser->buffer, turtle_parser->buffer_length);
 #endif
   }
