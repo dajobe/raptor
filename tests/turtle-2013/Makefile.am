@@ -155,13 +155,13 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
-check-local: check-rdf check-bad-rdf  check-syntax-rdf
+check-local: check-turtle check-bad-turtle check-turtle-syntax
 
 if MAINTAINER_MODE
-check_rdf_deps = $(TEST_FILES)
+check_turtle_deps = $(TEST_FILES)
 endif
 
-check-rdf: build-rapper $(check_rdf_deps)
+check-turtle: build-rapper $(check_turtle_deps)
 	@result=0; \
 	$(RECHO) "Testing legal Turtle"; \
 	for test in $(TEST_FILES); do \
@@ -191,10 +191,10 @@ check-rdf: build-rapper $(check_rdf_deps)
 	exit $$result
 
 if MAINTAINER_MODE
-check_bad_rdf_deps = $(TEST_BAD_FILES)
+check_bad_turtle_deps = $(TEST_BAD_FILES)
 endif
 
-check-bad-rdf: build-rapper $(check_bad_rdf_deps)
+check-bad-turtle: build-rapper $(check_bad_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing bad Turtle fails"; \
 	for test in $(TEST_BAD_FILES); do \
@@ -225,12 +225,12 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 
 
 if MAINTAINER_MODE
-check_syntax_rdf_deps = $(TEST_FILES) $(TEST_SYNTAX_FILES)
+check_turtle_syntax_deps = $(TEST_FILES) $(TEST_SYNTAX_FILES)
 endif
 
-check-syntax-rdf: build-rapper $(check_syntax_rdf_deps)
-	@set +e; result=0; \
-	$(RECHO) "Testing good Turtle passes"; \
+check-turtle-syntax: build-rapper $(check_turtle_syntax_deps)
+	@set +e; result=0; errors=0; \
+	$(RECHO) "Testing Turtle syntax"; \
 	for test in $(TEST_FILES) $(TEST_SYNTAX_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
@@ -241,6 +241,7 @@ check-syntax-rdf: build-rapper $(check_syntax_rdf_deps)
 	    $(RECHO) "FAILED returned status $$status"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
+	    errors=`expr $$errors + 1`; \
 	  elif test $$status = 2 ; then \
 	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	  else \
@@ -248,4 +249,5 @@ check-syntax-rdf: build-rapper $(check_syntax_rdf_deps)
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
+	$(RECHO) "Result: $$errors errors"; \
 	set -e; exit $$result
