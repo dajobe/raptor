@@ -103,7 +103,6 @@
 #include "raptor_internal.h"
 
 #include <turtle_parser.h>
-
 #include <turtle_common.h>
 
 
