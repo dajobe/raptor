@@ -189,7 +189,7 @@ DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
 EXPONENT [eE][+-]?[0-9]+
 
 
-%x PREF LITERAL
+%x PREF LONG_DLITERAL LONG_SLITERAL
 
 
 %%
@@ -244,13 +244,13 @@ EXPONENT [eE][+-]?[0-9]+
 
                                 return STRING_LITERAL; }
 
-\"\"\"				{ BEGIN(LITERAL); 
+\"\"\"				{ BEGIN(LONG_DLITERAL); 
                                   turtle_parser->sb = raptor_new_stringbuffer();
                                   if(!turtle_parser->sb)
                                     TURTLE_LEXER_OOM();
                           }
 
-<LITERAL>\"\"\"			{
+<LONG_DLITERAL>\"\"\"			{
 		  size_t len;
      
 		  BEGIN(INITIAL);
@@ -265,7 +265,7 @@ EXPONENT [eE][+-]?[0-9]+
                   turtle_parser->sb = NULL;
                   return STRING_LITERAL; }
 
-<LITERAL>\"|(\\.|[^\"\\]|\n)*	{
+<LONG_DLITERAL>\"|(\\.|[^\"\\]|\n)*	{
 		  char *p;
 
 		  if(*yytext == EOF) {
@@ -290,20 +290,83 @@ EXPONENT [eE][+-]?[0-9]+
                   
    }
 
-<LITERAL>\\	{
+<LONG_DLITERAL>\\	{
      		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
 
-<LITERAL><<EOF>>     {
+<LONG_DLITERAL><<EOF>>     {
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
+                    yyterminate();
+}
+    
+\'\'\'				{ BEGIN(LONG_SLITERAL); 
+                                  turtle_parser->sb = raptor_new_stringbuffer();
+                                  if(!turtle_parser->sb)
+                                    TURTLE_LEXER_OOM();
+                          }
+
+<LONG_SLITERAL>\'\'\'			{
+		  size_t len;
+     
+		  BEGIN(INITIAL);
+                  len = raptor_stringbuffer_length(turtle_parser->sb);
+                  turtle_parser_lval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
+                  turtle_parser_lval->string[len]='\0';
+
+                  raptor_free_stringbuffer(turtle_parser->sb);
+                  turtle_parser->sb = NULL;
+                  return STRING_LITERAL; }
+
+<LONG_SLITERAL>\'|(\\.|[^\'\\]|\n)*	{
+		  char *p;
+
+		  if(*yytext == EOF) {
+                    BEGIN(INITIAL);
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \'\'\'literal\'\'\'");
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    return EOF;
+                  }
+
+		  for(p = yytext; *p; p++) {
+                    if(*p == '\n')
+                      turtle_parser->lineno++;
+                  }
+
+                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) { /* " */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
+                  }
+                  
+   }
+
+<LONG_SLITERAL>\\	{
+     		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
+                    yyterminate();
+}
+
+<LONG_SLITERAL><<EOF>>     {
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
                     yyterminate();
 }
     
