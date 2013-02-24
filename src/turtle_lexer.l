@@ -179,9 +179,9 @@ PN_PREFIX ({PN_CHARS_BASE})(({PN_CHARS}|".")*({PN_CHARS}))*
 PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_CHARS}|":"|{PLX}))*
 
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
-  
-/* similar to SPARQL but no need for <= check here */
-QUOTEDURI \<[^\>]*\>
+
+UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
+IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
 
 DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
 DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
@@ -419,11 +419,11 @@ EXPONENT [eE][+-]?[0-9]+
                   yyterminate();  }
 
 
-{QUOTEDURI}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
+{IRI}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
 
-                  /* make length just the QUOTEDURI */
+                  /* make length just the IRI */
                   while(yytext[yyleng - 1] != '>')
                     yyleng--;
 
@@ -470,7 +470,7 @@ EXPONENT [eE][+-]?[0-9]+
 
                 return GRAPH_NAME_LEFT_CURLY; }
 
-{QUOTEDURI}   { if(yyleng == 2) 
+{IRI}   { if(yyleng == 2) 
                   turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                 else {
                   raptor_stringbuffer* sb;
