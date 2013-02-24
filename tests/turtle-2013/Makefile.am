@@ -195,7 +195,7 @@ check_bad_turtle_deps = $(TEST_BAD_FILES)
 endif
 
 check-bad-turtle: build-rapper $(check_bad_turtle_deps)
-	@set +e; result=0; \
+	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing bad Turtle fails"; \
 	for test in $(TEST_BAD_FILES); do \
 	  name=`basename $$test .ttl` ; \
@@ -209,18 +209,25 @@ check-bad-turtle: build-rapper $(check_bad_turtle_deps)
 	    $(RECHO) "FAILED - parsing succeeded with a warning";  result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; grep Warning $$name.err; \
+	    errors=`expr $$errors + 1`; \
+	    failures="$$failures $$test"; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; \
+	    errors=`expr $$errors + 1`; \
+	    failures="$$failures $$test"; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    cat $$name.res; \
+	    errors=`expr $$errors + 1`; \
+	    failures="$$failures $$test"; \
 	  fi; \
 	  rm -f $$name.res $$name.err ; \
 	done; \
+	$(RECHO) "Result: $$errors errors: $$failures"; \
 	set -e; exit $$result
 
 
@@ -229,7 +236,7 @@ check_turtle_syntax_deps = $(TEST_FILES) $(TEST_SYNTAX_FILES)
 endif
 
 check-turtle-syntax: build-rapper $(check_turtle_syntax_deps)
-	@set +e; result=0; errors=0; \
+	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing Turtle syntax"; \
 	for test in $(TEST_FILES) $(TEST_SYNTAX_FILES); do \
 	  name=`basename $$test .ttl` ; \
@@ -242,6 +249,7 @@ check-turtle-syntax: build-rapper $(check_turtle_syntax_deps)
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
 	    errors=`expr $$errors + 1`; \
+	    failures="$$failures $$test"; \
 	  elif test $$status = 2 ; then \
 	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	  else \
@@ -249,5 +257,5 @@ check-turtle-syntax: build-rapper $(check_turtle_syntax_deps)
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
-	$(RECHO) "Result: $$errors errors"; \
+	$(RECHO) "Result: $$errors errors: $$failures"; \
 	set -e; exit $$result
