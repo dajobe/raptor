@@ -1295,6 +1295,11 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
   rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
+  name_len = raptor_turtle_expand_name_escapes(name, name_len,
+                                               (raptor_simple_message_handler)turtle_parser_error, rdf_parser);
+  if(!name_len)
+    return NULL;
+  
   return raptor_qname_string_to_uri(&turtle_parser->namespaces, name, name_len);
 }
 
