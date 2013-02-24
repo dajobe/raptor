@@ -223,7 +223,6 @@ EXPONENT [eE][+-]?[0-9]+
 		return SPARQL_PREFIX; }
 "@base"   { return BASE; }
 [Bb][Aa][Ss][Ee] { return SPARQL_BASE; }
-"@"       { return AT; }
 "^^"      { return HAT; }
 "("       { return LEFT_ROUND; }
 ")"       { return RIGHT_ROUND; }
@@ -427,10 +426,10 @@ EXPONENT [eE][+-]?[0-9]+
                 }
                 return URI_LITERAL; }
 
-{LANGUAGETOKEN}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{LANGTAG}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
-                          return IDENTIFIER; }
+                          return LANGTAG; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
 		turtle_parser->lineno++;
@@ -829,9 +828,6 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
     case RIGHT_SQUARE:
       return "RIGHT_SQUARE";
 
-    case AT:
-      return "AT";
-
     case HAT:
       return "HAT";
 
@@ -863,6 +859,11 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
+              (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
+    case LANGTAG:
+      sprintf(buffer, "LANGTAG(%s)", 
               (lval->string ? (char*)lval->string : ""));
       return buffer;
 

@@ -130,7 +130,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* others */
 
 %token A "a"
-%token AT "@"
 %token HAT "^"
 %token DOT "."
 %token COMMA ","
@@ -155,6 +154,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token <string> BLANK_LITERAL "blank node"
 %token <uri> QNAME_LITERAL "QName"
 %token <string> IDENTIFIER "identifier"
+%token <string> LANGTAG "langtag"
 %token <string> INTEGER_LITERAL "integer literal"
 %token <string> FLOATING_LITERAL "floating point literal"
 %token <string> DECIMAL_LITERAL "decimal literal"
@@ -170,7 +170,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
 
 %destructor {
   if($$)
@@ -802,61 +802,61 @@ object: resource
 ;
 
 
-literal: STRING_LITERAL AT IDENTIFIER
+literal: STRING_LITERAL LANGTAG
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    $1, NULL, $3);
+                                    $1, NULL, $2);
   RAPTOR_FREE(char*, $1);
-  RAPTOR_FREE(char*, $3);
+  RAPTOR_FREE(char*, $2);
   if(!$$)
     YYERROR;
 }
-| STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
+| STRING_LITERAL LANGTAG HAT URI_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($5) {
-    if($3) {
+  if($4) {
+    if($2) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(char*, $3);
-      $3 = NULL;
+      RAPTOR_FREE(char*, $2);
+      $2 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, NULL);
+                                      $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
-    raptor_free_uri($5);
+    raptor_free_uri($4);
     if(!$$)
       YYERROR;
   } else
     $$ = NULL;
     
 }
-| STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
+| STRING_LITERAL LANGTAG HAT QNAME_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($5) {
-    if($3) {
+  if($4) {
+    if($2) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(char*, $3);
-      $3 = NULL;
+      RAPTOR_FREE(char*, $2);
+      $2 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, NULL);
+                                      $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
-    raptor_free_uri($5);
+    raptor_free_uri($4);
     if(!$$)
       YYERROR;
   } else
