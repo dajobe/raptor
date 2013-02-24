@@ -58,7 +58,9 @@
  *
  * The Turtle escapes are \n \r \t \\
  * \uXXXX \UXXXXXXXX where X is [A-F0-9]
- * 
+ *
+ * Turtle 2013 allows \ with -_~.!$&\'()*+,;=/?#@%
+ *
  * Return value: non-0 on failure
  **/
 int
@@ -81,15 +83,19 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
 
     if(c == '\\' ) {
       s++; i++;
-      c=*s;
+      c = *s;
       if(c == 'n')
-        *d++= '\n';
+        *d++ = '\n';
       else if(c == 'r')
-        *d++= '\r';
+        *d++ = '\r';
       else if(c == 't')
-        *d++= '\t';
-      else if(c == '\\' || c == delim)
-        *d++=c;
+        *d++ = '\t';
+      else if(c == '\\' || c == delim ||
+              c == '-' || c == '_' || c == '~' || c == '.' || c == '!' ||
+              c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
+              c == '*' || c == '+' || c == ',' || c == ';' ||c == '=' ||
+              c == '/' || c == '?' || c == '#' || c == '@' ||c == '%')
+        *d++ = c;
       else if(c == 'u' || c == 'U') {
         size_t ulen = (c == 'u') ? 4 : 8;
         unsigned long unichar = 0;
