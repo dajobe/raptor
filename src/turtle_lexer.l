@@ -168,7 +168,7 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 /* Tokens from Turtle 2013 spec - lex-ifyed to remove unicode ranges */
 PN_CHARS_BASE [A-Za-z\x80-\xff]
 PN_CHARS {PN_CHARS_BASE}|"_"|"-"|[0-9]
-BS_ESCAPES [-_~.!$&\'()*+,;=/?#@%]
+BS_ESCAPES [-_~\.!$&\'()*+,;=/?#@%]
 HEX [0-9A-Fa-f]
 PLX "%"{HEX}{HEX})|("\\"{BS_ESCAPES}
 
