@@ -448,10 +448,11 @@ raptor_qname_string_to_uri(raptor_namespace_stack *nstack,
     if(*name == ':') {
       name++;
       name_len--;
+      p = name + name_len;
+    } else {
+      for(p = name; *p && *p != ':'; p++)
+        ;
     }
-    
-    for(p = name; *p && *p != ':'; p++)
-      ;
     
     /* If ends with :, it is the URI of a namespace */
     if(RAPTOR_GOOD_CAST(size_t, p-name) == (name_len - 1)) {

@@ -1286,6 +1286,7 @@ tests/rdfa11/Makefile
 tests/json/Makefile
 tests/rdfxml/Makefile
 tests/turtle/Makefile
+tests/turtle-2013/Makefile
 tests/trig/Makefile
 utils/Makefile
 librdfa/Makefile

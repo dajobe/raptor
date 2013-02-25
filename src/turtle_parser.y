@@ -2,7 +2,7 @@
  *
  * turtle_parser.y - Raptor Turtle / TRIG / N3 parsers - over tokens from turtle grammar lexer
  *
- * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2013, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -69,6 +69,7 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 
 /* Slow down the grammar operation and watch it work */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
+#undef YYDEBUG 1
 #define YYDEBUG 1
 #endif
 
@@ -123,13 +124,10 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
-%expect 2
-
 
 /* others */
 
 %token A "a"
-%token AT "@"
 %token HAT "^"
 %token DOT "."
 %token COMMA ","
@@ -144,6 +142,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token FALSE_TOKEN "false"
 %token PREFIX "@prefix"
 %token BASE "@base"
+%token SPARQL_PREFIX "PREFIX"
+%token SPARQL_BASE "BASE"
 
 /* literals */
 %token <string> STRING_LITERAL "string literal"
@@ -152,6 +152,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token <string> BLANK_LITERAL "blank node"
 %token <uri> QNAME_LITERAL "QName"
 %token <string> IDENTIFIER "identifier"
+%token <string> LANGTAG "langtag"
 %token <string> INTEGER_LITERAL "integer literal"
 %token <string> FLOATING_LITERAL "floating point literal"
 %token <string> DECIMAL_LITERAL "decimal literal"
@@ -159,15 +160,15 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blank collection
-%type <sequence> objectList itemList propertyList propertyListOpt
+%type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
+%type <sequence> objectList itemList predicateObjectList predicateObjectListOpt
 
 /* tidy up tokens after errors */
 
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
 
 %destructor {
   if($$)
@@ -177,12 +178,12 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blank collection
+} subject predicate object verb literal resource blankNode collection
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList propertyList propertyListOpt
+} objectList itemList predicateObjectList predicateObjectListOpt
 
 %%
 
@@ -264,31 +265,30 @@ dotTriplesList: triples
 ;
 
 statementList: statementList statement
-| statementList statement DOT
 | /* empty */
 ;
 
 statement: directive
 | graph
-| triples
+| triples DOT
 ;
 
-triples: subject propertyList
+triples: subject predicateObjectList
 {
   int i;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("statement 2\n subject=");
+  printf("triples 1\n subject=");
   if($1)
     raptor_term_print_as_ntriples($1, stdout);
   else
     fputs("NULL", stdout);
   if($2) {
-    printf("\n propertyList (reverse order to syntax)=");
+    printf("\n predicateObjectList (reverse order to syntax)=");
     raptor_sequence_print($2, stdout);
     printf("\n");
   } else     
-    printf("\n and empty propertyList\n");
+    printf("\n and empty predicateObjectList\n");
 #endif
 
   if($1 && $2) {
@@ -298,7 +298,48 @@ triples: subject propertyList
       t2->subject = raptor_term_copy($1);
     }
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf(" after substitution propertyList=");
+    printf(" after substitution predicateObjectList=");
+    raptor_sequence_print($2, stdout);
+    printf("\n\n");
+#endif
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
+      raptor_turtle_generate_statement((raptor_parser*)rdf_parser, t2);
+    }
+  }
+
+  if($2)
+    raptor_free_sequence($2);
+
+  if($1)
+    raptor_free_term($1);
+}
+| blankNodePropertyList predicateObjectListOpt
+{
+  int i;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+  printf("triples 2\n blankNodePropertyList=");
+  if($1)
+    raptor_term_print_as_ntriples($1, stdout);
+  else
+    fputs("NULL", stdout);
+  if($2) {
+    printf("\n predicateObjectListOpt (reverse order to syntax)=");
+    raptor_sequence_print($2, stdout);
+    printf("\n");
+  } else     
+    printf("\n and empty predicateObjectListOpt\n");
+#endif
+
+  if($1 && $2) {
+    /* have subject and non-empty predicate object list, handle it  */
+    for(i = 0; i < raptor_sequence_size($2); i++) {
+      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
+      t2->subject = raptor_term_copy($1);
+    }
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+    printf(" after substitution predicateObjectListOpt=");
     raptor_sequence_print($2, stdout);
     printf("\n\n");
 #endif
@@ -509,16 +550,16 @@ verb: predicate
 ;
 
 
-propertyList: propertyList SEMICOLON verb objectList
+predicateObjectList: predicateObjectList SEMICOLON verb objectList
 {
   int i;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 1\n verb=");
+  printf("predicateObjectList 1\n verb=");
   raptor_term_print_as_ntriples($3, stdout);
   printf("\n objectList=");
   raptor_sequence_print($4, stdout);
-  printf("\n propertyList=");
+  printf("\n predicateObjectList=");
   raptor_sequence_print($1, stdout);
   printf("\n\n");
 #endif
@@ -543,7 +584,7 @@ propertyList: propertyList SEMICOLON verb objectList
 
   if($1 == NULL) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf(" empty propertyList not copied\n\n");
+    printf(" empty predicateObjectList not copied\n\n");
 #endif
   } else if($3 && $4 && $1) {
     while(raptor_sequence_size($4)) {
@@ -574,7 +615,7 @@ propertyList: propertyList SEMICOLON verb objectList
 {
   int i;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 2\n verb=");
+  printf("predicateObjectList 2\n verb=");
   raptor_term_print_as_ntriples($1, stdout);
   if($2) {
     printf("\n objectList=");
@@ -602,11 +643,11 @@ propertyList: propertyList SEMICOLON verb objectList
 
   $$ = $2;
 }
-| propertyList SEMICOLON
+| predicateObjectList SEMICOLON
 {
   $$ = $1;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("propertyList 5\n trailing semicolon returning existing list ");
+  printf("predicateObjectList 5\n trailing semicolon returning existing list ");
   raptor_sequence_print($$, stdout);
   printf("\n\n");
 #endif
@@ -623,7 +664,41 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   raptor_namespace *ns;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("directive @prefix %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
+  printf("directive PREFIX %s %s\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
+#endif
+
+  if(prefix) {
+    size_t len = strlen((const char*)prefix);
+    if(prefix[len-1] == ':') {
+      if(len == 1)
+         /* declaring default namespace prefix PREFIX : ... */
+        prefix = NULL;
+      else
+        prefix[len-1]='\0';
+    }
+  }
+
+  ns = raptor_new_namespace_from_uri(&turtle_parser->namespaces, prefix, $3, 0);
+  if(ns) {
+    raptor_namespaces_start_namespace(&turtle_parser->namespaces, ns);
+    raptor_parser_start_namespace((raptor_parser*)rdf_parser, ns);
+  }
+
+  if($2)
+    RAPTOR_FREE(char*, $2);
+  raptor_free_uri($3);
+
+  if(!ns)
+    YYERROR;
+}
+| SPARQL_PREFIX IDENTIFIER URI_LITERAL
+{
+  unsigned char *prefix = $2;
+  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);
+  raptor_namespace *ns;
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
+  printf("directive @prefix %s %s.\n",($2 ? (char*)$2 : "(default)"), raptor_uri_as_string($3));
 #endif
 
   if(prefix) {
@@ -656,8 +731,17 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 base: BASE URI_LITERAL DOT
 {
   raptor_uri *uri=$2;
-  /*raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(((raptor_parser*)rdf_parser)->context);*/
   raptor_parser* parser = (raptor_parser*)rdf_parser;
+
+  if(parser->base_uri)
+    raptor_free_uri(parser->base_uri);
+  parser->base_uri = uri;
+}
+| SPARQL_BASE URI_LITERAL
+{
+  raptor_uri *uri=$2;
+  raptor_parser* parser = (raptor_parser*)rdf_parser;
+
   if(parser->base_uri)
     raptor_free_uri(parser->base_uri);
   parser->base_uri = uri;
@@ -668,7 +752,11 @@ subject: resource
 {
   $$ = $1;
 }
-| blank
+| blankNode
+{
+  $$ = $1;
+}
+| collection
 {
   $$ = $1;
 }
@@ -686,7 +774,15 @@ object: resource
 {
   $$ = $1;
 }
-| blank
+| blankNode
+{
+  $$ = $1;
+}
+| collection
+{
+  $$ = $1;
+}
+| blankNodePropertyList
 {
   $$ = $1;
 }
@@ -703,61 +799,61 @@ object: resource
 ;
 
 
-literal: STRING_LITERAL AT IDENTIFIER
+literal: STRING_LITERAL LANGTAG
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                    $1, NULL, $3);
+                                    $1, NULL, $2);
   RAPTOR_FREE(char*, $1);
-  RAPTOR_FREE(char*, $3);
+  RAPTOR_FREE(char*, $2);
   if(!$$)
     YYERROR;
 }
-| STRING_LITERAL AT IDENTIFIER HAT URI_LITERAL
+| STRING_LITERAL LANGTAG HAT URI_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($5) {
-    if($3) {
+  if($4) {
+    if($2) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(char*, $3);
-      $3 = NULL;
+      RAPTOR_FREE(char*, $2);
+      $2 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, NULL);
+                                      $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
-    raptor_free_uri($5);
+    raptor_free_uri($4);
     if(!$$)
       YYERROR;
   } else
     $$ = NULL;
     
 }
-| STRING_LITERAL AT IDENTIFIER HAT QNAME_LITERAL
+| STRING_LITERAL LANGTAG HAT QNAME_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $3, raptor_uri_as_string($5));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($5) {
-    if($3) {
+  if($4) {
+    if($2) {
       raptor_parser_warning((raptor_parser*)rdf_parser, 
                             "Ignoring language used with datatyped literal");
-      RAPTOR_FREE(char*, $3);
-      $3 = NULL;
+      RAPTOR_FREE(char*, $2);
+      $2 = NULL;
     }
   
     $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
-                                      $1, $5, NULL);
+                                      $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
-    raptor_free_uri($5);
+    raptor_free_uri($4);
     if(!$$)
       YYERROR;
   } else
@@ -927,7 +1023,7 @@ resource: URI_LITERAL
 ;
 
 
-propertyListOpt: propertyList
+predicateObjectListOpt: predicateObjectList
 {
   $$ = $1;
 }
@@ -937,7 +1033,7 @@ propertyListOpt: propertyList
 }
 
 
-blank: BLANK_LITERAL
+blankNode: BLANK_LITERAL
 {
   const unsigned char *id;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -954,7 +1050,9 @@ blank: BLANK_LITERAL
   if(!$$)
     YYERROR;
 }
-| LEFT_SQUARE propertyListOpt RIGHT_SQUARE
+;
+
+blankNodePropertyList: LEFT_SQUARE predicateObjectListOpt RIGHT_SQUARE
 {
   int i;
   const unsigned char *id;
@@ -976,14 +1074,14 @@ blank: BLANK_LITERAL
 
   if($2 == NULL) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf("resource\n propertyList=");
+    printf("resource\n predicateObjectList=");
     raptor_term_print_as_ntriples($$, stdout);
     printf("\n");
 #endif
   } else {
     /* non-empty property list, handle it  */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-    printf("resource\n propertyList=");
+    printf("resource\n predicateObjectList=");
     raptor_sequence_print($2, stdout);
     printf("\n");
 #endif
@@ -1004,10 +1102,6 @@ blank: BLANK_LITERAL
 
   }
   
-}
-| collection
-{
-  $$ = $1;
 }
 ;
 
@@ -1036,7 +1130,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   
   /* non-empty property list, handle it  */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("resource\n propertyList=");
+  printf("resource\n predicateObjectList=");
   raptor_sequence_print($2, stdout);
   printf("\n");
 #endif
@@ -1163,6 +1257,9 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
   va_list arguments;
 
+  if(!turtle_parser)
+    return 1;
+
   if(turtle_parser->error_count++)
     return 0;
 
@@ -1187,11 +1284,19 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
+  if(!turtle_parser)
+    return NULL;
+
   rdf_parser->locator.line = turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
   rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
+  name_len = raptor_turtle_expand_name_escapes(name, name_len,
+                                               (raptor_simple_message_handler)turtle_parser_error, rdf_parser);
+  if(!name_len)
+    return NULL;
+  
   return raptor_qname_string_to_uri(&turtle_parser->namespaces, name, name_len);
 }
 
@@ -1212,6 +1317,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
@@ -1251,6 +1357,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
+  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
@@ -1450,7 +1557,7 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("buffer buffer now '%s' (%d bytes)\n", 
+    RAPTOR_DEBUG3("buffer buffer now '%s' (%ld bytes)\n", 
                   turtle_parser->buffer, turtle_parser->buffer_length);
 #endif
   }

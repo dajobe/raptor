@@ -41,6 +41,9 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+#include <turtle_lexer.h>
+#include <turtle_parser.h>
+#include <turtle_common.h>
 
 /**
  * raptor_stringbuffer_append_turtle_string:
@@ -58,7 +61,9 @@
  *
  * The Turtle escapes are \n \r \t \\
  * \uXXXX \UXXXXXXXX where X is [A-F0-9]
- * 
+ *
+ * Turtle 2013 allows \ with -_~.!$&\'()*+,;=/?#@%
+ *
  * Return value: non-0 on failure
  **/
 int
@@ -81,20 +86,25 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
 
     if(c == '\\' ) {
       s++; i++;
-      c=*s;
+      c = *s;
       if(c == 'n')
-        *d++= '\n';
+        *d++ = '\n';
       else if(c == 'r')
-        *d++= '\r';
+        *d++ = '\r';
       else if(c == 't')
-        *d++= '\t';
-      else if(c == '\\' || c == delim)
-        *d++=c;
+        *d++ = '\t';
+      else if(c == '\\' || c == delim ||
+              c == '-' || c == '_' || c == '~' || c == '.' || c == '!' ||
+              c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
+              c == '*' || c == '+' || c == ',' || c == ';' ||c == '=' ||
+              c == '/' || c == '?' || c == '#' || c == '@' ||c == '%')
+        *d++ = c;
       else if(c == 'u' || c == 'U') {
         size_t ulen = (c == 'u') ? 4 : 8;
         unsigned long unichar = 0;
         int n;
         int unichar_width;
+        size_t ii;
 
         s++; i++;
         if(i+ulen > len) {
@@ -103,11 +113,22 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           RAPTOR_FREE(char*, string);
           return 1;
         }
-        
+
+        for(ii = 0; ii < ulen; ii++) {
+          char cc = s[ii];
+          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+            error_handler(error_data,
+                          "Turtle string error - illegal hex digit %c in Unicode escape '%c%s...'",
+                          cc, c, s);
+            RAPTOR_FREE(char*, string);
+            return 1;
+          }
+        }
+
         n = sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
         if(n != 1) {
           error_handler(error_data,
-                        "Turtle string error - illegal Uncode escape '%c%s...'",
+                        "Turtle string error - illegal Unicode escape '%c%s...'",
                         c, s);
           RAPTOR_FREE(char*, string);
           return 1;
@@ -156,4 +177,146 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
 }
 
 
+/**
+ * raptor_turtle_expand_name_escapes:
+ * @name: turtle name to decode
+ * @len: length of name
+ * @error_handler: error handling function
+ * @error_data: error handler data
+ *
+ * Expands Turtle escapes for the given name
+ *
+ * The passed in string is handled according to the Turtle string
+ * escape rules giving a UTF-8 encoded output of the Unicode codepoints.
+ *
+ * The Turtle escapes are \n \r \t \\
+ * \uXXXX \UXXXXXXXX where X is [A-F0-9]
+ *
+ * Turtle 2013 allows \ with -_~.!$&\'()*+,;=/?#@%
+ *
+ * Return value: new length or 0 on failure
+ **/
+size_t
+raptor_turtle_expand_name_escapes(unsigned char *name,
+                                  size_t len,
+                                  raptor_simple_message_handler error_handler, 
+                                  void *error_data)
+{
+  size_t i;
+  const unsigned char *s;
+  unsigned char *d;
+  
+  if(!name)
+    return -1;
+
+  for(s = name, d = name, i = 0; i < len; s++, i++) {
+    unsigned char c=*s;
+
+    if(c == '\\' ) {
+      s++; i++;
+      c = *s;
+      if(c == 'n')
+        *d++ = '\n';
+      else if(c == 'r')
+        *d++ = '\r';
+      else if(c == 't')
+        *d++ = '\t';
+      else if(c == '\\' ||
+              c == '-' || c == '_' || c == '~' || c == '.' || c == '!' ||
+              c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
+              c == '*' || c == '+' || c == ',' || c == ';' ||c == '=' ||
+              c == '/' || c == '?' || c == '#' || c == '@' ||c == '%')
+        *d++ = c;
+      else if(c == 'u' || c == 'U') {
+        size_t ulen = (c == 'u') ? 4 : 8;
+        unsigned long unichar = 0;
+        int n;
+        int unichar_width;
+        size_t ii;
+
+        s++; i++;
+        if(i+ulen > len) {
+          error_handler(error_data,
+                        "Turtle string error - \\%c over end of line", c);
+          RAPTOR_FREE(char*, name);
+          return 1;
+        }
+        
+        for(ii = 0; ii < ulen; ii++) {
+          char cc = s[ii];
+          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+            error_handler(error_data,
+                          "Turtle string error - illegal hex digit %c in Unicode escape '%c%s...'",
+                          cc, c, s);
+            RAPTOR_FREE(char*, name);
+            return 1;
+          }
+        }
+
+        n = sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
+        if(n != 1) {
+          error_handler(error_data,
+                        "Turtle string error - illegal Uncode escape '%c%s...'",
+                        c, s);
+          RAPTOR_FREE(char*, name);
+          return 1;
+        }
+
+        s+= ulen-1;
+        i+= ulen-1;
+        
+        if(unichar > raptor_unicode_max_codepoint) {
+          error_handler(error_data,
+                        "Turtle string error - illegal Unicode character with code point #x%lX (max #x%lX).", 
+                        unichar, raptor_unicode_max_codepoint);
+          RAPTOR_FREE(char*, name);
+          return 1;
+        }
+          
+        unichar_width = raptor_unicode_utf8_string_put_char(unichar, d, 
+                                                            len - (d-name));
+        if(unichar_width < 0) {
+          error_handler(error_data,
+                        "Turtle string error - illegal Unicode character with code point #x%lX.", 
+                        unichar);
+          RAPTOR_FREE(char*, name);
+          return 1;
+        }
+        d += (size_t)unichar_width;
+
+      } else {
+        /* don't handle \x where x isn't one of: \t \n \r \\ (delim) */
+        error_handler(error_data,
+                      "Turtle string error - illegal escape \\%c (#x%02X) in \"%s\"", 
+                      c, c, name);
+      }
+    } else
+      *d++ = c;
+  }
+  *d='\0';
+
+  /* calculate output string size */
+  len = d - name;
+  
+  /* string gets owned by the stringbuffer after this */
+  return len;
+}
+
+
+int
+raptor_turtle_check_uri_string(unsigned char *string)
+{
+  unsigned char c;
+
+  if(!string)
+    return 0;
+  
+  while((c = *string++)) {
+    if(((c <= 0x20) ||
+        c == '<' || c == '>' || c == '"' || c == '{' || c == '}' || 
+        c == '|' || c == '^' || c == '`' || c == '\\'))
+      return 0;
+  }
+  return 1;
+}
 

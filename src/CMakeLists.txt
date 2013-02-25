@@ -133,6 +133,7 @@ ADD_LIBRARY(raptor2
 	raptor_sequence.c
 	raptor_serialize.c
 	raptor_set.c
+	raptor_sparql.c
 	raptor_statement.c
 	raptor_stringbuffer.c
 	raptor_syntax_description.c

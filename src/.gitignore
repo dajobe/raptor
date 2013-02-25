@@ -10,6 +10,7 @@
 *.rdf
 *.rdfs
 *.rss
+*.trs
 *test
 *test.exe
 .deps
@@ -21,8 +22,8 @@ example?
 parsedate.c
 parsedate.h
 parsedate.output
-raptor2.h
 raptor-config
+raptor2.h
 raptor_config.h
 raptor_config.h.in
 stamp-h*
