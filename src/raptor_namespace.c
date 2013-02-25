@@ -419,8 +419,12 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
 {
   raptor_namespace* ns;
   unsigned int hash = raptor_hash_ns_string(prefix, prefix_length);
-  const int bucket = hash % (nstack->table_size);
+  int bucket;
 
+  if(!nstack || !nstack->table_size)
+    return NULL;
+
+  bucket = hash % (nstack->table_size);
   for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
     if(!prefix) {
       if(!ns->prefix)

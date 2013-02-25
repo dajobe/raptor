@@ -2,7 +2,7 @@
  *
  * turtle_lexer.l - Raptor Turtle lexer - making tokens for turtle grammar generator
  *
- * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2013, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -103,7 +103,6 @@
 #include "raptor_internal.h"
 
 #include <turtle_parser.h>
-
 #include <turtle_common.h>
 
 
@@ -165,30 +164,32 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
 %}
 
-/* Tokens from SPARQL spec, adjusted for Turtle */
-LANGUAGETOKEN [A-Za-z][-A-Z_a-z0-9]*
-NCCHAR1 [A-Za-z\\\x80-\xff]
-NCCHAR {NCCHAR1}|"-"|"_"|[0-9]
-/* SPARQL allows . in prefix after first position.   Would be:
-   NCNAME_PREFIX {NCCHAR1}(({NCCHAR}|".")*{NCCHAR})?
-*/
-NCNAME_PREFIX {NCCHAR1}{NCCHAR}*
-/* SPARQL allows . in name after first position.  Would be:
-  NCNAME ("_"|{NCCHAR1})(({NCCHAR}|".")*{NCCHAR})?
-*/
-NCNAME ("_"|{NCCHAR1}){NCCHAR}*
-QNAME {NCNAME_PREFIX}?":"{NCNAME}?
-BNAME "_:"{NCNAME}
+/* Tokens from Turtle 2013 spec - lex-ifyed to remove unicode ranges */
+PN_CHARS_BASE [A-Za-z\x80-\xff]
+PN_CHARS {PN_CHARS_BASE}|"_"|"-"|[0-9]
+BS_ESCAPES [-_~\.!$&\'()*+,;=/?#@%]
+HEX [0-9A-Fa-f]
+PLX "%"{HEX}{HEX})|("\\"{BS_ESCAPES}
 
-/* similar to SPARQL but no need for <= check here */
-QUOTEDURI \<[^\>]*\>
+LANGTAG "@"[A-Za-z][-A-Z_a-z0-9]*
 
-DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
-DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
+/* flex: only 1 level of definition expansion so have to expand PLX */
+BN_LABEL  ({PN_CHARS_BASE}|"_"|[0-9])(({PN_CHARS}|".")*({PN_CHARS}))*
+PN_PREFIX ({PN_CHARS_BASE})(({PN_CHARS}|".")*({PN_CHARS}))*
+PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_CHARS}|":"|{PLX}))*
+
+QNAME {PN_PREFIX}?":"{PN_LOCAL}?
+
+UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
+IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
+
+INTEGER [-+]?[0-9]+
+DECIMAL [-+]?[0-9]*"."[0-9]+
+DOUBLE [-+]?([0-9]+"."[0-9]*{EXPONENT}|"."[0-9]+{EXPONENT}|[0-9]+{EXPONENT})
 EXPONENT [eE][+-]?[0-9]+
 
 
-%x PREF LITERAL
+%x PREF LONG_DLITERAL LONG_SLITERAL
 
 
 %%
@@ -218,8 +219,10 @@ EXPONENT [eE][+-]?[0-9]+
 "["       { return LEFT_SQUARE; }
 "]"       { return RIGHT_SQUARE; }
 "@prefix" { BEGIN(PREF); return PREFIX; }
+[Pp][Rr][Ee][Ff][Ii][Xx] { BEGIN(PREF);
+		return SPARQL_PREFIX; }
 "@base"   { return BASE; }
-"@"       { return AT; }
+[Bb][Aa][Ss][Ee] { return SPARQL_BASE; }
 "^^"      { return HAT; }
 "("       { return LEFT_ROUND; }
 ")"       { return RIGHT_ROUND; }
@@ -229,19 +232,25 @@ EXPONENT [eE][+-]?[0-9]+
 "false"   { return FALSE_TOKEN; }
 
 
-\"([^"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+\"([^\"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
                                 if(!turtle_parser_lval->string)
                                   yyterminate();
 
                                 return STRING_LITERAL; }
 
-\"\"\"				{ BEGIN(LITERAL); 
+\'([^\'\\\n\r]|\\[^\n\r])*\'   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+                                if(!turtle_parser_lval->string)
+                                  yyterminate();
+
+                                return STRING_LITERAL; }
+
+\"\"\"				{ BEGIN(LONG_DLITERAL); 
                                   turtle_parser->sb = raptor_new_stringbuffer();
                                   if(!turtle_parser->sb)
                                     TURTLE_LEXER_OOM();
                           }
 
-<LITERAL>\"\"\"			{
+<LONG_DLITERAL>\"\"\"			{
 		  size_t len;
      
 		  BEGIN(INITIAL);
@@ -256,7 +265,7 @@ EXPONENT [eE][+-]?[0-9]+
                   turtle_parser->sb = NULL;
                   return STRING_LITERAL; }
 
-<LITERAL>\"|(\\.|[^\"\\]|\n)*	{
+<LONG_DLITERAL>\"|(\\.|[^\"\\]|\n)*	{
 		  char *p;
 
 		  if(*yytext == EOF) {
@@ -281,24 +290,87 @@ EXPONENT [eE][+-]?[0-9]+
                   
    }
 
-<LITERAL>\\	{
+<LONG_DLITERAL>\\	{
      		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
 
-<LITERAL><<EOF>>     {
+<LONG_DLITERAL><<EOF>>     {
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    turtle_syntax_error(rdf_parser, "End of file in middle of literal");
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
     
-{BNAME}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
+\'\'\'				{ BEGIN(LONG_SLITERAL); 
+                                  turtle_parser->sb = raptor_new_stringbuffer();
+                                  if(!turtle_parser->sb)
+                                    TURTLE_LEXER_OOM();
+                          }
+
+<LONG_SLITERAL>\'\'\'			{
+		  size_t len;
+     
+		  BEGIN(INITIAL);
+                  len = raptor_stringbuffer_length(turtle_parser->sb);
+                  turtle_parser_lval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!turtle_parser_lval->string)
+                    TURTLE_LEXER_OOM();
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
+                  turtle_parser_lval->string[len]='\0';
+
+                  raptor_free_stringbuffer(turtle_parser->sb);
+                  turtle_parser->sb = NULL;
+                  return STRING_LITERAL; }
+
+<LONG_SLITERAL>\'|(\\.|[^\'\\]|\n)*	{
+		  char *p;
+
+		  if(*yytext == EOF) {
+                    BEGIN(INITIAL);
+                    turtle_syntax_error(rdf_parser, "End of file in middle of \'\'\'literal\'\'\'");
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    return EOF;
+                  }
+
+		  for(p = yytext; *p; p++) {
+                    if(*p == '\n')
+                      turtle_parser->lineno++;
+                  }
+
+                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) { /* " */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
+                  }
+                  
+   }
+
+<LONG_SLITERAL>\\	{
+     		/* this should only happen if \ is at the end of the file so the Turtle doc is illegal anyway */
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
+                    yyterminate();
+}
+
+<LONG_SLITERAL><<EOF>>     {
+                    BEGIN(INITIAL);
+                    raptor_free_stringbuffer(turtle_parser->sb);
+                    turtle_parser->sb = NULL;
+                    turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
+                    yyterminate();
+}
+    
+"_:"{BN_LABEL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
           if(!turtle_parser_lval->string)
             YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return BLANK_LITERAL; }
@@ -311,25 +383,25 @@ EXPONENT [eE][+-]?[0-9]+
 
                           return QNAME_LITERAL; }
 
-[-+]?{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return DECIMAL_LITERAL;
 }
 
-[-+]?{DOUBLE} { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{DOUBLE} { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return FLOATING_LITERAL;
 }
 
-[-+]?[0-9]+        { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{INTEGER}        { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>{NCNAME_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+<PREF>{PN_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
                             if(!turtle_parser_lval->string)
                               YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           BEGIN(INITIAL);
@@ -348,11 +420,11 @@ EXPONENT [eE][+-]?[0-9]+
                   yyterminate();  }
 
 
-{QUOTEDURI}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
+{IRI}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
 
-                  /* make length just the QUOTEDURI */
+                  /* make length just the IRI */
                   while(yytext[yyleng - 1] != '>')
                     yyleng--;
 
@@ -369,7 +441,10 @@ EXPONENT [eE][+-]?[0-9]+
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
 
-                  if(!*uri_string)
+                  if(!raptor_turtle_check_uri_string(uri_string)) {
+                    turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                    yyterminate();
+                  } else if(!*uri_string)
                     turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                   else
                     turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
@@ -399,7 +474,7 @@ EXPONENT [eE][+-]?[0-9]+
 
                 return GRAPH_NAME_LEFT_CURLY; }
 
-{QUOTEDURI}   { if(yyleng == 2) 
+{IRI}   { if(yyleng == 2) 
                   turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                 else {
                   raptor_stringbuffer* sb;
@@ -414,19 +489,24 @@ EXPONENT [eE][+-]?[0-9]+
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
-                  turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
-                  if(!turtle_parser_lval->uri) {
-                    raptor_free_stringbuffer(sb);
-                    TURTLE_LEXER_OOM();
+                  if(!raptor_turtle_check_uri_string(uri_string)) {
+                    turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                    yyterminate();
+                  } else {
+                    turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                    if(!turtle_parser_lval->uri) {
+                      raptor_free_stringbuffer(sb);
+                      TURTLE_LEXER_OOM();
+                    }
                   }
                   raptor_free_stringbuffer(sb);
                 }
                 return URI_LITERAL; }
 
-{LANGUAGETOKEN}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{LANGTAG}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
-                          return IDENTIFIER; }
+                          return LANGTAG; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
 		turtle_parser->lineno++;
@@ -825,9 +905,6 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
     case RIGHT_SQUARE:
       return "RIGHT_SQUARE";
 
-    case AT:
-      return "AT";
-
     case HAT:
       return "HAT";
 
@@ -859,6 +936,11 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
     case IDENTIFIER:
       sprintf(buffer, "IDENTIFIER(%s)", 
+              (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
+    case LANGTAG:
+      sprintf(buffer, "LANGTAG(%s)", 
               (lval->string ? (char*)lval->string : ""));
       return buffer;
 

@@ -31,15 +31,15 @@ test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
 test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
 test-24.ttl test-25.ttl test-26.ttl test-27.ttl \
 test-29.ttl test-30.ttl test-33.ttl test-36.ttl test-37.ttl \
-test-38.ttl \
+test-38.ttl bad-15.ttl bad-17.ttl bad-18.ttl bad-21.ttl bad-22.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
 
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
-bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl bad-15.ttl bad-16.ttl \
-bad-17.ttl bad-18.ttl bad-19.ttl bad-20.ttl bad-21.ttl bad-22.ttl \
+bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl bad-16.ttl \
+bad-19.ttl bad-20.ttl \
 bad-23.ttl
 
 TEST_WARN_FILES=test-35.ttl
@@ -51,7 +51,7 @@ test-14.out test-15.out test-16.out test-17.out test-18.out \
 test-19.out test-20.out test-21.out test-22.out test-23.out \
 test-24.out test-25.out test-26.out test-27.out test-28.out \
 test-29.out test-30.out test-33.out test-36.out test-37.out \
-test-38.out \
+test-38.out bad-15.out bad-17.out bad-18.out bad-21.out bad-22.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
