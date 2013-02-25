@@ -441,7 +441,9 @@ EXPONENT [eE][+-]?[0-9]+
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
 
-                  if(!*uri_string)
+                  if(!raptor_turtle_check_uri_string(uri_string)) {
+                    turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                  } else if(!*uri_string)
                     turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                   else
                     turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
@@ -486,10 +488,14 @@ EXPONENT [eE][+-]?[0-9]+
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
-                  turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
-                  if(!turtle_parser_lval->uri) {
-                    raptor_free_stringbuffer(sb);
-                    TURTLE_LEXER_OOM();
+                  if(!raptor_turtle_check_uri_string(uri_string)) {
+                    turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                  } else {
+                    turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                    if(!turtle_parser_lval->uri) {
+                      raptor_free_stringbuffer(sb);
+                      TURTLE_LEXER_OOM();
+                    }
                   }
                   raptor_free_stringbuffer(sb);
                 }
