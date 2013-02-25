@@ -301,3 +301,22 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
   /* string gets owned by the stringbuffer after this */
   return len;
 }
+
+
+int
+raptor_turtle_check_uri_string(unsigned char *string)
+{
+  unsigned char c;
+
+  if(!string)
+    return 0;
+  
+  while((c = *string++)) {
+    if(((c <= 0x20) ||
+        c == '<' || c == '>' || c == '"' || c == '{' || c == '}' || 
+        c == '|' || c == '^' || c == '`' || c == '\\'))
+      return 0;
+  }
+  return 1;
+}
+
