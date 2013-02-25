@@ -51,7 +51,7 @@ test-14.out test-15.out test-16.out test-17.out test-18.out \
 test-19.out test-20.out test-21.out test-22.out test-23.out \
 test-24.out test-25.out test-26.out test-27.out test-28.out \
 test-29.out test-30.out test-33.out test-36.out test-37.out \
-test-38.out \
+test-38.out bad-15.out bad-17.out bad-18.out bad-21.out bad-22.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
