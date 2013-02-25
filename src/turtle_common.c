@@ -104,6 +104,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         unsigned long unichar = 0;
         int n;
         int unichar_width;
+        size_t ii;
 
         s++; i++;
         if(i+ulen > len) {
@@ -112,11 +113,22 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
           RAPTOR_FREE(char*, string);
           return 1;
         }
-        
+
+        for(ii = 0; ii < ulen; ii++) {
+          char cc = s[ii];
+          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+            error_handler(error_data,
+                          "Turtle string error - illegal hex digit %c in Unicode escape '%c%s...'",
+                          cc, c, s);
+            RAPTOR_FREE(char*, string);
+            return 1;
+          }
+        }
+
         n = sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
         if(n != 1) {
           error_handler(error_data,
-                        "Turtle string error - illegal Uncode escape '%c%s...'",
+                        "Turtle string error - illegal Unicode escape '%c%s...'",
                         c, s);
           RAPTOR_FREE(char*, string);
           return 1;
@@ -220,6 +232,7 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
         unsigned long unichar = 0;
         int n;
         int unichar_width;
+        size_t ii;
 
         s++; i++;
         if(i+ulen > len) {
@@ -229,6 +242,17 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
           return 1;
         }
         
+        for(ii = 0; ii < ulen; ii++) {
+          char cc = s[ii];
+          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+            error_handler(error_data,
+                          "Turtle string error - illegal hex digit %c in Unicode escape '%c%s...'",
+                          cc, c, s);
+            RAPTOR_FREE(char*, name);
+            return 1;
+          }
+        }
+
         n = sscanf((const char*)s, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
         if(n != 1) {
           error_handler(error_data,
