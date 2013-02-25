@@ -124,8 +124,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
-%expect 4
-
 
 /* others */
 
@@ -267,13 +265,12 @@ dotTriplesList: triples
 ;
 
 statementList: statementList statement
-| statementList statement DOT
 | /* empty */
 ;
 
 statement: directive
 | graph
-| triples
+| triples DOT
 ;
 
 triples: subject predicateObjectList
