@@ -183,8 +183,9 @@ QNAME {PN_PREFIX}?":"{PN_LOCAL}?
 UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
 IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
 
-DECIMAL [0-9]+"."[0-9]*|"."[0-9]+
-DOUBLE [0-9]+"."[0-9]*{EXPONENT}|"."([0-9])+{EXPONENT}|([0-9])+{EXPONENT}
+INTEGER [-+]?[0-9]+
+DECIMAL [-+]?[0-9]*"."[0-9]+
+DOUBLE [-+]?([0-9]+"."[0-9]*{EXPONENT}|"."[0-9]+{EXPONENT}|[0-9]+{EXPONENT})
 EXPONENT [eE][+-]?[0-9]+
 
 
@@ -382,19 +383,19 @@ EXPONENT [eE][+-]?[0-9]+
 
                           return QNAME_LITERAL; }
 
-[-+]?{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return DECIMAL_LITERAL;
 }
 
-[-+]?{DOUBLE} { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{DOUBLE} { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return FLOATING_LITERAL;
 }
 
-[-+]?[0-9]+        { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+{INTEGER}        { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!turtle_parser_lval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return INTEGER_LITERAL; }
