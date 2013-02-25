@@ -137,7 +137,7 @@ RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 # for rdfs-namespace.ttl
 RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 
-ALL_TEST_FILES= README.txt \
+ALL_TEST_FILES= README \
 	$(TEST_FILES) \
 	$(TEST_SYNTAX_FILES) \
 	$(TEST_BAD_FILES) \
