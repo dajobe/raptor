@@ -31,7 +31,7 @@ test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
 test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
 test-24.ttl test-25.ttl test-26.ttl test-27.ttl \
 test-29.ttl test-30.ttl test-33.ttl test-36.ttl test-37.ttl \
-test-38.ttl bad-15.ttl bad-21.ttl bad-22.ttl \
+test-38.ttl bad-15.ttl bad-17.ttl bad-18.ttl bad-21.ttl bad-22.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
 rdfq-results.ttl
@@ -39,7 +39,7 @@ rdfq-results.ttl
 TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
 bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl bad-16.ttl \
-bad-17.ttl bad-18.ttl bad-19.ttl bad-20.ttl \
+bad-19.ttl bad-20.ttl \
 bad-23.ttl
 
 TEST_WARN_FILES=test-35.ttl
