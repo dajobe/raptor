@@ -443,6 +443,7 @@ EXPONENT [eE][+-]?[0-9]+
 
                   if(!raptor_turtle_check_uri_string(uri_string)) {
                     turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                    yyterminate();
                   } else if(!*uri_string)
                     turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
                   else
@@ -490,6 +491,7 @@ EXPONENT [eE][+-]?[0-9]+
                   uri_string = raptor_stringbuffer_as_string(sb);
                   if(!raptor_turtle_check_uri_string(uri_string)) {
                     turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                    yyterminate();
                   } else {
                     turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
                     if(!turtle_parser_lval->uri) {
