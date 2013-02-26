@@ -22,11 +22,34 @@
 </ul>
 
 
-<h3>Parser class changes</h3>
+<h3>Parser Changes</h3>
 
-<p>Handle non-namespaced elements without crash in RDFa.
+<p>RDFa parser:
+Handle non-namespaced elements without crash in RDFa.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=521">Issue #0000521</a>
 </p>
+
+<p>Turtle Parser: Added full support for
+<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+</p>
+
+<p>This includes accepting new keywords from SPARQL
+(<code>BASE</code> and <code>PREFIX</code>), triples forms and
+details of the characters allowed in URIs, Literals, Prefix Names,
+Local Names and Blank Node identifiers.  Some existing documents that
+used <code>\</code>-escapes in URIs to encode characters not allowed
+in URIs, are now forbidden.  For example ASCII 32 (0x20) - space,
+which should be written as <code>%20</code>.
+</p>
+
+
+<h2>Serializer changes</h2>
+
+<p>Turtle Serializer: Added full support for
+<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+which particular effects the encoding of URIs in the serializer.
+</p>
+
 
 <h3>Configuration and build changes</h3>
 
@@ -59,6 +82,7 @@ added 2006-10-10 in <a href="http://git.gnome.org/browse/libxml2/commit/?id=a37a
 released in libxml2 2.6.27 on 2006-10-25.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
 </p>
+
 
 <h3>Other changes</h3>
 
