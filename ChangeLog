@@ -1,3 +1,389 @@
+2013-02-25  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_sparql.c:
+	(raptor_sparql_name_check_type): Removed - not used
+
+	* Merge pull request #7 from dajobe/turtle-2013 Support Turtle 2013
+
+2013-02-24  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Terminate parsing at bad URI characters
+
+	* tests/turtle/Makefile.am: Add bad-15.out bad-17.out bad-18.out
+	bad-21.out bad-22.out to dist
+
+	* tests/turtle-2013/Makefile.am: README
+
+	* tests/turtle-2013/README: Add Turtle 2013 Readme
+
+	* src/turtle_lexer.l: Use raptor_turtle_check_uri_string to valid
+	IRIs in Turtle docs
+
+	* src/turtle_common.c, src/turtle_common.h: Ensure only an IRI
+	that matches Turtle rules passes parsing
+
+	(raptor_turtle_check_uri_string): Added to check Turtle URI char
+	rules
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: Update Turtle URI writing to match
+	Turtle 2013 encoding
+
+	(raptor_turtle_writer_reference): Write URIs with Turtle 2013
+	escaped characters; must escape #x00-#x20<>\"{}|^`
+
+	* tests/turtle/Makefile.am: Mark turtle tests bad-17 and bad-18 as
+	now good
+
+	* tests/turtle/bad-17.out, tests/turtle/bad-17.ttl,
+	tests/turtle/bad-18.out, tests/turtle/bad-18.ttl: Mark turtle
+	tests bad-17 and bad-18 as now good
+
+	* tests/turtle/test-29.ttl: Turtle 2013 changes the way URIs are
+	encoded :/
+
+	* src/turtle_parser.y: Fix statement list to match Turtle 2013
+	rules about '.'s Removes 4 lexer conflicts; now expect 0
+
+	* src/turtle_lexer.l: Fix DECIMAL, DOUBLE, INTEGER to match Turtle
+	2013.  '123.' is now an integer followed by '.' not a double
+
+	* src/turtle_common.c: Check for valid \u and \U escapes in turtle
+	strings
+
+	(raptor_stringbuffer_append_turtle_string)
+	(raptor_turtle_expand_name_escapes): Added checking code.
+
+	* src/turtle_lexer.l: Replace QUOTEDURI with Turtle 2013 IRI
+	allowing u-escapes
+
+	* tests/turtle-2013/Makefile.am: Report error counts and failing
+	tests
+
+	* src/turtle_lexer.l: ws
+
+	* src/turtle_common.c, src/turtle_common.h, src/turtle_parser.y:
+	Added turtle_expand_name_escapes for expanding escapes inline
+
+	* src/turtle_lexer.l: Support '''single long''' quotes
+
+	* src/turtle_lexer.l: Support 'single' quotes
+
+	* src/turtle_lexer.l: \.
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-15.out,
+	tests/turtle/bad-21.out, tests/turtle/bad-22.out: Turtle tests
+	bad-15, bad-21 and bad-22 are good for Turtle 2013
+
+	* src/raptor_qname.c:
+	(raptor_qname_string_to_uri): Handle qnames with two :s
+	Need to handle ':foo:...' QNames; just care about first ':'
+
+	* tests/turtle-2013/Makefile.am: Tidy and report number of errors
+
+	* src/turtle_lexer.l: Fix Turtle 2013 lexing rules
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Switch to use LANGTAG
+	for language tag
+
+	* src/turtle_parser.y: Fixes for debugging bison
+
+	* src/turtle_common.c:
+	(raptor_stringbuffer_append_turtle_string): Handle Turtle 2013
+	\-escapes
+
+2013-02-23  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Be resilient to NULL turtle_parser in
+	errors and qname lookups
+
+	(turtle_syntax_error, turtle_qname_to_uri): Return NULL if no
+	turtle_parser is present.
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_find_namespace): Be resilient to NULL or empty
+	stack.
+
+	* tests/turtle-2013/Makefile.am: more turtle 2013 syntax tests
+
+	* src/turtle_parser.y: Allow blankNodePropertyList %expect from 2
+	to 4:
+
+	State 25 conflicts: 2 shift/reduce
+	State 59 conflicts: 2 shift/reduce
+
+	Altered some rules to match Turtle 2013:
+
+	- predicateObjectList: renamed from propertyList
+	- predicateObjectListOpt: renamed from propertyListOpt
+	- blankNode: renamed from blank and altered to match
+	- subject: add blankNode and collection
+	- object: add collection and blankNodePropertyList
+
+	* src/turtle_lexer.l, src/turtle_parser.y:
+	Support SPARQL "BASE <URI>" and "PREFIX <prefix>: <URI>" for Turtle 2013
+
+	* tests/turtle-2013/Makefile.am: Add turtle 2013 syntax check
+	files
+
+	* tests/turtle-2013/LICENSE, tests/turtle-2013/Makefile.am,
+	tests/turtle-2013/manifest.ttl,
+	tests/turtle-2013/turtle-eval-bad-01.ttl,
+	tests/turtle-2013/turtle-eval-bad-02.ttl,
+	tests/turtle-2013/turtle-eval-bad-03.ttl,
+	tests/turtle-2013/turtle-eval-bad-04.ttl,
+	tests/turtle-2013/turtle-eval-struct-01.nt,
+	tests/turtle-2013/turtle-eval-struct-01.ttl,
+	tests/turtle-2013/turtle-eval-struct-02.nt,
+	tests/turtle-2013/turtle-eval-struct-02.ttl,
+	tests/turtle-2013/turtle-subm-01.nt,
+	tests/turtle-2013/turtle-subm-01.ttl,
+	tests/turtle-2013/turtle-subm-02.nt,
+	tests/turtle-2013/turtle-subm-02.ttl,
+	tests/turtle-2013/turtle-subm-03.nt,
+	tests/turtle-2013/turtle-subm-03.ttl,
+	tests/turtle-2013/turtle-subm-04.nt,
+	tests/turtle-2013/turtle-subm-04.ttl,
+	tests/turtle-2013/turtle-subm-05.nt,
+	tests/turtle-2013/turtle-subm-05.ttl,
+	tests/turtle-2013/turtle-subm-06.nt,
+	tests/turtle-2013/turtle-subm-06.ttl,
+	tests/turtle-2013/turtle-subm-07.nt,
+	tests/turtle-2013/turtle-subm-07.ttl,
+	tests/turtle-2013/turtle-subm-08.nt,
+	tests/turtle-2013/turtle-subm-08.ttl,
+	tests/turtle-2013/turtle-subm-09.nt,
+	tests/turtle-2013/turtle-subm-09.ttl,
+	tests/turtle-2013/turtle-subm-10.nt,
+	tests/turtle-2013/turtle-subm-10.ttl,
+	tests/turtle-2013/turtle-subm-11.nt,
+	tests/turtle-2013/turtle-subm-11.ttl,
+	tests/turtle-2013/turtle-subm-12.nt,
+	tests/turtle-2013/turtle-subm-12.ttl,
+	tests/turtle-2013/turtle-subm-13.nt,
+	tests/turtle-2013/turtle-subm-13.ttl,
+	tests/turtle-2013/turtle-subm-14.nt,
+	tests/turtle-2013/turtle-subm-14.ttl,
+	tests/turtle-2013/turtle-subm-15.nt,
+	tests/turtle-2013/turtle-subm-15.ttl,
+	tests/turtle-2013/turtle-subm-16.nt,
+	tests/turtle-2013/turtle-subm-16.ttl,
+	tests/turtle-2013/turtle-subm-17.nt,
+	tests/turtle-2013/turtle-subm-17.ttl,
+	tests/turtle-2013/turtle-subm-18.nt,
+	tests/turtle-2013/turtle-subm-18.ttl,
+	tests/turtle-2013/turtle-subm-19.nt,
+	tests/turtle-2013/turtle-subm-19.ttl,
+	tests/turtle-2013/turtle-subm-20.nt,
+	tests/turtle-2013/turtle-subm-20.ttl,
+	tests/turtle-2013/turtle-subm-21.nt,
+	tests/turtle-2013/turtle-subm-21.ttl,
+	tests/turtle-2013/turtle-subm-22.nt,
+	tests/turtle-2013/turtle-subm-22.ttl,
+	tests/turtle-2013/turtle-subm-23.nt,
+	tests/turtle-2013/turtle-subm-23.ttl,
+	tests/turtle-2013/turtle-subm-24.nt,
+	tests/turtle-2013/turtle-subm-24.ttl,
+	tests/turtle-2013/turtle-subm-25.nt,
+	tests/turtle-2013/turtle-subm-25.ttl,
+	tests/turtle-2013/turtle-subm-26.nt,
+	tests/turtle-2013/turtle-subm-26.ttl,
+	tests/turtle-2013/turtle-subm-27.nt,
+	tests/turtle-2013/turtle-subm-27.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-lang-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-08.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-13.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-08.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-13.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-14.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-15.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-16.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-17.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-05.ttl,
+	tests/turtle-2013/turtle-syntax-base-01.ttl,
+	tests/turtle-2013/turtle-syntax-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-base-04.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-01.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-02.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-03.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-04.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-05.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-06.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-07.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-08.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-09.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-10.ttl,
+	tests/turtle-2013/turtle-syntax-datatypes-01.ttl,
+	tests/turtle-2013/turtle-syntax-datatypes-02.ttl,
+	tests/turtle-2013/turtle-syntax-file-01.ttl,
+	tests/turtle-2013/turtle-syntax-file-02.ttl,
+	tests/turtle-2013/turtle-syntax-file-03.ttl,
+	tests/turtle-2013/turtle-syntax-kw-01.ttl,
+	tests/turtle-2013/turtle-syntax-kw-02.ttl,
+	tests/turtle-2013/turtle-syntax-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-01.ttl,
+	tests/turtle-2013/turtle-syntax-lists-02.ttl,
+	tests/turtle-2013/turtle-syntax-lists-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-04.ttl,
+	tests/turtle-2013/turtle-syntax-lists-05.ttl,
+	tests/turtle-2013/turtle-syntax-number-01.ttl,
+	tests/turtle-2013/turtle-syntax-number-02.ttl,
+	tests/turtle-2013/turtle-syntax-number-03.ttl,
+	tests/turtle-2013/turtle-syntax-number-04.ttl,
+	tests/turtle-2013/turtle-syntax-number-05.ttl,
+	tests/turtle-2013/turtle-syntax-number-06.ttl,
+	tests/turtle-2013/turtle-syntax-number-07.ttl,
+	tests/turtle-2013/turtle-syntax-number-08.ttl,
+	tests/turtle-2013/turtle-syntax-number-09.ttl,
+	tests/turtle-2013/turtle-syntax-number-10.ttl,
+	tests/turtle-2013/turtle-syntax-number-11.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-06.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-07.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-08.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-09.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-string-08.ttl,
+	tests/turtle-2013/turtle-syntax-string-09.ttl,
+	tests/turtle-2013/turtle-syntax-string-10.ttl,
+	tests/turtle-2013/turtle-syntax-string-11.ttl,
+	tests/turtle-2013/turtle-syntax-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-uri-04.ttl: Add Turtle 2013 tests
+	from W3C
+
+	* src/.gitignore: Exclude .trs files from newer automate test
+	framework
+
+	* src/turtle_lexer.l:
+	Add Turtle 2013 rules
+
+	Added PN_CHARS_BASE (no Unicode), PN_CHARS from Turtle 2013
+
+	Added BS_ESCAPES based on Turtle 2013 PN_LOCAL escapes
+
+	Added HEX
+
+	Added PLX from Turtle 2013
+
+	Added BN_LABEL, PN_PREFIX and PN_LOCAL based on Turtle 2013 rules.
+
+	Redefine QNAME in terms of PN_PREFIX and PN_LOCAL Replace BNAME
+	with BN_LABEL for blank node label Use PN_PREFIX for @prefix
+	prefix
+
+	* configure.ac, tests/Makefile.am:
+	Add tests/turtle-2013
+
+2013-02-22  Dave Beckett <dave@dajobe.org>
+
+	* build/.gitignore: Ignore automake test-driver
+
+	* src/CMakeLists.txt: Add raptor_sparql.c
+
+	* src/raptor_sparql.c: comment
+
+2013-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sparql.c: docs
+
+	* src/raptor_sparql.c:
+	(raptor_sparql_name_check): Check hex
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_qname.c,
+	src/raptor_sparql.c: Add sparql name check module
+
+	* src/raptor_qname.c:
+	(raptor_sparql_name_check): Added to check sparql / turtle names
+	Adds new enum raptor_sparql_name_check_type
+
+2013-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www.c:
+	(raptor_www_set_ssl_verify_options): Update docs to match curl
+	latest
+
 2013-02-18  Dave Beckett <dave@dajobe.org>
 
 	* INSTALL.html: Document how to find gtkdocize
