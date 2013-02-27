@@ -1,4 +1,11 @@
+2013-02-26  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html, NEWS.html, RELEASE.html, TODO.html, UPGRADING.html:
+	2.0.9
+
 2013-02-25  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, README.html, RELEASE.html: 2.0.9
 
 	* src/Makefile.am, src/raptor2.h.in, src/raptor_sparql.c:
 	(raptor_sparql_name_check_type): Removed - not used
