@@ -128,8 +128,6 @@ TEST_OUT_FILES = turtle-subm-01.nt	\
   turtle-subm-26.nt turtle-subm-27.nt \
   turtle-eval-struct-01.nt turtle-eval-struct-02.nt
 
-TEST_MANIFEST_FILES=manifest.ttl
-
 # Used to make N-triples output consistent
 BASE_URI=http://example/base/
 # for rdf-schema.ttl
@@ -141,8 +139,7 @@ ALL_TEST_FILES= README \
 	$(TEST_FILES) \
 	$(TEST_SYNTAX_FILES) \
 	$(TEST_BAD_FILES) \
-	$(TEST_OUT_FILES) \
-	$(TEST_MANIFEST_FILES)
+	$(TEST_OUT_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
 
