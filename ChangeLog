@@ -1,4 +1,7 @@
-2013-02-26  Dave Beckett <dave@dajobe.org>
+2013-02-26  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_9 for 2.0.9 release (GIT
+	32b08d01e8c378b43ca2fee2b849b4d14b36c32d)
 
 	* INSTALL.html, NEWS.html, RELEASE.html, TODO.html, UPGRADING.html:
 	2.0.9
