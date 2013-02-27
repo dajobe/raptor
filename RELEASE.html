@@ -13,6 +13,8 @@
 
 <p>Issues Fixed:</p>
 <ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=499">0000499</a>: Turtle parser fails to correctly parse valid syntax</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=508">0000508</a>: Raptor objects to possibly valid Turtle syntax</li>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=520">0000520</a>: compilation failure</li>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=521">0000521</a>: Python RDF 1.0.14.1 segfault when one tries to parse xhtml+rdf using the RDFa parser</li>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=526">0000526</a>: Document how to find gtkdocize in INSTALL.html</li>
@@ -40,7 +42,7 @@ which should be written as <code>%20</code>.
 </p>
 
 
-<h2>Serializer changes</h2>
+<h3>Serializer changes</h3>
 
 <p>Turtle Serializer: Added full support for
 <a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
@@ -51,8 +53,9 @@ which particular effects the encoding of URIs in the serializer.
 <h3>Configuration and build changes</h3>
 
 <p>Added CMake build framework for building Raptor on Microsoft
-Windows.  Removed the old win32/ area and win32_raptor_config.h
-references.  Contributed by Daniel Richard G. for Teragram Inc.
+Windows.  Removed the old <code>win32/</code> area and
+<code>win32_raptor_config.h</code> references.  Contributed by Daniel
+Richard G. for Teragram Inc.
 </p>
 
 <p>Ensure that a small system BUFSIZ does not affect parser guessing
@@ -60,18 +63,19 @@ Patch from Daniel Richard G for Teragram Inc.</p>
 
 <p>Added a compile-time check for
 <code>raptor_world_guess_parser_name()</code> to ensure that
-<code>RAPTOR_READ_BUFFER_SIZE</code> is at least as large as FIRSTN,
-because otherwise the guesser sees fewer than FIRSTN bytes from the
-document. Patch from Daniel Richard G for Teragram Inc.
+<code>RAPTOR_READ_BUFFER_SIZE</code> is at least as large as
+<code>FIRSTN</code>, because otherwise the guesser sees fewer than
+<code>FIRSTN</code> bytes from the document. Patch from Daniel
+Richard G for Teragram Inc.
 </p>
 
 <p>Update <code>configure</code> to allow xml2-config and curl-config
 to work for libxml and libcurl.  It now report on the source of xml, curl
 libraries in the configuration status.</p>
 
-<p>autogen.sh updates to abort the run if a configuring program
-fails, Generate NEWS with old timestamp if missing so automake can
-run.</p>
+<p><code>autogen.sh</code> updates to abort the run if a configuring
+program fails, Generate NEWS with old timestamp if missing so
+automake can run.</p>
 
 <p>Handle the libxml2 <code>ret->checked</code> field not being
 present in older libxml2 versions.  The entities checked field was
@@ -83,11 +87,13 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
 
 <h3>Other changes</h3>
 
-<p><code>raptor_www_set_ssl_verify_options()</code>: Support Curl
-7.28.1 removal of <code>CURLOPT_SSL_VERIFYHOST</code> with a value of
-2. Now <code>verify_host</code> non-0 is verify CN.</p>
+<p><code>raptor_www_set_ssl_verify_options()</code> now supports the
+Curl 7.28.1 removal of <code>CURLOPT_SSL_VERIFYHOST</code> with a
+value of 2. Now <code>verify_host</code> non-0 means to verify CN, 0
+means to not verify.</p>
 
-<p>Remove -m MODE from rapper help message, removed in commit
+<p>Remove <code>-m MODE</code> from the <code>rapper(1)</code> help
+message which was removed in commit
 f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
 -0700 as part of the Raptor V2 work.
 </p>
