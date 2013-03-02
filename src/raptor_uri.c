@@ -1659,6 +1659,53 @@ raptor_uri_file_exists(raptor_uri* uri)
   return raptor_uri_filename_exists(uri_string + 6);
 }
 
+
+
+/**
+ * raptor_uri_escaped_write:
+ * @uri: uri to write
+ * @base_uri: base uri to write relative to (or NULL)
+ * @flags: bit flags - see #raptor_escaped_write_bitflags
+ * @iostr: raptor iostream
+ * 
+ * Write a #raptor_uri formatted with escapes to a #raptor_iostream
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+raptor_uri_escaped_write(raptor_uri* uri,
+                         raptor_uri* base_uri,
+                         unsigned int flags,
+                         raptor_iostream *iostr)
+{
+  unsigned char *uri_str;
+  int uri_str_owned = 0;
+  size_t len;
+
+  if(!uri)
+    return 1;
+  
+  raptor_iostream_write_byte('<', iostr);
+  if(base_uri) {
+    uri_str = raptor_uri_to_relative_counted_uri_string(base_uri, uri, &len);
+    if(!uri_str)
+      return 1;
+
+    uri_str_owned = 1;
+  } else {
+    uri_str = raptor_uri_as_counted_string(uri, &len);
+  }
+  if(uri_str)
+    raptor_string_escaped_write(uri_str, len, '>', flags, iostr);
+  raptor_iostream_write_byte('>', iostr);
+
+  if(uri_str_owned && uri_str)
+    RAPTOR_FREE(char*, uri_str);
+
+  return 0;
+}
+
+
 #endif /* !STANDALONE */
 
 

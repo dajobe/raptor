@@ -1309,6 +1309,8 @@ RAPTOR_API
 raptor_world* raptor_uri_get_world(raptor_uri *uri);
 RAPTOR_API
 int raptor_uri_file_exists(raptor_uri* uri);
+RAPTOR_API
+int raptor_uri_escaped_write(raptor_uri* uri, raptor_uri* base_uri, unsigned int flags, raptor_iostream *iostr);
 
 /* XML utility functions */
 RAPTOR_API
