@@ -1091,6 +1091,8 @@ unsigned char* raptor_term_to_counted_string(raptor_term *term, size_t* len_p);
 RAPTOR_API
 unsigned char* raptor_term_to_string(raptor_term *term);
 RAPTOR_API
+int raptor_term_escaped_write(const raptor_term *term, unsigned int flags, raptor_iostream* iostr);
+RAPTOR_API RAPTOR_DEPRECATED
 int raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr);
 RAPTOR_API
 int raptor_uri_turtle_write(raptor_world *world, raptor_iostream* iostr, raptor_uri* uri, raptor_namespace_stack *nstack, raptor_uri *base_uri);
@@ -1776,15 +1778,55 @@ RAPTOR_API
 int raptor_iostream_read_eof(raptor_iostream *iostr);
 
 /* I/O Stream utility functions */
+
+/**
+ * raptor_escaped_write_bitflags:
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF   : Allow \b \f,
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU : ALlow \t \n \r \u
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8            : Allow UTF-8 for printable U *
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES: Must escape #x00-#x20<>\"{}|^` in URIs
+ *
+ * Bit flags for raptor_string_escaped_write() and friends.
+ */
+typedef enum {
+  RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF      = 1,
+  RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU    = 2,
+  RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8               = 4,
+  RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES = 8,
+
+  /* N-Triples */
+  RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU,
+  RAPTOR_ESCAPED_WRITE_NTRIPLES_URI     = RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES,
+
+  /* SPARQL literal: allows raw UTF8 for printable literals */
+  RAPTOR_ESCAPED_WRITE_SPARQL_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8,
+
+  /* SPARQL long literal: no BS-escapes allowed */
+  RAPTOR_ESCAPED_WRITE_SPARQL_LONG_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8,
+
+  /* SPARQL uri: have to escape certain characters */
+  RAPTOR_ESCAPED_WRITE_SPARQL_URI     = RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8 | RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES,
+
+  /* Turtle (2013) escapes are like SPARQL */
+  RAPTOR_ESCAPED_WRITE_TURTLE_URI     = RAPTOR_ESCAPED_WRITE_SPARQL_URI,
+  RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL = RAPTOR_ESCAPED_WRITE_SPARQL_LITERAL,
+  RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL = RAPTOR_ESCAPED_WRITE_SPARQL_LONG_LITERAL,
+
+  /* JSON literals: \b \f \t \r \n and \u \U */
+  RAPTOR_ESCAPED_WRITE_JSON_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU | RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF
+} raptor_escaped_write_bitflags;
+
+
 RAPTOR_API
 int raptor_string_ntriples_write(const unsigned char *string, size_t len, const char delim, raptor_iostream *iostr);
 RAPTOR_API
 int raptor_bnodeid_ntriples_write(const unsigned char *bnodeid, size_t len, raptor_iostream *iostr);
-RAPTOR_API
-int raptor_string_python_write(const unsigned char *string, size_t len, const char delim, int flags, raptor_iostream *iostr);
-RAPTOR_API
+RAPTOR_API RAPTOR_DEPRECATED
+int raptor_string_python_write(const unsigned char *string, size_t len, const char delim, unsigned int mode, raptor_iostream *iostr);
+RAPTOR_API RAPTOR_DEPRECATED
 int raptor_statement_ntriples_write(const raptor_statement *statement, raptor_iostream* iostr, int write_graph_term);
-
+RAPTOR_API
+int raptor_string_escaped_write(const unsigned char *string, size_t len, const char delim, unsigned int flags, raptor_iostream *iostr);
 
 
 /* Parser and Serializer options */
