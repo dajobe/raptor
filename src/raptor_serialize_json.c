@@ -266,7 +266,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   raptor_statement* s2 = context->last_statement;
   int new_subject = 0;
   int new_predicate = 0;
-  
+  unsigned int flags = RAPTOR_ESCAPED_WRITE_JSON_LITERAL;
+
   if(s2) {
     new_subject = !raptor_term_equals(s1->subject, s2->subject);
 
@@ -305,9 +306,9 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         
       case RAPTOR_TERM_TYPE_BLANK:
         raptor_iostream_counted_string_write("\"_:", 3, serializer->iostream);
-        raptor_string_python_write(s1->subject->value.blank.string, 0,
-                                   '"', 2,
-                                   serializer->iostream);
+        raptor_string_escaped_write(s1->subject->value.blank.string, 0,
+                                    '"', flags,
+                                    serializer->iostream);
         raptor_iostream_write_byte('"', serializer->iostream);
         break;
         

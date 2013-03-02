@@ -111,7 +111,9 @@ raptor_string_ntriples_write(const unsigned char *string,
                              const char delim,
                              raptor_iostream *iostr)
 {
-  return raptor_string_python_write(string, len, delim, 0, iostr);
+  return raptor_string_escaped_write(string, len, delim,
+                                     RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL,
+                                     iostr);
 }
 
 

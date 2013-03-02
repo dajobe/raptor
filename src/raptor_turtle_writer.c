@@ -415,28 +415,32 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
                                            const unsigned char *s, size_t len)
 {
   const unsigned char *quotes = (const unsigned char *)"\"\"\"\"";
-  const unsigned char *q;
-  size_t q_len;
-  int flags;
+  const unsigned char *q = quotes + 2;
+  size_t q_len = 1;
+  int flags = RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL;
   int rc = 0;
 
   if(!s)
     return 1;
   
   /* Turtle """longstring""" (2) or "string" (1) */
-  flags = raptor_turtle_writer_contains_newline(s) ? 2 : 1;
-  q = (flags == 2) ? quotes : quotes + 2;
-  q_len = (q == quotes) ? 3 : 1;
+  if(raptor_turtle_writer_contains_newline(s)) {
+    /* long string */
+    flags = RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL;
+    q = quotes;
+    q_len = 3;
+  }
+
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
-  rc = raptor_string_python_write(s, strlen((const char*)s), '"', flags,
-                                  turtle_writer->iostr);
+  rc = raptor_string_escaped_write(s, strlen((const char*)s), '"', 
+                                   flags, turtle_writer->iostr);
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
 
   return rc;
 }
 
 
-/**
+/*
  * raptor_turtle_writer_literal:
  * @turtle_writer: Turtle writer object
  * @nstack: Namespace stack for making a QName for datatype URI

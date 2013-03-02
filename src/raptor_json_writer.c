@@ -155,9 +155,9 @@ raptor_json_writer_quoted(raptor_json_writer* json_writer,
     value_len = strlen((const char*)value);
 
   raptor_iostream_write_byte('\"', json_writer->iostr);
-  rc = raptor_string_python_write((const unsigned char*)value, value_len,
-                                  '"', 3,
-                                  json_writer->iostr);
+  rc = raptor_string_escaped_write((const unsigned char*)value, value_len,
+                                   '"', RAPTOR_ESCAPED_WRITE_JSON_LITERAL,
+                                   json_writer->iostr);
   raptor_iostream_write_byte('\"', json_writer->iostr);
 
   return rc;
