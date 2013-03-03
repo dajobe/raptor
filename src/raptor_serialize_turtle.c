@@ -1301,27 +1301,40 @@ raptor_term_turtle_write(raptor_iostream* iostr,
  * Convert #raptor_uri to a string.
  * Caller has responsibility to free the string.
  *
+ * Note: This creates and destroys several internal objects for each
+ * call so for more efficient writing, create a turtle serializer.
+ *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
  */
 unsigned char*
 raptor_uri_to_turtle_counted_string(raptor_world *world,
-                            raptor_uri* uri, 
-                            raptor_namespace_stack *nstack,
-                            raptor_uri *base_uri,
-                            size_t *len_p)
+                                    raptor_uri* uri, 
+                                    raptor_namespace_stack *nstack,
+                                    raptor_uri *base_uri,
+                                    size_t *len_p)
 {
-  int rc;
+  int rc = 1;
   raptor_iostream* iostr;
-  unsigned char *s;
+  unsigned char *s = NULL;
+  raptor_turtle_writer* turtle_writer;
+
   iostr = raptor_new_iostream_to_string(world,
                                         (void**)&s, len_p, malloc);
   if(!iostr)
     return NULL;
+  
+  turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr);
+  if(!turtle_writer)
+    goto tidy;
 
-  rc = raptor_uri_turtle_write(world, iostr, uri, nstack, base_uri);
+  rc = raptor_turtle_writer_uri(turtle_writer, uri);
 
+  raptor_free_turtle_writer(turtle_writer);
+
+  tidy:
   raptor_free_iostream(iostr);
+
   if(rc) {
     free(s);
     s = NULL;
