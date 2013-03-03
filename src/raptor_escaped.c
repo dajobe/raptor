@@ -127,7 +127,7 @@ raptor_string_escaped_write(const unsigned char *string,
     } 
     
     /* It is unicode */    
-    unichar_len = raptor_unicode_utf8_string_get_char(string, len, NULL);
+    unichar_len = raptor_unicode_utf8_string_get_char(string, len, &unichar);
     if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > len)
       /* UTF-8 encoding had an error or ended in the middle of a string */
       return 1;
