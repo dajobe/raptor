@@ -408,7 +408,7 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
  * @lang: language tag (may be NULL)
  * @datatype: datatype URI (may be NULL)
  *
- * Write a literal (possibly with lang and datatype) to the Turtle writer.
+ * INTERNAL - Write a literal (possibly with lang and datatype) to the Turtle writer.
  *
  * Return value: non-0 on failure
  **/
