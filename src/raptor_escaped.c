@@ -85,7 +85,7 @@ raptor_string_escaped_write(const unsigned char *string,
         raptor_iostream_counted_string_write("\\u", 2, iostr);
         raptor_iostream_hexadecimal_write(c, 4, iostr);
         continue;
-      } else if(c < 0x80) {
+      } else if(c < 0x7f) {
         raptor_iostream_write_byte(c, iostr);
         continue;
       }
@@ -121,7 +121,7 @@ raptor_string_escaped_write(const unsigned char *string,
     }
 
     /* Just format remaining characters */
-    if(c < 0x80) {
+    if(c < 0x7f) {
       raptor_iostream_write_byte(c, iostr);
       continue;
     } 
