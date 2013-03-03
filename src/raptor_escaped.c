@@ -274,8 +274,7 @@ raptor_term_escaped_write(const raptor_term *term,
       else if(flags == RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL)
         flags = RAPTOR_ESCAPED_WRITE_TURTLE_URI;
 
-      raptor_uri_escaped_write(term->value.literal.datatype, NULL,
-                               flags, iostr);
+      raptor_uri_escaped_write(term->value.uri, NULL, flags, iostr);
       break;
       
     case RAPTOR_TERM_TYPE_UNKNOWN:
