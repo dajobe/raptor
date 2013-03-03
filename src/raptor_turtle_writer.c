@@ -831,6 +831,84 @@ raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer,
 }
 
 
+/**
+ * raptor_turtle_writer_uri:
+ * @turtle_writer: Turtle writer object
+ * @uri: uri
+ *
+ * Write a #raptor_uri to a turtle writer in qname or URI form
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer,
+                         raptor_uri* uri)
+{
+  raptor_qname* qname;
+  int rc = 0;
+
+  if(!uri)
+    return 1;
+
+  qname = raptor_new_qname_from_namespace_uri(turtle_writer->nstack, uri, 10);
+
+  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+    raptor_free_qname(qname);
+    qname = NULL;
+  }
+
+  if(qname) {
+    raptor_turtle_writer_qname(turtle_writer, qname);
+    raptor_free_qname(qname);
+  } else {
+    rc = raptor_turtle_writer_reference(turtle_writer, uri);
+  }
+
+  return rc;
+}
+
+
+/**
+ * raptor_turtle_writer_term:
+ * @turtle_writer: Turtle writer object
+ * @term: term
+ *
+ * Write a #raptor_term to a turtle write
+ *
+ * Return value: non-0 on failure
+ */
+int
+raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer,
+                          raptor_term* term)
+{
+  int rc = 0;
+
+  if(!term)
+    return 1;
+
+  if(term->type == RAPTOR_TERM_TYPE_URI) {
+    rc = raptor_turtle_writer_uri(turtle_writer, term->value.uri);
+  } else if(term->type == RAPTOR_TERM_TYPE_LITERAL) {
+    rc = raptor_turtle_writer_literal(turtle_writer,
+                                      turtle_writer->nstack,
+                                      term->value.literal.string,
+                                      term->value.literal.language, 
+                                      term->value.literal.datatype);
+  } else if(term->type == RAPTOR_TERM_TYPE_BLANK) {
+    rc = raptor_bnodeid_ntriples_write(term->value.blank.string,
+                                       term->value.blank.string_len,
+                                       turtle_writer->iostr);
+  } else {
+    rc = 2;
+  }
+  
+  return rc;
+}
+
+
+
+
 #endif
 
 

@@ -1296,8 +1296,9 @@ int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, 
 int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
 const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
 void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const unsigned char *bnodeid, size_t len);
+int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
+int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
 RAPTOR_INTERNAL_API int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
-
 
 /**
  * raptor_json_writer:
