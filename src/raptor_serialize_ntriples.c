@@ -156,60 +156,17 @@ raptor_bnodeid_ntriples_write(const unsigned char *bnodeid,
  * 
  * Write a #raptor_term formatted in N-Triples format to a #raptor_iostream
  * 
+ * @Deprecated: Use raptor_term_escaped_write() that allows
+ * configuring format detail flags.
+ *
  * Return value: non-0 on failure
  **/
 int
 raptor_term_ntriples_write(const raptor_term *term, raptor_iostream* iostr)
 {
-  unsigned char *term_str;
-  size_t len;
-
-  if(!term)
-    return 1;
-  
-  switch(term->type) {
-    case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_iostream_write_byte('"', iostr);
-      raptor_string_ntriples_write(term->value.literal.string,
-                                   term->value.literal.string_len,
-                                   '"',
+  return raptor_term_escaped_write(term,
+                                   RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL,
                                    iostr);
-      raptor_iostream_write_byte('"', iostr);
-      if(term->value.literal.language) {
-        raptor_iostream_write_byte('@', iostr);
-        raptor_iostream_string_write(term->value.literal.language, iostr);
-      }
-      if(term->value.literal.datatype) {
-        raptor_iostream_counted_string_write("^^<", 3, iostr);
-        raptor_iostream_string_write(raptor_uri_as_string(term->value.literal.datatype),
-                                     iostr);
-        raptor_iostream_write_byte('>', iostr);
-      }
-
-      break;
-      
-    case RAPTOR_TERM_TYPE_BLANK:
-      raptor_bnodeid_ntriples_write(term->value.blank.string,
-                                    term->value.blank.string_len,
-                                    iostr);
-      break;
-      
-    case RAPTOR_TERM_TYPE_URI:
-      raptor_iostream_write_byte('<', iostr);
-      term_str = raptor_uri_as_counted_string(term->value.uri, &len);
-      raptor_string_ntriples_write(term_str, len, '>', iostr);
-      raptor_iostream_write_byte('>', iostr);
-      break;
-      
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-    default:
-      raptor_log_error_formatted(term->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                 "Triple has unsupported term type %d", 
-                                 term->type);
-      return 1;
-  }
-
-  return 0;
 }
 
 
@@ -229,22 +186,24 @@ raptor_statement_ntriples_write(const raptor_statement *statement,
                                 raptor_iostream* iostr,
                                 int write_graph_term)
 {
+  unsigned int flags = RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL;
+
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(statement, raptor_statement, 1);
 
-  if(raptor_term_ntriples_write(statement->subject, iostr))
+  if(raptor_term_escaped_write(statement->subject, flags, iostr))
     return 1;
   
   raptor_iostream_write_byte(' ', iostr);
-  if(raptor_term_ntriples_write(statement->predicate, iostr))
+  if(raptor_term_escaped_write(statement->predicate, flags, iostr))
     return 1;
   
   raptor_iostream_write_byte(' ', iostr);
-  if(raptor_term_ntriples_write(statement->object, iostr))
+  if(raptor_term_escaped_write(statement->object, flags, iostr))
     return 1;
 
   if(statement->graph && write_graph_term) {
     raptor_iostream_write_byte(' ', iostr);
-    if(raptor_term_ntriples_write(statement->graph, iostr))
+    if(raptor_term_escaped_write(statement->graph, flags, iostr))
       return 1;
   }
   

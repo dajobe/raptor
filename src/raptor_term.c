@@ -472,7 +472,8 @@ raptor_term_to_counted_string(raptor_term *term, size_t* len_p)
                                         &string, len_p, NULL);
   if(!iostr)
     return NULL;
-  rc = raptor_term_ntriples_write(term, iostr);
+
+  rc = raptor_term_escaped_write(term, 0, iostr);
   raptor_free_iostream(iostr);
   
   if(rc) {
@@ -519,7 +520,7 @@ raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream)
   if(!iostr)
     return 1;
   
-  rc = raptor_term_ntriples_write(term, iostr);
+  rc = raptor_term_escaped_write(term, 0, iostr);
 
   raptor_free_iostream(iostr);
   
