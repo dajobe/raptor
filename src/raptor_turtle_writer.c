@@ -327,49 +327,9 @@ int
 raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, 
                                raptor_uri* uri)
 {
-  unsigned char* uri_str;
-  size_t len;
-  
-  uri_str = raptor_uri_to_relative_counted_uri_string(turtle_writer->base_uri, uri, &len);
-
-  raptor_iostream_write_byte('<', turtle_writer->iostr);
-  if(uri_str) {
-    unsigned char* string = uri_str;
-    unsigned char c;
-
-    for(; (c=*string); string++, len--) {
-      int unichar_len;
-
-      /* Must escape #x00-#x20<>\"{}|^` */
-      if(c <= 0x20 ||
-         c == '<' || c == '>' || c == '\\' || c == '"' || 
-         c == '{' || c == '}' || c == '|' || c == '^' || c == '`') {
-        raptor_iostream_counted_string_write("\\u", 2, turtle_writer->iostr);
-        raptor_iostream_hexadecimal_write(c, 4, turtle_writer->iostr);
-        continue;
-      } else if(c < 0x80) {
-        raptor_iostream_write_byte(c, turtle_writer->iostr);
-        continue;
-      }
-
-      /* It is unicode */
-      unichar_len = raptor_unicode_utf8_string_get_char(string, len, NULL);
-      if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > len) {
-        /* UTF-8 encoding had an error or ended in the middle of a string */
-        RAPTOR_FREE(char*, uri_str);
-        return 1;
-      }
-      
-      raptor_iostream_counted_string_write(string, unichar_len,
-                                           turtle_writer->iostr);
-      unichar_len--; /* since loop does len-- */
-      string += unichar_len; len -= unichar_len;
-    }
-  }
-  raptor_iostream_write_byte('>', turtle_writer->iostr);
-
-  RAPTOR_FREE(char*, uri_str);
-  return 0;
+  return raptor_uri_escaped_write(uri, turtle_writer->base_uri, 
+                                  RAPTOR_ESCAPED_WRITE_TURTLE_URI,
+                                  turtle_writer->iostr);
 }
 
 
