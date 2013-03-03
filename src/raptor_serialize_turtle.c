@@ -1211,33 +1211,18 @@ raptor_uri_turtle_write(raptor_world *world,
                         raptor_namespace_stack *nstack,
                         raptor_uri *base_uri)
 {
-  raptor_qname* qname;
+  int rc;
   raptor_turtle_writer* turtle_writer;
   
   turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr);
-  if(!turtle_writer) {
+  if(!turtle_writer)
     return 1;
-  }
-  
-  qname = raptor_new_qname_from_namespace_uri(nstack, uri, 10);
 
-  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
-    raptor_free_qname(qname);
-    qname = NULL;
-  }
-
-  if(qname) {
-    raptor_turtle_writer_qname(turtle_writer, qname);
-    
-    raptor_free_qname(qname);
-  } else {
-    raptor_turtle_writer_reference(turtle_writer, uri);
-  }
+  rc = raptor_turtle_writer_uri(turtle_writer, uri);
   
   raptor_free_turtle_writer(turtle_writer);
   
-  return 0;
+  return rc;
 }
 
 
