@@ -261,34 +261,24 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
   if(!statement->subject) {
     fputs("NULL", stream);
   } else {
-    if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK) {
+    if(statement->subject->type == RAPTOR_TERM_TYPE_BLANK)
       fputs((const char*)statement->subject->value.blank.string, stream);
-    } else {
-#ifdef RAPTOR_DEBUG
-      if(!statement->subject->value.uri)
-        RAPTOR_FATAL1("Statement has NULL subject URI\n");
-#endif
-      fputs((const char*)raptor_uri_as_string(statement->subject->value.uri),
-            stream);
-    }
+    else
+      raptor_uri_print(statement->subject->value.uri, stream);
   }
   
   fputs(", ", stream);
 
-  if(statement->predicate) {
-#ifdef RAPTOR_DEBUG
-    if(!statement->predicate->value.uri)
-      RAPTOR_FATAL1("Statement has NULL predicate URI\n");
-#endif
-    fputs((const char*)raptor_uri_as_string(statement->predicate->value.uri),
-          stream);
-  } else {
+  if(statement->predicate)
+    raptor_uri_print(statement->predicate->value.uri, stream);
+  else
     fputs("NULL", stream);
-  }
   
   fputs(", ", stream);
 
-  if(statement->object) {
+  if(!statement->object) {
+    fputs("NULL", stream);
+  } else {
     if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
       if(statement->object->value.literal.datatype) {
         raptor_uri* dt_uri = statement->object->value.literal.datatype;
@@ -302,15 +292,8 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
     } else if(statement->object->type == RAPTOR_TERM_TYPE_BLANK)
       fputs((const char*)statement->object->value.blank.string, stream);
     else {
-#ifdef RAPTOR_DEBUG
-      if(!statement->object->value.uri)
-        RAPTOR_FATAL1("Statement has NULL object URI\n");
-#endif
-      fputs((const char*)raptor_uri_as_string(statement->object->value.uri),
-            stream);
+      raptor_uri_print(statement->object->value.uri, stream);
     }
-  } else {
-    fputs("NULL", stream);
   }
 
   if(statement->graph) {
@@ -322,8 +305,7 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
     } else if(statement->graph->type == RAPTOR_TERM_TYPE_URI &&
               statement->graph->value.uri) {
       fputs(", ", stream);
-      fputs((const char*)raptor_uri_as_string(statement->graph->value.uri),
-            stream);
+      raptor_uri_print(statement->graph->value.uri, stream);
     }
   }
   
