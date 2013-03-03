@@ -222,7 +222,8 @@ raptor_ntriples_serialize_statement(raptor_serializer* serializer,
 
   ntriples_serializer = (raptor_ntriples_serializer_context*)serializer->context;
 
-  raptor_statement_ntriples_write(statement, serializer->iostream, 
+  raptor_statement_ntriples_write(statement,
+                                  serializer->iostream,
                                   ntriples_serializer->is_nquads);
   return 0;
 }
