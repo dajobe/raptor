@@ -1262,26 +1262,15 @@ raptor_term_turtle_write(raptor_iostream* iostr,
                          raptor_namespace_stack *nstack,
                          raptor_uri *base_uri)
 {
-  int rc = 0;
+  int rc;
   raptor_turtle_writer* turtle_writer;
   
-  turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack, iostr);
-  if(!turtle_writer) {
+  turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack,
+                                           iostr);
+  if(!turtle_writer)
     return 1;
-  }
-  
-  if(term->type == RAPTOR_TERM_TYPE_URI) {
-    rc = raptor_uri_turtle_write(term->world, iostr, term->value.uri, nstack, base_uri);
-  } else if(term->type == RAPTOR_TERM_TYPE_LITERAL) {
-    raptor_turtle_writer_literal(turtle_writer, nstack,
-                                 term->value.literal.string,
-                                 term->value.literal.language, 
-                                 term->value.literal.datatype);
-  } else if(term->type == RAPTOR_TERM_TYPE_BLANK) {
-    raptor_bnodeid_ntriples_write(term->value.blank.string, term->value.blank.string_len, iostr);
-  } else {
-    rc = 2;
-  }
+
+  rc = raptor_turtle_writer_term(turtle_writer, term);
   
   raptor_free_turtle_writer(turtle_writer);
   
