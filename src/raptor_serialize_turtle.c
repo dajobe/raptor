@@ -121,7 +121,7 @@ static int raptor_turtle_serialize_end(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
 
 
-static int
+int
 raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
 {
   const char* prefix_name;
