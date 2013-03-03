@@ -1199,6 +1199,9 @@ raptor_init_serializer_turtle(raptor_world* world)
  *
  * Write #raptor_uri to a stream in turtle syntax (using QNames).
  *
+ * Note: This creates and destroys several internal objects for each
+ * call so for more efficient writing, create a turtle serializer.
+ *
  * Return value: non-0 on failure
  */
 int
@@ -1247,6 +1250,9 @@ raptor_uri_turtle_write(raptor_world *world,
  * @base_uri: base URI
  *
  * Write #raptor_term to a stream in turtle syntax (using QNames).
+ *
+ * Note: This creates and destroys several internal objects for each
+ * call so for more efficient writing, create a turtle serializer.
  *
  * Return value: non-0 on failure
  */
@@ -1334,6 +1340,9 @@ raptor_uri_to_turtle_counted_string(raptor_world *world,
  * Convert #raptor_uri to a string.
  * Caller has responsibility to free the string.
  *
+ * Note: This creates and destroys several internal objects for each
+ * call so for more efficient writing, create a turtle serializer.
+ *
  * Return value: the new string or NULL on failure.
  */
 unsigned char*
@@ -1357,14 +1366,17 @@ raptor_uri_to_turtle_string(raptor_world *world,
  * Convert #raptor_term to a string.
  * Caller has responsibility to free the string.
  *
+ * Note: This creates and destroys several internal objects for each
+ * call so for more efficient writing, create a turtle serializer.
+ *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
  */
 unsigned char*
 raptor_term_to_turtle_counted_string(raptor_term* term, 
-                             raptor_namespace_stack *nstack,
-                             raptor_uri *base_uri,
-                             size_t *len_p)
+                                     raptor_namespace_stack *nstack,
+                                     raptor_uri *base_uri,
+                                     size_t *len_p)
 {
   int rc;
   raptor_iostream* iostr;
