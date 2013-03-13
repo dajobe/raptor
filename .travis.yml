@@ -1,0 +1,7 @@
+# see http://about.travis-ci.org/docs/user/getting-started/
+# and http://about.travis-ci.org/docs/user/languages/c/
+language: c
+compiler:
+  - gcc
+  - clang
+script: ./autogen.sh && make
