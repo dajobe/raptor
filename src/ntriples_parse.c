@@ -458,6 +458,17 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
       case 't':
         *dest++ = '\t';
         break;
+      case '<':
+      case '>':
+      case '{':
+      case '}':
+      case '|':
+      case '^':
+      case '`':
+        /* Turtle 2013 allows these in URIs (as well as \" and \\) */
+        *dest++ = c;
+        break;
+
       case 'u':
       case 'U':
         ulen = (c == 'u') ? 4 : 8;
