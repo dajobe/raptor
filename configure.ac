@@ -1078,10 +1078,13 @@ fi
 if test $need_libcurl = 1; then
   CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$CURL_CONFIG --libs`"
-  if test "X$PKG_CONFIG_REQUIRES" != X; then
-    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+
+  if test libcurl_source = "pkg-config"; then
+    if test "X$PKG_CONFIG_REQUIRES" != X; then
+      PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+    fi
+    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $libcurl_min_version"
   fi
-  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $libcurl_min_version"
 
   AC_LIBOBJ(raptor_www_curl)
 fi
@@ -1177,10 +1180,13 @@ if test $need_libxml = 1; then
   fi
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
   CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
-  if test "X$PKG_CONFIG_REQUIRES" != X; then
-    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+
+  if test libxml_source = "pkg-config"; then
+    if test "X$PKG_CONFIG_REQUIRES" != X; then
+      PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
+    fi
+    PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libxml-2.0 >= $libxml_min_version"
   fi
-  PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libxml-2.0 >= $libxml_min_version"
   RAPTOR_XML_PARSER=libxml
 fi
 AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
