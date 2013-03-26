@@ -359,6 +359,10 @@ raptor_iostream_write_byte
 raptor_iostream_write_bytes
 raptor_iostream_write_end
 raptor_bnodeid_ntriples_write
+raptor_escaped_write_bitflags
+raptor_string_escaped_write
+raptor_term_escaped_write
+raptor_uri_escaped_write
 raptor_string_ntriples_write
 raptor_string_python_write
 </SECTION>
