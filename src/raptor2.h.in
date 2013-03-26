@@ -1785,6 +1785,15 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
  * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU : ALlow \t \n \r \u
  * @RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8            : Allow UTF-8 for printable U *
  * @RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES: Must escape #x00-#x20<>\"{}|^` in URIs
+ * @RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL: N-Triples literal
+ * @RAPTOR_ESCAPED_WRITE_NTRIPLES_URI: N-Triples URI
+ * @RAPTOR_ESCAPED_WRITE_SPARQL_LITERAL: SPARQL literal: allows raw UTF8 for printable literals
+ * @RAPTOR_ESCAPED_WRITE_SPARQL_LONG_LITERAL: SPARQL long literal: no BS-escapes allowed
+ * @RAPTOR_ESCAPED_WRITE_SPARQL_URI: SPARQL uri: have to escape certain characters 
+ * @RAPTOR_ESCAPED_WRITE_TURTLE_URI: Turtle 2013 URIs (like SPARQL)
+ * @RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL: Turtle 2013 literals (like SPARQL)
+ * @RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL: Turtle 2013 long literals (like SPARQL)
+ * @RAPTOR_ESCAPED_WRITE_JSON_LITERAL: JSON literals: \b \f \t \r \n and \u \U
  *
  * Bit flags for raptor_string_escaped_write() and friends.
  */
