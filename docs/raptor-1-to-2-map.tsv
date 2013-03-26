@@ -419,6 +419,9 @@
 2.0.7	-	-	-	2.0.8	unsigned char*	raptor_term_to_turtle_counted_string	(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri, size_t *len_p)	-
 2.0.7	-	-	-	2.0.8	unsigned char*	raptor_term_to_turtle_string	(raptor_term* term, raptor_namespace_stack *nstack, raptor_uri *base_uri)	-
 2.0.7	-	-	-	2.0.8	raptor_uri*	raptor_new_uri_relative_to_base_counted	(raptor_world* world, raptor_uri *base_uri, const unsigned char *uri_string, size_t uri_len)	-
+2.0.9	-	-	-	2.0.10	int	raptor_string_escaped_write	(const unsigned char *string, size_t len, const char delim, unsigned int flags, raptor_iostream *iostr)	-
+2.0.9	-	-	-	2.0.10	int	raptor_term_escaped_write	(const raptor_term *term, unsigned int flags, raptor_iostream* iostr)	-
+2.0.9	-	-	-	2.0.10	int	raptor_uri_escaped_write	(raptor_uri* uri, raptor_uri* base_uri, unsigned int flags, raptor_iostream *iostr)	-
 #
 # Types
 #
@@ -473,7 +476,10 @@
 1.4.21	type	-	-	2.0.0	type	raptor_term_literal_value	-	-
 1.4.21	type	-	-	2.0.0	type	raptor_term_value	-	-
 1.4.21	type	-	-	2.0.0	type	raptor_type_q	-	-
+2.0.9	type	-	-	2.0.10	type	raptor_escaped_write_bitflags	-	-
+#
 # Enums
+#
 1.4.21	enum	RAPTOR_IDENTIFIER_TYPE_UNKNOWN	-	2.0.0	enum	RAPTOR_TERM_TYPE_UNKNOWN	-	-
 1.4.21	enum	RAPTOR_IDENTIFIER_TYPE_RESOURCE	-	2.0.0	enum	RAPTOR_TERM_TYPE_URI	-	-
 1.4.21	enum	RAPTOR_IDENTIFIER_TYPE_ANONYMOUS	-	2.0.0	enum	RAPTOR_TERM_TYPE_BLANK	-	-
