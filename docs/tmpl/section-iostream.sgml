@@ -326,6 +326,61 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @Returns: 
 
 
+<!-- ##### ENUM raptor_escaped_write_bitflags ##### -->
+<para>
+
+</para>
+
+@RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF: 
+@RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU: 
+@RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8: 
+@RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES: 
+@RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL: 
+@RAPTOR_ESCAPED_WRITE_NTRIPLES_URI: 
+@RAPTOR_ESCAPED_WRITE_SPARQL_LITERAL: 
+@RAPTOR_ESCAPED_WRITE_SPARQL_LONG_LITERAL: 
+@RAPTOR_ESCAPED_WRITE_SPARQL_URI: 
+@RAPTOR_ESCAPED_WRITE_TURTLE_URI: 
+@RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL: 
+@RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL: 
+@RAPTOR_ESCAPED_WRITE_JSON_LITERAL: 
+
+<!-- ##### FUNCTION raptor_string_escaped_write ##### -->
+<para>
+
+</para>
+
+@string: 
+@len: 
+@delim: 
+@flags: 
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_term_escaped_write ##### -->
+<para>
+
+</para>
+
+@term: 
+@flags: 
+@iostr: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_escaped_write ##### -->
+<para>
+
+</para>
+
+@uri: 
+@base_uri: 
+@flags: 
+@iostr: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_string_ntriples_write ##### -->
 <para>
 
@@ -346,7 +401,7 @@ file handles (<literal>FILE*</literal>) or to a user function.
 @string: 
 @len: 
 @delim: 
-@flags: 
+@mode: 
 @iostr: 
 @Returns: 
 
