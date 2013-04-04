@@ -71,11 +71,9 @@ AM_PROG_AR
 AC_PROG_CC
 AM_PROG_CC_C_O
 
-m4_undefine([AC_PROG_CXX])
-m4_defun([AC_PROG_CXX],[])
-m4_undefine([AC_PROG_F77])
-m4_defun([AC_PROG_F77],[])
+dnl Initialize libtool
 LT_INIT
+
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
