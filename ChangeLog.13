@@ -1,0 +1,1599 @@
+2012-12-11  Dave Beckett <dave@dajobe.org>
+
+	* .gitignore: Ignore CMakeTests.txt
+
+2012-11-07  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Handle non-namespaced elements without crash in
+	RDFa
+
+	Fixes Issue #0000521
+	http://bugs.librdf.org/mantis/view.php?id=521
+
+2012-10-22  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #6 from ansell/master: Update turtle test
+	manifests
+
+2012-09-23  Dave Beckett <dave@dajobe.org>
+
+	* manifest.pl:
+	Remove ancient manifest.pl moved to testing project
+
+2012-09-19  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #5 from iskunk/drg-win32-2
+	Win32 parser-guess and DLL linkage fixes
+
+2012-09-19  Daniel Richard G <danielg@teragram.com>
+
+	* src/raptor_internal.h, src/turtle_common.h: Fix DLL export
+	linkage for internal functions needed by the test programs
+
+	This allows the test programs to be linked against a DLL build of
+	Raptor.
+
+	* src/raptor_internal.h, src/raptor_parse.c: Ensure that a small
+	system BUFSIZ does not affect parser guessing
+
+	raptor_internal.h: Ensure that RAPTOR_READ_BUFFER_SIZE is never
+	smaller than 4096. (It really only needs to be as large as FIRSTN
+	in raptor_parse.c, i.e. 1024, but 4kB isn't all that much nowadays
+	anyway)
+
+	(raptor_world_guess_parser_name): Added a compile-time check to
+	ensure that RAPTOR_READ_BUFFER_SIZE is at least as large as
+	FIRSTN, because otherwise the guesser sees fewer than FIRSTN bytes
+	from the document.
+
+2012-09-07  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c: Remove -m MODE from help
+
+	This option was removed in commit
+	f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54
+	2010 -0700 as part of the Raptor V2 work.
+
+2012-08-31  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh, configure.ac: Require autoconf 2.62 again
+
+	* autogen.sh: Update autogen.sh
+
+	* autogen.sh: Echo autoconf args
+
+	Merge pull request #4 from iskunk/drg-win32 win32 and
+	autoconf-related changes
+
+2012-08-30  Daniel Richard G <danielg@teragram.com>
+
+	* CMakeLists.txt, src/CMakeLists.txt: Simplify CMake usage with
+	CMAKE_INCLUDE_CURRENT_DIR
+
+	* configure.ac, docs/Makefile.am, examples/grapper.c,
+	examples/raptor_abort.c, scripts/fix-flex, src/.gitignore,
+	src/Makefile.am, src/ntriples_parse.c, src/parsedate.y,
+	src/raptor_abbrev.c, src/raptor_avltree.c, src/raptor_concepts.c,
+	src/raptor_general.c, src/raptor_grddl.c, src/raptor_guess.c,
+	src/raptor_iostream.c, src/raptor_json.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_libxml.c, src/raptor_locator.c, src/raptor_log.c,
+	src/raptor_memstr.c, src/raptor_namespace.c, src/raptor_nfc_icu.c,
+	src/raptor_nfc_test.c, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_permute_test.c, src/raptor_qname.c,
+	src/raptor_rdfxml.c, src/raptor_rfc2396.c, src/raptor_rss.c,
+	src/raptor_rss_common.c, src/raptor_sax2.c, src/raptor_sequence.c,
+	src/raptor_serialize.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_serialize_rdfxml.c,
+	src/raptor_serialize_rdfxmla.c, src/raptor_serialize_rss.c,
+	src/raptor_serialize_turtle.c, src/raptor_set.c,
+	src/raptor_statement.c, src/raptor_stringbuffer.c,
+	src/raptor_syntax_description.c, src/raptor_term.c,
+	src/raptor_turtle_writer.c, src/raptor_unicode.c,
+	src/raptor_uri.c, src/raptor_win32.c, src/raptor_www.c,
+	src/raptor_www_curl.c, src/raptor_www_libfetch.c,
+	src/raptor_www_libxml.c, src/raptor_www_test.c, src/raptor_xml.c,
+	src/raptor_xml_writer.c, src/snprintf.c, src/strcasecmp.c,
+	src/turtle_common.c, src/turtle_lexer.l, src/turtle_parser.y,
+	src/win32_raptor_config.h.in, utils/rapper.c, utils/rdfdiff.c:
+	Remove all traces of win32_raptor_config.h
+
+	Remove the file itself, all #include uses of it, and all
+	references to it, as this file is no longer needed.
+
+	* Makefile.am, README-cmake.md, configure.ac, win32/Makefile.am,
+	win32/README.md, win32/rapper.dsp, win32/rapper.vcproj,
+	win32/raptor.dsp, win32/raptor.dsw, win32/raptor.sln,
+	win32/raptor.vcproj, win32/raptortest.cpp, win32/raptortest.dsp,
+	win32/raptortest.vcproj: Delete win32/ subdirectory
+
+	The MSVC6 and MSVC7.1 project files in win32/ fail to build
+	current versions of Raptor, require external projects for Curl and
+	Expat which do not appear to be publicly available, are unlikely
+	to get the extensive work they need in the near future due to John
+	Barstow's busy schedule, and are redundant now that Raptor can be
+	built on Windows using CMake. Thus, out they go.
+
+	win32/README.md: Moved up to README-cmake.md, as this information
+	is useful, and CMake build support is not limited to Win32
+
+2012-08-25  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	fix PKG_CONFIG_REQUIRES version vars
+
+	* configure.ac, raptor2.pc.in: Allow xml2-config and curl-config
+	to work for libxml and libcurl
+
+	- report on source of xml, curl libraries in status
+	- remove extra oCPPFLAGS assignements
+	- substitute pkgconfig dependencies into raptor2.pc
+
+2012-08-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_log.c:
+	(raptor_log_error): sizeof should take size of field not pointer
+
+2012-08-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c: Handle ret->checked field not being present
+
+	The entities checked field was added 2006-10-10 in
+	http://git.gnome.org/browse/libxml2/commit/?id=a37a6ad91a61d168ecc4b29263def3363fff4da6and
+	released in libxml2 2.6.27 on 2006-10-25
+
+	Fixes Issue #0000520
+	http://bugs.librdf.org/mantis/view.php?id=520
+
+2012-08-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_element_content_type_as_string): LAST is not valid
+
+2012-08-10  Dave Beckett <dave@dajobe.org>
+
+	* RELEASE.html: 2.0.9
+
+	* win32/Makefile.am:
+	README.md in dist replacing README.txt
+
+2012-08-10  Daniel Richard G <oss@teragram.com>
+
+	* CMakeLists.txt, Makefile.am, librdfa/config.h,
+	src/CMakeLists.txt, src/Makefile.am, src/raptor_config_cmake.h.in,
+	src/win32_raptor_config.h.in, tests/feeds/CMakeLists.txt,
+	tests/feeds/Makefile.am, tests/grddl/CMakeLists.txt,
+	tests/grddl/Makefile.am, tests/json/CMakeLists.txt,
+	tests/json/Makefile.am, tests/ntriples/CMakeLists.txt,
+	tests/ntriples/Makefile.am, tests/rdfa/CMakeLists.txt,
+	tests/rdfa/Makefile.am, tests/rdfa11/CMakeLists.txt,
+	tests/rdfa11/Makefile.am, tests/rdfxml/CMakeLists.txt,
+	tests/rdfxml/Makefile.am, tests/trig/CMakeLists.txt,
+	tests/trig/Makefile.am, utils/CMakeLists.txt, utils/Makefile.am,
+	win32/README.md, win32/README.txt: CMake build framework for
+	Raptor - win32
+
+	This commit is based on the email with patch that
+	Daniel Richard G.  sent to redland-dev on 5th July 2012
+	  http://lists.librdf.org/pipermail/redland-dev/2012-July/002502.htmlI
+	lightly edited the email to fit into 80 chars and make more it
+	markdowny and turn it into win32/README.md -- Dave Beckett
+
+2012-07-27  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Fix for flex version message from OSX
+
+2012-07-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in:
+	Protect macro checks for __GNUC__ are defined
+
+2012-07-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: Add RAPTOR_NORETURN
+
+	* configure.ac:
+	Set automake -W and gcc -W to same as librdf
+
+2012-06-26  Dave Beckett <dave@dajobe.org>
+
+	* Makefile.am: EXTRA_DIST: Remove ChangeLog NEWS since they are in
+	dist by default
+
+	* scripts/build-formats.c:
+	(sort_type_syntax_by_mime_type): Add explicit cast for ordering mime
+	types
+
+	* Makefile.am:
+	Restore NEWS building to maintainer mode.
+
+	Reverts 979af117bb40de4e8391656b3e18f47f7096d1fc but requires
+	autogen.sh to touch NEWS after a GIT checkout so that automake can
+	run.
+
+	* autogen.sh:
+	autogen.sh updates
+	- Abort run if a configuring program fails.
+	- Generate NEWS with old timestamp if missing so automake can run
+	- small doc and message updates
+
+	* librdfa/strtok_r.h: Fix strtok_r typo
+
+	* docs/Makefile.am: Added raptor-1-to-2-map.tsv to EXTRA_DIST
+
+2012-06-24  Dave Beckett <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_8 for 2.0.8 release (GIT
+	dbdb2f9e4aee4e93383fe62751b52349be64187b)
+
+	* librdfa/config.h, librdfa/rdfa.h: Fix fake librdfa config.h
+
+	* librdfa/config.h, librdfa/context.c, librdfa/lists.c,
+	librdfa/rdfa.h: librdfa config.h now includes raptor_config.h
+	directly
+
+2012-06-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_libxml.c:
+	Init / cleanup libxml nano HTTP library
+
+	(raptor_www_libxml_init, raptor_www_libxml_free): Call
+	xmlNanoHTTPInit and xmlNanoHTTPCleanup respectively.
+
+2012-06-22  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/context.c: DECLARE_URI_MAPPING - start new namespace, do
+	not make a new one Call raptor_namespaces_start_namespace()
+	instead of raptor_namespace_stack_start_namespace() which copies
+	the namespace to the stack and then starts it.
+
+	* tests/rdfa11/Makefile.am: Update rapper and rdfdiff use like
+	already done for 'rdfa' tests
+
+	* librdfa/rdfa.c:
+	(raptor_rdfa_start_element): Free attr if allocated
+
+	* src/raptor_nfc_test.c: Remove include of raptor_nfc.h
+
+2012-06-20  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html: 2.0.8
+
+	* librdfa/curie.c, librdfa/namespace.c, librdfa/rdfa.c: Build
+	fixes from Daniel Richard G.
+
+	* RELEASE.html: 2.0.8
+
+2012-06-19  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c: Lower min syntax guess score to 2 (Q 0.3)
+
+	* src/turtle_parser.y: If Turtle and Trig are both present, make
+	guessing prefer Turtle
+
+	Also score higher for Trig if 'trig' is in mime type
+
+	* examples/.gitignore: ignore rdfguess
+
+	* examples/rdfguess.c: Update rdfguess example code to read from
+	stdin or a file called '-'
+
+	(rdfguess_guess_name): Added and alter to accept file called '-'
+	as reading from FILE* stdin.
+
+	(main): Call above to support reading from stdin.  Do something
+	with -h/--help
+
+	* src/raptor_parse.c: Be conservative in guessing syntax - scoring
+	too low is a failure.
+
+	(raptor_world_guess_parser_name): Set min guess core to 5 (Q
+	0.6). this value isn't exposed or user configurable.
+	Addresses Issue #0000487
+	http://bugs.librdf.org/mantis/view.php?id=487
+
+	* tests/feeds/Makefile.am: Fix output turtle files for out of
+	source tree 'make check'
+
+2012-06-18  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, README.html, RELEASE.html: 2.0.8
+
+2012-06-17  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/curie.c:
+	(rdfa_resolve_curie): Protect NULL uri lookup [clang]
+
+	* librdfa/rdfa_utils.c:
+	(rdfa_add_item): Protect NULL list lookup [clang]
+
+	* librdfa/curie.c:
+	(rdfa_resolve_curie): Protect NULL uri lookup [clang]
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_find_namespace): No NULL prefix for strcmp
+	[clang]
+
+	* librdfa/context.c:
+	(rdfa_create_new_element_context): Return NULL on OOM [clang]
+
+	* librdfa/context.c: librdfa in raptor: do not print to stdout on
+	failure
+
+	(rdfa_create_context): Remove printf with hardcoded message.  if
+	malloc fails return NULL
+
+	* librdfa/rdfa.c:
+	(end_element): Protect for NULL xml_literal before strlen [clang]
+
+	* librdfa/curie.c:
+	(rdfa_resolve_uri): empty rval check for OOM [clang]
+
+	* src/raptor_qname.c:
+	(raptor_qname_copy): Free new_qname on OOM [clang]
+
+	* NEWS.html, RELEASE.html: 2.0.8
+
+	* src/raptor_serialize_turtle.c: Do not emit a Turtle (...)
+	collection if the list item is a URI
+
+	Fixes Issue #0000381
+	http://bugs.librdf.org/mantis/view.php?id=381
+
+	* tests/rdfa11/Makefile.am: 29 failures - 0114 passes
+
+	* tests/rdfa11/0114.out: Correct expected result based on original
+	sparql
+
+	* src/raptor_rfc2396.c:
+	Fix URI resolving with reference uri '?y'
+
+	(raptor_uri_resolve_uri_reference): When reference uri has no path,
+	copy the base path over.
+
+	(main): Correct the test case expected result for '?y' following
+	RFC3986 section 5.4.1 Normal examples.  Add test case based on
+	RDFa 1.1 test 0114
+
+	* tests/rdfa11/Makefile.am: 30 failures - 0234 passes
+
+	* tests/rdfa11/0234.out: Fix test URI
+
+	* tests/rdfa11/Makefile.am: notes
+
+	* tests/rdfa11/Makefile.am: 32 failures - 0295 passes
+
+	* tests/rdfa11/0295.out: Update XML ns; remove non-ascii junk
+
+	* tests/rdfa11/Makefile.am: 32 failures - 0259 passes
+
+	* librdfa/curie.c:
+	(rdfa_resolve_curie): Get XML namespace from constnat
+
+2012-06-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_guess.c, src/raptor_internal.h, src/raptor_parse.c:
+	Raptor locator accessor for guess parser struct
+	raptor_parser_factory_s gains optional get_locator method.
+
+	(raptor_parser_get_locator): Call factory get_locator method if
+	present, otherwise use field.
+
+	(raptor_guess_guess_get_locator): Added to get locator from inner
+	parser if it exists.
+
+2012-06-11  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Compare libcurl hex vernums as strings
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Cast language length again
+
+	* src/raptor_internal.h: Remove redundant
+	raptor_parser_log_error_varargs
+
+	* librdfa/Makefile.am: Add missing librdfa files to dist
+
+	* src/raptor_internal.h: Add prototype for
+	raptor_parser_log_error_varargs
+
+	* tests/rdfa11/0226.out, tests/rdfa11/0226.xml,
+	tests/rdfa11/0227.out, tests/rdfa11/0227.xml: Updated RDFa 1.1
+	tests 0226 and 0227 after upstream change
+
+	Switches from (fake) rdf:inlist property to ex:inlist in
+	example.org namespace
+
+2012-06-10  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa11/Makefile.am:
+	33 failures
+
+	* tests/rdfa11/0221.out: Add <uri> rdf:value <foo> triple that is
+	also generated by librdfa
+
+	* tests/rdfa11/0218.out: Fix test URI
+
+	* tests/rdfa11/0201.out: Fix test URI to .xml
+
+	* tests/rdfa11/0220.out: Add <uri> rdf:value <foo> triple that is
+	also generated by librdfa
+
+	* tests/rdfa11/0197.out: Add other triples not tested in sparql
+
+	* tests/rdfa11/Makefile.am: More failures detail
+
+	* tests/rdfa11/0255.out: 1 triple plain literal test
+
+	* tests/rdfa11/Makefile.am: 39 failures
+
+	* tests/rdfa11/0061.xml, tests/rdfa11/0062.xml,
+	tests/rdfa11/0076.xml, tests/rdfa11/0077.xml,
+	tests/rdfa11/0172.xml, tests/rdfa11/0173.xml,
+	tests/rdfa11/0260.xml: Format some tests as XHTML1 as the only
+	expected input form.  0061 0062 0076 0077 0172 0173 0260 are
+	marked in the test manifest as only having a host language
+	'xhtml1'
+
+	* tests/rdfa11/0260.out: Fix test URI
+
+	* tests/rdfa11/Makefile.am: 44 failures
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_inscope_xml_language): Allow returning ""
+
+	* tests/rdfa11/0296.out: Add vocab triple and homepage one that
+	sparql ommits
+
+	* tests/rdfa11/0259.out: Add test URI
+
+	* tests/rdfa11/0258.out: FIx test URI
+
+	* librdfa/rdfa.c: Simplify and fix languag handling
+
+	* src/raptor_general.c, src/raptor_internal.h: Move git-version.h
+	include to just one module to speed up recompiles.
+
+2012-06-09  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa11/Makefile.am: 0295
+
+	* tests/rdfa11/0295.out:
+	Test passes if >0 triples are generated
+
+	* src/raptor_librdfa.c:
+	(raptor_librdfa_parse_start): Set initial line/column to unknown.
+
+	* librdfa/rdfa.c: librdfa in raptor - pass back error line number
+	info to user
+
+	(start_element): Update locator from SAX2
+
+	* tests/rdfa11/Makefile.am: 50 failures
+
+	* tests/rdfa11/0189.out: Fix test URI
+
+	* tests/rdfa11/0187.out: Fix output vocabs
+
+	* tests/rdfa11/Makefile.am: 0304 note
+
+	* src/raptor_internal.h: Redefine rdfa_update_uri_mappings to
+	internal symbol
+
+	* tests/rdfa11/Makefile.am: 52 failures
+
+	* tests/rdfa11/0301.out, tests/rdfa11/0302.out,
+	tests/rdfa11/0303.out: Use exact output triples including
+	usesVocabulary
+
+	* tests/rdfa11/0258.out: 1 triple
+
+	* tests/rdfa11/Makefile.am: 53 failures
+
+	* tests/rdfa11/0272.out, tests/rdfa11/0273.out,
+	tests/rdfa11/0274.out, tests/rdfa11/0275.out,
+	tests/rdfa11/0276.out, tests/rdfa11/0277.out,
+	tests/rdfa11/0278.out, tests/rdfa11/0279.out,
+	tests/rdfa11/0280.out, tests/rdfa11/0281.out,
+	tests/rdfa11/0282.out, tests/rdfa11/0283.out,
+	tests/rdfa11/0284.out, tests/rdfa11/0285.out,
+	tests/rdfa11/0286.out, tests/rdfa11/0287.out: Fixed expected
+	output bnode subject to be test URI
+
+	* tests/rdfa11/0188.out, tests/rdfa11/0189.out: Add usesVocabulary
+	triple which comes from @vocab - why!?
+
+	* tests/rdfa11/0186.out: Add usesVocabulary triple which comes
+	from @vocab - why!?
+
+	* src/Makefile.am: Add librdfa/namespace.c
+
+	* librdfa/rdfa.c: Let rdfa_update_uri_mappings() handle RDFa
+	namespace starting.
+
+	* librdfa/Makefile.am, librdfa/namespace.c: Add namespace.c
+
+	* librdfa/rdfa.c: Handle @lang tag for raptor
+
+	* tests/rdfa11/0180.out: Expect 1 triple
+
+	* tests/rdfa11/0173.out: just 1 triple with a plain literal
+
+	* tests/rdfa11/Makefile.am: 58 failures
+
+	* librdfa/rdfa.c:
+	(start_element): Do not abort @prefix handling too early
+
+	* tests/rdfa11/Makefile.am:
+	0176 passes
+
+	* tests/rdfa11/0176.out: Use exact expected output for quick cmp
+
+	* tests/rdfa11/Makefile.am: Use cmp as a quicker test before doing
+	an rdfdiff
+
+	* tests/rdfa11/0107.out, tests/rdfa11/0122.out,
+	tests/rdfa11/0140.out, tests/rdfa11/0180.out,
+	tests/rdfa11/0235.out, tests/rdfa11/0258.out: Add expect 0 triples
+	files
+
+	* tests/rdfa11/0295.out: 0295 expected output
+
+	* tests/rdfa11/Makefile.am: comments
+
+	* configure.ac, tests/Makefile.am, tests/rdfa11/0001.out,
+	tests/rdfa11/0001.xml, tests/rdfa11/0006.out,
+	tests/rdfa11/0006.xml, tests/rdfa11/0007.out,
+	tests/rdfa11/0007.xml, tests/rdfa11/0008.out,
+	tests/rdfa11/0008.xml, tests/rdfa11/0009.out,
+	tests/rdfa11/0009.xml, tests/rdfa11/0010.out,
+	tests/rdfa11/0010.xml, tests/rdfa11/0012.out,
+	tests/rdfa11/0012.xml, tests/rdfa11/0013.out,
+	tests/rdfa11/0013.xml, tests/rdfa11/0014.out,
+	tests/rdfa11/0014.xml, tests/rdfa11/0015.out,
+	tests/rdfa11/0015.xml, tests/rdfa11/0017.out,
+	tests/rdfa11/0017.xml, tests/rdfa11/0018.out,
+	tests/rdfa11/0018.xml, tests/rdfa11/0019.out,
+	tests/rdfa11/0019.xml, tests/rdfa11/0020.out,
+	tests/rdfa11/0020.xml, tests/rdfa11/0021.out,
+	tests/rdfa11/0021.xml, tests/rdfa11/0023.out,
+	tests/rdfa11/0023.xml, tests/rdfa11/0025.out,
+	tests/rdfa11/0025.xml, tests/rdfa11/0026.out,
+	tests/rdfa11/0026.xml, tests/rdfa11/0027.out,
+	tests/rdfa11/0027.xml, tests/rdfa11/0029.out,
+	tests/rdfa11/0029.xml, tests/rdfa11/0030.out,
+	tests/rdfa11/0030.xml, tests/rdfa11/0031.out,
+	tests/rdfa11/0031.xml, tests/rdfa11/0032.out,
+	tests/rdfa11/0032.xml, tests/rdfa11/0033.out,
+	tests/rdfa11/0033.xml, tests/rdfa11/0034.out,
+	tests/rdfa11/0034.xml, tests/rdfa11/0035.out,
+	tests/rdfa11/0035.xml, tests/rdfa11/0036.out,
+	tests/rdfa11/0036.xml, tests/rdfa11/0037.out,
+	tests/rdfa11/0037.xml, tests/rdfa11/0038.out,
+	tests/rdfa11/0038.xml, tests/rdfa11/0039.out,
+	tests/rdfa11/0039.xml, tests/rdfa11/0041.out,
+	tests/rdfa11/0041.xml, tests/rdfa11/0048.out,
+	tests/rdfa11/0048.xml, tests/rdfa11/0049.out,
+	tests/rdfa11/0049.xml, tests/rdfa11/0050.out,
+	tests/rdfa11/0050.xml, tests/rdfa11/0051.out,
+	tests/rdfa11/0051.xml, tests/rdfa11/0052.out,
+	tests/rdfa11/0052.xml, tests/rdfa11/0053.out,
+	tests/rdfa11/0053.xml, tests/rdfa11/0054.out,
+	tests/rdfa11/0054.xml, tests/rdfa11/0055.out,
+	tests/rdfa11/0055.xml, tests/rdfa11/0056.out,
+	tests/rdfa11/0056.xml, tests/rdfa11/0057.out,
+	tests/rdfa11/0057.xml, tests/rdfa11/0059.out,
+	tests/rdfa11/0059.xml, tests/rdfa11/0060.out,
+	tests/rdfa11/0060.xml, tests/rdfa11/0061.out,
+	tests/rdfa11/0061.xml, tests/rdfa11/0062.out,
+	tests/rdfa11/0062.xml, tests/rdfa11/0063.out,
+	tests/rdfa11/0063.xml, tests/rdfa11/0064.out,
+	tests/rdfa11/0064.xml, tests/rdfa11/0065.out,
+	tests/rdfa11/0065.xml, tests/rdfa11/0066.out,
+	tests/rdfa11/0066.xml, tests/rdfa11/0067.out,
+	tests/rdfa11/0067.xml, tests/rdfa11/0068.out,
+	tests/rdfa11/0068.xml, tests/rdfa11/0069.out,
+	tests/rdfa11/0069.xml, tests/rdfa11/0070.out,
+	tests/rdfa11/0070.xml, tests/rdfa11/0071.out,
+	tests/rdfa11/0071.xml, tests/rdfa11/0072.out,
+	tests/rdfa11/0072.xml, tests/rdfa11/0073.out,
+	tests/rdfa11/0073.xml, tests/rdfa11/0074.out,
+	tests/rdfa11/0074.xml, tests/rdfa11/0075.out,
+	tests/rdfa11/0075.xml, tests/rdfa11/0076.out,
+	tests/rdfa11/0076.xml, tests/rdfa11/0077.out,
+	tests/rdfa11/0077.xml, tests/rdfa11/0079.out,
+	tests/rdfa11/0079.xml, tests/rdfa11/0080.out,
+	tests/rdfa11/0080.xml, tests/rdfa11/0083.out,
+	tests/rdfa11/0083.xml, tests/rdfa11/0084.out,
+	tests/rdfa11/0084.xml, tests/rdfa11/0085.out,
+	tests/rdfa11/0085.xml, tests/rdfa11/0087.out,
+	tests/rdfa11/0087.xml, tests/rdfa11/0088.out,
+	tests/rdfa11/0088.xml, tests/rdfa11/0089.out,
+	tests/rdfa11/0089.xml, tests/rdfa11/0091.out,
+	tests/rdfa11/0091.xml, tests/rdfa11/0093.out,
+	tests/rdfa11/0093.xml, tests/rdfa11/0099.out,
+	tests/rdfa11/0099.xml, tests/rdfa11/0104.out,
+	tests/rdfa11/0104.xml, tests/rdfa11/0106.out,
+	tests/rdfa11/0106.xml, tests/rdfa11/0107.xml,
+	tests/rdfa11/0108.out, tests/rdfa11/0108.xml,
+	tests/rdfa11/0109.out, tests/rdfa11/0109.xml,
+	tests/rdfa11/0110.out, tests/rdfa11/0110.xml,
+	tests/rdfa11/0111.out, tests/rdfa11/0111.xml,
+	tests/rdfa11/0112.out, tests/rdfa11/0112.xml,
+	tests/rdfa11/0113.out, tests/rdfa11/0113.xml,
+	tests/rdfa11/0114.out, tests/rdfa11/0114.xml,
+	tests/rdfa11/0115.out, tests/rdfa11/0115.xml,
+	tests/rdfa11/0117.out, tests/rdfa11/0117.xml,
+	tests/rdfa11/0118.out, tests/rdfa11/0118.xml,
+	tests/rdfa11/0119.out, tests/rdfa11/0119.xml,
+	tests/rdfa11/0120.out, tests/rdfa11/0120.xml,
+	tests/rdfa11/0121.out, tests/rdfa11/0121.xml,
+	tests/rdfa11/0122.xml, tests/rdfa11/0126.out,
+	tests/rdfa11/0126.xml, tests/rdfa11/0131.out,
+	tests/rdfa11/0131.xml, tests/rdfa11/0134.out,
+	tests/rdfa11/0134.xml, tests/rdfa11/0140.xml,
+	tests/rdfa11/0147.out, tests/rdfa11/0147.xml,
+	tests/rdfa11/0172.out, tests/rdfa11/0172.xml,
+	tests/rdfa11/0173.out, tests/rdfa11/0173.xml,
+	tests/rdfa11/0174.out, tests/rdfa11/0174.xml,
+	tests/rdfa11/0175.out, tests/rdfa11/0175.xml,
+	tests/rdfa11/0176.out, tests/rdfa11/0176.xml,
+	tests/rdfa11/0177.out, tests/rdfa11/0177.xml,
+	tests/rdfa11/0178.out, tests/rdfa11/0178.xml,
+	tests/rdfa11/0179.out, tests/rdfa11/0179.xml,
+	tests/rdfa11/0180.xml, tests/rdfa11/0181.out,
+	tests/rdfa11/0181.xml, tests/rdfa11/0182.out,
+	tests/rdfa11/0182.xml, tests/rdfa11/0183.out,
+	tests/rdfa11/0183.xml, tests/rdfa11/0186.out,
+	tests/rdfa11/0186.xml, tests/rdfa11/0187.out,
+	tests/rdfa11/0187.xml, tests/rdfa11/0188.out,
+	tests/rdfa11/0188.xml, tests/rdfa11/0189.out,
+	tests/rdfa11/0189.xml, tests/rdfa11/0190.out,
+	tests/rdfa11/0190.xml, tests/rdfa11/0196.out,
+	tests/rdfa11/0196.xml, tests/rdfa11/0197.out,
+	tests/rdfa11/0197.xml, tests/rdfa11/0198.out,
+	tests/rdfa11/0198.xml, tests/rdfa11/0201.out,
+	tests/rdfa11/0201.xml, tests/rdfa11/0202.out,
+	tests/rdfa11/0202.xml, tests/rdfa11/0203.out,
+	tests/rdfa11/0203.xml, tests/rdfa11/0206.out,
+	tests/rdfa11/0206.xml, tests/rdfa11/0207.out,
+	tests/rdfa11/0207.xml, tests/rdfa11/0213.out,
+	tests/rdfa11/0213.xml, tests/rdfa11/0214.out,
+	tests/rdfa11/0214.xml, tests/rdfa11/0216.out,
+	tests/rdfa11/0216.xml, tests/rdfa11/0217.out,
+	tests/rdfa11/0217.xml, tests/rdfa11/0218.out,
+	tests/rdfa11/0218.xml, tests/rdfa11/0219.out,
+	tests/rdfa11/0219.xml, tests/rdfa11/0220.out,
+	tests/rdfa11/0220.xml, tests/rdfa11/0221.out,
+	tests/rdfa11/0221.xml, tests/rdfa11/0222.out,
+	tests/rdfa11/0222.xml, tests/rdfa11/0223.out,
+	tests/rdfa11/0223.xml, tests/rdfa11/0224.out,
+	tests/rdfa11/0224.xml, tests/rdfa11/0225.out,
+	tests/rdfa11/0225.xml, tests/rdfa11/0226.out,
+	tests/rdfa11/0226.xml, tests/rdfa11/0227.out,
+	tests/rdfa11/0227.xml, tests/rdfa11/0228.out,
+	tests/rdfa11/0228.xml, tests/rdfa11/0229.out,
+	tests/rdfa11/0229.xml, tests/rdfa11/0230.out,
+	tests/rdfa11/0230.xml, tests/rdfa11/0231.out,
+	tests/rdfa11/0231.xml, tests/rdfa11/0232.out,
+	tests/rdfa11/0232.xml, tests/rdfa11/0233.out,
+	tests/rdfa11/0233.xml, tests/rdfa11/0234.out,
+	tests/rdfa11/0234.xml, tests/rdfa11/0235.xml,
+	tests/rdfa11/0236.out, tests/rdfa11/0236.xml,
+	tests/rdfa11/0237.out, tests/rdfa11/0237.xml,
+	tests/rdfa11/0238.out, tests/rdfa11/0238.xml,
+	tests/rdfa11/0239.out, tests/rdfa11/0239.xml,
+	tests/rdfa11/0246.out, tests/rdfa11/0246.xml,
+	tests/rdfa11/0247.out, tests/rdfa11/0247.xml,
+	tests/rdfa11/0248.out, tests/rdfa11/0248.xml,
+	tests/rdfa11/0249.out, tests/rdfa11/0249.xml,
+	tests/rdfa11/0250.out, tests/rdfa11/0250.xml,
+	tests/rdfa11/0251.out, tests/rdfa11/0251.xml,
+	tests/rdfa11/0252.out, tests/rdfa11/0252.xml,
+	tests/rdfa11/0253.out, tests/rdfa11/0253.xml,
+	tests/rdfa11/0254.out, tests/rdfa11/0254.xml,
+	tests/rdfa11/0255.out, tests/rdfa11/0255.xml,
+	tests/rdfa11/0256.out, tests/rdfa11/0256.xml,
+	tests/rdfa11/0257.out, tests/rdfa11/0257.xml,
+	tests/rdfa11/0258.xml, tests/rdfa11/0259.out,
+	tests/rdfa11/0259.xml, tests/rdfa11/0260.out,
+	tests/rdfa11/0260.xml, tests/rdfa11/0261.out,
+	tests/rdfa11/0261.xml, tests/rdfa11/0262.out,
+	tests/rdfa11/0262.xml, tests/rdfa11/0263.out,
+	tests/rdfa11/0263.xml, tests/rdfa11/0264.out,
+	tests/rdfa11/0264.xml, tests/rdfa11/0265.out,
+	tests/rdfa11/0265.xml, tests/rdfa11/0266.out,
+	tests/rdfa11/0266.xml, tests/rdfa11/0267.out,
+	tests/rdfa11/0267.xml, tests/rdfa11/0268.out,
+	tests/rdfa11/0268.xml, tests/rdfa11/0269.out,
+	tests/rdfa11/0269.xml, tests/rdfa11/0271.out,
+	tests/rdfa11/0271.xml, tests/rdfa11/0272.out,
+	tests/rdfa11/0272.xml, tests/rdfa11/0273.out,
+	tests/rdfa11/0273.xml, tests/rdfa11/0274.out,
+	tests/rdfa11/0274.xml, tests/rdfa11/0275.out,
+	tests/rdfa11/0275.xml, tests/rdfa11/0276.out,
+	tests/rdfa11/0276.xml, tests/rdfa11/0277.out,
+	tests/rdfa11/0277.xml, tests/rdfa11/0278.out,
+	tests/rdfa11/0278.xml, tests/rdfa11/0279.out,
+	tests/rdfa11/0279.xml, tests/rdfa11/0280.out,
+	tests/rdfa11/0280.xml, tests/rdfa11/0281.out,
+	tests/rdfa11/0281.xml, tests/rdfa11/0282.out,
+	tests/rdfa11/0282.xml, tests/rdfa11/0283.out,
+	tests/rdfa11/0283.xml, tests/rdfa11/0284.out,
+	tests/rdfa11/0284.xml, tests/rdfa11/0285.out,
+	tests/rdfa11/0285.xml, tests/rdfa11/0286.out,
+	tests/rdfa11/0286.xml, tests/rdfa11/0287.out,
+	tests/rdfa11/0287.xml, tests/rdfa11/0289.out,
+	tests/rdfa11/0289.xml, tests/rdfa11/0290.out,
+	tests/rdfa11/0290.xml, tests/rdfa11/0291.out,
+	tests/rdfa11/0291.xml, tests/rdfa11/0292.out,
+	tests/rdfa11/0292.xml, tests/rdfa11/0293.out,
+	tests/rdfa11/0293.xml, tests/rdfa11/0295.xml,
+	tests/rdfa11/0296.out, tests/rdfa11/0296.xml,
+	tests/rdfa11/0297.out, tests/rdfa11/0297.xml,
+	tests/rdfa11/0298.out, tests/rdfa11/0298.xml,
+	tests/rdfa11/0299.out, tests/rdfa11/0299.xml,
+	tests/rdfa11/0300.out, tests/rdfa11/0300.xml,
+	tests/rdfa11/0301.out, tests/rdfa11/0301.xml,
+	tests/rdfa11/0302.out, tests/rdfa11/0302.xml,
+	tests/rdfa11/0303.out, tests/rdfa11/0303.xml,
+	tests/rdfa11/0304.out, tests/rdfa11/0304.xml,
+	tests/rdfa11/Makefile.am: Add RDFa 1.1 tests and expected failures
+
+	* librdfa/rdfa.c: Crash fix for @prefix
+
+	(start_element): Do not crash if strtok_r returns NULL during walk
+	through @prefix.  Instead, abort attribute prefix search This
+	makes RDFA 1.0 test 0209 work for me
+
+	* src/raptor_librdfa.c: Default for parser 'rdfa' is whatever
+	librdfa does by default
+
+	* librdfa/lists.c: Removed assignment of never-read 'triple'
+	variable [clang]
+
+	* src/turtle_lexer.l: Make failure to convert Turtle qname log as
+	level error not fatal
+
+2012-06-08  Dave Beckett <dave@dajobe.org>
+
+	* Makefile.am: Restore README and NEWS building for building from
+	GIT
+
+	* RELEASE.html: 2.0.8
+
+	* ChangeLog, ChangeLog.12, Makefile.am:
+	Added ChangeLog.12 for 2011
+
+	* docs/tmpl/section-uri.sgml: Updated uri tmpl
+
+	* src/snprintf.c: Prototypes for test functions to remove GCC
+	format warnings
+
+	* src/Makefile.am, src/snprintf.c: Add snprintf module simple unit
+	tests
+
+	* configure.ac: Set CPPFLAGS temporarily before libxml and libxslt
+	tests
+
+	* configure.ac: Make stripping -O flags (for maintainer) work
+	unless --enable-release
+
+	* configure.ac: --enable-debug no longer adds -g to CFLAGS
+
+2012-06-07  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Remove fatal errors
+	when a Turtle qname cannot be found
+
+	(turtle_lexer_error): Renamed from turtle_lexer_fatal_error and
+	takes a log level and now is in varargs format.
+
+	{QNAME}: Call turtle_lexer_error with a regular error log level
+	and provide user level information on the qname that failed.
+	Updated other calls to turtle_lexer_fatal error.
+
+	(turtle_syntax_error): Call raptor_parser_log_error_varargs().
+	Fixes Issue#0000507
+	http://bugs.librdf.org/mantis/view.php?id=507
+
+	* src/raptor_grddl.c, src/raptor_internal.h, src/raptor_parse.c:
+	Pass in log level to parser error helper
+
+	(raptor_parser_log_error_varargs): Renamed from
+	raptor_parser_error_varargs and pass on log level to
+	raptor_log_error_varargs
+
+	* librdfa/Makefile.am, librdfa/config.h: Add librdfa config.h to
+	dist
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): Bad cast for language len
+	truncation.
+
+	* utils/Makefile.am:
+	Improve building of rdfdiff
+
+	Declare rdfdiff as noinst_PROGRAMS instead of EXTRA_PROGRAMS, so
+	that it's always built (but not installed)
+
+	There is no need to mention rdfdiff in CLEANFILES, as Automake
+	already knows to clean it
+
+	* tests/grddl/Makefile.am, tests/json/Makefile.am,
+	tests/ntriples/Makefile.am, tests/rdfa/Makefile.am,
+	tests/rdfxml/Makefile.am, tests/trig/Makefile.am,
+	tests/turtle/Makefile.am:
+	Fixes for out of tree testing
+
+	Place the path to rapper in a variable RAPPER that can be
+	overridden by the user and ensure all instances have a $(EXEEXT)
+	suffix.
+
+	Use $(RAPPER) instead of the path to same in target bodies.
+
+	Place the path to rdfdiff in a variable RDFDIFF that can be
+	overridden by the user.
+
+	Use $(RDFDIFF) instead of the path to same in target bodies
+
+	* tests/feeds/Makefile.am: Fixes for feeds testing for out of tree
+	builds and portability
+
+	Do not use a variable containing a list of filenames both in a
+	target's dependencies and in the target body, at least outside of
+	maintainer mode.  Make on Solaris 8 has a funny idea of how to
+	implement VPATH; it modifies the value of the variable by
+	prefixing the srcdir path to each filename therein, and this
+	breaks our rule code.
+
+	Remove the use of $? as this is not well-supported outside of GNU
+	Make and the semantics of it are not needed or wanted.
+
+	Adjust check-validate-atom target to look for input fields in
+	either builddir or srcdir since some are generated and some are
+	source.
+
+	* tests/feeds/Makefile.am: TRANG in a variable and add docs ptr
+
+	* src/Makefile.am:
+	Fixes for out of tree builds of library
+
+	Declare the turtle lex/yacc sources as BUILT_SOURCES, to take
+	advantage of Automake semantics for these.
+
+	Remove LEX and YACC variables, as these are already handled
+	automagically.
+
+	Replaced all instances of $(srcdir)/.. with $(top_srcdir)
+
+	Added some guard logic to the turtle_lexer.c rule so that it
+	doesn't erroneously generate the target file.
+
+	Added dummy turtle_lexer.h and turtle_parser.h rules to satisfy
+	dependencies
+
+	Fixed a typo in the raptor_parse_test rule
+
+	* docs/Makefile.am:
+	Fixes for out of tree builds of docs
+
+	Removed $(builddir)/ from target files since that is where they
+	already are.
+
+	raptor2.h is a file generated by config.status, so it always lives
+	in $(builddir), not $(srcdir)
+
+	Replaced all instances of $(srcdir)/.. with $(top_srcdir)
+
+	Added "dist-hook-local: docs" so that the docs are generated
+	during a "make dist" if they haven't been generated already
+	(otherwise "make dist" fails when they can't be found)
+
+	* configure.ac: Quote testing $use_memory_signing
+
+	* configure.ac:
+	Make all AC_ARG_WITH(blah) options handle --without-blah correctly
+
+	Now these forms can be used
+	  --with-foo      - enable feature
+	  --without-foo   - disable feature
+	  --with-foo=blah - enable and give a value
+	  --with-foo=     - (default action) enable and search for value
+	  (not given)     - (default action) enable and search for value
+	for --with-xml2-config, --with-xslt-config, --with-curl-config,
+	--with-icu-config and --with-libwww-config where 'no' can be used
+	to disable it and prevent automatic searches for the config script
+	in the PATH.
+
+	* configure.ac:
+	Fix some configure portability issues
+
+	Fixed a typo in the STRCASECMP conditional
+
+	Set CPPFLAGS whether or not the check for xsltSaveResultToString
+	succeeds, because AC_CHECK_HEADERS() depends on this and the
+	result of the header check should not depend on the result of the
+	lib check.
+
+	Put -DRAPTOR_DEBUG and -DMAINTAINER_MODE into the config header
+	instead of CPPFLAGS. This prevents the flags from potentially
+	being passed to "make distcheck" builds, where they can cause
+	trouble (e.g. absence of git-version.h header)
+
+	Removed -g from maintainer CPPFLAGS since it does not belong there
+	and add to CFLAGS when --enable-debug is given.
+
+	* Makefile.am:
+	Fix README and NEWS building - only for maintainer
+
+	Generate NEWS in $(srcdir) as automake won't look for it in
+	$(builddir)
+
+	Remove not needed dist-hook target since README and NEWS are
+	copied in by the standard 'make dist' mechanism.
+
+	* autogen.sh: Support NOCONFIGURE variable, like Lib{XML2,XSLT}
+
+2012-06-06  Dave Beckett <dave@dajobe.org>
+
+	* src/snprintf.c: Portability improvements to vsnprintf code and
+	macros
+
+	(vsnprintf_check_is_c99): Initialize len to -1 when the variable
+	is declared instead of in the macro to remove redundancy.
+
+	(vsnprintf_is_c99): Check that len < size before looking at
+	tmp_buffer[len] otherwise we may be looking past the buffer size.
+
+	(macro VSNPRINTF_NOT_C99_BLOCK): free tmp_buffer when breaking out
+	of the while(1) loop.  set len to a non-negative value in the
+	buffer != NULL case (raptor_vsnprintf2): Initialize len to -1 here
+	instead of in the VSNPRINTF_NOT_C99_BLOCK() macro.  Return -1 if
+	format is NULL.
+
+	(raptor_vasprintf): Copy var args to re-use them when calling
+	raptor_vsnprintf2()
+
+	* configure.ac: Make configure vsnprintf() check more
+	comprehensive
+
+	- Test program also needs <stdio.h> and (now) <stdlib.h>
+	- Declare is_c99() function as static to avoid "no previous
+	  declaration" warning from GCC's -Wmissing-declarations
+	- Improved test to invoke vsnprintf(NULL, 0, ...) because on Solaris
+	  8, the function returns -1 in this case but works normally otherwise
+	- Declare main(void) instead of main(int argc, char* argv) to avoid
+	  "unused parameter" warnings
+	- Make test program return 0 if the test is successful,
+	  as otherwise a false-positive result is possible (note that
+	  AC_TRY_RUN() interprets failure to compile/link the program, etc.
+	  the same as a non-zero program exit status)
+	- Make the test program return an exit status indicative of the
+	  failure mode: 1 = non-NULL case fails, 10 = NULL case fails, 11
+	  = both fail
+	- Use proper m4 quoting in modified code
+
+	* src/turtle_common.h: struct raptor_turtle_parser_s: trig field
+	is now int (compiler bugs)
+
+	* src/parsedate.y:
+	Include raptor headers here for CAST macros
+
+2012-05-23  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c:
+	(start_element): Start a raptor namespace for RDFa 1.1 @prefix
+
+2012-05-23  Lauri Aalto <laalto@iki.fi>
+
+	* src/snprintf.c:
+	(raptor_vsnprintf2): Fix uninitialized variable problems in non-c99
+	variant. Thanks to John Emmas for reporting.
+
+	- Compute len internally using int, not size_t as standard
+	  vsnprintf() returns ints anyway. This fixes for negative value
+	  comparison. Cast from size_t to int required for strlen() return
+	  value.
+	- Initialize len earlier
+	- Use passed in size if a buffer is given
+
+2012-05-22  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Use #ifdef in parsedate code fragment
+
+2012-05-21  Dave Beckett <dave@dajobe.org>
+
+	* src/win32_raptor_config.h.in: win32 config
+	RAPTOR_VERSION_DECIMAL renamed from RAPTOR_VERSION
+
+	* src/turtle_parser.y:
+	(main): Store fread result in a size_t
+
+	* utils/rdfdiff.c: Fixed reference leak of blank->owner
+
+	* utils/rdfdiff.c: Add raptor internal macros when building
+	without RAPTOR_INTERNAL
+
+	* utils/rapper.c, utils/rdfdiff.c: Need <io.h> on Windows for
+	_access()
+
+	* src/turtle_lexer.l: Removed const qualifier from
+	turtle_lexer_oom_text[]
+
+	Fixes warning when passed as a non-const function argument
+
+	* src/turtle_parser.y:
+	(turtle_parse): Added casts to quell type-compatibility warnings
+
+	* src/strcasecmp.c: Removed needless <stdio.h> #include and main()
+	prototype
+
+	(assert_strcasecmp): Test raptor_strcasecmp(), not
+	whatever strcasecmp() resolves to
+
+	* src/raptor_xml.c: Changed quote to a char for better type
+	compatibility
+
+	* src/raptor_uri.c:
+	URI test build fixes
+
+	Removed redundant WIN32_URI_TEST construct
+
+	Added STANDALONE cpp conditional around library functions
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_literal): size_t and char casts.
+
+	* src/raptor_serialize_rss.c: Fix reference leaks for rss tag soup
+	parser.
+
+	(raptor_rss10_emit_rdfxml_item_triples): Don't make a copy of
+	base_uri to pass to raptor_serializer_start_to_iostream(), because
+	this function already makes its own copy
+
+	(raptor_rss10_ensure_atom_feed_valid): Use time() instead of
+	gettimeofday() with struct timeval when HAVE_GETTIMEOFDAY is not
+	defined.
+
+	(raptor_rss10_emit_item): Moved the "atom:summary" short-circuit
+	up to prevent a potential memory leak ("predicate")
+
+	(raptor_rss10_serialize_end): Don't leak entry_uri
+
+	* src/raptor_rdfxml.c: Fixed some rdfxml parser memory leaks /
+	double frees
+
+	(raptor_rdfxml_start_element_grammar): Fixed a memory leak
+
+	(raptor_rdfxml_end_element_grammar): Fixed a double-free() by
+	setting a pointer to NULL
+
+	* src/raptor_rdfxml.c: Broaden range of RDF/XML entity recognizing
+	heuristic
+
+	(raptor_rdfxml_parse_recognise_syntax): Removed angle brackets
+	from the HAS_RDF_ENTITY* strings to allow recognition of documents
+	produced by Stanford's Protege software (and possibly others)
+
+	* src/raptor_rdfxml.c:
+	(raptor_rdfxml_parse_terminate): Fixed leaks when freeing
+	rdf_xml_parser
+
+	* src/raptor_log.c: Guard against a buffer underrun
+
+	* src/raptor_iostream.c: Change raptor_iostream offset type to
+	size_t
+
+	(raptor_iostream_tell): Cast it (BAD) to "unsigned long" here.
+	FIXME: Needs a new iostream API method that returns the full
+	offset as a size_t
+
+	* src/raptor_internal.h: Quell cpp warnings for undefined symbols
+
+	* src/raptor_general.c: Use RAPTOR_VERSION_STRING for
+	raptor_version_string
+
+	* src/parsedate.y: Quell cpp warnings for undefined symbols
+
+	(LookupWord): Use a cast to assign a size_t to an int
+
+2012-05-17  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa/0304.out, tests/rdfa/0304.xml,
+	tests/rdfa/Makefile.am: Add approved test 0304 (SVG) - failing
+
+	* tests/rdfa/Makefile.am: 0294.xml now passes
+
+	* librdfa/curie.c: Do not match the 'xml' prefix in raptor
+
+	* tests/rdfa/Makefile.am: Remove unused unapproved test framework
+
+	* utils/rapper.1: typo
+
+2012-05-16  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/config.h, librdfa/context.c, librdfa/curie.c,
+	librdfa/iri.c, librdfa/language.c, librdfa/lists.c,
+	librdfa/rdfa.c, librdfa/rdfa.h, librdfa/rdfa_utils.c,
+	librdfa/rdfa_utils.h, librdfa/strtok_r.c, librdfa/strtok_r.h,
+	librdfa/subject.c, librdfa/triple.c, src/Makefile.am,
+	src/raptor_internal.h, src/raptor_librdfa.c,
+	tests/rdfa/Makefile.am: Update librdfa in raptor to latest GIT and
+	make it work for RDFa 1.0
+
+	Add RDFa parser version aliases rdfa10, rdfa11 and default to 1.1
+
+	Existing RDFa 1.0 tests pass ONLY IF RDFa 1.0 is forced with -i rdfa10
+
+	* tests/ntriples/bug-481.out: Add surrogate chars to bug 481
+	output
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-15.ttl,
+	tests/turtle/bad-16.ttl: Add (currently) bad turtle forms of bnode
+	subjects
+
+	* tests/turtle/Makefile.am, tests/turtle/test-38.out,
+	tests/turtle/test-38.ttl: Turtle test 38 for reading/writing
+	UTF-16 surrogates
+
+	Test for Issue #0000505
+	http://bugs.librdf.org/mantis/view.php?id=505
+
+	* src/turtle_lexer.l: Do not report double errors for Turtle
+	string decoding problems.
+
+	* src/ntriples_parse.c, src/raptor_nfc_test.c, src/turtle_common.c:
+	Handle errors from raptor_unicode_utf8_string_put_char
+
+	(raptor_stringbuffer_append_turtle_string)
+	(raptor_string_python_write, raptor_ntriples_term): Store result
+	in int and only use it if positive.
+
+	Part of fix for Issue #0000505
+	http://bugs.librdf.org/mantis/view.php?id=505
+
+	* src/raptor_unicode.c:
+	Allow reading/writing U+D800 to U+DFFF (UTF-16 surrogates)
+
+	(raptor_unicode_utf8_string_put_char)
+	(raptor_unicode_utf8_string_get_char): Should be ok to pass
+	through.  Leaving the BOMs as forbidden - definitely not UTF-8
+
+	Part of fix for Issue #0000505
+	http://bugs.librdf.org/mantis/view.php?id=505
+
+	* tests/rdfa/0001.out, tests/rdfa/0001.xhtml, tests/rdfa/0001.xml,
+	tests/rdfa/0006.out, tests/rdfa/0006.xhtml, tests/rdfa/0006.xml,
+	tests/rdfa/0007.out, tests/rdfa/0007.xhtml, tests/rdfa/0007.xml,
+	tests/rdfa/0008.out, tests/rdfa/0008.xhtml, tests/rdfa/0008.xml,
+	tests/rdfa/0009.xhtml, tests/rdfa/0009.xml, tests/rdfa/0010.xhtml,
+	tests/rdfa/0010.xml, tests/rdfa/0011.out, tests/rdfa/0011.xhtml,
+	tests/rdfa/0012.xhtml, tests/rdfa/0012.xml, tests/rdfa/0013.xhtml,
+	tests/rdfa/0013.xml, tests/rdfa/0014.xhtml, tests/rdfa/0014.xml,
+	tests/rdfa/0015.out, tests/rdfa/0015.xhtml, tests/rdfa/0015.xml,
+	tests/rdfa/0017.xhtml, tests/rdfa/0017.xml, tests/rdfa/0018.out,
+	tests/rdfa/0018.xhtml, tests/rdfa/0018.xml, tests/rdfa/0019.xhtml,
+	tests/rdfa/0019.xml, tests/rdfa/0020.out, tests/rdfa/0020.xhtml,
+	tests/rdfa/0020.xml, tests/rdfa/0021.out, tests/rdfa/0021.xhtml,
+	tests/rdfa/0021.xml, tests/rdfa/0023.out, tests/rdfa/0023.xhtml,
+	tests/rdfa/0023.xml, tests/rdfa/0025.out, tests/rdfa/0025.xhtml,
+	tests/rdfa/0025.xml, tests/rdfa/0026.xhtml, tests/rdfa/0026.xml,
+	tests/rdfa/0027.xhtml, tests/rdfa/0027.xml, tests/rdfa/0029.xhtml,
+	tests/rdfa/0029.xml, tests/rdfa/0030.out, tests/rdfa/0030.xhtml,
+	tests/rdfa/0030.xml, tests/rdfa/0031.out, tests/rdfa/0031.xhtml,
+	tests/rdfa/0031.xml, tests/rdfa/0032.out, tests/rdfa/0032.xhtml,
+	tests/rdfa/0032.xml, tests/rdfa/0033.out, tests/rdfa/0033.xhtml,
+	tests/rdfa/0033.xml, tests/rdfa/0034.xhtml, tests/rdfa/0034.xml,
+	tests/rdfa/0035.xhtml, tests/rdfa/0035.xml, tests/rdfa/0036.xhtml,
+	tests/rdfa/0036.xml, tests/rdfa/0037.xhtml, tests/rdfa/0037.xml,
+	tests/rdfa/0038.xhtml, tests/rdfa/0038.xml, tests/rdfa/0039.xhtml,
+	tests/rdfa/0039.xml, tests/rdfa/0040.xhtml, tests/rdfa/0040.xml,
+	tests/rdfa/0041.xhtml, tests/rdfa/0041.xml, tests/rdfa/0042.xhtml,
+	tests/rdfa/0042.xml, tests/rdfa/0046.xhtml, tests/rdfa/0046.xml,
+	tests/rdfa/0047.xhtml, tests/rdfa/0047.xml, tests/rdfa/0048.xhtml,
+	tests/rdfa/0048.xml, tests/rdfa/0049.xhtml, tests/rdfa/0049.xml,
+	tests/rdfa/0050.xhtml, tests/rdfa/0050.xml, tests/rdfa/0051.out,
+	tests/rdfa/0051.xhtml, tests/rdfa/0051.xml, tests/rdfa/0052.xhtml,
+	tests/rdfa/0052.xml, tests/rdfa/0053.xhtml, tests/rdfa/0053.xml,
+	tests/rdfa/0054.out, tests/rdfa/0054.xhtml, tests/rdfa/0054.xml,
+	tests/rdfa/0055.out, tests/rdfa/0055.xhtml, tests/rdfa/0055.xml,
+	tests/rdfa/0056.xhtml, tests/rdfa/0056.xml, tests/rdfa/0057.xhtml,
+	tests/rdfa/0057.xml, tests/rdfa/0058.xhtml, tests/rdfa/0058.xml,
+	tests/rdfa/0059.out, tests/rdfa/0059.xhtml, tests/rdfa/0059.xml,
+	tests/rdfa/0060.xhtml, tests/rdfa/0060.xml, tests/rdfa/0061.out,
+	tests/rdfa/0061.xhtml, tests/rdfa/0061.xml, tests/rdfa/0062.out,
+	tests/rdfa/0062.xhtml, tests/rdfa/0062.xml, tests/rdfa/0063.out,
+	tests/rdfa/0063.xhtml, tests/rdfa/0063.xml, tests/rdfa/0064.out,
+	tests/rdfa/0064.xhtml, tests/rdfa/0064.xml, tests/rdfa/0065.out,
+	tests/rdfa/0065.xhtml, tests/rdfa/0065.xml, tests/rdfa/0066.out,
+	tests/rdfa/0066.xhtml, tests/rdfa/0066.xml, tests/rdfa/0067.out,
+	tests/rdfa/0067.xhtml, tests/rdfa/0067.xml, tests/rdfa/0068.out,
+	tests/rdfa/0068.xhtml, tests/rdfa/0068.xml, tests/rdfa/0069.out,
+	tests/rdfa/0069.xhtml, tests/rdfa/0069.xml, tests/rdfa/0070.out,
+	tests/rdfa/0070.xhtml, tests/rdfa/0070.xml, tests/rdfa/0071.out,
+	tests/rdfa/0071.xhtml, tests/rdfa/0071.xml, tests/rdfa/0072.xhtml,
+	tests/rdfa/0072.xml, tests/rdfa/0073.xhtml, tests/rdfa/0073.xml,
+	tests/rdfa/0074.xhtml, tests/rdfa/0074.xml, tests/rdfa/0075.xhtml,
+	tests/rdfa/0075.xml, tests/rdfa/0076.out, tests/rdfa/0076.xhtml,
+	tests/rdfa/0076.xml, tests/rdfa/0077.out, tests/rdfa/0077.xhtml,
+	tests/rdfa/0077.xml, tests/rdfa/0078.out, tests/rdfa/0078.xhtml,
+	tests/rdfa/0078.xml, tests/rdfa/0079.xhtml, tests/rdfa/0079.xml,
+	tests/rdfa/0080.xhtml, tests/rdfa/0080.xml, tests/rdfa/0081.xhtml,
+	tests/rdfa/0081.xml, tests/rdfa/0082.xhtml, tests/rdfa/0082.xml,
+	tests/rdfa/0083.xhtml, tests/rdfa/0083.xml, tests/rdfa/0084.xhtml,
+	tests/rdfa/0084.xml, tests/rdfa/0085.xhtml, tests/rdfa/0085.xml,
+	tests/rdfa/0086.out, tests/rdfa/0086.xhtml, tests/rdfa/0087.out,
+	tests/rdfa/0087.xhtml, tests/rdfa/0087.xml, tests/rdfa/0088.xhtml,
+	tests/rdfa/0088.xml, tests/rdfa/0089.xhtml, tests/rdfa/0089.xml,
+	tests/rdfa/0090.xhtml, tests/rdfa/0090.xml, tests/rdfa/0091.out,
+	tests/rdfa/0091.xhtml, tests/rdfa/0091.xml, tests/rdfa/0092.out,
+	tests/rdfa/0092.xhtml, tests/rdfa/0093.out, tests/rdfa/0093.xhtml,
+	tests/rdfa/0093.xml, tests/rdfa/0094.out, tests/rdfa/0094.xhtml,
+	tests/rdfa/0099.xhtml, tests/rdfa/0099.xml, tests/rdfa/0100.out,
+	tests/rdfa/0100.xhtml, tests/rdfa/0101.out, tests/rdfa/0101.xhtml,
+	tests/rdfa/0102.out, tests/rdfa/0102.xhtml, tests/rdfa/0103.out,
+	tests/rdfa/0103.xhtml, tests/rdfa/0104.out, tests/rdfa/0104.xhtml,
+	tests/rdfa/0104.xml, tests/rdfa/0105.out, tests/rdfa/0105.xhtml,
+	tests/rdfa/0106.out, tests/rdfa/0106.xhtml, tests/rdfa/0106.xml,
+	tests/rdfa/0107.xhtml, tests/rdfa/0107.xml, tests/rdfa/0108.xhtml,
+	tests/rdfa/0108.xml, tests/rdfa/0109.out, tests/rdfa/0109.xhtml,
+	tests/rdfa/0109.xml, tests/rdfa/0110.out, tests/rdfa/0110.xhtml,
+	tests/rdfa/0110.xml, tests/rdfa/0111.out, tests/rdfa/0111.xhtml,
+	tests/rdfa/0111.xml, tests/rdfa/0112.xhtml, tests/rdfa/0112.xml,
+	tests/rdfa/0113.out, tests/rdfa/0113.xml, tests/rdfa/0114.out,
+	tests/rdfa/0114.xml, tests/rdfa/0115.out, tests/rdfa/0115.xml,
+	tests/rdfa/0117.out, tests/rdfa/0117.xml, tests/rdfa/0118.out,
+	tests/rdfa/0118.xml, tests/rdfa/0119.out, tests/rdfa/0119.xml,
+	tests/rdfa/0120.out, tests/rdfa/0120.xml, tests/rdfa/0121.out,
+	tests/rdfa/0121.xml, tests/rdfa/0122.out, tests/rdfa/0122.xml,
+	tests/rdfa/0126.out, tests/rdfa/0126.xml, tests/rdfa/0131.out,
+	tests/rdfa/0131.xml, tests/rdfa/0134.out, tests/rdfa/0134.xml,
+	tests/rdfa/0140.out, tests/rdfa/0140.xml, tests/rdfa/0147.out,
+	tests/rdfa/0147.xml, tests/rdfa/0172.out, tests/rdfa/0172.xhtml,
+	tests/rdfa/0172.xml, tests/rdfa/0173.out, tests/rdfa/0173.xhtml,
+	tests/rdfa/0173.xml, tests/rdfa/0174.out, tests/rdfa/0174.xhtml,
+	tests/rdfa/0174.xml, tests/rdfa/0181.out, tests/rdfa/0181.xml,
+	tests/rdfa/0197.out, tests/rdfa/0197.xml, tests/rdfa/0201.out,
+	tests/rdfa/0201.xml, tests/rdfa/0202.out, tests/rdfa/0202.xml,
+	tests/rdfa/0203.out, tests/rdfa/0203.xml, tests/rdfa/0207.out,
+	tests/rdfa/0207.xml, tests/rdfa/0209.out, tests/rdfa/0209.xml,
+	tests/rdfa/0210.out, tests/rdfa/0210.xml, tests/rdfa/0211.out,
+	tests/rdfa/0211.xml, tests/rdfa/0212.out, tests/rdfa/0212.xml,
+	tests/rdfa/0215.out, tests/rdfa/0215.xml, tests/rdfa/0258.out,
+	tests/rdfa/0258.xml, tests/rdfa/0262.out, tests/rdfa/0262.xml,
+	tests/rdfa/0291.out, tests/rdfa/0291.xml, tests/rdfa/0292.out,
+	tests/rdfa/0292.xml, tests/rdfa/0294.out, tests/rdfa/0294.xml,
+	tests/rdfa/1001.out, tests/rdfa/1001.xhtml, tests/rdfa/Makefile.am:
+	Update RDFa 1.0 tests
+	- Rename test files to .xml so expected result urls are correct
+	- Just approved tests
+	- Turned sparql queries into expected triple output
+	- Hand edited all negative tests to expect 0 triples
+	- Removed duplicate xmlns from generated xml
+	- 0201.xml 0202.xml 0203.xml are SVG not XHTML; altered expected
+	output triples
+
+	* librdfa/curie.c:
+	(rdfa_resolve_uri): Pulled from newer RDFA git
+
+	* librdfa/rdfa.c:
+	(rdfa_init_base): Calculate buffer expansion correctly
+
+	Pulled from newer RDFA git
+
+	* tests/rdfa/Makefile.am: check-rdfa: Allow rapper result
+	warning (status 2) as success
+
+	* src/raptor_librdfa.c: Do not generate blank node predicate RDFa
+	triples
+
+	(raptor_librdfa_generate_statement): Return warning instead of
+	generating blank node predicate RDFa triples.  Maybe should be
+	silent?
+
+	* configure.ac: Add strtok_r check for upcoming librdfa RDFA 1.1
+
+2012-05-15  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_qname.c: doc
+
+2012-05-14  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c:
+	(raptor_libxml_resolveEntity): Init entity_input [clang]
+
+2012-04-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_header_callback): Do not send CRNL to URI
+	constructor.
+
+	* src/raptor_www_curl.c: Interpret Content-Location header as
+	absolute or relative URI
+
+	(raptor_www_curl_header_callback): Use
+	raptor_new_uri_relative_to_base_counted to construct URI relative
+	to current base.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_new_uri_relative_to_base_counted): Added
+
+2012-03-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	docs/tmpl/section-triples.sgml, docs/tmpl/section-uri.sgml: Update
+	api docs for turtle write fns
+
+	* Merge pull request #3 from Anchakor/node_rw_turtle_string
+	turtle uri and term writing/tostring functions
+
+2012-03-29  Jiří Procházka <ojirio@gmail.com>
+
+	* src/raptor2.h.in, src/raptor_serialize_turtle.c:
+	(raptor_uri_to_turtle_counted_string,
+	raptor_term_to_turtle_counted_string): add counted string
+	versions. style and docs changes
+
+	* Merge remote-tracking branch 'dajobe/master' into
+	node_rw_turtle_string
+
+2012-03-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor2-sections.txt, docs/tmpl/section-www.sgml: Add
+	raptor_www_set_ssl_verify_option to docs - missing 's' in sections
+
+	* RELEASE.html:
+	RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES words
+
+2012-03-22  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html, configure.ac:
+	Bumped version to 2.0.8
+
+	* Snapshotted raptor2_2_0_7 for 2.0.7 release (GIT
+	a676f235309a59d4aa78eeffd2574ae5d341fcb0)
+
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c, src/raptor2.h.in, src/raptor_libxml.c,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: CVE-2012-0037
+
+	Enforce entity loading policy in raptor_libxml_resolveEntity and
+	raptor_libxml_getEntity by checking for file URIs and network
+	URIs.
+
+	Add RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES / loadExternalEntities
+	for turning on loading of XML external entity loading, disabled by
+	default.
+
+	This affects all the parsers that use SAX2: rdfxml, rdfa,
+	rss-tag-soup (and aliases).
+
+2012-03-15  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c: Pass on options NO_NET and NO_FILE to RDFA SAX2
+	object
+
+2012-03-11  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c:
+	(raptor_world_default_generate_bnodeid_handler): size_t for
+	id_length.
+
+	* src/snprintf.c:
+	(raptor_format_integer): cast for comparing width to len
+
+	* INSTALL.html, configure.ac, src/Makefile.am,
+	src/raptor_internal.h, src/raptor_nfc.c, src/raptor_nfc.h,
+	src/raptor_nfc_data.c, src/raptor_nfc_icu.c, src/raptor_rdfxml.c,
+	src/raptor_unicode.c: Use ICU to check for Unicode NFC
+
+	This commit removes the built-in Raptor code for checking that
+	RDF/XML literals in Unicode NFC.  This is now provided by the ICU
+	library which is only linked in if configure is given the
+	--with-icu-config=PATH argument.
+
+	Advantages:
+	1. Removes a large compiled-in static dataset in the library and
+	makes raptor smaller.
+	2. Uses a library that is kept up to date for new Unicode
+	versions.
+	3. Should make RDF/XML parsing faster since it does not need to
+	check for NFC on every literal.
+
+	Disadvantages:
+	1. Removes an existing (but likely rarely used) feature
+
+	* src/raptor_nfc_test.c:
+	Run all tests, fix file decoding
+
+	* src/raptor_nfc_test.c: size_t
+
+2012-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/snprintf.c:
+	(raptor_format_integer): Return size_t for this internal function.
+
+2012-02-17  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-option.sgml, docs/tmpl/section-sax2.sgml,
+	docs/tmpl/section-uri.sgml: Update tmpls
+
+2012-02-13  Lauri Aalto <laalto@iki.fi>
+
+	* autogen.sh:
+	require automake 1.11.2+ for -Wextra-portability
+
+2012-02-08  Dave Beckett <dave@dajobe.org>
+
+	* build/.gitignore, configure.ac: Add automake option
+	-Wextra-portability and AM_PROG_AR to make it happy
+
+2012-02-04  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.c:
+	Put raptor_option_get_count() out of the loops
+
+	* src/raptor_parse.c:
+	(raptor_new_parser): Set default strictness
+
+	* docs/raptor2-sections.txt: docs
+
+	* ChangeLog, RELEASE.html: 2.0.7
+
+	* src/raptor_option.c, src/raptor_parse.c, src/raptor_serialize.c,
+	src/raptor_xml_writer.c:
+	(raptor_object_options_init): Move default option settings here
+
+	* RELEASE.html, docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_internal.h, src/raptor_option.c, src/raptor_parse.c,
+	src/raptor_turtle_writer.c, src/raptor_www.c,
+	src/raptor_www_curl.c: Add options for controlling SSL certificate
+	verifying
+
+	Add options RAPTOR_OPTION_WWW_SSL_VERIFY_PEER for controlling
+	verifying an SSL peer.  Takes an integer value: non-0 to verify
+	peer SSL certificate (default 1)
+
+	Add option RAPTOR_OPTION_WWW_SSL_VERIFY_HOST for controlling
+	verifying an SSL host.  Takes an integer value: 0 none, 1 CN
+	match, 2 host match (default). Other values are ignored.
+
+	(raptor_www_set_ssl_verify_options): Added to set the verify
+	options on the raptor_www object.
+
+	Fixes Issue #0000469
+	http://bugs.librdf.org/mantis/view.php?id=469
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html, UPGRADING.html: 2011
+
+	* configure.ac: tidy xml parser message
+
+	* configure.ac, src/Makefile.am, src/raptor_expat.c,
+	src/raptor_internal.h, src/raptor_rdfxml.c, src/raptor_sax2.c:
+	Remove expat support
+
+	Update configure to properly let you build raptor without any XML
+	support either - it only needs it if a parser that requires XML is
+	configured.
+
+2012-02-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_check_load_uri_string): Failure returned
+
+	* src/raptor_uri.c: casts
+
+	* src/raptor_uri.c:
+	(raptor_new_uri_from_uri_or_file_string): Never free
+	uri_or_file_string
+
+	* src/raptor_uri.c: Make raptor_new_uri_from_uri_or_file_string
+	check for files first.
+
+	(raptor_new_uri_from_uri_or_file_string): If the arg is a file
+	that exists, use that as the path.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_filename_exists): Added
+
+2012-02-01  Lauri Aalto <laalto@iki.fi>
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_parse_chunk): Return parse errors to caller.
+
+	Fixes part of Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+	* src/raptor_json.c:
+	(raptor_json_new_term_from_counted_string): RAPTOR_BAD_CAST for
+	shortening size_t -> int cast
+
+	* src/turtle_parser.y:
+	(turtle_parse,raptor_turtle_parse_chunk): Return parse error
+	status to caller
+
+	Fixes Issue #0000488
+	http://bugs.librdf.org/mantis/view.php?id=488
+
+2012-01-30  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_sax2.c, src/raptor_uri.c: More file
+	URI updates
+
+	(raptor_new_uri_from_uri_or_file_string): Added new constructor
+
+	(raptor_uri_uri_string_to_counted_filename): Removed
+
+	(raptor_sax2_check_load_uri_string): Use
+	raptor_new_uri_from_uri_or_file_string() and just check for file:
+
+	(raptor_uri_uri_string_is_file_uri): Just check for file:
+
+	(raptor_uri_file_exists): Check if URI is a file URI and the file
+	exists.
+
+	* src/raptor_internal.h, src/raptor_sax2.c, utils/rapper.c:
+	Consolidate URI policy checks and call SAX2 uri filter
+
+	(raptor_sax2_check_load_uri_string): add and use for policy
+	checks, making file URIs from canonical filename and calling URI
+	filter callback on SAX2.
+
+	rapper (rapper_uri_trace): Use trace word since it is not just
+	processing
+
+2012-01-29  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_rdfxml.c,
+	src/raptor_rss.c, src/raptor_sax2.c:
+	(raptor_sax2_set_uri_filter): Added to filter for SAX2
+
+	* src/raptor_www.c:
+	(raptor_www_fetch): Return status code from URI filter
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_option.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: Add RAPTOR_OPTION_NO_FILE to deny
+	internal file requests
+
+	* src/raptor_json.c:
+	Handle size changing between YAJL V1 and V2
+
+	Use RAPTOR_YAJL_LEN_TYPE macro to deal with the arg type change
+
+2012-01-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: code cleanup
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_uri.c: Rename file uri string to
+	match convention
+
+	(raptor_uri_uri_string_to_counted_filename_fragment): Added to
+	return count lengths
+
+	(raptor_uri_uri_string_is_file_uri): Use
+	raptor_uri_uri_string_to_counted_filename() after a simple URI
+	test.
+
+	(raptor_uri_uri_string_to_filename): Renamed from
+	raptor_uri_uri_string_as_filename and use above.
+
+	(raptor_uri_uri_string_to_counted_filename): Added using above and
+	returning count.
+
+	* configure.ac, docs/raptor-1-to-2-map.tsv,
+	docs/raptor2-sections.txt, src/raptor2.h.in, src/raptor_uri.c:
+	raptor_uri_uri_string_as_filename
+
+	* src/raptor_internal.h, src/raptor_sax2.c: Add internal SAX2
+	enabled flag for enabling/disabling callbacks
