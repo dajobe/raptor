@@ -414,7 +414,7 @@ RAPTOR_LDFLAGS=
 AC_SYS_LARGEFILE
 
 
-AC_CHECK_PROGS(PKG_CONFIG, pkg-config)
+PKG_PROG_PKG_CONFIG
 
 PKG_CONFIG_REQUIRES=
 
@@ -439,8 +439,11 @@ fi
 
 libxml_source=no
 if test "X$XML_CONFIG" != "X"; then
-  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
-  LIBS="$LIBS `$XML_CONFIG --libs`"
+  LIBXML_CFLAGS=`$XML_CONFIG --cflags`
+  LIBXML_LIBS=`$XML_CONFIG --libs`
+
+  CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
+  LIBS="$LIBS $LIBXML_LIBS"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
 
   AC_MSG_CHECKING(for libxml via xml2-config)
@@ -451,12 +454,11 @@ if test "X$XML_CONFIG" != "X"; then
   CPPFLAGS="$oCPPFLAGS"
   LIBS="$oLIBS"
 else
-  AC_MSG_CHECKING(for libxml via pkg-config)
-  XML_CONFIG="$PKG_CONFIG libxml-2.0"
-  if $XML_CONFIG --exists; then
-    LIBXML_VERSION=`$XML_CONFIG --modversion 2>/dev/null`
+  PKG_CHECK_MODULES([LIBXML],[libxml-2.0],[
+    LIBXML_VERSION=`$PKG_CONFIG libxml-2.0 --modversion`
     libxml_source="pkg-config"
-  fi
+  ], [])
+  AC_MSG_CHECKING(for libxml via pkg-config)
 fi
 
 if test "$libxml_source" != "no"; then
@@ -506,8 +508,11 @@ fi
 
 libcurl_source=no
 if test "X$CURL_CONFIG" != "X"; then
-  CPPFLAGS="`$CURL_CONFIG --cflags` $CPPFLAGS"
-  LIBS="$LIBS `$CURL_CONFIG --libs`"
+  LIBCURL_CFLAGS=`$CURL_CONFIG --cflags`
+  LIBCURL_LIBS=`$CURL_CONFIG --libs`
+
+  CPPFLAGS="$LIBCURL_CFLAGS $CPPFLAGS"
+  LIBS="$LIBS $LIBCURL_LIBS"
   AC_CHECK_HEADER(curl/curl.h)
   AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
 
@@ -519,12 +524,11 @@ if test "X$CURL_CONFIG" != "X"; then
   CPPFLAGS="$oCPPFLAGS"
   LIBS="$oLIBS"
 else
-  AC_MSG_CHECKING(for libcurl via pkg-config)
-  CURL_CONFIG="$PKG_CONFIG libcurl"
-  if $CURL_CONFIG --exists; then
-    LIBCURL_VERSION=`$CURL_CONFIG --modversion 2>/dev/null`
+  PKG_CHECK_MODULES([LIBCURL],[libcurl],[
+    LIBCURL_VERSION=`$PKG_CONFIG libcurl --modversion`
     libcurl_source="pkg-config"
-  fi
+  ], [])
+  AC_MSG_CHECKING(for libcurl via pkg-config)
 fi
 
 if test "$libcurl_source" = "no"; then
@@ -560,9 +564,9 @@ have_libxml=0
 need_libxml=0
 
 oCPPFLAGS="$CPPFLAGS"
-if test "X$XML_CONFIG" != X; then
-  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
-  LIBS="$LIBS `$XML_CONFIG --libs`"
+if test "X$LIBXML_CFLAGS" != X; then
+  CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
+  LIBS="$LIBS $LIBXML_LIBS"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
   AC_MSG_CHECKING(libxml library)
   if test $have_xmlCreatePushParserCtxt = yes; then
@@ -961,9 +965,9 @@ need_libcurl=0
 need_libxml_www=0
 need_libfetch=0
 
-if test "X$CURL_CONFIG" != X; then
-  CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
-  LIBS="$LIBS `$CURL_CONFIG --libs`"
+if test "X$LIBCURL_CFLAGS" != X; then
+  CPPFLAGS="$CPPFLAGS $LIBCURL_CFLAGS"
+  LIBS="$LIBS $LIBCURL_LIBS"
   AC_CHECK_HEADER(curl/curl.h)
   AC_CHECK_FUNC(curl_easy_init, have_curl_easy_init=yes, have_curl_easy_init=no)
 
@@ -1074,8 +1078,8 @@ if test "X$www_library" = Xnone; then
 fi
 
 if test $need_libcurl = 1; then
-  CPPFLAGS="$CPPFLAGS `$CURL_CONFIG --cflags`"
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$CURL_CONFIG --libs`"
+  CPPFLAGS="$CPPFLAGS $LIBCURL_CFLAGS"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $LIBCURL_LIBS"
 
   if test libcurl_source = "pkg-config"; then
     if test "X$PKG_CONFIG_REQUIRES" != X; then
@@ -1176,8 +1180,8 @@ if test $need_libxml = 1; then
   if test $need_libxml_www = 1; then
     AC_LIBOBJ(raptor_www_libxml)
   fi
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XML_CONFIG --libs`"
-  CPPFLAGS="`$XML_CONFIG --cflags` $CPPFLAGS"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $LIBXML_LIBS"
+  CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
 
   if test libxml_source = "pkg-config"; then
     if test "X$PKG_CONFIG_REQUIRES" != X; then
