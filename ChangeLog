@@ -1,4 +1,154 @@
-2013-02-26  Dave Beckett  <dave@dajobe.org>
+2013-04-05  Dave Beckett <dave@dajobe.org>
+
+	* build/pkg.m4, configure.ac: Switch libxml and libcurl to use
+	PKG_PROG_PKG_CONFIG and PKG_CHECK_MODULES
+
+	Preference is still to xml2-config and curl-config unless
+	--with-curl-config=no --with-xml2-config=no are used
+
+	* configure.ac: Die if xml2-config or xslt-config point at non
+	executable files
+
+	Patch from Michael Stahl - thanks
+
+	Fixes Issue #0000534
+	http://bugs.librdf.org/mantis/view.php?id=535
+
+	* autogen.sh, configure.ac:
+	Modernize LT_INIT call for libtool 2.2+
+
+2013-03-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: Document raptor_escaped_write_bitflags enum
+	values
+
+	* docs/raptor2-sections.txt: Add escaped_write enum and functions
+
+	* docs/raptor-1-to-2-map.tsv: 2.0.10 changes
+
+2013-03-23  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Add curl or libxml pkg-config requires iff they
+	were found via pkg-config
+
+	This enables building a good raptor pkg-config file when raptor is
+	built with libxml or libcurl installs that provide xml2-config /
+	curl-config, includes and libraries but no pkg-config files.
+
+2013-03-12  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh, src/ntriples_parse.c:
+	Handle variations of header
+	macro Fixes Issue #0000532 http://bugs.librdf.org/mantis/view.php?id=532
+
+	* .travis.yml: Test travis-ci.org
+
+2013-03-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_uri_turtle_write): Wraps raptor_turtle_writer_uri
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_term_turtle_write): Wraps raptor_turtle_writer_term
+
+	* src/raptor_serialize_turtle.c: Make
+	raptor_uri_to_turtle_counted_string use a turtle writer.
+
+	(raptor_uri_to_turtle_counted_string): Use turtle writer and
+	raptor_turtle_writer_uri.  Add docs warning about inefficiency
+
+	* src/raptor_serialize_turtle.c: Add docs warning about
+	inefficiencies
+
+	(raptor_init_serializer_turtle, raptor_uri_turtle_write,
+	raptor_uri_to_turtle_counted_string, raptor_uri_to_turtle_string):
+	Add doc note warning they are inefficient - a turtle writer is
+	made and destroyed each time - and that a serializer is better.
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Use raptor_uri_print
+
+	* src/raptor_turtle_writer.c: docs
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_reference): Wraps raptor_uri_escaped_write
+
+	* src/raptor_internal.h: Remove not needed RAPTOR_INTERNAL_API
+	prefix
+
+	* src/raptor_internal.h, src/raptor_turtle_writer.c: Added turtle
+	writer methods for writing uris and term
+
+	(raptor_turtle_writer_uri, raptor_turtle_writer_term): Added to
+	write URIs and terms.
+
+	* src/raptor2.h.in:
+	Undeprecate raptor_statement_ntriples_write
+
+	* src/raptor_escaped.c:
+	(raptor_string_escaped_write): 0x7f is never written raw
+
+	* tests/ntriples/testnq-1.nq, tests/ntriples/testnq-1.out: Remove
+	spaces from test data URIs
+
+	* src/raptor_escaped.c:
+	(raptor_string_escaped_write): Decode unicode chars
+
+	* src/raptor_escaped.c:
+	(raptor_term_escaped_write): Encode uri not datatype uri
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c: Make
+	raptor_turtle_is_legal_turtle_qname internal not static
+
+	* src/raptor_serialize_ntriples.c: ws
+
+	* src/raptor_serialize_ntriples.c, src/raptor_term.c: Use
+	raptor_term_escaped_write instead of deprecated
+	raptor_term_ntriples_write
+
+	(raptor_bnodeid_ntriples_write, raptor_statement_ntriples_write):
+	Use raptor_term_escaped_write instead of deprecated
+	raptor_term_ntriples_write
+
+2013-03-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_json_writer.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_turtle_writer.c:
+	Use raptor_string_escaped_write instead of raptor_string_python_write
+
+	(raptor_json_writer_quoted, raptor_json_serialize_avltree_visit,
+	raptor_string_ntriples_write,
+	raptor_turtle_writer_quoted_counted_string): Replace deprecated
+	function with new one
+
+	(raptor_turtle_writer_quoted_counted_string): Tidy code as well.
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_escaped.c,
+	src/raptor_turtle_writer.c: Added escaped writing module to write
+	Turtle/N-Triples terms
+
+	Added enum of bitflags raptor_escaped_write_bitflags that describe
+	the escaping wanted.
+
+	(raptor_string_escaped_write): Added
+
+	(raptor_string_python_write): Deprecated, now calls
+	raptor_string_escaped_write() with flags.
+
+	(raptor_term_escaped_write): Added.
+
+	* src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_escaped_write): Added
+
+2013-02-27  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am, tests/turtle-2013/manifest.ttl:
+	Remove manifest.ttl from dist
+
+2013-02-26  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.10
 
 	* Snapshotted raptor2_2_0_9 for 2.0.9 release (GIT
 	32b08d01e8c378b43ca2fee2b849b4d14b36c32d)
