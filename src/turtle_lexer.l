@@ -125,10 +125,7 @@ int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
 #endif
 
 
-/* Missing turtle_lexer.c/h prototypes */
-int turtle_lexer_get_column(yyscan_t yyscanner);
-void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);
-
+/* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
 
 #ifdef HAVE_SETJMP
