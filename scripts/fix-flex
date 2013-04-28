@@ -7,7 +7,7 @@
 #  perl fix-flex $output > $tmp
 #  mv $tmp $output
 #
-# (C) Copyright 2004-2010 Dave Beckett http://www.dajobe.org/
+# (C) Copyright 2004-2013 Dave Beckett http://www.dajobe.org/
 # (C) Copyright 2004 University of Bristol
 #
 
@@ -19,9 +19,13 @@ print <<'EOT';
 #endif
 
 EOT
-$line_offset += 8; # added 8 lines to output
+$line_offset += 4; # added 4 lines above to output
 
 my $prefix = undef;
+
+# Looking for function starting 'YY_BUFFER_STATE <words>__scan_bytes...'
+# 0: before it; 1: in it; 2: passed it
+my $in_scan_bytes = 0;
 
 while(<>) {
   # Remove generated yy_fatal_error declaration and definition to avoid warnings about unused/non-defined static function
@@ -78,6 +82,17 @@ EOT
   #   int n : in the macro YY_INPUT definition
   #   (size_t)num_to_read : which is silly since num_to_read is an int!
   s/yyg->yy_n_chars, \(size_t\) num_to_read \)/yyg->yy_n_chars, num_to_read \)/;
+
+
+  # Fix declaration of signed 'i' operating over range of yy_size_t
+  if(/^YY_BUFFER_STATE \w+?__scan_bytes/) {
+    $in_scan_bytes = 1;
+  }
+  if($in_scan_bytes == 1) {
+    s/int i;/yy_size_t i;/;
+
+    $in_scan_bytes = 2 if /^\}/;
+  }
 
   print;
 }
