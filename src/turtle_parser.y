@@ -82,11 +82,7 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 /* Prototypes */ 
 int turtle_parser_error(void* rdf_parser, const char *msg);
 
-/* Missing turtle_lexer.c/h prototypes */
-int turtle_lexer_get_column(yyscan_t yyscanner);
-/* Not used here */
-/* void turtle_lexer_set_column(int  column_no , yyscan_t yyscanner);*/
-
+/* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
 
 /* What the lexer wants */
 extern int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t scanner);
