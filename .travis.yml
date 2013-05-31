@@ -1,5 +1,9 @@
-# see http://about.travis-ci.org/docs/user/getting-started/
-# and http://about.travis-ci.org/docs/user/languages/c/
+# see
+#   http://about.travis-ci.org/docs/user/getting-started/
+#   http://about.travis-ci.org/docs/user/languages/c/
+#   http://about.travis-ci.org/docs/user/build-configuration/
+#
+before_install: sudo apt-get install gtk-doc-tools -y
 language: c
 compiler:
   - gcc
