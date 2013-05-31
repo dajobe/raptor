@@ -3,7 +3,9 @@
 #   http://about.travis-ci.org/docs/user/languages/c/
 #   http://about.travis-ci.org/docs/user/build-configuration/
 #
-before_install: sudo apt-get install gtk-doc-tools -y
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install gtk-doc-tools -y
 language: c
 compiler:
   - gcc
