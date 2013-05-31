@@ -1,3 +1,30 @@
+2013-05-31  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: More travis-ci.org config
+
+2013-04-27  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-flex: Fix declaration of 'i' in generated flex
+	<name>__scan_bytes function
+
+	* src/turtle_parser.y:
+	Remove prototypes for column methods that
+	flex 2.5.36+ provides now.
+
+	* configure.ac, src/turtle_lexer.l:
+	Recommend flex 2.5.36 Remove prototypes for column methods that
+	flex 2.5.36+ provides now.
+
+2013-04-05  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.13, Makefile.am:
+	ChangeLog.13 for 2012
+
+2013-03-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml:
+	Update tmpls
+
 2013-04-05  Dave Beckett <dave@dajobe.org>
 
 	* build/pkg.m4, configure.ac: Switch libxml and libcurl to use
