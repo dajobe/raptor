@@ -29,7 +29,7 @@ AC_CONFIG_SRCDIR([src/raptor_general.c])
 AC_CONFIG_HEADERS([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
 AC_CONFIG_MACRO_DIR(build)
-AM_INIT_AUTOMAKE([1.11 check-news std-options subdir-objects -Wobsolete -Wportability -Wsyntax -Wunsupported -Wextra-portability])
+AM_INIT_AUTOMAKE([1.11 check-news std-options -Wobsolete -Wportability -Wsyntax -Wunsupported -Wextra-portability])
 
 libxml_min_version=2.6.8
 
