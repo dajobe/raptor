@@ -28,6 +28,7 @@
 #endif
 
 #include <stdio.h>
+#include <time.h>
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
@@ -278,17 +279,29 @@ raptor_world_set_generate_bnodeid_handler(raptor_world* world,
   world->generate_bnodeid_handler = handler;
 }
 
+char *rand_str(char *dst, int size)
+{
+   static const char text[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+   int i;
+   for ( i = 0; i < size; i++ )
+   {
+      dst[i] = text[rand() % (sizeof text - 1)];
+   }
+   dst[i] = '\0';
+   return dst;
+}
 
-static unsigned char*
+static unsigned char *
 raptor_world_default_generate_bnodeid_handler(void *user_data,
                                               unsigned char *user_bnodeid) 
 {
   raptor_world *world = (raptor_world*)user_data;
   int id;
   unsigned char *buffer;
-  const char* prefix;
   unsigned int prefix_length;
+  char* prefix;
   size_t id_length;
+  srand(time(0));
 
   if(user_bnodeid)
     return user_bnodeid;
@@ -301,8 +314,11 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
     prefix = world->default_generate_bnodeid_handler_prefix;
     prefix_length = world->default_generate_bnodeid_handler_prefix_length;
   } else {
-    prefix = "genid";
-    prefix_length = 5; /* strlen("genid") */
+    //as we want unique over different files (e.g. for concat purpose), generate a 30 digit long random string per file
+    // prefix = "genid";
+    prefix_length = 30;
+    prefix=(char *) malloc(prefix_length*sizeof(char));
+    rand_str(prefix, prefix_length);
   }
 
   buffer = RAPTOR_MALLOC(unsigned char*, id_length + prefix_length + 1);
@@ -312,7 +328,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
   memcpy(buffer, prefix, prefix_length);
   (void)raptor_format_integer(RAPTOR_GOOD_CAST(char*, &buffer[prefix_length]),
                               id_length + 1, id, /* base */ 10,-1, '\0');
-
+  free(prefix);
   return buffer;
 }
 
