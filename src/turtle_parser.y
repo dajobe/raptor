@@ -816,8 +816,8 @@ literal: STRING_LITERAL LANGTAG
 
   if($4) {
     if($2) {
-      raptor_parser_warning((raptor_parser*)rdf_parser, 
-                            "Ignoring language used with datatyped literal");
+      raptor_parser_error((raptor_parser*)rdf_parser, 
+                          "Language not allowed with datatyped literal");
       RAPTOR_FREE(char*, $2);
       $2 = NULL;
     }
@@ -840,8 +840,8 @@ literal: STRING_LITERAL LANGTAG
 
   if($4) {
     if($2) {
-      raptor_parser_warning((raptor_parser*)rdf_parser, 
-                            "Ignoring language used with datatyped literal");
+      raptor_parser_error((raptor_parser*)rdf_parser, 
+                          "Language not allowed with datatyped literal");
       RAPTOR_FREE(char*, $2);
       $2 = NULL;
     }
