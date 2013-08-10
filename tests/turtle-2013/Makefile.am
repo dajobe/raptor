@@ -420,7 +420,7 @@ TEST_OUT_FILES = \
   underscore_in_localName.nt
 
 # Used to make N-triples output consistent
-BASE_URI=http://example/base/
+BASE_URI=http://www.w3.org/2013/TurtleTests/
 # for rdf-schema.ttl
 RDF_NS_URI=http://www.w3.org/1999/02/22-rdf-syntax-ns
 # for rdfs-namespace.ttl
