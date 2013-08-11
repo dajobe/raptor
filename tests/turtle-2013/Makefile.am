@@ -545,7 +545,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	    $(RECHO) "FAILED"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
-	    diff $(srcdir)/$$name.nt $$name.res; \
+	    diff $(srcdir)/$$name.nnt $$name.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
