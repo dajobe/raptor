@@ -526,6 +526,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
+	  $(RAPPER) -q -i ntriples -o ntriples $(srcdir)/$$name.nt > $$name.nnt; \
 	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
@@ -534,7 +535,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	    cat $$name.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
-	  elif cmp $(srcdir)/$$name.nt $$name.res >/dev/null 2>&1; then \
+	  elif cmp $(srcdir)/$$name.nnt $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
 	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
@@ -548,7 +549,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
+	  rm -f $$name.res $$name.err $$name.nnt; \
 	done; \
 	$(RECHO) "Result: $$errors errors: $$failures"; \
 	set -e; exit $$result
