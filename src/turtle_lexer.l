@@ -500,10 +500,14 @@ EXPONENT [eE][+-]?[0-9]+
                 }
                 return URI_LITERAL; }
 
-{LANGTAG}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
-                  if(!turtle_parser_lval->string)
-                    YY_FATAL_ERROR_EOF("turtle_copy_token failed");
-                          return LANGTAG; }
+{LANGTAG}	{
+                turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
+
+                if(!turtle_parser_lval->string)
+                  YY_FATAL_ERROR_EOF("turtle_copy_token failed");
+
+                raptor_normalize_language(turtle_parser_lval->string);
+                return LANGTAG; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
 		turtle_parser->lineno++;
