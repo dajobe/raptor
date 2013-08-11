@@ -59,7 +59,7 @@
  * The passed in string is handled according to the Turtle string
  * escape rules giving a UTF-8 encoded output of the Unicode codepoints.
  *
- * The Turtle escapes are \n \r \t \\
+ * The Turtle escapes are \b \f \n \r \t \\
  * \uXXXX \UXXXXXXXX where X is [A-F0-9]
  *
  * Turtle 2013 allows \ with -_~.!$&\'()*+,;=/?#@%
@@ -93,6 +93,10 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         *d++ = '\r';
       else if(c == 't')
         *d++ = '\t';
+      else if(c == 'b')
+        *d++ = '\b';
+      else if(c == 'f')
+        *d++ = '\f';
       else if(c == '\\' || c == delim ||
               c == '-' || c == '_' || c == '~' || c == '.' || c == '!' ||
               c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
@@ -189,7 +193,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
  * The passed in string is handled according to the Turtle string
  * escape rules giving a UTF-8 encoded output of the Unicode codepoints.
  *
- * The Turtle escapes are \n \r \t \\
+ * The Turtle escapes are \b \f \n \r \t \\
  * \uXXXX \UXXXXXXXX where X is [A-F0-9]
  *
  * Turtle 2013 allows \ with -_~.!$&\'()*+,;=/?#@%
@@ -221,6 +225,10 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
         *d++ = '\r';
       else if(c == 't')
         *d++ = '\t';
+      else if(c == 'b')
+        *d++ = '\b';
+      else if(c == 'f')
+        *d++ = '\f';
       else if(c == '\\' ||
               c == '-' || c == '_' || c == '~' || c == '.' || c == '!' ||
               c == '$' || c == '&' || c == '\'' || c == '(' || c == ')' ||
