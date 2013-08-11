@@ -324,7 +324,6 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  * @dest_lenp: pointer to length of destination string (out)
  * @end_char: string ending character
  * @class: string class
- * @allow_utf8: Non-0 if UTF-8 chars are allowed in the term
  *
  * Parse an N-Triples term with escapes.
  *
@@ -339,9 +338,7 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  *
  * If the class is RAPTOR_TERM_CLASS_FULL, the end_char is ignored.
  *
- * UTF-8 is only allowed if allow_utf8 is non-0, otherwise the
- * string is US-ASCII and only the \u and \U esapes are allowed.
- * If enabled, both are allowed.
+ * UTF-8 and the \u and \U esapes are both allowed.
  *
  * Return value: Non 0 on failure
  **/
@@ -350,8 +347,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
                      const unsigned char **start, unsigned char *dest, 
                      size_t *lenp, size_t *dest_lenp,
                      char end_char,
-                     raptor_ntriples_term_class term_class,
-                     int allow_utf8)
+                     raptor_ntriples_term_class term_class)
 {
   const unsigned char *p = *start;
   unsigned char c = '\0';
@@ -374,32 +370,24 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     rdf_parser->locator.column++;
     rdf_parser->locator.byte++;
 
-    if(allow_utf8) {
-      if(c > 0x7f) {
-        /* just copy the UTF-8 bytes through */
-        int unichar_len;
-        unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
-        if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
-          raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
-          /* UTF-8 encoding had an error or ended in the middle of a string */
-          return 1;
-        }
-        memcpy(dest, p-1, unichar_len);
-        dest += unichar_len;
-
-        unichar_len--; /* p, *lenp were moved on by 1 earlier */
-        
-        p += unichar_len;
-        (*lenp) -= unichar_len;
-        rdf_parser->locator.column += unichar_len;
-        rdf_parser->locator.byte += unichar_len;
-        continue;
+    if(c > 0x7f) {
+      /* just copy the UTF-8 bytes through */
+      int unichar_len;
+      unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
+      if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
+        raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
+        /* UTF-8 encoding had an error or ended in the middle of a string */
+        return 1;
       }
-    } else if(!IS_ASCII_PRINT(c)) {
-      /* This is an ASCII check, not a printable character check 
-       * so isprint() is not appropriate, since that is a locale check.
-       */
-      raptor_parser_error(rdf_parser, "Non-printable ASCII character %d (0x%02X) found.", c, c);
+      memcpy(dest, p-1, unichar_len);
+      dest += unichar_len;
+
+      unichar_len--; /* p, *lenp were moved on by 1 earlier */
+      
+      p += unichar_len;
+      (*lenp) -= unichar_len;
+      rdf_parser->locator.column += unichar_len;
+      rdf_parser->locator.byte += unichar_len;
       continue;
     }
     
@@ -664,7 +652,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         if(raptor_ntriples_term(rdf_parser,
                                 (const unsigned char**)&p, 
                                 dest, &len, &term_length, 
-                                '>', RAPTOR_TERM_CLASS_URI, 0)) {
+                                '>', RAPTOR_TERM_CLASS_URI)) {
           rc = 1;
           goto cleanup;
         }
@@ -683,7 +671,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         if(raptor_ntriples_term(rdf_parser,
                                 (const unsigned char**)&p,
                                 dest, &len, &term_length,
-                                '"', RAPTOR_TERM_CLASS_STRING, 0)) {
+                                '"', RAPTOR_TERM_CLASS_STRING)) {
           rc = 1;
           goto cleanup;
         }
@@ -709,7 +697,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           if(raptor_ntriples_term(rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_language, &len, NULL,
-                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE, 0)) {
+                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
             rc = 1;
             goto cleanup;
           }
@@ -738,7 +726,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           if(raptor_ntriples_term(rdf_parser,
                                   (const unsigned char**)&p,
                                   object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI, 0)) {
+                                  '>', RAPTOR_TERM_CLASS_URI)) {
             rc = 1;
             goto cleanup;
           }
@@ -779,7 +767,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         if(raptor_ntriples_term(rdf_parser,
                                 (const unsigned char**)&p,
                                 dest, &len, &term_length,
-                                '\0', RAPTOR_TERM_CLASS_BNODEID, 0)) {
+                                '\0', RAPTOR_TERM_CLASS_BNODEID)) {
           rc = 1;
           goto cleanup;
         }
