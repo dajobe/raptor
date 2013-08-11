@@ -40,9 +40,9 @@ TEST_BAD_FILES=bad-00.ttl bad-01.ttl bad-02.ttl bad-03.ttl \
 bad-04.ttl bad-05.ttl bad-06.ttl bad-07.ttl bad-08.ttl bad-09.ttl \
 bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl bad-16.ttl \
 bad-19.ttl bad-20.ttl \
-bad-23.ttl
+bad-23.ttl bad-24.ttl
 
-TEST_WARN_FILES=test-35.ttl
+TEST_WARN_FILES=
 
 TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
 test-04.out test-05.out test-06.out test-07.out test-08.out \
