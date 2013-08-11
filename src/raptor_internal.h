@@ -684,6 +684,8 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
+int raptor_normalize_language(char* language);
+
 /* raptor_parse.c */
 raptor_parser_factory* raptor_world_get_parser_factory(raptor_world* world, const char *name);  
 void raptor_delete_parser_factories(void);

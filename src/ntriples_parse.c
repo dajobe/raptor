@@ -256,10 +256,12 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 
 /* These are for 7-bit ASCII and not locale-specific */
 #define IS_ASCII_ALPHA(c) (((c) > 0x40 && (c) < 0x5B) || ((c) > 0x60 && (c) < 0x7B))
+#define IS_ASCII_LOWER(c) ((c) > 0x60 && (c) < 0x7B)
 #define IS_ASCII_UPPER(c) ((c) > 0x40 && (c) < 0x5B)
 #define IS_ASCII_DIGIT(c) ((c) > 0x2F && (c) < 0x3A)
 #define IS_ASCII_PRINT(c) ((c) > 0x1F && (c) < 0x7F)
-#define TO_ASCII_LOWER(c) ((c)+0x20)
+#define TO_ASCII_LOWER(c) ((c) + 0x20)
+#define TO_ASCII_UPPER(c) ((c) - 0x20)
 
 typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
@@ -534,6 +536,44 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
 
 #define MAX_NTRIPLES_TERMS 4
+
+/*
+ * raptor_normalize_language:
+ * @language: language
+ *
+ * INTERNAL - Normalize language to lowercase
+ *
+ * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+ *
+ * Return value: non-0 if normalized
+ */
+int
+raptor_normalize_language(char* language)
+{
+  char *p;
+  int seen_ = 0;
+  int normalized = 0;
+
+  if(!language)
+    return 0;
+
+  for(p = language; *p; p++) {
+    if(*p == '-')
+      seen_ ++;
+    else if(!seen_) {
+      if(IS_ASCII_UPPER(*p)) {
+        *p = TO_ASCII_LOWER(*p);
+        normalized = 1;
+      }
+    } else if(IS_ASCII_LOWER(*p)) {
+      *p = TO_ASCII_UPPER(*p);
+      normalized = 1;
+    }
+  }
+
+  return normalized;
+}
+
 
 static int
 raptor_ntriples_parse_line(raptor_parser* rdf_parser,
