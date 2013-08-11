@@ -1123,9 +1123,10 @@ static const char* const ntriples_uri_strings[3] = {
   NULL
 };
   
-#define NTRIPLES_TYPES_COUNT 1
+#define NTRIPLES_TYPES_COUNT 2
 static const raptor_type_q ntriples_types[NTRIPLES_TYPES_COUNT + 1] = {
-  { "text/plain", 10, 1}, 
+  { "application/n-triples", 21, 10},
+  { "text/plain", 10, 1},
   { NULL, 0, 0}
 };
 
