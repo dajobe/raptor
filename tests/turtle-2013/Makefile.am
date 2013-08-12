@@ -528,7 +528,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i ntriples -o ntriples $(srcdir)/$$name.nt > $$name.nnt; \
+	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$name.nt > $$name.nnt; \
 	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
