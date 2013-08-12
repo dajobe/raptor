@@ -506,7 +506,7 @@ EXPONENT [eE][+-]?[0-9]+
                 if(!turtle_parser_lval->string)
                   YY_FATAL_ERROR_EOF("turtle_copy_token failed");
 
-                raptor_normalize_language(turtle_parser_lval->string);
+                raptor_normalize_language(RAPTOR_GOOD_CAST(char*, turtle_parser_lval->string));
                 return LANGTAG; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
