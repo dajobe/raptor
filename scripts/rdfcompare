@@ -1,0 +1,55 @@
+#!/bin/sh
+#
+# Compare two RDF graphs
+#
+# Needs an external utility to do a true graph compare.
+#
+
+
+PROGRAM=`basename $0`
+
+CMP=cmp
+DIFF=diff
+
+tmpdiff=/tmp/rdfcompare$$
+
+if [ $# -lt 1 ] ; then
+    echo "$PROGRAM: compare two RDF graphs for isomorphism" 1>&2
+    echo "USAGE: $PROGRAM RDF-FILE-1 RDF-FILE-2" 1>&2
+    echo "where both files are RDF graphs serialized as N-Triples" 1>&2
+    exit 0
+fi
+
+# Try a simple compare first
+$CMP $1 $2 2>&1
+status=$?
+if test $status -eq 0; then
+  exit 0
+fi
+
+echo "$program: Doing an RDF graph compare" 1>&2
+
+if test "X$NTC" != X; then
+  $NTC $1 $2 > $tmpdiff 2>&1
+  status=$?
+  if test $status != 0; then
+    $DIFF -u $1 $2
+  fi
+elif test "X$JENAROOT" != X; then
+  RDFCOMPARE="$JENAROOT/bin/rdfcompare"
+
+  $RDFCOMPARE $1 $2 N-TRIPLE N-TRIPLE
+  status=$?
+  if test $status != 0; then
+    $DIFF -u $1 $2
+  fi
+else
+  $DIFF -u $1 $2 > $tmpdiff
+  status=$?
+  if test $status != 0; then
+    cat $tmpdiff
+    rm $tmpdiff
+  fi
+fi
+
+exit $status
