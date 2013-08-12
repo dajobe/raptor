@@ -40,7 +40,7 @@
     <#HYPHEN_MINUS_in_localName>
     <#underscore_in_localName>
     <#localname_with_COLON>
-    <#localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries>
+    <#localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries>
     <#localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries>
     <#localName_with_nfc_PN_CHARS_BASE_character_boundaries>
     <#localName_with_leading_underscore>
@@ -422,12 +422,12 @@
    mf:result    <IRI_spo.nt> ;
    .
 
-<#localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries> rdf:type rdft:TestTurtleEval ;
-   mf:name      "localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries" ;
+<#localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries> rdf:type rdft:TestTurtleEval ;
+   mf:name      "localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries" ;
    rdfs:comment "localName with assigned, NFC-normalized, basic-multilingual-plane PN CHARS BASE character boundaries (p:AZazÀÖØöø...)" ;
    rdft:approval rdft:Approved ;
-   mf:action    <localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.ttl> ;
-   mf:result    <localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.nt> ;
+   mf:action    <localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries.ttl> ;
+   mf:result    <localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries.nt> ;
    .
 
 <#localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries> rdf:type rdft:TestTurtleEval ;

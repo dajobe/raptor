@@ -197,7 +197,7 @@ TEST_EVAL_FILES = \
   prefix_only_IRI.ttl \
   prefix_with_PN_CHARS_BASE_character_boundaries.ttl \
   prefix_with_non_leading_extras.ttl \
-  localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.ttl \
+  localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries.ttl \
   localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries.ttl \
   localName_with_nfc_PN_CHARS_BASE_character_boundaries.ttl \
   default_namespace_IRI.ttl \
@@ -394,7 +394,7 @@ TEST_OUT_FILES = \
   literal_with_numeric_escape8.nt \
   localName_with_PN_CHARS_BASE_character_boundaries.nt \
   localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries.nt \
-  localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.nt \
+  localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries.nt \
   localName_with_leading_digit.nt \
   localName_with_leading_underscore.nt \
   localName_with_nfc_PN_CHARS_BASE_character_boundaries.nt \
