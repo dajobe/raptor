@@ -20,6 +20,8 @@
 # 
 # 
 
+RDFCOMPARE=$(srcdir)/../../scripts/rdfcompare
+
 RDFXML_DIR = ../rdfxml
 NTRIPLES_DIR = ../ntriples
 
@@ -535,7 +537,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	    cat $$name.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
-	  elif cmp $(srcdir)/$$name.nnt $$name.res >/dev/null 2>&1; then \
+	  elif $(RDFCOMPARE) $$name.nnt $$name.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
 	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	    else \
@@ -545,7 +547,7 @@ check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	    $(RECHO) "FAILED"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.err; \
-	    diff $(srcdir)/$$name.nnt $$name.res; \
+	    diff $$name.nnt $$name.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
