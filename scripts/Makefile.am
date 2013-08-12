@@ -24,7 +24,8 @@ fix-bison \
 fix-flex \
 fix-groff-xhtml \
 fix-gtkdoc-header.pl \
-process-changes.pl
+process-changes.pl \
+rdfcompare
 
 CLEANFILES =
 
