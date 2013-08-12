@@ -322,23 +322,38 @@ TEST_OUT_FILES = \
   HYPHEN_MINUS_in_localName.nt \
   IRIREF_datatype.nt \
   IRI_spo.nt \
+  IRI_subject.nt \
   IRI_with_all_punctuation.nt \
+  IRI_with_eight_digit_numeric_escape.nt \
+  IRI_with_four_digit_numeric_escape.nt \
   LITERAL1.nt \
   LITERAL1_all_controls.nt \
   LITERAL1_all_punctuation.nt \
   LITERAL1_ascii_boundaries.nt \
+  LITERAL1_with_UTF8_boundaries.nt \
+  LITERAL2.nt \
   LITERAL2_ascii_boundaries.nt \
+  LITERAL2_with_UTF8_boundaries.nt \
+  LITERAL_LONG1.nt \
   LITERAL_LONG1_ascii_boundaries.nt \
   LITERAL_LONG1_with_1_squote.nt \
   LITERAL_LONG1_with_2_squotes.nt \
+  LITERAL_LONG1_with_UTF8_boundaries.nt \
+  LITERAL_LONG2.nt \
   LITERAL_LONG2_ascii_boundaries.nt \
   LITERAL_LONG2_with_1_squote.nt \
   LITERAL_LONG2_with_2_squotes.nt \
   LITERAL_LONG2_with_REVERSE_SOLIDUS.nt \
+  LITERAL_LONG2_with_UTF8_boundaries.nt \
   LITERAL_with_UTF8_boundaries.nt \
+  SPARQL_style_base.nt \
+  SPARQL_style_prefix.nt \
+  anonymous_blank_node_object.nt \
+  anonymous_blank_node_subject.nt \
   bareword_a_predicate.nt \
   bareword_decimal.nt \
   bareword_double.nt \
+  bareword_integer.nt \
   blankNodePropertyList_as_object.nt \
   blankNodePropertyList_as_subject.nt \
   blankNodePropertyList_containing_collection.nt \
@@ -346,11 +361,18 @@ TEST_OUT_FILES = \
   collection_object.nt \
   collection_subject.nt \
   comment_following_PNAME_NS.nt \
+  comment_following_localName.nt \
+  default_namespace_IRI.nt \
   double_lower_case_e.nt \
   empty_collection.nt \
   first.nt \
   labeled_blank_node_object.nt \
   labeled_blank_node_subject.nt \
+  labeled_blank_node_with_PN_CHARS_BASE_character_boundaries.nt \
+  labeled_blank_node_with_leading_digit.nt \
+  labeled_blank_node_with_leading_underscore.nt \
+  labeled_blank_node_with_non_leading_extras.nt \
+  langtagged_LONG.nt \
   langtagged_LONG_with_subtag.nt \
   langtagged_non_LONG.nt \
   lantag_with_subtag.nt \
@@ -363,7 +385,13 @@ TEST_OUT_FILES = \
   literal_with_FORM_FEED.nt \
   literal_with_LINE_FEED.nt \
   literal_with_REVERSE_SOLIDUS.nt \
+  literal_with_escaped_BACKSPACE.nt \
+  literal_with_escaped_CARRIAGE_RETURN.nt \
+  literal_with_escaped_CHARACTER_TABULATION.nt \
+  literal_with_escaped_FORM_FEED.nt \
+  literal_with_escaped_LINE_FEED.nt \
   literal_with_numeric_escape4.nt \
+  literal_with_numeric_escape8.nt \
   localName_with_PN_CHARS_BASE_character_boundaries.nt \
   localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries.nt \
   localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.nt \
@@ -379,13 +407,22 @@ TEST_OUT_FILES = \
   number_sign_following_localName.nt \
   numeric_with_leading_0.nt \
   objectList_with_two_objects.nt \
+  old_style_base.nt \
+  old_style_prefix.nt \
   percent_escaped_localName.nt \
   positive_numeric.nt \
   predicateObjectList_with_two_objectLists.nt \
+  prefix_only_IRI.nt \
   prefix_reassigned_and_used.nt \
+  prefix_with_PN_CHARS_BASE_character_boundaries.nt \
+  prefix_with_non_leading_extras.nt \
+  prefixed_IRI_object.nt \
+  prefixed_IRI_predicate.nt \
+  prefixed_name_datatype.nt \
+  repeated_semis_at_end.nt \
   repeated_semis_not_at_end.nt \
   reserved_escaped_localName.nt \
-  test-38.nt \
+  sole_blankNodePropertyList.nt \
   turtle-eval-struct-01.nt \
   turtle-eval-struct-02.nt \
   turtle-subm-01.nt \
