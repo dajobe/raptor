@@ -318,6 +318,13 @@ TEST_EVAL_FILES = \
   two_LITERAL_LONG2s.ttl \
   langtagged_LONG_with_subtag.ttl
 
+TEST_BAD_EVAL_FILES = \
+  turtle-syntax-bad-uri-01.ttl \
+  turtle-syntax-bad-uri-02.ttl \
+  turtle-syntax-bad-uri-03.ttl \
+  turtle-syntax-bad-uri-04.ttl \
+  turtle-syntax-bad-uri-05.ttl
+
 TEST_OUT_FILES = \
   HYPHEN_MINUS_in_localName.nt \
   IRIREF_datatype.nt \
@@ -469,6 +476,7 @@ ALL_TEST_FILES= README \
 	$(TEST_GOOD_FILES) \
 	$(TEST_BAD_FILES) \
 	$(TEST_EVAL_FILES) \
+	$(TEST_BAD_EVAL_FILES) \
 	$(TEST_OUT_FILES)
 
 EXTRA_DIST = $(ALL_TEST_FILES)
@@ -514,13 +522,13 @@ check-good-turtle: build-rapper $(check_good_turtle_deps)
 	set -e; exit $$result
 
 if MAINTAINER_MODE
-check_bad_turtle_deps = $(TEST_BAD_FILES)
+check_bad_turtle_deps = $(TEST_BAD_FILES) $(TEST_BAD_EVAL_FILES)
 endif
 
 check-bad-turtle: build-rapper $(check_bad_turtle_deps)
 	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing bad Turtle fails"; \
-	for test in $(TEST_BAD_FILES); do \
+	for test in $(TEST_BAD_FILES) $(TEST_BAD_EVAL_FILES) ; do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
