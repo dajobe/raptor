@@ -309,11 +309,14 @@ typedef enum {
   /* These terms are datatypes (used as a literal datatype URI) */
   RDF_NS_XMLLiteral      = 26,
   RDF_NS_PlainLiteral    = 27, /* http://www.w3.org/TR/rdf-text/ */
+  /* RDF 1.1 datatypes */
+  RDF_NS_HTML            = 28,
+  RDF_NS_langString      = 29,
 
   /* These terms are internal */
   RDF_NS_LAST_SYNTAX_TERM = RDF_NS_datatype,
 
-  RDF_NS_LAST            = RDF_NS_PlainLiteral
+  RDF_NS_LAST            = RDF_NS_langString
 } raptor_rdf_ns_term_id;
 
 

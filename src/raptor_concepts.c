@@ -109,6 +109,11 @@ const raptor_rdf_ns_term_info raptor_rdf_ns_terms_info[RDF_NS_LAST + 2] = {
   /* datatypes */
   { "XMLLiteral",      RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
   { "PlainLiteral",    RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  /* RDF 1.1 */
+  /* http://www.w3.org/TR/2013/WD-rdf11-concepts-20130723/#section-html */
+  { "HTML",            RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
+  /* http://www.w3.org/TR/2013/WD-rdf11-concepts-20130723/#section-Datatypes */
+  { "langString",      RAPTOR_TERM_TYPE_LITERAL, 1, 1, 1, 0 },
 
   /* internal */
   { NULL ,             RAPTOR_TERM_TYPE_UNKNOWN, 1, 1, 1, 0 }
