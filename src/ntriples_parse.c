@@ -859,7 +859,17 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   }
   
 
-  raptor_normalize_language(RAPTOR_GOOD_CAST(char*, object_literal_language));
+  if(object_literal_language) {
+    unsigned char *q;
+    /* Normalize language to lowercase
+     * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+     */
+    for(q = object_literal_language; *q; q++) {
+      if(IS_ASCII_UPPER(*q))
+        *q = TO_ASCII_LOWER(*q);
+    }
+  }
+
 
   /* Just to be sure */
   if(!ntriples_parser->is_nquads)
