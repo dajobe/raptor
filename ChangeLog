@@ -583,9 +583,11 @@
 
 2013-03-12  Dave Beckett <dave@dajobe.org>
 
-	* autogen.sh, src/ntriples_parse.c:
-	Handle variations of header
-	macro Fixes Issue #0000532 http://bugs.librdf.org/mantis/view.php?id=532
+	* autogen.sh, src/ntriples_parse.c: Handle variations of header
+	macro
+
+	Fixes Issue #0000532
+	http://bugs.librdf.org/mantis/view.php?id=532
 
 	* .travis.yml: Test travis-ci.org
 

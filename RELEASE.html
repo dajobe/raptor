@@ -14,6 +14,76 @@
 <p>Not yet released.
 </p>
 
+<h3>Parser changes</h3>
+
+<p>Turtle parser was updated to handle
+<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+(Turtle 2013)
+The main changes were to align with SPARQL-style blank node names,
+prefixes and local names.
+</p>
+
+<p>N-Triples parser was updated to handle 
+<a href="http://www.w3.org/TR/2013/NOTE-n-triples-20130409/">N-Triples - A line-based syntax for an RDF graph</a> W3C Working Group Note 09 April 2013 (N-Triples 2013)
+The main changes were to allow \b \f, UTF-8 in strings and
+URIs and the SPARQL-style blank node names.</p>
+
+<p>RDF/XML parser updated to understand the new RDF 1.1 datatypes:
+rdf:HTML and rdf:langString</p>
+
+
+<h3>Serializer changes</h3>
+
+<p>Updated N-Triples and Turtle serializers (via writers) for 2013
+versions based on SPARQL 1.1 definitions.  These new formats
+have incompatible changes.
+</p>
+
+<p>Added functions for writing escaped Turtle / N-Triples terms:</p>
+<pre>
+int raptor_string_escaped_write(const unsigned char *string,
+  size_t len, const char delim, unsigned int flags, raptor_iostream *iostr);
+
+int raptor_term_escaped_write(const raptor_term *term, unsigned int flags,
+  raptor_iostream* iostr);
+
+int raptor_uri_escaped_write(raptor_uri* uri, raptor_uri* base_uri,
+  unsigned int flags, raptor_iostream *iostr);
+</pre>
+<p>These uses the new new <code>raptor_escaped_write_bitflags</code>
+enum bitflag values for the <code>flags</code> argument.</p>
+
+<p>Deprecated <code>raptor_string_python_write()</code> for
+<code>raptor_string_escaped_write()</code> with flags.</p>
+
+
+<h3>Configuration and build changes</h3>
+
+<p><code>configure</code> now recommends flex 2.5.36</p>
+
+<p><code>configure</code> was updated to switch configuring libxml
+and libcurl to use the <code>PKG_PROG_PKG_CONFIG</code> and
+<code>PKG_CHECK_MODULES</code> macros.  The preference remains to
+prefer looking for the xml2-config and curl-config programs before
+trying pkg-config unless <code>--with-curl-config=no</code>
+<code>--with-xml2-config=no</code> are used.
+</p>
+
+<p><code>configure</code> now dies if xml2-config or xslt-config
+point at non executable files. 	Patch from Michael Stahl - thanks.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=535">Issue #0000534</a>
+</p>
+
+<p><code>configure</code> now adds curl or libxml pkg-config requires
+only if they were found via pkg-config; this prevents unnecessary
+dependency on pkg-config files if they are not needed.</p>
+
+<p>Updated autogen.sh and code to handle variations of header
+macro.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=532">Issue #0000532</a>
+</p>
+
+
 
 <h2 id="rel2_0_9"><a name="rel2_0_9">Raptor2 2.0.9 changes</a></h2>
 
