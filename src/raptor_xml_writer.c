@@ -305,6 +305,14 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     }
   }
 
+  if(element->xml_language) {
+    size_t lang_len = strlen(RAPTOR_GOOD_CAST(char*, element->xml_language));
+    raptor_iostream_counted_string_write(" xml:lang=\"", 11, iostr);
+    raptor_xml_escape_string_any_write(element->xml_language, lang_len,
+                                       '"', xml_version, iostr);
+    raptor_iostream_write_byte('"', iostr);
+  }
+  
 
   if(element->attributes) {
     for(i = 0; i < element->attribute_count; i++) {
