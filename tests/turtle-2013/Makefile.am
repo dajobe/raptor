@@ -182,12 +182,7 @@ TEST_BAD_FILES = \
   turtle-syntax-bad-ns-dot-end.ttl \
   turtle-syntax-bad-ns-dot-start.ttl \
   turtle-syntax-bad-missing-ns-dot-end.ttl \
-  turtle-syntax-bad-missing-ns-dot-start.ttl \
-  turtle-syntax-bad-uri-01.ttl \
-  turtle-syntax-bad-uri-02.ttl \
-  turtle-syntax-bad-uri-03.ttl \
-  turtle-syntax-bad-uri-04.ttl \
-  turtle-syntax-bad-uri-05.ttl
+  turtle-syntax-bad-missing-ns-dot-start.ttl
 
 TEST_EVAL_FILES = \
   IRI_subject.ttl \
