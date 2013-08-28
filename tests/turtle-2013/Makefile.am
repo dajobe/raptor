@@ -182,7 +182,12 @@ TEST_BAD_FILES = \
   turtle-syntax-bad-ns-dot-end.ttl \
   turtle-syntax-bad-ns-dot-start.ttl \
   turtle-syntax-bad-missing-ns-dot-end.ttl \
-  turtle-syntax-bad-missing-ns-dot-start.ttl
+  turtle-syntax-bad-missing-ns-dot-start.ttl \
+  turtle-syntax-bad-uri-01.ttl \
+  turtle-syntax-bad-uri-02.ttl \
+  turtle-syntax-bad-uri-03.ttl \
+  turtle-syntax-bad-uri-04.ttl \
+  turtle-syntax-bad-uri-05.ttl
 
 TEST_EVAL_FILES = \
   IRI_subject.ttl \
@@ -319,11 +324,10 @@ TEST_EVAL_FILES = \
   langtagged_LONG_with_subtag.ttl
 
 TEST_BAD_EVAL_FILES = \
-  turtle-syntax-bad-uri-01.ttl \
-  turtle-syntax-bad-uri-02.ttl \
-  turtle-syntax-bad-uri-03.ttl \
-  turtle-syntax-bad-uri-04.ttl \
-  turtle-syntax-bad-uri-05.ttl
+  turtle-eval-bad-01.ttl \
+  turtle-eval-bad-02.ttl \
+  turtle-eval-bad-03.ttl \
+  turtle-eval-bad-04.ttl
 
 TEST_OUT_FILES = \
   HYPHEN_MINUS_in_localName.nt \
