@@ -265,8 +265,7 @@ typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
   RAPTOR_TERM_CLASS_BNODEID,  /* ends on first non [A-Za-z][A-Za-z0-9]* */
   RAPTOR_TERM_CLASS_STRING,   /* ends on non-escaped " */
-  RAPTOR_TERM_CLASS_LANGUAGE, /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
-  RAPTOR_TERM_CLASS_FULL      /* the entire string is used */
+  RAPTOR_TERM_CLASS_LANGUAGE  /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
 } raptor_ntriples_term_class;
 
 
@@ -302,10 +301,6 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
         result = (result || c == '-');
       break;
       
-    case RAPTOR_TERM_CLASS_FULL:
-      result = 1;
-      break;
-      
     default:
       raptor_parser_error(rdf_parser, "Unknown N-Triples term class %d",
                           term_class);
@@ -336,8 +331,6 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  * outside the printable ASCII range are discarded with a warning.
  * See the grammar for full details of the allowed ranges.
  *
- * If the class is RAPTOR_TERM_CLASS_FULL, the end_char is ignored.
- *
  * UTF-8 and the \u and \U esapes are both allowed.
  *
  * Return value: Non 0 on failure
@@ -356,9 +349,6 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
   unsigned int position = 0;
   int end_char_seen = 0;
 
-  if(term_class == RAPTOR_TERM_CLASS_FULL)
-    end_char = '\0';
-  
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
     int unichar_width;
@@ -420,8 +410,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     }
 
     if(!*lenp) {
-      if(term_class != RAPTOR_TERM_CLASS_FULL)
-        raptor_parser_error(rdf_parser, "\\ at end of line");
+      raptor_parser_error(rdf_parser, "\\ at end of line");
       return 0;
     }
 
