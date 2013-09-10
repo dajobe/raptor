@@ -592,19 +592,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   /* can't be empty now - that would have been caught above */
   
-  /* Check for terminating '.' */
-  if(p[len-1] != '.') {
-    /* Move current location to point to problem */
-    rdf_parser->locator.column += RAPTOR_BAD_CAST(int, len - 2);
-    rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len - 2);
-    raptor_parser_error(rdf_parser, "Missing . at end of line");
-    return 0;
-  }
-
-  p[len-1] = '\0';
-  len--;
-
-
   /* Must be triple/quad */
 
   for(i = 0; i < max_terms; i++) {
@@ -810,14 +797,39 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr, "item %d: term '%s' len %d type %d\n",
             i, terms[i], (unsigned int)term_lengths[i], term_types[i]);
-#endif    
-  }
+#endif
 
-  if(len) {
-    raptor_parser_error(rdf_parser, "Junk before terminating \".\"");
-    return 0;
+    /* Look for terminating '.' after 3rd (ntriples) or 3rd/4th (nquads) term */
+    if(i == (ntriples_parser->is_nquads ? 4 : 3) && *p != '.') {
+      raptor_parser_error(rdf_parser, "Missing terminating \".\"");
+      return 0;
+    }
+
+    /* Still may be optional so check again */
+    if(*p == '.') {
+      p++;
+      len--;
+
+      /* Skip whitespace after '.' */
+      while(len > 0 && isspace((int)*p)) {
+        p++;
+        len--;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
+      }
+
+      /* Only a comment is allowed here */
+      if(*p && *p != '#') {
+        /* Move current location to point to problem */
+        rdf_parser->locator.column += RAPTOR_BAD_CAST(int, len - 2);
+        rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len - 2);
+        raptor_parser_error(rdf_parser, "Junk after terminating \".\"");
+        return 0;
+      }
+
+      p += len; len = 0;
+    }
   }
-  
 
   if(object_literal_language) {
     unsigned char *q;
