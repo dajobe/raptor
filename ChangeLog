@@ -1,4 +1,42 @@
+2013-09-09  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	Tidy error column/byte offsets for errors
+
+	* src/ntriples_parse.c: Support # comments after end of line in
+	N-Triples / NQuads 2013
+
+	* tests/ntriples/nt2013-ex3.out: Write expected result in \uHHHH
+	form
+
+	* tests/ntriples/Makefile.am: check-nt: add rapper failure clause
+
+	* tests/ntriples/Makefile.am: make check-nt show error output in a
+	rapper failure
+
+	* tests/ntriples/Makefile.am, tests/ntriples/nt2013-ex1.nt,
+	tests/ntriples/nt2013-ex1.out, tests/ntriples/nt2013-ex2.nt,
+	tests/ntriples/nt2013-ex2.out, tests/ntriples/nt2013-ex3.nt,
+	tests/ntriples/nt2013-ex3.out, tests/ntriples/nt2013-ex4.nt,
+	tests/ntriples/nt2013-ex4.out: Add ntriples 2013 examples from
+	spec
+
 2013-08-27  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am: Remove dup tests
+
+	* tests/turtle-2013/README,
+	tests/turtle-2013/localName_with_non_leading_extras.nt: Updated
+	Turtle W3C tests to latest files from repo
+
+	* tests/turtle-2013/Makefile.am: Add the 4 negative eval tests
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.11
+
+	* ChangeLog: #changes
+
+	* 2.0.10
 
 	* NEWS.html, RELEASE.html: 2.0.10
 
