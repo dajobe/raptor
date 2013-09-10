@@ -809,6 +809,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     if(*p == '.') {
       p++;
       len--;
+      rdf_parser->locator.column++;
+      rdf_parser->locator.byte++;
 
       /* Skip whitespace after '.' */
       while(len > 0 && isspace((int)*p)) {
@@ -820,9 +822,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
       /* Only a comment is allowed here */
       if(*p && *p != '#') {
-        /* Move current location to point to problem */
-        rdf_parser->locator.column += RAPTOR_BAD_CAST(int, len - 2);
-        rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len - 2);
         raptor_parser_error(rdf_parser, "Junk after terminating \".\"");
         return 0;
       }
