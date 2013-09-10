@@ -652,10 +652,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           goto cleanup;
         }
         
-        if(len && (*p == '-' || *p == '@')) {
-          if(*p == '-')
-            raptor_parser_error(rdf_parser, "Old N-Triples language syntax using \"string\"-lang rather than \"string\"@lang.");
-
+        if(len && *p == '@') {
           object_literal_language = p;
 
           /* Skip - */
