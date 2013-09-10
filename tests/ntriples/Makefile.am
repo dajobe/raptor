@@ -21,9 +21,17 @@
 # 
 # 
 
-NT_TEST_FILES=test.nt
+NT_TEST_FILES = test.nt \
+nt2013-ex1.nt \
+nt2013-ex2.nt \
+nt2013-ex3.nt \
+nt2013-ex4.nt
 
-NT_OUT_FILES=test.out
+NT_OUT_FILES = test.out \
+nt2013-ex1.out \
+nt2013-ex2.out \
+nt2013-ex3.out \
+nt2013-ex4.out
 
 NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
 bad-05.nt bad-06.nt bad-07.nt

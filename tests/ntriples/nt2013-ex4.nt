@@ -1,0 +1,2 @@
+_:alice <http://xmlns.com/foaf/0.1/knows> _:bob .
+_:bob <http://xmlns.com/foaf/0.1/knows> _:alice .
