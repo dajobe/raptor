@@ -71,14 +71,15 @@ check-nt: build-rapper $(check_nt_deps)
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
+	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2> $$name.err; \
 	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
+	    cat $$name.err; \
 	    diff $(srcdir)/$$name.out $$name.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
+	  rm -f $$name.res $$name.err ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		ntriples.$$name \
 		"\$${RAPPER} -q -i ntriples -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $(BASE_URI)$$test" \
