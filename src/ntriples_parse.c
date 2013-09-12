@@ -559,7 +559,11 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
             if(ordinal <= 0)
               raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
           }
-
+          if(raptor_uri_string_is_absolute(dest) <= 0) {
+            raptor_parser_error(rdf_parser, "URI '%s' is not absolute.", dest);
+            goto cleanup;
+          }
+          
           uri = raptor_new_uri(rdf_parser->world, dest);
           if(!uri) {
             raptor_parser_error(rdf_parser, "Could not create URI for '%s'", (const char *)dest);
