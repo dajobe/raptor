@@ -658,6 +658,12 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
               goto cleanup;
             }
 
+            if(raptor_uri_string_is_absolute(object_literal_datatype) <= 0) {
+              raptor_parser_error(rdf_parser, "Datatype URI '%s' is not absolute.", object_literal_datatype);
+              rc = 1;
+              goto cleanup;
+            }
+
           }
 
           if(object_literal_datatype && object_literal_language) {
