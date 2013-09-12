@@ -357,8 +357,23 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         }
 
         if(1) {
-          int n;
+          unsigned int ii;
+          int n = 0;
 
+          for(ii = 0; ii < ulen; ii++) {
+            char cc = p[ii];
+            if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+              raptor_parser_error(rdf_parser,
+                            "N-Triples string error - illegal hex digit %c in Unicode escape '%c%s...'",
+                            cc, c, p);
+              n = 1;
+              break;
+            }
+          }
+
+          if(n)
+            break;
+          
           n = sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
           if(n != 1) {
             raptor_parser_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, p);
