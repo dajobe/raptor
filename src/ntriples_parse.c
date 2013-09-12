@@ -534,6 +534,26 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           rc = 1;
           goto cleanup;
         }
+
+        if(1) {
+          raptor_uri *uri;
+
+          /* Check for bad ordinal predicate */
+          if(!strncmp((const char*)dest,
+                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
+            int ordinal = raptor_check_ordinal(dest + 44);
+            if(ordinal <= 0)
+              raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
+          }
+
+          uri = raptor_new_uri(rdf_parser->world, dest);
+          if(!uri) {
+            raptor_parser_error(rdf_parser, "Could not create URI for '%s'", (const char *)dest);
+            goto cleanup;
+          }
+          real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, uri);
+          raptor_free_uri(uri);
+        }
         break;
 
       case '"':
@@ -745,16 +765,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   i = 0;
   /* Two choices for subject from N-Triples */
   if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-    raptor_uri *uri;
-
-    uri = raptor_new_uri(rdf_parser->world, (const unsigned char*)terms[i]);
-    if(!uri) {
-      raptor_parser_error(rdf_parser, "Could not create URI '%s', skipping", (const char *)terms[i]);
-      goto cleanup;
-    }
-    real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, uri);
-    raptor_free_uri(uri);
-    uri = NULL;
+    ; /* handled above */
   } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
     real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
                                                (const unsigned char*)terms[i]);
@@ -781,26 +792,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     goto cleanup;
   }
 
-  i = 1;
-  /* Predicates in N-Triples are URIs but check for bad ordinals */
-  if(!strncmp((const char*)terms[i],
-              "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    int predicate_ordinal = raptor_check_ordinal(terms[i] + 44);
-    if(predicate_ordinal <= 0)
-      raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, terms[i]);
-  }
-  
-  if(1) {
-    raptor_uri* predicate_uri = raptor_new_uri(rdf_parser->world, terms[i]);
-
-    if(!predicate_uri) {
-      raptor_parser_error(rdf_parser, "Could not create predicate uri '%s', skipping", terms[i]);
-      goto cleanup;
-    }
-    real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, predicate_uri);
-    raptor_free_uri(predicate_uri);
-  }
-
   i = 2;
   /* Three choices for object from N-Triples */
   if(1) {
@@ -816,16 +807,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
     if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-      raptor_uri *object_uri;
-
-      object_uri = raptor_new_uri(rdf_parser->world, (const unsigned char*)terms[i]);
-      if(!object_uri) {
-        raptor_parser_error(rdf_parser, "Could not create object uri '%s', skipping", (const char *)terms[i]);
-        goto cleanup;
-      }
-      real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, object_uri);
-      raptor_free_uri(object_uri);
-      object_uri = NULL;
+      /* handled above */
     } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
       real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
                                                  (const unsigned char*)terms[i]);
