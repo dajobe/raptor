@@ -575,6 +575,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         }
         
         if(len && *p == '@') {
+          unsigned char *q;
+
           object_literal_language = p;
 
           /* Skip - */
@@ -596,6 +598,15 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
             rc = 1;
             goto cleanup;
           }
+
+          /* Normalize language to lowercase
+           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+           */
+          for(q = object_literal_language; *q; q++) {
+            if(IS_ASCII_UPPER(*q))
+              *q = TO_ASCII_LOWER(*q);
+          }
+
         }
 
         if(len >1 && *p == '^' && p[1] == '^') {
@@ -631,6 +642,25 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         if(object_literal_datatype && object_literal_language) {
           raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
           object_literal_language = NULL;
+        }
+
+        if(1) {
+          raptor_uri* datatype_uri = NULL;
+    
+          if(object_literal_datatype) {
+            datatype_uri = raptor_new_uri(rdf_parser->world,
+                                          object_literal_datatype);
+            if(!datatype_uri) {
+              raptor_parser_error(rdf_parser, "Could not create literal datatype uri '%s'", object_literal_datatype);
+              goto cleanup;
+            }
+            object_literal_language = NULL;
+          }
+          
+          real_terms[i] = raptor_new_term_from_literal(rdf_parser->world,
+                                                       dest,
+                                                       datatype_uri,
+                                                       object_literal_language);
         }
 
         break;
@@ -738,17 +768,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
   }
 
-  if(object_literal_language) {
-    unsigned char *q;
-    /* Normalize language to lowercase
-     * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-     */
-    for(q = object_literal_language; *q; q++) {
-      if(IS_ASCII_UPPER(*q))
-        *q = TO_ASCII_LOWER(*q);
-    }
-  }
-
 
   /* Just to be sure */
   if(!ntriples_parser->is_nquads)
@@ -765,28 +784,14 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   i = 0;
   /* Two choices for subject from N-Triples */
   if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-    ; /* handled above */
+    ; /* uri - handled above */
   } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
     real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
                                                (const unsigned char*)terms[i]);
   } else { 
-    raptor_uri* datatype_uri = NULL;
-    
-    /*  RAPTOR_TERM_TYPE_LITERAL */
-    if(object_literal_datatype) {
-      datatype_uri = raptor_new_uri(rdf_parser->world, object_literal_datatype);
-      if(!datatype_uri) {
-        raptor_parser_error(rdf_parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
-        goto cleanup;
-      }
-      object_literal_language = NULL;
-    }
-
-    real_terms[i] = raptor_new_term_from_literal(rdf_parser->world,
-                                                 (const unsigned char*)terms[i],
-                                                 datatype_uri,
-                                                 (const unsigned char*)object_literal_language);
+    ; /* literal - handled above */
   }
+  
   if(!real_terms[i]) {
     raptor_parser_error(rdf_parser, "Could not create subject term");
     goto cleanup;
@@ -800,7 +805,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     if(object_literal_datatype) {
       datatype_uri = raptor_new_uri(rdf_parser->world, object_literal_datatype);
       if(!datatype_uri) {
-        raptor_parser_error(rdf_parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
+        raptor_parser_error(rdf_parser, "Could not create object literal datatype uri '%s'", object_literal_datatype);
         goto cleanup;
       }
       object_literal_language = NULL;
