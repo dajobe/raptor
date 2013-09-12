@@ -434,11 +434,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   int i;
   unsigned char *p;
   unsigned char *dest;
-  unsigned char *terms[MAX_NTRIPLES_TERMS] = { NULL, NULL, NULL, NULL};
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  size_t term_lengths[MAX_NTRIPLES_TERMS] = {0, 0, 0, 0};
-#endif
-  raptor_term_type term_types[MAX_NTRIPLES_TERMS] = {RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN};
   raptor_term* real_terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
   size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
@@ -518,8 +513,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
     switch(*p) {
       case '<':
-        term_types[i] = RAPTOR_TERM_TYPE_URI;
-        
         dest = p;
 
         p++;
@@ -557,8 +550,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
         break;
 
       case '"':
-        term_types[i] = RAPTOR_TERM_TYPE_LITERAL;
-        
         dest = p;
 
         p++;
@@ -667,8 +658,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
       case '_':
-        term_types[i] = RAPTOR_TERM_TYPE_BLANK;
-
         /* store where _ was */
         dest = p;
 
@@ -702,6 +691,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           goto cleanup;
         }
 
+        real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, dest);
+
         break;
 
       default:
@@ -711,15 +702,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 
-    /* Store term */
-    terms[i] = dest;
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    term_lengths[i] = term_length;
-#endif
-
     /* Whitespace must separate the terms */
     if(i < 2 && !isspace((int)*p)) {
-      raptor_parser_error(rdf_parser, "Missing whitespace after term '%s'", terms[i]);
+      raptor_parser_error(rdf_parser, "Missing whitespace after term");
       rc = 1;
       goto cleanup;
     }
@@ -733,8 +718,12 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    fprintf(stderr, "item %d: term '%s' len %d type %d\n",
-            i, terms[i], (unsigned int)term_lengths[i], term_types[i]);
+    if(1) {
+      unsigned char* c = raptor_term_to_string(real_terms[i]);
+      fprintf(stderr, "item %d: term '%s' type %d\n",
+              i, c, real_terms[i]->type);
+      raptor_free_string(c);
+    }
 #endif
 
     /* Look for terminating '.' after 3rd (ntriples) or 3rd/4th (nquads) term */
@@ -770,89 +759,20 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
   /* Just to be sure */
-  if(!ntriples_parser->is_nquads)
-    terms[3] = NULL;
+  if(!ntriples_parser->is_nquads) {
+    if(real_terms[3]) {
+      raptor_free_term(real_terms[3]);
+      real_terms[3] = NULL;
+    }
+  }
 
-  if(terms[3] && term_types[3] == RAPTOR_TERM_TYPE_LITERAL) {
+  if(real_terms[3] && real_terms[3]->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(!ntriples_parser->literal_graph_warning++)
       raptor_parser_warning(rdf_parser, "Ignoring N-Quad literal contexts");
 
-    terms[3] = NULL;
+    raptor_free_term(real_terms[3]);
+    real_terms[3] = NULL;
   }
-
-  
-  i = 0;
-  /* Two choices for subject from N-Triples */
-  if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-    ; /* uri - handled above */
-  } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
-    real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
-                                               (const unsigned char*)terms[i]);
-  } else { 
-    ; /* literal - handled above */
-  }
-  
-  if(!real_terms[i]) {
-    raptor_parser_error(rdf_parser, "Could not create subject term");
-    goto cleanup;
-  }
-
-  i = 2;
-  /* Three choices for object from N-Triples */
-  if(1) {
-    raptor_uri *datatype_uri = NULL;
-    
-    if(object_literal_datatype) {
-      datatype_uri = raptor_new_uri(rdf_parser->world, object_literal_datatype);
-      if(!datatype_uri) {
-        raptor_parser_error(rdf_parser, "Could not create object literal datatype uri '%s'", object_literal_datatype);
-        goto cleanup;
-      }
-      object_literal_language = NULL;
-    }
-
-    if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-      /* handled above */
-    } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
-      real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
-                                                 (const unsigned char*)terms[i]);
-    } else { 
-      /*  RAPTOR_TERM_TYPE_LITERAL */
-      real_terms[i] = raptor_new_term_from_literal(rdf_parser->world,
-                                                   (const unsigned char*)terms[i],
-                                                   datatype_uri,
-                                                   (const unsigned char*)object_literal_language);
-    }
-  }
-
-
-  i = 3;
-  /* Three choices for graph/context from N-Quads according to
-   * http://sw.deri.org/2008/07/n-quads/ but I am IGNORING Literal
-   */
-  if(terms[i]) {
-    if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
-      raptor_uri *graph_uri;
-
-      graph_uri = raptor_new_uri(rdf_parser->world, (const unsigned char*)terms[i]);
-      if(!graph_uri) {
-        raptor_parser_error(rdf_parser,
-                            "Could not create object uri '%s', skipping", 
-                            (const char *)terms[i]);
-        goto cleanup;
-      }
-      real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, graph_uri);
-      raptor_free_uri(graph_uri);
-      graph_uri = NULL;
-    } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
-      real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
-                                                 (const unsigned char*)terms[i]);
-    } else { 
-      /* Warning about literal graphs is handled elsewhere */
-      real_terms[i] = NULL;
-    }
-  }
-
 
   raptor_ntriples_generate_statement(rdf_parser, 
                                      real_terms[0],
