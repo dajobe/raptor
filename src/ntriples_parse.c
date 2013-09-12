@@ -53,7 +53,7 @@
 
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser* parser, raptor_term* subject_term, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype, const void *graph, const raptor_term_type graph_type);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, raptor_term* subject_term, raptor_term* predicate_term, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype, const void *graph, const raptor_term_type graph_type);
 
 /*
  * NTriples parser object
@@ -126,8 +126,7 @@ raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 static void
 raptor_ntriples_generate_statement(raptor_parser* parser, 
                                    raptor_term *subject,
-                                   const unsigned char *predicate,
-                                   const raptor_term_type predicate_type,
+                                   raptor_term *predicate,
                                    const void *object,
                                    const raptor_term_type object_type,
                                    const unsigned char *object_literal_language,
@@ -137,7 +136,6 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
 {
   /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement = &parser->statement;
-  raptor_uri *predicate_uri = NULL;
   raptor_uri *datatype_uri = NULL;
 
   if(!parser->emitted_default_graph) {
@@ -161,21 +159,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     object_literal_language = NULL;
   }
 
-  /* Predicates in N-Triples are URIs but check for bad ordinals */
-  if(!strncmp((const char*)predicate, "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    int predicate_ordinal = raptor_check_ordinal(predicate+44);
-    if(predicate_ordinal <= 0)
-      raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate);
-  }
-  
-  predicate_uri = raptor_new_uri(parser->world, predicate);
-  if(!predicate_uri) {
-    raptor_parser_error(parser, "Could not create predicate uri '%s', skipping", predicate);
-    goto cleanup;
-  }
-  statement->predicate = raptor_new_term_from_uri(parser->world, predicate_uri);
-  raptor_free_uri(predicate_uri);
-  predicate_uri = NULL;
+  statement->predicate = predicate;
   
   /* Three choices for object from N-Triples */
   if(object_type == RAPTOR_TERM_TYPE_URI) {
@@ -233,8 +217,6 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   cleanup:
   raptor_free_statement(statement);
 
-  if(predicate_uri)
-    raptor_free_uri(predicate_uri);
   if(datatype_uri)
     raptor_free_uri(datatype_uri);
 }
@@ -865,9 +847,30 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     goto cleanup;
   }
 
+  i = 1;
+  /* Predicates in N-Triples are URIs but check for bad ordinals */
+  if(!strncmp((const char*)terms[i],
+              "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
+    int predicate_ordinal = raptor_check_ordinal(terms[i] + 44);
+    if(predicate_ordinal <= 0)
+      raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, terms[i]);
+  }
+  
+  if(1) {
+    raptor_uri* predicate_uri = raptor_new_uri(rdf_parser->world, terms[i]);
+
+    if(!predicate_uri) {
+      raptor_parser_error(rdf_parser, "Could not create predicate uri '%s', skipping", terms[i]);
+      goto cleanup;
+    }
+    real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, predicate_uri);
+    raptor_free_uri(predicate_uri);
+  }
+  
+
   raptor_ntriples_generate_statement(rdf_parser, 
-                                     real_terms[i],
-                                     terms[1], term_types[1],
+                                     real_terms[0],
+                                     real_terms[1],
                                      terms[2], term_types[2],
                                      object_literal_language,
                                      object_literal_datatype,
