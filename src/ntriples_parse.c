@@ -436,8 +436,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   unsigned char *dest;
   raptor_term* real_terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
   size_t term_length = 0;
-  unsigned char *object_literal_language = NULL;
-  unsigned char *object_literal_datatype = NULL;
   int rc = 0;
   
   /* ASSERTION:
@@ -564,80 +562,82 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
           rc = 1;
           goto cleanup;
         }
-        
-        if(len && *p == '@') {
-          unsigned char *q;
-
-          object_literal_language = p;
-
-          /* Skip - */
-          p++;
-          len--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
-
-          if(!len) {
-            raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
-            goto cleanup;
-          }
-          
-
-          if(raptor_ntriples_term(rdf_parser,
-                                  (const unsigned char**)&p,
-                                  object_literal_language, &len, NULL,
-                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
-            rc = 1;
-            goto cleanup;
-          }
-
-          /* Normalize language to lowercase
-           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-           */
-          for(q = object_literal_language; *q; q++) {
-            if(IS_ASCII_UPPER(*q))
-              *q = TO_ASCII_LOWER(*q);
-          }
-
-        }
-
-        if(len >1 && *p == '^' && p[1] == '^') {
-
-          object_literal_datatype = p;
-
-          /* Skip ^^ */
-          p += 2;
-          len -= 2;
-          rdf_parser->locator.column += 2;
-          rdf_parser->locator.byte += 2;
-
-          if(!len || (len && *p != '<')) {
-            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
-            goto cleanup;
-          }
-
-          p++;
-          len--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
-
-          if(raptor_ntriples_term(rdf_parser,
-                                  (const unsigned char**)&p,
-                                  object_literal_datatype, &len, NULL,
-                                  '>', RAPTOR_TERM_CLASS_URI)) {
-            rc = 1;
-            goto cleanup;
-          }
-          
-        }
-
-        if(object_literal_datatype && object_literal_language) {
-          raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
-          object_literal_language = NULL;
-        }
 
         if(1) {
+          unsigned char *object_literal_language = NULL;
+          unsigned char *object_literal_datatype = NULL;
           raptor_uri* datatype_uri = NULL;
     
+          if(len && *p == '@') {
+            unsigned char *q;
+
+            object_literal_language = p;
+
+            /* Skip - */
+            p++;
+            len--;
+            rdf_parser->locator.column++;
+            rdf_parser->locator.byte++;
+
+            if(!len) {
+              raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
+              goto cleanup;
+            }
+
+
+            if(raptor_ntriples_term(rdf_parser,
+                                    (const unsigned char**)&p,
+                                    object_literal_language, &len, NULL,
+                                    '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
+              rc = 1;
+              goto cleanup;
+            }
+
+            /* Normalize language to lowercase
+             * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+             */
+            for(q = object_literal_language; *q; q++) {
+              if(IS_ASCII_UPPER(*q))
+                *q = TO_ASCII_LOWER(*q);
+            }
+
+          }
+
+          if(len >1 && *p == '^' && p[1] == '^') {
+
+            object_literal_datatype = p;
+
+            /* Skip ^^ */
+            p += 2;
+            len -= 2;
+            rdf_parser->locator.column += 2;
+            rdf_parser->locator.byte += 2;
+
+            if(!len || (len && *p != '<')) {
+              raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
+              goto cleanup;
+            }
+
+            p++;
+            len--;
+            rdf_parser->locator.column++;
+            rdf_parser->locator.byte++;
+
+            if(raptor_ntriples_term(rdf_parser,
+                                    (const unsigned char**)&p,
+                                    object_literal_datatype, &len, NULL,
+                                    '>', RAPTOR_TERM_CLASS_URI)) {
+              rc = 1;
+              goto cleanup;
+            }
+
+          }
+
+          if(object_literal_datatype && object_literal_language) {
+            raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
+            object_literal_language = NULL;
+          }
+
           if(object_literal_datatype) {
             datatype_uri = raptor_new_uri(rdf_parser->world,
                                           object_literal_datatype);
