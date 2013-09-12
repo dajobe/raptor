@@ -53,7 +53,7 @@
 
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser* parser, const unsigned char *subject, const raptor_term_type subject_type, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype, const void *graph, const raptor_term_type graph_type);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, raptor_term* subject_term, const unsigned char *predicate, const raptor_term_type predicate_type, const void *object, const raptor_term_type object_type, const unsigned char *object_literal_language, const unsigned char *object_literal_datatype, const void *graph, const raptor_term_type graph_type);
 
 /*
  * NTriples parser object
@@ -125,8 +125,7 @@ raptor_ntriples_parse_terminate(raptor_parser* rdf_parser)
 
 static void
 raptor_ntriples_generate_statement(raptor_parser* parser, 
-                                   const unsigned char *subject,
-                                   const raptor_term_type subject_type,
+                                   raptor_term *subject,
                                    const unsigned char *predicate,
                                    const raptor_term_type predicate_type,
                                    const void *object,
@@ -151,20 +150,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     goto cleanup;
 
   /* Two choices for subject from N-Triples */
-  if(subject_type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->subject = raptor_new_term_from_blank(parser->world, subject);
-  } else {
-    raptor_uri *subject_uri;
-
-    /* must be RAPTOR_TERM_TYPE_URI */
-    subject_uri = raptor_new_uri(parser->world, subject);
-    if(!subject_uri) {
-      raptor_parser_error(parser, "Could not create subject uri '%s', skipping", subject);
-      goto cleanup;
-    }
-    statement->subject = raptor_new_term_from_uri(parser->world, subject_uri);
-    raptor_free_uri(subject_uri);
-  }
+  statement->subject = subject;
 
   if(object_literal_datatype) {
     datatype_uri = raptor_new_uri(parser->world, object_literal_datatype);
@@ -538,6 +524,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   size_t term_lengths[MAX_NTRIPLES_TERMS] = {0, 0, 0, 0};
 #endif
   raptor_term_type term_types[MAX_NTRIPLES_TERMS] = {RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN, RAPTOR_TERM_TYPE_UNKNOWN};
+  raptor_term* real_terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
   size_t term_length = 0;
   unsigned char *object_literal_language = NULL;
   unsigned char *object_literal_datatype = NULL;
@@ -839,8 +826,47 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     terms[3] = NULL;
   }
 
+  
+  i = 0;
+  if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
+    raptor_uri *uri;
+
+    uri = raptor_new_uri(rdf_parser->world, (const unsigned char*)terms[i]);
+    if(!uri) {
+      raptor_parser_error(rdf_parser, "Could not create URI '%s', skipping", (const char *)terms[i]);
+      goto cleanup;
+    }
+    real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, uri);
+    raptor_free_uri(uri);
+    uri = NULL;
+  } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
+    real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
+                                               (const unsigned char*)terms[i]);
+  } else { 
+    raptor_uri* datatype_uri = NULL;
+    
+    /*  RAPTOR_TERM_TYPE_LITERAL */
+    if(object_literal_datatype) {
+      datatype_uri = raptor_new_uri(rdf_parser->world, object_literal_datatype);
+      if(!datatype_uri) {
+        raptor_parser_error(rdf_parser, "Could not create object literal datatype uri '%s', skipping", object_literal_datatype);
+        goto cleanup;
+      }
+      object_literal_language = NULL;
+    }
+
+    real_terms[i] = raptor_new_term_from_literal(rdf_parser->world,
+                                                 (const unsigned char*)terms[i],
+                                                 datatype_uri,
+                                                 (const unsigned char*)object_literal_language);
+  }
+  if(!real_terms[i]) {
+    raptor_parser_error(rdf_parser, "Could not create subject term");
+    goto cleanup;
+  }
+
   raptor_ntriples_generate_statement(rdf_parser, 
-                                     terms[0], term_types[0],
+                                     real_terms[i],
                                      terms[1], term_types[1],
                                      terms[2], term_types[2],
                                      object_literal_language,
