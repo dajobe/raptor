@@ -45,6 +45,8 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+RAPTOR_INTERNAL_API int raptor_turtle_check_uri_string(unsigned char *string);
+
 /* Set RAPTOR_DEBUG to > 1 to get lots of buffer related debugging */
 /*
 #undef RAPTOR_DEBUG
@@ -537,6 +539,12 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
                                 (const unsigned char**)&p, 
                                 dest, &len, &term_length, 
                                 '>', RAPTOR_TERM_CLASS_URI)) {
+          rc = 1;
+          goto cleanup;
+        }
+
+        if(!raptor_turtle_check_uri_string(dest)) {
+          raptor_parser_error(rdf_parser, "URI '%s' contains bad character(s)", dest);
           rc = 1;
           goto cleanup;
         }
