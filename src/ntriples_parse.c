@@ -198,10 +198,10 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       break;
 
     case RAPTOR_TERM_CLASS_LANGUAGE:
-      /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
-      result = (IS_ASCII_ALPHA(c) || IS_ASCII_DIGIT(c));
+      /* ends on first non [a-zA-Z]+ ('-' [a-zA-Z0-9]+ )? */
+      result = IS_ASCII_ALPHA(c);
       if(position)
-        result = (result || c == '-');
+        result = (result || IS_ASCII_DIGIT(c) || c == '-');
       break;
       
     default:
@@ -597,7 +597,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     
           if(len && *p == '@') {
             unsigned char *q;
-
+            size_t lang_len;
+            
             object_literal_language = p;
 
             /* Skip - */
@@ -614,12 +615,18 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
             if(raptor_ntriples_term(rdf_parser,
                                     (const unsigned char**)&p,
-                                    object_literal_language, &len, NULL,
+                                    object_literal_language, &len, &lang_len,
                                     '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
               rc = 1;
               goto cleanup;
             }
 
+            if(!lang_len) {
+              raptor_parser_error(rdf_parser, "Invalid language tag at @%s", p);
+              rc = 1;
+              goto cleanup;
+            }
+            
             /* Normalize language to lowercase
              * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
              */
