@@ -53,7 +53,7 @@
 
 
 /* Prototypes for local functions */
-static void raptor_ntriples_generate_statement(raptor_parser* parser, raptor_term* subject_term, raptor_term* predicate_term, raptor_term* object_term, const void *graph, const raptor_term_type graph_type);
+static void raptor_ntriples_generate_statement(raptor_parser* parser, raptor_term* subject_term, raptor_term* predicate_term, raptor_term* object_term, raptor_term* graph_term);
 
 /*
  * NTriples parser object
@@ -128,8 +128,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
                                    raptor_term *subject,
                                    raptor_term *predicate,
                                    raptor_term *object,
-                                   const void *graph,
-                                   const raptor_term_type graph_type)
+                                   raptor_term *graph)
 {
   /* raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)parser->context; */
   raptor_statement *statement = &parser->statement;
@@ -146,32 +145,7 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
   statement->subject = subject;
   statement->predicate = predicate;
   statement->object = object;
-
-  if(graph) {
-    /* Three choices for graph/context from N-Quads according to
-     * http://sw.deri.org/2008/07/n-quads/ but I am IGNORING Literal
-     */
-    if(graph_type == RAPTOR_TERM_TYPE_URI) {
-      raptor_uri *graph_uri;
-
-      graph_uri = raptor_new_uri(parser->world, (const unsigned char*)graph);
-      if(!graph_uri) {
-        raptor_parser_error(parser,
-                            "Could not create object uri '%s', skipping", 
-                            (const char *)graph);
-        goto cleanup;
-      }
-      statement->graph = raptor_new_term_from_uri(parser->world, graph_uri);
-      raptor_free_uri(graph_uri);
-      graph_uri = NULL;
-    } else if(graph_type == RAPTOR_TERM_TYPE_BLANK) {
-      statement->graph = raptor_new_term_from_blank(parser->world, 
-                                                    (const unsigned char*)graph);
-    } else { 
-      /* Warning about literal graphs is handled below */
-      statement->graph = NULL;
-    }
-  }
+  statement->graph = graph;
 
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
@@ -864,11 +838,40 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
   }
 
+
+  i = 3;
+  /* Three choices for graph/context from N-Quads according to
+   * http://sw.deri.org/2008/07/n-quads/ but I am IGNORING Literal
+   */
+  if(terms[i]) {
+    if(term_types[i] == RAPTOR_TERM_TYPE_URI) {
+      raptor_uri *graph_uri;
+
+      graph_uri = raptor_new_uri(rdf_parser->world, (const unsigned char*)terms[i]);
+      if(!graph_uri) {
+        raptor_parser_error(rdf_parser,
+                            "Could not create object uri '%s', skipping", 
+                            (const char *)terms[i]);
+        goto cleanup;
+      }
+      real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, graph_uri);
+      raptor_free_uri(graph_uri);
+      graph_uri = NULL;
+    } else if(term_types[i] == RAPTOR_TERM_TYPE_BLANK) {
+      real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, 
+                                                 (const unsigned char*)terms[i]);
+    } else { 
+      /* Warning about literal graphs is handled elsewhere */
+      real_terms[i] = NULL;
+    }
+  }
+
+
   raptor_ntriples_generate_statement(rdf_parser, 
                                      real_terms[0],
                                      real_terms[1],
                                      real_terms[2],
-                                     terms[3], term_types[3]);
+                                     real_terms[3]);
 
   rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len);
 
