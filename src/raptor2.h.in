@@ -1313,6 +1313,8 @@ RAPTOR_API
 int raptor_uri_file_exists(raptor_uri* uri);
 RAPTOR_API
 int raptor_uri_escaped_write(raptor_uri* uri, raptor_uri* base_uri, unsigned int flags, raptor_iostream *iostr);
+RAPTOR_API
+int raptor_uri_string_is_absolute(const unsigned char* uri_string);
 
 /* XML utility functions */
 RAPTOR_API
