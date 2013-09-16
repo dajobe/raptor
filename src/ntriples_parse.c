@@ -45,8 +45,6 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
-RAPTOR_INTERNAL_API int raptor_turtle_check_uri_string(unsigned char *string);
-
 /* Set RAPTOR_DEBUG to > 1 to get lots of buffer related debugging */
 /*
 #undef RAPTOR_DEBUG
