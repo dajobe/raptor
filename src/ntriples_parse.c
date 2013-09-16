@@ -493,7 +493,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   
   /* Must be triple/quad */
 
-  for(i = 0; i < max_terms; i++) {
+  for(i = 0; i < 4; i++) {
     if(!len) {
       /* context is optional in nquads */
       if (i == 3)
@@ -796,11 +796,13 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   }
 
 
-  /* Just to be sure */
+  /* Check N-Triples has only 3 terms */
   if(!ntriples_parser->is_nquads) {
     if(real_terms[3]) {
       raptor_free_term(real_terms[3]);
       real_terms[3] = NULL;
+      raptor_parser_error(rdf_parser, "N-Triples only allows 3 terms");
+      goto cleanup;
     }
   }
 
