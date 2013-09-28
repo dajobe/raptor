@@ -1072,7 +1072,7 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
   /* sequence of rss:item */
   for(item = rss_parser->model.items; item; item = item->next) {
     raptor_rss_block *block;
-    raptor_uri* uri;
+    raptor_uri* uri = NULL;
     
     if(!item->fields[RAPTOR_RSS_FIELD_LINK])  {
       if(raptor_rss_insert_rss_link(rdf_parser, item))
@@ -1097,6 +1097,9 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
           uri = raptor_uri_copy(item->fields[RAPTOR_RSS_FIELD_ATOM_ID]->uri);
       }
     }
+
+    if(!uri)
+      continue;
 
     item->term = raptor_new_term_from_uri(rdf_parser->world, uri);
     raptor_free_uri(uri);
