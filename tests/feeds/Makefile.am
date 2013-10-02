@@ -224,27 +224,29 @@ SUFFIXES = .rng .rnc
 
 check-validate-atom: $(srcdir)/atom.rng $(OUT_ATOMS) $(TEST_IN_ATOMS)
 	@set +e; result=0; \
-	$(RECHO) "Validating Atom XML with RelaxNG"; \
-	printf 'IF(HAVE_JING)\n' >>CMakeTests.txt; \
-	for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
-	  test -f $$atom || atom=$(srcdir)/$$atom; \
-	  $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
-	  jing $(srcdir)/atom.rng $$atom > errors.log 2>&1; \
-	  status=$$?; \
-	  if test $$status != 0; then \
-	    $(RECHO) "FAILED with code $$status"; result=1; \
-	    $(RECHO) jing $(srcdir)/atom.rng $$atom; \
-	    sed -e "s,^.*$$atom,$$atom," errors.log ; \
-	    result=1 ; \
-	  else \
-	    $(RECHO) "ok"; \
-	  fi; \
-	  rm -f errors.log; \
-	  printf '\tADD_TEST(%s %s)\n' \
-		feeds.jing-$$atom \
-		"\$${JING} \$${CMAKE_CURRENT_SOURCE_DIR}/atom.rng $$atom" >>CMakeTests.txt; \
-	done; \
-	printf 'ENDIF(HAVE_JING)\n\n' >>CMakeTests.txt; \
+	if test "X$(JING)" = X; then \
+	  $(RECHO) "WARNING: Skipping feed validation RelaxNG tests - jing is missing"; \
+	else \
+	  $(RECHO) "Validating Atom XML with RelaxNG"; \
+	  for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
+	    test -f $$atom || atom=$(srcdir)/$$atom; \
+	    $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
+	    $(JING) $(srcdir)/atom.rng $$atom > errors.log 2>&1; \
+	    status=$$?; \
+	    if test $$status != 0; then \
+	      $(RECHO) "FAILED with code $$status"; result=1; \
+	      $(RECHO) $(JING) $(srcdir)/atom.rng $$atom; \
+	      sed -e "s,^.*$$atom,$$atom," errors.log ; \
+	      result=1 ; \
+	    else \
+	      $(RECHO) "ok"; \
+	    fi; \
+	    rm -f errors.log; \
+	    printf '\tADD_TEST(%s %s)\n' \
+		  feeds.jing-$$atom \
+		  "\$${JING} \$${CMAKE_CURRENT_SOURCE_DIR}/atom.rng $$atom" >>CMakeTests.txt; \
+	  done; \
+	fi; \
 	set -e; exit $$result
 
 endif
