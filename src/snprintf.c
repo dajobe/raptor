@@ -107,9 +107,12 @@ vsnprintf_is_c99(void)
          * with an unterminated string.  The added check makes sure     \
          * the string returned is terminated - otherwise more buffer    \
          * space is allocated and the while() loop retries.             \
+         *                                                              \
+         * On tru64, vsnprintf() returns the buffer size minus 1 if     \
+         * the buffer is too small, leaving room for the terminator.    \
          */                                                             \
         if((len >= 0) &&                                                \
-           (RAPTOR_GOOD_CAST(size_t, len) < size) &&                    \
+           (RAPTOR_GOOD_CAST(size_t, len) + 1 < size) &&                \
            (tmp_buffer[len] == '\0')) {                                 \
           len = RAPTOR_BAD_CAST(int, strlen(tmp_buffer));               \
           RAPTOR_FREE(char*, tmp_buffer);                               \
