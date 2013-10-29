@@ -37,7 +37,7 @@ raptor_empty_test_SOURCES=empty.c
 # Used to make N-triples output consistent
 BASE_URI=http://librdf.org/raptor/tests/
 
-SUBDIRS = rdfxml ntriples turtle turtle-2013 trig grddl rdfa rdfa11 json feeds
+SUBDIRS = rdfxml ntriples ntriples-2013 turtle turtle-2013 trig grddl rdfa rdfa11 json feeds
 
 
 $(top_builddir)/src/libraptor2.la:

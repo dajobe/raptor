@@ -158,6 +158,7 @@ libraptor2_la_SOURCES += strcasecmp.c
 endif
 if PARSEDATE
 libraptor2_la_SOURCES += parsedate.c
+BUILT_SOURCES += parsedate.c
 endif
 
 
@@ -228,6 +229,12 @@ turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
+parsedate.c: $(srcdir)/parsedate.y
+	$(YACC) -b parsedate -p raptor_parsedate_ -d -v $(srcdir)/parsedate.y
+	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/parsedate.tab.c/$@/" parsedate.tab.c > $@
+	mv parsedate.tab.h parsedate.h
+	rm -f parsedate.tab.c
+
 endif
 
 # Actually it needs turtle_parser.h but nevermind
@@ -236,18 +243,6 @@ turtle_lexer_test: $(srcdir)/turtle_lexer.c libraptor2.la
 
 turtle_parser_test: $(srcdir)/turtle_parser.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/turtle_parser.c libraptor2.la $(LIBS)
-
-
-parsedate.c: $(srcdir)/parsedate.y
-	$(YACC) -b parsedate -p raptor_parsedate_ -d -v $(srcdir)/parsedate.y
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/parsedate.tab.c/$@/" parsedate.tab.c > $@
-	mv parsedate.tab.h parsedate.h
-	rm -f parsedate.tab.c
-
-
-
-# Some people need a little help ;-)
-test: check
 
 raptor_parse_test: $(srcdir)/raptor_parse.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_parse.c libraptor2.la $(LIBS)
@@ -305,6 +300,9 @@ raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
 
 raptor_snprintf_test: $(srcdir)/snprintf.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/snprintf.c libraptor2.la $(LIBS)
+
+# Some people need a little help ;-)
+test: check
 
 
 if MAINTAINER_MODE
