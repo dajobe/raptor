@@ -459,7 +459,7 @@ else
   PKG_CHECK_MODULES([LIBXML],[libxml-2.0],[
     LIBXML_VERSION=`$PKG_CONFIG libxml-2.0 --modversion`
     libxml_source="pkg-config"
-  ], [])
+  ], [:])
   AC_MSG_CHECKING(for libxml via pkg-config)
 fi
 
@@ -529,7 +529,7 @@ else
   PKG_CHECK_MODULES([LIBCURL],[libcurl],[
     LIBCURL_VERSION=`$PKG_CONFIG libcurl --modversion`
     libcurl_source="pkg-config"
-  ], [])
+  ], [:])
   AC_MSG_CHECKING(for libcurl via pkg-config)
 fi
 

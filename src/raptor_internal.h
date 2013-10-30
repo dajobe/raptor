@@ -76,6 +76,10 @@ void raptor_sign_free(void *ptr);
 
 #endif
 
+#ifndef __func__
+#define __func__ "???"
+#endif
+
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
 #define RAPTOR_DEBUG1(msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__); } while(0)

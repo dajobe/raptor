@@ -180,7 +180,8 @@ endif
 check-warn-rdf: build-rapper $(check_warn_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Turtle with warnings"; \
-	for test in $(TEST_WARN_FILES); do \
+	for test in $(TEST_WARN_FILES) .; do \
+	  test $$test = . && break; \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
