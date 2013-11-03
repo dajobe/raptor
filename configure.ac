@@ -72,10 +72,10 @@ AC_PROG_CC
 AM_PROG_CC_C_O
 AC_MSG_CHECKING(whether $CC is clang)
 CC_IS_CLANG=no
-if echo "$CC" | grep clang >/dev/null 2>&1; then
-  :
-else
+if $CC 2>&1 | grep clang >/dev/null 2>&1; then
   CC_IS_CLANG=yes
+else
+  :
 fi
 AC_MSG_RESULT($CC_IS_CLANG)
 
