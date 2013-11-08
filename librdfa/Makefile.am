@@ -3,6 +3,14 @@
 # Makefile for librdfa convienience library
 #
 
+ANALYZE = clang
+ANALYZE_FLAGS = "--analyze"
+# Based on COMPILE target
+ANALYZE_COMMAND = $(ANALYZE) \
+	$(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) \
+	$(ANALYZE_FLAGS)
+
 if LIBRDFA
 noinst_LTLIBRARIES = librdfa.la
 AM_CPPFLAGS = -DLIBRDFA_IN_RAPTOR -I$(srcdir)
@@ -52,4 +60,22 @@ rdfa_utils.h \
 strtok_r.h \
 config.h
 
+endif
+
+if MAINTAINER_MODE
+# Run Clang static analyzer over sources.
+analyze: $(SOURCES)
+	@list='$(SOURCES)'; \
+	result=0; \
+	for file in $$list; do \
+	  if echo $$file | grep '\.c$$' >/dev/null 2>&1; then \
+	    $(RECHO) "Analyzing $$file"; \
+	    $(ANALYZE_COMMAND) $(srcdir)/$$file; \
+	    status=$$?; \
+	    if test $$status != 0; then \
+	      result=1; \
+	    fi; \
+	  fi; \
+	done; \
+	set -e; exit $$result
 endif
