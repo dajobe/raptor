@@ -22,7 +22,7 @@
 # 
 
 
-SUBDIRS = src utils docs data tests examples librdfa scripts
+SUBDIRS = librdfa src utils docs data tests examples scripts
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = raptor2.pc

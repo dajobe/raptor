@@ -1,9 +1,11 @@
 # -*- Mode: Makefile -*-
 #
-# Makefile for distributing librdfa sources
+# Makefile for librdfa convienience library
 #
 
-EXTRA_DIST = \
+noinst_LTLIBRARIES = librdfa.la
+
+librdfa_la_SOURCES = \
 context.c \
 curie.c \
 iri.c \
@@ -19,6 +21,13 @@ rdfa.h \
 rdfa_utils.h \
 strtok_r.h \
 config.h
+
+if NEED_STRTOK_R
+librdfa_la_SOURCES += \
+strtok_r.c \
+strtok_r.h
+endif
+
 
 # Do not need:
 #   mingw32_utils.c
