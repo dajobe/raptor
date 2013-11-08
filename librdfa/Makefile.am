@@ -13,7 +13,7 @@ ANALYZE_COMMAND = $(ANALYZE) \
 
 if LIBRDFA
 noinst_LTLIBRARIES = librdfa.la
-AM_CPPFLAGS = -DLIBRDFA_IN_RAPTOR -I$(srcdir)
+AM_CPPFLAGS = -DLIBRDFA_IN_RAPTOR -I$(srcdir) -I$(top_srcdir)/src
 
 librdfa_la_SOURCES = \
 context.c \
