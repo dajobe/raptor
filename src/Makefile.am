@@ -165,7 +165,7 @@ endif
 libraptor2_la_LIBADD = 
 
 if LIBRDFA
-AM_CPPFLAGS += -I$(top_srcdir)/librdfa
+AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
 libraptor2_la_LIBADD += $(top_builddir)/librdfa/librdfa.la
 endif
 
