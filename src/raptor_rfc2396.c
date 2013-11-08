@@ -304,10 +304,16 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
   /* reference has a scheme - is an absolute URI */
   if(ref->scheme) {
-    memcpy(buffer, reference_uri, ref->uri_len + 1);
-
     result_len = ref->uri_len;
-    goto resolve_tidy;
+    path_buffer = RAPTOR_MALLOC(unsigned char*, result_len + 1);
+    if(!path_buffer) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    memcpy(path_buffer, reference_uri, result_len + 1);
+    result.path = path_buffer;
+
+    goto normalize;
   }
   
 
@@ -396,6 +402,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   }
   path_buffer[result.path_len] = '\0';
 
+  normalize:
 
   /* remove all "./" path components */
   for(p = (prev = path_buffer); *p; p++) {
@@ -785,6 +792,11 @@ main(int argc, char *argv[])
   failures += check_resolve("http://example.org/file",
                             "?foo=bar../baz",
                             "http://example.org/file?foo=bar../baz");
+
+  /* BUG 556 - http://bugs.librdf.org/mantis/view.php?id=556 */
+  failures += check_resolve("http://example.com/folder1/folder2/",
+                            "http://example.com/folder1/folder2/../folder1/../entity1",
+                            "http://example.com/folder1/entity1");
 
   return failures;
 }
