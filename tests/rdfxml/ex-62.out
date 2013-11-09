@@ -1,0 +1,3 @@
+<http://example.com/folder1/entity1> <http://www.w3.org/2000/01/rdf-schema#comment> "Item1" .
+<http://example.com/folder1/entity1> <http://www.w3.org/2000/01/rdf-schema#comment> "Item2" .
+<http://example.com/folder1/entity1> <http://www.w3.org/2000/01/rdf-schema#comment> "Item3" .

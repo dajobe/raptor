@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE rdf:RDF [  
+<!ENTITY corp "http://example.com/folder1/folder2/">  
+]>
+
+<rdf:RDF   
+xml:base="http://example.com/folder1/folder2/"
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+    <rdf:Description rdf:about="../entity1">
+        <rdfs:comment>Item1</rdfs:comment>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="../folder1/../entity1">
+        <rdfs:comment>Item2</rdfs:comment>
+    </rdf:Description>
+
+    <rdf:Description rdf:about="&corp;../folder1/../entity1">
+        <rdfs:comment>Item3</rdfs:comment>
+    </rdf:Description>
+
+</rdf:RDF>
