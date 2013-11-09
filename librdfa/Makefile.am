@@ -62,6 +62,8 @@ config.h
 
 endif
 
+CLEANFILES=*.plist
+
 if MAINTAINER_MODE
 # Run Clang static analyzer over sources.
 analyze: $(SOURCES)
