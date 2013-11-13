@@ -270,7 +270,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         /* UTF-8 encoding had an error or ended in the middle of a string */
         return 1;
       }
-      memcpy(dest, p-1, unichar_len);
+      memmove(dest, p-1, unichar_len);
       dest += unichar_len;
 
       unichar_len--; /* p, *lenp were moved on by 1 earlier */
