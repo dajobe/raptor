@@ -1,3 +1,17 @@
+2013-11-13  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	Use memmove for overlapping copy [llvm address sanitizer]
+
+	(raptor_ntriples_term): Use memmove to replace memcpy for an
+	overlapping copy.
+
+	Found via LLVM address sanitizer in LLVM 3.4 (SVN) with options:
+	export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-3.4
+	CC='clang -fsanitize=address -O1 -fno-omit-frame-pointer -g' ./configure ...
+	See https://code.google.com/p/address-sanitizer/wiki/AddressSanitizer
+	and http://llvm.org/releases/3.3/tools/clang/docs/AddressSanitizer.html
+
 2013-11-08  Dave Beckett <dave@dajobe.org>
 
 	* librdfa/Makefile.am: clean plist files
