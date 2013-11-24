@@ -17,6 +17,7 @@
 <p>Issues Fixed:</p>
 <ul>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=556">0000556</a>: Problem with relative URI in rdf:about, rdf:resource etc.</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=554">0000554</a>: RDF/XML serializer does not canonicalize attribute order in XMLLiterals</li>
 </ul>
 
 <h3>Parser changes</h3>
@@ -32,9 +33,21 @@ Also removed support for legacy N-Triples
 Many internal changes were also made.
 </p>
 
+<p>RDF/XML parser fixed the XML Canonicalization so that it writes
+the XML attributes in sorted order.
+Fixes
+<a href="http://bugs.librdf.org/mantis/view.php?id=554">Issue #0000554</a>.
+</p>
+
 <h3>URI class changes</h3>
 <p>Added <code>raptor_uri_uri_string_is_absolute()</code> to
 check if a URI is absolute.</p>
+
+<h3>QName class changes</h3>
+
+<p>Added <code>raptor_qname_format_as_xml()</code> to turn a qname
+into an XML declaration.
+</p>
 
 <h3>Configuration and build changes</h3>
 

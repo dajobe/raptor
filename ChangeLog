@@ -19,7 +19,10 @@
 	serialization attributes newlines
 
 	* src/raptor_xml_writer.c: Generate namespaces and attributes and
-	xml:lang in canonical order
+	xml:lang in canonical order.
+
+	Fixes Issue #0000554
+	http://bugs.librdf.org/mantis/view.php?id=554
 
 	(raptor_xml_writer_start_element_common): Add attributes and
 	xml:lang to declarations list and sort, then emit namespaces and
