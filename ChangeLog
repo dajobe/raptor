@@ -1,3 +1,14 @@
+2013-11-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/ntriples_parse.c, src/raptor2.h.in, src/raptor_uri.c: Renamed
+	raptor_uri_string_is_absolute to raptor_uri_uri_string_is_absolute
+
+2013-11-16  Dave Beckett <dave@dajobe.org>
+
+	* tests/test.html, tests/test.svg: remove unused test.html
+	test.svg files
+
 2013-11-13  Dave Beckett <dave@dajobe.org>
 
 	* src/ntriples_parse.c:
