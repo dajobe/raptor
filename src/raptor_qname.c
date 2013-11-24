@@ -655,7 +655,7 @@ raptor_qname_format_as_xml(const raptor_qname *qname, size_t *length_p)
   if(qname->value_length)
     length += raptor_xml_escape_string(qname->world,
                                        qname->value, qname->value_length,
-                                       NULL, NULL, quote);
+                                       NULL, 0, quote);
 
   if(qname->nspace && qname->nspace->prefix_length > 0)
     length += qname->nspace->prefix_length + 1; /* for : */
