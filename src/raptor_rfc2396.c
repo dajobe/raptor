@@ -490,14 +490,16 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.authority_len = ref->authority_len;
     
     /* Allocate path so it can be normalized below */
-    path_buffer = RAPTOR_MALLOC(unsigned char*, ref->path_len + 1);
+    result.path_len = (!ref->path_len) ? 0: ref->path_len;
+    path_buffer = RAPTOR_MALLOC(unsigned char*, result.path_len + 1);
     if(!path_buffer) {
       result_len = 0;
       goto resolve_tidy;
     }
-    memcpy(path_buffer, ref->path, ref->path_len + 1);
+    if(ref->path_len)
+      memcpy(path_buffer, ref->path, ref->path_len);
+    path_buffer[result.path_len] = '\0';
     result.path = path_buffer;
-    result.path_len = ref->path_len;
 
     goto normalize;
   }
