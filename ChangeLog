@@ -1,5 +1,35 @@
 2013-11-24  Dave Beckett <dave@dajobe.org>
 
+	* src/raptor_rfc2396.c: remove dead condition
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Handle empty ref path
+
+	* src/raptor_uri.c:
+	Normalize file URIs
+
+	(raptor_uri_filename_to_uri_string): Use raptor_uri_normalize_path
+	to normalize the resulting URI
+
+	* src/raptor_internal.h, src/raptor_rfc2396.c: Make
+	raptor_uri_normalize_path internal
+
+	* src/raptor_rfc2396.c:
+	Handle normalizing reference URIs
+
+	Fixes Issue #0000556
+	http://bugs.librdf.org/mantis/view.php?id=556
+
+	* src/raptor_rfc2396.c:
+	Pull out URI normalizing
+
+	(raptor_uri_normalize_path): Added and called from
+	raptor_uri_resolve_uri_reference().
+
+	(raptor_uri_resolve_uri_reference): Malloc path_buffer for
+	hierarchical ref, non-hierarchical base case and copy over, then
+	normalize.
+
 	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
 	src/ntriples_parse.c, src/raptor2.h.in, src/raptor_uri.c: Renamed
 	raptor_uri_string_is_absolute to raptor_uri_uri_string_is_absolute
