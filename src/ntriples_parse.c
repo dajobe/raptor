@@ -557,7 +557,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
             if(ordinal <= 0)
               raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
           }
-          if(raptor_uri_string_is_absolute(dest) <= 0) {
+          if(raptor_uri_uri_string_is_absolute(dest) <= 0) {
             raptor_parser_error(rdf_parser, "URI '%s' is not absolute.", dest);
             goto cleanup;
           }
@@ -663,7 +663,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
               goto cleanup;
             }
 
-            if(raptor_uri_string_is_absolute(object_literal_datatype) <= 0) {
+            if(raptor_uri_uri_string_is_absolute(object_literal_datatype) <= 0) {
               raptor_parser_error(rdf_parser, "Datatype URI '%s' is not absolute.", object_literal_datatype);
               rc = 1;
               goto cleanup;
