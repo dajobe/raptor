@@ -177,7 +177,6 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
   raptor_namespace_stack *nstack = xml_writer->nstack;
   int depth = xml_writer->depth;
   int auto_indent = XML_WRITER_AUTO_INDENT(xml_writer);
-  int xml_version = XML_WRITER_XML_VERSION(xml_writer);
   struct nsd *nspace_declarations = NULL;
   size_t nspace_declarations_count = 0;  
   unsigned int i;
@@ -187,7 +186,9 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     int nspace_max_count = element->attribute_count+1;
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
-    
+    if(element->xml_language)
+      nspace_max_count++;
+
     nspace_declarations = RAPTOR_CALLOC(struct nsd*, nspace_max_count,
                                         sizeof(struct nsd));
     if(!nspace_declarations)
@@ -210,6 +211,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     for(i = 0; i < element->attribute_count; i++) {
       /* qname */
       if(element->attributes[i]->nspace) {
+        /* Check if we need a namespace declaration attribute */
         if(nstack && 
            !raptor_namespaces_namespace_in_scope(nstack, element->attributes[i]->nspace) && element->attributes[i]->nspace != element->name->nspace) {
           /* not in scope and not same as element (so already going to be declared)*/
@@ -234,6 +236,16 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
           }
         }
       }
+
+      /* Add the attribute + value */
+      nspace_declarations[nspace_declarations_count].declaration=
+        raptor_qname_format_as_xml(element->attributes[i],
+                                   &nspace_declarations[nspace_declarations_count].length);
+      if(!nspace_declarations[nspace_declarations_count].declaration)
+        goto error;
+      nspace_declarations[nspace_declarations_count].nspace = NULL;
+      nspace_declarations_count++;
+
     }
   }
 
@@ -264,6 +276,29 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     }
   }
 
+  if(element->xml_language) {
+    size_t lang_len = strlen(RAPTOR_GOOD_CAST(char*, element->xml_language));
+#define XML_LANG_PREFIX_LEN 10
+    size_t buf_length = XML_LANG_PREFIX_LEN + lang_len + 1;
+    unsigned char* buffer = RAPTOR_MALLOC(unsigned char*, buf_length + 1);
+    const char quote = '\"';
+    unsigned char* p;
+
+    memcpy(buffer, "xml:lang=\"", XML_LANG_PREFIX_LEN);
+    p = buffer + XML_LANG_PREFIX_LEN;
+    p += raptor_xml_escape_string(xml_writer->world,
+                                  element->xml_language, lang_len,
+                                  p, buf_length, quote);
+    *p++ = quote;
+    *p = '\0';
+
+    nspace_declarations[nspace_declarations_count].declaration = buffer;
+    nspace_declarations[nspace_declarations_count].length = buf_length;
+    nspace_declarations[nspace_declarations_count].nspace = NULL;
+    nspace_declarations_count++;
+  }
+  
+
   raptor_iostream_write_byte('<', iostr);
 
   if(element->name->nspace && element->name->nspace->prefix_length > 0) {
@@ -276,16 +311,22 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
                                        element->name->local_name_length,
                                        iostr);
 
-  /* declare namespaces */
+  /* declare namespaces and attributes */
   if(nspace_declarations_count) {
+    int need_indent = 0;
+    
     /* sort them into the canonical order */
     qsort((void*)nspace_declarations, 
           nspace_declarations_count, sizeof(struct nsd),
           raptor_xml_writer_nsd_compare);
-    /* add them */
+
+    /* declare namespaces first */
     for(i = 0; i < nspace_declarations_count; i++) {
-      if(auto_indent && nspace_declarations_count > 1) {
-        /* indent xmlns namespace attributes */
+      if(!nspace_declarations[i].nspace)
+        continue;
+
+      if(auto_indent && need_indent) {
+        /* indent attributes */
         raptor_xml_writer_newline(xml_writer);
         xml_writer->depth++;
         raptor_xml_writer_indent(xml_writer);
@@ -297,47 +338,34 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
                                            iostr);
       RAPTOR_FREE(char*, nspace_declarations[i].declaration);
       nspace_declarations[i].declaration = NULL;
-
+      need_indent = 1;
+      
       if(raptor_namespace_stack_start_namespace(nstack,
                                                 (raptor_namespace*)nspace_declarations[i].nspace,
                                                 depth))
         goto error;
     }
-  }
 
-  if(element->xml_language) {
-    size_t lang_len = strlen(RAPTOR_GOOD_CAST(char*, element->xml_language));
-    raptor_iostream_counted_string_write(" xml:lang=\"", 11, iostr);
-    raptor_xml_escape_string_any_write(element->xml_language, lang_len,
-                                       '"', xml_version, iostr);
-    raptor_iostream_write_byte('"', iostr);
-  }
-  
+    /* declare attributes */
+    for(i = 0; i < nspace_declarations_count; i++) {
+      if(nspace_declarations[i].nspace)
+        continue;
 
-  if(element->attributes) {
-    for(i = 0; i < element->attribute_count; i++) {
-      raptor_iostream_write_byte(' ', iostr);
-      
-      if(element->attributes[i]->nspace && 
-         element->attributes[i]->nspace->prefix_length > 0) {
-        raptor_iostream_counted_string_write((char*)element->attributes[i]->nspace->prefix,
-                                             element->attributes[i]->nspace->prefix_length,
-                                             iostr);
-        raptor_iostream_write_byte(':', iostr);
+      if(auto_indent && need_indent) {
+        /* indent attributes */
+        raptor_xml_writer_newline(xml_writer);
+        xml_writer->depth++;
+        raptor_xml_writer_indent(xml_writer);
+        xml_writer->depth--;
       }
-
-      raptor_iostream_counted_string_write((const char*)element->attributes[i]->local_name,
-                                           element->attributes[i]->local_name_length,
+      raptor_iostream_write_byte(' ', iostr);
+      raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
+                                           nspace_declarations[i].length,
                                            iostr);
-      
-      raptor_iostream_counted_string_write("=\"", 2, iostr);
-      
-      raptor_xml_escape_string_any_write(element->attributes[i]->value, 
-                                          element->attributes[i]->value_length,
-                                          '"',
-                                          xml_version,
-                                          iostr);
-      raptor_iostream_write_byte('"', iostr);
+      need_indent = 1;
+
+      RAPTOR_FREE(char*, nspace_declarations[i].declaration);
+      nspace_declarations[i].declaration = NULL;
     }
   }
 
