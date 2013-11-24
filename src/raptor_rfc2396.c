@@ -490,7 +490,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.authority_len = ref->authority_len;
     
     /* Allocate path so it can be normalized below */
-    result.path_len = (!ref->path_len) ? 0: ref->path_len;
+    result.path_len = ref->path_len;
     path_buffer = RAPTOR_MALLOC(unsigned char*, result.path_len + 1);
     if(!path_buffer) {
       result_len = 0;
