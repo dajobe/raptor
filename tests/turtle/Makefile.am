@@ -42,8 +42,6 @@ bad-10.ttl bad-11.ttl bad-12.ttl bad-13.ttl bad-14.ttl bad-16.ttl \
 bad-19.ttl bad-20.ttl \
 bad-23.ttl bad-24.ttl
 
-TEST_WARN_FILES=
-
 TEST_OUT_FILES=test-00.out test-01.out test-02.out test-03.out \
 test-04.out test-05.out test-06.out test-07.out test-08.out \
 test-09.out test-10.out test-11.out test-12.out test-13.out \
@@ -67,9 +65,6 @@ ex-38-turtle.out
 
 TURTLE_SERIALIZE_RDF_FILES=ex-62.rdf
 
-
-TEST_WARN_OUT_FILES= test-35.out
-
 TEST_MANIFEST_FILES=manifest.ttl manifest-bad.ttl
 
 # Used to make N-triples output consistent
@@ -82,9 +77,7 @@ RDFS_NS_URI=http://www.w3.org/2000/01/rdf-schema
 ALL_TEST_FILES= README.txt \
 	$(TEST_FILES) \
 	$(TEST_BAD_FILES) \
-	$(TEST_WARN_FILES) \
 	$(TEST_OUT_FILES) \
-	$(TEST_WARN_OUT_FILES) \
 	$(TEST_MANIFEST_FILES) \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) \
@@ -105,7 +98,7 @@ build-rdfdiff:
 
 check-local: check-rdf check-bad-rdf check-turtle-serialize \
 check-turtle-serialize-syntax check-turtle-parse-ntriples \
-check-turtle-serialize-rdf check-warn-rdf
+check-turtle-serialize-rdf
 
 if MAINTAINER_MODE
 check_rdf_deps = $(TEST_FILES)
@@ -163,36 +156,6 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
 	    cat $$name.res; \
-	  else \
-	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
-	    cat $$name.res; \
-	  fi; \
-	  rm -f $$name.res $$name.err ; \
-	done; \
-	set -e; exit $$result
-
-if MAINTAINER_MODE
-check_warn_rdf_deps = $(TEST_WARN_FILES)
-endif
-
-check-warn-rdf: build-rapper $(check_warn_rdf_deps)
-	@set +e; result=0; \
-	$(RECHO) "Testing Turtle with warnings"; \
-	for test in $(TEST_WARN_FILES) .; do \
-	  test $$test = . && break; \
-	  name=`basename $$test .ttl` ; \
-	  baseuri=$(BASE_URI)$$test; \
-	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
-	  status=$$?; \
-	  if test $$status -eq 1 ; then \
-	    $(RECHO) "FAILED - parsing failed when should have warned"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.res; grep Error $$name.err; \
-	  elif test $$status -eq 2 ; then \
-	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \

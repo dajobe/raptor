@@ -1707,7 +1707,7 @@ raptor_uri_escaped_write(raptor_uri* uri,
 
 
 /**
- * raptor_uri_string_is_absolute:
+ * raptor_uri_uri_string_is_absolute:
  * @uri_string: uri to check write
  * 
  * Check if a uri string is an absolute URI
@@ -1715,7 +1715,7 @@ raptor_uri_escaped_write(raptor_uri* uri,
  * Return value: >0 if absolute, 0 if not, < 0 on failure
  **/
 int
-raptor_uri_string_is_absolute(const unsigned char* uri_string)
+raptor_uri_uri_string_is_absolute(const unsigned char* uri_string)
 {
   raptor_uri_detail *detail = NULL;
   int rc = -1;

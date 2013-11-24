@@ -1,3 +1,222 @@
+2013-11-24  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/ntriples_parse.c, src/raptor2.h.in, src/raptor_uri.c: Renamed
+	raptor_uri_string_is_absolute to raptor_uri_uri_string_is_absolute
+
+2013-11-16  Dave Beckett <dave@dajobe.org>
+
+	* tests/test.html, tests/test.svg: remove unused test.html
+	test.svg files
+
+2013-11-13  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	Use memmove for overlapping copy [llvm address sanitizer]
+
+	(raptor_ntriples_term): Use memmove to replace memcpy for an
+	overlapping copy.
+
+	Found via LLVM address sanitizer in LLVM 3.4 (SVN) with options:
+	export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-3.4
+	CC='clang -fsanitize=address -O1 -fno-omit-frame-pointer -g' ./configure ...
+	See https://code.google.com/p/address-sanitizer/wiki/AddressSanitizer
+	and http://llvm.org/releases/3.3/tools/clang/docs/AddressSanitizer.html
+
+2013-11-08  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/Makefile.am: clean plist files
+
+	* src/raptor_general.c: 2013
+
+	* librdfa/.gitignore: ignore plist
+
+	* librdfa/.gitignore: ignore .la
+
+	* librdfa/Makefile.am: Fix make distcheck for librdfa.la
+
+	* src/Makefile.am: src needs -DLIBRDFA_IN_RAPTOR
+
+	* librdfa/Makefile.am: Add analyze target
+
+	* librdfa/Makefile.am, src/Makefile.am: librdfa.la as a
+	convenience library build fixes
+
+	Do not build strtok for librdfa unless needed.  Move
+	-DLIBRDFA_IN_RAPTOR include to librdfa dir only
+
+	* Makefile.am, librdfa/Makefile.am, src/Makefile.am: Build
+	librdfa.la as a convenience library
+
+	Trying to get away from the noisy subdir-objects warnings and
+	deprecation messages from newer automakes.
+
+2013-11-02  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Fix clang test
+
+	* configure.ac: Check for clang to enable correct discovery of
+	supported warnings
+
+2013-10-30  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am, tests/turtle/test-35.out: Remove (now)
+	unused turtle warning tests
+
+2013-10-29  Daniel Richard G <skunk@iSKUNK.ORG>
+
+	* configure.ac, src/Makefile.am, tests/Makefile.am,
+	tests/turtle/Makefile.am: Various build system fixes
+
+	configure.ac:
+	- Place a ":" in the action-if-not-found arguments of the
+	  PKG_CHECK_MODULES() calls for LIBXML and LIBCURL to override the
+	  default action of quitting with an error, as neither of these
+	  libraries are a hard requirement
+
+	src/Makefile.am:
+	- Add parsedate.c to BUILT_SOURCES so that it can be handled
+	properly
+	- Move the parsedate.c rule into the MAINTAINER_MODE block, as
+	only   maintainers should be regenerating this file
+	- Bump the "test" rule down after the test-program rules
+
+	tests/Makefile.am:
+	- Add ntriples-2013 to SUBDIRS to fix configure script invocation
+
+	tests/turtle/Makefile.am:
+	- Add logic to prevent breakage when TEST_WARN_FILES is empty
+
+2013-10-02  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, tests/feeds/Makefile.am: Test for jing and skip
+	feed validation tests if it is missing
+
+2013-09-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_identifiers): Handle NULL uri [clang]
+
+2013-09-15  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_internal.h, src/turtle_common.h:
+	Move raptor_turtle_check_uri_string prototype to raptor_internal.h
+
+2013-09-13  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfxml/ex-59.nt, tests/rdfxml/ex-59.rdf,
+	tests/rdfxml/ex-60.nt, tests/rdfxml/ex-60.rdf: Update tests with
+	legal N-Triples URIs
+
+2013-09-12  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: Check language tag validity
+
+	* src/ntriples_parse.c: Use raptor_uri_string_is_absolute to check
+	datatype URI is abs
+
+	* src/ntriples_parse.c: Use raptor_uri_string_is_absolute to
+	enforce abs URIs for N-Triples
+
+	* src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_string_is_absolute): Added
+
+	* src/ntriples_parse.c: Check for bad URIs using turtle function -
+	FIXME
+
+	* src/ntriples_parse.c: Check for illegal unicode escapes.
+
+	* src/ntriples_parse.c: Move object_literal_language/datatype to
+	area of code that uses it.
+
+	* src/ntriples_parse.c: Kill use of terms, term_lengths and
+	term_types
+
+	* src/ntriples_parse.c: Make literals once during syntax parsing
+	Move language normalization to same area of code
+
+	* src/ntriples_parse.c: Make URIs in one place during syntax
+	parsing
+
+	* src/ntriples_parse.c: Pass a raptor_term for graph to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for object to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for predicate to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for subject to
+	raptor_ntriples_generate_statement
+
+	(raptor_ntriples_parse_line): Make term here and pass to
+	raptor_ntriples_generate_statement subject
+
+2013-09-10  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: Remove special error for legacy N-Triples
+	"foo"-LANGTOKEN
+
+	* src/ntriples_parse.c:
+	Remove unused RAPTOR_TERM_CLASS_FULL
+
+	* configure.ac, tests/ntriples-2013/Makefile.am,
+	tests/ntriples-2013/manifest.ttl,
+	tests/ntriples-2013/nt-syntax-bad-base-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-lang-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-prefix-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-04.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-05.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-06.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-07.nt,
+	tests/ntriples-2013/nt-syntax-bad-struct-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-struct-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-04.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-05.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-06.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-07.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-08.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-09.nt,
+	tests/ntriples-2013/nt-syntax-bnode-01.nt,
+	tests/ntriples-2013/nt-syntax-bnode-02.nt,
+	tests/ntriples-2013/nt-syntax-datatypes-01.nt,
+	tests/ntriples-2013/nt-syntax-datatypes-02.nt,
+	tests/ntriples-2013/nt-syntax-file-01.nt,
+	tests/ntriples-2013/nt-syntax-file-02.nt,
+	tests/ntriples-2013/nt-syntax-file-03.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-01.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-02.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-03.nt,
+	tests/ntriples-2013/nt-syntax-string-01.nt,
+	tests/ntriples-2013/nt-syntax-string-02.nt,
+	tests/ntriples-2013/nt-syntax-string-03.nt,
+	tests/ntriples-2013/nt-syntax-subm-01.nt,
+	tests/ntriples-2013/nt-syntax-uri-01.nt,
+	tests/ntriples-2013/nt-syntax-uri-02.nt,
+	tests/ntriples-2013/nt-syntax-uri-03.nt,
+	tests/ntriples-2013/nt-syntax-uri-04.nt: N-Triples 2013 test suite
+	Current state: all good tests pass.  13 bad tests fail:
+	nt-syntax-bad-uri-01.nt nt-syntax-bad-uri-02.nt
+	nt-syntax-bad-uri-03.nt nt-syntax-bad-uri-04.nt
+	nt-syntax-bad-uri-06.nt nt-syntax-bad-uri-07.nt
+	nt-syntax-bad-uri-08.nt nt-syntax-bad-uri-09.nt
+	nt-syntax-bad-struct-01.nt nt-syntax-bad-struct-02.nt
+	nt-syntax-bad-lang-01.nt nt-syntax-bad-esc-03.nt
+	nt-syntax-bad-string-05.nt
+
 2013-09-09  Dave Beckett <dave@dajobe.org>
 
 	* src/ntriples_parse.c:

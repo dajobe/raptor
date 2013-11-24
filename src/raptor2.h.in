@@ -1313,8 +1313,6 @@ RAPTOR_API
 int raptor_uri_file_exists(raptor_uri* uri);
 RAPTOR_API
 int raptor_uri_escaped_write(raptor_uri* uri, raptor_uri* base_uri, unsigned int flags, raptor_iostream *iostr);
-RAPTOR_API
-int raptor_uri_string_is_absolute(const unsigned char* uri_string);
 
 /* XML utility functions */
 RAPTOR_API
@@ -1358,6 +1356,8 @@ RAPTOR_API
 int raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb, const char* string, size_t length, int space_is_plus);
 RAPTOR_API
 char* raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_string, size_t* len_p, unsigned char **fragment_p, size_t* fragment_len_p);
+RAPTOR_API
+int raptor_uri_uri_string_is_absolute(const unsigned char* uri_string);
 
 
 /**

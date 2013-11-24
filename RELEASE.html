@@ -14,6 +14,49 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+  <li>None</li>
+</ul>
+
+<h3>Parser changes</h3>
+
+<p>N-Triples parser was updated to support all of
+<a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
+N-Triples - A line-based syntax for an RDF graph</a> (aka N-Triples 2013)
+It now supports <code># comments</code> after the end of
+lines, checks for illegal unicode escapes, checks for bad URIs and
+checks language tags.
+Also removed support for legacy N-Triples
+<code>"foo"-LANGTOKEN</code>.
+Many internal changes were also made.
+</p>
+
+<h3>URI class changes</h3>
+<p>Added <code>raptor_uri_uri_string_is_absolute()</code> to
+check if a URI is absolute.</p>
+
+<h3>Configuration and build changes</h3>
+
+<p>Restructured code to build an internal librdfa convenience library
+(never installed) so that newer automake will stop moaning about
+subdir-objects.
+</p>
+
+<p><code>configure</code> now checks for clang to correctly find
+supported warnings.</p>
+
+<p>Various portability and build fixes (Daniel Richard G)</p>
+
+<p>Build fixes: <code>make check</code> will now work if jing is not
+installed (for feed XML generation validation).
+</p>
+
+<h3>Other changes</h3>
+
+<p>Fixed a few issues found with LLVM 3.4 (SVN) run with address
+sanitizing.</p>
+
 
 <h2 id="rel2_0_10"><a name="rel2_0_10">Raptor2 2.0.10 changes</a></h2>
 

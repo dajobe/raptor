@@ -162,33 +162,16 @@ BUILT_SOURCES += parsedate.c
 endif
 
 
+libraptor2_la_LIBADD = 
+
 if LIBRDFA
-libraptor2_la_SOURCES += \
-$(top_srcdir)/librdfa/context.c \
-$(top_srcdir)/librdfa/curie.c \
-$(top_srcdir)/librdfa/iri.c \
-$(top_srcdir)/librdfa/language.c \
-$(top_srcdir)/librdfa/lists.c \
-$(top_srcdir)/librdfa/namespace.c \
-$(top_srcdir)/librdfa/rdfa.c \
-$(top_srcdir)/librdfa/rdfa_utils.c \
-$(top_srcdir)/librdfa/subject.c \
-$(top_srcdir)/librdfa/triple.c \
-$(top_srcdir)/librdfa/rdfa.h \
-$(top_srcdir)/librdfa/rdfa_utils.h 
-
-if NEED_STRTOK_R
-libraptor2_la_SOURCES += \
-$(top_srcdir)/librdfa/strtok_r.c \
-$(top_srcdir)/librdfa/strtok_r.h
-endif
-
 AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
+libraptor2_la_LIBADD += $(top_builddir)/librdfa/librdfa.la
 endif
 
 libraptor2_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@ \
 @RAPTOR_LDFLAGS@ $(MEM_LIBS)
-libraptor2_la_LIBADD = @LTLIBOBJS@
+libraptor2_la_LIBADD += @LTLIBOBJS@
 
 
 EXTRA_DIST=\
@@ -300,6 +283,9 @@ raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
 
 raptor_snprintf_test: $(srcdir)/snprintf.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/snprintf.c libraptor2.la $(LIBS)
+
+$(top_builddir)/librdfa/librdfa.la:
+	cd $(top_builddir)/librdfa && $(MAKE) librdfa.la 
 
 # Some people need a little help ;-)
 test: check
