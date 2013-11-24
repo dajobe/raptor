@@ -1,0 +1,1 @@
+<http://example.org/doc/pmc/2751467> <http://purl.org/dc/terms/description> "\n         <div xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\">\n            <p a=\"bar\" b=\"foo\">123</p>\n\n         </div>\n      "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
