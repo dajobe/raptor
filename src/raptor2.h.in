@@ -1467,6 +1467,8 @@ int raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr);
 /* QName String utility functions */
 RAPTOR_API
 raptor_uri* raptor_qname_string_to_uri(raptor_namespace_stack *nstack,  const unsigned char *name, size_t name_len);
+RAPTOR_API
+unsigned char* raptor_qname_format_as_xml(const raptor_qname *qname, size_t *length_p);
 
 /* XML Namespaces Stack class */
 RAPTOR_API

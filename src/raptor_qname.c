@@ -626,3 +626,68 @@ raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p)
     *length_p=name->value_length;
   return name->value;
 }
+
+
+/**
+ * raptor_qname_format_as_xml:
+ * @ns: qname object
+ * @length_p: pointer to length (or NULL)
+ *
+ * Format a qname in an XML style into a newly allocated string.
+ *
+ * Generates a string of the form a:b="value" or a="value"
+ * depending on the qname's prefix.  Double quotes are always used.
+ *
+ * If @length_p is not NULL, the length of the string is
+ * stored in the address it points to.
+ *
+ * Return value: qname formatted as newly allocated string or NULL on failure
+ **/
+unsigned char*
+raptor_qname_format_as_xml(const raptor_qname *qname, size_t *length_p)
+{
+  size_t length;
+  unsigned char *buffer;
+  const char quote='"';
+  unsigned char *p;
+
+  length = qname->local_name_length + 3 /* ="" */;
+  if(qname->value_length)
+    length += raptor_xml_escape_string(qname->world,
+                                       qname->value, qname->value_length,
+                                       NULL, NULL, quote);
+
+  if(qname->nspace && qname->nspace->prefix_length > 0)
+    length += qname->nspace->prefix_length + 1; /* for : */
+
+  if(length_p)
+    *length_p = length;
+
+  buffer = RAPTOR_MALLOC(unsigned char*, length + 1);
+  if(!buffer)
+    return NULL;
+
+  p = buffer;
+
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    memcpy(p, qname->nspace->prefix, qname->nspace->prefix_length);
+    p += qname->nspace->prefix_length;
+    *p++ = ':';
+  }
+  memcpy(p, qname->local_name, qname->local_name_length);
+  p += qname->local_name_length;
+  *p++ = '=';
+  *p++ = quote;
+  if(qname->value_length) {
+    p += raptor_xml_escape_string(qname->world,
+                                  qname->value, qname->value_length,
+                                  p, length, quote);
+  }
+  *p++ = quote;
+  /* *p used here since we never need to use value of p again [CLANG] */
+  *p = '\0';
+
+  return buffer;
+}
+
+
