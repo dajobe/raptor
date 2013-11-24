@@ -630,7 +630,7 @@ raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p)
 
 /**
  * raptor_qname_format_as_xml:
- * @ns: qname object
+ * @qname: qname object
  * @length_p: pointer to length (or NULL)
  *
  * Format a qname in an XML style into a newly allocated string.
