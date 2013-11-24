@@ -241,7 +241,16 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 }
 
 
-static size_t
+/*
+ * raptor_uri_normalize_path:
+ * @path_buffer: URI/file path
+ * @path_len: length of above
+ *
+ * INTERNAL - normalize a URI path (POSIX path too)
+ *
+ * Return value: new path length or 0 on failure
+ */
+size_t
 raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
 {
   unsigned char *p, *cur, *prev, *s;

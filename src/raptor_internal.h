@@ -792,6 +792,7 @@ void raptor_qname_print(FILE *stream, raptor_qname* name);
 int raptor_uri_init(raptor_world* world);
 void raptor_uri_finish(raptor_world* world);
 raptor_uri* raptor_new_uri_from_rdf_ordinal(raptor_world* world, int ordinal);
+size_t raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len);
 
 /* parsers */
 int raptor_init_parser_rdfxml(raptor_world* world);
