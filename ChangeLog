@@ -1,5 +1,36 @@
 2013-11-24  Dave Beckett <dave@dajobe.org>
 
+	* tests/rdfxml/Makefile.am: Add ex-62.out to dist
+
+	* src/raptor_qname.c: autodocs
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt: Add
+	raptor_qname_format_as_xml to docs
+
+	* src/raptor_qname.c: Fix pointer as integer issue
+	(raptor_qname_format_as_xml): Pass in integer to
+	raptor_xml_escape_string length arg.
+
+	* tests/feeds/test01-result.atom, tests/feeds/test02-result.atom,
+	tests/feeds/test03-result.atom: Updated expected atom feeds output
+	for serialization attributes newlines
+
+	* tests/rdfxml/ex-38-rdfxmla.out: Updated expected output for
+	serialization attributes newlines
+
+	* src/raptor_xml_writer.c: Generate namespaces and attributes and
+	xml:lang in canonical order
+
+	(raptor_xml_writer_start_element_common): Add attributes and
+	xml:lang to declarations list and sort, then emit namespaces and
+	attributes in separate order - as XML C14N wants
+
+	* src/raptor2.h.in, src/raptor_qname.c:
+	(raptor_qname_format_as_xml): Added
+
+	* tests/rdfxml/Makefile.am, tests/rdfxml/ex-63.out,
+	tests/rdfxml/ex-63.rdf: Added ex-63 for Issue #0000554
+
 	* src/raptor_rfc2396.c: remove dead condition
 
 	* src/raptor_rfc2396.c:
