@@ -247,6 +247,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
   unsigned char *p, *cur, *prev, *s;
   unsigned char last_char;
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
+  RAPTOR_DEBUG3("Input path \"%s\" (%zu)\n", (const char*)path_buffer, path_len);
+#endif
+
   /* remove all "./" path components */
   for(p = (prev = path_buffer); *p; p++) {
     if(*p != '/')
@@ -399,6 +403,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
       break;
   }
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
+  fprintf(stderr, "  Normalized path \"%s\" (%zu)\n", path_buffer, path_len);
+#endif
+
   return path_len;
 }  
 
@@ -466,15 +474,21 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   
   /* reference has a scheme - is an absolute URI */
   if(ref->scheme) {
-    result_len = ref->uri_len;
-    path_buffer = RAPTOR_MALLOC(unsigned char*, result_len + 1);
+    /* Copy over schema and authority */
+    result.scheme = ref->scheme;
+    result.scheme_len = ref->scheme_len;
+    result.authority = ref->authority;
+    result.authority_len = ref->authority_len;
+    
+    /* Allocate path so it can be normalized below */
+    path_buffer = RAPTOR_MALLOC(unsigned char*, ref->path_len + 1);
     if(!path_buffer) {
       result_len = 0;
       goto resolve_tidy;
     }
-    memcpy(path_buffer, reference_uri, result_len + 1);
+    memcpy(path_buffer, ref->path, ref->path_len + 1);
     result.path = path_buffer;
-    result.path_len = result_len;
+    result.path_len = ref->path_len;
 
     goto normalize;
   }
