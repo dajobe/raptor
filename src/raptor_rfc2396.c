@@ -241,6 +241,169 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 }
 
 
+static size_t
+raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
+{
+  unsigned char *p, *cur, *prev, *s;
+  unsigned char last_char;
+
+  /* remove all "./" path components */
+  for(p = (prev = path_buffer); *p; p++) {
+    if(*p != '/')
+      continue;
+
+    if(p == (prev+1) && *prev == '.') {
+      unsigned char *dest = prev;
+      
+      p++;
+      while(*dest)
+        *dest++ = *p++;
+      *dest= '\0';
+      
+      p = prev;
+      path_len -= 2;
+      if(!*p)
+        break;
+    } else {
+      prev = p+1;
+    }
+  }
+  
+  if(p == (prev+1) && *prev == '.') {
+    /* Remove "." at the end of a path */
+    *prev = '\0';
+    path_len--;
+  }
+
+  
+#if defined(RAPTOR_DEBUG)
+  if(path_len != strlen((const char*)path_buffer))
+    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+#endif
+    
+  /* Remove all "<component>/../" path components */
+
+  /*
+   * The pointers:
+   *            <component>/../<next>
+   *       prev-^       cur-^
+   * and p points to the previous prev (can be NULL)
+   */
+  prev = NULL;
+  cur = NULL;
+  p = NULL;
+  last_char='\0';
+  
+  for(s = path_buffer; *s; last_char=*s++) {
+
+    /* find the path components */
+    if(*s != '/') {
+      /* If it is the start or following a /, record a new path component */
+      if(!last_char || last_char == '/') {
+        /* Store 2 path components */
+        if(!prev)
+          prev = s;
+        else if(!cur)
+          cur = s;
+      }
+      continue;
+    }
+
+
+    /* Wait till there are two path components */
+    if(!prev || !cur)
+      continue;
+
+#if defined(RAPTOR_DEBUG)
+    if(path_len != strlen((const char*)path_buffer))
+      RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+#endif
+    
+    /* If the current one is '..' */
+    if(s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
+        
+      /* and if the previous one isn't '..'
+       * (which means it is beyond the root such as a path "/foo/../..")
+       */
+      if(cur != (prev+3) || prev[0] != '.' || prev[1] != '.') {
+        unsigned char *dest = prev;
+        
+        /* remove the <component>/../<next>
+         *       prev-^       cur-^ ^-s 
+         */
+        size_t len = s-prev+1; /* length of path component we are removing */
+        
+        s++;
+        while(*s)
+          *dest++ = *s++;
+        *dest = '\0';
+        path_len -= len;
+
+        if(p && p < prev) {
+          /* We know the previous prev path component and we didn't do
+           * two adjustments in a row, so can adjust the
+           * pointers to continue the newly shortened path:
+           * s to the / before <next> (autoincremented by the loop)
+           * prev to the previous prev path component
+           * cur to NULL. Will be set by the next loop iteration since s
+           *   points to a '/', last_char will be set to *s. */
+          s = prev-1;
+          prev = p;
+          cur = NULL;
+          p = NULL;
+        } else {
+          /* Otherwise must start from the beginning again */
+          prev = NULL;
+          cur = NULL;
+          p = NULL;
+          s = path_buffer;
+        }
+        
+      }
+      
+    } else {
+      /* otherwise this is not a special path component so 
+       * shift the path components stack 
+       */
+      p = prev;
+      prev = cur;
+      cur = NULL;
+    }
+
+  } 
+
+  
+  if(prev && s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
+    /* Remove <component>/.. at the end of the path */
+    *prev = '\0';
+    path_len -= (s-prev);
+  }
+
+
+#if defined(RAPTOR_DEBUG)
+  if(path_len != strlen((const char*)path_buffer))
+    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+#endif
+
+  /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
+   * Remove leading /../ and /./ 
+   */
+  for(p = path_buffer; p; ) {
+    if(!strncmp((const char *)p, "/../", 4)) {
+      path_len -= 3;
+      memmove(p, p+3, path_len+1);
+    } else if(!strncmp((const char *)p, "/./", 3)) {
+      path_len -= 2;
+      memmove(p, p+2, path_len+1);
+    } else
+      break;
+  }
+
+  return path_len;
+}  
+
+
+
 /**
  * raptor_uri_resolve_uri_reference:
  * @base_uri: Base URI string
@@ -261,8 +424,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   raptor_uri_detail *base = NULL;
   raptor_uri_detail result; /* static - pointers go to inside ref or base */
   unsigned char *path_buffer = NULL;
-  unsigned char *p, *cur, *prev, *s;
-  unsigned char last_char;
+  unsigned char *p;
   size_t result_len = 0;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
@@ -312,6 +474,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     }
     memcpy(path_buffer, reference_uri, result_len + 1);
     result.path = path_buffer;
+    result.path_len = result_len;
 
     goto normalize;
   }
@@ -345,11 +508,18 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   if(ref->is_hierarchical || !base->is_hierarchical) {
     /* if the reference path is absolute OR the base URI
      * is a non-hierarchical URI then just copy the reference path
-     * to the result.
+     * to the result and normalize.
      */
-    result.path = ref->path;
+    path_buffer = RAPTOR_MALLOC(unsigned char*, ref->path_len + 1);
+    if(!path_buffer) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    result.path = path_buffer;
     result.path_len = ref->path_len;
-    goto resolve_end;
+    memcpy(path_buffer, ref->path, result.path_len);
+    path_buffer[result.path_len] = '\0';
+    goto normalize;
   }
 
 
@@ -404,161 +574,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
 
   normalize:
 
-  /* remove all "./" path components */
-  for(p = (prev = path_buffer); *p; p++) {
-    if(*p != '/')
-      continue;
-
-    if(p == (prev+1) && *prev == '.') {
-      unsigned char *dest = prev;
-      
-      p++;
-      while(*dest)
-        *dest++ = *p++;
-      *dest= '\0';
-      
-      p = prev;
-      result.path_len -=2;
-      if(!*p)
-        break;
-    } else {
-      prev = p+1;
-    }
-  }
+  result.path_len = raptor_uri_normalize_path(path_buffer, result.path_len);
   
-  if(p == (prev+1) && *prev == '.') {
-    /* Remove "." at the end of a path */
-    *prev = '\0';
-    result.path_len--;
-  }
-
-  
-#if defined(RAPTOR_DEBUG)
-  if(result.path_len != strlen((const char*)path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
-#endif
-    
-  /* Remove all "<component>/../" path components */
-
-  /*
-   * The pointers:
-   *            <component>/../<next>
-   *       prev-^       cur-^
-   * and p points to the previous prev (can be NULL)
-   */
-  prev = NULL;
-  cur = NULL;
-  p = NULL;
-  last_char='\0';
-  
-  for(s = path_buffer; *s; last_char=*s++) {
-
-    /* find the path components */
-    if(*s != '/') {
-      /* If it is the start or following a /, record a new path component */
-      if(!last_char || last_char == '/') {
-        /* Store 2 path components */
-        if(!prev)
-          prev = s;
-        else if(!cur)
-          cur = s;
-      }
-      continue;
-    }
-
-
-    /* Wait till there are two path components */
-    if(!prev || !cur)
-      continue;
-
-#if defined(RAPTOR_DEBUG)
-    if(result.path_len != strlen((const char*)path_buffer))
-      RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
-#endif
-    
-    /* If the current one is '..' */
-    if(s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
-        
-      /* and if the previous one isn't '..'
-       * (which means it is beyond the root such as a path "/foo/../..")
-       */
-      if(cur != (prev+3) || prev[0] != '.' || prev[1] != '.') {
-        unsigned char *dest = prev;
-        
-        /* remove the <component>/../<next>
-         *       prev-^       cur-^ ^-s 
-         */
-        size_t len = s-prev+1; /* length of path component we are removing */
-        
-        s++;
-        while(*s)
-          *dest++ = *s++;
-        *dest = '\0';
-        result.path_len -= len;
-
-        if(p && p < prev) {
-          /* We know the previous prev path component and we didn't do
-           * two adjustments in a row, so can adjust the
-           * pointers to continue the newly shortened path:
-           * s to the / before <next> (autoincremented by the loop)
-           * prev to the previous prev path component
-           * cur to NULL. Will be set by the next loop iteration since s
-           *   points to a '/', last_char will be set to *s. */
-          s = prev-1;
-          prev = p;
-          cur = NULL;
-          p = NULL;
-        } else {
-          /* Otherwise must start from the beginning again */
-          prev = NULL;
-          cur = NULL;
-          p = NULL;
-          s = path_buffer;
-        }
-        
-      }
-      
-    } else {
-      /* otherwise this is not a special path component so 
-       * shift the path components stack 
-       */
-      p = prev;
-      prev = cur;
-      cur = NULL;
-    }
-
-  } 
-
-  
-  if(prev && s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
-    /* Remove <component>/.. at the end of the path */
-    *prev = '\0';
-    result.path_len -= (s-prev);
-  }
-
-
-#if defined(RAPTOR_DEBUG)
-  if(result.path_len != strlen((const char*)path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)result.path_len);
-#endif
-
   resolve_end:
   
-  /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
-   * Remove leading /../ and /./ 
-   */
-  for(p = result.path; p; ) {
-    if(!strncmp((const char *)p, "/../", 4)) {
-      result.path_len -= 3;
-      memmove(p, p+3, result.path_len+1);
-    } else if(!strncmp((const char *)p, "/./", 3)) {
-      result.path_len -= 2;
-      memmove(p, p+2, result.path_len+1);
-    } else
-      break;
-  }
-  
-
   if(ref->query) {
     result.query = ref->query;
     result.query_len = ref->query_len;
