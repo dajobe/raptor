@@ -63,7 +63,7 @@ ex-27.out ex-28.out ex-29.out ex-30.out ex-31.out ex-32.out ex-33.out \
 ex-34.out ex-35.out ex-36.out ex-37.out ex-38.out ex-39.out ex-40.out \
 ex-41.out ex-42.out ex-43.out ex-44.out ex-45.out ex-46.out ex-47.out \
 ex-48.out ex-49.out ex-51.out ex-53.out ex-54.out ex-55.out ex-56.out \
-ex-57.out ex-58.out ex-61.out ex-61.out ex-63.out \
+ex-57.out ex-58.out ex-61.out ex-61.out ex-62.out ex-63.out \
 22-rdf-syntax-ns.out rdfs-namespace.out rdf-schema.out \
 owl-schema.out daml-oil.out wine.out
 
