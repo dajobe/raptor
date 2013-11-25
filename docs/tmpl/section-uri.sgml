@@ -251,6 +251,24 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_uri_uri_string_is_absolute ##### -->
+<para>
+
+</para>
+
+@uri_string: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_uri_uri_string_is_file_uri ##### -->
+<para>
+
+</para>
+
+@uri_string: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_uri_uri_string_to_filename ##### -->
 <para>
 
@@ -279,15 +297,6 @@ current access to internals of URIs such as URI scheme, path, authority.
 @len_p: 
 @fragment_p: 
 @fragment_len_p: 
-@Returns: 
-
-
-<!-- ##### FUNCTION raptor_uri_uri_string_is_file_uri ##### -->
-<para>
-
-</para>
-
-@uri_string: 
 @Returns: 
 
 
