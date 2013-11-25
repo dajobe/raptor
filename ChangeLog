@@ -1,5 +1,8 @@
 2013-11-24  Dave Beckett <dave@dajobe.org>
 
+	* NEWS.html, README.html, ChangeLog:
+	release docs and changes for 2.0.11
+
 	* tests/rdfxml/Makefile.am: Add ex-62.out to dist
 
 	* src/raptor_qname.c: autodocs
