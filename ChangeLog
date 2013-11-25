@@ -1,7 +1,7 @@
 2013-11-24  Dave Beckett  <dave@dajobe.org>
 
 	* Snapshotted raptor2_2_0_11 for 2.0.11 release (GIT
-	c194a49dcf544de66e4c1f7ed73f45b3c00a8e88)
+	74f5b7e9541d734494ef637ab1acd8f1d193ef30)
 
 	* NEWS.html, README.html, ChangeLog:
 	release docs and changes for 2.0.11
