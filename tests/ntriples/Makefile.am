@@ -33,7 +33,7 @@ nt2013-ex2.out \
 nt2013-ex3.out \
 nt2013-ex4.out
 
-NT_BAD_TEST_FILES=bad-00.nt bad-01.nt bad-02.nt bad-03.nt bad-04.nt \
+NT_BAD_TEST_FILES=bad-00.nt bad-02.nt bad-03.nt bad-04.nt \
 bad-05.nt bad-06.nt bad-07.nt
 
 NQ_TEST_FILES=testnq-1.nq testnq-optional-context.nq bug-481.nq
