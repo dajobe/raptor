@@ -740,13 +740,6 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 
-    /* Whitespace must separate the terms */
-    if(i < 2 && !isspace((int)*p)) {
-      raptor_parser_error(rdf_parser, "Missing whitespace after term");
-      rc = 1;
-      goto cleanup;
-    }
-
     /* Skip whitespace after terms */
     while(len > 0 && isspace((int)*p)) {
       p++;
