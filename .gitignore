@@ -2,8 +2,10 @@
 *.log
 *~
 .DS_Store
+.dirstamp
 .gdb_history
 .gdbinit
+CMakeTests.txt
 INSTALL
 LICENSE.txt
 Makefile
@@ -34,4 +36,3 @@ raptor2.spec
 releases
 run*
 setup.sh
-CMakeTests.txt
