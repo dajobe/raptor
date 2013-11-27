@@ -187,7 +187,12 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       /* ends on first non [A-Za-z0-9_:][-.A-Za-z0-9]* */
       result = IS_ASCII_ALPHA(c) || IS_ASCII_DIGIT(c) || c == '_' || c == ':';
       if(position)
-        result = (result || c == '-' || c == '.');
+        /* FIXME
+         * This isn't correct; '.' is allowed in positions 1..N-1 but
+         * this calling convention of character-by-character cannot
+         * check this.
+         */
+        result = (result || c == '-');
       break;
       
     case RAPTOR_TERM_CLASS_STRING:
