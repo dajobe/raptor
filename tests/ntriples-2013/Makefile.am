@@ -98,8 +98,6 @@ TEST_BAD_FILES = \
   nt-syntax-bad-num-02.nt \
   nt-syntax-bad-num-03.nt
 
-EXPECTED_GOOD_FAILURES=" nt-syntax-bnode-03.nt"
-
 # Used to make N-triples output consistent
 BASE_URI=http://www.w3.org/2013/N-TriplesTests/
 # for rdf-schema.ttl
@@ -150,12 +148,7 @@ check-good-ntriples: build-rapper $(check_good_ntriples_deps)
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
-	if test "$$failures" = $(EXPECTED_GOOD_FAILURES) ; then \
-	  $(RECHO) "Ignoring $$errors expected failures $$failures"; \
-	  result=0; \
-	else \
-	  $(RECHO) "Result: $$errors errors:$$failures"; \
-	fi; \
+	$(RECHO) "Result: $$errors errors:$$failures"; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE

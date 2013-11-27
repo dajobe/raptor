@@ -184,10 +184,10 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       break;
       
     case RAPTOR_TERM_CLASS_BNODEID:  
-      /* ends on first non [A-Za-z][A-Za-z0-9]* */
-      result = IS_ASCII_ALPHA(c);
+      /* ends on first non [A-Za-z0-9_:][-.A-Za-z0-9]* */
+      result = IS_ASCII_ALPHA(c) || IS_ASCII_DIGIT(c) || c == '_' || c == ':';
       if(position)
-        result = (result || IS_ASCII_DIGIT(c));
+        result = (result || c == '-' || c == '.');
       break;
       
     case RAPTOR_TERM_CLASS_STRING:
