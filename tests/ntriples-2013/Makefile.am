@@ -40,10 +40,34 @@ TEST_GOOD_FILES = \
   nt-syntax-str-esc-03.nt \
   nt-syntax-bnode-01.nt \
   nt-syntax-bnode-02.nt \
+  nt-syntax-bnode-03.nt \
   nt-syntax-datatypes-01.nt \
   nt-syntax-datatypes-02.nt \
-  nt-syntax-subm-01.nt
-
+  nt-syntax-subm-01.nt \
+  comment_following_triple.nt \
+  literal.nt \
+  literal_all_controls.nt \
+  literal_all_punctuation.nt \
+  literal_ascii_boundaries.nt \
+  literal_false.nt \
+  literal_true.nt \
+  literal_with_2_dquotes.nt \
+  literal_with_2_squotes.nt \
+  literal_with_BACKSPACE.nt \
+  literal_with_CARRIAGE_RETURN.nt \
+  literal_with_CHARACTER_TABULATION.nt \
+  literal_with_FORM_FEED.nt \
+  literal_with_LINE_FEED.nt \
+  literal_with_REVERSE_SOLIDUS.nt \
+  literal_with_REVERSE_SOLIDUS2.nt \
+  literal_with_UTF8_boundaries.nt \
+  literal_with_dquote.nt \
+  literal_with_numeric_escape4.nt \
+  literal_with_numeric_escape8.nt \
+  literal_with_squote.nt \
+  langtagged_string.nt \
+  lantag_with_subtag.nt \
+  minimal_whitespace.nt
 
 TEST_BAD_FILES = \
   nt-syntax-bad-uri-01.nt \
@@ -73,6 +97,8 @@ TEST_BAD_FILES = \
   nt-syntax-bad-num-01.nt \
   nt-syntax-bad-num-02.nt \
   nt-syntax-bad-num-03.nt
+
+EXPECTED_GOOD_FAILURES=" nt-syntax-bnode-03.nt literal_with_BACKSPACE.nt literal_with_FORM_FEED.nt minimal_whitespace.nt"
 
 # Used to make N-triples output consistent
 BASE_URI=http://www.w3.org/2013/N-TriplesTests/
@@ -124,7 +150,12 @@ check-good-ntriples: build-rapper $(check_good_ntriples_deps)
 	  fi; \
 	  rm -f $$name.res $$name.err; \
 	done; \
-	$(RECHO) "Result: $$errors errors:$$failures"; \
+	if test "$$failures" = $(EXPECTED_GOOD_FAILURES) ; then \
+	  $(RECHO) "Ignoring $$errors expected failures $$failures"; \
+	  result=0; \
+	else \
+	  $(RECHO) "Result: $$errors errors:$$failures"; \
+	fi
 	set -e; exit $$result
 
 if MAINTAINER_MODE
