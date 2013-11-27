@@ -98,7 +98,7 @@ TEST_BAD_FILES = \
   nt-syntax-bad-num-02.nt \
   nt-syntax-bad-num-03.nt
 
-EXPECTED_GOOD_FAILURES=" nt-syntax-bnode-03.nt literal_with_BACKSPACE.nt literal_with_FORM_FEED.nt"
+EXPECTED_GOOD_FAILURES=" nt-syntax-bnode-03.nt"
 
 # Used to make N-triples output consistent
 BASE_URI=http://www.w3.org/2013/N-TriplesTests/
