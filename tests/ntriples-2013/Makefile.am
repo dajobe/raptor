@@ -155,7 +155,7 @@ check-good-ntriples: build-rapper $(check_good_ntriples_deps)
 	  result=0; \
 	else \
 	  $(RECHO) "Result: $$errors errors:$$failures"; \
-	fi
+	fi; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
