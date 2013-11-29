@@ -351,6 +351,61 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 }
 
 
+static int
+raptor_parse_turtle_term_internal(raptor_world* world,
+                                  raptor_locator* locator,
+                                  const unsigned char **start,
+                                  unsigned char *dest,
+                                  size_t *len_p, size_t *dest_lenp,
+                                  raptor_uri** datatype_uri_p)
+{
+  const unsigned char *p = *start;
+  unsigned int position = 0;
+  /* 0 = xsd:integer; 1= xsd:decimal; 2= xsd:double */
+  short dtype = 0;
+
+  while(*len_p > 0) {
+    unsigned char c = *p;
+
+    if((position > 0 && (c == '+' || c == '-')) ||
+       !((c >= '0' && c <'9') || c == '.' || c == 'e' || c == 'E'))
+      break;
+
+    if(c == '.')
+      dtype = 1;
+
+    p++;
+    if(c == 'e' || c == 'E')
+      dtype = 2;
+
+    p++;
+    (*len_p)--;
+    if(locator) {
+      locator->column++;
+      locator->byte++;
+    }
+
+    *dest++ = c;
+
+    position++;
+  }
+
+  *dest = '\0';
+
+  if(dest_lenp)
+    *dest_lenp = p - *start;
+
+  if(dtype == 0)
+    *datatype_uri_p = raptor_uri_copy(world->xsd_integer_uri);
+  else if (dtype == 1)
+    *datatype_uri_p = raptor_uri_copy(world->xsd_decimal_uri);
+  else
+    *datatype_uri_p = raptor_uri_copy(world->xsd_double_uri);
+
+  return 0;
+}
+
+
 /*
  * raptor_ntriples_parse_term:
  * @world: raptor world
@@ -358,6 +413,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
  * @string: string input (in)
  * @len_p: pointer to length of @string (in/out)
  * @term_p: pointer to store term (out)
+ * @allow_turtle: non-0 to allow Turtle forms such as integers, boolean
  *
  * INTERNAL - Parse an N-Triples string into a #raptor_term
  *
@@ -370,7 +426,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 size_t
 raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
                            unsigned char *string, size_t *len_p,
-                           raptor_term** term_p)
+                           raptor_term** term_p, int allow_turtle)
 {
   unsigned char *p = string;
   unsigned char *dest;
@@ -423,6 +479,38 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         *term_p = raptor_new_term_from_uri(world, uri);
         raptor_free_uri(uri);
       }
+      break;
+
+    case '-':
+    case '+':
+    case '0':
+    case '1':
+    case '2':
+    case '3':
+    case '4':
+    case '5':
+    case '6':
+    case '7':
+    case '8':
+    case '9':
+      if(allow_turtle) {
+        raptor_uri* datatype_uri = NULL;
+
+        dest = p;
+
+        if(raptor_parse_turtle_term_internal(world, locator,
+                                             (const unsigned char**)&p,
+                                             dest, len_p, &term_length,
+                                             &datatype_uri)) {
+          goto fail;
+        }
+
+        *term_p = raptor_new_term_from_literal(world,
+                                               dest,
+                                               datatype_uri,
+                                               NULL /* language */);
+      } else
+        goto fail;
       break;
 
     case '"':

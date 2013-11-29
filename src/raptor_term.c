@@ -372,7 +372,7 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
  * @string: N-Triples format string (UTF-8)
  * @length: length of @string (or 0)
  *
- * Constructor - create a new term from an N-Triples format string in UTF-8
+ * Constructor - create a new term from a Turtle / N-Triples format string in UTF-8
  *
  * See also raptor_term_to_counted_string() and raptor_term_to_string()
  *
@@ -400,7 +400,7 @@ raptor_new_term_from_counted_string(raptor_world* world,
   locator.line = -1;
 
   bytes_read = raptor_ntriples_parse_term(world, &locator,
-                                          string, &length, &term);
+                                          string, &length, &term, 1);
 
   if(!bytes_read || bytes_read != length) {
     if(term)

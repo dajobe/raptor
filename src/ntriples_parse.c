@@ -241,7 +241,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
     rc = raptor_ntriples_parse_term(rdf_parser->world, &rdf_parser->locator,
-                                    p, &len, &terms[i]);
+                                    p, &len, &terms[i], 0);
     
     if(!rc) {
       rc = 1;
