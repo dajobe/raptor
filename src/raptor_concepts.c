@@ -145,6 +145,13 @@ raptor_concepts_init(raptor_world* world)
     }
   }
 
+  world->xsd_namespace_uri = raptor_new_uri(world, raptor_xmlschema_datatypes_namespace_uri);
+
+  world->xsd_boolean_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"boolean");
+  world->xsd_decimal_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"decimal");
+  world->xsd_double_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"double");
+  world->xsd_integer_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"integer");
+
   return 0;
 }
 
@@ -164,5 +171,16 @@ raptor_concepts_finish(raptor_world* world)
     if(world->terms[i])
       raptor_free_term(world->terms[i]);
   }
-  
+
+  if(world->xsd_boolean_uri)
+    raptor_free_uri(world->xsd_boolean_uri);
+  if(world->xsd_decimal_uri)
+    raptor_free_uri(world->xsd_decimal_uri);
+  if(world->xsd_double_uri)
+    raptor_free_uri(world->xsd_double_uri);
+  if(world->xsd_integer_uri)
+    raptor_free_uri(world->xsd_integer_uri);
+
+  if(world->xsd_namespace_uri)
+    raptor_free_uri(world->xsd_namespace_uri);
 }

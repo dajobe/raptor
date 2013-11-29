@@ -1435,6 +1435,12 @@ struct raptor_world_s {
   int default_generate_bnodeid_handler_base;
   char *default_generate_bnodeid_handler_prefix;
   unsigned int default_generate_bnodeid_handler_prefix_length;
+
+  raptor_uri* xsd_namespace_uri;
+  raptor_uri* xsd_boolean_uri;
+  raptor_uri* xsd_decimal_uri;
+  raptor_uri* xsd_double_uri;
+  raptor_uri* xsd_integer_uri;
 };
 
 /* raptor_www.c */
