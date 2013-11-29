@@ -166,7 +166,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   int i;
   unsigned char *p;
-  raptor_term* real_terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
+  raptor_term* terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
   int rc = 0;
   
   /* ASSERTION:
@@ -241,7 +241,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 
     rc = raptor_ntriples_parse_term(rdf_parser->world, &rdf_parser->locator,
-                                    p, &len, &real_terms[i]);
+                                    p, &len, &terms[i]);
     
     if(!rc) {
       rc = 1;
@@ -260,9 +260,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     if(1) {
-      unsigned char* c = raptor_term_to_string(real_terms[i]);
+      unsigned char* c = raptor_term_to_string(terms[i]);
       fprintf(stderr, "item %d: term '%s' type %d\n",
-              i, c, real_terms[i]->type);
+              i, c, terms[i]->type);
       raptor_free_string(c);
     }
 #endif
@@ -301,27 +301,24 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   /* Check N-Triples has only 3 terms */
   if(!ntriples_parser->is_nquads) {
-    if(real_terms[3]) {
-      raptor_free_term(real_terms[3]);
-      real_terms[3] = NULL;
+    if(terms[3]) {
+      raptor_free_term(terms[3]);
+      terms[3] = NULL;
       raptor_parser_error(rdf_parser, "N-Triples only allows 3 terms");
       goto cleanup;
     }
   }
 
-  if(real_terms[3] && real_terms[3]->type == RAPTOR_TERM_TYPE_LITERAL) {
+  if(terms[3] && terms[3]->type == RAPTOR_TERM_TYPE_LITERAL) {
     if(!ntriples_parser->literal_graph_warning++)
       raptor_parser_warning(rdf_parser, "Ignoring N-Quad literal contexts");
 
-    raptor_free_term(real_terms[3]);
-    real_terms[3] = NULL;
+    raptor_free_term(terms[3]);
+    terms[3] = NULL;
   }
 
   raptor_ntriples_generate_statement(rdf_parser, 
-                                     real_terms[0],
-                                     real_terms[1],
-                                     real_terms[2],
-                                     real_terms[3]);
+                                     terms[0], terms[1], terms[2], terms[3]);
 
   rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len);
 
