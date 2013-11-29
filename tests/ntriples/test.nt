@@ -33,7 +33,8 @@ _:anon <http://example.org/property> <http://example.org/resource2> .
 # Space is optional before final .
 <http://example.org/resource13> <http://example.org/property> <http://example.org/resource2>.
 <http://example.org/resource14> <http://example.org/property> "x".
-<http://example.org/resource15> <http://example.org/property> _:anon.
+# space is required after bnode ID before final .
+<http://example.org/resource15> <http://example.org/property> _:anon .
 
 # \u and \U escapes
 # latin small letter e with acute symbol \u00E9 - 3 UTF-8 bytes #xC3 #A9

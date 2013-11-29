@@ -78,7 +78,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
          * this calling convention of character-by-character cannot
          * check this.
          */
-        result = (result || c == '-');
+        result = (result || c == '-' || c == '.');
       break;
 
     case RAPTOR_TERM_CLASS_STRING:
@@ -198,6 +198,17 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
           if(locator) {
             locator->column--;
             locator->byte--;
+          }
+          if(term_class == RAPTOR_TERM_CLASS_BNODEID && dest[-1] == '.') {
+            /* If bnode id ended on '.' move back one */
+            dest--;
+
+            p--;
+            (*lenp)++;
+            if(locator) {
+              locator->column--;
+              locator->byte--;
+            }
           }
           break;
         }
