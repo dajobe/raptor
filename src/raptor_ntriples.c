@@ -102,7 +102,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
 
 
 /*
- * raptor_ntriples_term:
+ * raptor_ntriples_parse_term_internal:
  * @world: raptor world
  * @locator: locator object (in/out) (or NULL)
  * @start: pointer to starting character of string (in)
@@ -128,11 +128,13 @@ raptor_ntriples_term_valid(unsigned char c, int position,
  * Return value: Non 0 on failure
  **/
 static int
-raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
-                     const unsigned char **start, unsigned char *dest,
-                     size_t *lenp, size_t *dest_lenp,
-                     char end_char,
-                     raptor_ntriples_term_class term_class)
+raptor_ntriples_parse_term_internal(raptor_world* world,
+                                    raptor_locator* locator,
+                                    const unsigned char **start,
+                                    unsigned char *dest,
+                                    size_t *lenp, size_t *dest_lenp,
+                                    char end_char,
+                                    raptor_ntriples_term_class term_class)
 {
   const unsigned char *p = *start;
   unsigned char c = '\0';
@@ -370,10 +372,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         locator->byte++;
       }
 
-      if(raptor_ntriples_term(world, locator,
-                              (const unsigned char**)&p,
-                              dest, len_p, &term_length,
-                              '>', RAPTOR_TERM_CLASS_URI)) {
+      if(raptor_ntriples_parse_term_internal(world, locator,
+                                             (const unsigned char**)&p,
+                                             dest, len_p, &term_length,
+                                             '>', RAPTOR_TERM_CLASS_URI)) {
         goto fail;
       }
 
@@ -418,10 +420,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         locator->byte++;
       }
 
-      if(raptor_ntriples_term(world, locator,
-                              (const unsigned char**)&p,
-                              dest, len_p, &term_length,
-                              '"', RAPTOR_TERM_CLASS_STRING)) {
+      if(raptor_ntriples_parse_term_internal(world, locator,
+                                             (const unsigned char**)&p,
+                                             dest, len_p, &term_length,
+                                             '"', RAPTOR_TERM_CLASS_STRING)) {
         goto fail;
       }
 
@@ -449,7 +451,7 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
             goto fail;
           }
 
-          if(raptor_ntriples_term(world, locator,
+          if(raptor_ntriples_parse_term_internal(world, locator,
                                   (const unsigned char**)&p,
                                   object_literal_language, len_p, &lang_len,
                                   '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
@@ -495,7 +497,7 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
             locator->byte++;
           }
 
-          if(raptor_ntriples_term(world, locator,
+          if(raptor_ntriples_parse_term_internal(world, locator,
                                   (const unsigned char**)&p,
                                   object_literal_datatype, len_p, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI)) {
@@ -558,10 +560,11 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
           locator->byte++;
         }
 
-        if(raptor_ntriples_term(world, locator,
-                                (const unsigned char**)&p,
-                                dest, len_p, &term_length,
-                                '\0', RAPTOR_TERM_CLASS_BNODEID)) {
+        if(raptor_ntriples_parse_term_internal(world, locator,
+                                               (const unsigned char**)&p,
+                                               dest, len_p, &term_length,
+                                               '\0',
+                                               RAPTOR_TERM_CLASS_BNODEID)) {
           goto fail;
         }
 
