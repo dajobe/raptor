@@ -352,7 +352,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
  *
  * Return value: number of bytes processed or 0 on failure
  */
-int
+size_t
 raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
                            unsigned char *string, size_t *len_p,
                            raptor_term** term_p)

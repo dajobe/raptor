@@ -1356,6 +1356,9 @@ raptor_uri_to_turtle_string(raptor_world *world,
  * Note: This creates and destroys several internal objects for each
  * call so for more efficient writing, create a turtle serializer.
  *
+ * See also raptor_term_to_counted_string() which writes in simpler
+ * N-Triples with no Turtle abbreviated forms, and is quicker.
+ *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
  */
@@ -1392,6 +1395,9 @@ raptor_term_to_turtle_counted_string(raptor_term* term,
  *
  * Convert #raptor_term to a string.
  * Caller has responsibility to free the string.
+ *
+ * See also raptor_term_to_counted_string() which writes in simpler
+ * N-Triples with no Turtle abbreviated forms, and is quicker.
  *
  * Return value: the new string or NULL on failure.
  */

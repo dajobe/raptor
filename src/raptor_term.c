@@ -367,6 +367,52 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 
 
 /**
+ * raptor_new_term_from_counted_string:
+ * @world: raptor world
+ * @string: N-Triples format string (UTF-8)
+ * @length: length of @string (or 0)
+ *
+ * Constructor - create a new term from an N-Triples format string in UTF-8
+ *
+ * See also raptor_term_to_counted_string() and raptor_term_to_string()
+ *
+ * Return value: new term or NULL on failure
+*/
+raptor_term*
+raptor_new_term_from_counted_string(raptor_world* world,
+                                    unsigned char* string, size_t length)
+{
+  raptor_term* term = NULL;
+  size_t bytes_read;
+  raptor_locator locator;
+
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
+  if(!string)
+    return NULL;
+
+  if(!length)
+    length = strlen(RAPTOR_GOOD_CAST(const char*, string));
+
+  raptor_world_open(world);
+
+  memset(&locator, sizeof(locator), '\0');
+  locator.line = -1;
+
+  bytes_read = raptor_ntriples_parse_term(world, &locator,
+                                          string, &length, &term);
+
+  if(!bytes_read || bytes_read != length) {
+    if(term)
+      raptor_free_term(term);
+    term = NULL;
+  }
+
+  return term;
+}
+
+
+/**
  * raptor_term_copy:
  * @term: raptor term
  *
@@ -447,7 +493,7 @@ raptor_free_term(raptor_term *term)
  * @term: #raptor_term
  * @len_p: Pointer to location to store length of new string (if not NULL)
  *
- * Turns part of raptor term into a N-Triples format counted string.
+ * Turns a raptor term into a N-Triples format counted string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
@@ -455,6 +501,11 @@ raptor_free_term(raptor_term *term)
  * This function uses raptor_term_ntriples_write() to write to an
  * #raptor_iostream which is the prefered way to write formatted
  * output.
+ *
+ * See also raptor_new_term_from_string() to reverse this.
+ *
+ * See also raptor_term_to_turtle_string() to write as Turtle which
+ * will include Turtle syntax such as 'true' for booleans and """quoting"""
  *
  * Return value: the new string or NULL on failure.  The length of
  * the new string is returned in *@len_p if len_p is not NULL.
@@ -491,10 +542,15 @@ raptor_term_to_counted_string(raptor_term *term, size_t* len_p)
  * raptor_term_to_string:
  * @term: #raptor_term
  *
- * Turns part of raptor statement into a N-Triples format string.
+ * Turns a raptor term into a N-Triples format string.
  * 
  * Turns the given @term into an N-Triples escaped string using all the
  * escapes as defined in http://www.w3.org/TR/rdf-testcases/#ntriples
+ *
+ * See also raptor_new_term_from_counted_string() to reverse this.
+ *
+ * See also raptor_term_to_turtle_string() to write as Turtle which
+ * will include Turtle syntax such as 'true' for booleans and """quoting"""
  *
  * Return value: the new string or NULL on failure.
  **/
@@ -507,6 +563,13 @@ raptor_term_to_string(raptor_term *term)
 }
 
 
+/*
+ * raptor_term_print_as_ntriples:
+ * @term: #raptor_term
+ * @stream: FILE stream
+ *
+ * INTERNAL - Print a term as N-Triples
+ */
 int
 raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream)
 {

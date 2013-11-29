@@ -424,6 +424,7 @@
 2.0.9	-	-	-	2.0.10	int	raptor_uri_escaped_write	(raptor_uri* uri, raptor_uri* base_uri, unsigned int flags, raptor_iostream *iostr)	-
 2.0.10	-	-	-	2.0.11	int	raptor_uri_uri_string_is_absolute	(const unsigned char* uri_string)	-
 2.0.10	-	-	-	2.0.11	unsigned char*	raptor_qname_format_as_xml	(const raptor_qname *qname, size_t *length_p)	-
+2.0.11	-	-	-	2.0.12	raptor_term*	raptor_new_term_from_counted_string	(raptor_world* world, unsigned char* string, size_t length)	-
 #
 # Types
 #
