@@ -449,6 +449,244 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 }
 
 
+/*
+ * raptor_ntriples_parse_term:
+ * @rdf_parser: parser
+ * @string: string input (in)
+ * @len_p: pointer to length of @string (in/out)
+ * @term_p: pointer to store term (out)
+ *
+ * INTERNAL - Parse a string into a #raptor_term
+ *
+ * Return value: number of bytes processed or 0 on failure
+ */
+static int
+raptor_ntriples_parse_term(raptor_parser* rdf_parser,
+                           unsigned char *string, size_t *len_p,
+                           raptor_term** term_p) 
+{
+  unsigned char *p = string;
+  unsigned char *dest;
+  size_t term_length = 0;
+  
+  switch(*p) {
+    case '<':
+      dest = p;
+      
+      p++;
+      (*len_p)--;
+      rdf_parser->locator.column++;
+      rdf_parser->locator.byte++;
+      
+      if(raptor_ntriples_term(rdf_parser,
+                              (const unsigned char**)&p, 
+                              dest, len_p, &term_length, 
+                              '>', RAPTOR_TERM_CLASS_URI)) {
+        goto fail;
+      }
+      
+      if(!raptor_turtle_check_uri_string(dest)) {
+        raptor_parser_error(rdf_parser, "URI '%s' contains bad character(s)",
+                            dest);
+        goto fail;
+      }
+
+      if(1) {
+        raptor_uri *uri;
+        
+        /* Check for bad ordinal predicate */
+        if(!strncmp((const char*)dest,
+                    "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
+          int ordinal = raptor_check_ordinal(dest + 44);
+          if(ordinal <= 0)
+            raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
+        }
+        if(raptor_uri_uri_string_is_absolute(dest) <= 0) {
+          raptor_parser_error(rdf_parser, "URI '%s' is not absolute.", dest);
+          goto fail;
+        }
+          
+        uri = raptor_new_uri(rdf_parser->world, dest);
+        if(!uri) {
+          raptor_parser_error(rdf_parser, "Could not create URI for '%s'", (const char *)dest);
+          goto fail;
+        }
+
+        *term_p = raptor_new_term_from_uri(rdf_parser->world, uri);
+        raptor_free_uri(uri);
+      }
+      break;
+
+    case '"':
+      dest = p;
+      
+      p++;
+      (*len_p)--;
+      rdf_parser->locator.column++;
+      rdf_parser->locator.byte++;
+      
+      if(raptor_ntriples_term(rdf_parser,
+                              (const unsigned char**)&p,
+                              dest, len_p, &term_length,
+                              '"', RAPTOR_TERM_CLASS_STRING)) {
+        goto fail;
+      }
+
+      if(1) {
+        unsigned char *object_literal_language = NULL;
+        unsigned char *object_literal_datatype = NULL;
+        raptor_uri* datatype_uri = NULL;
+        
+        if(*len_p && *p == '@') {
+          unsigned char *q;
+          size_t lang_len;
+          
+          object_literal_language = p;
+          
+          /* Skip - */
+          p++;
+          (*len_p)--;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
+          
+          if(!*len_p) {
+            raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
+            goto fail;
+          }
+
+          if(raptor_ntriples_term(rdf_parser,
+                                  (const unsigned char**)&p,
+                                  object_literal_language, len_p, &lang_len,
+                                  '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
+            goto fail;
+          }
+
+          if(!lang_len) {
+            raptor_parser_error(rdf_parser, "Invalid language tag at @%s", p);
+            goto fail;
+          }
+            
+          /* Normalize language to lowercase
+           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+           */
+          for(q = object_literal_language; *q; q++) {
+            if(IS_ASCII_UPPER(*q))
+              *q = TO_ASCII_LOWER(*q);
+          }
+          
+        }
+
+        if(*len_p > 1 && *p == '^' && p[1] == '^') {
+
+          object_literal_datatype = p;
+          
+          /* Skip ^^ */
+          p += 2;
+          *len_p -= 2;
+          rdf_parser->locator.column += 2;
+          rdf_parser->locator.byte += 2;
+          
+          if(!*len_p || (*len_p && *p != '<')) {
+            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
+            goto fail;
+          }
+
+          p++;
+          (*len_p)--;
+          rdf_parser->locator.column++;
+          rdf_parser->locator.byte++;
+          
+          if(raptor_ntriples_term(rdf_parser,
+                                  (const unsigned char**)&p,
+                                  object_literal_datatype, len_p, NULL,
+                                  '>', RAPTOR_TERM_CLASS_URI)) {
+            goto fail;
+          }
+          
+          if(raptor_uri_uri_string_is_absolute(object_literal_datatype) <= 0) {
+            raptor_parser_error(rdf_parser, "Datatype URI '%s' is not absolute.", object_literal_datatype);
+            goto fail;
+          }
+          
+        }
+        
+        if(object_literal_datatype && object_literal_language) {
+          raptor_parser_warning(rdf_parser,
+                                "Typed literal used with a language - ignoring the language");
+          object_literal_language = NULL;
+        }
+
+        if(object_literal_datatype) {
+          datatype_uri = raptor_new_uri(rdf_parser->world,
+                                        object_literal_datatype);
+          if(!datatype_uri) {
+            raptor_parser_error(rdf_parser,
+                                "Could not create literal datatype uri '%s'",
+                                object_literal_datatype);
+            goto fail;
+          }
+          object_literal_language = NULL;
+        }
+        
+        *term_p = raptor_new_term_from_literal(rdf_parser->world,
+                                               dest,
+                                               datatype_uri,
+                                               object_literal_language);
+      }
+      
+      break;
+
+
+      case '_':
+        /* store where _ was */
+        dest = p;
+
+        p++;
+        (*len_p)--;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
+
+        if(!*len_p || (*len_p > 0 && *p != ':')) {
+          raptor_parser_error(rdf_parser, 
+                              "Illegal bNodeID - _ not followed by :");
+          goto fail;
+        }
+
+        /* Found ':' - move on */
+
+        p++;
+        (*len_p)--;
+        rdf_parser->locator.column++;
+        rdf_parser->locator.byte++;
+
+        if(raptor_ntriples_term(rdf_parser,
+                                (const unsigned char**)&p,
+                                dest, len_p, &term_length,
+                                '\0', RAPTOR_TERM_CLASS_BNODEID)) {
+          goto fail;
+        }
+
+        if(!term_length) {
+          raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
+          goto fail;
+        }
+
+        *term_p = raptor_new_term_from_blank(rdf_parser->world, dest);
+
+        break;
+
+      default:
+        raptor_parser_fatal_error(rdf_parser, "Unknown term type");
+        goto fail;
+    }
+
+  fail:
+
+  return p - string;
+}
+
+
+
 #define MAX_NTRIPLES_TERMS 4
 
 static int
@@ -459,9 +697,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   int i;
   unsigned char *p;
-  unsigned char *dest;
   raptor_term* real_terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
-  size_t term_length = 0;
   int rc = 0;
   
   /* ASSERTION:
@@ -535,221 +771,14 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 
-    switch(*p) {
-      case '<':
-        dest = p;
-
-        p++;
-        len--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
-
-        if(raptor_ntriples_term(rdf_parser,
-                                (const unsigned char**)&p, 
-                                dest, &len, &term_length, 
-                                '>', RAPTOR_TERM_CLASS_URI)) {
-          rc = 1;
-          goto cleanup;
-        }
-
-        if(!raptor_turtle_check_uri_string(dest)) {
-          raptor_parser_error(rdf_parser, "URI '%s' contains bad character(s)", dest);
-          rc = 1;
-          goto cleanup;
-        }
-
-        if(1) {
-          raptor_uri *uri;
-
-          /* Check for bad ordinal predicate */
-          if(!strncmp((const char*)dest,
-                      "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-            int ordinal = raptor_check_ordinal(dest + 44);
-            if(ordinal <= 0)
-              raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
-          }
-          if(raptor_uri_uri_string_is_absolute(dest) <= 0) {
-            raptor_parser_error(rdf_parser, "URI '%s' is not absolute.", dest);
-            goto cleanup;
-          }
-          
-          uri = raptor_new_uri(rdf_parser->world, dest);
-          if(!uri) {
-            raptor_parser_error(rdf_parser, "Could not create URI for '%s'", (const char *)dest);
-            goto cleanup;
-          }
-          real_terms[i] = raptor_new_term_from_uri(rdf_parser->world, uri);
-          raptor_free_uri(uri);
-        }
-        break;
-
-      case '"':
-        dest = p;
-
-        p++;
-        len--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
-
-        if(raptor_ntriples_term(rdf_parser,
-                                (const unsigned char**)&p,
-                                dest, &len, &term_length,
-                                '"', RAPTOR_TERM_CLASS_STRING)) {
-          rc = 1;
-          goto cleanup;
-        }
-
-        if(1) {
-          unsigned char *object_literal_language = NULL;
-          unsigned char *object_literal_datatype = NULL;
-          raptor_uri* datatype_uri = NULL;
+    rc = raptor_ntriples_parse_term(rdf_parser, p, &len, &real_terms[i]);
     
-          if(len && *p == '@') {
-            unsigned char *q;
-            size_t lang_len;
-            
-            object_literal_language = p;
-
-            /* Skip - */
-            p++;
-            len--;
-            rdf_parser->locator.column++;
-            rdf_parser->locator.byte++;
-
-            if(!len) {
-              raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
-              goto cleanup;
-            }
-
-
-            if(raptor_ntriples_term(rdf_parser,
-                                    (const unsigned char**)&p,
-                                    object_literal_language, &len, &lang_len,
-                                    '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
-              rc = 1;
-              goto cleanup;
-            }
-
-            if(!lang_len) {
-              raptor_parser_error(rdf_parser, "Invalid language tag at @%s", p);
-              rc = 1;
-              goto cleanup;
-            }
-            
-            /* Normalize language to lowercase
-             * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-             */
-            for(q = object_literal_language; *q; q++) {
-              if(IS_ASCII_UPPER(*q))
-                *q = TO_ASCII_LOWER(*q);
-            }
-
-          }
-
-          if(len >1 && *p == '^' && p[1] == '^') {
-
-            object_literal_datatype = p;
-
-            /* Skip ^^ */
-            p += 2;
-            len -= 2;
-            rdf_parser->locator.column += 2;
-            rdf_parser->locator.byte += 2;
-
-            if(!len || (len && *p != '<')) {
-              raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
-              goto cleanup;
-            }
-
-            p++;
-            len--;
-            rdf_parser->locator.column++;
-            rdf_parser->locator.byte++;
-
-            if(raptor_ntriples_term(rdf_parser,
-                                    (const unsigned char**)&p,
-                                    object_literal_datatype, &len, NULL,
-                                    '>', RAPTOR_TERM_CLASS_URI)) {
-              rc = 1;
-              goto cleanup;
-            }
-
-            if(raptor_uri_uri_string_is_absolute(object_literal_datatype) <= 0) {
-              raptor_parser_error(rdf_parser, "Datatype URI '%s' is not absolute.", object_literal_datatype);
-              rc = 1;
-              goto cleanup;
-            }
-
-          }
-
-          if(object_literal_datatype && object_literal_language) {
-            raptor_parser_warning(rdf_parser, "Typed literal used with a language - ignoring the language");
-            object_literal_language = NULL;
-          }
-
-          if(object_literal_datatype) {
-            datatype_uri = raptor_new_uri(rdf_parser->world,
-                                          object_literal_datatype);
-            if(!datatype_uri) {
-              raptor_parser_error(rdf_parser, "Could not create literal datatype uri '%s'", object_literal_datatype);
-              goto cleanup;
-            }
-            object_literal_language = NULL;
-          }
-          
-          real_terms[i] = raptor_new_term_from_literal(rdf_parser->world,
-                                                       dest,
-                                                       datatype_uri,
-                                                       object_literal_language);
-        }
-
-        break;
-
-
-      case '_':
-        /* store where _ was */
-        dest = p;
-
-        p++;
-        len--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
-
-        if(!len || (len > 0 && *p != ':')) {
-          raptor_parser_error(rdf_parser, "Illegal bNodeID - _ not followed by :");
-          goto cleanup;
-        }
-
-        /* Found ':' - move on */
-
-        p++;
-        len--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
-
-        if(raptor_ntriples_term(rdf_parser,
-                                (const unsigned char**)&p,
-                                dest, &len, &term_length,
-                                '\0', RAPTOR_TERM_CLASS_BNODEID)) {
-          rc = 1;
-          goto cleanup;
-        }
-
-        if(!term_length) {
-          raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
-          goto cleanup;
-        }
-
-        real_terms[i] = raptor_new_term_from_blank(rdf_parser->world, dest);
-
-        break;
-
-      default:
-        raptor_parser_fatal_error(rdf_parser, "Unknown term type");
-        rc = 1;
-        goto cleanup;
+    if(!rc) {
+      rc = 1;
+      goto cleanup;
     }
-
+    p += rc;
+    rc = 0;
 
     /* Skip whitespace after terms */
     while(len > 0 && isspace((int)*p)) {
