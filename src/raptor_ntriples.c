@@ -103,7 +103,8 @@ raptor_ntriples_term_valid(unsigned char c, int position,
 
 /*
  * raptor_ntriples_term:
- * @parser: NTriples parser
+ * @world: raptor world
+ * @locator: locator object (in/out) (or NULL)
  * @start: pointer to starting character of string (in)
  * @dest: destination of string (in)
  * @lenp: pointer to length of string (in/out)
@@ -111,16 +112,16 @@ raptor_ntriples_term_valid(unsigned char c, int position,
  * @end_char: string ending character
  * @class: string class
  *
- * Parse an N-Triples term with escapes.
+ * INTERNAL - Parse an N-Triples term with escapes.
  *
  * Relies that @dest is long enough; it need only be as large as the
  * input string @start since when UTF-8 encoding, the escapes are
  * removed and the result is always less than or equal to length of
  * input.
  *
- * N-Triples strings/URIs are written in ASCII at present; characters
- * outside the printable ASCII range are discarded with a warning.
- * See the grammar for full details of the allowed ranges.
+ * N-Triples strings / URIs are written in ASCII at present;
+ * characters outside the printable ASCII range are discarded with a
+ * warning.  See the grammar for full details of the allowed ranges.
  *
  * UTF-8 and the \u and \U esapes are both allowed.
  *
@@ -148,8 +149,10 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
 
     p++;
     (*lenp)--;
-    locator->column++;
-    locator->byte++;
+    if(locator) {
+      locator->column++;
+      locator->byte++;
+    }
 
     if(c > 0x7f) {
       /* just copy the UTF-8 bytes through */
@@ -167,8 +170,10 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
 
       p += unichar_len;
       (*lenp) -= unichar_len;
-      locator->column += unichar_len;
-      locator->byte += unichar_len;
+      if(locator) {
+        locator->column += unichar_len;
+        locator->byte += unichar_len;
+      }
       continue;
     }
 
@@ -188,8 +193,10 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
           /* it's the end - so rewind 1 to save next char */
           p--;
           (*lenp)++;
-          locator->column--;
-          locator->byte--;
+          if(locator) {
+            locator->column--;
+            locator->byte--;
+          }
           break;
         }
       }
@@ -209,8 +216,10 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
 
     p++;
     (*lenp)--;
-    locator->column++;
-    locator->byte++;
+    if(locator) {
+      locator->column++;
+      locator->byte++;
+    }
 
     switch(c) {
       case '"':
@@ -278,8 +287,10 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
 
         p += ulen;
         (*lenp) -= ulen;
-        locator->column += RAPTOR_GOOD_CAST(int, ulen);
-        locator->byte += RAPTOR_GOOD_CAST(int, ulen);
+        if(locator) {
+          locator->column += RAPTOR_GOOD_CAST(int, ulen);
+          locator->byte += RAPTOR_GOOD_CAST(int, ulen);
+        }
 
         if(unichar > raptor_unicode_max_codepoint) {
           raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal Unicode character with code point #x%lX (max #x%lX).", unichar, raptor_unicode_max_codepoint);
@@ -330,7 +341,7 @@ raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
 /*
  * raptor_ntriples_parse_term:
  * @world: raptor world
- * @locator: raptor locator (in/out)
+ * @locator: raptor locator (in/out) (or NULL)
  * @string: string input (in)
  * @len_p: pointer to length of @string (in/out)
  * @term_p: pointer to store term (out)
@@ -354,8 +365,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
       p++;
       (*len_p)--;
-      locator->column++;
-      locator->byte++;
+      if(locator) {
+        locator->column++;
+        locator->byte++;
+      }
 
       if(raptor_ntriples_term(world, locator,
                               (const unsigned char**)&p,
@@ -400,8 +413,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
       p++;
       (*len_p)--;
-      locator->column++;
-      locator->byte++;
+      if(locator) {
+        locator->column++;
+        locator->byte++;
+      }
 
       if(raptor_ntriples_term(world, locator,
                               (const unsigned char**)&p,
@@ -424,8 +439,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
           /* Skip - */
           p++;
           (*len_p)--;
-          locator->column++;
-          locator->byte++;
+          if(locator) {
+            locator->column++;
+            locator->byte++;
+          }
 
           if(!*len_p) {
             raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing language after \"string\"-");
@@ -461,8 +478,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
           /* Skip ^^ */
           p += 2;
           *len_p -= 2;
-          locator->column += 2;
-          locator->byte += 2;
+          if(locator) {
+            locator->column += 2;
+            locator->byte += 2;
+          }
 
           if(!*len_p || (*len_p && *p != '<')) {
             raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
@@ -471,8 +490,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
           p++;
           (*len_p)--;
-          locator->column++;
-          locator->byte++;
+          if(locator) {
+            locator->column++;
+            locator->byte++;
+          }
 
           if(raptor_ntriples_term(world, locator,
                                   (const unsigned char**)&p,
@@ -518,8 +539,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
         p++;
         (*len_p)--;
-        locator->column++;
-        locator->byte++;
+        if(locator) {
+          locator->column++;
+          locator->byte++;
+        }
 
         if(!*len_p || (*len_p > 0 && *p != ':')) {
           raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal bNodeID - _ not followed by :");
@@ -530,8 +553,10 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
         p++;
         (*len_p)--;
-        locator->column++;
-        locator->byte++;
+        if(locator) {
+          locator->column++;
+          locator->byte++;
+        }
 
         if(raptor_ntriples_term(world, locator,
                                 (const unsigned char**)&p,
