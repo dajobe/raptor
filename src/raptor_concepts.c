@@ -146,11 +146,24 @@ raptor_concepts_init(raptor_world* world)
   }
 
   world->xsd_namespace_uri = raptor_new_uri(world, raptor_xmlschema_datatypes_namespace_uri);
+  if(!world->xsd_namespace_uri)
+    return 1;
 
   world->xsd_boolean_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"boolean");
+  if(!world->xsd_boolean_uri)
+    return 1;
+
   world->xsd_decimal_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"decimal");
+  if(!world->xsd_decimal_uri)
+    return 1;
+
   world->xsd_double_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"double");
+  if(!world->xsd_double_uri)
+    return 1;
+
   world->xsd_integer_uri = raptor_new_uri_from_uri_local_name(world, world->xsd_namespace_uri, (const unsigned char*)"integer");
+  if(!world->xsd_integer_uri)
+    return 1;
 
   return 0;
 }

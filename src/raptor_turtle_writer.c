@@ -76,11 +76,6 @@ struct raptor_turtle_writer_s {
 
   /* indentation per level if formatting */
   int indent;
-
-  raptor_uri* xsd_boolean_uri;
-  raptor_uri* xsd_decimal_uri;
-  raptor_uri* xsd_double_uri;
-  raptor_uri* xsd_integer_uri;
 };
 
 
@@ -188,11 +183,6 @@ raptor_new_turtle_writer(raptor_world* world,
     raptor_turtle_writer_base(turtle_writer, base_uri);
   turtle_writer->base_uri = base_uri;
 
-  turtle_writer->xsd_boolean_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  turtle_writer->xsd_decimal_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
-  turtle_writer->xsd_double_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  turtle_writer->xsd_integer_uri = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
-  
   return turtle_writer;
 }
 
@@ -212,15 +202,6 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 
   if(turtle_writer->nstack && turtle_writer->my_nstack)
     raptor_free_namespaces(turtle_writer->nstack);
-
-  if(turtle_writer->xsd_boolean_uri)
-    raptor_free_uri(turtle_writer->xsd_boolean_uri);
-  if(turtle_writer->xsd_decimal_uri)
-    raptor_free_uri(turtle_writer->xsd_decimal_uri);
-  if(turtle_writer->xsd_double_uri)
-    raptor_free_uri(turtle_writer->xsd_double_uri);
-  if(turtle_writer->xsd_integer_uri)
-    raptor_free_uri(turtle_writer->xsd_integer_uri);
 
   RAPTOR_FREE(raptor_turtle_writer, turtle_writer);
 }
@@ -430,7 +411,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   /* typed literal special cases */
   if(datatype) {
     /* integer */
-    if(raptor_uri_equals(datatype, turtle_writer->xsd_integer_uri)) {
+    if(raptor_uri_equals(datatype, turtle_writer->world->xsd_integer_uri)) {
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       long gcc_is_stupid = strtol((const char*)s, &endptr, 10);
       if(endptr != (char*)s && !*endptr) {
@@ -443,8 +424,8 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* double, decimal */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_double_uri) ||
-      raptor_uri_equals(datatype, turtle_writer->xsd_decimal_uri)) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->world->xsd_double_uri) ||
+      raptor_uri_equals(datatype, turtle_writer->world->xsd_decimal_uri)) {
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
       double gcc_is_doubly_stupid = strtod((const char*)s, &endptr);
       if(endptr != (char*)s && !*endptr) {
@@ -457,7 +438,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
       }
 
     /* boolean */
-    } else if(raptor_uri_equals(datatype, turtle_writer->xsd_boolean_uri)) {
+    } else if(raptor_uri_equals(datatype, turtle_writer->world->xsd_boolean_uri)) {
       if(!strcmp((const char*)s, "0") || !strcmp((const char*)s, "false")) {
         raptor_iostream_string_write("false", turtle_writer->iostr);
         written = 1;
@@ -957,11 +938,9 @@ main(int argc, char *argv[])
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
-  datatype = raptor_new_uri(world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
   raptor_turtle_writer_literal(turtle_writer, nstack,
                                (const unsigned char*)"10.0", NULL,
-                               datatype);
-  raptor_free_uri(datatype);
+                               world->xsd_decimal_uri);
 
   raptor_turtle_writer_newline(turtle_writer);
 

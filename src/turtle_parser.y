@@ -907,11 +907,7 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource integer=%s\n", $1);
 #endif
-  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#integer");
-  if(!uri) {
-    RAPTOR_FREE(char*, $1);
-    YYERROR;
-  }
+  uri = raptor_uri_copy(((raptor_parser*)rdf_parser)->world->xsd_integer_uri);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
   RAPTOR_FREE(char*, $1);
@@ -925,11 +921,7 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource double=%s\n", $1);
 #endif
-  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#double");
-  if(!uri) {
-    RAPTOR_FREE(char*, $1);
-    YYERROR;
-  }
+  uri = raptor_uri_copy(((raptor_parser*)rdf_parser)->world->xsd_double_uri);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     $1, uri, NULL);
   RAPTOR_FREE(char*, $1);
@@ -943,7 +935,7 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
-  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#decimal");
+  uri = raptor_uri_copy(((raptor_parser*)rdf_parser)->world->xsd_decimal_uri);
   if(!uri) {
     RAPTOR_FREE(char*, $1);
     YYERROR;
@@ -961,9 +953,7 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean true\n", stderr);
 #endif
-  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  if(!uri)
-    YYERROR;
+  uri = raptor_uri_copy(((raptor_parser*)rdf_parser)->world->xsd_boolean_uri);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     (const unsigned char*)"true", uri, NULL);
   raptor_free_uri(uri);
@@ -976,9 +966,7 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean false\n", stderr);
 #endif
-  uri = raptor_new_uri(((raptor_parser*)rdf_parser)->world, (const unsigned char*)"http://www.w3.org/2001/XMLSchema#boolean");
-  if(!uri)
-    YYERROR;
+  uri = raptor_uri_copy(((raptor_parser*)rdf_parser)->world->xsd_boolean_uri);
   $$ = raptor_new_term_from_literal(((raptor_parser*)rdf_parser)->world,
                                     (const unsigned char*)"false", uri, NULL);
   raptor_free_uri(uri);
