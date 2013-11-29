@@ -210,7 +210,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
     }
 
     if(!*lenp) {
-      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "\\ at end of line");
+      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "\\ at end of input.");
       return 0;
     }
 
@@ -259,7 +259,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
         ulen = (c == 'u') ? 4 : 8;
 
         if(*lenp < ulen) {
-          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "%c over end of line", c);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "%c over end of input.", c);
           return 0;
         }
 
@@ -324,7 +324,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 
 
   if(end_char && !end_char_seen) {
-    raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing terminating '%c' before end of line.", end_char);
+    raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing terminating '%c' before end of input.", end_char);
     return 1;
   }
 
