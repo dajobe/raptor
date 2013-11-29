@@ -348,7 +348,11 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
  * @len_p: pointer to length of @string (in/out)
  * @term_p: pointer to store term (out)
  *
- * INTERNAL - Parse a string into a #raptor_term
+ * INTERNAL - Parse an N-Triples string into a #raptor_term
+ *
+ * The @len_p destination and @locator fields are modified as parsing
+ * proceeds to be used in error messages.  The final value is written
+ * into the #raptor_term pointed at by @term_p
  *
  * Return value: number of bytes processed or 0 on failure
  */
