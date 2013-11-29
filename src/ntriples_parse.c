@@ -221,7 +221,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
     if(i == 2) {
       /* object term (2): expect either <URI> or _:name or literal */
-      if(*p != '<' && *p != '_' && *p != '"' && *p != 'x') {
+      if(*p != '<' && *p != '_' && *p != '"') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
         goto cleanup;
       }
