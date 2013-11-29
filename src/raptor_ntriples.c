@@ -58,8 +58,7 @@ typedef enum {
 
 
 static int
-raptor_ntriples_term_valid(raptor_parser* rdf_parser,
-                           unsigned char c, int position,
+raptor_ntriples_term_valid(unsigned char c, int position,
                            raptor_ntriples_term_class term_class)
 {
   int result = 0;
@@ -95,8 +94,7 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
       break;
 
     default:
-      raptor_parser_error(rdf_parser, "Unknown N-Triples term class %d",
-                          term_class);
+      RAPTOR_DEBUG2("Unknown N-Triples term class %d", term_class);
   }
 
   return result;
@@ -129,7 +127,7 @@ raptor_ntriples_term_valid(raptor_parser* rdf_parser,
  * Return value: Non 0 on failure
  **/
 static int
-raptor_ntriples_term(raptor_parser* rdf_parser,
+raptor_ntriples_term(raptor_world* world, raptor_locator* locator,
                      const unsigned char **start, unsigned char *dest,
                      size_t *lenp, size_t *dest_lenp,
                      char end_char,
@@ -150,15 +148,15 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
     p++;
     (*lenp)--;
-    rdf_parser->locator.column++;
-    rdf_parser->locator.byte++;
+    locator->column++;
+    locator->byte++;
 
     if(c > 0x7f) {
       /* just copy the UTF-8 bytes through */
       int unichar_len;
       unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
       if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
-        raptor_parser_error(rdf_parser, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
         /* UTF-8 encoding had an error or ended in the middle of a string */
         return 1;
       }
@@ -169,8 +167,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
       p += unichar_len;
       (*lenp) -= unichar_len;
-      rdf_parser->locator.column += unichar_len;
-      rdf_parser->locator.byte += unichar_len;
+      locator->column += unichar_len;
+      locator->byte += unichar_len;
       continue;
     }
 
@@ -181,17 +179,17 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
       }
 
-      if(!raptor_ntriples_term_valid(rdf_parser, c, position, term_class)) {
+      if(!raptor_ntriples_term_valid(c, position, term_class)) {
         if(end_char) {
           /* end char was expected, so finding an invalid thing is an error */
-          raptor_parser_error(rdf_parser, "Missing terminating '%c' (found '%c')", end_char, c);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing terminating '%c' (found '%c')", end_char, c);
           return 0;
         } else {
           /* it's the end - so rewind 1 to save next char */
           p--;
           (*lenp)++;
-          rdf_parser->locator.column--;
-          rdf_parser->locator.byte--;
+          locator->column--;
+          locator->byte--;
           break;
         }
       }
@@ -203,7 +201,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
     }
 
     if(!*lenp) {
-      raptor_parser_error(rdf_parser, "\\ at end of line");
+      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "\\ at end of line");
       return 0;
     }
 
@@ -211,8 +209,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
     p++;
     (*lenp)--;
-    rdf_parser->locator.column++;
-    rdf_parser->locator.byte++;
+    locator->column++;
+    locator->byte++;
 
     switch(c) {
       case '"':
@@ -250,7 +248,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         ulen = (c == 'u') ? 4 : 8;
 
         if(*lenp < ulen) {
-          raptor_parser_error(rdf_parser, "%c over end of line", c);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "%c over end of line", c);
           return 0;
         }
 
@@ -261,8 +259,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
           for(ii = 0; ii < ulen; ii++) {
             char cc = p[ii];
             if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
-              raptor_parser_error(rdf_parser,
-                            "N-Triples string error - illegal hex digit %c in Unicode escape '%c%s...'",
+              raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "N-Triples string error - illegal hex digit %c in Unicode escape '%c%s...'",
                             cc, c, p);
               n = 1;
               break;
@@ -274,28 +271,24 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
           n = sscanf((const char*)p, ((ulen == 4) ? "%04lx" : "%08lx"), &unichar);
           if(n != 1) {
-            raptor_parser_error(rdf_parser, "Illegal Uncode escape '%c%s...'", c, p);
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal Uncode escape '%c%s...'", c, p);
             break;
           }
         }
 
         p += ulen;
         (*lenp) -= ulen;
-        rdf_parser->locator.column += RAPTOR_GOOD_CAST(int, ulen);
-        rdf_parser->locator.byte += RAPTOR_GOOD_CAST(int, ulen);
+        locator->column += RAPTOR_GOOD_CAST(int, ulen);
+        locator->byte += RAPTOR_GOOD_CAST(int, ulen);
 
         if(unichar > raptor_unicode_max_codepoint) {
-          raptor_parser_error(rdf_parser,
-                              "Illegal Unicode character with code point #x%lX (max #x%lX).",
-                              unichar, raptor_unicode_max_codepoint);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal Unicode character with code point #x%lX (max #x%lX).", unichar, raptor_unicode_max_codepoint);
           break;
         }
 
         unichar_width = raptor_unicode_utf8_string_put_char(unichar, dest, 4);
         if(unichar_width < 0) {
-          raptor_parser_error(rdf_parser,
-                              "Illegal Unicode character with code point #x%lX.",
-                              unichar);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal Unicode character with code point #x%lX.", unichar);
           break;
         }
 
@@ -309,9 +302,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
         break;
 
       default:
-        raptor_parser_error(rdf_parser,
-                            "Illegal string escape \\%c in \"%s\"", c,
-                            (char*)start);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal string escape \\%c in \"%s\"", c, (char*)start);
         return 0;
     }
 
@@ -320,7 +311,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
 
   if(end_char && !end_char_seen) {
-    raptor_parser_error(rdf_parser, "Missing terminating '%c' before end of line.", end_char);
+    raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing terminating '%c' before end of line.", end_char);
     return 1;
   }
 
@@ -338,7 +329,8 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
 
 /*
  * raptor_ntriples_parse_term:
- * @rdf_parser: parser
+ * @world: raptor world
+ * @locator: raptor locator (in/out)
  * @string: string input (in)
  * @len_p: pointer to length of @string (in/out)
  * @term_p: pointer to store term (out)
@@ -348,7 +340,7 @@ raptor_ntriples_term(raptor_parser* rdf_parser,
  * Return value: number of bytes processed or 0 on failure
  */
 int
-raptor_ntriples_parse_term(raptor_parser* rdf_parser,
+raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
                            unsigned char *string, size_t *len_p,
                            raptor_term** term_p)
 {
@@ -362,10 +354,10 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
 
       p++;
       (*len_p)--;
-      rdf_parser->locator.column++;
-      rdf_parser->locator.byte++;
+      locator->column++;
+      locator->byte++;
 
-      if(raptor_ntriples_term(rdf_parser,
+      if(raptor_ntriples_term(world, locator,
                               (const unsigned char**)&p,
                               dest, len_p, &term_length,
                               '>', RAPTOR_TERM_CLASS_URI)) {
@@ -373,8 +365,7 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
       }
 
       if(!raptor_turtle_check_uri_string(dest)) {
-        raptor_parser_error(rdf_parser, "URI '%s' contains bad character(s)",
-                            dest);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "URI '%s' contains bad character(s)", dest);
         goto fail;
       }
 
@@ -386,20 +377,20 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
                     "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
           int ordinal = raptor_check_ordinal(dest + 44);
           if(ordinal <= 0)
-            raptor_parser_error(rdf_parser, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal ordinal value %d in property '%s'.", ordinal, dest);
         }
         if(raptor_uri_uri_string_is_absolute(dest) <= 0) {
-          raptor_parser_error(rdf_parser, "URI '%s' is not absolute.", dest);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "URI '%s' is not absolute.", dest);
           goto fail;
         }
 
-        uri = raptor_new_uri(rdf_parser->world, dest);
+        uri = raptor_new_uri(world, dest);
         if(!uri) {
-          raptor_parser_error(rdf_parser, "Could not create URI for '%s'", (const char *)dest);
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Could not create URI for '%s'", (const char *)dest);
           goto fail;
         }
 
-        *term_p = raptor_new_term_from_uri(rdf_parser->world, uri);
+        *term_p = raptor_new_term_from_uri(world, uri);
         raptor_free_uri(uri);
       }
       break;
@@ -409,10 +400,10 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
 
       p++;
       (*len_p)--;
-      rdf_parser->locator.column++;
-      rdf_parser->locator.byte++;
+      locator->column++;
+      locator->byte++;
 
-      if(raptor_ntriples_term(rdf_parser,
+      if(raptor_ntriples_term(world, locator,
                               (const unsigned char**)&p,
                               dest, len_p, &term_length,
                               '"', RAPTOR_TERM_CLASS_STRING)) {
@@ -433,15 +424,15 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
           /* Skip - */
           p++;
           (*len_p)--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
+          locator->column++;
+          locator->byte++;
 
           if(!*len_p) {
-            raptor_parser_error(rdf_parser, "Missing language after \"string\"-");
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing language after \"string\"-");
             goto fail;
           }
 
-          if(raptor_ntriples_term(rdf_parser,
+          if(raptor_ntriples_term(world, locator,
                                   (const unsigned char**)&p,
                                   object_literal_language, len_p, &lang_len,
                                   '\0', RAPTOR_TERM_CLASS_LANGUAGE)) {
@@ -449,7 +440,7 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
           }
 
           if(!lang_len) {
-            raptor_parser_error(rdf_parser, "Invalid language tag at @%s", p);
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Invalid language tag at @%s", p);
             goto fail;
           }
 
@@ -470,20 +461,20 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
           /* Skip ^^ */
           p += 2;
           *len_p -= 2;
-          rdf_parser->locator.column += 2;
-          rdf_parser->locator.byte += 2;
+          locator->column += 2;
+          locator->byte += 2;
 
           if(!*len_p || (*len_p && *p != '<')) {
-            raptor_parser_error(rdf_parser, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing datatype URI-ref in\"string\"^^<URI-ref> after ^^");
             goto fail;
           }
 
           p++;
           (*len_p)--;
-          rdf_parser->locator.column++;
-          rdf_parser->locator.byte++;
+          locator->column++;
+          locator->byte++;
 
-          if(raptor_ntriples_term(rdf_parser,
+          if(raptor_ntriples_term(world, locator,
                                   (const unsigned char**)&p,
                                   object_literal_datatype, len_p, NULL,
                                   '>', RAPTOR_TERM_CLASS_URI)) {
@@ -491,31 +482,28 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
           }
 
           if(raptor_uri_uri_string_is_absolute(object_literal_datatype) <= 0) {
-            raptor_parser_error(rdf_parser, "Datatype URI '%s' is not absolute.", object_literal_datatype);
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Datatype URI '%s' is not absolute.", object_literal_datatype);
             goto fail;
           }
 
         }
 
         if(object_literal_datatype && object_literal_language) {
-          raptor_parser_warning(rdf_parser,
-                                "Typed literal used with a language - ignoring the language");
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Typed literal used with a language - ignoring the language");
           object_literal_language = NULL;
         }
 
         if(object_literal_datatype) {
-          datatype_uri = raptor_new_uri(rdf_parser->world,
+          datatype_uri = raptor_new_uri(world,
                                         object_literal_datatype);
           if(!datatype_uri) {
-            raptor_parser_error(rdf_parser,
-                                "Could not create literal datatype uri '%s'",
-                                object_literal_datatype);
+            raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Could not create literal datatype uri '%s'", object_literal_datatype);
             goto fail;
           }
           object_literal_language = NULL;
         }
 
-        *term_p = raptor_new_term_from_literal(rdf_parser->world,
+        *term_p = raptor_new_term_from_literal(world,
                                                dest,
                                                datatype_uri,
                                                object_literal_language);
@@ -530,12 +518,11 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
 
         p++;
         (*len_p)--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
+        locator->column++;
+        locator->byte++;
 
         if(!*len_p || (*len_p > 0 && *p != ':')) {
-          raptor_parser_error(rdf_parser,
-                              "Illegal bNodeID - _ not followed by :");
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal bNodeID - _ not followed by :");
           goto fail;
         }
 
@@ -543,10 +530,10 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
 
         p++;
         (*len_p)--;
-        rdf_parser->locator.column++;
-        rdf_parser->locator.byte++;
+        locator->column++;
+        locator->byte++;
 
-        if(raptor_ntriples_term(rdf_parser,
+        if(raptor_ntriples_term(world, locator,
                                 (const unsigned char**)&p,
                                 dest, len_p, &term_length,
                                 '\0', RAPTOR_TERM_CLASS_BNODEID)) {
@@ -554,16 +541,16 @@ raptor_ntriples_parse_term(raptor_parser* rdf_parser,
         }
 
         if(!term_length) {
-          raptor_parser_error(rdf_parser, "Bad or missing bNodeID after _:");
+          raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Bad or missing bNodeID after _:");
           goto fail;
         }
 
-        *term_p = raptor_new_term_from_blank(rdf_parser->world, dest);
+        *term_p = raptor_new_term_from_blank(world, dest);
 
         break;
 
       default:
-        raptor_parser_fatal_error(rdf_parser, "Unknown term type");
+        RAPTOR_DEBUG2("Unknown term type '%c'", *p);
         goto fail;
     }
 
