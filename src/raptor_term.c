@@ -402,7 +402,7 @@ raptor_new_term_from_counted_string(raptor_world* world,
   bytes_read = raptor_ntriples_parse_term(world, &locator,
                                           string, &length, &term, 1);
 
-  if(!bytes_read || bytes_read != length) {
+  if(!bytes_read || length != 0) {
     if(term)
       raptor_free_term(term);
     term = NULL;
