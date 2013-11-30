@@ -373,9 +373,7 @@ raptor_parse_turtle_term_internal(raptor_world* world,
 
     if(c == '.')
       dtype = 1;
-
-    p++;
-    if(c == 'e' || c == 'E')
+    else if(c == 'e' || c == 'E')
       dtype = 2;
 
     p++;
@@ -394,6 +392,8 @@ raptor_parse_turtle_term_internal(raptor_world* world,
 
   if(dest_lenp)
     *dest_lenp = p - *start;
+
+  *start = p;
 
   if(dtype == 0)
     *datatype_uri_p = raptor_uri_copy(world->xsd_integer_uri);
