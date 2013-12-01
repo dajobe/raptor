@@ -15,6 +15,26 @@
 </p>
 
 
+<h3>Parser changes</h3>
+
+<p>N-Triples parser was updated to pass the test suite to support all of
+<a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
+N-Triples - A line-based syntax for an RDF graph</a> (aka N-Triples 2013).
+This main was to allow <code>\b</code> and <code>\f</code> escapes
+and fix the allowed blank node identifier characters.
+</p>
+
+<h3>Term class changes</h3>
+
+<p>Added <code>raptor_new_term_from_counted_string()</code> to
+create a term from a Turtle or N-Triples string syntax.  This is
+the opposite of <code>raptor_term_to_turtle_counted_string()</code>
+and <code>raptor_term_to_turtle_string()</code> and also reads the
+strings created by <code>raptor_term_to_counted_string()</code> and
+<code>raptor_term_to_string()</code>.
+</p>
+
+
 <h2 id="rel2_0_11"><a name="rel2_0_11">Raptor2 2.0.11 changes</a></h2>
 
 <p>Issues Fixed:</p>
