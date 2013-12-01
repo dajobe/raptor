@@ -1,7 +1,164 @@
-2013-11-24  Dave Beckett  <dave@dajobe.org>
+2013-11-30  Dave Beckett <dave@dajobe.org>
 
-	* Snapshotted raptor2_2_0_11 for 2.0.11 release (GIT
+	* src/raptor_term.c: Port changes from rasqal_ntriples.c
+
+	* src/raptor_ntriples.c:
+	(raptor_parse_turtle_term_internal): Fix parsing
+
+2013-11-29  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c, src/raptor_term.c: Allow reading Turtle
+	numeric strings
+
+	(raptor_ntriples_parse_term): Gains a allow_turtle argument.
+
+	(raptor_parse_turtle_term_internal): Added to implement numerics:
+	xsd:integer, xsd:decimal and xsd:double.
+
+	(raptor_new_term_from_counted_string): Update code and docs to
+	note it allow reading Turtle numeric literals.
+
+	* src/raptor_concepts.c, src/raptor_turtle_writer.c,
+	src/turtle_parser.y: Use XSD namespace, datatype URIs from
+	raptor_world
+
+	* src/raptor_concepts.c, src/raptor_internal.h: Declare xsd
+	datatypes uris in raptor_world
+
+	* src/raptor_json_writer.c: Remove dead code protected by
+	RAPTOR_JSON_WRITER_DATATYPES
+
+2013-11-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_ntriples.c, tests/ntriples/test.nt: Check for
+	N-Triples blank node '.' in positions 2-(N-1)
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term_internal): Internal docs
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_ntriples.c,
+	src/raptor_serialize_turtle.c, src/raptor_term.c: Added
+	raptor_new_term_from_counted_string to write a term as N-Triples
+
+	(raptor_new_term_from_counted_string): Added
+
+	(raptor_term_to_turtle_counted_string)
+	(raptor_term_to_turtle_string): Added references to new function
+	and N-Triples versions below.
+
+	(raptor_term_to_counted_string, raptor_term_to_string): Added
+	reference to new function and Turtle versions above.
+
+	* docs/raptor-1-to-2-map.tsv: fix 2.0.11 changes
+
+	* src/raptor_ntriples.c: replace references to line with input
+
+	* src/ntriples_parse.c: real_terms -> terms
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): No 'x' literal
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term_internal): Renamed from
+	raptor_ntriples_term
+
+	* src/raptor_ntriples.c: Make locator optional
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c: Pull all reference to parser out of
+	raptor_ntriples code
+
+	Pass in world and locator objects, just to return errors.
+
+	* src/Makefile.am, src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c: Add raptor_ntriples.c module exporting
+	raptor_ntriples_parse_term Make N-Triples parser use it
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_term): pull out of
+	raptor_ntriples_parse_line()
+
+2013-11-27  Dave Beckett <dave@dajobe.org>
+
+	* .gitignore: ignore .dirstamp
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bad-01.nt: N-Triples
+	2008 test bad-01.nt is now valid N-Triples 2013
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_term_valid): Do not allow . in bnode
+
+	This isn't correct; '.' is allowed in positions 1..N-1 but this
+	calling convention of character-by-character cannot check this.
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: fix bnode ID check
+
+	(raptor_ntriples_term_valid): For bnodes, allow leading digits, _
+	and : Allow trailing - and .  Fixes N-Triples test
+	nt-syntax-bnode-03.nt No remaining failures
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: allow \b and \f escapes
+
+	(raptor_ntriples_term): Add \b and \f to escape check.  Fixes
+	N-Triples tests literal_with_BACKSPACE.nt and
+	literal_with_FORM_FEED.nt 1 remaining failure
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: allow no whitespace between terms
+
+	(raptor_ntriples_parse_line): Remove whitespace check.  Fixes
+	N-Triples test minimal_whitespace.nt 3 remaining failures
+
+	* tests/ntriples-2013/Makefile.am: check-good-ntriples: fix return
+	result
+
+	* tests/ntriples-2013/Makefile.am: Run latest set of N-Triples
+	tests: 4 expected failures
+
+	* tests/ntriples-2013/comment_following_triple.nt,
+	tests/ntriples-2013/langtagged_string.nt,
+	tests/ntriples-2013/lantag_with_subtag.nt,
+	tests/ntriples-2013/literal.nt,
+	tests/ntriples-2013/literal_all_controls.nt,
+	tests/ntriples-2013/literal_all_punctuation.nt,
+	tests/ntriples-2013/literal_false.nt,
+	tests/ntriples-2013/literal_true.nt,
+	tests/ntriples-2013/literal_with_2_dquotes.nt,
+	tests/ntriples-2013/literal_with_2_squotes.nt,
+	tests/ntriples-2013/literal_with_BACKSPACE.nt,
+	tests/ntriples-2013/literal_with_CARRIAGE_RETURN.nt,
+	tests/ntriples-2013/literal_with_CHARACTER_TABULATION.nt,
+	tests/ntriples-2013/literal_with_FORM_FEED.nt,
+	tests/ntriples-2013/literal_with_LINE_FEED.nt,
+	tests/ntriples-2013/literal_with_REVERSE_SOLIDUS.nt,
+	tests/ntriples-2013/literal_with_REVERSE_SOLIDUS2.nt,
+	tests/ntriples-2013/literal_with_UTF8_boundaries.nt,
+	tests/ntriples-2013/literal_with_dquote.nt,
+	tests/ntriples-2013/literal_with_numeric_escape4.nt,
+	tests/ntriples-2013/literal_with_numeric_escape8.nt,
+	tests/ntriples-2013/literal_with_squote.nt,
+	tests/ntriples-2013/manifest.ttl,
+	tests/ntriples-2013/minimal_whitespace.nt,
+	tests/ntriples-2013/nt-syntax-bnode-03.nt: Updated from N-Triples
+	tests in Mercurial
+
+2013-11-24  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.12
+
+	* ChangeLog:
+	Snapshotted raptor2_2_0_11 for 2.0.11 release (GIT
 	74f5b7e9541d734494ef637ab1acd8f1d193ef30)
+
+	* librdfa/.gitignore: ignore .o
+
+	* docs/tmpl/section-uri.sgml, docs/tmpl/section-xml-qname.sgml:
+	Update tmpls
 
 	* NEWS.html, README.html, ChangeLog:
 	release docs and changes for 2.0.11
