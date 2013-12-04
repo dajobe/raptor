@@ -878,7 +878,6 @@ main(int argc, char *argv[])
   raptor_uri* base_uri;
   raptor_qname* el_name;
   unsigned long count;
-  raptor_uri* datatype;
   
   /* for raptor_new_iostream_to_string */
   void *string = NULL;
