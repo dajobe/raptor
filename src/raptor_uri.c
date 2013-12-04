@@ -1722,19 +1722,25 @@ raptor_uri_escaped_write(raptor_uri* uri,
 int
 raptor_uri_uri_string_is_absolute(const unsigned char* uri_string)
 {
-  raptor_uri_detail *detail = NULL;
-  int rc = -1;
+  const unsigned char* s = uri_string;
   
-  detail = raptor_new_uri_detail(uri_string);
-  if(!detail)
-    goto tidy;
+  /* 
+   * scheme = alpha *( alpha | digit | "+" | "-" | "." )
+   *    RFC 2396 section 3.1 Scheme Component
+   */
+  if(*s && isalpha((int)*s)) {
+    s++;
 
-  rc = (detail->scheme_len) > 0;
+    while(*s && (isalnum((int)*s) ||
+                 (*s == '+') || (*s == '-') || (*s == '.')))
+      s++;
   
-  tidy:
-  raptor_free_uri_detail(detail);
-  
-  return rc;
+    if(*s == ':')
+      return 1;
+  }
+
+
+  return 0;
 }
 
 
