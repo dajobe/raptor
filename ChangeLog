@@ -1,3 +1,17 @@
+2013-12-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	(raptor_uri_uri_string_is_absolute): Make a much cheaper test.
+
+	* src/raptor_turtle_writer.c:
+	(main): remove unused var
+
+2013-12-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html: Add 2.0.11 release link
+
+	* RELEASE.html: 2.0.12
+
 2013-11-30  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_term.c: Port changes from rasqal_ntriples.c
