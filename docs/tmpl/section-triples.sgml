@@ -147,6 +147,17 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_new_term_from_counted_string ##### -->
+<para>
+
+</para>
+
+@world: 
+@string: 
+@length: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_term_copy ##### -->
 <para>
 
