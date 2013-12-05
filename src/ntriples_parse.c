@@ -166,7 +166,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   int i;
   unsigned char *p;
-  raptor_term* terms[MAX_NTRIPLES_TERMS] = {NULL, NULL, NULL, NULL};
+  raptor_term* terms[MAX_NTRIPLES_TERMS+1] = {NULL, NULL, NULL, NULL, NULL};
   int rc = 0;
   
   /* ASSERTION:
@@ -209,7 +209,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   
   /* Must be triple/quad */
 
-  for(i = 0; i < 4; i++) {
+  for(i = 0; i < MAX_NTRIPLES_TERMS + 1; i++) {
     if(!len) {
       /* context is optional in nquads */
       if (i == 3)
@@ -299,11 +299,25 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   }
 
 
-  /* Check N-Triples has only 3 terms */
-  if(!ntriples_parser->is_nquads) {
-    if(terms[3]) {
-      raptor_free_term(terms[3]);
-      terms[3] = NULL;
+  if(ntriples_parser->is_nquads) {
+    /* Check N-Quads has 3 or 4 terms */
+    if(terms[4]) {
+      raptor_free_term(terms[4]);
+      terms[4] = NULL;
+      raptor_parser_error(rdf_parser, "N-Quads only allows 3 or 4 terms");
+      goto cleanup;
+    }
+  } else {
+    /* Check N-Triples has only 3 terms */
+    if(terms[3] || terms[4]) {
+      if(terms[4]) {
+        raptor_free_term(terms[4]);
+        terms[4] = NULL;
+      }
+      if(terms[3]) {
+        raptor_free_term(terms[3]);
+        terms[3] = NULL;
+      }
       raptor_parser_error(rdf_parser, "N-Triples only allows 3 terms");
       goto cleanup;
     }
