@@ -250,6 +250,17 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     p += rc;
     rc = 0;
 
+    if(terms[i] && terms[i]->type == RAPTOR_TERM_TYPE_URI) {
+      unsigned const char* uri_string;
+
+      /* Check for absolute URI */
+      uri_string = raptor_uri_as_string(terms[i]->value.uri);
+      if(!raptor_uri_uri_string_is_absolute(uri_string)) {
+        raptor_parser_error(rdf_parser, "URI %s is not absolute", uri_string);
+        goto cleanup;
+      }
+    }
+
     /* Skip whitespace after terms */
     while(len > 0 && isspace((int)*p)) {
       p++;
