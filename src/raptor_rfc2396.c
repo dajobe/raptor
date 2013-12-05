@@ -269,7 +269,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
       unsigned char *dest = prev;
       
       p++;
-      while(*dest)
+      while(*p)
         *dest++ = *p++;
       *dest= '\0';
       
