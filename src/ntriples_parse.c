@@ -211,15 +211,26 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   for(i = 0; i < MAX_NTRIPLES_TERMS + 1; i++) {
     if(!len) {
-      /* context is optional in nquads */
-      if (i == 3)
-	break;
+      if(ntriples_parser->is_nquads) {
+        /* context is optional in nquads */
+        if(i == 3 || i ==4)
+          break;
+      } else {
+        if(i == 3)
+          break;
+      }
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
     }
     
 
-    if(i == 2) {
+    if(i == 3) {
+      /* graph term (3): blank node or <URI> */
+      if(*p != '<' && *p != '_') {
+        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID", *p);
+        goto cleanup;
+      }
+    } else if(i == 2) {
       /* object term (2): expect either <URI> or _:name or literal */
       if(*p != '<' && *p != '_' && *p != '"') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
