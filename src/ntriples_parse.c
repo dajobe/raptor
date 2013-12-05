@@ -488,7 +488,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   /* exit now, no more input */
   if(is_end) {
     if(ntriples_parser->offset != ntriples_parser->line_length) {
-       raptor_parser_error(rdf_parser, "Junk at end of input.\"");
+       raptor_parser_error(rdf_parser, "Junk at end of input.");
        return 1;
     }
     
