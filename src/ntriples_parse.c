@@ -211,15 +211,26 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   for(i = 0; i < MAX_NTRIPLES_TERMS + 1; i++) {
     if(!len) {
-      /* context is optional in nquads */
-      if (i == 3)
-	break;
+      if(ntriples_parser->is_nquads) {
+        /* context is optional in nquads */
+        if(i == 3 || i ==4)
+          break;
+      } else {
+        if(i == 3)
+          break;
+      }
       raptor_parser_error(rdf_parser, "Unexpected end of line");
       goto cleanup;
     }
     
 
-    if(i == 2) {
+    if(i == 3) {
+      /* graph term (3): blank node or <URI> */
+      if(*p != '<' && *p != '_') {
+        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID", *p);
+        goto cleanup;
+      }
+    } else if(i == 2) {
       /* object term (2): expect either <URI> or _:name or literal */
       if(*p != '<' && *p != '_' && *p != '"') {
         raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
@@ -249,6 +260,17 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
     p += rc;
     rc = 0;
+
+    if(terms[i] && terms[i]->type == RAPTOR_TERM_TYPE_URI) {
+      unsigned const char* uri_string;
+
+      /* Check for absolute URI */
+      uri_string = raptor_uri_as_string(terms[i]->value.uri);
+      if(!raptor_uri_uri_string_is_absolute(uri_string)) {
+        raptor_parser_error(rdf_parser, "URI %s is not absolute", uri_string);
+        goto cleanup;
+      }
+    }
 
     /* Skip whitespace after terms */
     while(len > 0 && isspace((int)*p)) {
@@ -331,8 +353,9 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     terms[3] = NULL;
   }
 
-  raptor_ntriples_generate_statement(rdf_parser, 
-                                     terms[0], terms[1], terms[2], terms[3]);
+  if(terms[0] && terms[1] && terms[2])
+    raptor_ntriples_generate_statement(rdf_parser, 
+                                       terms[0], terms[1], terms[2], terms[3]);
 
   rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len);
 
@@ -477,7 +500,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   /* exit now, no more input */
   if(is_end) {
     if(ntriples_parser->offset != ntriples_parser->line_length) {
-       raptor_parser_error(rdf_parser, "Junk at end of input.\"");
+       raptor_parser_error(rdf_parser, "Junk at end of input.");
        return 1;
     }
     
