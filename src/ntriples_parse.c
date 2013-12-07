@@ -231,25 +231,25 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     if(i == 3) {
       /* graph term (3): blank node or <URI> */
       if(*p != '<' && *p != '_') {
-        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected Graph term <URIref>, _:bnodeID", *p);
         goto cleanup;
       }
     } else if(i == 2) {
       /* object term (2): expect either <URI> or _:name or literal */
       if(*p != '<' && *p != '_' && *p != '"') {
-        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>, _:bnodeID or \"literal\"", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected object term <URIref>, _:bnodeID or \"literal\"", *p);
         goto cleanup;
       }
     } else if(i == 1) {
       /* predicate term (1): expect URI only */
       if(*p != '<') {
-        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref>", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected predict term <URIref>", *p);
         goto cleanup;
       }
     } else {
       /* subject (0) or graph (3) terms: expect <URI> or _:name */
       if(*p != '<' && *p != '_') {
-        raptor_parser_error(rdf_parser, "Saw '%c', expected <URIref> or _:bnodeID", *p);
+        raptor_parser_error(rdf_parser, "Saw '%c', expected subject term <URIref> or _:bnodeID", *p);
         goto cleanup;
       }
     }
