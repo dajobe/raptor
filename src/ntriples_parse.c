@@ -138,14 +138,18 @@ raptor_ntriples_generate_statement(raptor_parser* parser,
     parser->emitted_default_graph++;
   }
 
-  /* If there is no statement handler - there is nothing else to do */
-  if(!parser->statement_handler)
-    goto cleanup;
-
   statement->subject = subject;
   statement->predicate = predicate;
   statement->object = object;
   statement->graph = graph;
+
+  /* Do not generate a partial triple - but do clean up */
+  if(!subject || !predicate || !object)
+    goto cleanup;
+
+  /* If there is no statement handler - there is nothing else to do */
+  if(!parser->statement_handler)
+    goto cleanup;
 
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);

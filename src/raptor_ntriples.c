@@ -363,18 +363,25 @@ raptor_parse_turtle_term_internal(raptor_world* world,
   unsigned int position = 0;
   /* 0 = xsd:integer; 1= xsd:decimal; 2= xsd:double */
   short dtype = 0;
+  int after_e = 0;
 
   while(*len_p > 0) {
     unsigned char c = *p;
 
-    if((position > 0 && (c == '+' || c == '-')) ||
+    if(after_e) {
+      if(!((c >= '0' && c <'9') || c == '+' || c == '-'))
+        break;
+      after_e = 0;
+    } else if((position > 0 && (c == '+' || c == '-')) ||
        !((c >= '0' && c <'9') || c == '.' || c == 'e' || c == 'E'))
       break;
 
     if(c == '.')
       dtype = 1;
-    else if(c == 'e' || c == 'E')
+    else if(c == 'e' || c == 'E') {
       dtype = 2;
+      after_e = 1;
+    }
 
     p++;
     (*len_p)--;
