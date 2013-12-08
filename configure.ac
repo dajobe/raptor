@@ -295,6 +295,13 @@ AC_C_CONST
 AC_C_BIGENDIAN
 AC_C_INLINE
 
+AC_MSG_CHECKING(whether __func__ is available)
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([int main() { printf(__func__); }])],
+    [AC_DEFINE([HAVE___FUNC__], [1], [Is __func__ available])
+     AC_MSG_RESULT(yes)],
+    [AC_MSG_RESULT(no)])
+
+
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
 version_major=`echo $VERSION | sed -e 's/^\([^\.]*\)\.\([^\.]*\)\.\(.*\)$/\1/'`

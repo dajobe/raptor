@@ -76,7 +76,8 @@ void raptor_sign_free(void *ptr);
 
 #endif
 
-#ifndef __func__
+#ifdef HAVE___FUNC__
+#else
 #define __func__ "???"
 #endif
 
