@@ -285,12 +285,13 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    if(1) {
+    if(terms[i]) {
       unsigned char* c = raptor_term_to_string(terms[i]);
       fprintf(stderr, "item %d: term '%s' type %d\n",
               i, c, terms[i]->type);
-      raptor_free_string(c);
-    }
+      raptor_free_memory(c);
+    } else
+      fprintf(stderr, "item %d: NULL term\n", i);
 #endif
 
     /* Look for terminating '.' after 3rd (ntriples) or 3rd/4th (nquads) term */
@@ -412,15 +413,15 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   *ptr = '\0';
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("buffer now %d bytes\n", ntriples_parser->line_length);
+  RAPTOR_DEBUG2("buffer now %ld bytes\n", ntriples_parser->line_length);
 #endif
 
   ptr = buffer+ntriples_parser->offset;
   while(*(start = ptr)) {
     unsigned char *line_start = ptr;
-    
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG3("line buffer now '%s' (offset %d)\n", ptr, ptr-(buffer+ntriples_parser->offset));
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 3
+  RAPTOR_DEBUG3("line buffer now '%s' (offset %ld)\n", ptr, ptr-(buffer+ntriples_parser->offset));
 #endif
 
     /* skip \n when just seen \r - i.e. \r\n or CR LF */
@@ -476,7 +477,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     /* collapse buffer */
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("collapsing buffer from %d to %d bytes\n", ntriples_parser->line_length, (unsigned int)len);
+    RAPTOR_DEBUG3("collapsing buffer from %ld to %ld bytes\n", ntriples_parser->line_length, len);
 #endif
     buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
     if(!buffer) {
@@ -496,10 +497,10 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     ntriples_parser->offset = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("buffer now '%s' (%d bytes)\n", ntriples_parser->line, ntriples_parser->line_length);
+    RAPTOR_DEBUG3("buffer now '%s' (%ld bytes)\n", ntriples_parser->line, ntriples_parser->line_length);
 #endif    
   }
-  
+
   /* exit now, no more input */
   if(is_end) {
     if(ntriples_parser->offset != ntriples_parser->line_length) {
