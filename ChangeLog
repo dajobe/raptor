@@ -1,3 +1,141 @@
+2013-12-07  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_internal.h: Add a configure test for
+	__func__ since it's not always a macro
+
+	* tests/nquads-2013/README: Add nquads test README
+
+	* src/ntriples_parse.c: Make N-Triples / N-Quads parser more
+	carefully handle NUL
+
+	(raptor_ntriples_parse_chunk): Looks for end_ptr rather than NUL
+	when searching for \n or \r.  It also checks for \\ and " 's
+
+	* src/ntriples_parse.c: Fix code in #ifdef RASQAL_DEBUG
+
+	* src/ntriples_parse.c: Improve debug messages
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): No triple if one term failed
+
+	* src/raptor_ntriples.c:
+	(raptor_parse_turtle_term_internal): Allow 2.0E-1
+
+2013-12-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_normalize_path): end when string does
+
+	* configure.ac, tests/Makefile.am, tests/nquads-2013/Makefile.am,
+	tests/nquads-2013/comment_following_triple.nq,
+	tests/nquads-2013/langtagged_string.nq,
+	tests/nquads-2013/lantag_with_subtag.nq,
+	tests/nquads-2013/literal.nq,
+	tests/nquads-2013/literal_all_controls.nq,
+	tests/nquads-2013/literal_all_punctuation.nq,
+	tests/nquads-2013/literal_false.nq,
+	tests/nquads-2013/literal_true.nq,
+	tests/nquads-2013/literal_with_2_dquotes.nq,
+	tests/nquads-2013/literal_with_2_squotes.nq,
+	tests/nquads-2013/literal_with_BACKSPACE.nq,
+	tests/nquads-2013/literal_with_CARRIAGE_RETURN.nq,
+	tests/nquads-2013/literal_with_CHARACTER_TABULATION.nq,
+	tests/nquads-2013/literal_with_FORM_FEED.nq,
+	tests/nquads-2013/literal_with_LINE_FEED.nq,
+	tests/nquads-2013/literal_with_REVERSE_SOLIDUS.nq,
+	tests/nquads-2013/literal_with_REVERSE_SOLIDUS2.nq,
+	tests/nquads-2013/literal_with_UTF8_boundaries.nq,
+	tests/nquads-2013/literal_with_dquote.nq,
+	tests/nquads-2013/literal_with_numeric_escape4.nq,
+	tests/nquads-2013/literal_with_numeric_escape8.nq,
+	tests/nquads-2013/literal_with_squote.nq,
+	tests/nquads-2013/manifest.ttl,
+	tests/nquads-2013/minimal_whitespace.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-01.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-02.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-03.nq,
+	tests/nquads-2013/nq-syntax-bad-quint-01.nq,
+	tests/nquads-2013/nq-syntax-bad-uri-01.nq,
+	tests/nquads-2013/nq-syntax-bnode-01.nq,
+	tests/nquads-2013/nq-syntax-bnode-02.nq,
+	tests/nquads-2013/nq-syntax-bnode-03.nq,
+	tests/nquads-2013/nq-syntax-bnode-04.nq,
+	tests/nquads-2013/nq-syntax-bnode-05.nq,
+	tests/nquads-2013/nq-syntax-bnode-06.nq,
+	tests/nquads-2013/nq-syntax-uri-01.nq,
+	tests/nquads-2013/nq-syntax-uri-02.nq,
+	tests/nquads-2013/nq-syntax-uri-03.nq,
+	tests/nquads-2013/nq-syntax-uri-04.nq,
+	tests/nquads-2013/nq-syntax-uri-05.nq,
+	tests/nquads-2013/nq-syntax-uri-06.nq,
+	tests/nquads-2013/nt-syntax-bad-base-01.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-01.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-02.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-03.nq,
+	tests/nquads-2013/nt-syntax-bad-lang-01.nq,
+	tests/nquads-2013/nt-syntax-bad-num-01.nq,
+	tests/nquads-2013/nt-syntax-bad-num-02.nq,
+	tests/nquads-2013/nt-syntax-bad-num-03.nq,
+	tests/nquads-2013/nt-syntax-bad-prefix-01.nq,
+	tests/nquads-2013/nt-syntax-bad-string-01.nq,
+	tests/nquads-2013/nt-syntax-bad-string-02.nq,
+	tests/nquads-2013/nt-syntax-bad-string-03.nq,
+	tests/nquads-2013/nt-syntax-bad-string-04.nq,
+	tests/nquads-2013/nt-syntax-bad-string-05.nq,
+	tests/nquads-2013/nt-syntax-bad-string-06.nq,
+	tests/nquads-2013/nt-syntax-bad-string-07.nq,
+	tests/nquads-2013/nt-syntax-bad-struct-01.nq,
+	tests/nquads-2013/nt-syntax-bad-struct-02.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-01.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-02.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-03.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-04.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-05.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-06.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-07.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-08.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-09.nq,
+	tests/nquads-2013/nt-syntax-bnode-01.nq,
+	tests/nquads-2013/nt-syntax-bnode-02.nq,
+	tests/nquads-2013/nt-syntax-bnode-03.nq,
+	tests/nquads-2013/nt-syntax-datatypes-01.nq,
+	tests/nquads-2013/nt-syntax-datatypes-02.nq,
+	tests/nquads-2013/nt-syntax-file-01.nq,
+	tests/nquads-2013/nt-syntax-file-02.nq,
+	tests/nquads-2013/nt-syntax-file-03.nq,
+	tests/nquads-2013/nt-syntax-str-esc-01.nq,
+	tests/nquads-2013/nt-syntax-str-esc-02.nq,
+	tests/nquads-2013/nt-syntax-str-esc-03.nq,
+	tests/nquads-2013/nt-syntax-string-01.nq,
+	tests/nquads-2013/nt-syntax-string-02.nq,
+	tests/nquads-2013/nt-syntax-string-03.nq,
+	tests/nquads-2013/nt-syntax-subm-01.nq,
+	tests/nquads-2013/nt-syntax-uri-01.nq,
+	tests/nquads-2013/nt-syntax-uri-02.nq,
+	tests/nquads-2013/nt-syntax-uri-03.nq,
+	tests/nquads-2013/nt-syntax-uri-04.nq: Add N-Quads 2013 W3C tests
+
+	From http://www.w3.org/2013/N-QuadsTests/ via mercurial and
+	https://github.com/dajobe/nquads-tests-w3c-mirror
+
+	* src/ntriples_parse.c: Check for max allowed terms in N-Triples /
+	N-Quads
+
+	* src/ntriples_parse.c: Fix error extra "
+
+	* src/ntriples_parse.c: Check N-Triples and N-Quads are absolute
+	URIs
+
+	* src/ntriples_parse.c: Check N-Quads has 3/4 terms and N-Triples
+	has 3
+
+	(raptor_ntriples_parse_line): Try to find 5th term and error out
+	if it is.
+
+2013-12-04  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-triples.sgml: Update tmpls
+
 2013-12-03  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_uri.c:
