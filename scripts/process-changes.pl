@@ -618,7 +618,7 @@ close(IN);
 
 
 sub version_for_sort($) {
-  map { sprintf("%02d", $_) } split(/\./, $_);
+  map { sprintf("%02d", $_) } split(/\./, $_[0]);
 }
 
 # Write Docbook XML output
