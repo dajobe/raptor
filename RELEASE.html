@@ -17,12 +17,22 @@
 
 <h3>Parser changes</h3>
 
-<p>N-Triples parser was updated to pass the test suite to support all of
-<a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
-N-Triples - A line-based syntax for an RDF graph</a> (aka N-Triples 2013).
-This main was to allow <code>\b</code> and <code>\f</code> escapes
-and fix the allowed blank node identifier characters.
+<p>The N-Triples / N-Quads parser was updated to pass all the two test
+suites for the updated specifications:
 </p>
+<ul>
+<li><a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples - A line-based syntax for an RDF graph</a>, W3C Candidate Recommendation, 05 November 2013 (aka N-Triples 2013)</li>
+<li><a href="http://www.w3.org/TR/2013/CR-n-quads-20131105/">RDF 1.1 N-Quads - A line-based syntax for an RDF datasets</a>, W3C Candidate Recommendation, 05 November 2013</li>
+</ul>
+<p>The main fixes were:</p>
+<ul>
+<li>allow <code>\b</code> and <code>\f</code> escapes (from Turtle, SPARQL)</li>
+<li>fix the allowed blank node identifier characters</li>
+<li>require all URIs to be absolute</li>
+<li>handle a single short document with no end of line</li>
+<li>support NULs inside literals</li>
+<li>handle unescaped newlines inside literals</li>
+</ul>
 
 <h3>Term class changes</h3>
 
