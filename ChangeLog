@@ -1,3 +1,7 @@
+2013-12-13  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_12 for 2.0.12 release (GIT f38f4182b8d90a8f457e856e8eaa93cb1f135322)
+
 2013-12-07  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac, src/raptor_internal.h: Add a configure test for
