@@ -617,6 +617,9 @@ close(IN);
 
 
 
+sub version_for_sort($) {
+  map { sprintf("%02d", $_) } split(/\./, $_);
+}
 
 # Write Docbook XML output
 
@@ -650,7 +653,7 @@ EOT
     print_end_section_as_docbook_xml($out_fh);
 
   # Sort by new version, newest first
-  for my $vp (sort { $b->[1] cmp $a->[1] } @version_pairs) {
+  for my $vp (sort { version_for_sort($b->[1]) cmp version_for_sort($a->[1]) } @version_pairs) {
     my($old_version, $new_version)= @$vp;
     my $id = to_id($old_version) . "-to-" . to_id($new_version);
 
