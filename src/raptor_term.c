@@ -502,7 +502,7 @@ raptor_free_term(raptor_term *term)
  * #raptor_iostream which is the prefered way to write formatted
  * output.
  *
- * See also raptor_new_term_from_string() to reverse this.
+ * See also raptor_new_term_from_counted_string() to reverse this.
  *
  * See also raptor_term_to_turtle_string() to write as Turtle which
  * will include Turtle syntax such as 'true' for booleans and """quoting"""
