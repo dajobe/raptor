@@ -396,7 +396,7 @@ raptor_new_term_from_counted_string(raptor_world* world,
 
   raptor_world_open(world);
 
-  memset(&locator, sizeof(locator), '\0');
+  memset(&locator, '\0', sizeof(locator));
   locator.line = -1;
 
   bytes_read = raptor_ntriples_parse_term(world, &locator,
