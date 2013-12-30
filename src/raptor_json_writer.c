@@ -219,18 +219,14 @@ raptor_json_writer_end_block(raptor_json_writer* json_writer, char c)
 int
 raptor_json_writer_literal_object(raptor_json_writer* json_writer,
                                   unsigned char* s, unsigned char* lang,
-                                  raptor_uri* datatype,
-                                  const char* key, const char* type_key)
+                                  raptor_uri* datatype)
 {
-
-  if(key) {
-    raptor_json_writer_start_block(json_writer, '{');
-    raptor_json_writer_newline(json_writer);
+  raptor_json_writer_start_block(json_writer, '{');
+  raptor_json_writer_newline(json_writer);
     
-    raptor_json_writer_quoted(json_writer, key, 0);
+  raptor_json_writer_quoted(json_writer, "value", 5);
   
-    raptor_iostream_counted_string_write(" : ", 3, json_writer->iostr);
-  }
+  raptor_iostream_counted_string_write(" : ", 3, json_writer->iostr);
 
   raptor_json_writer_quoted(json_writer, (const char*)s, 0);
   
@@ -252,19 +248,15 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
     }
   }
 
-  if(type_key) {
-    raptor_iostream_write_byte(',', json_writer->iostr);
-    raptor_json_writer_newline(json_writer);
+  raptor_iostream_write_byte(',', json_writer->iostr);
+  raptor_json_writer_newline(json_writer);
 
-    raptor_json_writer_key_value(json_writer, type_key, 0, "literal", 0);
-  }
+  raptor_json_writer_key_value(json_writer, "type", 4, "literal", 7);
 
   raptor_json_writer_newline(json_writer);
 
-  if(key) {
-    raptor_json_writer_end_block(json_writer, '}');
-    raptor_json_writer_newline(json_writer);
-  }
+  raptor_json_writer_end_block(json_writer, '}');
+  raptor_json_writer_newline(json_writer);
 
   return 0;
 }

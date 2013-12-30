@@ -227,8 +227,7 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
       raptor_json_writer_literal_object(context->json_writer,
                                         statement->object->value.literal.string,
                                         statement->object->value.literal.language, 
-                                        statement->object->value.literal.datatype,
-                                        "value", "type");
+                                        statement->object->value.literal.datatype);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
@@ -376,8 +375,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       raptor_json_writer_literal_object(context->json_writer,
                                         s1->object->value.literal.string,
                                         s1->object->value.literal.language, 
-                                        s1->object->value.literal.datatype,
-                                        "value", "type");
+                                        s1->object->value.literal.datatype);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
