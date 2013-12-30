@@ -162,7 +162,7 @@ static int LookupWord (YYSTYPE *lvalp, char *buff);
 
 /* This grammar has 56 shift/reduce conflicts. */
 %expect 56
-%pure_parser
+%pure-parser
 
 %token	tAGO tDAY tDAY_UNIT tDAYZONE tDST tHOUR_UNIT tID tTZONE tWZONE tZZONE
 %token	tMERIDIAN tMINUTE_UNIT tMONTH tMONTH_UNIT
