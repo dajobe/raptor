@@ -183,66 +183,21 @@ raptor_json_serialize_statement(raptor_serializer* serializer,
   /* subject */
   raptor_iostream_string_write((const unsigned char*)"\"subject\" : ",
                                serializer->iostream);
-  switch(statement->subject->type) {
-    case RAPTOR_TERM_TYPE_URI:
-      raptor_json_writer_uri_object(context->json_writer,
-                                    statement->subject->value.uri);
-      break;
-          
-    case RAPTOR_TERM_TYPE_BLANK:
-      raptor_json_writer_blank_object(context->json_writer,
-                                      statement->subject->value.blank.string);
-      break;
-
-    case RAPTOR_TERM_TYPE_LITERAL:
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-      default:
-        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL, 
-                                   "Triple has unsupported subject term type %d", 
-                                   statement->subject->type);
-        break;
-  }
+  raptor_json_writer_term(context->json_writer, statement->subject);
   raptor_iostream_write_byte(',', serializer->iostream);
   raptor_json_writer_newline(context->json_writer);
   
   /* predicate */
   raptor_iostream_string_write((const unsigned char*)"\"predicate\" : ",
                                serializer->iostream);
-  raptor_json_writer_uri_object(context->json_writer,
-                                statement->predicate->value.uri);
+  raptor_json_writer_term(context->json_writer, statement->predicate);
   raptor_iostream_write_byte(',', serializer->iostream);
   raptor_json_writer_newline(context->json_writer);
 
   /* object */
   raptor_iostream_string_write((const unsigned char*)"\"object\" : ",
                                serializer->iostream);
-  switch(statement->object->type) {
-    case RAPTOR_TERM_TYPE_URI:
-      raptor_json_writer_uri_object(context->json_writer,
-                                    statement->object->value.uri);
-      break;
-          
-    case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_json_writer_literal_object(context->json_writer,
-                                        statement->object->value.literal.string,
-                                        statement->object->value.literal.language, 
-                                        statement->object->value.literal.datatype);
-      break;
-
-    case RAPTOR_TERM_TYPE_BLANK:
-      raptor_json_writer_blank_object(context->json_writer,
-                                      statement->object->value.blank.string);
-      break;
-
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-      default:
-        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL,
-                                   "Triple has unsupported object term type %d", 
-                                   statement->object->type);
-        break;
-  }
+  raptor_json_writer_term(context->json_writer, statement->object);
   raptor_json_writer_newline(context->json_writer);
 
   /* end triple */
@@ -364,34 +319,9 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
   }
   
   /* object */
-  switch(s1->object->type) {
-    case RAPTOR_TERM_TYPE_URI:
-      raptor_json_writer_uri_object(context->json_writer,
-                                    s1->object->value.uri);
-      raptor_json_writer_newline(context->json_writer);
-      break;
-          
-    case RAPTOR_TERM_TYPE_LITERAL:
-      raptor_json_writer_literal_object(context->json_writer,
-                                        s1->object->value.literal.string,
-                                        s1->object->value.literal.language, 
-                                        s1->object->value.literal.datatype);
-      break;
-
-    case RAPTOR_TERM_TYPE_BLANK:
-      raptor_json_writer_blank_object(context->json_writer, 
-                                      s1->object->value.blank.string);
-      raptor_json_writer_newline(context->json_writer);
-      break;
-
-    case RAPTOR_TERM_TYPE_UNKNOWN:
-      default:
-        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL,
-                                   "Triple has unsupported object term type %d", 
-                                   s1->object->type);
-        break;
-  }
+  raptor_json_writer_term(context->json_writer, s1->object);
+  if(s1->object->type != RAPTOR_TERM_TYPE_LITERAL)
+    raptor_json_writer_newline(context->json_writer);
 
   /* end triple */
 
