@@ -304,4 +304,41 @@ raptor_json_writer_uri_object(raptor_json_writer* json_writer,
   return 0;
 }
 
+
+int
+raptor_json_writer_term(raptor_json_writer* json_writer,
+                        raptor_term *term)
+{
+  int rc = 0;
+
+  switch(term->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      rc = raptor_json_writer_uri_object(json_writer, term->value.uri);
+      break;
+
+    case RAPTOR_TERM_TYPE_LITERAL:
+      rc = raptor_json_writer_literal_object(json_writer,
+                                             term->value.literal.string,
+                                             term->value.literal.language,
+                                             term->value.literal.datatype);
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      rc = raptor_json_writer_blank_object(json_writer,
+                                           term->value.blank.string);
+      break;
+
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+      default:
+        raptor_log_error_formatted(json_writer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL,
+                                   "Triple has unsupported object term type %d", 
+                                   term->type);
+        rc = 1;
+        break;
+  }
+
+  return rc;
+}
+
 #endif
