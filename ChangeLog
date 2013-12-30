@@ -1,4 +1,33 @@
-2013-12-13  Dave Beckett  <dave@dajobe.org>
+2013-12-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Use
+	raptor_turtle_writer_raw_counted to save strlen()s
+
+	* src/raptor_internal.h, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_turtle.c: Add RAPTOR_DEBUG_ABBREV_NODE for
+	abbreviated serializing debugging
+
+	Update RDF/XML-Abbrev and Turtle serializer to use it
+
+	* src/ntriples_parse.c:
+	Allow ' in <URI>
+
+	Fixes Issue #0000562
+	http://bugs.librdf.org/mantis/view.php?id=562
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bug-562.nt,
+	tests/ntriples/bug-562.out: Add bug-562 test files for Issue
+	#0000562
+
+2013-12-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_counted_string): Fix memset transposed args.
+
+	* NEWS.html: word
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.13
 
 	* Snapshotted raptor2_2_0_12 for 2.0.12 release (GIT f38f4182b8d90a8f457e856e8eaa93cb1f135322)
 
