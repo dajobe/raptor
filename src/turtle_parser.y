@@ -106,7 +106,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %define api.pure
 
 /* Push or pull parser? */
-%define api.push_pull "pull"
+%define api.push-pull pull
 
 /* Pure parser argument */
 %parse-param { raptor_parser* rdf_parser }
@@ -1015,6 +1015,7 @@ predicateObjectListOpt: predicateObjectList
 {
   $$ = NULL;
 }
+;
 
 
 blankNode: BLANK_LITERAL
