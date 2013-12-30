@@ -218,17 +218,19 @@ raptor_json_writer_end_block(raptor_json_writer* json_writer, char c)
 
 int
 raptor_json_writer_literal_object(raptor_json_writer* json_writer,
-                                  unsigned char* s, unsigned char* lang,
+                                  unsigned char* s, size_t s_len,
+                                  unsigned char* lang,
                                   raptor_uri* datatype)
 {
   raptor_json_writer_start_block(json_writer, '{');
   raptor_json_writer_newline(json_writer);
     
-  raptor_json_writer_quoted(json_writer, "value", 5);
-  
-  raptor_iostream_counted_string_write(" : ", 3, json_writer->iostr);
+  raptor_iostream_counted_string_write("\"value\" : ", 10, json_writer->iostr);
 
-  raptor_json_writer_quoted(json_writer, (const char*)s, 0);
+  if(!s_len)
+    s_len = strlen((const char*)s);
+
+  raptor_json_writer_quoted(json_writer, (const char*)s, s_len);
   
   if(datatype || lang) {
     raptor_iostream_write_byte(',', json_writer->iostr);
@@ -319,6 +321,7 @@ raptor_json_writer_term(raptor_json_writer* json_writer,
     case RAPTOR_TERM_TYPE_LITERAL:
       rc = raptor_json_writer_literal_object(json_writer,
                                              term->value.literal.string,
+                                             term->value.literal.string_len,
                                              term->value.literal.language,
                                              term->value.literal.datatype);
       break;
