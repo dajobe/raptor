@@ -122,8 +122,6 @@ raptor_json_writer_quoted(raptor_json_writer* json_writer,
     raptor_iostream_counted_string_write("\"\"", 2, json_writer->iostr);
     return 0;
   }
-  if(!value_len)
-    value_len = strlen((const char*)value);
 
   raptor_iostream_write_byte('\"', json_writer->iostr);
   rc = raptor_string_escaped_write((const unsigned char*)value, value_len,
