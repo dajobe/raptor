@@ -171,9 +171,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 
   raptor_qname* qname = NULL;
 
-  RAPTOR_DEBUG5("Emitting resource node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting resource node", node);
 
   if(node->term->type != RAPTOR_TERM_TYPE_URI)
     return 1;
@@ -194,7 +192,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     raptor_turtle_writer_reference(turtle_writer, node->term->value.uri);
   }
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted", node);
   
   return 0;
 }
@@ -219,9 +217,7 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
   int rc = 0;
   
-  RAPTOR_DEBUG5("Emitting literal node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting literal node", node);
 
   if(node->term->type != RAPTOR_TERM_TYPE_LITERAL)
     return 1;
@@ -231,7 +227,7 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
                                     node->term->value.literal.language, 
                                     node->term->value.literal.datatype);
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted literal node", node);
   
   return rc;
 }
@@ -255,9 +251,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   int rc = 0;
   
-  RAPTOR_DEBUG5("Emitting blank node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting blank node", node);
   
   if(node->term->type != RAPTOR_TERM_TYPE_BLANK)
     return 1;
@@ -281,7 +275,7 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
                                  node->term->value.blank.string_len);
   }
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted blank node", node);
   
   return rc;
 }
@@ -305,10 +299,7 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
   int rv = 0;
   int i = 0;
 
-  RAPTOR_DEBUG5("Emitting subject list items for node %p refcount %d subject %d object %d\n", 
-                subject->node,
-                subject->node->ref_count, subject->node->count_as_subject, 
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject list items", subject->node);
 
   while(!rv && i < raptor_sequence_size(subject->list_items)) {
     raptor_abbrev_node* object;
@@ -367,10 +358,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
   int i;
   int is_new_subject = 0;
 
-  RAPTOR_DEBUG5("Emitting subject collection items for node %p refcount %d subject %d object %d\n", 
-                subject->node,
-                subject->node->ref_count, subject->node->count_as_subject, 
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject collection items", subject->node);
 
   /* if just saw a new subject (is_new_subject is true) then there is no need
    * to advance the iterator - it was just reset
@@ -500,10 +488,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   raptor_avltree_iterator* iter = NULL;
   int i;
 
-  RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
-                subject->node, subject->node->ref_count, 
-                subject->node->count_as_subject,
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject properties", subject->node);
 
   /* Emit any rdf:_n properties collected */
   if(raptor_sequence_size(subject->list_items) > 0)
@@ -606,22 +591,18 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   
   if(!raptor_abbrev_subject_valid(subject)) return 0;
 
-  RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
-                subject->node,
-                subject->node->ref_count, 
-                subject->node->count_as_subject,
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject node", subject->node);
 
   if(!depth &&
      subject->node->term->type == RAPTOR_TERM_TYPE_BLANK &&
      subject->node->count_as_subject == 1 &&
      subject->node->count_as_object == 1) {
-    RAPTOR_DEBUG2("Skipping subject node %p\n", subject->node);
+    RAPTOR_DEBUG_ABBREV_NODE("Skipping subject node - subj & obj count 1", subject->node);
     return 0;
   }
   
   if(raptor_avltree_size(subject->properties) == 0) {
-    RAPTOR_DEBUG2("Skipping subject node %p\n", subject->node);
+    RAPTOR_DEBUG_ABBREV_NODE("Skipping subject node - no props", subject->node);
     return 0;
   }
 

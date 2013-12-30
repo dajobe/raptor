@@ -214,9 +214,7 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
 {
   int rc;
   
-  RAPTOR_DEBUG5("Emitting resource node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting resource node", node);
 
   if(node->term->type != RAPTOR_TERM_TYPE_URI)
     return 1;
@@ -224,7 +222,7 @@ raptor_rdfxmla_emit_resource(raptor_serializer *serializer,
   rc = raptor_rdfxmla_emit_resource_uri(serializer, element, 
                                         node->term->value.uri, depth);
   
-  RAPTOR_DEBUG2("Emitted resource node %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted resource node", node);
 
   return rc;
 }
@@ -252,9 +250,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   raptor_qname **attrs;
   int attrs_count;
   
-  RAPTOR_DEBUG5("Emitting literal node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting literal node", node);
 
   if(node->term->type != RAPTOR_TERM_TYPE_LITERAL)
     return 1;
@@ -301,7 +297,7 @@ raptor_rdfxmla_emit_literal(raptor_serializer *serializer,
   raptor_xml_writer_cdata(xml_writer, node->term->value.literal.string);
   raptor_xml_writer_end_element(xml_writer, element);
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted literal node", node);
   
   return 0;
 
@@ -340,9 +336,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
 {
   raptor_rdfxmla_context* context = (raptor_rdfxmla_context*)serializer->context;
 
-  RAPTOR_DEBUG5("Emitting blank node %p refcount %d subject %d object %d\n",
-                node, 
-                node->ref_count, node->count_as_subject, node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting blank node", node);
 
   if(node->term->type != RAPTOR_TERM_TYPE_BLANK)
     return 1;
@@ -383,7 +377,7 @@ raptor_rdfxmla_emit_blank(raptor_serializer *serializer,
 
   raptor_xml_writer_end_element(context->xml_writer, element);
 
-  RAPTOR_DEBUG2("Emitted %p\n", node);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitted blank node", node);
   
   return 0;
 }
@@ -409,10 +403,7 @@ raptor_rdfxmla_emit_subject_list_items(raptor_serializer* serializer,
   int i = 0;
   raptor_uri* base_uri = NULL;
 
-  RAPTOR_DEBUG5("Emitting subject list items for node %p refcount %d subject %d object %d\n", 
-                subject->node,
-                subject->node->ref_count, subject->node->count_as_subject, 
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject list items", subject->node);
 
   while(!rv && i < raptor_sequence_size(subject->list_items)) {
 
@@ -495,10 +486,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
   raptor_avltree_iterator* iter = NULL;
   raptor_term* subject_term = subject->node->term;
 
-  RAPTOR_DEBUG5("Emitting subject properties for node %p refcount %d subject %d object %d\n", 
-                subject->node, subject->node->ref_count, 
-                subject->node->count_as_subject,
-                subject->node->count_as_object);
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject properties", subject->node);
 
   /* Emit any rdf:_n properties collected */
   if(raptor_sequence_size(subject->list_items) > 0) {
@@ -658,17 +646,13 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
                                               context->single_node));
   
 
-  RAPTOR_DEBUG5("Emitting subject node %p refcount %d subject %d object %d\n", 
-                subject->node,
-                subject->node->ref_count, 
-                subject->node->count_as_subject,
-                subject->node->count_as_object);
-
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject node", subject->node);
+  
   if(!depth &&
      subject_term->type == RAPTOR_TERM_TYPE_BLANK &&
      subject->node->count_as_subject == 1 &&
      subject->node->count_as_object == 1) {
-    RAPTOR_DEBUG2("Skipping subject node %p\n", subject->node);
+    RAPTOR_DEBUG_ABBREV_NODE("Skipping subject node", subject->node);
     return 0;
   }
   

@@ -1242,6 +1242,19 @@ typedef struct {
   raptor_term* term;
 } raptor_abbrev_node;
 
+#ifdef RAPTOR_DEBUG
+#define RAPTOR_DEBUG_ABBREV_NODE(label, node) \
+  do {                                                       \
+    RAPTOR_DEBUG1(label " ");                                \
+    raptor_term_print_as_ntriples(node->term, stderr);       \
+    fprintf(stderr, " (refcount %d subject %d object %d)\n", \
+            node->ref_count,                                 \
+            node->count_as_subject,                          \
+            node->count_as_object);                          \
+  } while(0)
+#else
+#define RAPTOR_DEBUG_ABBREV_NODE(label, node)
+#endif
 
 typedef struct {
   raptor_abbrev_node* node;      /* node representing the subject of
