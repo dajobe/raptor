@@ -225,9 +225,6 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
     
   raptor_iostream_counted_string_write("\"value\" : ", 10, json_writer->iostr);
 
-  if(!s_len)
-    s_len = strlen((const char*)s);
-
   raptor_json_writer_quoted(json_writer, (const char*)s, s_len);
   
   if(datatype || lang) {
