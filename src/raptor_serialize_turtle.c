@@ -511,7 +511,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
-        raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" ;");
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
         raptor_turtle_writer_newline(turtle_writer);
       }
 
@@ -520,18 +520,18 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
                                                   10);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type))
-        raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"a");
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"a", 1);
       else if(qname)
         raptor_turtle_writer_qname(turtle_writer, qname);
       else
         raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
 
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" ");
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
     
       if(qname)
         raptor_free_qname(qname);
     } else
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)", ");
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
 
 
     switch(object->term->type) {
@@ -647,27 +647,21 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         subject->node->count_as_object == 0) && depth > 1) { 
       blank = 1;
     } else if(subject->node->count_as_object == 0) {
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"[]");
+      raptor_turtle_writer_raw_counted(turtle_writer,
+                                       (const unsigned char*)"[]", 2);
       blank = 0;
     } else if(!collection && subject->node->count_as_object > 1) {
       /* Referred to (used as an object), so needs a nodeID */
-      const unsigned char* genid = subject->node->term->value.blank.string;
-      size_t len = strlen((const char*)genid);
-      unsigned char* subject_str;
-      subject_str= RAPTOR_MALLOC(unsigned char*, len + 3);
-      if(!subject_str)
-        return 1;
-
-      subject_str[0]='_';
-      subject_str[1]=':';
-      memcpy(&subject_str[2], genid, len + 1);
-      raptor_turtle_writer_raw(turtle_writer, subject_str);
-      RAPTOR_FREE(char*, subject_str);
+      raptor_turtle_writer_raw_counted(turtle_writer,
+                                       (const unsigned char*)"_:", 2);
+      raptor_turtle_writer_raw_counted(turtle_writer,
+                                       subject->node->term->value.blank.string,
+                                       subject->node->term->value.blank.string_len);
     }
   } 
 
   if(collection) {
-    raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"(");
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
     
     raptor_turtle_writer_increase_indent(turtle_writer);
     
@@ -676,11 +670,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_writer_decrease_indent(turtle_writer);
     raptor_turtle_writer_newline(turtle_writer);
     
-    raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)")");
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
 
   } else {
     if(blank && depth > 1)
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"[");
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
     
     raptor_turtle_writer_increase_indent(turtle_writer);
     raptor_turtle_writer_newline(turtle_writer);
@@ -691,7 +685,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     
     if(blank && depth > 1) {
       raptor_turtle_writer_newline(turtle_writer);
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"]");
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
     }
   }
 
@@ -701,7 +695,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
      * (the "." will be parsed as part of the literal and statement
      * left unterminated) 
      */
-    raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)" .");
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" .", 2);
     raptor_turtle_writer_newline(turtle_writer);
     raptor_turtle_writer_newline(turtle_writer);
   }
@@ -1017,7 +1011,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
     raptor_namespace_stack_start_namespace(context->nstack, ns, 0);
   }
   
-  raptor_turtle_writer_raw(context->turtle_writer, (const unsigned char*)"\n");
+  raptor_turtle_writer_newline(context->turtle_writer);
 
   context->written_header = 1;
 }
