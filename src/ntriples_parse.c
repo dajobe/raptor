@@ -442,6 +442,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
 
     if(1) {
       int quote = '\0';
+      int in_uri = '\0';
       int bq = 0;
       while(ptr < end_ptr) {
         if(!bq) {
@@ -451,8 +452,13 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
             continue;
           }
 
+          if(*ptr == '<')
+            in_uri = 1;
+          else if (in_uri && *ptr == '>')
+            in_uri = 0;
+
           if(!quote) {
-            if(*ptr == '\'' || *ptr == '"')
+            if((!in_uri && *ptr == '\'') || *ptr == '"')
               quote = *ptr;
             if(*ptr == '\n' || *ptr == '\r')
               break;
