@@ -266,14 +266,16 @@ raptor_json_writer_literal_object(raptor_json_writer* json_writer,
 
 int
 raptor_json_writer_blank_object(raptor_json_writer* json_writer,
-                                const unsigned char* blank)
+                                const unsigned char* blank,
+                                size_t blank_len)
 {
   raptor_json_writer_start_block(json_writer, '{');
   raptor_json_writer_newline(json_writer);
 
   raptor_iostream_counted_string_write("\"value\" : \"_:", 13,
                                        json_writer->iostr);
-  raptor_iostream_string_write((const char*)blank, json_writer->iostr);
+  raptor_iostream_counted_string_write((const char*)blank, blank_len,
+                                       json_writer->iostr);
   raptor_iostream_counted_string_write("\",", 2, json_writer->iostr);
   raptor_json_writer_newline(json_writer);
 
@@ -328,7 +330,8 @@ raptor_json_writer_term(raptor_json_writer* json_writer,
 
     case RAPTOR_TERM_TYPE_BLANK:
       rc = raptor_json_writer_blank_object(json_writer,
-                                           term->value.blank.string);
+                                           term->value.blank.string,
+                                           term->value.blank.string_len);
       break;
 
     case RAPTOR_TERM_TYPE_UNKNOWN:
