@@ -206,18 +206,20 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/f
 turtle_lexer.h: turtle_lexer.c ; @exit 0
 
 turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison
-	$(YACC) -b turtle_parser -p turtle_parser_ -d -v $(srcdir)/turtle_parser.y
+	$(BISON) $(srcdir)/turtle_parser.y
 	$(PERL) $(top_srcdir)/scripts/fix-bison turtle_parser.tab.c > $@
 	mv -f turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
-parsedate.c: $(srcdir)/parsedate.y
-	$(YACC) -b parsedate -p raptor_parsedate_ -d -v $(srcdir)/parsedate.y
-	sed -e '/Suppress GCC warning that yyerrlab1/,/^\#endif/d' -e "s/parsedate.tab.c/$@/" parsedate.tab.c > $@
-	mv parsedate.tab.h parsedate.h
+parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison
+	$(BISON) $(srcdir)/parsedate.y
+	$(PERL) $(top_srcdir)/scripts/fix-bison parsedate.tab.c > $@
+	mv -f parsedate.tab.h parsedate.h
 	rm -f parsedate.tab.c
+
+parsedate.h: parsedate.c ; @exit 0
 
 endif
 

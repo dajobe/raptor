@@ -123,8 +123,8 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   fi
 fi
 
-BISON_MIN_VERSION=2.4
-AC_PROG_YACC
+BISON_MIN_VERSION=3.0.0
+AC_CHECK_PROGS(BISON, bison3 bison)
 if test "$USE_MAINTAINER_MODE" = yes; then
   AC_MSG_CHECKING(for GNU bison)
   # Match these styles of versions
@@ -132,7 +132,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   # bison (GNU Bison) 1.875
 dnl need to change quotes to allow square brackets
 changequote(<<, >>)dnl
-  BISON_VERSION=`$YACC --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
+  BISON_VERSION=`$BISON --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
 changequote([, ])dnl
   if test "X$BISON_VERSION" != X; then
     BISON_VERSION_DEC=`echo $BISON_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
@@ -148,10 +148,10 @@ changequote([, ])dnl
       AC_MSG_FAILURE(GNU Bison too old)
     fi
   else
-    AC_MSG_FAILURE($YACC is not GNU bison)
+    AC_MSG_FAILURE($BISON is not GNU bison)
   fi
 fi
-
+AC_SUBST(BISON)
 
 # Find a tar command for 'make dist'
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
