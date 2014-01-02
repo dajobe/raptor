@@ -83,9 +83,6 @@ int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *ms
 
 /* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
 
-/* What the lexer wants */
-extern int turtle_lexer_lex (YYSTYPE *yylval_param, yyscan_t yyscanner);
-
 /* Make lex/yacc interface as small as possible */
 #undef yylex
 #define yylex turtle_lexer_lex
