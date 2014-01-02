@@ -127,6 +127,11 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 
 
 /* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
+#if YY_FLEX_MAJOR_VERSION == 2 && YY_FLEX_MINOR_VERSION == 5 && YY_FLEX_SUBMINOR_VERSION < 36
+void turtle_lexer_set_column(int column_no, yyscan_t yyscanner);
+int turtle_lexer_get_column(yyscan_t yyscanner);
+#endif
+
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
 
 #ifdef HAVE_SETJMP
