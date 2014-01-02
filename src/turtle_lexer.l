@@ -70,6 +70,10 @@
 
 %option extra-type="raptor_parser*"
 
+/* Makes yyget_lval() yyset_lval() and yylval appear */
+%option bison-bridge
+/* Makes yyget_lloc() yyset_lloc() and yylloc appear */
+/* %option bison-locations */
 
   /* definitions */
 
