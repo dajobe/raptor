@@ -924,7 +924,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
       return buffer;
 
     case INTEGER_LITERAL:
-      sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
+      sprintf(buffer, "INTEGER_LITERAL(%s)", lval->string);
       return buffer;
 
     case FLOATING_LITERAL:

@@ -117,7 +117,6 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   raptor_term *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
-  int integer; /* 0+ for a xsd:integer datatyped RDF literal */
 }
 
 
