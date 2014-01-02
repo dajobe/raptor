@@ -160,9 +160,26 @@ static int LookupWord (YYSTYPE *lvalp, char *buff);
 
 %}
 
+/* directives */
+
+%require "3.0.0"
+
+/* File prefix (bison -b) */
+%file-prefix "parsedate"
+
+/* Symbol prefix (bison -d : deprecated) */
+%name-prefix "raptor_parsedate_"
+
+/* Write parser header file with macros (bison -d) */
+%defines
+
+/* Write output file with verbose descriptions of parser states */
+%verbose
+
+%define api.pure true
+
 /* This grammar has 56 shift/reduce conflicts. */
 %expect 56
-%define api.pure
 
 %param { struct date_yy *parm }
 
