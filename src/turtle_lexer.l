@@ -115,9 +115,6 @@ void turtle_lexer_syntax_error(void* ctx, const char *message, ...) RAPTOR_PRINT
 const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
-int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
-#define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
-
 #ifdef __cplusplus
 #define INPUT_FN yyinput
 #else
