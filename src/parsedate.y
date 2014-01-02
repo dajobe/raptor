@@ -1091,7 +1091,7 @@ time_t raptor_parse_date(const char *p, time_t *now)
   date.yyHaveTime = 0;
   date.yyHaveZone = 0;
 
-  if(yyparse ((void *)&date)
+  if(yyparse (&date)
       || date.yyHaveTime > 1 || date.yyHaveZone > 1 
 	  || date.yyHaveDate > 1 || date.yyHaveDay > 1) {
     return -1;
