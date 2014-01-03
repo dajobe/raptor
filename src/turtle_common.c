@@ -41,8 +41,8 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
-#include <turtle_lexer.h>
 #include <turtle_parser.h>
+#include <turtle_lexer.h>
 #include <turtle_common.h>
 
 /**

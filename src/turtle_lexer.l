@@ -70,6 +70,10 @@
 
 %option extra-type="raptor_parser*"
 
+/* Makes yyget_lval() yyset_lval() and yylval appear */
+%option bison-bridge
+/* Makes yyget_lloc() yyset_lloc() and yylloc appear */
+/* %option bison-locations */
 
   /* definitions */
 
@@ -115,9 +119,6 @@ void turtle_lexer_syntax_error(void* ctx, const char *message, ...) RAPTOR_PRINT
 const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
-int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
-#define YY_DECL int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner)
-
 #ifdef __cplusplus
 #define INPUT_FN yyinput
 #else
@@ -125,7 +126,12 @@ int turtle_lexer_lex (YYSTYPE *turtle_parser_lval, yyscan_t yyscanner);
 #endif
 
 
-/* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
+/* debian flex 2.5.35-10.1 added these column header prototypes in
+ * re-entrant mode.  standard flex omits them
+ */
+void turtle_lexer_set_column(int column_no, yyscan_t yyscanner);
+int turtle_lexer_get_column(yyscan_t yyscanner);
+
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
 
 #ifdef HAVE_SETJMP
@@ -229,14 +235,14 @@ EXPONENT [eE][+-]?[0-9]+
 "false"   { return FALSE_TOKEN; }
 
 
-\"([^\"\\\n\r]|\\[^\n\r])*\"   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
-                                if(!turtle_parser_lval->string)
+\"([^\"\\\n\r]|\\[^\n\r])*\"   { yylval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+                                if(!yylval->string)
                                   yyterminate();
 
                                 return STRING_LITERAL; }
 
-\'([^\'\\\n\r]|\\[^\n\r])*\'   { turtle_parser_lval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
-                                if(!turtle_parser_lval->string)
+\'([^\'\\\n\r]|\\[^\n\r])*\'   { yylval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
+                                if(!yylval->string)
                                   yyterminate();
 
                                 return STRING_LITERAL; }
@@ -252,11 +258,11 @@ EXPONENT [eE][+-]?[0-9]+
      
 		  BEGIN(INITIAL);
                   len = raptor_stringbuffer_length(turtle_parser->sb);
-                  turtle_parser_lval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
-                  if(!turtle_parser_lval->string)
+                  yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!yylval->string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
-                  turtle_parser_lval->string[len]='\0';
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len);
+                  yylval->string[len]='\0';
 
                   raptor_free_stringbuffer(turtle_parser->sb);
                   turtle_parser->sb = NULL;
@@ -315,11 +321,11 @@ EXPONENT [eE][+-]?[0-9]+
      
 		  BEGIN(INITIAL);
                   len = raptor_stringbuffer_length(turtle_parser->sb);
-                  turtle_parser_lval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
-                  if(!turtle_parser_lval->string)
+                  yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!yylval->string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)turtle_parser_lval->string, len);
-                  turtle_parser_lval->string[len]='\0';
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len);
+                  yylval->string[len]='\0';
 
                   raptor_free_stringbuffer(turtle_parser->sb);
                   turtle_parser->sb = NULL;
@@ -367,45 +373,45 @@ EXPONENT [eE][+-]?[0-9]+
                     yyterminate();
 }
     
-"_:"{BN_LABEL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
-          if(!turtle_parser_lval->string)
+"_:"{BN_LABEL}	{ yylval->string = turtle_copy_token((unsigned char*)yytext+2, yyleng-2);
+          if(!yylval->string)
             YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return BLANK_LITERAL; }
 
-{QNAME}	{ turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-          if(!turtle_parser_lval->uri) {
+{QNAME}	{ yylval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+          if(!yylval->uri) {
             turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_ERROR, "Failed to convert qname %s to URI", yytext);
             yyterminate();
           }
 
                           return QNAME_LITERAL; }
 
-{DECIMAL}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
-                  if(!turtle_parser_lval->string)
+{DECIMAL}	{ yylval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!yylval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return DECIMAL_LITERAL;
 }
 
-{DOUBLE} { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
-                  if(!turtle_parser_lval->string)
+{DOUBLE} { yylval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!yylval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                         return FLOATING_LITERAL;
 }
 
-{INTEGER}        { turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
-                  if(!turtle_parser_lval->string)
+{INTEGER}        { yylval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
+                  if(!yylval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return INTEGER_LITERAL; }
 
 <PREF>[\ \t\v]+ { /* eat up leading whitespace */ }
-<PREF>{PN_PREFIX}":"	{ turtle_parser_lval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
-                            if(!turtle_parser_lval->string)
+<PREF>{PN_PREFIX}":"	{ yylval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                            if(!yylval->string)
                               YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
 <PREF>":"	{ BEGIN(INITIAL);
-		  turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext, 0);
-      if(!turtle_parser_lval->string)
+		  yylval->string = turtle_copy_token((unsigned char*)yytext, 0);
+      if(!yylval->string)
         YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                   return IDENTIFIER; }
 
@@ -442,13 +448,13 @@ EXPONENT [eE][+-]?[0-9]+
                     turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
                     yyterminate();
                   } else if(!*uri_string)
-                    turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
+                    yylval->uri = raptor_uri_copy(rdf_parser->base_uri);
                   else
-                    turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                    yylval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
 
                   raptor_free_stringbuffer(sb);
 
-                  if(!turtle_parser_lval->uri)
+                  if(!yylval->uri)
                     TURTLE_LEXER_OOM();
                 return GRAPH_NAME_LEFT_CURLY; }
 
@@ -463,8 +469,8 @@ EXPONENT [eE][+-]?[0-9]+
                 }
                 yytext[yyleng] = '\0';
 
-                turtle_parser_lval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
-                if(!turtle_parser_lval->uri) {
+                yylval->uri = turtle_qname_to_uri(rdf_parser, (unsigned char*)yytext, yyleng);
+                if(!yylval->uri) {
                   turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_ERROR, "Failed to convert qname %s to URI", yytext);
                   yyterminate();
                 }
@@ -472,7 +478,7 @@ EXPONENT [eE][+-]?[0-9]+
                 return GRAPH_NAME_LEFT_CURLY; }
 
 {IRI}   { if(yyleng == 2) 
-                  turtle_parser_lval->uri = raptor_uri_copy(rdf_parser->base_uri);
+                  yylval->uri = raptor_uri_copy(rdf_parser->base_uri);
                 else {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
@@ -490,8 +496,8 @@ EXPONENT [eE][+-]?[0-9]+
                     turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
                     yyterminate();
                   } else {
-                    turtle_parser_lval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
-                    if(!turtle_parser_lval->uri) {
+                    yylval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
+                    if(!yylval->uri) {
                       raptor_free_stringbuffer(sb);
                       TURTLE_LEXER_OOM();
                     }
@@ -500,8 +506,8 @@ EXPONENT [eE][+-]?[0-9]+
                 }
                 return URI_LITERAL; }
 
-{LANGTAG}	{ turtle_parser_lval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
-                  if(!turtle_parser_lval->string)
+{LANGTAG}	{ yylval->string = turtle_copy_token((unsigned char*)yytext+1, yyleng-1);
+                  if(!yylval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return LANGTAG; }
 
@@ -924,7 +930,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
       return buffer;
 
     case INTEGER_LITERAL:
-      sprintf(buffer, "INTEGER_LITERAL(%d)", lval->integer);
+      sprintf(buffer, "INTEGER_LITERAL(%s)", lval->string);
       return buffer;
 
     case FLOATING_LITERAL:

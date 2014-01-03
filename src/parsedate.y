@@ -92,7 +92,7 @@
 #endif
 
 /* Prototypes */ 
-static int raptor_parsedate_error(const char *msg);
+static int raptor_parsedate_error(void* parm, const char *msg);
 
 
 #define EPOCH		1970
@@ -160,9 +160,28 @@ static int LookupWord (YYSTYPE *lvalp, char *buff);
 
 %}
 
+/* directives */
+
+%require "3.0.0"
+
+/* File prefix (bison -b) */
+%file-prefix "parsedate"
+
+/* Symbol prefix (bison -d : deprecated) */
+%name-prefix "raptor_parsedate_"
+
+/* Write parser header file with macros (bison -d) */
+%defines
+
+/* Write output file with verbose descriptions of parser states */
+%verbose
+
+%define api.pure true
+
 /* This grammar has 56 shift/reduce conflicts. */
 %expect 56
-%pure-parser
+
+%param { struct date_yy *parm }
 
 %token	tAGO tDAY tDAY_UNIT tDAYZONE tDST tHOUR_UNIT tID tTZONE tWZONE tZZONE
 %token	tMERIDIAN tMINUTE_UNIT tMONTH tMONTH_UNIT
@@ -778,7 +797,7 @@ static TABLE const MilitaryTable[] = {
 
 /* ARGSUSED */
 static int
-yyerror(const char *s)
+yyerror(void* parm, const char *s)
 {
   return 0;
 }
@@ -1072,7 +1091,7 @@ time_t raptor_parse_date(const char *p, time_t *now)
   date.yyHaveTime = 0;
   date.yyHaveZone = 0;
 
-  if(yyparse ((void *)&date)
+  if(yyparse (&date)
       || date.yyHaveTime > 1 || date.yyHaveZone > 1 
 	  || date.yyHaveDate > 1 || date.yyHaveDay > 1) {
     return -1;
