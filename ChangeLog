@@ -1,3 +1,108 @@
+2014-01-04  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Remove YY_INPUT - never want to read from
+	stdin/file
+
+2014-01-02  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #12 from dajobe/bison3.0-new Switch to use
+	and require Bison 3.0
+
+	* src/turtle_lexer.l: Provide missing flex prototypes for flex
+	2.5.35 or earlier
+
+	* src/parsedate.y:
+	(raptor_parse_date): No need for cast to void* for yyparse
+
+2014-01-01  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Remove redundant declaration of
+	turtle_lexer_lex
+
+	* configure.ac, src/Makefile.am: Alter configure to accept bison
+	3.0.0 or newer, no yacc
+
+	* src/parsedate.y: Add bison 3.0 directives
+
+	* src/parsedate.y: Bison 3.0 the parsedate parser
+
+	- Update to new directives
+	- Set %param
+	- Update error call
+
+	* src/turtle_parser.y: Bison 3.0 the turtle parser
+
+	- Use bison 3.0+ directives replacing all command line arguments
+	- Update lexer and parser parameters (remove use of YYLEX_PARAM)
+	- (turtle_parser_error): Add scanner arg.
+	- Use rdf_parser argument directly rather than via casted variable.
+	- Add %empty directives
+	- Remove casts to raptor_parser* that are no longer needed
+	- (turtle_parse): Pass in scanner
+
+	* src/turtle_parser.y: Remove YY_DECL
+
+	* src/turtle_lexer.l: Add %option bison-bridge
+
+	* src/turtle_lexer.l: Remove turtle_lexer_lex prototype / header
+	override
+
+	No longer use YYDECL - the default works.
+
+	* src/turtle_lexer.l: Replace turtle_parser_lval with yylval
+
+	* src/turtle_common.c: Move turtle_lexer.h include earlier so
+	YYSTYPE can be found
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Remove token union
+	unused integer field
+
+2013-12-30  Dave Beckett <dave@dajobe.org>
+
+	* src/parsedate.y: bison %pure-parser
+
+	* src/turtle_parser.y: bison %define api.push-pull pull
+
+	* tests/ntriples/Makefile.am: Add bug-562.out to dist
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_literal_object): No need for strlen
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_quoted): No need for strlen
+
+	* src/raptor_internal.h, src/raptor_json_writer.c: Add size arg to
+	raptor_json_writer_blank_object
+
+	(raptor_json_writer_blank_object): use len and save a strlen
+
+	(raptor_json_writer_term): Update call to above
+
+	* src/raptor_internal.h, src/raptor_json_writer.c: Add len arg to
+	raptor_json_writer_literal_object
+
+	(raptor_json_writer_literal_object): Remove use of
+	raptor_json_writer_quoted for constant string.
+
+	* src/raptor_json_writer.c, src/raptor_serialize_json.c: Use
+	raptor_json_writer_term() in several places
+
+	(raptor_json_serialize_statement): Use raptor_json_writer_term()
+	for s, p, o.
+
+	(raptor_json_serialize_avltree_visit): Use
+	raptor_json_writer_term() for final object.
+
+	* src/raptor_internal.h, src/raptor_json_writer.c:
+	(raptor_json_writer_term): Added
+
+	* src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_serialize_json.c: Inline constant args for
+	raptor_json_writer_literal_object
+
+	(raptor_json_writer_literal_object): Was always called with same
+	constants so inline them and update callers.
+
 2013-12-29  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_turtle.c: Use
