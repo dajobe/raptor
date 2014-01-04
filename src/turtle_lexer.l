@@ -149,6 +149,9 @@ static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 } while(0)
 #endif
  
+/* Remove the re-fill function since it should never be called */
+#define YY_INPUT(buf,result,max_size) { return YY_NULL; }
+
 static void turtle_lexer_error(yyscan_t yyscanner, raptor_log_level level, yyconst char *message, ...) RAPTOR_PRINTF_FORMAT(3, 4);
 
 /* Fatal error handler that returns EOF instead of abort()/longjmp()
@@ -162,7 +165,7 @@ static void turtle_lexer_error(yyscan_t yyscanner, raptor_log_level level, yycon
 #define TURTLE_LEXER_OOM() YY_FATAL_ERROR_EOF(turtle_lexer_oom_text)
 static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 
-/* Dot not need input() to to read from stdin */
+/* Do not need input() to to read from stdin */
 #define YY_NO_INPUT 1
 
 %}
