@@ -157,7 +157,7 @@ AC_SUBST(BISON)
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
 AC_CHECK_PROGS(PERL, perl)
 # Used in tests/feeds
-AC_CHECK_PROG(JING, jing)
+AC_CHECK_PROGS(JING, jing)
 
 AM_MISSING_PROG(ACLOCAL, aclocal, $missing_dir)
 AM_MISSING_PROG(AUTOCONF, autoconf, $missing_dir)
