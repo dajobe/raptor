@@ -431,7 +431,6 @@ raptor_abbrev_subject_find(raptor_avltree *subjects, raptor_term* node)
   rv_subject = (raptor_abbrev_subject*) raptor_avltree_search(subjects, lookup);
 
   raptor_free_abbrev_subject(lookup);
-  raptor_free_abbrev_node(lookup_node);
 
   return rv_subject;
 }
