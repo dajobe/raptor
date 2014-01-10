@@ -542,7 +542,8 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     }
     result.path = path_buffer;
     result.path_len = ref->path_len;
-    memcpy(path_buffer, ref->path, result.path_len);
+    if(ref->path)
+      memcpy(path_buffer, ref->path, result.path_len);
     path_buffer[result.path_len] = '\0';
     goto normalize;
   }
