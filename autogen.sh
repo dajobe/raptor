@@ -363,10 +363,12 @@ do
 	fi
       fi
 
-      if test ! -f NEWS; then
-        echo "$program: Creating empty NEWS file to allow configure to work"
-        $DRYRUN touch -t 200001010000 NEWS
-      fi
+      for docs in NEWS README; do
+	if test ! -f $docs; then
+	  echo "$program: Creating empty $docs file to allow configure to work"
+	  $DRYRUN touch -t 200001010000 $docs
+	fi
+      done
 
       echo "$program: Running $aclocal $aclocal_args"
       $DRYRUN $aclocal $aclocal_args
