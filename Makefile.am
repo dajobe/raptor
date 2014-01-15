@@ -60,7 +60,7 @@ SUFFIXES = .html .txt
 .html.txt:
 	$(HTML_TO_TEXT) $< > $@
 
-README: README.html
+$(srcdir)/README: README.html
 	$(HTML_TO_TEXT) $< > $@
 
 $(srcdir)/NEWS: NEWS.html
