@@ -3,11 +3,15 @@
 #   http://about.travis-ci.org/docs/user/languages/c/
 #   http://about.travis-ci.org/docs/user/build-configuration/
 #
+language: c
+branches:
+  only:
+    - master
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
-language: c
 compiler:
   - gcc
   - clang
-script: ./autogen.sh && make && make test
+before_script: ./autogen.sh
+
