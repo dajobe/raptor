@@ -60,10 +60,10 @@ SUFFIXES = .html .txt
 .html.txt:
 	$(HTML_TO_TEXT) $< > $@
 
-$(srcdir)/README: README.html
+$(srcdir)/README: $(srcdir)/README.html
 	$(HTML_TO_TEXT) $< > $@
 
-$(srcdir)/NEWS: NEWS.html
+$(srcdir)/NEWS: $(srcdir)/NEWS.html
 	$(HTML_TO_TEXT) $< > $@
 
 endif
