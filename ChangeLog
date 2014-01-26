@@ -1,4 +1,38 @@
+2014-01-15  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Create NEWS and README
+
+2014-01-14  Dave Beckett <dave@dajobe.org>
+
+	* Makefile.am: fix html rules more
+
+	* .travis.yml: Travis CI fix
+
+	* Makefile.am: fix html rule
+
+2014-01-10  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_abbrev.c:
+	Revert: (raptor_abbrev_subject_find): Remove
+	double free of lookup_node.
+
+	This reverts commit c1c82f1be5d86ebf95fa10b86a938d6799e35626.
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Handle NULL ref->path
+
+	* src/raptor_abbrev.c:
+	(raptor_abbrev_subject_find): Remove double free of lookup_node
+	Remove call to raptor_free_abbrev_node()
+
+2014-01-07  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Use AC_CHECK_PROGS to find jing
+	AC_CHECK_PROG doesn't default to setting it as found!
+
 2014-01-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: 2014
 
 	* src/turtle_lexer.l: Remove YY_INPUT - never want to read from
 	stdin/file
