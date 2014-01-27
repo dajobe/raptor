@@ -14,6 +14,39 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=562">0000562</a>: N-Quads parsing of URIs with ' fails</li>
+</ul>
+
+<h3>Parser changes</h3>
+
+<p>The N-Triples / N-Quads parser was updated to allow ' in URIs.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=562">Issue #0000562</a>.
+</p>
+
+<h3>Configuration changes</h3>
+
+<p>Use the discovery of the <code>xml2-config(1)</code> /
+<code>curl-config(1)</code> programs as test for presence of the
+libraries. This fixes the issue where that after configuring, curl
+was present but is not used for WWW fetching.
+</p>
+
+<p>Updated to use the <code>AC_CHECK_PROGS</code> macro to find jing
+since <code>AC_CHECK_PROG</code> doesn't default to setting it as
+found when present!
+</p>
+
+<h3>Internal changes</h3>
+
+<p>The Turtle and parsedate parsers and the turtle lexer were updated
+to use and require Bison 3.0.0.
+</p>
+
+<p>The JSON and turtle writers were updated to save several expensive
+<code>strlen()</code> calls.</p>
+
 
 <h2 id="rel2_0_12"><a name="rel2_0_12">Raptor2 2.0.12 changes</a></h2>
 
@@ -4468,7 +4501,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2013 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2014 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

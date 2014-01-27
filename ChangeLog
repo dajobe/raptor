@@ -1,3 +1,17 @@
+2014-01-27  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Use presence of libxml / curl config programs as
+	test for presence
+
+	Symptom was that after configuring, curl was present but not used
+	for WWW fetching.
+
+	Original commit that changed this was
+	  commit 7da03ba5cd6e45ea41afebd4955acf6e96e9d622
+	  Date:   Fri Apr 5 19:01:55 2013 +0100
+
+	which was Raptor 2.0.10 onwards
+
 2014-01-15  Dave Beckett <dave@dajobe.org>
 
 	* autogen.sh: Create NEWS and README
