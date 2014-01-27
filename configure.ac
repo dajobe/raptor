@@ -585,7 +585,7 @@ have_libxml=0
 need_libxml=0
 
 oCPPFLAGS="$CPPFLAGS"
-if test "X$LIBXML_CFLAGS" != X; then
+if test "X$XML_CONFIG" != X; then
   CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
   LIBS="$LIBS $LIBXML_LIBS"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
@@ -986,7 +986,7 @@ need_libcurl=0
 need_libxml_www=0
 need_libfetch=0
 
-if test "X$LIBCURL_CFLAGS" != X; then
+if test "X$CURL_CONFIG" != X; then
   CPPFLAGS="$CPPFLAGS $LIBCURL_CFLAGS"
   LIBS="$LIBS $LIBCURL_LIBS"
   AC_CHECK_HEADER(curl/curl.h)
