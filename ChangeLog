@@ -1,4 +1,17 @@
+2014-01-29  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_13 for 2.0.13 release (GIT
+	fde3f210e7442de6de16c410443fd8a695f09820)
+
+2014-01-29  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html:
+	2.0.13
+
 2014-01-27  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html, UPGRADING.html: 2.0.13 and 2014
 
 	* configure.ac: Use presence of libxml / curl config programs as
 	test for presence
