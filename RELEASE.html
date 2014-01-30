@@ -11,9 +11,6 @@
 
 <h2 id="rel2_0_13"><a name="rel2_0_13">Raptor2 2.0.13 changes</a></h2>
 
-<p>Not yet released.
-</p>
-
 <p>Issues Fixed:</p>
 <ul>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=562">0000562</a>: N-Quads parsing of URIs with ' fails</li>
@@ -30,7 +27,8 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=562">Issue #0000562</a>
 <p>Use the discovery of the <code>xml2-config(1)</code> /
 <code>curl-config(1)</code> programs as test for presence of the
 libraries. This fixes the issue where that after configuring, curl
-was present but is not used for WWW fetching.
+was present but was not used for WWW fetching.  This is seen when
+the output of <code>curl-config --cflags</code> is empty / whitespace.
 </p>
 
 <p>Updated to use the <code>AC_CHECK_PROGS</code> macro to find jing
