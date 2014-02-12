@@ -45,14 +45,14 @@ TEST_GOOD_FILES = \
   nt-syntax-datatypes-02.nt \
   nt-syntax-subm-01.nt \
   comment_following_triple.nt \
-  literal.nt \
-  literal_all_controls.nt \
-  literal_all_punctuation.nt \
-  literal_ascii_boundaries.nt \
+  LITERAL.nt \
+  LITERAL_all_controls.nt \
+  LITERAL_all_punctuation.nt \
+  LITERAL_ascii_boundaries.nt \
   literal_false.nt \
   literal_true.nt \
-  literal_with_2_dquotes.nt \
-  literal_with_2_squotes.nt \
+  LITERAL_with_2_dquotes.nt \
+  LITERAL_with_2_squotes.nt \
   literal_with_BACKSPACE.nt \
   literal_with_CARRIAGE_RETURN.nt \
   literal_with_CHARACTER_TABULATION.nt \
@@ -60,11 +60,11 @@ TEST_GOOD_FILES = \
   literal_with_LINE_FEED.nt \
   literal_with_REVERSE_SOLIDUS.nt \
   literal_with_REVERSE_SOLIDUS2.nt \
-  literal_with_UTF8_boundaries.nt \
-  literal_with_dquote.nt \
+  LITERAL_with_UTF8_boundaries.nt \
+  LITERAL_with_dquote.nt \
   literal_with_numeric_escape4.nt \
   literal_with_numeric_escape8.nt \
-  literal_with_squote.nt \
+  LITERAL_with_squote.nt \
   langtagged_string.nt \
   lantag_with_subtag.nt \
   minimal_whitespace.nt
@@ -109,7 +109,8 @@ ALL_TEST_FILES= \
 	$(TEST_GOOD_FILES) \
 	$(TEST_BAD_FILES)
 
-EXTRA_DIST = $(ALL_TEST_FILES)
+EXTRA_DIST = README \
+	$(ALL_TEST_FILES)
 
 RAPPER  = $(top_builddir)/utils/rapper
 RDFDIFF = $(top_builddir)/utils/rdfdiff
