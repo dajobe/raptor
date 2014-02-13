@@ -316,7 +316,8 @@ TEST_EVAL_FILES = \
   number_sign_following_PNAME_NS.ttl \
   LITERAL_LONG2_with_REVERSE_SOLIDUS.ttl \
   two_LITERAL_LONG2s.ttl \
-  langtagged_LONG_with_subtag.ttl
+  langtagged_LONG_with_subtag.ttl \
+  oops.ttl
 
 TEST_BAD_EVAL_FILES = \
   turtle-eval-bad-01.ttl \
@@ -462,7 +463,8 @@ TEST_OUT_FILES = \
   turtle-syntax-ln-colons.nt \
   turtle-syntax-ln-dots.nt \
   two_LITERAL_LONG2s.nt \
-  underscore_in_localName.nt
+  underscore_in_localName.nt \
+  oops.nt
 
 # Used to make N-triples output consistent
 BASE_URI=http://www.w3.org/2013/TurtleTests/
