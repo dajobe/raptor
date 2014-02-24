@@ -248,6 +248,7 @@ possible_warnings="\
 -Wstrict-prototypes \
 -Wswitch-enum \
 -Wundef \
+-Wunreachable-code \
 -Wunsafe-loop-optimizations \
 -Wwrite-strings \
 \
