@@ -1037,15 +1037,13 @@ raptor_rss_insert_identifiers(raptor_parser* rdf_parser)
             else if(field->uri)
               new_uri = raptor_uri_copy(field->uri);
 
-            if(!new_uri)
-              return 1;
-            
-            item->term = raptor_new_term_from_uri(rdf_parser->world, new_uri);
-            raptor_free_uri(new_uri);
-            if(!item->term)
-              return 1;
-
-            break;
+            if(new_uri) {
+              item->term = raptor_new_term_from_uri(rdf_parser->world, new_uri);
+              raptor_free_uri(new_uri);
+              if(!item->term)
+                return 1;
+              break;
+            }
           }
         }
       
@@ -1575,13 +1573,11 @@ raptor_rss_start_namespaces(raptor_parser* rdf_parser)
       
       /* for each field */
       for(f = 0; f< RAPTOR_RSS_FIELDS_SIZE; f++) {
-        raptor_rss_field* field;
-        /* for each field value */
-        for(field = item->fields[f]; field; field = field->next) {
+        raptor_rss_field* field = item->fields[f];
+        if(field) {
+          /* knowing there is one value is enough */
           rss_info_namespace ns_index = raptor_rss_fields_info[f].nspace;
           rss_parser->nspaces_seen[ns_index] = 'Y';
-          /* knowing there is one value is enough */
-          break;
         }
       }
     }

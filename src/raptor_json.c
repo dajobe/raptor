@@ -357,7 +357,6 @@ static int raptor_json_yajl_map_key(void * ctx, const unsigned char * str,
       raptor_parser_error(rdf_parser, "Unexpected key name in triple definition");
       return 0;
     }
-    return 1;
   } else {
     raptor_parser_error(rdf_parser, "Unexpected JSON map key");
     return 0;

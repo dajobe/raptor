@@ -476,9 +476,6 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
     case RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH:
       world->www_skip_www_init_finish = value;
       break;
-      
-    default:
-      rc = -1;
   }
 
   return rc;
@@ -754,7 +751,6 @@ raptor_check_world_internal(raptor_world* world, const char* name)
   if(!world) {
     fprintf(stderr, "%s called with NULL world object\n", name);
     RAPTOR_ASSERT_DIE
-    return 1;
   }
   
   /* In Raptor V1 ABI the first int of raptor_world is the 'opened' field */
