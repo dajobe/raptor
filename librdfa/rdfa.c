@@ -241,8 +241,8 @@ static void start_element(void *parser_context, const char* name,
 
    rdfa_push_item(context_stack, context, RDFALIST_FLAG_CONTEXT);
 
-   if(DEBUG)
-   {
+#if defined(DEBUG) && DEBUG > 0
+   if(1) {
       int i;
 
       /* dump all arguments sent to this callback */
@@ -283,6 +283,7 @@ static void start_element(void *parser_context, const char* name,
       }
       fprintf(stdout, ")\n");
    }
+#endif
 
    /* start the XML Literal text */
    if(context->xml_literal == NULL)
@@ -760,8 +761,7 @@ static void start_element(void *parser_context, const char* name,
    rdfa_update_language(context, xml_lang);
 
    /***************** FOR DEBUGGING PURPOSES ONLY ******************/
-   if(DEBUG)
-   {
+#if defined(DEBUG) && DEBUG > 0
       printf("DEBUG: depth = %u\n", context->depth);
       if(about != NULL)
       {
@@ -815,7 +815,7 @@ static void start_element(void *parser_context, const char* name,
       {
          printf("DEBUG: @xml:lang = %s\n", xml_lang);
       }
-   }
+#endif
 
    /* TODO: This isn't part of the processing model, it needs to be
     * included and is a correction for the last item in step #4. */
@@ -866,10 +866,9 @@ static void start_element(void *parser_context, const char* name,
 
    if(context->new_subject != NULL)
    {
-      if(DEBUG)
-      {
-         printf("DEBUG: new_subject = %s\n", context->new_subject);
-      }
+#if defined(DEBUG) && DEBUG > 0
+     printf("DEBUG: new_subject = %s\n", context->new_subject);
+#endif
 
       /* RDFa 1.0: 6. If in any of the previous steps a [new subject] was set
        * to a non-null value, it is now used to provide a subject for
@@ -1023,13 +1022,12 @@ static void end_element(void* parser_context, const char* name,
    /* append the text to the current context's XML literal */
    char* buffer = (char*)malloc(strlen(name) + 4);
 
-   if(DEBUG)
-   {
-      printf("DEBUG: </%s>\n", name);
-      printf("context->local_list_mappings (start of end_element): ");
-      rdfa_print_mapping(context->local_list_mappings,
+#if defined(DEBUG) && DEBUG > 0
+   printf("DEBUG: </%s>\n", name);
+   printf("context->local_list_mappings (start of end_element): ");
+   rdfa_print_mapping(context->local_list_mappings,
          (print_mapping_value_fp)rdfa_print_triple_list);
-   }
+#endif
 
    sprintf(buffer, "</%s>", name);
    if(context->xml_literal == NULL)
@@ -1180,12 +1178,11 @@ static void end_element(void* parser_context, const char* name,
             (void**)context->local_list_mappings,
             (copy_mapping_value_fp)rdfa_replace_list);
 
-         if(DEBUG)
-         {
-            printf("parent_context->local_list_mappings (after copy): ");
-            rdfa_print_mapping(context->local_list_mappings,
+#if defined(DEBUG) && DEBUG > 0
+         printf("parent_context->local_list_mappings (after copy): ");
+         rdfa_print_mapping(context->local_list_mappings,
                (print_mapping_value_fp)rdfa_print_triple_list);
-         }
+#endif
          rdfa_free_mapping(context->local_list_mappings,
             (free_mapping_value_fp)rdfa_free_list);
          context->local_list_mappings = NULL;
@@ -1195,10 +1192,9 @@ static void end_element(void* parser_context, const char* name,
    /* free the context */
    rdfa_free_context(context);
 
-   if(DEBUG)
-   {
-      printf("-------------------------------------------------------------\n");
-   }
+#if defined(DEBUG) && DEBUG > 0
+   printf("-------------------------------------------------------------\n");
+#endif
 }
 
 void rdfa_set_default_graph_triple_handler(

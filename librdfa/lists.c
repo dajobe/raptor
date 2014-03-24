@@ -55,12 +55,11 @@ void rdfa_establish_new_inlist_triples(rdfacontext* context,
       free(resolved_predicate);
    }
 
-   if(DEBUG)
-   {
-      printf("LOCAL LIST MAPPINGS: ");
-      rdfa_print_mapping(context->local_list_mappings,
+#if defined(DEBUG) && DEBUG > 0
+   printf("LOCAL LIST MAPPINGS: ");
+   rdfa_print_mapping(context->local_list_mappings,
          (print_mapping_value_fp)rdfa_print_triple_list);
-   }
+#endif
 }
 
 void rdfa_save_incomplete_list_triples(
@@ -85,11 +84,10 @@ void rdfa_save_incomplete_list_triples(
       free(resolved_curie);
    }
 
-   if(DEBUG)
-   {
-      printf("LOCAL INCOMPLETE TRIPLES: ");
-      rdfa_print_list(context->local_incomplete_triples);
-   }
+#if defined(DEBUG) && DEBUG > 0
+   printf("LOCAL INCOMPLETE TRIPLES: ");
+   rdfa_print_list(context->local_incomplete_triples);
+#endif
 }
 
 void rdfa_complete_list_triples(rdfacontext* context)
@@ -106,12 +104,11 @@ void rdfa_complete_list_triples(rdfacontext* context)
    void* value = NULL;
    unsigned int list_depth = 0;
 
-   if(DEBUG)
-   {
-      printf("local_list_mappings: ");
-      rdfa_print_mapping(context->local_list_mappings,
+#if defined(DEBUG) && DEBUG > 0
+   printf("local_list_mappings: ");
+   rdfa_print_mapping(context->local_list_mappings,
          (print_mapping_value_fp)rdfa_print_triple_list);
-   }
+#endif
 
    while(*mptr != NULL)
    {
@@ -120,11 +117,10 @@ void rdfa_complete_list_triples(rdfacontext* context)
       list = (rdfalist*)value;
       list_depth = list->user_data;
       mptr++;
-      if(DEBUG)
-      {
-         printf("LIST TRIPLES for key (%u/%u): KEY(%s)\n",
-            context->depth, list_depth, key);
-      }
+#if defined(DEBUG) && DEBUG > 0
+      printf("LIST TRIPLES for key (%u/%u): KEY(%s)\n",
+             context->depth, list_depth, key);
+#endif
 
       if((context->depth < (int)list_depth) &&
          (rdfa_get_list_mapping(
