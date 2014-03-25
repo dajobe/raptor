@@ -1,4 +1,61 @@
-2014-01-29  Dave Beckett  <dave@dajobe.org>
+2014-03-24  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.14, Makefile.am: ChangeLog.14 for 2013
+
+2014-03-24  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/lists.c, librdfa/rdfa.c: librdfa fixes for
+	-Wunreachable-code (clang)
+
+2014-02-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c, src/raptor_json.c, src/raptor_rss.c,
+	src/raptor_turtle_writer.c: Fixes for -Wunreachable-code (clang)
+
+	(raptor_rss_insert_identifiers): When inserting identifiers, allow
+	the loop to continue searching.
+
+	(raptor_rss_start_namespaces): Remove loop since 1 value is
+	enough.
+
+	* configure.ac: Add -Wunreachable-code (clang)
+
+2014-02-13  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am, tests/turtle-2013/oops.nt,
+	tests/turtle-2013/oops.ttl: Add test and expected response for RDF
+	1.1 Turtle post-REC error
+
+	Announced:
+	http://lists.w3.org/Archives/Public/public-rdf-comments/2014Feb/0018.html
+	Expected answer requested:
+	http://lists.w3.org/Archives/Public/public-rdf-comments/2014Feb/0020.html
+
+2014-02-12  Dave Beckett <dave@dajobe.org>
+
+	* tests/ntriples-2013/LITERAL.nt,
+	tests/ntriples-2013/LITERAL_all_controls.nt,
+	tests/ntriples-2013/LITERAL_all_punctuation.nt,
+	tests/ntriples-2013/LITERAL_with_2_dquotes.nt,
+	tests/ntriples-2013/LITERAL_with_2_squotes.nt,
+	tests/ntriples-2013/LITERAL_with_UTF8_boundaries.nt,
+	tests/ntriples-2013/LITERAL_with_dquote.nt,
+	tests/ntriples-2013/LITERAL_with_squote.nt,
+	tests/ntriples-2013/Makefile.am, tests/ntriples-2013/README,
+	tests/ntriples-2013/literal.nt,
+	tests/ntriples-2013/literal_all_controls.nt,
+	tests/ntriples-2013/literal_all_punctuation.nt,
+	tests/ntriples-2013/literal_with_2_dquotes.nt,
+	tests/ntriples-2013/literal_with_2_squotes.nt,
+	tests/ntriples-2013/literal_with_UTF8_boundaries.nt,
+	tests/ntriples-2013/literal_with_dquote.nt,
+	tests/ntriples-2013/literal_with_squote.nt: Renames to match W3C
+	mercurial repo names
+
+2014-01-29  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.14
 
 	* Snapshotted raptor2_2_0_13 for 2.0.13 release (GIT
 	fde3f210e7442de6de16c410443fd8a695f09820)
