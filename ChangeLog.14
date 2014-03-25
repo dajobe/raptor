@@ -1,0 +1,1854 @@
+2013-12-30  Dave Beckett <dave@dajobe.org>
+
+	* src/parsedate.y: bison %pure-parser
+
+	* src/turtle_parser.y: bison %define api.push-pull pull
+
+	* tests/ntriples/Makefile.am: Add bug-562.out to dist
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_literal_object): No need for strlen
+
+	* src/raptor_json_writer.c:
+	(raptor_json_writer_quoted): No need for strlen
+
+	* src/raptor_internal.h, src/raptor_json_writer.c: Add size arg to
+	raptor_json_writer_blank_object
+
+	(raptor_json_writer_blank_object): use len and save a strlen
+
+	(raptor_json_writer_term): Update call to above
+
+	* src/raptor_internal.h, src/raptor_json_writer.c: Add len arg to
+	raptor_json_writer_literal_object
+
+	(raptor_json_writer_literal_object): Remove use of
+	raptor_json_writer_quoted for constant string.
+
+	* src/raptor_json_writer.c, src/raptor_serialize_json.c: Use
+	raptor_json_writer_term() in several places
+
+	(raptor_json_serialize_statement): Use raptor_json_writer_term()
+	for s, p, o.
+
+	(raptor_json_serialize_avltree_visit): Use
+	raptor_json_writer_term() for final object.
+
+	* src/raptor_internal.h, src/raptor_json_writer.c:
+	(raptor_json_writer_term): Added
+
+	* src/raptor_internal.h, src/raptor_json_writer.c,
+	src/raptor_serialize_json.c: Inline constant args for
+	raptor_json_writer_literal_object
+
+	(raptor_json_writer_literal_object): Was always called with same
+	constants so inline them and update callers.
+
+2013-12-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Use
+	raptor_turtle_writer_raw_counted to save strlen()s
+
+	* src/raptor_internal.h, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_turtle.c: Add RAPTOR_DEBUG_ABBREV_NODE for
+	abbreviated serializing debugging
+
+	Update RDF/XML-Abbrev and Turtle serializer to use it
+
+	* src/ntriples_parse.c:
+	Allow ' in <URI>
+
+	Fixes Issue #0000562
+	http://bugs.librdf.org/mantis/view.php?id=562
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bug-562.nt,
+	tests/ntriples/bug-562.out: Add bug-562 test files for Issue
+	#0000562
+
+2013-12-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_counted_string): Fix memset transposed args.
+
+	* NEWS.html: word
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.13
+
+	* Snapshotted raptor2_2_0_12 for 2.0.12 release (GIT f38f4182b8d90a8f457e856e8eaa93cb1f135322)
+
+2013-12-07  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_internal.h: Add a configure test for
+	__func__ since it's not always a macro
+
+	* tests/nquads-2013/README: Add nquads test README
+
+	* src/ntriples_parse.c: Make N-Triples / N-Quads parser more
+	carefully handle NUL
+
+	(raptor_ntriples_parse_chunk): Looks for end_ptr rather than NUL
+	when searching for \n or \r.  It also checks for \\ and " 's
+
+	* src/ntriples_parse.c: Fix code in #ifdef RASQAL_DEBUG
+
+	* src/ntriples_parse.c: Improve debug messages
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): No triple if one term failed
+
+	* src/raptor_ntriples.c:
+	(raptor_parse_turtle_term_internal): Allow 2.0E-1
+
+2013-12-05  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_normalize_path): end when string does
+
+	* configure.ac, tests/Makefile.am, tests/nquads-2013/Makefile.am,
+	tests/nquads-2013/comment_following_triple.nq,
+	tests/nquads-2013/langtagged_string.nq,
+	tests/nquads-2013/lantag_with_subtag.nq,
+	tests/nquads-2013/literal.nq,
+	tests/nquads-2013/literal_all_controls.nq,
+	tests/nquads-2013/literal_all_punctuation.nq,
+	tests/nquads-2013/literal_false.nq,
+	tests/nquads-2013/literal_true.nq,
+	tests/nquads-2013/literal_with_2_dquotes.nq,
+	tests/nquads-2013/literal_with_2_squotes.nq,
+	tests/nquads-2013/literal_with_BACKSPACE.nq,
+	tests/nquads-2013/literal_with_CARRIAGE_RETURN.nq,
+	tests/nquads-2013/literal_with_CHARACTER_TABULATION.nq,
+	tests/nquads-2013/literal_with_FORM_FEED.nq,
+	tests/nquads-2013/literal_with_LINE_FEED.nq,
+	tests/nquads-2013/literal_with_REVERSE_SOLIDUS.nq,
+	tests/nquads-2013/literal_with_REVERSE_SOLIDUS2.nq,
+	tests/nquads-2013/literal_with_UTF8_boundaries.nq,
+	tests/nquads-2013/literal_with_dquote.nq,
+	tests/nquads-2013/literal_with_numeric_escape4.nq,
+	tests/nquads-2013/literal_with_numeric_escape8.nq,
+	tests/nquads-2013/literal_with_squote.nq,
+	tests/nquads-2013/manifest.ttl,
+	tests/nquads-2013/minimal_whitespace.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-01.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-02.nq,
+	tests/nquads-2013/nq-syntax-bad-literal-03.nq,
+	tests/nquads-2013/nq-syntax-bad-quint-01.nq,
+	tests/nquads-2013/nq-syntax-bad-uri-01.nq,
+	tests/nquads-2013/nq-syntax-bnode-01.nq,
+	tests/nquads-2013/nq-syntax-bnode-02.nq,
+	tests/nquads-2013/nq-syntax-bnode-03.nq,
+	tests/nquads-2013/nq-syntax-bnode-04.nq,
+	tests/nquads-2013/nq-syntax-bnode-05.nq,
+	tests/nquads-2013/nq-syntax-bnode-06.nq,
+	tests/nquads-2013/nq-syntax-uri-01.nq,
+	tests/nquads-2013/nq-syntax-uri-02.nq,
+	tests/nquads-2013/nq-syntax-uri-03.nq,
+	tests/nquads-2013/nq-syntax-uri-04.nq,
+	tests/nquads-2013/nq-syntax-uri-05.nq,
+	tests/nquads-2013/nq-syntax-uri-06.nq,
+	tests/nquads-2013/nt-syntax-bad-base-01.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-01.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-02.nq,
+	tests/nquads-2013/nt-syntax-bad-esc-03.nq,
+	tests/nquads-2013/nt-syntax-bad-lang-01.nq,
+	tests/nquads-2013/nt-syntax-bad-num-01.nq,
+	tests/nquads-2013/nt-syntax-bad-num-02.nq,
+	tests/nquads-2013/nt-syntax-bad-num-03.nq,
+	tests/nquads-2013/nt-syntax-bad-prefix-01.nq,
+	tests/nquads-2013/nt-syntax-bad-string-01.nq,
+	tests/nquads-2013/nt-syntax-bad-string-02.nq,
+	tests/nquads-2013/nt-syntax-bad-string-03.nq,
+	tests/nquads-2013/nt-syntax-bad-string-04.nq,
+	tests/nquads-2013/nt-syntax-bad-string-05.nq,
+	tests/nquads-2013/nt-syntax-bad-string-06.nq,
+	tests/nquads-2013/nt-syntax-bad-string-07.nq,
+	tests/nquads-2013/nt-syntax-bad-struct-01.nq,
+	tests/nquads-2013/nt-syntax-bad-struct-02.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-01.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-02.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-03.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-04.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-05.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-06.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-07.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-08.nq,
+	tests/nquads-2013/nt-syntax-bad-uri-09.nq,
+	tests/nquads-2013/nt-syntax-bnode-01.nq,
+	tests/nquads-2013/nt-syntax-bnode-02.nq,
+	tests/nquads-2013/nt-syntax-bnode-03.nq,
+	tests/nquads-2013/nt-syntax-datatypes-01.nq,
+	tests/nquads-2013/nt-syntax-datatypes-02.nq,
+	tests/nquads-2013/nt-syntax-file-01.nq,
+	tests/nquads-2013/nt-syntax-file-02.nq,
+	tests/nquads-2013/nt-syntax-file-03.nq,
+	tests/nquads-2013/nt-syntax-str-esc-01.nq,
+	tests/nquads-2013/nt-syntax-str-esc-02.nq,
+	tests/nquads-2013/nt-syntax-str-esc-03.nq,
+	tests/nquads-2013/nt-syntax-string-01.nq,
+	tests/nquads-2013/nt-syntax-string-02.nq,
+	tests/nquads-2013/nt-syntax-string-03.nq,
+	tests/nquads-2013/nt-syntax-subm-01.nq,
+	tests/nquads-2013/nt-syntax-uri-01.nq,
+	tests/nquads-2013/nt-syntax-uri-02.nq,
+	tests/nquads-2013/nt-syntax-uri-03.nq,
+	tests/nquads-2013/nt-syntax-uri-04.nq: Add N-Quads 2013 W3C tests
+
+	From http://www.w3.org/2013/N-QuadsTests/ via mercurial and
+	https://github.com/dajobe/nquads-tests-w3c-mirror
+
+	* src/ntriples_parse.c: Check for max allowed terms in N-Triples /
+	N-Quads
+
+	* src/ntriples_parse.c: Fix error extra "
+
+	* src/ntriples_parse.c: Check N-Triples and N-Quads are absolute
+	URIs
+
+	* src/ntriples_parse.c: Check N-Quads has 3/4 terms and N-Triples
+	has 3
+
+	(raptor_ntriples_parse_line): Try to find 5th term and error out
+	if it is.
+
+2013-12-04  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-triples.sgml: Update tmpls
+
+2013-12-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	(raptor_uri_uri_string_is_absolute): Make a much cheaper test.
+
+	* src/raptor_turtle_writer.c:
+	(main): remove unused var
+
+2013-12-01  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html: Add 2.0.11 release link
+
+	* RELEASE.html: 2.0.12
+
+2013-11-30  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c: Port changes from rasqal_ntriples.c
+
+	* src/raptor_ntriples.c:
+	(raptor_parse_turtle_term_internal): Fix parsing
+
+2013-11-29  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c, src/raptor_term.c: Allow reading Turtle
+	numeric strings
+
+	(raptor_ntriples_parse_term): Gains a allow_turtle argument.
+
+	(raptor_parse_turtle_term_internal): Added to implement numerics:
+	xsd:integer, xsd:decimal and xsd:double.
+
+	(raptor_new_term_from_counted_string): Update code and docs to
+	note it allow reading Turtle numeric literals.
+
+	* src/raptor_concepts.c, src/raptor_turtle_writer.c,
+	src/turtle_parser.y: Use XSD namespace, datatype URIs from
+	raptor_world
+
+	* src/raptor_concepts.c, src/raptor_internal.h: Declare xsd
+	datatypes uris in raptor_world
+
+	* src/raptor_json_writer.c: Remove dead code protected by
+	RAPTOR_JSON_WRITER_DATATYPES
+
+2013-11-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_ntriples.c, tests/ntriples/test.nt: Check for
+	N-Triples blank node '.' in positions 2-(N-1)
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term_internal): Internal docs
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_ntriples.c,
+	src/raptor_serialize_turtle.c, src/raptor_term.c: Added
+	raptor_new_term_from_counted_string to write a term as N-Triples
+
+	(raptor_new_term_from_counted_string): Added
+
+	(raptor_term_to_turtle_counted_string)
+	(raptor_term_to_turtle_string): Added references to new function
+	and N-Triples versions below.
+
+	(raptor_term_to_counted_string, raptor_term_to_string): Added
+	reference to new function and Turtle versions above.
+
+	* docs/raptor-1-to-2-map.tsv: fix 2.0.11 changes
+
+	* src/raptor_ntriples.c: replace references to line with input
+
+	* src/ntriples_parse.c: real_terms -> terms
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_line): No 'x' literal
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term_internal): Renamed from
+	raptor_ntriples_term
+
+	* src/raptor_ntriples.c: Make locator optional
+
+	* src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c: Pull all reference to parser out of
+	raptor_ntriples code
+
+	Pass in world and locator objects, just to return errors.
+
+	* src/Makefile.am, src/ntriples_parse.c, src/raptor_internal.h,
+	src/raptor_ntriples.c: Add raptor_ntriples.c module exporting
+	raptor_ntriples_parse_term Make N-Triples parser use it
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_parse_term): pull out of
+	raptor_ntriples_parse_line()
+
+2013-11-27  Dave Beckett <dave@dajobe.org>
+
+	* .gitignore: ignore .dirstamp
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bad-01.nt: N-Triples
+	2008 test bad-01.nt is now valid N-Triples 2013
+
+	* src/ntriples_parse.c:
+	(raptor_ntriples_term_valid): Do not allow . in bnode
+
+	This isn't correct; '.' is allowed in positions 1..N-1 but this
+	calling convention of character-by-character cannot check this.
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: fix bnode ID check
+
+	(raptor_ntriples_term_valid): For bnodes, allow leading digits, _
+	and : Allow trailing - and .  Fixes N-Triples test
+	nt-syntax-bnode-03.nt No remaining failures
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: allow \b and \f escapes
+
+	(raptor_ntriples_term): Add \b and \f to escape check.  Fixes
+	N-Triples tests literal_with_BACKSPACE.nt and
+	literal_with_FORM_FEED.nt 1 remaining failure
+
+	* src/ntriples_parse.c, tests/ntriples-2013/Makefile.am: N-Triples
+	2013: allow no whitespace between terms
+
+	(raptor_ntriples_parse_line): Remove whitespace check.  Fixes
+	N-Triples test minimal_whitespace.nt 3 remaining failures
+
+	* tests/ntriples-2013/Makefile.am: check-good-ntriples: fix return
+	result
+
+	* tests/ntriples-2013/Makefile.am: Run latest set of N-Triples
+	tests: 4 expected failures
+
+	* tests/ntriples-2013/comment_following_triple.nt,
+	tests/ntriples-2013/langtagged_string.nt,
+	tests/ntriples-2013/lantag_with_subtag.nt,
+	tests/ntriples-2013/literal.nt,
+	tests/ntriples-2013/literal_all_controls.nt,
+	tests/ntriples-2013/literal_all_punctuation.nt,
+	tests/ntriples-2013/literal_false.nt,
+	tests/ntriples-2013/literal_true.nt,
+	tests/ntriples-2013/literal_with_2_dquotes.nt,
+	tests/ntriples-2013/literal_with_2_squotes.nt,
+	tests/ntriples-2013/literal_with_BACKSPACE.nt,
+	tests/ntriples-2013/literal_with_CARRIAGE_RETURN.nt,
+	tests/ntriples-2013/literal_with_CHARACTER_TABULATION.nt,
+	tests/ntriples-2013/literal_with_FORM_FEED.nt,
+	tests/ntriples-2013/literal_with_LINE_FEED.nt,
+	tests/ntriples-2013/literal_with_REVERSE_SOLIDUS.nt,
+	tests/ntriples-2013/literal_with_REVERSE_SOLIDUS2.nt,
+	tests/ntriples-2013/literal_with_UTF8_boundaries.nt,
+	tests/ntriples-2013/literal_with_dquote.nt,
+	tests/ntriples-2013/literal_with_numeric_escape4.nt,
+	tests/ntriples-2013/literal_with_numeric_escape8.nt,
+	tests/ntriples-2013/literal_with_squote.nt,
+	tests/ntriples-2013/manifest.ttl,
+	tests/ntriples-2013/minimal_whitespace.nt,
+	tests/ntriples-2013/nt-syntax-bnode-03.nt: Updated from N-Triples
+	tests in Mercurial
+
+2013-11-24  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.12
+
+	* ChangeLog:
+	Snapshotted raptor2_2_0_11 for 2.0.11 release (GIT
+	74f5b7e9541d734494ef637ab1acd8f1d193ef30)
+
+	* librdfa/.gitignore: ignore .o
+
+	* docs/tmpl/section-uri.sgml, docs/tmpl/section-xml-qname.sgml:
+	Update tmpls
+
+	* NEWS.html, README.html, ChangeLog:
+	release docs and changes for 2.0.11
+
+	* tests/rdfxml/Makefile.am: Add ex-62.out to dist
+
+	* src/raptor_qname.c: autodocs
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt: Add
+	raptor_qname_format_as_xml to docs
+
+	* src/raptor_qname.c: Fix pointer as integer issue
+	(raptor_qname_format_as_xml): Pass in integer to
+	raptor_xml_escape_string length arg.
+
+	* tests/feeds/test01-result.atom, tests/feeds/test02-result.atom,
+	tests/feeds/test03-result.atom: Updated expected atom feeds output
+	for serialization attributes newlines
+
+	* tests/rdfxml/ex-38-rdfxmla.out: Updated expected output for
+	serialization attributes newlines
+
+	* src/raptor_xml_writer.c: Generate namespaces and attributes and
+	xml:lang in canonical order.
+
+	Fixes Issue #0000554
+	http://bugs.librdf.org/mantis/view.php?id=554
+
+	(raptor_xml_writer_start_element_common): Add attributes and
+	xml:lang to declarations list and sort, then emit namespaces and
+	attributes in separate order - as XML C14N wants
+
+	* src/raptor2.h.in, src/raptor_qname.c:
+	(raptor_qname_format_as_xml): Added
+
+	* tests/rdfxml/Makefile.am, tests/rdfxml/ex-63.out,
+	tests/rdfxml/ex-63.rdf: Added ex-63 for Issue #0000554
+
+	* src/raptor_rfc2396.c: remove dead condition
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_resolve_uri_reference): Handle empty ref path
+
+	* src/raptor_uri.c:
+	Normalize file URIs
+
+	(raptor_uri_filename_to_uri_string): Use raptor_uri_normalize_path
+	to normalize the resulting URI
+
+	* src/raptor_internal.h, src/raptor_rfc2396.c: Make
+	raptor_uri_normalize_path internal
+
+	* src/raptor_rfc2396.c:
+	Handle normalizing reference URIs
+
+	Fixes Issue #0000556
+	http://bugs.librdf.org/mantis/view.php?id=556
+
+	* src/raptor_rfc2396.c:
+	Pull out URI normalizing
+
+	(raptor_uri_normalize_path): Added and called from
+	raptor_uri_resolve_uri_reference().
+
+	(raptor_uri_resolve_uri_reference): Malloc path_buffer for
+	hierarchical ref, non-hierarchical base case and copy over, then
+	normalize.
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/ntriples_parse.c, src/raptor2.h.in, src/raptor_uri.c: Renamed
+	raptor_uri_string_is_absolute to raptor_uri_uri_string_is_absolute
+
+2013-11-16  Dave Beckett <dave@dajobe.org>
+
+	* tests/test.html, tests/test.svg: remove unused test.html
+	test.svg files
+
+2013-11-13  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	Use memmove for overlapping copy [llvm address sanitizer]
+
+	(raptor_ntriples_term): Use memmove to replace memcpy for an
+	overlapping copy.
+
+	Found via LLVM address sanitizer in LLVM 3.4 (SVN) with options:
+	export ASAN_SYMBOLIZER_PATH=/usr/bin/llvm-symbolizer-3.4
+	CC='clang -fsanitize=address -O1 -fno-omit-frame-pointer -g' ./configure ...
+	See https://code.google.com/p/address-sanitizer/wiki/AddressSanitizer
+	and http://llvm.org/releases/3.3/tools/clang/docs/AddressSanitizer.html
+
+2013-11-08  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/Makefile.am: clean plist files
+
+	* src/raptor_general.c: 2013
+
+	* librdfa/.gitignore: ignore plist
+
+	* librdfa/.gitignore: ignore .la
+
+	* librdfa/Makefile.am: Fix make distcheck for librdfa.la
+
+	* src/Makefile.am: src needs -DLIBRDFA_IN_RAPTOR
+
+	* librdfa/Makefile.am: Add analyze target
+
+	* librdfa/Makefile.am, src/Makefile.am: librdfa.la as a
+	convenience library build fixes
+
+	Do not build strtok for librdfa unless needed.  Move
+	-DLIBRDFA_IN_RAPTOR include to librdfa dir only
+
+	* Makefile.am, librdfa/Makefile.am, src/Makefile.am: Build
+	librdfa.la as a convenience library
+
+	Trying to get away from the noisy subdir-objects warnings and
+	deprecation messages from newer automakes.
+
+2013-11-02  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Fix clang test
+
+	* configure.ac: Check for clang to enable correct discovery of
+	supported warnings
+
+2013-10-30  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle/Makefile.am, tests/turtle/test-35.out: Remove (now)
+	unused turtle warning tests
+
+2013-10-29  Daniel Richard G <skunk@iSKUNK.ORG>
+
+	* configure.ac, src/Makefile.am, tests/Makefile.am,
+	tests/turtle/Makefile.am: Various build system fixes
+
+	configure.ac:
+	- Place a ":" in the action-if-not-found arguments of the
+	  PKG_CHECK_MODULES() calls for LIBXML and LIBCURL to override the
+	  default action of quitting with an error, as neither of these
+	  libraries are a hard requirement
+
+	src/Makefile.am:
+	- Add parsedate.c to BUILT_SOURCES so that it can be handled
+	properly
+	- Move the parsedate.c rule into the MAINTAINER_MODE block, as
+	only   maintainers should be regenerating this file
+	- Bump the "test" rule down after the test-program rules
+
+	tests/Makefile.am:
+	- Add ntriples-2013 to SUBDIRS to fix configure script invocation
+
+	tests/turtle/Makefile.am:
+	- Add logic to prevent breakage when TEST_WARN_FILES is empty
+
+2013-10-02  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, tests/feeds/Makefile.am: Test for jing and skip
+	feed validation tests if it is missing
+
+2013-09-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_identifiers): Handle NULL uri [clang]
+
+2013-09-15  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c, src/raptor_internal.h, src/turtle_common.h:
+	Move raptor_turtle_check_uri_string prototype to raptor_internal.h
+
+2013-09-13  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfxml/ex-59.nt, tests/rdfxml/ex-59.rdf,
+	tests/rdfxml/ex-60.nt, tests/rdfxml/ex-60.rdf: Update tests with
+	legal N-Triples URIs
+
+2013-09-12  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: Check language tag validity
+
+	* src/ntriples_parse.c: Use raptor_uri_string_is_absolute to check
+	datatype URI is abs
+
+	* src/ntriples_parse.c: Use raptor_uri_string_is_absolute to
+	enforce abs URIs for N-Triples
+
+	* src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_string_is_absolute): Added
+
+	* src/ntriples_parse.c: Check for bad URIs using turtle function -
+	FIXME
+
+	* src/ntriples_parse.c: Check for illegal unicode escapes.
+
+	* src/ntriples_parse.c: Move object_literal_language/datatype to
+	area of code that uses it.
+
+	* src/ntriples_parse.c: Kill use of terms, term_lengths and
+	term_types
+
+	* src/ntriples_parse.c: Make literals once during syntax parsing
+	Move language normalization to same area of code
+
+	* src/ntriples_parse.c: Make URIs in one place during syntax
+	parsing
+
+	* src/ntriples_parse.c: Pass a raptor_term for graph to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for object to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for predicate to
+	raptor_ntriples_generate_statement
+
+	* src/ntriples_parse.c: Pass a raptor_term for subject to
+	raptor_ntriples_generate_statement
+
+	(raptor_ntriples_parse_line): Make term here and pass to
+	raptor_ntriples_generate_statement subject
+
+2013-09-10  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c: Remove special error for legacy N-Triples
+	"foo"-LANGTOKEN
+
+	* src/ntriples_parse.c:
+	Remove unused RAPTOR_TERM_CLASS_FULL
+
+	* configure.ac, tests/ntriples-2013/Makefile.am,
+	tests/ntriples-2013/manifest.ttl,
+	tests/ntriples-2013/nt-syntax-bad-base-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-esc-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-lang-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-num-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-prefix-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-04.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-05.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-06.nt,
+	tests/ntriples-2013/nt-syntax-bad-string-07.nt,
+	tests/ntriples-2013/nt-syntax-bad-struct-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-struct-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-01.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-02.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-03.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-04.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-05.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-06.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-07.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-08.nt,
+	tests/ntriples-2013/nt-syntax-bad-uri-09.nt,
+	tests/ntriples-2013/nt-syntax-bnode-01.nt,
+	tests/ntriples-2013/nt-syntax-bnode-02.nt,
+	tests/ntriples-2013/nt-syntax-datatypes-01.nt,
+	tests/ntriples-2013/nt-syntax-datatypes-02.nt,
+	tests/ntriples-2013/nt-syntax-file-01.nt,
+	tests/ntriples-2013/nt-syntax-file-02.nt,
+	tests/ntriples-2013/nt-syntax-file-03.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-01.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-02.nt,
+	tests/ntriples-2013/nt-syntax-str-esc-03.nt,
+	tests/ntriples-2013/nt-syntax-string-01.nt,
+	tests/ntriples-2013/nt-syntax-string-02.nt,
+	tests/ntriples-2013/nt-syntax-string-03.nt,
+	tests/ntriples-2013/nt-syntax-subm-01.nt,
+	tests/ntriples-2013/nt-syntax-uri-01.nt,
+	tests/ntriples-2013/nt-syntax-uri-02.nt,
+	tests/ntriples-2013/nt-syntax-uri-03.nt,
+	tests/ntriples-2013/nt-syntax-uri-04.nt: N-Triples 2013 test suite
+	Current state: all good tests pass.  13 bad tests fail:
+	nt-syntax-bad-uri-01.nt nt-syntax-bad-uri-02.nt
+	nt-syntax-bad-uri-03.nt nt-syntax-bad-uri-04.nt
+	nt-syntax-bad-uri-06.nt nt-syntax-bad-uri-07.nt
+	nt-syntax-bad-uri-08.nt nt-syntax-bad-uri-09.nt
+	nt-syntax-bad-struct-01.nt nt-syntax-bad-struct-02.nt
+	nt-syntax-bad-lang-01.nt nt-syntax-bad-esc-03.nt
+	nt-syntax-bad-string-05.nt
+
+2013-09-09  Dave Beckett <dave@dajobe.org>
+
+	* src/ntriples_parse.c:
+	Tidy error column/byte offsets for errors
+
+	* src/ntriples_parse.c: Support # comments after end of line in
+	N-Triples / NQuads 2013
+
+	* tests/ntriples/nt2013-ex3.out: Write expected result in \uHHHH
+	form
+
+	* tests/ntriples/Makefile.am: check-nt: add rapper failure clause
+
+	* tests/ntriples/Makefile.am: make check-nt show error output in a
+	rapper failure
+
+	* tests/ntriples/Makefile.am, tests/ntriples/nt2013-ex1.nt,
+	tests/ntriples/nt2013-ex1.out, tests/ntriples/nt2013-ex2.nt,
+	tests/ntriples/nt2013-ex2.out, tests/ntriples/nt2013-ex3.nt,
+	tests/ntriples/nt2013-ex3.out, tests/ntriples/nt2013-ex4.nt,
+	tests/ntriples/nt2013-ex4.out: Add ntriples 2013 examples from
+	spec
+
+2013-08-27  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am: Remove dup tests
+
+	* tests/turtle-2013/README,
+	tests/turtle-2013/localName_with_non_leading_extras.nt: Updated
+	Turtle W3C tests to latest files from repo
+
+	* tests/turtle-2013/Makefile.am: Add the 4 negative eval tests
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.11
+
+	* ChangeLog: #changes
+
+	* 2.0.10
+
+	* NEWS.html, RELEASE.html: 2.0.10
+
+2013-08-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c: Make XML writer emit xml:lang on
+	elements
+
+	Fixes Issue #0000548
+	http://bugs.librdf.org/mantis/view.php?id=548
+
+	* src/ntriples_parse.c, src/raptor_internal.h: Revert
+	"(raptor_normalize_language): Added to normalize to en-US-BLAH"
+	This reverts commit 7b4788f656546be7abdd87122c03ea005e771c17.
+
+	* src/ntriples_parse.c, src/turtle_lexer.l: Revert "Use
+	raptor_normalize_language to normalize N-Triples and Turtle
+	inputs"
+
+	This reverts commit 74e9fc1160cbb300cb87445bebcca4033a627e56.
+	Conflicts: src/turtle_lexer.l
+
+2013-08-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_concepts.c, src/raptor_internal.h: Add rdf:HTML and
+	rdf:langString from RDF 1.1 concepts
+
+	RDF 1.1 Concepts and Abstract Syntax W3C Last Call Working Draft 23
+	July 2013 http://www.w3.org/TR/2013/WD-rdf11-concepts-20130723/
+	http://www.w3.org/TR/2013/WD-rdf11-concepts-20130723/#section-html
+	http://www.w3.org/TR/2013/WD-rdf11-concepts-20130723/#section-Datatypes
+
+2013-08-12  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am: Add 4 bad eval tests to
+	check-bad-turtle
+
+2013-08-11  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	r_boundaries.nt,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	r_boundaries.ttl,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	racter_boundaries.nt,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	racter_boundaries.ttl, tests/turtle-2013/manifest.ttl:
+	Renamed long turtle 2013 test file so it can be stored in tar
+
+	localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries*
+	-> localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries*
+
+	GNUtar can't handle file names >99 letters
+
+	tar: raptor2-2.0.10/tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.ttl: file name is too long (max 99); not dumped
+	tar: raptor2-2.0.10/tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_character_boundaries.nt: file name is too long (max 99); not dumped
+	tar: Exiting with failure status due to previous errors
+
+	* tests/turtle-2013/test-38.nt: remove unused test-38.nt
+
+	* tests/turtle-2013/Makefile.am: Add all TEST_OUT_FILES
+
+	* tests/.gitignore: Ignore raptor_empty_test.trs
+
+	* src/turtle_lexer.l: cast for language
+
+	* tests/turtle-2013/Makefile.am:
+	Use turtle parser to read exemplars
+
+	* scripts/rdfcompare: rdfcompare
+
+	* tests/turtle-2013/anonymous_blank_node_object.nt,
+	tests/turtle-2013/anonymous_blank_node_subject.nt,
+	tests/turtle-2013/blankNodePropertyList_as_object.nt,
+	tests/turtle-2013/blankNodePropertyList_as_subject.nt,
+	tests/turtle-2013/blankNodePropertyList_containing_collection.nt,
+	tests/turtle-2013/blankNodePropertyList_with_multiple_triples.nt,
+	tests/turtle-2013/collection_object.nt,
+	tests/turtle-2013/collection_subject.nt,
+	tests/turtle-2013/first.nt,
+	tests/turtle-2013/labeled_blank_node_object.nt,
+	tests/turtle-2013/labeled_blank_node_subject.nt,
+	tests/turtle-2013/labeled_blank_node_with_PN_CHARS_BASE_character_b
+	oundaries.nt,
+	tests/turtle-2013/labeled_blank_node_with_leading_digit.nt,
+	tests/turtle-2013/labeled_blank_node_with_leading_underscore.nt,
+	tests/turtle-2013/labeled_blank_node_with_non_leading_extras.nt,
+	tests/turtle-2013/last.nt,
+	tests/turtle-2013/nested_blankNodePropertyLists.nt,
+	tests/turtle-2013/nested_collection.nt,
+	tests/turtle-2013/sole_blankNodePropertyList.nt: Replace official
+	results with raptor expected ones
+
+	* tests/turtle-2013/Makefile.am:
+	Use rdfcompare to compare
+
+	* scripts/Makefile.am: Add rdfcompare
+
+	* src/ntriples_parse.c, src/turtle_lexer.l: Use
+	raptor_normalize_language to normalize N-Triples and Turtle inputs
+
+	* src/ntriples_parse.c, src/raptor_internal.h:
+	(raptor_normalize_language): Added to normalize to en-US-BLAH
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-24.ttl,
+	tests/turtle/test-35.ttl: Turtle test for lang and datatype
+	warning is now an error Renamed test-35.ttl to bad-24.ttl
+
+	* tests/turtle-2013/literal_with_escaped_BACKSPACE.nt: Added
+	missing literal_with_escaped_BACKSPACE.nt
+
+	* tests/turtle-2013/Makefile.am: Report normalize N-Triples diff
+
+	* tests/turtle-2013/Makefile.am: Normalize N-Triples expected
+	output before comparing them with diff
+
+	* src/raptor2.h.in:
+	Make N-Triples allow writing \b and \f
+
+	* src/ntriples_parse.c: Always allow UTF-8 in N-Triples strings
+	and URIs (N-Triples 2013)
+
+	(raptor_ntriples_term): Remove allow_utf8 arg and always set it
+	true.
+
+	* src/ntriples_parse.c, src/raptor_serialize_ntriples.c: Use
+	N-Triples 2013 mime type
+
+	* src/turtle_common.c:
+	Allow \b \f escapes in Turtle strings
+
+2013-08-10  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Make turtle literals with language and
+	datatype an error (Turtle 2013)
+
+	Makes test
+	turtle-syntax-bad-LITERAL2_with_langtag_and_datatype.ttl fail as
+	it should.
+
+	* tests/turtle-2013/Makefile.am: Count and report errors for good
+	tests
+
+	* tests/turtle-2013/Makefile.am: Update BASE_URI
+
+	* tests/turtle-2013/Makefile.am: Updated for Turtle 2013 tests
+
+	* tests/turtle-2013/LITERAL_LONG2_with_UTF8_boundaries.ttl: add
+	missing LITERAL_LONG2_with_UTF8_boundaries.ttl
+
+	* tests/turtle-2013/IRI_subject.nt,
+	tests/turtle-2013/IRI_with_eight_digit_numeric_escape.nt,
+	tests/turtle-2013/IRI_with_four_digit_numeric_escape.nt,
+	tests/turtle-2013/LITERAL1_with_UTF8_boundaries.nt,
+	tests/turtle-2013/LITERAL2.nt,
+	tests/turtle-2013/LITERAL2_with_UTF8_boundaries.nt,
+	tests/turtle-2013/LITERAL_LONG1.nt,
+	tests/turtle-2013/LITERAL_LONG1_with_UTF8_boundaries.nt,
+	tests/turtle-2013/LITERAL_LONG2.nt,
+	tests/turtle-2013/LITERAL_LONG2_with_UTF8_boundaries.nt,
+	tests/turtle-2013/SPARQL_style_base.nt,
+	tests/turtle-2013/SPARQL_style_prefix.nt,
+	tests/turtle-2013/anonymous_blank_node_object.nt,
+	tests/turtle-2013/anonymous_blank_node_subject.nt,
+	tests/turtle-2013/bareword_integer.nt,
+	tests/turtle-2013/comment_following_localName.nt,
+	tests/turtle-2013/default_namespace_IRI.nt,
+	tests/turtle-2013/labeled_blank_node_with_PN_CHARS_BASE_character_b
+	oundaries.nt,
+	tests/turtle-2013/labeled_blank_node_with_leading_digit.nt,
+	tests/turtle-2013/labeled_blank_node_with_leading_underscore.nt,
+	tests/turtle-2013/labeled_blank_node_with_non_leading_extras.nt,
+	tests/turtle-2013/langtagged_LONG.nt,
+	tests/turtle-2013/literal_with_escaped_CARRIAGE_RETURN.nt,
+	tests/turtle-2013/literal_with_escaped_CHARACTER_TABULATION.nt,
+	tests/turtle-2013/literal_with_escaped_FORM_FEED.nt,
+	tests/turtle-2013/literal_with_escaped_LINE_FEED.nt,
+	tests/turtle-2013/literal_with_numeric_escape8.nt,
+	tests/turtle-2013/old_style_base.nt,
+	tests/turtle-2013/old_style_prefix.nt,
+	tests/turtle-2013/prefix_only_IRI.nt,
+	tests/turtle-2013/prefix_with_PN_CHARS_BASE_character_boundaries.nt
+	, tests/turtle-2013/prefix_with_non_leading_extras.nt,
+	tests/turtle-2013/prefixed_IRI_object.nt,
+	tests/turtle-2013/prefixed_IRI_predicate.nt,
+	tests/turtle-2013/prefixed_name_datatype.nt,
+	tests/turtle-2013/repeated_semis_at_end.nt,
+	tests/turtle-2013/sole_blankNodePropertyList.nt: Add .nt versions
+	of shared result files
+
+	* tests/turtle-2013/HYPHEN_MINUS_in_localName.nt,
+	tests/turtle-2013/HYPHEN_MINUS_in_localName.ttl,
+	tests/turtle-2013/IRIREF_datatype.nt,
+	tests/turtle-2013/IRIREF_datatype.ttl,
+	tests/turtle-2013/IRI_spo.nt, tests/turtle-2013/IRI_subject.ttl,
+	tests/turtle-2013/IRI_with_all_punctuation.nt,
+	tests/turtle-2013/IRI_with_all_punctuation.ttl,
+	tests/turtle-2013/IRI_with_eight_digit_numeric_escape.ttl,
+	tests/turtle-2013/IRI_with_four_digit_numeric_escape.ttl,
+	tests/turtle-2013/LICENSE, tests/turtle-2013/LITERAL1.nt,
+	tests/turtle-2013/LITERAL1.ttl,
+	tests/turtle-2013/LITERAL1_all_controls.nt,
+	tests/turtle-2013/LITERAL1_all_punctuation.nt,
+	tests/turtle-2013/LITERAL1_all_punctuation.ttl,
+	tests/turtle-2013/LITERAL1_ascii_boundaries.nt,
+	tests/turtle-2013/LITERAL1_with_UTF8_boundaries.ttl,
+	tests/turtle-2013/LITERAL2.ttl,
+	tests/turtle-2013/LITERAL2_ascii_boundaries.nt,
+	tests/turtle-2013/LITERAL2_with_UTF8_boundaries.ttl,
+	tests/turtle-2013/LITERAL_LONG1.ttl,
+	tests/turtle-2013/LITERAL_LONG1_ascii_boundaries.nt,
+	tests/turtle-2013/LITERAL_LONG1_with_1_squote.nt,
+	tests/turtle-2013/LITERAL_LONG1_with_1_squote.ttl,
+	tests/turtle-2013/LITERAL_LONG1_with_2_squotes.nt,
+	tests/turtle-2013/LITERAL_LONG1_with_2_squotes.ttl,
+	tests/turtle-2013/LITERAL_LONG1_with_UTF8_boundaries.ttl,
+	tests/turtle-2013/LITERAL_LONG2.ttl,
+	tests/turtle-2013/LITERAL_LONG2_ascii_boundaries.nt,
+	tests/turtle-2013/LITERAL_LONG2_with_1_squote.nt,
+	tests/turtle-2013/LITERAL_LONG2_with_1_squote.ttl,
+	tests/turtle-2013/LITERAL_LONG2_with_2_squotes.nt,
+	tests/turtle-2013/LITERAL_LONG2_with_2_squotes.ttl,
+	tests/turtle-2013/LITERAL_LONG2_with_REVERSE_SOLIDUS.nt,
+	tests/turtle-2013/LITERAL_LONG2_with_REVERSE_SOLIDUS.ttl,
+	tests/turtle-2013/LITERAL_with_UTF8_boundaries.nt,
+	tests/turtle-2013/README, tests/turtle-2013/SPARQL_style_base.ttl,
+	tests/turtle-2013/SPARQL_style_prefix.ttl,
+	tests/turtle-2013/anonymous_blank_node_object.ttl,
+	tests/turtle-2013/anonymous_blank_node_subject.ttl,
+	tests/turtle-2013/bareword_a_predicate.nt,
+	tests/turtle-2013/bareword_a_predicate.ttl,
+	tests/turtle-2013/bareword_decimal.nt,
+	tests/turtle-2013/bareword_decimal.ttl,
+	tests/turtle-2013/bareword_double.nt,
+	tests/turtle-2013/bareword_double.ttl,
+	tests/turtle-2013/bareword_integer.ttl,
+	tests/turtle-2013/blankNodePropertyList_as_object.nt,
+	tests/turtle-2013/blankNodePropertyList_as_object.ttl,
+	tests/turtle-2013/blankNodePropertyList_as_subject.nt,
+	tests/turtle-2013/blankNodePropertyList_as_subject.ttl,
+	tests/turtle-2013/blankNodePropertyList_containing_collection.nt,
+	tests/turtle-2013/blankNodePropertyList_containing_collection.ttl,
+	tests/turtle-2013/blankNodePropertyList_with_multiple_triples.nt,
+	tests/turtle-2013/blankNodePropertyList_with_multiple_triples.ttl,
+	tests/turtle-2013/collection_object.nt,
+	tests/turtle-2013/collection_object.ttl,
+	tests/turtle-2013/collection_subject.nt,
+	tests/turtle-2013/collection_subject.ttl,
+	tests/turtle-2013/comment_following_PNAME_NS.nt,
+	tests/turtle-2013/comment_following_PNAME_NS.ttl,
+	tests/turtle-2013/comment_following_localName.ttl,
+	tests/turtle-2013/default_namespace_IRI.ttl,
+	tests/turtle-2013/double_lower_case_e.nt,
+	tests/turtle-2013/double_lower_case_e.ttl,
+	tests/turtle-2013/empty_collection.nt,
+	tests/turtle-2013/empty_collection.ttl,
+	tests/turtle-2013/first.nt, tests/turtle-2013/first.ttl,
+	tests/turtle-2013/labeled_blank_node_object.nt,
+	tests/turtle-2013/labeled_blank_node_object.ttl,
+	tests/turtle-2013/labeled_blank_node_subject.nt,
+	tests/turtle-2013/labeled_blank_node_subject.ttl,
+	tests/turtle-2013/labeled_blank_node_with_PN_CHARS_BASE_character_b
+	oundaries.ttl,
+	tests/turtle-2013/labeled_blank_node_with_leading_digit.ttl,
+	tests/turtle-2013/labeled_blank_node_with_leading_underscore.ttl,
+	tests/turtle-2013/labeled_blank_node_with_non_leading_extras.ttl,
+	tests/turtle-2013/langtagged_LONG.ttl,
+	tests/turtle-2013/langtagged_LONG_with_subtag.nt,
+	tests/turtle-2013/langtagged_LONG_with_subtag.ttl,
+	tests/turtle-2013/langtagged_non_LONG.nt,
+	tests/turtle-2013/langtagged_non_LONG.ttl,
+	tests/turtle-2013/lantag_with_subtag.nt,
+	tests/turtle-2013/lantag_with_subtag.ttl,
+	tests/turtle-2013/last.nt, tests/turtle-2013/last.ttl,
+	tests/turtle-2013/literal_false.nt,
+	tests/turtle-2013/literal_false.ttl,
+	tests/turtle-2013/literal_true.nt,
+	tests/turtle-2013/literal_true.ttl,
+	tests/turtle-2013/literal_with_BACKSPACE.nt,
+	tests/turtle-2013/literal_with_BACKSPACE.ttl,
+	tests/turtle-2013/literal_with_CARRIAGE_RETURN.nt,
+	tests/turtle-2013/literal_with_CARRIAGE_RETURN.ttl,
+	tests/turtle-2013/literal_with_CHARACTER_TABULATION.nt,
+	tests/turtle-2013/literal_with_CHARACTER_TABULATION.ttl,
+	tests/turtle-2013/literal_with_FORM_FEED.nt,
+	tests/turtle-2013/literal_with_FORM_FEED.ttl,
+	tests/turtle-2013/literal_with_LINE_FEED.nt,
+	tests/turtle-2013/literal_with_LINE_FEED.ttl,
+	tests/turtle-2013/literal_with_REVERSE_SOLIDUS.nt,
+	tests/turtle-2013/literal_with_REVERSE_SOLIDUS.ttl,
+	tests/turtle-2013/literal_with_escaped_BACKSPACE.ttl,
+	tests/turtle-2013/literal_with_escaped_CARRIAGE_RETURN.ttl,
+	tests/turtle-2013/literal_with_escaped_CHARACTER_TABULATION.ttl,
+	tests/turtle-2013/literal_with_escaped_FORM_FEED.ttl,
+	tests/turtle-2013/literal_with_escaped_LINE_FEED.ttl,
+	tests/turtle-2013/literal_with_numeric_escape4.nt,
+	tests/turtle-2013/literal_with_numeric_escape4.ttl,
+	tests/turtle-2013/literal_with_numeric_escape8.ttl,
+	tests/turtle-2013/localName_with_PN_CHARS_BASE_character_boundaries
+	.nt,
+	tests/turtle-2013/localName_with_PN_CHARS_BASE_character_boundaries
+	.ttl,
+	tests/turtle-2013/localName_with_assigned_nfc_PN_CHARS_BASE_charact
+	er_boundaries.nt,
+	tests/turtle-2013/localName_with_assigned_nfc_PN_CHARS_BASE_charact
+	er_boundaries.ttl,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	racter_boundaries.nt,
+	tests/turtle-2013/localName_with_assigned_nfc_bmp_PN_CHARS_BASE_cha
+	racter_boundaries.ttl,
+	tests/turtle-2013/localName_with_leading_digit.nt,
+	tests/turtle-2013/localName_with_leading_digit.ttl,
+	tests/turtle-2013/localName_with_leading_underscore.nt,
+	tests/turtle-2013/localName_with_leading_underscore.ttl,
+	tests/turtle-2013/localName_with_nfc_PN_CHARS_BASE_character_bounda
+	ries.nt,
+	tests/turtle-2013/localName_with_nfc_PN_CHARS_BASE_character_bounda
+	ries.ttl, tests/turtle-2013/localName_with_non_leading_extras.nt,
+	tests/turtle-2013/localName_with_non_leading_extras.ttl,
+	tests/turtle-2013/localname_with_COLON.nt,
+	tests/turtle-2013/localname_with_COLON.ttl,
+	tests/turtle-2013/manifest.ttl,
+	tests/turtle-2013/negative_numeric.nt,
+	tests/turtle-2013/negative_numeric.ttl,
+	tests/turtle-2013/nested_blankNodePropertyLists.nt,
+	tests/turtle-2013/nested_blankNodePropertyLists.ttl,
+	tests/turtle-2013/nested_collection.nt,
+	tests/turtle-2013/nested_collection.ttl,
+	tests/turtle-2013/number_sign_following_PNAME_NS.nt,
+	tests/turtle-2013/number_sign_following_PNAME_NS.ttl,
+	tests/turtle-2013/number_sign_following_localName.nt,
+	tests/turtle-2013/number_sign_following_localName.ttl,
+	tests/turtle-2013/numeric_with_leading_0.nt,
+	tests/turtle-2013/numeric_with_leading_0.ttl,
+	tests/turtle-2013/objectList_with_two_objects.nt,
+	tests/turtle-2013/objectList_with_two_objects.ttl,
+	tests/turtle-2013/old_style_base.ttl,
+	tests/turtle-2013/old_style_prefix.ttl,
+	tests/turtle-2013/percent_escaped_localName.nt,
+	tests/turtle-2013/percent_escaped_localName.ttl,
+	tests/turtle-2013/positive_numeric.nt,
+	tests/turtle-2013/positive_numeric.ttl,
+	tests/turtle-2013/predicateObjectList_with_two_objectLists.nt,
+	tests/turtle-2013/predicateObjectList_with_two_objectLists.ttl,
+	tests/turtle-2013/prefix_only_IRI.ttl,
+	tests/turtle-2013/prefix_reassigned_and_used.nt,
+	tests/turtle-2013/prefix_reassigned_and_used.ttl,
+	tests/turtle-2013/prefix_with_PN_CHARS_BASE_character_boundaries.tt
+	l, tests/turtle-2013/prefix_with_non_leading_extras.ttl,
+	tests/turtle-2013/prefixed_IRI_object.ttl,
+	tests/turtle-2013/prefixed_IRI_predicate.ttl,
+	tests/turtle-2013/prefixed_name_datatype.ttl,
+	tests/turtle-2013/repeated_semis_at_end.ttl,
+	tests/turtle-2013/repeated_semis_not_at_end.nt,
+	tests/turtle-2013/repeated_semis_not_at_end.ttl,
+	tests/turtle-2013/reserved_escaped_localName.nt,
+	tests/turtle-2013/reserved_escaped_localName.ttl,
+	tests/turtle-2013/sole_blankNodePropertyList.ttl,
+	tests/turtle-2013/test-38.nt, tests/turtle-2013/test-38.ttl,
+	tests/turtle-2013/turtle-eval-bad-01.ttl,
+	tests/turtle-2013/turtle-eval-bad-02.ttl,
+	tests/turtle-2013/turtle-eval-bad-03.ttl,
+	tests/turtle-2013/turtle-eval-bad-04.ttl,
+	tests/turtle-2013/turtle-eval-struct-01.nt,
+	tests/turtle-2013/turtle-eval-struct-01.ttl,
+	tests/turtle-2013/turtle-eval-struct-02.nt,
+	tests/turtle-2013/turtle-eval-struct-02.ttl,
+	tests/turtle-2013/turtle-subm-01.nt,
+	tests/turtle-2013/turtle-subm-27.nt,
+	tests/turtle-2013/turtle-subm-27.ttl,
+	tests/turtle-2013/turtle-syntax-bad-LITERAL2_with_langtag_and_datat
+	ype.ttl, tests/turtle-2013/turtle-syntax-bad-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-blank-label-dot-end.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-lang-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-ln-dash-start.ttl,
+	tests/turtle-2013/turtle-syntax-bad-ln-escape-start.ttl,
+	tests/turtle-2013/turtle-syntax-bad-ln-escape.ttl,
+	tests/turtle-2013/turtle-syntax-bad-missing-ns-dot-end.ttl,
+	tests/turtle-2013/turtle-syntax-bad-missing-ns-dot-start.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-ns-dot-end.ttl,
+	tests/turtle-2013/turtle-syntax-bad-ns-dot-start.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-number-dot-in-anon.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-08.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-13.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-14.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-15.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-16.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-17.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-05.ttl,
+	tests/turtle-2013/turtle-syntax-base-01.ttl,
+	tests/turtle-2013/turtle-syntax-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-base-04.ttl,
+	tests/turtle-2013/turtle-syntax-blank-label.nt,
+	tests/turtle-2013/turtle-syntax-blank-label.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-01.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-02.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-03.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-04.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-05.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-06.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-07.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-08.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-09.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-10.ttl,
+	tests/turtle-2013/turtle-syntax-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-01.ttl,
+	tests/turtle-2013/turtle-syntax-lists-02.ttl,
+	tests/turtle-2013/turtle-syntax-lists-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-04.ttl,
+	tests/turtle-2013/turtle-syntax-lists-05.ttl,
+	tests/turtle-2013/turtle-syntax-ln-colons.nt,
+	tests/turtle-2013/turtle-syntax-ln-colons.ttl,
+	tests/turtle-2013/turtle-syntax-ln-dots.nt,
+	tests/turtle-2013/turtle-syntax-ln-dots.ttl,
+	tests/turtle-2013/turtle-syntax-ns-dots.ttl,
+	tests/turtle-2013/turtle-syntax-pname-dots.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-06.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-07.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-08.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-09.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-string-08.ttl,
+	tests/turtle-2013/turtle-syntax-string-09.ttl,
+	tests/turtle-2013/turtle-syntax-string-10.ttl,
+	tests/turtle-2013/turtle-syntax-string-11.ttl,
+	tests/turtle-2013/turtle-syntax-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-uri-04.ttl,
+	tests/turtle-2013/two_LITERAL_LONG2s.nt,
+	tests/turtle-2013/two_LITERAL_LONG2s.ttl,
+	tests/turtle-2013/underscore_in_localName.nt,
+	tests/turtle-2013/underscore_in_localName.ttl: Import latest
+	Turtle 2013 tests
+
+2013-07-30  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	Revert 53664470aca6c3393fe05724653c7e45d0c52588
+
+	* librdfa/.gitignore:
+	Add gitignore for objs in librdfa/
+
+	* configure.ac: Add automake option subdir-objects to keep librdfa
+	building
+
+2013-05-31  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: Add yajl and run tests
+
+	* .travis.yml: Do an update first
+
+	* .travis.yml: More travis-ci.org config
+
+2013-04-27  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-flex: Fix declaration of 'i' in generated flex
+	<name>__scan_bytes function
+
+	* src/turtle_parser.y:
+	Remove prototypes for column methods that
+	flex 2.5.36+ provides now.
+
+	* configure.ac, src/turtle_lexer.l:
+	Recommend flex 2.5.36 Remove prototypes for column methods that
+	flex 2.5.36+ provides now.
+
+2013-04-05  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, ChangeLog.13, Makefile.am:
+	ChangeLog.13 for 2012
+
+2013-03-26  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-iostream.sgml:
+	Update tmpls
+
+2013-04-05  Dave Beckett <dave@dajobe.org>
+
+	* build/pkg.m4, configure.ac: Switch libxml and libcurl to use
+	PKG_PROG_PKG_CONFIG and PKG_CHECK_MODULES
+
+	Preference is still to xml2-config and curl-config unless
+	--with-curl-config=no --with-xml2-config=no are used
+
+	* configure.ac: Die if xml2-config or xslt-config point at non
+	executable files
+
+	Patch from Michael Stahl - thanks
+
+	Fixes Issue #0000534
+	http://bugs.librdf.org/mantis/view.php?id=535
+
+	* autogen.sh, configure.ac:
+	Modernize LT_INIT call for libtool 2.2+
+
+2013-03-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: Document raptor_escaped_write_bitflags enum
+	values
+
+	* docs/raptor2-sections.txt: Add escaped_write enum and functions
+
+	* docs/raptor-1-to-2-map.tsv: 2.0.10 changes
+
+2013-03-23  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Add curl or libxml pkg-config requires iff they
+	were found via pkg-config
+
+	This enables building a good raptor pkg-config file when raptor is
+	built with libxml or libcurl installs that provide xml2-config /
+	curl-config, includes and libraries but no pkg-config files.
+
+2013-03-12  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh, src/ntriples_parse.c: Handle variations of header
+	macro
+
+	Fixes Issue #0000532
+	http://bugs.librdf.org/mantis/view.php?id=532
+
+	* .travis.yml: Test travis-ci.org
+
+2013-03-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_uri_turtle_write): Wraps raptor_turtle_writer_uri
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_term_turtle_write): Wraps raptor_turtle_writer_term
+
+	* src/raptor_serialize_turtle.c: Make
+	raptor_uri_to_turtle_counted_string use a turtle writer.
+
+	(raptor_uri_to_turtle_counted_string): Use turtle writer and
+	raptor_turtle_writer_uri.  Add docs warning about inefficiency
+
+	* src/raptor_serialize_turtle.c: Add docs warning about
+	inefficiencies
+
+	(raptor_init_serializer_turtle, raptor_uri_turtle_write,
+	raptor_uri_to_turtle_counted_string, raptor_uri_to_turtle_string):
+	Add doc note warning they are inefficient - a turtle writer is
+	made and destroyed each time - and that a serializer is better.
+
+	* src/raptor_statement.c:
+	(raptor_statement_print): Use raptor_uri_print
+
+	* src/raptor_turtle_writer.c: docs
+
+	* src/raptor_turtle_writer.c:
+	(raptor_turtle_writer_reference): Wraps raptor_uri_escaped_write
+
+	* src/raptor_internal.h: Remove not needed RAPTOR_INTERNAL_API
+	prefix
+
+	* src/raptor_internal.h, src/raptor_turtle_writer.c: Added turtle
+	writer methods for writing uris and term
+
+	(raptor_turtle_writer_uri, raptor_turtle_writer_term): Added to
+	write URIs and terms.
+
+	* src/raptor2.h.in:
+	Undeprecate raptor_statement_ntriples_write
+
+	* src/raptor_escaped.c:
+	(raptor_string_escaped_write): 0x7f is never written raw
+
+	* tests/ntriples/testnq-1.nq, tests/ntriples/testnq-1.out: Remove
+	spaces from test data URIs
+
+	* src/raptor_escaped.c:
+	(raptor_string_escaped_write): Decode unicode chars
+
+	* src/raptor_escaped.c:
+	(raptor_term_escaped_write): Encode uri not datatype uri
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c: Make
+	raptor_turtle_is_legal_turtle_qname internal not static
+
+	* src/raptor_serialize_ntriples.c: ws
+
+	* src/raptor_serialize_ntriples.c, src/raptor_term.c: Use
+	raptor_term_escaped_write instead of deprecated
+	raptor_term_ntriples_write
+
+	(raptor_bnodeid_ntriples_write, raptor_statement_ntriples_write):
+	Use raptor_term_escaped_write instead of deprecated
+	raptor_term_ntriples_write
+
+2013-03-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_json_writer.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_ntriples.c, src/raptor_turtle_writer.c:
+	Use raptor_string_escaped_write instead of raptor_string_python_write
+
+	(raptor_json_writer_quoted, raptor_json_serialize_avltree_visit,
+	raptor_string_ntriples_write,
+	raptor_turtle_writer_quoted_counted_string): Replace deprecated
+	function with new one
+
+	(raptor_turtle_writer_quoted_counted_string): Tidy code as well.
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_escaped.c,
+	src/raptor_turtle_writer.c: Added escaped writing module to write
+	Turtle/N-Triples terms
+
+	Added enum of bitflags raptor_escaped_write_bitflags that describe
+	the escaping wanted.
+
+	(raptor_string_escaped_write): Added
+
+	(raptor_string_python_write): Deprecated, now calls
+	raptor_string_escaped_write() with flags.
+
+	(raptor_term_escaped_write): Added.
+
+	* src/raptor2.h.in, src/raptor_uri.c:
+	(raptor_uri_escaped_write): Added
+
+2013-02-27  Dave Beckett <dave@dajobe.org>
+
+	* tests/turtle-2013/Makefile.am, tests/turtle-2013/manifest.ttl:
+	Remove manifest.ttl from dist
+
+2013-02-26  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.10
+
+	* Snapshotted raptor2_2_0_9 for 2.0.9 release (GIT
+	32b08d01e8c378b43ca2fee2b849b4d14b36c32d)
+
+	* INSTALL.html, NEWS.html, RELEASE.html, TODO.html, UPGRADING.html:
+	2.0.9
+
+2013-02-25  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, README.html, RELEASE.html: 2.0.9
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_sparql.c:
+	(raptor_sparql_name_check_type): Removed - not used
+
+	* Merge pull request #7 from dajobe/turtle-2013 Support Turtle 2013
+
+2013-02-24  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Terminate parsing at bad URI characters
+
+	* tests/turtle/Makefile.am: Add bad-15.out bad-17.out bad-18.out
+	bad-21.out bad-22.out to dist
+
+	* tests/turtle-2013/Makefile.am: README
+
+	* tests/turtle-2013/README: Add Turtle 2013 Readme
+
+	* src/turtle_lexer.l: Use raptor_turtle_check_uri_string to valid
+	IRIs in Turtle docs
+
+	* src/turtle_common.c, src/turtle_common.h: Ensure only an IRI
+	that matches Turtle rules passes parsing
+
+	(raptor_turtle_check_uri_string): Added to check Turtle URI char
+	rules
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c: Update Turtle URI writing to match
+	Turtle 2013 encoding
+
+	(raptor_turtle_writer_reference): Write URIs with Turtle 2013
+	escaped characters; must escape #x00-#x20<>\"{}|^`
+
+	* tests/turtle/Makefile.am: Mark turtle tests bad-17 and bad-18 as
+	now good
+
+	* tests/turtle/bad-17.out, tests/turtle/bad-17.ttl,
+	tests/turtle/bad-18.out, tests/turtle/bad-18.ttl: Mark turtle
+	tests bad-17 and bad-18 as now good
+
+	* tests/turtle/test-29.ttl: Turtle 2013 changes the way URIs are
+	encoded :/
+
+	* src/turtle_parser.y: Fix statement list to match Turtle 2013
+	rules about '.'s Removes 4 lexer conflicts; now expect 0
+
+	* src/turtle_lexer.l: Fix DECIMAL, DOUBLE, INTEGER to match Turtle
+	2013.  '123.' is now an integer followed by '.' not a double
+
+	* src/turtle_common.c: Check for valid \u and \U escapes in turtle
+	strings
+
+	(raptor_stringbuffer_append_turtle_string)
+	(raptor_turtle_expand_name_escapes): Added checking code.
+
+	* src/turtle_lexer.l: Replace QUOTEDURI with Turtle 2013 IRI
+	allowing u-escapes
+
+	* tests/turtle-2013/Makefile.am: Report error counts and failing
+	tests
+
+	* src/turtle_lexer.l: ws
+
+	* src/turtle_common.c, src/turtle_common.h, src/turtle_parser.y:
+	Added turtle_expand_name_escapes for expanding escapes inline
+
+	* src/turtle_lexer.l: Support '''single long''' quotes
+
+	* src/turtle_lexer.l: Support 'single' quotes
+
+	* src/turtle_lexer.l: \.
+
+	* tests/turtle/Makefile.am, tests/turtle/bad-15.out,
+	tests/turtle/bad-21.out, tests/turtle/bad-22.out: Turtle tests
+	bad-15, bad-21 and bad-22 are good for Turtle 2013
+
+	* src/raptor_qname.c:
+	(raptor_qname_string_to_uri): Handle qnames with two :s
+	Need to handle ':foo:...' QNames; just care about first ':'
+
+	* tests/turtle-2013/Makefile.am: Tidy and report number of errors
+
+	* src/turtle_lexer.l: Fix Turtle 2013 lexing rules
+
+	* src/turtle_lexer.l, src/turtle_parser.y: Switch to use LANGTAG
+	for language tag
+
+	* src/turtle_parser.y: Fixes for debugging bison
+
+	* src/turtle_common.c:
+	(raptor_stringbuffer_append_turtle_string): Handle Turtle 2013
+	\-escapes
+
+2013-02-23  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Be resilient to NULL turtle_parser in
+	errors and qname lookups
+
+	(turtle_syntax_error, turtle_qname_to_uri): Return NULL if no
+	turtle_parser is present.
+
+	* src/raptor_namespace.c:
+	(raptor_namespaces_find_namespace): Be resilient to NULL or empty
+	stack.
+
+	* tests/turtle-2013/Makefile.am: more turtle 2013 syntax tests
+
+	* src/turtle_parser.y: Allow blankNodePropertyList %expect from 2
+	to 4:
+
+	State 25 conflicts: 2 shift/reduce
+	State 59 conflicts: 2 shift/reduce
+
+	Altered some rules to match Turtle 2013:
+
+	- predicateObjectList: renamed from propertyList
+	- predicateObjectListOpt: renamed from propertyListOpt
+	- blankNode: renamed from blank and altered to match
+	- subject: add blankNode and collection
+	- object: add collection and blankNodePropertyList
+
+	* src/turtle_lexer.l, src/turtle_parser.y:
+	Support SPARQL "BASE <URI>" and "PREFIX <prefix>: <URI>" for Turtle 2013
+
+	* tests/turtle-2013/Makefile.am: Add turtle 2013 syntax check
+	files
+
+	* tests/turtle-2013/LICENSE, tests/turtle-2013/Makefile.am,
+	tests/turtle-2013/manifest.ttl,
+	tests/turtle-2013/turtle-eval-bad-01.ttl,
+	tests/turtle-2013/turtle-eval-bad-02.ttl,
+	tests/turtle-2013/turtle-eval-bad-03.ttl,
+	tests/turtle-2013/turtle-eval-bad-04.ttl,
+	tests/turtle-2013/turtle-eval-struct-01.nt,
+	tests/turtle-2013/turtle-eval-struct-01.ttl,
+	tests/turtle-2013/turtle-eval-struct-02.nt,
+	tests/turtle-2013/turtle-eval-struct-02.ttl,
+	tests/turtle-2013/turtle-subm-01.nt,
+	tests/turtle-2013/turtle-subm-01.ttl,
+	tests/turtle-2013/turtle-subm-02.nt,
+	tests/turtle-2013/turtle-subm-02.ttl,
+	tests/turtle-2013/turtle-subm-03.nt,
+	tests/turtle-2013/turtle-subm-03.ttl,
+	tests/turtle-2013/turtle-subm-04.nt,
+	tests/turtle-2013/turtle-subm-04.ttl,
+	tests/turtle-2013/turtle-subm-05.nt,
+	tests/turtle-2013/turtle-subm-05.ttl,
+	tests/turtle-2013/turtle-subm-06.nt,
+	tests/turtle-2013/turtle-subm-06.ttl,
+	tests/turtle-2013/turtle-subm-07.nt,
+	tests/turtle-2013/turtle-subm-07.ttl,
+	tests/turtle-2013/turtle-subm-08.nt,
+	tests/turtle-2013/turtle-subm-08.ttl,
+	tests/turtle-2013/turtle-subm-09.nt,
+	tests/turtle-2013/turtle-subm-09.ttl,
+	tests/turtle-2013/turtle-subm-10.nt,
+	tests/turtle-2013/turtle-subm-10.ttl,
+	tests/turtle-2013/turtle-subm-11.nt,
+	tests/turtle-2013/turtle-subm-11.ttl,
+	tests/turtle-2013/turtle-subm-12.nt,
+	tests/turtle-2013/turtle-subm-12.ttl,
+	tests/turtle-2013/turtle-subm-13.nt,
+	tests/turtle-2013/turtle-subm-13.ttl,
+	tests/turtle-2013/turtle-subm-14.nt,
+	tests/turtle-2013/turtle-subm-14.ttl,
+	tests/turtle-2013/turtle-subm-15.nt,
+	tests/turtle-2013/turtle-subm-15.ttl,
+	tests/turtle-2013/turtle-subm-16.nt,
+	tests/turtle-2013/turtle-subm-16.ttl,
+	tests/turtle-2013/turtle-subm-17.nt,
+	tests/turtle-2013/turtle-subm-17.ttl,
+	tests/turtle-2013/turtle-subm-18.nt,
+	tests/turtle-2013/turtle-subm-18.ttl,
+	tests/turtle-2013/turtle-subm-19.nt,
+	tests/turtle-2013/turtle-subm-19.ttl,
+	tests/turtle-2013/turtle-subm-20.nt,
+	tests/turtle-2013/turtle-subm-20.ttl,
+	tests/turtle-2013/turtle-subm-21.nt,
+	tests/turtle-2013/turtle-subm-21.ttl,
+	tests/turtle-2013/turtle-subm-22.nt,
+	tests/turtle-2013/turtle-subm-22.ttl,
+	tests/turtle-2013/turtle-subm-23.nt,
+	tests/turtle-2013/turtle-subm-23.ttl,
+	tests/turtle-2013/turtle-subm-24.nt,
+	tests/turtle-2013/turtle-subm-24.ttl,
+	tests/turtle-2013/turtle-subm-25.nt,
+	tests/turtle-2013/turtle-subm-25.ttl,
+	tests/turtle-2013/turtle-subm-26.nt,
+	tests/turtle-2013/turtle-subm-26.ttl,
+	tests/turtle-2013/turtle-subm-27.nt,
+	tests/turtle-2013/turtle-subm-27.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-esc-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-kw-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-lang-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-08.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-n3-extras-13.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-num-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-pname-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-06.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-07.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-08.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-09.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-10.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-11.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-12.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-13.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-14.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-15.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-16.ttl,
+	tests/turtle-2013/turtle-syntax-bad-struct-17.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-04.ttl,
+	tests/turtle-2013/turtle-syntax-bad-uri-05.ttl,
+	tests/turtle-2013/turtle-syntax-base-01.ttl,
+	tests/turtle-2013/turtle-syntax-base-02.ttl,
+	tests/turtle-2013/turtle-syntax-base-03.ttl,
+	tests/turtle-2013/turtle-syntax-base-04.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-01.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-02.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-03.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-04.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-05.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-06.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-07.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-08.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-09.ttl,
+	tests/turtle-2013/turtle-syntax-bnode-10.ttl,
+	tests/turtle-2013/turtle-syntax-datatypes-01.ttl,
+	tests/turtle-2013/turtle-syntax-datatypes-02.ttl,
+	tests/turtle-2013/turtle-syntax-file-01.ttl,
+	tests/turtle-2013/turtle-syntax-file-02.ttl,
+	tests/turtle-2013/turtle-syntax-file-03.ttl,
+	tests/turtle-2013/turtle-syntax-kw-01.ttl,
+	tests/turtle-2013/turtle-syntax-kw-02.ttl,
+	tests/turtle-2013/turtle-syntax-kw-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-01.ttl,
+	tests/turtle-2013/turtle-syntax-lists-02.ttl,
+	tests/turtle-2013/turtle-syntax-lists-03.ttl,
+	tests/turtle-2013/turtle-syntax-lists-04.ttl,
+	tests/turtle-2013/turtle-syntax-lists-05.ttl,
+	tests/turtle-2013/turtle-syntax-number-01.ttl,
+	tests/turtle-2013/turtle-syntax-number-02.ttl,
+	tests/turtle-2013/turtle-syntax-number-03.ttl,
+	tests/turtle-2013/turtle-syntax-number-04.ttl,
+	tests/turtle-2013/turtle-syntax-number-05.ttl,
+	tests/turtle-2013/turtle-syntax-number-06.ttl,
+	tests/turtle-2013/turtle-syntax-number-07.ttl,
+	tests/turtle-2013/turtle-syntax-number-08.ttl,
+	tests/turtle-2013/turtle-syntax-number-09.ttl,
+	tests/turtle-2013/turtle-syntax-number-10.ttl,
+	tests/turtle-2013/turtle-syntax-number-11.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-pname-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-01.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-02.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-03.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-04.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-05.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-06.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-07.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-08.ttl,
+	tests/turtle-2013/turtle-syntax-prefix-09.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-01.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-02.ttl,
+	tests/turtle-2013/turtle-syntax-str-esc-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-01.ttl,
+	tests/turtle-2013/turtle-syntax-string-02.ttl,
+	tests/turtle-2013/turtle-syntax-string-03.ttl,
+	tests/turtle-2013/turtle-syntax-string-04.ttl,
+	tests/turtle-2013/turtle-syntax-string-05.ttl,
+	tests/turtle-2013/turtle-syntax-string-06.ttl,
+	tests/turtle-2013/turtle-syntax-string-07.ttl,
+	tests/turtle-2013/turtle-syntax-string-08.ttl,
+	tests/turtle-2013/turtle-syntax-string-09.ttl,
+	tests/turtle-2013/turtle-syntax-string-10.ttl,
+	tests/turtle-2013/turtle-syntax-string-11.ttl,
+	tests/turtle-2013/turtle-syntax-struct-01.ttl,
+	tests/turtle-2013/turtle-syntax-struct-02.ttl,
+	tests/turtle-2013/turtle-syntax-struct-03.ttl,
+	tests/turtle-2013/turtle-syntax-struct-04.ttl,
+	tests/turtle-2013/turtle-syntax-struct-05.ttl,
+	tests/turtle-2013/turtle-syntax-uri-01.ttl,
+	tests/turtle-2013/turtle-syntax-uri-02.ttl,
+	tests/turtle-2013/turtle-syntax-uri-03.ttl,
+	tests/turtle-2013/turtle-syntax-uri-04.ttl: Add Turtle 2013 tests
+	from W3C
+
+	* src/.gitignore: Exclude .trs files from newer automate test
+	framework
+
+	* src/turtle_lexer.l:
+	Add Turtle 2013 rules
+
+	Added PN_CHARS_BASE (no Unicode), PN_CHARS from Turtle 2013
+
+	Added BS_ESCAPES based on Turtle 2013 PN_LOCAL escapes
+
+	Added HEX
+
+	Added PLX from Turtle 2013
+
+	Added BN_LABEL, PN_PREFIX and PN_LOCAL based on Turtle 2013 rules.
+
+	Redefine QNAME in terms of PN_PREFIX and PN_LOCAL Replace BNAME
+	with BN_LABEL for blank node label Use PN_PREFIX for @prefix
+	prefix
+
+	* configure.ac, tests/Makefile.am:
+	Add tests/turtle-2013
+
+2013-02-22  Dave Beckett <dave@dajobe.org>
+
+	* build/.gitignore: Ignore automake test-driver
+
+	* src/CMakeLists.txt: Add raptor_sparql.c
+
+	* src/raptor_sparql.c: comment
+
+2013-02-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_sparql.c: docs
+
+	* src/raptor_sparql.c:
+	(raptor_sparql_name_check): Check hex
+
+	* src/Makefile.am, src/raptor2.h.in, src/raptor_qname.c,
+	src/raptor_sparql.c: Add sparql name check module
+
+	* src/raptor_qname.c:
+	(raptor_sparql_name_check): Added to check sparql / turtle names
+	Adds new enum raptor_sparql_name_check_type
+
+2013-02-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www.c:
+	(raptor_www_set_ssl_verify_options): Update docs to match curl
+	latest
+
+2013-02-18  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html: Document how to find gtkdocize
+	Fixes Issue #0000526
+	http://bugs.librdf.org/mantis/view.php?id=526
+
+2013-02-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c: Never use CURLOPT_SSL_VERIFYHOST with a
+	value of 2
+
+	(raptor_www_curl_set_ssl_verify_options): curl 7.28.1 removed the
+	value 1 from being legal:
+	http://daniel.haxx.se/blog/2012/10/25/libcurl-claimed-to-be-dangerous/CURL
+	GIT commit da82f59b697310229ccdf66104d5d65a44dfab98
+	Sat Oct 27 12:31:39 2012 +0200
+
+	Legal values are: 0 to disable host verifying 2 (default) to
+	enable host verifyinging
+
+2013-01-24  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog: 2.0.9 and 2013
+
+2013-01-23  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/triple.c:
+	Output correct literal datatypes ^^<uri>
+
+	librdfa commit f3d10545bc2dd4a7aa940dd11dfcb6c6035e23a4
+
+2013-01-03  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, LICENSE.html, NEWS.html, README.html, RELEASE.html:
+	2.0.9 and 2013
