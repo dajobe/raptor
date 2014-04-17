@@ -236,12 +236,14 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
 {
   raptor_qname* qname;
   unsigned char* new_name;
-  unsigned int local_name_length = (unsigned int)strlen((char*)local_name);
+  unsigned int local_name_length;
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   if(!local_name)
     return NULL;
+
+  local_name_length = (unsigned int)strlen((char*)local_name);
 
   raptor_world_open(world);
 
