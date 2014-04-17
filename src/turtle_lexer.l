@@ -497,6 +497,7 @@ EXPONENT [eE][+-]?[0-9]+
                   uri_string = raptor_stringbuffer_as_string(sb);
                   if(!raptor_turtle_check_uri_string(uri_string)) {
                     turtle_syntax_error(rdf_parser, "URI '%s' contains bad character(s)", uri_string);
+                    raptor_free_stringbuffer(sb);
                     yyterminate();
                   } else {
                     yylval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
