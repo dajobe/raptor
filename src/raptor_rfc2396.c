@@ -291,7 +291,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
   
 #if defined(RAPTOR_DEBUG)
   if(path_len != strlen((const char*)path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+    RAPTOR_FATAL4("Path '%s' length %ld does not match calculated %ld.", (const char*)path_buffer, (long)strlen((const char*)path_buffer), (long)path_len);
 #endif
     
   /* Remove all "<component>/../" path components */

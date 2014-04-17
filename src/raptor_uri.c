@@ -635,8 +635,9 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 /**
  * raptor_uri_filename_to_uri_string:
  * @filename: The filename to convert
+ * @filename_len: length of @filename or 0 to count it here
  *
- * Converts a filename to a file: URI.
+ * Converts a counted filename to a file: URI.
  * 
  * Handles the OS-specific escaping on turning filenames into URIs
  * and returns a new buffer that the caller must free().  Turns a
@@ -644,8 +645,9 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
-unsigned char *
-raptor_uri_filename_to_uri_string(const char *filename) 
+unsigned char*
+raptor_uri_counted_filename_to_uri_string(const char *filename,
+                                          size_t filename_len)
 {
   unsigned char *buffer = NULL;
   const char *from;
@@ -659,6 +661,9 @@ raptor_uri_filename_to_uri_string(const char *filename)
   
   if(!filename)
     return NULL;
+
+  if(!filename_len)
+    filename_len = strlen(filename);
   
 #ifdef WIN32
 /*
@@ -692,6 +697,9 @@ raptor_uri_filename_to_uri_string(const char *filename)
 
   if(*filename != '/') {
     size_t path_max;
+    size_t path_len;
+    size_t new_filename_len;
+
 #ifdef PATH_MAX
     path_max = PATH_MAX;
 #else
@@ -714,9 +722,18 @@ raptor_uri_filename_to_uri_string(const char *filename)
     }
     if(!path)
       goto path_done;
+    path_len = strlen(path);
 
-    strcat(path, "/");
-    strcat(path, filename);
+    /* path + '/' + filename */
+    new_filename_len = path_len + 1 + filename_len;
+    if(path_max < new_filename_len + 1) {
+      path = (char*)realloc(path, new_filename_len + 1);
+      if(!path)
+        goto path_done;
+    }
+
+    path[path_len] = '/';
+    memcpy(path + path_len + 1, filename, filename_len + 1);
     filename = (const char*)path;
   }
 #endif
@@ -724,6 +741,12 @@ raptor_uri_filename_to_uri_string(const char *filename)
   /* add URI-escaped filename length */
   for(from = filename; *from ; from++) {
     len++;
+#ifdef WIN32
+    if(*from == ':') {
+      if(from[1] != '\\')
+        len += 2;
+    }
+#endif
     if(*from == ' ' || *from == '%')
       len += 2; /* strlen(%xx)-1 */
   }
@@ -774,6 +797,26 @@ raptor_uri_filename_to_uri_string(const char *filename)
 #endif
   
   return buffer;
+}
+
+
+/**
+ * raptor_uri_filename_to_uri_string:
+ * @filename: The filename to convert
+ *
+ * Converts a filename to a file: URI.
+ *
+ * Handles the OS-specific escaping on turning filenames into URIs
+ * and returns a new buffer that the caller must free().  Turns a
+ * space in the filename into \%20 and '%' into \%25.
+ *
+ * Return value: A newly allocated string with the URI or NULL on failure
+ **/
+unsigned char *
+raptor_uri_filename_to_uri_string(const char *filename)
+
+{
+  return raptor_uri_counted_filename_to_uri_string(filename, 0);
 }
 
 

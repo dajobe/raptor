@@ -425,6 +425,7 @@
 2.0.10	-	-	-	2.0.11	int	raptor_uri_uri_string_is_absolute	(const unsigned char* uri_string)	-
 2.0.10	-	-	-	2.0.11	unsigned char*	raptor_qname_format_as_xml	(const raptor_qname *qname, size_t *length_p)	-
 2.0.11	-	-	-	2.0.12	raptor_term*	raptor_new_term_from_counted_string	(raptor_world* world, unsigned char* string, size_t length)	-
+2.0.13	-	-	-	2.0.14	unsigned char*	raptor_uri_counted_filename_to_uri_string	(const char *filename, size_t filename_len)	-
 #
 # Types
 #
