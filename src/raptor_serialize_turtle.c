@@ -382,6 +382,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                           context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - first predicate is not rdf:first");
+      raptor_free_avltree_iterator(iter);
       return 1;
     }
     
@@ -437,6 +438,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       if(!subject) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Malformed collection - could not find subject for rdf:rest");
+        raptor_free_avltree_iterator(iter);
         return 1;
       }
 
@@ -453,6 +455,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
          !raptor_uri_equals(object->term->value.uri, context->rdf_nil_uri)) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Malformed collection - last rdf:rest resource is not rdf:nil");
+        raptor_free_avltree_iterator(iter);
         return 1;
       }
       break;
