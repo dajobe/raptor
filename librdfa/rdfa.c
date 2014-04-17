@@ -1106,54 +1106,56 @@ static void end_element(void* parser_context, const char* name,
 
    /*printf(context->plain_literal);*/
 
-   /* append the XML literal and plain text literals to the parent
-    * literals */
-   if(context->xml_literal != NULL)
-   {
-      if(parent_context->xml_literal == NULL)
-      {
-         parent_context->xml_literal =
-            rdfa_replace_string(
-               parent_context->xml_literal, context->xml_literal);
-         parent_context->xml_literal_size = context->xml_literal_size;
-      }
-      else
-      {
-         parent_context->xml_literal =
-            rdfa_n_append_string(
-               parent_context->xml_literal,
-               &parent_context->xml_literal_size,
-               context->xml_literal, context->xml_literal_size);
-      }
+   if(parent_context != NULL) {
+       /* append the XML literal and plain text literals to the parent
+        * literals */
+       if(context->xml_literal != NULL)
+       {
+          if(parent_context->xml_literal == NULL)
+          {
+             parent_context->xml_literal =
+                rdfa_replace_string(
+                   parent_context->xml_literal, context->xml_literal);
+             parent_context->xml_literal_size = context->xml_literal_size;
+          }
+          else
+          {
+             parent_context->xml_literal =
+                rdfa_n_append_string(
+                   parent_context->xml_literal,
+                   &parent_context->xml_literal_size,
+                   context->xml_literal, context->xml_literal_size);
+          }
 
-      /* if there is an XML literal, there is probably a plain literal */
-      if(context->plain_literal != NULL)
-      {
-         if(parent_context->plain_literal == NULL)
-         {
-            parent_context->plain_literal =
-               rdfa_replace_string(
-                  parent_context->plain_literal, context->plain_literal);
-            parent_context->plain_literal_size =
-               context->plain_literal_size;
-         }
-         else
-         {
-            parent_context->plain_literal =
-               rdfa_n_append_string(
-                  parent_context->plain_literal,
-                  &parent_context->plain_literal_size,
-                  context->plain_literal,
-                  context->plain_literal_size);
-         }
-      }
+          /* if there is an XML literal, there is probably a plain literal */
+          if(context->plain_literal != NULL)
+          {
+             if(parent_context->plain_literal == NULL)
+             {
+                parent_context->plain_literal =
+                   rdfa_replace_string(
+                      parent_context->plain_literal, context->plain_literal);
+                parent_context->plain_literal_size =
+                   context->plain_literal_size;
+             }
+             else
+             {
+                parent_context->plain_literal =
+                   rdfa_n_append_string(
+                      parent_context->plain_literal,
+                      &parent_context->plain_literal_size,
+                      context->plain_literal,
+                      context->plain_literal_size);
+             }
+          }
+       }
+
+       /* preserve the bnode count by copying it to the parent_context */
+       parent_context->bnode_count = context->bnode_count;
+       parent_context->underscore_colon_bnode_name = \
+          rdfa_replace_string(parent_context->underscore_colon_bnode_name,
+                              context->underscore_colon_bnode_name);
    }
-
-   /* preserve the bnode count by copying it to the parent_context */
-   parent_context->bnode_count = context->bnode_count;
-   parent_context->underscore_colon_bnode_name = \
-      rdfa_replace_string(parent_context->underscore_colon_bnode_name,
-                          context->underscore_colon_bnode_name);
 
    /* 10. If the [ skip element ] flag is 'false', and [ new subject ]
     * was set to a non-null value, then any [ incomplete triple ]s
