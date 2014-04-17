@@ -85,7 +85,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
 
   length = raptor_vasprintf(&buffer, message, arguments);
   if(!buffer) {
-    if(locator && world) {
+    if(locator) {
       raptor_locator_print(locator, stderr);
       fputc(' ', stderr);
     }
