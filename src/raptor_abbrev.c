@@ -285,7 +285,7 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
     subject->list_items =
       raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node, NULL);
 
-    if(!subject->node || !subject->properties || !subject->list_items) {
+    if(!subject->properties || !subject->list_items) {
       raptor_free_abbrev_subject(subject);
       subject = NULL;
     }
