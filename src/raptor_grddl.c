@@ -1322,9 +1322,11 @@ raptor_grddl_run_recursive(raptor_parser* rdf_parser, raptor_uri* uri,
       }      
     }
     
-    RAPTOR_FREE(char*, ibuffer);
     raptor_parser_save_content(grddl_parser->internal_parser, 0);
   }
+
+  if(ibuffer)
+    RAPTOR_FREE(char*, ibuffer);
 
   if(rpbc.final_uri)
     raptor_free_uri(rpbc.final_uri);
