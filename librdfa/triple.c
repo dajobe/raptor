@@ -564,7 +564,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
       current_object_literal = context->content;
       type = RDF_TYPE_PLAIN_LITERAL;
    }
-   else if(strchr(context->xml_literal, '<') == NULL)
+   else if(context->xml_literal && strchr(context->xml_literal, '<') == NULL)
    {
       current_object_literal = context->plain_literal;
       type = RDF_TYPE_PLAIN_LITERAL;
