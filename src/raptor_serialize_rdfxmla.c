@@ -1079,8 +1079,8 @@ raptor_rdfxmla_serialize_set_xml_writer(raptor_serializer* serializer,
   context = (raptor_rdfxmla_context*)serializer->context;
 
   context->xml_writer = xml_writer;
-  context->starting_depth= raptor_xml_writer_get_depth(xml_writer) + 1;
-  context->external_xml_writer= (xml_writer != NULL);
+  context->starting_depth = xml_writer ? (raptor_xml_writer_get_depth(xml_writer) + 1) : -1;
+  context->external_xml_writer = (xml_writer != NULL);
 
   if(context->xml_nspace)
     raptor_free_namespace(context->xml_nspace);
