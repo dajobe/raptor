@@ -1254,8 +1254,10 @@ raptor_world_guess_parser_name(raptor_world* world,
 
       p++;
       suffix = RAPTOR_MALLOC(unsigned char*, strlen((const char*)p) + 1);
-      if(!suffix)
+      if(!suffix) {
+        RAPTOR_FREE(syntax_scores, scores);
         return NULL;
+      }
 
       for(from = p, to = suffix; *from; ) {
         unsigned char c = *from++;
