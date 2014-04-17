@@ -585,16 +585,13 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       }
 
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
-      if(!attrs[attrs_count]) {
-        if(allocated)
-          RAPTOR_FREE(char*, object_uri_string);
-        goto oom;
-      }
-      attrs_count++;
-
       if(allocated)
         RAPTOR_FREE(char*, object_uri_string);
 
+      if(!attrs[attrs_count])
+        goto oom;
+
+      attrs_count++;
       raptor_xml_element_set_attributes(predicate_element, attrs, attrs_count);
       attrs = NULL; /* attrs ownership transferred to element */
 
