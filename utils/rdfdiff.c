@@ -839,22 +839,18 @@ main(int argc, char *argv[])
     free_to_string = 1;
   }
   
-  if(from_string) {
-    from_uri = raptor_new_uri(world, from_string);
-    if(!from_uri) {
-      fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
-      rv = 2;
-      goto exit;
-    }
+  from_uri = raptor_new_uri(world, from_string);
+  if(!from_uri) {
+    fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
+    rv = 2;
+    goto exit;
   }
   
-  if(to_string) {
-    to_uri = raptor_new_uri(world, to_string);
-    if(!to_uri) {
-      fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
-      rv = 2;
-      goto exit;
-    }
+  to_uri = raptor_new_uri(world, to_string);
+  if(!to_uri) {
+    fprintf(stderr, "%s: Failed to create URI for %s\n", program, from_string);
+    rv = 2;
+    goto exit;
   }
 
   /* create and init "from" data structures */
