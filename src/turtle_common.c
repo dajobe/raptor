@@ -246,7 +246,6 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
         if(i+ulen > len) {
           error_handler(error_data,
                         "Turtle string error - \\%c over end of line", c);
-          RAPTOR_FREE(char*, name);
           return 1;
         }
         
@@ -256,7 +255,6 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
             error_handler(error_data,
                           "Turtle string error - illegal hex digit %c in Unicode escape '%c%s...'",
                           cc, c, s);
-            RAPTOR_FREE(char*, name);
             return 1;
           }
         }
@@ -266,7 +264,6 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
           error_handler(error_data,
                         "Turtle string error - illegal Uncode escape '%c%s...'",
                         c, s);
-          RAPTOR_FREE(char*, name);
           return 1;
         }
 
@@ -277,7 +274,6 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
           error_handler(error_data,
                         "Turtle string error - illegal Unicode character with code point #x%lX (max #x%lX).", 
                         unichar, raptor_unicode_max_codepoint);
-          RAPTOR_FREE(char*, name);
           return 1;
         }
           
@@ -287,7 +283,6 @@ raptor_turtle_expand_name_escapes(unsigned char *name,
           error_handler(error_data,
                         "Turtle string error - illegal Unicode character with code point #x%lX.", 
                         unichar);
-          RAPTOR_FREE(char*, name);
           return 1;
         }
         d += (size_t)unichar_width;
