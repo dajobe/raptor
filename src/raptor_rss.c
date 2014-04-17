@@ -809,6 +809,7 @@ raptor_rss_end_element_handler(void *user_data,
         field->value = RAPTOR_MALLOC(unsigned char*, cdata_len + 1);
         if(!field->value) {
           rdf_parser->failed = 1;
+          raptor_rss_field_free(field);
           return;
         }
         
