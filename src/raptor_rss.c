@@ -962,8 +962,10 @@ raptor_rss_insert_rss_link(raptor_parser* rdf_parser,
       return 1;
     
     field->value = RAPTOR_MALLOC(unsigned char*, len + 1);
-    if(!field->value)
+    if(!field->value) {
+      raptor_rss_field_free(field);
       return 1;
+    }
     
     memcpy(field->value, value, len + 1);
     raptor_rss_item_add_field(item, RAPTOR_RSS_FIELD_LINK, field);
