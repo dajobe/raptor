@@ -190,7 +190,7 @@ void rdfa_complete_list_triples(rdfacontext* context)
                }
                else
                {
-                  next = (char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil";
+                  next = strdup((char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
                }
 
                triple = rdfa_create_triple(bnode,
@@ -222,6 +222,8 @@ void rdfa_complete_list_triples(rdfacontext* context)
             context->default_graph_triple_callback(
                triple, context->callback_data);
             free(subject);
+            if(bnode)
+              free(bnode);
          }
 
          /* Free the first list item and empty the list */
