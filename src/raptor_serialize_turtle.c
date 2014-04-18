@@ -414,8 +414,10 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     }
 
     /* Return error if emitting something failed above */
-    if(rv)
+    if(rv) {
+      raptor_free_avltree_iterator(iter);
       return rv;
+    }
 
     /* last item */
     rv = raptor_avltree_iterator_next(iter);
@@ -429,6 +431,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_rest_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - second predicate is not rdf:rest");
+      raptor_free_avltree_iterator(iter);
       return 1;
     }
     
