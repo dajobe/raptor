@@ -821,15 +821,14 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
 {
   va_list arguments;
 
-  parser->failed = 1;
-
   va_start(arguments, message);
-  if(parser)
+  if(parser) {
+    parser->failed = 1;
     raptor_log_error_varargs(parser->world,
                              RAPTOR_LOG_LEVEL_FATAL,
                              &parser->locator,
                              message, arguments);
-  else
+  } else
     raptor_log_error_varargs(NULL,
                              RAPTOR_LOG_LEVEL_FATAL, NULL,
                              message, arguments); 
