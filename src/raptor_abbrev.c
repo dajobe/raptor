@@ -278,8 +278,9 @@ raptor_new_abbrev_subject(raptor_abbrev_node* node)
                          (raptor_data_free_handler)raptor_free_abbrev_po,
                          0);
 #ifdef RAPTOR_DEBUG
-    raptor_avltree_set_print_handler(subject->properties,
-                                     (raptor_data_print_handler)raptor_print_abbrev_po);
+    if(subject->properties)
+      raptor_avltree_set_print_handler(subject->properties,
+                                       (raptor_data_print_handler)raptor_print_abbrev_po);
 #endif
 
     subject->list_items =
