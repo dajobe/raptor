@@ -572,21 +572,18 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       break;
 
     case RAPTOR_TERM_TYPE_URI:
-      allocated = 1;
       /* must be URI */
       if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_RELATIVE_URIS)) {
         object_uri_string = raptor_uri_to_relative_uri_string(serializer->base_uri,
                                                               statement->object->value.uri);
-        if(!object_uri_string)
-          goto oom;
       } else {
         object_uri_string = raptor_uri_to_string(statement->object->value.uri);
-        allocated = 0;
       }
+      if(!object_uri_string)
+        goto oom;
 
       attrs[attrs_count] = raptor_new_qname_from_namespace_local_name(serializer->world, context->rdf_nspace, (const unsigned char*)"resource", object_uri_string);
-      if(allocated)
-        RAPTOR_FREE(char*, object_uri_string);
+      RAPTOR_FREE(char*, object_uri_string);
 
       if(!attrs[attrs_count])
         goto oom;
