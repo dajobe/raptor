@@ -875,8 +875,7 @@ raptor_rss_end_element_handler(void *user_data,
 
  tidy_end_element:
 
-  if(rss_element)
-    raptor_free_rss_element(rss_element);
+  raptor_free_rss_element(rss_element);
 
 }
 
