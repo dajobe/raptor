@@ -585,7 +585,7 @@ raptor_xml_writer_start_element(raptor_xml_writer* xml_writer,
     element->parent = xml_writer->current_element;
   
   xml_writer->current_element = element;
-  if(element && element->parent)
+  if(element->parent)
     element->parent->content_element_seen = 1;
 }
 
