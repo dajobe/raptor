@@ -385,8 +385,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       RAPTOR_FREE(char*, nspace_declarations[i].declaration);
   }
 
-  if(nspace_declarations)
-    RAPTOR_FREE(stringarray, nspace_declarations);
+  RAPTOR_FREE(stringarray, nspace_declarations);
 
   return 1;
 }
