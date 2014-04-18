@@ -789,8 +789,9 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   path_done:
 #ifndef WIN32
   /* Normalize the resulting URI path after the "file://"  */
-  raptor_uri_normalize_path(buffer + RAPTOR_LEN_FILE_CSS,
-                            len - RAPTOR_LEN_FILE_CSS);
+  if(buffer)
+    raptor_uri_normalize_path(buffer + RAPTOR_LEN_FILE_CSS,
+                              len - RAPTOR_LEN_FILE_CSS);
 
   if(path)
     free(path);
