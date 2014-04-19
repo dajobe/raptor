@@ -1688,9 +1688,16 @@ raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr,
     return rc;
   
   while(!raptor_iostream_read_eof(iostr)) {
-    size_t len = raptor_iostream_read_bytes(rdf_parser->buffer, 1,
-                                            RAPTOR_READ_BUFFER_SIZE, iostr);
-    int is_end = (len < RAPTOR_READ_BUFFER_SIZE);
+    int ilen;
+    size_t len;
+    int is_end;
+
+    ilen = raptor_iostream_read_bytes(rdf_parser->buffer, 1,
+                                      RAPTOR_READ_BUFFER_SIZE, iostr);
+    if(ilen < 0)
+      break;
+    len = RAPTOR_GOOD_CAST(size_t, ilen);
+    is_end = (len < RAPTOR_READ_BUFFER_SIZE);
 
     rc = raptor_parser_parse_chunk(rdf_parser, rdf_parser->buffer, len, is_end);
     if(rc || is_end)
