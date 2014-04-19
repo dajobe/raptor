@@ -80,7 +80,7 @@ raptor_log_error_varargs(raptor_world* world, raptor_log_level level,
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
-  if(world->internal_ignore_errors)
+  if(world && world->internal_ignore_errors)
     return;
 
   length = raptor_vasprintf(&buffer, message, arguments);
