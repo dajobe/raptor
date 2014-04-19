@@ -1448,7 +1448,6 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
 {
   raptor_rss10_serializer_context *rss_serializer;
   raptor_xml_writer* xml_writer;
-  raptor_qname* root_qname = NULL;
   raptor_xml_element* root_element = NULL;
   raptor_serializer* ser = NULL;
   raptor_uri* base_uri = NULL;
@@ -1485,6 +1484,7 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   
   if(is_atom) {
     raptor_namespace* at_nspace = rss_serializer->nspaces[ATOMTRIPLES_NS];
+    raptor_qname* root_qname;
 
     /* atom:md with no attribute */
     root_qname = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
@@ -1503,10 +1503,8 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
     if(!root_element) {
       if(base_uri)
         raptor_free_uri(base_uri);
-      raptor_free_qname(root_qname); root_qname = NULL;
-      goto oom;
+      raptor_free_qname(root_qname);
     }
-    root_qname = NULL;
 
     raptor_xml_writer_start_element(xml_writer, root_element);
   }
@@ -1544,9 +1542,6 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   oom:
   if(ser)
     raptor_free_serializer(ser);
-
-  if(root_qname)
-    raptor_free_qname(root_qname);
 
   if(root_element)
     raptor_free_xml_element(root_element);
