@@ -813,9 +813,10 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
   
   if(grddl_parser->internal_parser) {
     /* generate the triples */
-    raptor_parser_parse_start(grddl_parser->internal_parser, base_uri);
-    raptor_parser_parse_chunk(grddl_parser->internal_parser,
-                              doc_txt, doc_txt_len, 1);
+    ret = raptor_parser_parse_start(grddl_parser->internal_parser, base_uri);
+    if(!ret)
+      ret = raptor_parser_parse_chunk(grddl_parser->internal_parser,
+                                      doc_txt, doc_txt_len, 1);
   }
   
   cleanup_xslt:
