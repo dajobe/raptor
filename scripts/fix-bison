@@ -42,6 +42,15 @@ while(<>) {
     next; 
   }
 
+  if(m%^\# undef YYCASE_$%) {
+    # Add a default value for yyformat for coverity CID 10838
+    my $line=$_;
+    print qq{      default: yyformat = YY_("syntax error");\n};
+    $line_offset++; # extra line
+    print $line;
+    next;
+  }
+
   # Suppress warnings about empty declarations
   s/(^static int .*_init_globals.*);$/$1/;
 
