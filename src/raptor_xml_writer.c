@@ -276,7 +276,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     }
   }
 
-  if(element->xml_language) {
+  if(nstack && element->xml_language) {
     size_t lang_len = strlen(RAPTOR_GOOD_CAST(char*, element->xml_language));
 #define XML_LANG_PREFIX_LEN 10
     size_t buf_length = XML_LANG_PREFIX_LEN + lang_len + 1;
