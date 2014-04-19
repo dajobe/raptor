@@ -1170,7 +1170,7 @@ static void end_element(void* parser_context, const char* name,
 
    /* 14. Once all the child elements have been traversed, list triples are
     * generated, if necessary. */
-   if(context->rdfa_version == RDFA_VERSION_1_1)
+   if(context->rdfa_version == RDFA_VERSION_1_1 && (context->new_subject != NULL))
    {
       rdfa_complete_list_triples(context);
 
