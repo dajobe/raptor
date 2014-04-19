@@ -382,11 +382,11 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       goto tidy;
     }
 
-    c=*name; *name='\0';
+    c = *name; *name = '\0';
     predicate_ns_uri = raptor_new_uri(serializer->world, uri_string);
+    *name = c;
     if(!predicate_ns_uri)
       goto oom;
-    *name=c;
 
     predicate_ns = raptor_namespaces_find_namespace_by_uri(context->nstack,
                                                            predicate_ns_uri);
