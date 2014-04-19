@@ -1538,8 +1538,6 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
   
   raptor_serializer_serialize_end(ser);
   
-  raptor_free_serializer(ser); ser = NULL;
-
   if(is_atom)
     raptor_xml_writer_end_element(xml_writer, root_element);
   
