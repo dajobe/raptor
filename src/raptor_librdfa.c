@@ -267,6 +267,9 @@ raptor_librdfa_parse_start(raptor_parser* rdf_parser)
 
   if(rdf_parser->base_uri)
     base_uri_string = (char*)raptor_uri_as_string(rdf_parser->base_uri);
+  else
+    /* base URI is required for rdfa - checked in rdfa_create_context() */
+    return 1;
 
   if(librdfa_parser->context)
     rdfa_free_context(librdfa_parser->context);
@@ -371,7 +374,7 @@ raptor_librdfa_parser_register_factory(raptor_parser_factory *factory)
   factory->desc.label = "RDF/A via librdfa";
   factory->desc.uri_strings = rdfa_uri_strings;
   
-  factory->desc.flags = 0;
+  factory->desc.flags = RAPTOR_SYNTAX_NEED_BASE_URI;
   
   factory->context_length     = sizeof(raptor_librdfa_parser_context);
 
