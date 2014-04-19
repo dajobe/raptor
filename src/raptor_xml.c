@@ -716,6 +716,8 @@ raptor_xml_escape_string_any(raptor_world *world,
         *q++ = ';';
       }
     } else {
+      /* coverity[negative_returns]
+       * negative unichar_len values are checked and cause return -1 above */
       memcpy(q, p, unichar_len);
       q+= unichar_len;
     }
