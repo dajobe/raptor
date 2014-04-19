@@ -1504,9 +1504,8 @@ raptor_rss10_emit_rdfxml_item_triples(raptor_serializer *serializer,
       if(base_uri)
         raptor_free_uri(base_uri);
       raptor_free_qname(root_qname);
-    }
-
-    raptor_xml_writer_start_element(xml_writer, root_element);
+    } else
+      raptor_xml_writer_start_element(xml_writer, root_element);
   }
   
   ser = raptor_new_serializer(rss_serializer->world, "rdfxml-abbrev");
