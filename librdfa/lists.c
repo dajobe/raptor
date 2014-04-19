@@ -212,16 +212,21 @@ void rdfa_complete_list_triples(rdfacontext* context)
              * object
              *   first item of the 'bnode' array */
             subject = strdup(key);
-            tmp = strstr(subject, " ");
-            tmp[0] = '\0';
-            triple = (rdftriple*)list->items[0]->data;
-            triple->subject =
-               rdfa_replace_string(triple->subject, subject);
-            triple->predicate =
-               rdfa_replace_string(triple->predicate, predicate);
-            context->default_graph_triple_callback(
-               triple, context->callback_data);
-            free(subject);
+            if(subject)
+              tmp = strstr(subject, " ");
+
+            if(tmp) {
+              tmp[0] = '\0';
+              triple = (rdftriple*)list->items[0]->data;
+              triple->subject =
+                rdfa_replace_string(triple->subject, subject);
+              triple->predicate =
+                rdfa_replace_string(triple->predicate, predicate);
+              context->default_graph_triple_callback(
+                triple, context->callback_data);
+            }
+            if(subject)
+              free(subject);
             if(bnode)
               free(bnode);
          }
