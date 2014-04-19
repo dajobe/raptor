@@ -1146,7 +1146,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     else
       base_uri = NULL;
     
-    if(flags & MATCH_IS_VALUE_LIST) {
+    if(uri_string && (flags & MATCH_IS_VALUE_LIST)) {
       char *start;
       char *end;
       char* buffer;
@@ -1185,7 +1185,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       RAPTOR_DEBUG2("Got hardcoded XSLT match for %s\n", xpathExpr);
       /* return at first match, that's enough */
       break;
-    } else {
+    } else if(uri_string) {
       grddl_xml_context* xml_context;
       RAPTOR_DEBUG2("Got single match URI '%s'\n", uri_string);
 
