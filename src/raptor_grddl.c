@@ -1449,7 +1449,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
     
       grddl_parser->xml_ctxt->replaceEntities = 1;
       grddl_parser->xml_ctxt->loadsubset = 1;
-    } else if(loop == 1) {
+    } else { /* loop is 1 */
   
       /* try to create an HTML parser context */
       if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_HTML_TAG_SOUP)) {
@@ -1491,10 +1491,9 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
         htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
  
-      } else
+      } else /* No HTML tag soup allowed so continue loop */
         continue;
-    } else
-      continue;
+    }
 
 
     if(grddl_parser->html_ctxt) {
