@@ -145,7 +145,7 @@ void rdfa_complete_list_triples(rdfacontext* context)
          {
             char* bnode = NULL;
             char* subject;
-            char* tmp;
+            char* tmp = NULL;
             bnode = rdfa_replace_string(bnode, triple->subject);
             for(i = 1; i < (int)list->num_items; i++)
             {
