@@ -51,6 +51,15 @@ while(<>) {
     next;
   }
 
+  if(m%yysyntax_error_status = YYSYNTAX_ERROR%) {
+    # Set yytoken to non-negative value for coverity CID 29259
+    my $line=$_;
+    print qq{if(yytoken < 0) yytoken = YYUNDEFTOK;\n};
+    $line_offset++; # extra line
+    print $line;
+    next;
+  }
+
   # Suppress warnings about empty declarations
   s/(^static int .*_init_globals.*);$/$1/;
 
