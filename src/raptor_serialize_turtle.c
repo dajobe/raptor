@@ -622,7 +622,8 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(!iter)
       return 1;
     pred1 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
-    raptor_avltree_iterator_next(iter);
+    if(raptor_avltree_iterator_next(iter))
+      return 1;
     pred2 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_free_avltree_iterator(iter);
 
