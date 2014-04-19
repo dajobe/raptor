@@ -593,7 +593,8 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
     * serializing to text, all nodes that are descendants of the
     * [current element], i.e., not including the element itself, and
     * giving it a datatype of rdf:XMLLiteral. */
-   if((current_object_literal == NULL) &&
+   if((context->xml_literal != NULL) &&
+      (current_object_literal == NULL) &&
       (strchr(context->xml_literal, '<') != NULL) &&
       ((context->datatype == NULL) ||
        (strcmp(context->datatype,
