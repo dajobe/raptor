@@ -207,7 +207,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     }
   }
 
-  if(element->attributes) {
+  if(nstack && element->attributes) {
     for(i = 0; i < element->attribute_count; i++) {
       /* qname */
       if(element->attributes[i]->nspace) {
