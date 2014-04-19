@@ -342,7 +342,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   raptor_namespace* predicate_ns = NULL;
   int free_predicate_ns = 0;
   raptor_xml_element* predicate_element = NULL;
-  int end_predicate_element = 0;
   raptor_qname **attrs = NULL;
   int attrs_count = 0;
   raptor_uri* base_uri = NULL;
@@ -549,7 +548,6 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
       }
 
       raptor_xml_writer_end_element(xml_writer, predicate_element);
-      end_predicate_element = 0;
       raptor_free_xml_element(predicate_element);
       predicate_element = NULL;
       raptor_xml_writer_cdata_counted(xml_writer, (const unsigned char*)"\n", 1);
@@ -620,11 +618,8 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
   if(attrs)
     RAPTOR_FREE(qnamearray, attrs);
 
-  if(predicate_element) {
-    if(end_predicate_element)
-      raptor_xml_writer_end_element(xml_writer, predicate_element);
+  if(predicate_element)
     raptor_free_xml_element(predicate_element);
-  }
 
   if(rdf_Description_element) {
     raptor_xml_writer_end_element(xml_writer, rdf_Description_element);
