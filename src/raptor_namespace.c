@@ -768,10 +768,15 @@ raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
   unsigned char *p;
 
   if(ns->uri) {
+    int xlength;
+    
     uri_string = raptor_uri_as_counted_string(ns->uri, &uri_length);
-    xml_uri_length = raptor_xml_escape_string(ns->nstack->world,
-                                              uri_string, uri_length,
-                                              NULL, 0, quote);
+    xlength = raptor_xml_escape_string(ns->nstack->world,
+                                       uri_string, uri_length,
+                                       NULL, 0, quote);
+    if(xlength < 0)
+      return NULL;
+    xml_uri_length = RAPTOR_GOOD_CAST(size_t, xlength);
   }
 
   /* 8 = length of [[xmlns=""] */
@@ -800,10 +805,14 @@ raptor_namespace_format_as_xml(const raptor_namespace *ns, size_t *length_p)
   *p++ = '=';
   *p++ = quote;
   if(uri_length) {
-    raptor_xml_escape_string(ns->nstack->world,
-                             uri_string, uri_length,
-                             p, xml_uri_length, quote);
-    p += xml_uri_length;
+    int xlength;
+
+    xlength = raptor_xml_escape_string(ns->nstack->world,
+                                       uri_string, uri_length,
+                                       p, xml_uri_length, quote);
+    if(xlength < 0)
+      return NULL;
+    p += RAPTOR_GOOD_CAST(size_t, xlength);
   }
   *p++ = quote;
   /* *p used here since we never need to use value of p again [CLANG] */
