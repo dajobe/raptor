@@ -125,35 +125,39 @@ raptor_log_error(raptor_world* world, raptor_log_level level,
                  raptor_locator* locator, const char* text)
 {
   raptor_log_handler handler;
-  
-  memset(&world->message, '\0', sizeof(world->message));
-  world->message.code = -1;
-  world->message.domain = RAPTOR_DOMAIN_NONE;
-  world->message.level = level;
-  world->message.locator = locator;
-  world->message.text = text;
-  
+
   if(level == RAPTOR_LOG_LEVEL_NONE)
     return;
 
-  if(world->internal_ignore_errors)
-    return;
+  if(world) {
+    if(world->internal_ignore_errors)
+      return;
 
-  handler = world->message_handler;
-  if(handler)
-    /* This is the place in raptor that ALL of the user error handler
-     * functions are called.
-     */
-    handler(world->message_handler_user_data, &world->message);
-  else {
-    if(locator) {
-      raptor_locator_print(locator, stderr);
-      fputc(' ', stderr);
+    memset(&world->message, '\0', sizeof(world->message));
+    world->message.code = -1;
+    world->message.domain = RAPTOR_DOMAIN_NONE;
+    world->message.level = level;
+    world->message.locator = locator;
+    world->message.text = text;
+  
+    handler = world->message_handler;
+    if(handler) {
+      /* This is the place in raptor that ALL of the user error handler
+       * functions are called.
+       */
+      handler(world->message_handler_user_data, &world->message);
+      return;
     }
-    fputs("raptor ", stderr);
-    fputs(raptor_log_level_labels[level], stderr);
-    fputs(" - ", stderr);
-    fputs(text, stderr);
-    fputc('\n', stderr);
   }
+
+  /* default - print it to stderr */
+  if(locator) {
+    raptor_locator_print(locator, stderr);
+    fputc(' ', stderr);
+  }
+  fputs("raptor ", stderr);
+  fputs(raptor_log_level_labels[level], stderr);
+  fputs(" - ", stderr);
+  fputs(text, stderr);
+  fputc('\n', stderr);
 }
