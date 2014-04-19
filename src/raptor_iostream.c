@@ -1350,12 +1350,12 @@ static int
 test_read_from_filename(raptor_world *world,
                         const char* filename, 
                         const char* test_string, size_t test_string_len,
-                        const unsigned int expected_len,
-                        const unsigned int expected_len2)
+                        const int expected_len,
+                        const int expected_len2)
 {
   raptor_iostream *iostr = NULL;
   char buffer[READ_BUFFER_SIZE];
-  unsigned long count;
+  int count;
   int rc = 0;
   const char* const label="read iostream from filename";
 
