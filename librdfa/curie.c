@@ -179,9 +179,11 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
             char* end_index2;
 
             tmpstr = rdfa_replace_string(tmpstr, context->base);
-            end_index2= strrchr(tmpstr, '/');
-            end_index2++;
-            *end_index2 = '\0';
+            end_index2 = strrchr(tmpstr, '/');
+            if(end_index2 != NULL) {
+              end_index2++;
+              *end_index2 = '\0';
+            }
 
             rval = rdfa_join_string(tmpstr, uri);
             free(tmpstr);
