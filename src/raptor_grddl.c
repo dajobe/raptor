@@ -1184,6 +1184,8 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     } else if(flags & MATCH_IS_HARDCODED) {
       RAPTOR_DEBUG2("Got hardcoded XSLT match for %s\n", xpathExpr);
       /* return at first match, that's enough */
+      if(base_uri)
+        raptor_free_uri(base_uri);
       break;
     } else if(uri_string) {
       grddl_xml_context* xml_context;
