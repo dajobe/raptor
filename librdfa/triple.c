@@ -834,7 +834,7 @@ void rdfa_complete_current_property_value_triples(rdfacontext* context)
           * object
           *   current property value */
          rdfalistitem* curie = *pptr;
-         rdftriple* triple = triple = rdfa_create_triple(context->new_subject,
+         rdftriple* triple = rdfa_create_triple(context->new_subject,
             (const char*)curie->data, current_property_value, type,
             context->datatype, context->language);
 
