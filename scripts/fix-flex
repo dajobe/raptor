@@ -115,8 +115,7 @@ EOT
 
   if($cur_function eq $prefix."_switch_to_buffer" ||
      $cur_function eq $prefix."restart" ||
-     $cur_function eq $prefix."push_buffer_state" ||
-     $cur_function eq $prefix."pop_buffer_state" ) {
+     $cur_function eq $prefix."push_buffer_state") {
     if(!exists($fn_state{'seen_ensure'}) &&
        m%^\s*${prefix}ensure_buffer_stack\s*\(%) {
       $fn_state{'seen_ensure'} = 1;
