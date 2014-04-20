@@ -27,7 +27,8 @@ my $debug = 0;
 my $prefix = undef;
 # Current function or undef if out of function
 my $cur_function = undef;
-
+# State for current function for rules to use.
+my(%fn_state);
 
 while(<>) {
   # find lexer prefix
@@ -77,17 +78,19 @@ EOT
   s/yyg->yy_n_chars, \(size_t\) num_to_read \)/yyg->yy_n_chars, num_to_read \)/;
 
 
-  if(/^.*?(${prefix}\w+)\s+\((.*)$/) {
+  if(!defined($cur_function) && /^.*?(${prefix}\w+)\s+\((.*)$/) {
     my($f,$rest)=($1,$2);
     if($rest !~ /;$/) {
       $cur_function=$1;
       warn "$.: Now in $cur_function: $_\n"
 	  if $debug > 1;
+      %fn_state=();
     }
   } elsif(defined($cur_function) && /^\}/) {
     warn "$.: End of $cur_function\n"
 	if $debug > 1;
     $cur_function = undef;
+    %fn_state=();
   }
 
   # Fix declaration of signed 'i' operating over range of yy_size_t
