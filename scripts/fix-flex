@@ -137,5 +137,10 @@ EOT
     }
   }
 
+  if($cur_function eq $prefix.'pop_buffer_state') {
+    # Change last if use of YY_CURRENT_BUFFER macro to unconditional value
+    s%^(\s*if \(\s*)YY_CURRENT_BUFFER(\s*\)\s*\{.*)$%${1}YY_CURRENT_BUFFER_LVALUE${2}%;
+  }
+
   print;
 }
