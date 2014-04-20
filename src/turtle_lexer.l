@@ -138,14 +138,15 @@ static void turtle_lexer_cleanup(yyscan_t yyscanner);
 static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 
 /* fatal error handler declaration */
-#define YY_FATAL_ERROR(msg) do {                                 \
-    turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg); \
-    longjmp(turtle_lexer_fatal_error_longjmp_env, 1);            \
+#define YY_FATAL_ERROR(msg) do {                                  \
+    turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg);   \
+    longjmp(turtle_lexer_fatal_error_longjmp_env, 1);             \
+    abort();                                                      \
 } while(0)
 #else
-#define YY_FATAL_ERROR(msg) do {                                  \
+#define YY_FATAL_ERROR(msg) do {                                   \
     turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg);    \
-    abort();                                                      \
+    abort();                                                       \
 } while(0)
 #endif
  
