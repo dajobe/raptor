@@ -126,11 +126,13 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
 
+#if FLEX_VERSION_DECIMAL < 20536
 /* debian flex 2.5.35-10.1 added these column header prototypes in
  * re-entrant mode.  standard flex omits them
  */
 void turtle_lexer_set_column(int column_no, yyscan_t yyscanner);
 int turtle_lexer_get_column(yyscan_t yyscanner);
+#endif
 
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
 

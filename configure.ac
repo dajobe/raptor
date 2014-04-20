@@ -122,6 +122,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
     AC_MSG_FAILURE(flex not present)
   fi
 fi
+AC_DEFINE_UNQUOTED(FLEX_VERSION_DECIMAL, $FLEX_VERSION_DEC, [Flex version as a decimal])
 
 BISON_MIN_VERSION=3.0.0
 AC_CHECK_PROGS(BISON, bison3 bison)
