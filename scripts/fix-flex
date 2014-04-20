@@ -78,7 +78,8 @@ EOT
   s/yyg->yy_n_chars, \(size_t\) num_to_read \)/yyg->yy_n_chars, num_to_read \)/;
 
 
-  if(!defined($cur_function) && /^.*?(${prefix}\w+)\s+\((.*)$/) {
+  # Match prefixed functions and a couple of static ones starting yy_
+  if(!defined($cur_function) && /^.*?((?:${prefix}|yy_)\w+)\s+\((.*)$/) {
     my($f,$rest)=($1,$2);
     if($rest !~ /;$/) {
       $cur_function=$1;
