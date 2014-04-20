@@ -128,5 +128,15 @@ EOT
     }
   }
 
+  if($cur_function eq 'yy_get_next_buffer') {
+    if(!exists($fn_state{'seen_yyinput'}) &&
+       m%^\s*YY_INPUT\(%) {
+      $fn_state{'seen_yyinput'} = 1;
+    } elsif(exists($fn_state{'seen_yyinput'})) {
+      # Remove dead code after YY_INPUT - which is a return NULL
+      s%^\s*YY_CURRENT_BUFFER_LVALUE->yy_n_chars\s*=\s*yyg->yy_n_chars;%%;
+    }
+  }
+
   print;
 }
