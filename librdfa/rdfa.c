@@ -143,11 +143,10 @@ static size_t rdfa_init_base(
    {
       char* base_start = strstr(*working_buffer, "<base ");
       char* href_start = NULL;
-      if(base_start == NULL) {
+      if(base_start == NULL)
          base_start = strstr(*working_buffer, "<BASE ");
-         if(base_start != NULL)
-           href_start = strstr(base_start, "href=");
-      }
+      if(base_start != NULL)
+        href_start = strstr(base_start, "href=");
       
       if(href_start != NULL)
       {
