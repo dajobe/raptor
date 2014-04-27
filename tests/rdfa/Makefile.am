@@ -95,9 +95,10 @@ ALL_TEST_FILES= \
 # Expected test failures:
 #  0202.xml - @xml:base support in SVG
 #  0203.xml - @xml:base in non-root in SVG
+#  0294.xml - property="xml:" generates a triple but shouldn't
 #  0304.xml - embedded rdf/xml in SVG
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0202.xml 0203.xml"
+EXPECTED_FAILURES=" 0202.xml 0203.xml 0294.xml 0304.xml"
 
 EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
@@ -156,10 +157,12 @@ check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_RDFA)\n\n' >>CMakeTests.txt; \
 	if test "X$$failures" != X; then \
-	  echo "$$failure_count tests FAILED: $$failures"; \
 	  if test "$$failures" = $(EXPECTED_FAILURES); then \
 	    echo "Ignoring expected failures"; \
 	    result=0; \
+	  else \
+	    echo "FAILED: Got $$failures but expected $(EXPECTED_FAILURES)"; \
+	    result=1; \
 	  fi; \
 	fi; \
 	set -e; exit $$result
