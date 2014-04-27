@@ -95,8 +95,6 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 /* Prototypes */ 
 int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 
-/* flex version 2.5.36 released 2012-07-20 added the column header prototypes */
-
 /* Make lex/yacc interface as small as possible */
 #undef yylex
 #define yylex turtle_lexer_lex
@@ -1108,6 +1106,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
   raptor_term* rest_identifier = NULL;
   raptor_term* object = NULL;
   raptor_term* blank = NULL;
+  char const *errmsg = NULL;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("collection\n objectList=");
@@ -1117,10 +1116,10 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   first_identifier = raptor_new_term_from_uri(world, RAPTOR_RDF_first_URI(world));
   if(!first_identifier)
-    goto err_collection;
+    YYERR_MSG_GOTO(err_collection, "Cannot create rdf:first term");
   rest_identifier = raptor_new_term_from_uri(world, RAPTOR_RDF_rest_URI(world));
   if(!rest_identifier)
-    goto err_collection;
+    YYERR_MSG_GOTO(err_collection, "Cannot create rdf:rest term");
   
   /* non-empty property list, handle it  */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -1131,7 +1130,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   object = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
   if(!object)
-    goto err_collection;
+    YYERR_MSG_GOTO(err_collection, "Cannot create rdf:nil term");
 
   for(i = raptor_sequence_size($2)-1; i>=0; i--) {
     raptor_term* temp;
@@ -1140,13 +1139,13 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
     blank_id = raptor_world_generate_bnodeid(rdf_parser->world);
     if(!blank_id)
-      goto err_collection;
+      YYERR_MSG_GOTO(err_collection, "Cannot create bnodeid");
 
     blank = raptor_new_term_from_blank(rdf_parser->world,
                                        blank_id);
     RAPTOR_FREE(char*, blank_id);
     if(!blank)
-      goto err_collection;
+      YYERR_MSG_GOTO(err_collection, "Cannot create bnode");
     
     t2->subject = blank;
     t2->predicate = first_identifier;
@@ -1182,25 +1181,24 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
   $$=object;
 
-  break; /* success */
-
   err_collection:
+  if(errmsg) {
+    if(blank)
+      raptor_free_term(blank);
 
-  if(blank)
-    raptor_free_term(blank);
+    if(object)
+      raptor_free_term(object);
 
-  if(object)
-    raptor_free_term(object);
+    if(rest_identifier)
+      raptor_free_term(rest_identifier);
 
-  if(rest_identifier)
-    raptor_free_term(rest_identifier);
+    if(first_identifier)
+      raptor_free_term(first_identifier);
 
-  if(first_identifier)
-    raptor_free_term(first_identifier);
+    raptor_free_sequence($2);
 
-  raptor_free_sequence($2);
-
-  YYERROR;
+    YYERROR_MSG(errmsg);
+  }
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
