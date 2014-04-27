@@ -1,3 +1,323 @@
+2014-04-27  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa/Makefile.am: Fix failure test and update expected
+	failures: +0294.xml +0349.xml
+
+	* tests/rdfa11/Makefile.am: Echo message when failures are not
+	what expected
+
+	* librdfa/rdfa.c:
+	(rdfa_init_base): Fix <base href > Fixes support broke in commit
+	9447e886ad66a1c3dd2c877341feca639824488a
+
+2014-04-26  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa11/Makefile.am: Fail exit on test failures - broken
+	for a long itme
+
+	* src/turtle_parser.y:
+	(collection): Use YYERR_MSG_GOTO to stop early break and add debug
+	info
+
+	* src/turtle_parser.y: Import header code from turtle-parser.y
+
+2014-04-20  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/turtle_lexer.l: Define FLEX_VERSION_DECIMAL
+	and use to not duplicate column prototypes.
+
+	* scripts/fix-flex: Convert buffer check for PREFIX_restart into
+	simple form
+
+	* scripts/fix-flex: Use YY_CURRENT_BUFFER_LVALUE in
+	PREFIX_pop_buffer_state [coverity CID 29295]
+
+	* scripts/fix-flex: pop_buffer_state does not get changed with
+	rule; delete ref
+
+	* src/turtle_lexer.l: YY_FATAL_ERROR always calls abort() -
+	hopefully coverity notices
+
+	* scripts/fix-flex:
+	Remove dead code after YY_INPUT - which is a
+	return NULL [coverity CID 29302]
+
+	* scripts/fix-flex:
+	Match (static) yy_ prefix functions too
+
+	* scripts/fix-flex:
+	Use YY_CURRENT_BUFFER_LVALUE when ensured ok
+	[coverity CID 29242 29252 29253 29295]
+
+	Rewrite YY_CURRENT_BUFFER to YY_CURRENT_BUFFER_LVALUE in some
+	functions after a PREFIX_ensure_buffer_stack() call has been seen.
+
+	* scripts/fix-flex:
+	Give function processing a state var %fn_state
+
+	* scripts/fix-flex: Cleanups - Figure out lexer prefix from input
+	- Capture current function name in $cur_function - Rewrite some
+	checks to use exact function name - Added $debug var
+
+2014-04-19  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-bison: Set yytoken to non-negative value for
+	[coverity CID 29259]
+
+	* scripts/fix-bison: Add a default value for yyformat for
+	[coverity CID 10838]
+
+	* src/raptor_xml.c: Added coverity[negative_returns] for second
+	use of unichar_len [CID 29257]
+
+	* librdfa/lists.c:
+	(rdfa_complete_list_triples): Init tmp for error path [coverity
+	CID 36737]
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_xpath_match): Free base_uri on error path
+	[coverity CID 34618]
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject): Free iterator on error path [coverity
+	CID 34617]
+
+2014-04-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_rdfxml_item_triples): root_element NULL [coverity
+	CID 34616] (raptor_rss10_emit_rdfxml_item_triples): start xml root_element if
+	not NULL [coverity CID 34616]
+
+	* librdfa/curie.c:
+	(rdfa_resolve_uri): Check end_index2 is not NULL [coverity CID
+	29261]
+
+	* librdfa/lists.c:
+	(rdfa_complete_list_triples):  strdup and strstr output. [coverity
+	CID 29260]
+
+	(rdfa_complete_list_triples): Be careful for strdup and strstr
+	returning NULL. [coverity CID 29260]
+
+	* src/raptor_namespace.c: Check return of raptor_xml_escape_string
+	for errors [coverity CID 29258]
+
+	(raptor_namespace_format_as_xml): Check return values of
+	raptor_xml_escape_string() for negative failure before casting to
+	size_t.
+
+	* src/raptor_iostream.c:
+	(test_read_from_filename): Use int for read bytes values
+
+	* src/raptor_parse.c: Treat raptor_iostream_read_bytes() returning
+	int [coverity CID 29256]
+
+	(raptor_parser_parse_iostream): Treat raptor_iostream_read_bytes()
+	return as int, convert to size_t when it's known to be
+	non-negative. [coverity CID 29256] The real fix is incompatible
+	API change to make iostream return size_t or ssize_t for reads.
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement): Restore *name always [coverity
+	CID 29255]
+
+	* librdfa/rdfa.c:
+	(end_element): Do not call rdfa_complete_list_triples() with no
+	new subject [coverity CID 29254]
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_start_element_common): attribute namespaces
+	[coverity CID 29244]
+
+	(raptor_xml_writer_start_element_common): Process attribute
+	namespaces only if there is a namespace stack [coverity CID 29244]
+
+	* src/raptor_librdfa.c: rdfa requires a base URI [coverity CID
+	29250]
+
+	(raptor_librdfa_parse_start): Add check for base URI
+	(raptor_librdfa_parser_register_factory): Mark 'rdfa' parser needs
+	a base URI.
+
+	* librdfa/triple.c:
+	(rdfa_complete_object_literal_triples) strchr on NULL [coverity CID
+	29429]
+
+	(rdfa_complete_object_literal_triples): Need non NULL
+	context->xml_literal to do strchr() on it [coverity CID 29429]
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement): Remove always 0
+	end_predicate_element [coverity CID 29238]
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_rdfxml_item_triples): Free root_qname in logical
+	place [coverity CID 29236]
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_start_element_common): nstack [coverity CID
+	29244]
+
+	(raptor_xml_writer_start_element_common): Defining xml language
+	declaration requires namespace declarations so add nstack check.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_xpath_match): Check if uri_string is not NULL
+	[coverity CID 29243]
+
+	* src/raptor_log.c:
+	(raptor_log_error): Allow world to be NULL [coverity CID 29241]
+
+	* src/raptor_log.c:
+	(raptor_log_error_varargs): Allow world to be NULL [coverity CID
+	29241]
+
+	* librdfa/triple.c:
+	(rdfa_complete_current_property_value_triples): Remove duplicate
+	variable [coverity CID 29240]
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_parse_chunk): Remove logically dead code [coverity CID
+	29239] loop is always 0 or 1 so don't check for other values.
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_emit_rdfxml_item_triples): Remove logically dead code
+	[coverity CID 29237] No need to test freeing serializer twice.
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_grddl_transform_doc): Check parse start/chunk
+	returns [coverity CID 29235]
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject): check raptor_avltree_iterator_next()
+	return [coverity CID 29234]
+
+2014-04-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c:
+	(raptor_parser_fatal_error): set parser failed if not NULL [coverity
+	CID 29283]
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_start_element_common): nspace_declarations is
+	never NULL on return path [coverity CID 29284]
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_start_element): element is not NULL [coverity CID
+	29285]
+
+	* src/raptor_rss.c:
+	(raptor_rss_end_element_handler): rss_element is never NULL
+	[coverity CID 29286]
+
+	* src/raptor_abbrev.c:
+	(raptor_new_abbrev_subject): Do not use subject->properties on debug
+	path [coverity CID 29287]
+
+	* src/raptor_uri.c:
+	(raptor_uri_counted_filename_to_uri_string): Error path cannot use
+	NULL buffer [coverity CID 29302]
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement): Free object_uri_string always
+	[coverity CID 29269]
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject_collection_items): Free iter on error
+	[coverity CID 29263]
+
+	* src/turtle_lexer.l: Free stringbuffer on error case [coverity
+	CID 29273]
+
+2014-04-16  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/rdfa.c:
+	(rdfa_init_base): Fix uri_start dead code again [coverity CID 29700]
+
+	* src/raptor_abbrev.c:
+	(raptor_new_abbrev_subject): node arg is never NULL [coverity CID
+	29288]
+
+	* src/raptor_qname.c:
+	(raptor_new_qname_from_namespace_local_name): move strlen after
+	local_name NULL check [coverity CID 29289]
+
+	* utils/rdfdiff.c:
+	(main): from_string and to_string are never NULL [coverity CID
+	29290, CID 29291]
+
+	* librdfa/triple.c:
+	(rdfa_complete_object_literal_triples): NULL check for
+	context->xml_literal [coverity CID 29292]
+
+	* src/raptor_serialize_rdfxmla.c:
+	(raptor_rdfxmla_serialize_set_xml_writer): Check xml_writer NULL
+	[coverity CID 29293]
+
+	* src/raptor_log.c:
+	(raptor_log_error_varargs): Can assume world is not NULL [coverity
+	CID 29294]
+
+	* librdfa/rdfa.c:
+	(end_element): Add parent_context check around block [coverity CID
+	29296]
+
+	* librdfa/rdfa.c:
+	(rdfa_init_base): Check for uri_start before use [coverity CID
+	29297]
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_turtle_emit_subject_collection_items): Free iter on error
+	path [coverity CID 29263]
+
+	* src/raptor_parse.c:
+	(raptor_world_guess_parser_name): Free scores on error path
+	[coverity CID 29264]
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_run_recursive): Free ibuffer [coverity CID 29265]
+
+	* src/raptor_rss.c:
+	(raptor_rss_end_element_handler): Free field on error path [coverity
+	CID 29266]
+
+	* src/raptor_rss.c:
+	(raptor_rss_insert_rss_link): Free field on error path [coverity CID
+	29267]
+
+	* src/raptor_serialize_rdfxml.c:
+	(raptor_rdfxml_serialize_statement): Free object_uri_string on error
+	path [coverity CID 29269]
+
+	* src/raptor_serialize_rss.c:
+	(raptor_rss10_serialize_end): Error path entry_uri cleanup [coverity
+	CID 29270]
+
+	* librdfa/lists.c:
+	(rdfa_complete_list_triples): Free bnode after loop [coverity CID
+	29272] Also strdup() the rdf:nil string so it can be freed.
+
+	* src/turtle_lexer.l: Free stringbuffer on error case [coverity
+	CID 29273]
+
+	* docs/raptor-1-to-2-map.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_internal.h, src/raptor_rfc2396.c,
+	src/raptor_uri.c: Added raptor_uri_counted_filename_to_uri_string
+
+	(raptor_uri_counted_filename_to_uri_string): Added based on
+	raptor_uri_filename_to_uri_string.  Updated to properly check the
+	length of the incoming filename and ensure (on unix) that the path
+	buffer is big enough.  Eliminate strcat() calls while here.  For
+	win32, properly calculate the length when there is a :\ in the
+	filename.  RAPTOR_FATAL4 added for debugging URI length failures
+
+	* src/turtle_common.c: (raptor_turtle_expand_name_escapes): arg
+	free on error path [coverity CID 29303]
+
+	(raptor_turtle_expand_name_escapes): Remove RAPTOR_FREE of name
+	argument on error paths - this function does not own name.
+
 2014-03-24  Dave Beckett <dave@dajobe.org>
 
 	* ChangeLog, ChangeLog.14, Makefile.am: ChangeLog.14 for 2013
