@@ -55,22 +55,36 @@
 #include <turtle_common.h>
 
 
+/* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
+#if 0
+#undef RAPTOR_DEBUG
+#define RAPTOR_DEBUG 3
+#endif
+
+
+#define DEBUG_FH stderr
+
 /* Make verbose error messages for syntax errors */
-#ifdef RAPTOR_DEBUG
 #define YYERROR_VERBOSE 1
+
+/* Fail with an debug error message if RAPTOR_DEBUG > 1 */
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+#define YYERROR_MSG(msg) do { fputs("** YYERROR ", DEBUG_FH); fputs(msg, DEBUG_FH); fputc('\n', DEBUG_FH); YYERROR; } while(0)
+#else
+#define YYERROR_MSG(ignore) YYERROR
+#endif
+#define YYERR_MSG_GOTO(label,msg) do { errmsg = msg; goto label; } while(0)
+
+/* Slow down the grammar operation and watch it work */
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
+#undef YYDEBUG
+#define YYDEBUG 1
 #endif
 
 #ifdef RAPTOR_DEBUG
 const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
-
-
-/* Slow down the grammar operation and watch it work */
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-#undef YYDEBUG 1
-#define YYDEBUG 1
-#endif
 
 /* the lexer does not seem to track this */
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
