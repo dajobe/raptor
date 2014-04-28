@@ -7,7 +7,7 @@
 #  perl fix-bison brql_parser.tab.c > $tmp
 #  mv $tmp brql_parser.tab.c
 #
-# Copyright (C) 2004-2006, David Beckett http://www.dajobe.org/
+# Copyright (C) 2004-2014, David Beckett http://www.dajobe.org/
 # Copyright (C) 2004, University of Bristol, UK http://www.bristol.ac.uk/
 #
 
@@ -67,6 +67,22 @@ while(<>) {
   # Fix line numbers.
   my $line=$. +$line_offset;
   s/^(\#line) \d+ (.*)\.tab\.c/$1 $line $2.c/;
+
+  # Remove always false condition
+  if(m%if \(/\*CONSTCOND\*/ 0\)%) {
+    $line_offset--; # skipped a line
+    $_ = <>;
+    $line_offset--; # skipped a line
+    next;
+  }
+
+  # Remove always false condition; this macro is #defined to 0
+  if(m%if \(yytable_value_is_error \(yyn\)\)%) {
+    $line_offset--; # skipped a line
+    $_ = <>;
+    $line_offset--; # skipped a line
+    next;
+  }
 
   print;
 }
