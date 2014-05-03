@@ -86,22 +86,24 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 
-AC_PROG_LEX
-if test "X$LEX" != "X:" ; then
-  if echo "$LEX" | grep flex >/dev/null 2>&1; then
-    :
-  else
-    LEX="$SHELL $missing_dir/missing flex"
-    AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
-    AC_SUBST(LEXLIB, '')
-  fi
-fi
+FLEX_MIN_VERSION=2.5.19
+FLEX_REC_VERSION=2.5.36
 
+# Do not want AM_PROG_LEX which adds 'missing' to LEX if it's not around
+AC_PROG_LEX
+AC_MSG_CHECKING(flex)
 if test "$USE_MAINTAINER_MODE" = yes; then
-  FLEX_MIN_VERSION=2.5.19
-  FLEX_REC_VERSION=2.5.36
-  AC_MSG_CHECKING(flex version)
-  if test "X$LEX" != "X:"; then
+  # maintainer mode - flex is required
+  if test "X$LEX" = "X:" ; then
+    AC_MSG_RESULT(not present)
+    AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
+    AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
+    AC_MSG_FAILURE(flex not present)
+  fi
+
+  # some kind of lexer is present
+  if echo "$LEX" | grep flex >/dev/null 2>&1; then
+    # flex is present
     FLEX_VERSION=`$LEX -V 2>&1 | $AWK '{print $2}'`
     FLEX_VERSION_DEC=`echo $FLEX_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 
@@ -113,16 +115,24 @@ if test "$USE_MAINTAINER_MODE" = yes; then
       AC_MSG_RESULT(version $FLEX_VERSION - too old)
       AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
       AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-      AC_MSG_FAILURE(flex too old)
+      AC_MSG_FAILURE(flex is too old)
     fi
   else
-    AC_MSG_RESULT(not present)
+    AC_MSG_RESULT(present - but is not flex)
     AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
     AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
-    AC_MSG_FAILURE(flex not present)
+    AC_MSG_FAILURE($LEX is not not flex)
   fi
+else
+  # not maintainer mode; flex is not required
+  AC_MSG_RESULT(not present - not required for non maintainer builds)
+  LEX="$SHELL $missing_dir/missing flex"
+  AC_SUBST(LEX_OUTPUT_ROOT, lex.yy)
+  AC_SUBST(LEXLIB, '')
+  FLEX_VERSION_DEC=00000
 fi
 AC_DEFINE_UNQUOTED(FLEX_VERSION_DECIMAL, $FLEX_VERSION_DEC, [Flex version as a decimal])
+
 
 BISON_MIN_VERSION=3.0.0
 AC_CHECK_PROGS(BISON, bison3 bison)
