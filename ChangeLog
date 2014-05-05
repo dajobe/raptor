@@ -1,3 +1,7 @@
+2014-05-05  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_14 for 2.0.14 release (GIT 93bc8ef8fa1c0b6b4278412f5d12e558b70db708)
+
 2014-05-03  Dave Beckett <dave@dajobe.org>
 
 	* configure.ac: Import flex check from rasqal
