@@ -1,3 +1,11 @@
+2014-05-03  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Import flex check from rasqal
+
+2014-04-28  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-bison: Remove dead code from bison output
+
 2014-04-27  Dave Beckett <dave@dajobe.org>
 
 	* tests/rdfa/Makefile.am: Fix failure test and update expected
