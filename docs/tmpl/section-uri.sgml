@@ -242,6 +242,16 @@ current access to internals of URIs such as URI scheme, path, authority.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_uri_counted_filename_to_uri_string ##### -->
+<para>
+
+</para>
+
+@filename: 
+@filename_len: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_uri_filename_to_uri_string ##### -->
 <para>
 
