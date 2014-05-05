@@ -633,7 +633,7 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
 
 
 /**
- * raptor_uri_filename_to_uri_string:
+ * raptor_uri_counted_filename_to_uri_string:
  * @filename: The filename to convert
  * @filename_len: length of @filename or 0 to count it here
  *
