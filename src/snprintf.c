@@ -303,6 +303,8 @@ static const char digits[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
  * If @buffer is NULL or the @bufsize is too small, the number of
  * bytes needed (excluding NUL) is returned and no formatting is done.
  *
+ * NOTE: Does NOT add a '\0' at end of string.
+ *
  * Return value: number of bytes needed or written (excluding NUL) or 0 on failure
  */
 size_t

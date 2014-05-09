@@ -77,14 +77,14 @@ raptor_locator_print(raptor_locator* locator, FILE *stream)
 /**
  * raptor_locator_format:
  * @buffer: buffer to store format
- * @length: size of buffer
+ * @length: size of buffer (excluding NUL)
  * @locator: #raptor_locator to format
  *
  * Format a raptor locator as a string.
  * 
- * If buffer is NULL or length is insufficient for the size of
+ * If buffer is NULL or @length is insufficient for the size of
  * the locator, returns the number of additional bytes required
- * in the buffer to write the locator.
+ * in the buffer to write the locator.  Writes a terminating '\0'.
  * 
  * Return value: 0 on success, >0 if additional bytes required in buffer, <0 on failure
  **/
@@ -141,18 +141,19 @@ raptor_locator_format(char *buffer, size_t length, raptor_locator* locator)
   buffer += value_len;
   
   if(locator->line > 0) {
-    *buffer ++ = ':';
+    *buffer ++= ':';
     buffer += raptor_format_integer(buffer, length,
                                     locator->line, /* base */ 10,
                                     -1, '\0');
     if(locator->column >= 0) {
       memcpy(buffer, COLUMN_STR, COLUMN_STR_LEN);
       buffer += COLUMN_STR_LEN;
-      (void)raptor_format_integer(buffer, length, 
-                                  locator->column, /* base */ 10,
-                                  -1, '\0');
+      buffer += raptor_format_integer(buffer, length,
+                                      locator->column, /* base */ 10,
+                                      -1, '\0');
     }
   }
+  *buffer = '\0';
 
   return 0;
 }
