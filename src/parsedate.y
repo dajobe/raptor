@@ -264,7 +264,7 @@ zonepart_numeric_without_colon: tSNUMBER {
 		/* format: [+-]hhmm */
 		if($1 <= -100 || $1 >= 100) {
 			((struct date_yy *)parm)->yyTimezone = (-$1 / 100) * 60 + (-$1 % 100);
-		} else if($1 >= -99 || $1 <= 99) {
+		} else if($1 >= -99 && $1 <= 99) {
 			((struct date_yy *)parm)->yyTimezone = -$1 * 60;
 		}
 	}
@@ -476,8 +476,8 @@ iso8601time:
 			i %= 100;
 			((struct date_yy *)parm)->yyMinutes = i;
 	    	((struct date_yy *)parm)->yySeconds = 0;
-		} else if(i >= -99 || i <= 99) {
-			((struct date_yy *)parm)->yyHour = $1;
+		} else if(i >= -99 && i <= 99) {
+			((struct date_yy *)parm)->yyHour = i;
 			((struct date_yy *)parm)->yyMinutes = 0;
 	    	((struct date_yy *)parm)->yySeconds = 0;
 		} else {
