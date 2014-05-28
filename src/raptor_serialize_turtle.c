@@ -132,20 +132,56 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   
   prefix_name = qname->nspace ? (const char*)qname->nspace->prefix : NULL;
   if(prefix_name) {
-    /* prefixName: must have leading [A-Z][a-z][0-9] (nameStartChar - '_')  */
-    /* prefixName: no . anywhere */
-    if(!(isalpha((int)*prefix_name) || isdigit((int)*prefix_name)) ||
-       strchr(prefix_name, '.'))
+    const char *pn;
+
+    /* from http://www.w3.org/TR/2011/WD-turtle-20110809/#term-turtle2-PN_PREFIX
+     * <PN_PREFIX> ::= PN_CHARS_BASE ( ( PN_CHARS | "." )* PN_CHARS )?
+     * i.e. must begin with [A-Z][a-z] or some unicode alphas,
+     * then [A-Z][a-z][0-9][-_.], and end with [A-Z][a-z][0-9][-_] */
+    if(!(isalpha((int)*prefix_name))) {
       return 0;
+    }
+
+    for (pn = prefix_name + 1; *pn; pn++) {
+      if (!(isalpha((int)*pn) || isdigit((int)*pn) ||
+            *pn == '_' || *pn == '-' || *pn == '.' ||
+            /* we don't want to deal with all the unicode issues,
+             * just allow all characters */
+            *pn > '\x7f')) {
+        return 0;
+      }
+    }
+
+    /* check last character again, no final . allowed */
+    if (*--pn == '.') {
+      return 0;
+    }
   }
 
   local_name = (const char*)qname->local_name;
   if(local_name) {
-    /* nameStartChar: must have leading [A-Z][a-z][0-9]_  */
-    /* nameChar: no . anywhere */
-    if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_') ||
-       strchr(local_name, '.'))
+    const char *ln;
+
+    /* from http://www.w3.org/TR/2011/WD-turtle-20110809/#term-turtle2-PN_LOCAL
+     * <PN_PREFIX> ::= ( PN_CHARS_U | [0-9] ) ( ( PN_CHARS | "." )* PN_CHARS )?
+     * pretty much like the prefix, but leading digits or underscores are ok */
+    if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_'))
       return 0;
+
+    for (ln = local_name + 1; *ln; ln++) {
+      if (!(isalpha((int)*ln) || isdigit((int)*ln) ||
+            *ln == '_' || *ln == '-' || *ln == '.' ||
+            /* we don't want to deal with all the unicode issues,
+             * just allow all characters */
+            *ln > '\x7f')) {
+        return 0;
+      }
+    }
+
+    /* check last character again, no final . allowed */
+    if (*--ln == '.') {
+      return 0;
+    }
   }
   
   return 1;
