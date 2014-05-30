@@ -151,14 +151,16 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
 /* raptor unicode/utf8 helpers */
 typedef long unsigned int xwchar_t;
 
-static size_t
-xmbtowc(xwchar_t *out, const char *s)
+static xwchar_t
+xmbtowc(const char **sp)
 {
-/* like C99's mbrtowc() without state */
+/* like C99's mbrtowc() without state and return wchar_t directly */
   size_t z = 1U;
+  xwchar_t out;
+  const char *s = *sp;
 
   if (*s <= '\x80') {
-    *out = (xwchar_t)*s;
+    out = (xwchar_t)*s;
   } else if (*s < '\xc2') {
     /* illegal */
     goto ill;
@@ -168,9 +170,9 @@ xmbtowc(xwchar_t *out, const char *s)
       /* continuation marker missing */
       goto ill;
     }
-    *out = (unsigned char)*s & 0x1fU;
-    *out <<= 6U;
-    *out |= (unsigned char)s[1U] & 0x3fU;
+    out = (unsigned char)*s & 0x1fU;
+    out <<= 6U;
+    out |= (unsigned char)s[1U] & 0x3fU;
     z = 2U;
   } else if (*s < '\xf0') {
     /* 3-byte sequence, 1110 xxxx  10xx xxxx times 2 */
@@ -181,11 +183,11 @@ xmbtowc(xwchar_t *out, const char *s)
       /* continuation marker missing */
       goto ill;
     }
-    *out = (unsigned char)*s & 0x0fU;
-    *out <<= 6U;
-    *out |= (unsigned char)s[1U] & 0x3fU;
-    *out <<= 6U;
-    *out |= (unsigned char)s[2U] & 0x3fU;
+    out = (unsigned char)*s & 0x0fU;
+    out <<= 6U;
+    out |= (unsigned char)s[1U] & 0x3fU;
+    out <<= 6U;
+    out |= (unsigned char)s[2U] & 0x3fU;
     z = 3U;
   } else if (*s < '\xf4') {
     /* 4-byte sequence, 1111 00xx  10xx xxxx times 3 */
@@ -199,19 +201,20 @@ xmbtowc(xwchar_t *out, const char *s)
       /* continuation marker missing */
       goto ill;
     }
-    *out = (unsigned char)*s & 0x03U;
-    *out <<= 6U;
-    *out |= (unsigned char)s[1U] & 0x3fU;
-    *out <<= 6U;
-    *out |= (unsigned char)s[2U] & 0x3fU;
-    *out <<= 6U;
-    *out |= (unsigned char)s[3U] & 0x3fU;
+    out = (unsigned char)*s & 0x03U;
+    out <<= 6U;
+    out |= (unsigned char)s[1U] & 0x3fU;
+    out <<= 6U;
+    out |= (unsigned char)s[2U] & 0x3fU;
+    out <<= 6U;
+    out |= (unsigned char)s[3U] & 0x3fU;
     z = 4U;
   } else {
       ill:
-    *out = 0U;
+    out = 0U;
   }
-  return z;
+  *sp += z;
+  return out;
 }
 
 static int
@@ -251,6 +254,49 @@ is_pn_chars(xwchar_t wc)
 }
 
 static int
+is_percent(const char **s)
+{
+/* percent requires 2 hex digits */
+  if (!isxdigit((int)(*s)[0U]) || !isxdigit((int)(*s)[1U])) {
+    return 0;
+  }
+  *s += 2U;
+  return 1;
+}
+
+static int
+is_local_esc(const char **s)
+{
+  switch (**s) {
+  case '_':
+  case '~':
+  case '.':
+  case '-':
+  case '!':
+  case '$':
+  case '&':
+  case '\'':
+  case '(':
+  case ')':
+  case '*':
+  case '+':
+  case ',':
+  case ';':
+  case '=':
+  case '/':
+  case '?':
+  case '#':
+  case '@':
+  case '%':
+    *s++;
+    return 1;
+  default:
+    break;
+  }
+  return 0;
+}
+
+static int
 raptor_turtle_is_legal_pn_prefix(const char *prefix)
 {
   const char *pn = prefix;
@@ -260,13 +306,13 @@ raptor_turtle_is_legal_pn_prefix(const char *prefix)
    * <PN_PREFIX> ::= PN_CHARS_BASE ( ( PN_CHARS | "." )* PN_CHARS )?
    * i.e. must begin with [A-Z][a-z] or some unicode alphas,
    * then [A-Z][a-z][0-9][-_.], and end with [A-Z][a-z][0-9][-_] */
-  pn += xmbtowc(&wc, pn);
+  wc = xmbtowc(&pn);
   if (!is_pn_chars_base(wc)) {
     return 0;
   }
 
   while (*pn) {
-    pn += xmbtowc(&wc, pn);
+    wc = xmbtowc(&pn);
     if (!(is_pn_chars(wc) || wc == (xwchar_t)'.')) {
       return 0;
     }
@@ -289,14 +335,16 @@ raptor_turtle_is_legal_pn_local(const char *local)
   /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_LOCAL
    * PN_LOCAL ::= (PN_CHARS_U | ':' | [0-9] | PLX)
    *              ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))? */
-  ln += xmbtowc(&wc, ln);
+  wc = xmbtowc(&ln);
   if (!(is_pn_chars_u(wc) || wc == (xwchar_t)':' ||
-        (wc >= (xwchar_t)'0' && wc <= (xwchar_t)'9'))) {
+        (wc >= (xwchar_t)'0' && wc <= (xwchar_t)'9') ||
+        (wc == (xwchar_t)'%' && is_percent(&ln)) ||
+        (wc == (xwchar_t)'\\' && is_local_esc(&ln)))) {
     return 0;
   }
 
   while (*ln) {
-    ln += xmbtowc(&wc, ln);
+    wc = xmbtowc(&ln);
     if (!(is_pn_chars(wc) || wc == (xwchar_t)'.' || wc == (xwchar_t)':')) {
       return 0;
     }
