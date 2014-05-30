@@ -1,0 +1,2 @@
+@prefix a_0_b: <http://a.example/>.
+a_0_b:s <http://a.example/p> <http://a.example/o> .

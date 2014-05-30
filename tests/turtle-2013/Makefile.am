@@ -182,7 +182,12 @@ TEST_BAD_FILES = \
   turtle-syntax-bad-ns-dot-end.ttl \
   turtle-syntax-bad-ns-dot-start.ttl \
   turtle-syntax-bad-missing-ns-dot-end.ttl \
-  turtle-syntax-bad-missing-ns-dot-start.ttl
+  turtle-syntax-bad-missing-ns-dot-start.ttl \
+  prefix_with_trailing_dots.ttl \
+  localName_with_trailing_dots.ttl \
+  localName_with_illegal_unicode.ttl \
+  localName_with_illegal_PLX.ttl \
+  localName_with_illegal_PN_LOCAL_ESC.ttl
 
 TEST_EVAL_FILES = \
   IRI_subject.ttl \
@@ -197,6 +202,8 @@ TEST_EVAL_FILES = \
   prefix_only_IRI.ttl \
   prefix_with_PN_CHARS_BASE_character_boundaries.ttl \
   prefix_with_non_leading_extras.ttl \
+  prefix_with_dots_inside.ttl \
+  prefix_with_underscores_inside.ttl \
   localName_with_assigned_nfc_bmp_PN_CHARS_BASE_char_boundaries.ttl \
   localName_with_assigned_nfc_PN_CHARS_BASE_character_boundaries.ttl \
   localName_with_nfc_PN_CHARS_BASE_character_boundaries.ttl \
@@ -210,6 +217,8 @@ TEST_EVAL_FILES = \
   localName_with_leading_underscore.ttl \
   localName_with_leading_digit.ttl \
   localName_with_non_leading_extras.ttl \
+  localName_with_PLX.ttl \
+  localName_with_PN_LOCAL_ESC.ttl \
   old_style_base.ttl \
   SPARQL_style_base.ttl \
   labeled_blank_node_subject.ttl \
@@ -406,6 +415,9 @@ TEST_OUT_FILES = \
   localName_with_leading_underscore.nt \
   localName_with_nfc_PN_CHARS_BASE_character_boundaries.nt \
   localName_with_non_leading_extras.nt \
+  localName_with_leading_colon.nt \
+  localName_with_PLX.nt \
+  localName_with_PN_LOCAL_ESCAPE.nt \
   localname_with_COLON.nt \
   negative_numeric.nt \
   nested_blankNodePropertyLists.nt \
@@ -423,6 +435,8 @@ TEST_OUT_FILES = \
   prefix_reassigned_and_used.nt \
   prefix_with_PN_CHARS_BASE_character_boundaries.nt \
   prefix_with_non_leading_extras.nt \
+  prefix_with_dots_inside.nt \
+  prefix_with_underscores_inside.nt \
   prefixed_IRI_object.nt \
   prefixed_IRI_predicate.nt \
   prefixed_name_datatype.nt \
