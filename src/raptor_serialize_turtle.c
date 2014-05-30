@@ -121,6 +121,11 @@ static int raptor_turtle_serialize_end(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
 
 
+/* helpers for turtle grammar */
+static int raptor_turtle_is_legal_pn_prefix(const char *prefix);
+static int raptor_turtle_is_legal_pn_local(const char *local);
+
+
 int
 raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
 {
@@ -129,61 +134,179 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   
   if(!qname)
     return 0;
-  
+
   prefix_name = qname->nspace ? (const char*)qname->nspace->prefix : NULL;
-  if(prefix_name) {
-    const char *pn;
-
-    /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_PREFIX
-     * <PN_PREFIX> ::= PN_CHARS_BASE ( ( PN_CHARS | "." )* PN_CHARS )?
-     * i.e. must begin with [A-Z][a-z] or some unicode alphas,
-     * then [A-Z][a-z][0-9][-_.], and end with [A-Z][a-z][0-9][-_] */
-    if(!(isalpha((int)*prefix_name))) {
-      return 0;
-    }
-
-    for (pn = prefix_name + 1; *pn; pn++) {
-      if (!(isalpha((int)*pn) || isdigit((int)*pn) ||
-            *pn == '_' || *pn == '-' || *pn == '.' ||
-            /* we don't want to deal with all the unicode issues,
-             * just allow all characters */
-            *pn > '\x7f')) {
-        return 0;
-      }
-    }
-
-    /* check last character again, no final . allowed */
-    if (*--pn == '.') {
-      return 0;
-    }
+  if(prefix_name && !raptor_turtle_is_legal_pn_prefix(prefix_name)) {
+    return 0;
   }
 
   local_name = (const char*)qname->local_name;
-  if(local_name) {
-    const char *ln;
+  if(local_name && !raptor_turtle_is_legal_pn_local(local_name)) {
+    return 0;
+  }
 
-    /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_LOCAL
-     * <PN_PREFIX> ::= ( PN_CHARS_U | [0-9] ) ( ( PN_CHARS | "." )* PN_CHARS )?
-     * pretty much like the prefix, but leading digits or underscores are ok */
-    if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_'))
-      return 0;
+  return 1;
+}
 
-    for (ln = local_name + 1; *ln; ln++) {
-      if (!(isalpha((int)*ln) || isdigit((int)*ln) ||
-            *ln == '_' || *ln == '-' || *ln == '.' ||
-            /* we don't want to deal with all the unicode issues,
-             * just allow all characters */
-            *ln > '\x7f')) {
-        return 0;
-      }
+/* raptor unicode/utf8 helpers */
+typedef long unsigned int xwchar_t;
+
+static size_t
+xmbtowc(xwchar_t *out, const char *s)
+{
+/* like C99's mbrtowc() without state */
+  size_t z = 1U;
+
+  if (*s <= '\x80') {
+    *out = (xwchar_t)*s;
+  } else if (*s < '\xc2') {
+    /* illegal */
+    goto ill;
+  } else if (*s < '\xe0') {
+    /* 2-byte sequence, 110x xxxx  10xx xxxx */
+    if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
     }
+    *out = (unsigned char)*s & 0x1fU;
+    *out <<= 6U;
+    *out |= (unsigned char)s[1U] & 0x3fU;
+    z = 2U;
+  } else if (*s < '\xf0') {
+    /* 3-byte sequence, 1110 xxxx  10xx xxxx times 2 */
+    if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
+    } else if (((unsigned char)s[2U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
+    }
+    *out = (unsigned char)*s & 0x0fU;
+    *out <<= 6U;
+    *out |= (unsigned char)s[1U] & 0x3fU;
+    *out <<= 6U;
+    *out |= (unsigned char)s[2U] & 0x3fU;
+    z = 3U;
+  } else if (*s < '\xf4') {
+    /* 4-byte sequence, 1111 00xx  10xx xxxx times 3 */
+    if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
+    } else if (((unsigned char)s[2U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
+    } else if (((unsigned char)s[3U] & 0xc0U) != 0x80U) {
+      /* continuation marker missing */
+      goto ill;
+    }
+    *out = (unsigned char)*s & 0x03U;
+    *out <<= 6U;
+    *out |= (unsigned char)s[1U] & 0x3fU;
+    *out <<= 6U;
+    *out |= (unsigned char)s[2U] & 0x3fU;
+    *out <<= 6U;
+    *out |= (unsigned char)s[3U] & 0x3fU;
+    z = 4U;
+  } else {
+      ill:
+    *out = 0U;
+  }
+  return z;
+}
 
-    /* check last character again, no final . allowed */
-    if (*--ln == '.') {
+static int
+is_pn_chars_base(xwchar_t wc)
+{
+  return (wc >= (xwchar_t)'A' && wc <= (xwchar_t)'Z') ||
+    (wc >= (xwchar_t)'a' && wc <= (xwchar_t)'z') ||
+    (wc >= 0x00C0U && wc <= 0x00D6U) ||
+    (wc >= 0x00D8U && wc <= 0x00F6U) ||
+    (wc >= 0x00F8U && wc <= 0x02FFU) ||
+    (wc >= 0x0370U && wc <= 0x037DU) ||
+    (wc >= 0x037FU && wc <= 0x1FFFU) ||
+    (wc >= 0x200CU && wc <= 0x200DU) ||
+    (wc >= 0x2070U && wc <= 0x218FU) ||
+    (wc >= 0x2C00U && wc <= 0x2FEFU) ||
+    (wc >= 0x3001U && wc <= 0xD7FFU) ||
+    (wc >= 0xF900U && wc <= 0xFDCFU) ||
+    (wc >= 0xFDF0U && wc <= 0xFFFDU) ||
+    (wc >= 0x10000U && wc <= 0xEFFFFU);
+}
+
+static int
+is_pn_chars_u(xwchar_t wc)
+{
+  return is_pn_chars_base(wc) || wc == (xwchar_t)'_';
+}
+
+static int
+is_pn_chars(xwchar_t wc)
+{
+  return is_pn_chars_u(wc) ||
+    wc == (xwchar_t)'-' ||
+    (wc >= (xwchar_t)'0' && wc <= (xwchar_t)'9') ||
+    wc == 0x00B7U ||
+    (wc >= 0x0300U && wc <= 0x036FU) ||
+    (wc >= 0x203FU && wc <= 0x2040);
+}
+
+static int
+raptor_turtle_is_legal_pn_prefix(const char *prefix)
+{
+  const char *pn = prefix;
+  xwchar_t wc;
+
+  /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_PREFIX
+   * <PN_PREFIX> ::= PN_CHARS_BASE ( ( PN_CHARS | "." )* PN_CHARS )?
+   * i.e. must begin with [A-Z][a-z] or some unicode alphas,
+   * then [A-Z][a-z][0-9][-_.], and end with [A-Z][a-z][0-9][-_] */
+  pn += xmbtowc(&wc, pn);
+  if (!is_pn_chars_base(wc)) {
+    return 0;
+  }
+
+  while (*pn) {
+    pn += xmbtowc(&wc, pn);
+    if (!(is_pn_chars(wc) || wc == (xwchar_t)'.')) {
       return 0;
     }
   }
-  
+
+  /* check last character again, no final . allowed */
+  if (wc == (xwchar_t)'.') {
+    return 0;
+  }
+
+  return 1;
+}
+
+static int
+raptor_turtle_is_legal_pn_local(const char *local)
+{
+  const char *ln = local;
+  xwchar_t wc;
+
+  /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_LOCAL
+   * PN_LOCAL ::= (PN_CHARS_U | ':' | [0-9] | PLX)
+   *              ((PN_CHARS | '.' | ':' | PLX)* (PN_CHARS | ':' | PLX))? */
+  ln += xmbtowc(&wc, ln);
+  if (!(is_pn_chars_u(wc) || wc == (xwchar_t)':' ||
+        (wc >= (xwchar_t)'0' && wc <= (xwchar_t)'9'))) {
+    return 0;
+  }
+
+  while (*ln) {
+    ln += xmbtowc(&wc, ln);
+    if (!(is_pn_chars(wc) || wc == (xwchar_t)'.' || wc == (xwchar_t)':')) {
+      return 0;
+    }
+  }
+
+  /* check last character again, no final . allowed */
+  if (wc == (xwchar_t)'.') {
+    return 0;
+  }
+
   return 1;
 }
     
