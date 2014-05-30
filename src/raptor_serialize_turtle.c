@@ -134,7 +134,7 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   if(prefix_name) {
     const char *pn;
 
-    /* from http://www.w3.org/TR/2011/WD-turtle-20110809/#term-turtle2-PN_PREFIX
+    /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_PREFIX
      * <PN_PREFIX> ::= PN_CHARS_BASE ( ( PN_CHARS | "." )* PN_CHARS )?
      * i.e. must begin with [A-Z][a-z] or some unicode alphas,
      * then [A-Z][a-z][0-9][-_.], and end with [A-Z][a-z][0-9][-_] */
@@ -162,7 +162,7 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   if(local_name) {
     const char *ln;
 
-    /* from http://www.w3.org/TR/2011/WD-turtle-20110809/#term-turtle2-PN_LOCAL
+    /* from http://www.w3.org/TR/2014/REC-turtle-20140225/#grammar-production-PN_LOCAL
      * <PN_PREFIX> ::= ( PN_CHARS_U | [0-9] ) ( ( PN_CHARS | "." )* PN_CHARS )?
      * pretty much like the prefix, but leading digits or underscores are ok */
     if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_'))
