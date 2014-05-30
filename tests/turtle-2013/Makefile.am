@@ -185,7 +185,6 @@ TEST_BAD_FILES = \
   turtle-syntax-bad-missing-ns-dot-start.ttl \
   prefix_with_trailing_dots.ttl \
   localName_with_trailing_dots.ttl \
-  localName_with_illegal_unicode.ttl \
   localName_with_illegal_PLX.ttl \
   localName_with_illegal_PN_LOCAL_ESC.ttl
 
