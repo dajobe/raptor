@@ -157,14 +157,14 @@ xmbtowc(const char **sp)
 /* like C99's mbrtowc() without state and return wchar_t directly */
   size_t z = 1U;
   xwchar_t out;
-  const char *s = *sp;
+  const unsigned char *s = (const unsigned char*)*sp;
 
-  if (*s <= '\x80') {
+  if (*s <= 0x80U) {
     out = (xwchar_t)*s;
-  } else if (*s < '\xc2') {
+  } else if (*s < 0xc2U) {
     /* illegal */
     goto ill;
-  } else if (*s < '\xe0') {
+  } else if (*s < 0xe0U) {
     /* 2-byte sequence, 110x xxxx  10xx xxxx */
     if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
       /* continuation marker missing */
@@ -174,7 +174,7 @@ xmbtowc(const char **sp)
     out <<= 6U;
     out |= (unsigned char)s[1U] & 0x3fU;
     z = 2U;
-  } else if (*s < '\xf0') {
+  } else if (*s < 0xf0U) {
     /* 3-byte sequence, 1110 xxxx  10xx xxxx times 2 */
     if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
       /* continuation marker missing */
@@ -189,7 +189,7 @@ xmbtowc(const char **sp)
     out <<= 6U;
     out |= (unsigned char)s[2U] & 0x3fU;
     z = 3U;
-  } else if (*s < '\xf4') {
+  } else if (*s < 0xf4U) {
     /* 4-byte sequence, 1111 00xx  10xx xxxx times 3 */
     if (((unsigned char)s[1U] & 0xc0U) != 0x80U) {
       /* continuation marker missing */
