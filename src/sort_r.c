@@ -96,14 +96,17 @@ of the region to invert (inclusive).
 */
 static int sort_r_cmp(const void *aa, const void *bb, void *arg)
 {
-  const int *a = aa, *b = bb, *interval = arg;
+  const int *a = (const int*)aa;
+  const int *b = (cosnt int*)bb;
+  const int *interval = (const int*)arg;
   int cmp = *a - *b;
   int inv_start = interval[0], inv_end = interval[1];
   char norm = (*a < inv_start || *a > inv_end || *b < inv_start || *b > inv_end);
   return norm ? cmp : -cmp;
 }
 
-int main()
+int
+main(int argc, char *argv[])
 {
   int i;
   /* sort 1..19, 30..20, 30..100 */
