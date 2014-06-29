@@ -77,7 +77,7 @@ raptor_json_writer.c raptor_memstr.c raptor_concepts.c \
 raptor_syntax_description.c \
 raptor_sax2.c raptor_escaped.c \
 raptor_ntriples.c \
-sort_r.c sort_r.h
+sort_r.c sort_r.h ssort.h
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c
 endif
