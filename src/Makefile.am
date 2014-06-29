@@ -34,7 +34,7 @@ raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
 raptor_turtle_writer_test raptor_avltree_test raptor_term_test \
-raptor_permute_test raptor_snprintf_test
+raptor_permute_test raptor_snprintf_test raptor_sort_r_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
 endif
@@ -76,7 +76,8 @@ raptor_turtle_writer.c raptor_avltree.c snprintf.c \
 raptor_json_writer.c raptor_memstr.c raptor_concepts.c \
 raptor_syntax_description.c \
 raptor_sax2.c raptor_escaped.c \
-raptor_ntriples.c
+raptor_ntriples.c \
+sort_r.c sort_r.h
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c
 endif
@@ -286,6 +287,9 @@ raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2.la
 
 raptor_snprintf_test: $(srcdir)/snprintf.c libraptor2.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/snprintf.c libraptor2.la $(LIBS)
+
+raptor_sort_r_test: $(srcdir)/sort_r.c libraptor2.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/sort_r.c libraptor2.la $(LIBS)
 
 $(top_builddir)/librdfa/librdfa.la:
 	cd $(top_builddir)/librdfa && $(MAKE) librdfa.la 
