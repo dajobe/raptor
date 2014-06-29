@@ -32,6 +32,8 @@
 
 /* Raptor includes */
 #include "raptor2.h"
+#include "raptor_internal.h"
+
 
 #ifndef STANDALONE
 
@@ -108,6 +110,8 @@ static int sort_r_cmp(const void *aa, const void *bb, void *arg)
 int
 main(int argc, char *argv[])
 {
+  const char *program = raptor_basename(argv[0]);
+
   int i;
   /* sort 1..19, 30..20, 30..100 */
   int arr[18] = {1, 5, 28, 4, 3, 2, 10, 20, 18, 25, 21, 29, 34, 35, 14, 100, 27, 19};
@@ -115,16 +119,20 @@ main(int argc, char *argv[])
 
   /* Region to invert: 20-30 (inclusive) */
   int interval[2] = {20, 30};
+  int failures = 0;
+
   raptor_sort_r(arr, 18, sizeof(int), sort_r_cmp, interval);
 
-  /* Print results */
-  for(i = 0; i < 18; i++) printf(" %i", arr[i]);
-  printf("\n");
-
   /* Check PASS/FAIL */
-  for(i = 0; i < 18 && arr[i] == tru[i]; i++);
-  printf("return: %s\n", i == 18 ? "PASS" : "FAIL");
-  return i == 18 ? EXIT_SUCCESS : EXIT_FAILURE;
+  for(i = 0; i < 18; i++) {
+    if(arr[i] != tru[i]) {
+      printf("%s: sort_r() result %i: got %d expected %d", program, 
+             i, arr[i], tru[i]);
+      failures++;
+    }
+  }
+  
+  return failures;
 }
 
 #endif
