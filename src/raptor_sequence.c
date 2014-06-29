@@ -552,7 +552,8 @@ raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare)
  **/
 RAPTOR_EXTERN_C
 void
-raptor_sequence_sort_r(raptor_sequence* seq, raptor_sort_r_compare compare,
+raptor_sequence_sort_r(raptor_sequence* seq,
+                       raptor_data_compare_arg_handler compare,
                        void* user_data)
 {
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);

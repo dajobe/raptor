@@ -426,8 +426,8 @@
 2.0.10	-	-	-	2.0.11	unsigned char*	raptor_qname_format_as_xml	(const raptor_qname *qname, size_t *length_p)	-
 2.0.11	-	-	-	2.0.12	raptor_term*	raptor_new_term_from_counted_string	(raptor_world* world, unsigned char* string, size_t length)	-
 2.0.13	-	-	-	2.0.14	unsigned char*	raptor_uri_counted_filename_to_uri_string	(const char *filename, size_t filename_len)	-
-2.0.14	-	-	-	2.0.15	void	raptor_sort_r	(void *base, size_t nel, size_t width, raptor_sort_r_compare compar, void *user_data)	-
-2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_sort_r_compare compare, void* user_data)	Uses raptor_sort_r() internally.
+2.0.14	-	-	-	2.0.15	void	raptor_sort_r	(void *base, size_t nel, size_t width, raptor_data_compare_arg_handler compar, void *user_data)	-
+2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_data_compare_arg_handler compare, void* user_data)	Uses raptor_sort_r() internally.
 #
 # Types
 #
@@ -483,6 +483,7 @@
 1.4.21	type	-	-	2.0.0	type	raptor_term_value	-	-
 1.4.21	type	-	-	2.0.0	type	raptor_type_q	-	-
 2.0.9	type	-	-	2.0.10	type	raptor_escaped_write_bitflags	-	-
+2.0.14	type	-	-	2.0.15	type	raptor_data_compare_arg_handler	-	Used by raptor_sort_r()
 #
 # Enums
 #

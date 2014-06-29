@@ -929,16 +929,20 @@ typedef enum {
 
 
 /**
- * raptor_sort_r_compare:
+ * raptor_data_compare_arg_handler:
  * @data1: first object
  * @data2: second object
  * @user_data: user data argument
  *
- * Function to compare two data objects with a user data for sort_r()
+ * Function to compare two data objects with a user data argument
+ *
+ * Designed to be used with raptor_sort_r() and compatible functions
+ * such as raptor_sequence_sort_r() which uses it.
  *
  * Return value: compare value <0 if @data1 is before @data2, =0 if equal, >0 if @data1 is after @data2
  */
-typedef int (*raptor_sort_r_compare)(const void *data1, const void *data2, void *user_data);
+typedef int (*raptor_data_compare_arg_handler)(const void *data1, const void *data2, void *user_data);
+
 
 /**
  * raptor_data_compare_handler:
@@ -1576,7 +1580,7 @@ void* raptor_sequence_delete_at(raptor_sequence* seq, int idx);
 RAPTOR_API
 void raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare);
 RAPTOR_API
-void raptor_sequence_sort_r(raptor_sequence* seq, raptor_sort_r_compare compare, void* user_data);
+void raptor_sequence_sort_r(raptor_sequence* seq, raptor_data_compare_arg_handler compare, void* user_data);
 RAPTOR_API
 int raptor_sequence_swap(raptor_sequence* seq, int i, int j);
 RAPTOR_API
@@ -2168,7 +2172,7 @@ RAPTOR_API
 void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 
 /* utility methods */
-void raptor_sort_r(void *base, size_t nel, size_t width, raptor_sort_r_compare compar, void *user_data);
+void raptor_sort_r(void *base, size_t nel, size_t width, raptor_data_compare_arg_handler compar, void *user_data);
 
 
 #ifdef __cplusplus

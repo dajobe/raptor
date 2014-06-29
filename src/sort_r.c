@@ -65,7 +65,7 @@
  */
 void
 raptor_sort_r(void *base, size_t nel, size_t width,
-              raptor_sort_r_compare compar, void *user_data)
+              raptor_data_compare_arg_handler compar, void *user_data)
 {
 #if defined(HAVE_QSORT_R) || defined(HAVE_QSORT_S)
   sort_r(base, nel, width, compar, user_data);
