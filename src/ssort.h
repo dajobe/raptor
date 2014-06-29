@@ -24,7 +24,7 @@
 */
 static int
 ssort_r(void* base, size_t nel, size_t width,
-        raptor_sort_r_compare comp,
+        raptor_data_compare_arg_handler comp,
         void* arg)
 {
   size_t wnel, gap, k;
