@@ -97,7 +97,7 @@ of the region to invert (inclusive).
 static int sort_r_cmp(const void *aa, const void *bb, void *arg)
 {
   const int *a = (const int*)aa;
-  const int *b = (cosnt int*)bb;
+  const int *b = (const int*)bb;
   const int *interval = (const int*)arg;
   int cmp = *a - *b;
   int inv_start = interval[0], inv_end = interval[1];
