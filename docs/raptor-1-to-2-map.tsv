@@ -427,6 +427,7 @@
 2.0.11	-	-	-	2.0.12	raptor_term*	raptor_new_term_from_counted_string	(raptor_world* world, unsigned char* string, size_t length)	-
 2.0.13	-	-	-	2.0.14	unsigned char*	raptor_uri_counted_filename_to_uri_string	(const char *filename, size_t filename_len)	-
 2.0.14	-	-	-	2.0.15	void	raptor_sort_r	(void *base, size_t nel, size_t width, raptor_sort_r_compare compar, void *user_data)	-
+2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_sort_r_compare compare, void* user_data)	Uses raptor_sort_r() internally.
 #
 # Types
 #

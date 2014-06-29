@@ -517,7 +517,7 @@ raptor_sequence_unshift(raptor_sequence* seq)
 /**
  * raptor_sequence_sort:
  * @seq: sequence to sort
- * @compare: comparison function
+ * @compare: comparison function with args (a, b)
  * 
  * Sort a sequence inline
  *
@@ -536,6 +536,31 @@ raptor_sequence_sort(raptor_sequence* seq, raptor_data_compare_handler compare)
     qsort(&seq->sequence[seq->start], seq->size, sizeof(void*), compare);
 }
 
+
+/**
+ * raptor_sequence_sort_r:
+ * @seq: sequence to sort
+ * @compare: comparison function with args (a, b, user data)
+ * @user_data: User data argument for @compare
+ *
+ * Sort a sequence inline with user data
+ *
+ * The comparison function @compare_r is compatible with that used
+ * for raptor_sort_r() and provides the addresses of pointers to the
+ * data that must be dereferenced to get to the stored sequence data.
+ *
+ **/
+RAPTOR_EXTERN_C
+void
+raptor_sequence_sort_r(raptor_sequence* seq, raptor_sort_r_compare compare,
+                       void* user_data)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN(seq, raptor_sequence);
+
+  if(seq->size > 1)
+    raptor_sort_r(&seq->sequence[seq->start], seq->size, sizeof(void*),
+                  compare, user_data);
+}
 
 
 /**
