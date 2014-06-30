@@ -53,14 +53,11 @@
  * @compar: comparison function
  * @user_data: a pointer to be passed to the comparison function
  *
- * Sort an array with an extra thunk / user data arg for the comparison funciton.
+ * Sort an array with an extra user data arg for the comparison funciton.
  *
  * Sorts data at @base of @nel elememnts of width @width using
  * comparison function @comp that takes args (void* data1, void*
  * data2, @user_data) and returns <0, 0, or >0 for object comparison.
- *
- * Implemented with the Public Domain licensed sort_r() by Isaac
- * Turner from https://github.com/noporpoise/sort_r
  *
  */
 void
