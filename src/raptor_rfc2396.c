@@ -425,12 +425,12 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
  * raptor_uri_resolve_uri_reference:
  * @base_uri: Base URI string
  * @reference_uri: Reference URI string
- * @buffer: Destination buffer URI
- * @length: Length of destination buffer
+ * @buffer: Destination URI output buffer
+ * @length: Length of destination output buffer
  *
- * Resolve a URI to a base URI.
+ * Resolve a URI against a base URI to create a new absolute URI.
  * 
- * Return value: length of resolved string or 0 on failure
+ * Return value: length of resolved string or 0 on failure (such as @buffer too small)
  **/
 size_t
 raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
@@ -443,6 +443,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   unsigned char *path_buffer = NULL;
   unsigned char *p;
   size_t result_len = 0;
+  size_t l;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   RAPTOR_DEBUG4("base uri='%s', reference_uri='%s, buffer size %d\n",
@@ -464,17 +465,30 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     unsigned char c;
 
     /* Copy base URI to result up to '\0' or '#' */
-    for(p = buffer; (c= *base_uri) && c != '#'; p++, base_uri++)
+    for(p = buffer, l = length;
+        (c = *base_uri) && c != '#' && l;
+        p++, base_uri++, l--)
       *p = c;
-    *p='\0';
+
+    if(!l) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    *p = '\0';
     
     if(ref->fragment) {
       unsigned char *src = ref->fragment;
       /* Append any fragment */
       *p++ = '#';
-      while(*src)
+      while(*src && l) {
         *p++ = *src++;
-      *p='\0';
+        l--;
+      }
+      if(!l) {
+        result_len = 0;
+        goto resolve_tidy;
+      }
+      *p = '\0';
     }
 
     result_len = p - buffer;
@@ -614,6 +628,24 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     result.fragment_len = ref->fragment_len;
   }
   
+  l = 0;
+  if(result.scheme)
+    l = result.scheme_len + 1;
+  if(result.authority)
+    l += 2 + result.authority_len;
+  if(result.path)
+    l += result.path_len;
+  if(result.query)
+    l += 1 + result.query_len;
+  if(result.fragment)
+    l += 1 + result.fragment_len;
+
+  if(l > length) {
+    /* Output buffer is too small */
+    result_len = 0;
+    goto resolve_tidy;
+  }
+
   p = buffer;
   if(result.scheme) {
     memcpy(p, result.scheme, result.scheme_len);
