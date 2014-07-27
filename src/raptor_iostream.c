@@ -185,7 +185,10 @@ static const raptor_iostream_handler raptor_iostream_sink_handler = {
  * raptor_new_iostream_to_sink:
  * @world: raptor_world object
  *
- * Create a new write iostream to a sink.
+ * Create a new write iostream to a sink, throwing away all data.
+ * 
+ * Provides an that throw away all writes and returns end of input
+ * immediately on reads.  Same as raptor_new_iostream_from_sink()
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
@@ -532,7 +535,11 @@ raptor_new_iostream_to_string(raptor_world *world,
  * raptor_new_iostream_from_sink:
  * @world: raptor world
  *
- * Create a new read iostream from a sink.
+ * Create a new read iostream from a sink, returning no data.
+ *
+ * Provides an I/O source that returns end of input immediately on
+ * reads, and throw away all writes. Same as
+ * raptor_new_iostream_to_sink()
  * 
  * Return value: new #raptor_iostream object or NULL on failure
  **/
