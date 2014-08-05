@@ -208,11 +208,11 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 
 
 static int
-raptor_turtle_writer_contains_newline(const unsigned char *s)
+raptor_turtle_writer_contains_newline(const unsigned char *s, size_t len)
 {
   size_t i = 0;
 
-  for( ; i < strlen((char*)s); i++)
+  for( ; i < len; i++)
     if(s[i] == '\n')
       return 1;
 
@@ -365,7 +365,7 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
     return 1;
   
   /* Turtle """longstring""" (2) or "string" (1) */
-  if(raptor_turtle_writer_contains_newline(s)) {
+  if(raptor_turtle_writer_contains_newline(s, len)) {
     /* long string */
     flags = RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL;
     q = quotes;
@@ -373,7 +373,7 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
   }
 
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
-  rc = raptor_string_escaped_write(s, strlen((const char*)s), '"', 
+  rc = raptor_string_escaped_write(s, len, '"',
                                    flags, turtle_writer->iostr);
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
 
