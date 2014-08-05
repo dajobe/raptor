@@ -105,11 +105,6 @@ raptor_new_uri_from_counted_string(raptor_world* world,
 
   raptor_world_open(world);
 
-#ifdef DEBUG
-  RAPTOR_ASSERT(strlen((const char*)uri_string) != length,
-                "URI string is not declared length");
-#endif
-
   if(world->uris_tree) {
     raptor_uri key; /* on stack - not allocated */
 
@@ -137,7 +132,9 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   /* otherwise create a new one */
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("Creating new URI %s in hash\n", uri_string);
+  RAPTOR_DEBUG1("Creating new URI '");
+  fwrite(uri_string, sizeof(char), length, RAPTOR_DEBUG_FH);
+  fputs(RAPTOR_DEBUG_FH, "' in hash\n")
 #endif
 
   new_uri = RAPTOR_CALLOC(raptor_uri*, 1, sizeof(*new_uri));
