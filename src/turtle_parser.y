@@ -62,14 +62,12 @@
 #endif
 
 
-#define DEBUG_FH stderr
-
 /* Make verbose error messages for syntax errors */
 #define YYERROR_VERBOSE 1
 
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-#define YYERROR_MSG(msg) do { fputs("** YYERROR ", DEBUG_FH); fputs(msg, DEBUG_FH); fputc('\n', DEBUG_FH); YYERROR; } while(0)
+#define YYERROR_MSG(msg) do { fputs("** YYERROR ", RAPTOR_DEBUG_FH); fputs(msg, RAPTOR_DEBUG_FH); fputc('\n', RAPTOR_DEBUG_FH); YYERROR; } while(0)
 #else
 #define YYERROR_MSG(ignore) YYERROR
 #endif

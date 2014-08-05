@@ -81,14 +81,18 @@ void raptor_sign_free(void *ptr);
 #define __func__ "???"
 #endif
 
+#ifndef RAPTOR_DEBUG_FH
+#define RAPTOR_DEBUG_FH stderr
+#endif
+
 #ifdef RAPTOR_DEBUG
 /* Debugging messages */
-#define RAPTOR_DEBUG1(msg) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__); } while(0)
-#define RAPTOR_DEBUG2(msg, arg1) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1);} while(0)
-#define RAPTOR_DEBUG3(msg, arg1, arg2) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2);} while(0)
-#define RAPTOR_DEBUG4(msg, arg1, arg2, arg3) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3);} while(0)
-#define RAPTOR_DEBUG5(msg, arg1, arg2, arg3, arg4) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4);} while(0)
-#define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(stderr, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4, arg5);} while(0)
+#define RAPTOR_DEBUG1(msg) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__); } while(0)
+#define RAPTOR_DEBUG2(msg, arg1) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1);} while(0)
+#define RAPTOR_DEBUG3(msg, arg1, arg2) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2);} while(0)
+#define RAPTOR_DEBUG4(msg, arg1, arg2, arg3) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3);} while(0)
+#define RAPTOR_DEBUG5(msg, arg1, arg2, arg3, arg4) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4);} while(0)
+#define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __func__, arg1, arg2, arg3, arg4, arg5);} while(0)
 
 #ifndef RAPTOR_ASSERT_DIE
 #define RAPTOR_ASSERT_DIE abort();
@@ -118,7 +122,7 @@ void raptor_sign_free(void *ptr);
 #ifdef RAPTOR_DISABLE_ASSERT_MESSAGES
 #define RAPTOR_ASSERT_REPORT(line)
 #else
-#define RAPTOR_ASSERT_REPORT(msg) fprintf(stderr, "%s:%d: (%s) assertion failed: " msg "\n", __FILE__, __LINE__, __func__);
+#define RAPTOR_ASSERT_REPORT(msg) fprintf(RAPTOR_DEBUG_FH, "%s:%d: (%s) assertion failed: " msg "\n", __FILE__, __LINE__, __func__);
 #endif
 
 
@@ -169,10 +173,10 @@ void raptor_sign_free(void *ptr);
 
 
 /* Fatal errors - always happen */
-#define RAPTOR_FATAL1(msg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__); abort();} while(0)
-#define RAPTOR_FATAL2(msg,arg) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg); abort();} while(0)
-#define RAPTOR_FATAL3(msg,arg1,arg2) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg1, arg2); abort();} while(0)
-#define RAPTOR_FATAL4(msg,arg1,arg2,arg3) do {fprintf(stderr, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg1, arg2, arg3); abort();} while(0)
+#define RAPTOR_FATAL1(msg) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__); abort();} while(0)
+#define RAPTOR_FATAL2(msg,arg) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg); abort();} while(0)
+#define RAPTOR_FATAL3(msg,arg1,arg2) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg1, arg2); abort();} while(0)
+#define RAPTOR_FATAL4(msg,arg1,arg2,arg3) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: fatal error: " msg, __FILE__, __LINE__ , __func__, arg1, arg2, arg3); abort();} while(0)
 
 #define MAX_ASCII_INT_SIZE 13
   
@@ -1247,8 +1251,8 @@ typedef struct {
 #define RAPTOR_DEBUG_ABBREV_NODE(label, node) \
   do {                                                       \
     RAPTOR_DEBUG1(label " ");                                \
-    raptor_term_print_as_ntriples(node->term, stderr);       \
-    fprintf(stderr, " (refcount %d subject %d object %d)\n", \
+    raptor_term_print_as_ntriples(node->term, RAPTOR_DEBUG_FH);       \
+    fprintf(RAPTOR_DEBUG_FH, " (refcount %d subject %d object %d)\n", \
             node->ref_count,                                 \
             node->count_as_subject,                          \
             node->count_as_object);                          \
