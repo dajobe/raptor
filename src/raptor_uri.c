@@ -655,7 +655,8 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   /* "file://" */
 #define RAPTOR_LEN_FILE_CSS 7 
   size_t len = RAPTOR_LEN_FILE_CSS;
-  
+  size_t fl;
+
   if(!filename)
     return NULL;
 
@@ -730,13 +731,15 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
     }
 
     path[path_len] = '/';
-    memcpy(path + path_len + 1, filename, filename_len + 1);
+    memcpy(path + path_len + 1, filename, filename_len);
+    path[new_filename_len] = '\0';
+    filename_len = new_filename_len;
     filename = (const char*)path;
   }
 #endif
 
   /* add URI-escaped filename length */
-  for(from = filename; *from ; from++) {
+  for(from = filename, fl = filename_len; fl ; from++, fl--) {
     len++;
 #ifdef WIN32
     if(*from == ':') {
@@ -755,14 +758,15 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   memcpy(buffer, "file://", 7);
   from = filename;
   to = (char*)(buffer+7);
+  fl = filename_len;
 #ifdef WIN32
-  if(*from == '\\' && from[1] == '\\')
-    from += 2;
-  else
+  if(*from == '\\' && from[1] == '\\') {
+    from += 2; fl -= 2;
+  } else
     *to++ ='/';
 #endif
-  while(*from) {
-    char c=*from++;
+  for(; fl; fl--) {
+    char c = *from++;
 #ifdef WIN32
     if(c == '\\')
       *to++ ='/';
@@ -781,7 +785,7 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
     } else
       *to++ = c;
   }
-  *to='\0';
+  *to = '\0';
 
   path_done:
 #ifndef WIN32
