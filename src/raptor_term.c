@@ -344,8 +344,8 @@ raptor_new_term_from_counted_blank(raptor_world* world,
  *
  * Takes a copy of the passed in @blank
  *
- * If @blank is NULL, creates a new internal identifier and uses it.
- * This will use the handler set with
+ * If @blank is NULL or an empty string, creates a new internal
+ * identifier and uses it.  This will use the handler set with
  * raptor_world_set_generate_bnodeid_parameters()
  *
  * Return value: new term or NULL on failure
@@ -359,8 +359,12 @@ raptor_new_term_from_blank(raptor_world* world, const unsigned char* blank)
 
   raptor_world_open(world);
 
-  if (blank)
-    length = strlen((const char*)blank);
+  if(blank) {
+    if(*blank)
+      length = strlen((const char*)blank);
+    else
+      blank = NULL;
+  }
 
   return raptor_new_term_from_counted_blank(world, blank, length);
 }
