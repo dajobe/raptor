@@ -784,8 +784,9 @@ main(int argc, char *argv[])
     
   }
 
-  if(optind != argc-2)
-    help = 1;
+  if(optind != argc-2 && !help && !usage) {
+    usage = 2; /* Title and usage */
+  }
   
   if(usage) {
     if(usage > 1) {
