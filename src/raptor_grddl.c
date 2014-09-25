@@ -524,9 +524,9 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
   grddl_parser = (raptor_grddl_parser_context*)rdf_parser->context;
 
   /* Look for a triple <uri> <uri> <uri> */
-  if(!statement->subject->type == RAPTOR_TERM_TYPE_URI ||
-     !statement->predicate->type == RAPTOR_TERM_TYPE_URI ||
-     !statement->object->type == RAPTOR_TERM_TYPE_URI)
+  if(statement->subject->type != RAPTOR_TERM_TYPE_URI ||
+     statement->predicate->type != RAPTOR_TERM_TYPE_URI ||
+     statement->object->type != RAPTOR_TERM_TYPE_URI)
     return;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
