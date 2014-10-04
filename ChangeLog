@@ -1,4 +1,148 @@
-2014-05-05  Dave Beckett  <dave@dajobe.org>
+2014-09-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:
+	(raptor_grddl_filter_triples): Fix <uri> <uri> <uri> check [gcc5]
+
+	This has been broken since 2007 but just meant too much work was
+	being done.  Original commit that added this
+	8bb88c9c4a5800b1163b50d2ff12b5245b4b1498
+
+2014-08-21  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c: Provide title and usage if args are missing
+	[Coverity CID 72385]
+
+2014-08-09  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_term.c:
+	(raptor_new_term_from_blank): Accept "" as same as NULL blank
+
+2014-08-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: raptor_uri_counted_filename_to_uri_string
+	handles a counted string
+
+	(raptor_uri_counted_filename_to_uri_string): Do not look for end
+	NUL char, count lengths.
+
+	Fixes Issue #0000576
+	http://bugs.librdf.org/mantis/view.php?id=576
+
+	* src/raptor_turtle_writer.c:
+	raptor_turtle_writer_quoted_counted_string handles a counted
+	string
+
+	(raptor_turtle_writer_contains_newline): Add len param and use it,
+	drop strlen().
+
+	(raptor_turtle_writer_quoted_counted_string): Use len, drop
+	strlen() and call raptor_turtle_writer_contains_newline with
+	passed in len.
+
+	Fixes Issue #0000576
+	http://bugs.librdf.org/mantis/view.php?id=576
+
+	* src/raptor_uri.c:
+	Do not assume NUL terminated string in
+	raptor_new_uri_from_counted_string
+
+	(raptor_new_uri_from_counted_string): Remove debug assert and use
+	fwrite to emit counted URI string to debug file handler.
+
+	Fixes Issue #0000576
+	http://bugs.librdf.org/mantis/view.php?id=576
+
+	* src/raptor_internal.h, src/turtle_parser.y: Add RAPTOR_DEBUG_FH
+	define internally
+
+2014-08-02  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html: Fix flex url
+
+2014-07-27  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_iostream.c: Document sink handlers
+
+2014-07-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c:
+	(raptor_uri_normalize_path): Check size of output buffer is big
+	enough.
+
+2014-07-07  Dave Beckett <dave@dajobe.org>
+
+	* README.html, INSTALL.html: bye bye sf
+
+	* README.html: Update TRiG pointer, conformance
+
+2014-06-29  Dave Beckett <dave@dajobe.org>
+
+	* src/sort_r.c: correct docs; does not always use sort_r
+
+	* src/ssort.h: one more rename
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_sequence.c, src/sort_r.c:
+	raptor_data_compare_arg_handler renamed from raptor_sort_r_compare
+	Added it to changelog too
+
+	* src/sort_r.c: Make sort test quiet on success
+
+	* src/sort_r.c: const
+
+	* src/sort_r.c: portability
+
+	* configure.ac, src/Makefile.am, src/sort_r.c, src/ssort.h:
+	Add
+	public domain ssort_r if qsort_r and qsort_s are not present
+
+	* docs/raptor-1-to-2-map.tsv, src/raptor2.h.in,
+	src/raptor_sequence.c:
+	(raptor_sequence_sort_r): Added based on raptor_sort_r()
+
+	* docs/raptor-1-to-2-map.tsv, src/Makefile.am, src/raptor2.h.in,
+	src/sort_r.c:
+	(raptor_sort_r): Added based on public domain sort_r()
+
+	* src/sort_r.h, sort_r.c: Public Domain sort_r() by Isaac Turner
+	Imported GIT commit 7c60ef94753624291055af0b1eec291f8c4bd5a7 from
+	https://github.com/noporpoise/sort_r
+
+2014-05-21  Dave Beckett <dave@dajobe.org>
+
+	* src/parsedate.y:
+	Update to point to PHP GIT
+
+	* src/parsedate.y: Fix -99 <= var <= 99 timezone interval check.
+	Thanks to Richard Trieu for the report.
+
+2014-05-11  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml: 2014
+
+2014-05-09  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_locator.c, src/snprintf.c:
+	(raptor_locator_format): Add a NUL to terminate output string.
+	See librdf commit aa3bf4ccf4cc9381a1c198566428812af28944de that
+	works around this.
+
+2014-05-05  Dave Beckett <dave@dajobe.org>
+
+	* utils/rapper.1: Use \- for hyphen
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.15
+
+	* ChangeLog:
+	Snapshotted raptor2_2_0_14 for 2.0.14 release (GIT
+	93bc8ef8fa1c0b6b4278412f5d12e558b70db708)
+
+	* src/raptor_uri.c: fix autodoc
+
+	* NEWS.html, RELEASE.html: 2.0.14
+
+	* Update tmpls
 
 	* Snapshotted raptor2_2_0_14 for 2.0.14 release (GIT 93bc8ef8fa1c0b6b4278412f5d12e558b70db708)
 

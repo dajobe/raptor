@@ -14,6 +14,59 @@
 <p>Not yet released.
 </p>
 
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=576">0000576</a>: Wrong assert for a counted string being nul terminated</li>
+</ul>
+
+<h3>Parser class changes</h3>
+
+<p>Fixed <code>raptor_grddl_filter_triples()</code> check for three
+URIs which has been broken since 2007 but just did more work.  Found
+via gcc5 warning.</p>
+
+<h3>Term class changes</h3>
+
+<p><code>raptor_new_term_from_blank()</code> now also accepts "" as
+the same as a NULL blank node ID argument.</p>
+
+<h3>URI class changes</h3>
+
+<p>Fixed <code>raptor_uri_counted_filename_to_uri_string()</code> to
+use the passed in len, not look for end NUL char and count lengths.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
+</p>
+
+<p><code>raptor_new_uri_from_counted_string()</code> no longer
+assumes a NUL terminated string. Remove a debug assert and use
+<code>fwrite()</code> to emit the counted URI string to the debug
+file handler.</p>
+
+<p>Fixed <code>raptor_uri_normalize_path()</code> to check the size of
+output buffer is big enough.</p>
+
+<h3>Writer class changes</h3>
+<p>Fixed <code>raptor_turtle_writer_quoted_counted_string()</code> to
+use the passed in length, drop the <code>strlen()</code> call and use
+the length internally.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
+</p>
+
+<h3>Other Changes</h3>
+
+<p>Added <code>raptor_sort_r()</code> and
+<code>raptor_sequence_sort_r()</code> re-entrant sort utility methods
+based on the public domain <a
+href="https://github.com/noporpoise/sort_r">sort_r</a> code by Isaac
+Turner.
+</p>
+
+<p>Ensure <code>raptor_locator_format()</code> always adds a NUL to
+terminate the output string.</p>
+
+<p>Fix a -99 &lt;= var &lt;= 99 timezone interval check.  Thanks to
+Richard Trieu for the report.</p>
+
 
 <h2 id="rel2_0_14"><a name="rel2_0_14">Raptor2 2.0.14 changes</a></h2>
 
