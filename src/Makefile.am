@@ -201,7 +201,7 @@ raptor_parse.c: git-version.h
 # Actually it needs turtle_parser.h but nevermind
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.pl
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
-	$(PERL) $(top_srcdir)/scripts/fix-flex $@ > turtle_lexer.t || rm -f $@
+	$(PERL) $(top_srcdir)/scripts/fix-flex.pl $@ > turtle_lexer.t || rm -f $@
 	mv -f turtle_lexer.t $@
 
 turtle_lexer.h: turtle_lexer.c ; @exit 0
