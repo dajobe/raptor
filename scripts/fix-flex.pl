@@ -58,7 +58,7 @@ while(<>) {
   s/(^\s*)yy_fatal_error\s*\(\s*(\".*\")\s*,\s*yyscanner\s*\)/$1YY_FATAL_ERROR($2)/;
 
   # flex has %option nounistd however it does not work in 2.5.31
-  # It is safe to add yet another wrapper. 
+  # It is safe to add yet another wrapper.
   if(m%^(\#include \<unistd.h\>)$%) {
     $_=<<"EOT";
 #ifndef YY_NO_UNISTD_H

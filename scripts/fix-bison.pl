@@ -39,7 +39,7 @@ while(<>) {
   }
   if(m%^void free\s*\(%) {
     $line_offset--; # skipped a line
-    next; 
+    next;
   }
 
   if(m%^\# undef YYCASE_$%) {

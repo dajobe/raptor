@@ -199,24 +199,24 @@ nodist_libraptor2_la_SOURCES += git-version.h
 raptor_parse.c: git-version.h
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.pl
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l
 	$(PERL) $(top_srcdir)/scripts/fix-flex $@ > turtle_lexer.t || rm -f $@
 	mv -f turtle_lexer.t $@
 
 turtle_lexer.h: turtle_lexer.c ; @exit 0
 
-turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison
+turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison.pl
 	$(BISON) $(srcdir)/turtle_parser.y
-	$(PERL) $(top_srcdir)/scripts/fix-bison turtle_parser.tab.c > $@
+	$(PERL) $(top_srcdir)/scripts/fix-bison.pl turtle_parser.tab.c > $@
 	mv -f turtle_parser.tab.h turtle_parser.h
 	rm -f turtle_parser.tab.c
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
-parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison
+parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison.pl
 	$(BISON) $(srcdir)/parsedate.y
-	$(PERL) $(top_srcdir)/scripts/fix-bison parsedate.tab.c > $@
+	$(PERL) $(top_srcdir)/scripts/fix-bison.pl parsedate.tab.c > $@
 	mv -f parsedate.tab.h parsedate.h
 	rm -f parsedate.tab.c
 
