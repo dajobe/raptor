@@ -71,13 +71,6 @@ AM_PROG_AR
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_MSG_CHECKING(whether $CC is clang)
-CC_IS_CLANG=no
-if $CC 2>&1 | grep clang >/dev/null 2>&1; then
-  CC_IS_CLANG=yes
-else
-  :
-fi
-AC_MSG_RESULT($CC_IS_CLANG)
 
 dnl Initialize libtool
 LT_INIT
@@ -198,14 +191,19 @@ dnl compiler checks
 
 AC_DEFUN([REDLAND_CC_TRY_FLAG], [
   AC_MSG_CHECKING([whether $CC supports $1])
+
+  ## backup CFLAGS and werror status
   redland_save_CFLAGS="$CFLAGS"
-  if test $CC_IS_CLANG = yes; then
-    # Make unknown warnings into errors for clang so the test below works
-    CFLAGS="-Werror $CFLAGS"
-  fi
+  redland_save_ac_c_werror_flag="${ac_c_werror_flag}"
+  AC_LANG_WERROR
+
   CFLAGS="$CFLAGS $1"
   AC_COMPILE_IFELSE([AC_LANG_SOURCE([ ])], [redland_cc_flag=yes], [redland_cc_flag=no])
+
+  ## restore CFLAGS and werror status
   CFLAGS="$redland_save_CFLAGS"
+  ac_c_werror_flag="${redland_save_ac_c_werror_flag}"
+
   if test "X$redland_cc_flag" = "Xyes"; then
     ifelse([$2], , :, [$2])
   else
