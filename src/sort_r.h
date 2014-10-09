@@ -20,8 +20,10 @@ void sort_r(void *base, size_t nel, size_t width,
 */
 
 #if (defined __APPLE__ || defined __MACH__ || defined __DARWIN__ || \
-     defined __FREEBSD__ || defined __BSD__ || \
+     defined __FreeBSD__ || defined __BSD__ || defined __bsdi__ || \
      defined OpenBSD3_1 || defined OpenBSD3_9 || defined __OpenBSD__ || \
+     defined __NetBSD__ || \
+     defined __DragonFly__ || \
      defined AMIGA)
 #  define _SORT_R_BSD
 #elif (defined _GNU_SOURCE || defined __gnu_hurd__ || defined __GNU__ || \
