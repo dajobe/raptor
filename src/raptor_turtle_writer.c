@@ -51,7 +51,7 @@
 
 
 typedef enum {
-  TURTLE_WRITER_AUTO_INDENT = 1,
+  TURTLE_WRITER_AUTO_INDENT = 1
 } raptor_turtle_writer_flags;
 
 
