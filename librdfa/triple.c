@@ -540,7 +540,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
     * @property. If present, a URI is obtained according to the
     * section on CURIE and URI Processing, and then the actual literal
     * value is obtained as follows: */
-   char* current_object_literal = NULL;
+   const char* current_object_literal = NULL;
    rdfresource_t type = RDF_TYPE_UNKNOWN;
 
    unsigned int i;
@@ -571,7 +571,7 @@ void rdfa_complete_object_literal_triples(rdfacontext* context)
    }
    else if(strlen(context->plain_literal) == 0)
    {
-      current_object_literal = (char*)"";
+      current_object_literal = (const char*)"";
       type = RDF_TYPE_PLAIN_LITERAL;
    }
    else if((context->xml_literal != NULL) &&

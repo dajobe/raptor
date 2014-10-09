@@ -123,7 +123,8 @@ static
 void print_graph(void *user_data, raptor_uri *graph, int flags)
 {
   /* raptor_parser *parser = (raptor_parser *)user_data; */
-  const char* label = (flags & RAPTOR_GRAPH_MARK_START) ? "start" : "end";
+  const char* const label = (flags & RAPTOR_GRAPH_MARK_START)
+    ? (const char*)"start" : (const char*)"end";
 
   if(!report_graph)
     return;
@@ -297,7 +298,7 @@ typedef struct
 {
   raptor_option option;
   int i_value;
-  char* s_value;
+  const char* s_value;
 } option_value;
 
 
@@ -481,7 +482,7 @@ main(int argc, char *argv[])
                   if(name_len < arg_len && optarg[name_len] == '=')
                     fv->s_value = &optarg[name_len + 1];
                   else if(name_len == arg_len)
-                    fv->s_value = (char*)"";
+                    fv->s_value = (const char*)"";
                 }
 
                 if(domain == RAPTOR_DOMAIN_PARSER) {
