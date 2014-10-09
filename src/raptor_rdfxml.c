@@ -721,7 +721,7 @@ raptor_rdfxml_start_element_handler(void *user_data,
       if(!element->parent->child_state) {
         raptor_parser_fatal_error(rdf_parser,
                                   "%s: Internal error: no parent element child_state set",
-                                  __func__);
+                                  __FUNCTION__);
         return;
       }
 
@@ -2362,7 +2362,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
       default:
         raptor_parser_fatal_error(rdf_parser,
                                   "%s Internal error - unexpected parser state %d - %s",
-                                  __func__,
+                                  __FUNCTION__,
                                   state, raptor_rdfxml_state_as_string(state));
         finished = 1;
 
@@ -2895,7 +2895,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           default:
             raptor_parser_fatal_error(rdf_parser,
                                       "%s: Internal error in state RAPTOR_STATE_PROPERTYELT - got unexpected content type %s (%d)",
-                                      __func__,
+                                      __FUNCTION__,
                                       raptor_rdfxml_element_content_type_as_string(element->content_type),
                                       element->content_type);
         } /* end switch */
@@ -2907,7 +2907,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
       default:
         raptor_parser_fatal_error(rdf_parser,
                                   "%s: Internal error - unexpected parser state %d - %s",
-                                  __func__,
+                                  __FUNCTION__,
                                   state,
                                   raptor_rdfxml_state_as_string(state));
         finished = 1;
