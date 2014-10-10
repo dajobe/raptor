@@ -1,3 +1,48 @@
+2014-10-09  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am: Further fix flex/bison rules to silence them in
+	normal runs
+
+	* configure.ac, src/parsedate.y, src/raptor_internal.h,
+	src/raptor_rdfxml.c: Use __FUNCTION__ (c99) replacing __func__
+	(c90)
+
+	* src/sort_r.h: Add BSD header checks from sort_r
+
+	* src/raptor_turtle_writer.c: Trailing ,
+
+	* configure.ac: Add some GCC5 warning flags
+
+	* Merge pull request #14 from hroptatyr/compiler-support Intel C
+	compiler (icc) support
+
+2014-10-09  Sebastian Freundt <freundt@ga-group.nl>
+
+	* librdfa/rdfa.c, librdfa/triple.c, utils/rapper.c: const'ify
+	string literals and char pointers that needn't be changed
+
+	librdfa (start_element): const'ify umap_key
+	librdfa (rdfa_complete_object_literal_triples): const'ifty
+	current_object_literal
+	rapper (print_graph): const'ify label
+
+	* configure.ac: Always use AC_LANG_WERROR when checking for
+	compiler warning flags
+
+	Many gcc-compatible compilers (icc, clang, etc.) verbosely ignore
+	gcc command line flags issuing a warning of some sort.  Catch
+	these warnings and turn them into errors when checking for support
+	of specific warning flags.
+
+2014-10-04  Dave Beckett <dave@dajobe.org>
+
+	* scripts/Makefile.am, scripts/fix-bison, scripts/fix-bison.pl,
+	scripts/fix-flex, scripts/fix-flex.pl, src/Makefile.am: Rename
+	fix-flex, fix-bison to have .pl suffix
+
+	* ChangeLog, NEWS.html, RELEASE.html:
+	2.0.15
+
 2014-09-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c:
