@@ -204,7 +204,7 @@ check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	    echo "Ignoring expected failures"; \
 	    result=0; \
 	  else \
-	    echo "FAILED: Got:\n  $$failures but expected\n $(EXPECTED_FAILURES)"; \
+	    echo "FAILED: Got:"; echo "  $$failures"; echo "but expected"; echo "  $(EXPECTED_FAILURES)"; \
 	    result=1; \
 	  fi; \
 	fi; \
