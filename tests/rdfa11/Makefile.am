@@ -113,7 +113,7 @@ ALL_TEST_FILES= \
 	$(TEST_FILES) \
 	$(TEST_OUT_FILES)
 
-# Expected test failures (29):
+# Expected test failures (26):
 # Test  Problem    Description
 # ----------------------------
 # 0190  librdfa    fails term case insensitivity 
