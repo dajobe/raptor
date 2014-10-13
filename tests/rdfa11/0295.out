@@ -284,8 +284,9 @@ _:gregg <http://xmlns.com/foaf/0.1/mbox> <mailto:gregg@kellogg-assoc.com> .
 <http://www.example.org/software> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/liCeNse> <http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231> .
 <http://www.example.org> <http://example.org/xmllit> "This is an XMLLiteral"^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .
 <http://www.example.org> <http://example.org/plainlit> "This is a plain literal" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/class/Person> .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/name> "Gregg Kellogg" .
-<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/language> "Ruby" .
+<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://purl.org/dc/terms/language> "Ruby"^^<http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/lang> .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/rel> <http://kellogg-assoc.com/> .
 <http://github.org/gkellogg/rdf_context> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/pred/rev> <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#mark> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://example.org/wrong/foaf/uri/Person> .
