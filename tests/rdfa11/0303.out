@@ -1,4 +1,6 @@
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0303.xml> <http://www.w3.org/ns/rdfa#usesVocabulary> <http://schema.org/> .
-<http://example.org/base> <http://schema.org/name> "Gregg Kellogg" .
-<http://example.org/base> <http://schema.org/uri> <http://example.orb/val1> .
+<http://example.org/base> <http://schema.org/license> <http://example.orb/val1> .
+<http://example.org/base> <http://schema.org/uri> "Not This" .
+<http://example.org/base> <http://schema.org/homepage> <http://greggkellogg.net/> .
 <http://example.org/base> <http://xmlns.com/foaf/0.1/homepage> <http://greggkellogg.net/> .
+<http://example.org/base> <http://schema.org/name> "Gregg Kellogg" .
