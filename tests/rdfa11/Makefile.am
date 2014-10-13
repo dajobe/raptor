@@ -123,7 +123,7 @@ ALL_TEST_FILES= \
 # 0236  librdfa    should return triple(?s a <http://www.w3.org/ns/rdfa#Error>)
 # 0238  librdfa    should return triple(?s a <http://www.w3.org/ns/rdfa#UnresolvedTerm>)
 # 0237 0239
-#       librrdfa   should return triple(?s a <http://www.w3.org/ns/rdfa#UnresolvedCURIE>)
+#       librdfa    should return triple(?s a <http://www.w3.org/ns/rdfa#UnresolvedCURIE>)
 # 0256  librdfa    wrong language code "hu" instead of "fr"
 # 0272 0273 0274 0275 0276 0277 0278 0279 0280 0281 0282
 #       librdfa    datatype support
