@@ -120,8 +120,10 @@ ALL_TEST_FILES= \
 # 0198  raptor     XML (HTML) markup differences but same meaning
 # 0202  librdfa    ensure @xml:base in SVG and XHTML5
 # 0203  librdfa    ensure @, XML+RDFa in non-root elements in SVG and XHTML5
-# 0235 0236 0237 0238 0239
-#       librdfa    failures about "rdfagraph='processor'"
+# 0236  librdfa    should return triple(?s a <http://www.w3.org/ns/rdfa#Error>)
+# 0238  librdfa    should return triple(?s a <http://www.w3.org/ns/rdfa#UnresolvedTerm>)
+# 0237 0239
+#       librrdfa   should return triple(?s a <http://www.w3.org/ns/rdfa#UnresolvedCURIE>)
 # 0256  librdfa    wrong language code "hu" instead of "fr"
 # 0272 0273 0274 0275 0276 0277 0278 0279 0280 0281 0282
 #       librdfa    datatype support
@@ -136,7 +138,7 @@ ALL_TEST_FILES= \
 # which is why the 'cmp' is done first.
 #
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0190.xml 0198.xml 0202.xml 0203.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0297.xml 0303.xml 0304.xml"
+EXPECTED_FAILURES=" 0190.xml 0198.xml 0202.xml 0203.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0297.xml 0303.xml 0304.xml"
 
 EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
