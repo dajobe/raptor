@@ -116,7 +116,6 @@ ALL_TEST_FILES= \
 # Expected test failures (29):
 # Test  Problem    Description
 # ----------------------------
-# 0134  librdfa    fails mixed-case reserved words generate triples.
 # 0190  librdfa    fails term case insensitivity 
 # 0198  raptor     XML (HTML) markup differences but same meaning
 # 0202  librdfa    ensure @xml:base in SVG and XHTML5
@@ -137,7 +136,7 @@ ALL_TEST_FILES= \
 # which is why the 'cmp' is done first.
 #
 # (Add a space to the start of this string)
-EXPECTED_FAILURES=" 0134.xml 0190.xml 0198.xml 0202.xml 0203.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0297.xml 0303.xml 0304.xml"
+EXPECTED_FAILURES=" 0190.xml 0198.xml 0202.xml 0203.xml 0235.xml 0236.xml 0237.xml 0238.xml 0239.xml 0256.xml 0272.xml 0273.xml 0274.xml 0275.xml 0276.xml 0277.xml 0278.xml 0279.xml 0280.xml 0281.xml 0282.xml 0285.xml 0286.xml 0287.xml 0297.xml 0303.xml 0304.xml"
 
 EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
