@@ -2,6 +2,7 @@
  *
  * raptor_serialize.c - Raptor Serializer API
  *
+ # modified for mKR Oct/11/2014 Richard H. McCullough
  * Copyright (C) 2004-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
@@ -109,6 +110,10 @@ raptor_serializers_init(raptor_world* world)
 
 #ifdef RAPTOR_SERIALIZER_NQUADS
   rc += raptor_init_serializer_nquads(world) != 0;
+#endif
+
+#ifdef RAPTOR_SERIALIZER_MKR
+  rc += raptor_init_serializer_mkr(world) != 0;
 #endif
 
   return rc;
