@@ -1,0 +1,6 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@prefix ex: <http://example.org/ns#> ;
+
+. is ex:node1 ;
+    . has rdf:value = [ex:item1,ex:item2] ;
+

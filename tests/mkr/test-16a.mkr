@@ -1,0 +1,6 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@prefix : <http://example.org/ns#> ;
+
+. is :a ;
+    . has :b = [:c1, :c10, :c2, :c3, :c4, :c5, :c6, :c7, :c8, :c9] ;
+
