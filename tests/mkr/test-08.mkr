@@ -2,5 +2,5 @@
 @prefix : <http://example.org/stuff/1.0/> ;
 
 . is :a ;
-    . has :b = rdf:nil ;
+    . has :b = [ ] ;
 

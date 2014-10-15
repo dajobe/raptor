@@ -180,6 +180,10 @@ raptor_mkr_emit_resource(raptor_serializer *serializer,
   if(node->term->type != RAPTOR_TERM_TYPE_URI)
     return 1;
 
+  if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
+      raptor_mkr_writer_raw_counted(mkr_writer,(const unsigned char *)"[ ]", 3);
+      return 0;
+  }
   qname = raptor_new_qname_from_namespace_uri(context->nstack,
                                               node->term->value.uri, 10);
 
