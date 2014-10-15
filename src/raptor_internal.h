@@ -1331,6 +1331,38 @@ int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* ur
 int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
 int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
 
+
+/**
+ * raptor_mkr_writer:
+ *
+ * Raptor mKR Writer class
+ */
+typedef struct raptor_mkr_writer_s raptor_mkr_writer;
+
+/* mKR Writer Class (raptor_mkr_writer) */
+RAPTOR_INTERNAL_API raptor_mkr_writer* raptor_new_mkr_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr);
+RAPTOR_INTERNAL_API void raptor_free_mkr_writer(raptor_mkr_writer* mkr_writer);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_raw(raptor_mkr_writer* mkr_writer, const unsigned char *s);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_raw_counted(raptor_mkr_writer* mkr_writer, const unsigned char *s, unsigned int len);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_namespace_prefix(raptor_mkr_writer* mkr_writer, raptor_namespace* ns);
+void raptor_mkr_writer_base(raptor_mkr_writer* mkr_writer, raptor_uri* base_uri);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_increase_indent(raptor_mkr_writer *mkr_writer);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_decrease_indent(raptor_mkr_writer *mkr_writer);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_newline(raptor_mkr_writer *mkr_writer);
+RAPTOR_INTERNAL_API int raptor_mkr_writer_reference(raptor_mkr_writer* mkr_writer, raptor_uri* uri);
+RAPTOR_INTERNAL_API int raptor_mkr_writer_literal(raptor_mkr_writer* mkr_writer, raptor_namespace_stack *nstack, const unsigned char *s, const unsigned char* lang, raptor_uri* datatype);
+RAPTOR_INTERNAL_API void raptor_mkr_writer_qname(raptor_mkr_writer* mkr_writer, raptor_qname* qname);
+RAPTOR_INTERNAL_API int raptor_mkr_writer_quoted_counted_string(raptor_mkr_writer* mkr_writer, const unsigned char *s, size_t length);
+void raptor_mkr_writer_comment(raptor_mkr_writer* mkr_writer, const unsigned char *s);
+RAPTOR_INTERNAL_API int raptor_mkr_writer_set_option(raptor_mkr_writer *mkr_writer, raptor_option option, int value);
+int raptor_mkr_writer_set_option_string(raptor_mkr_writer *mkr_writer, raptor_option option, const unsigned char *value);
+int raptor_mkr_writer_get_option(raptor_mkr_writer *mkr_writer, raptor_option option);
+const unsigned char *raptor_mkr_writer_get_option_string(raptor_mkr_writer *mkr_writer, raptor_option option);
+void raptor_mkr_writer_bnodeid(raptor_mkr_writer* mkr_writer, const unsigned char *bnodeid, size_t len);
+int raptor_mkr_writer_uri(raptor_mkr_writer* mkr_writer, raptor_uri* uri);
+int raptor_mkr_writer_term(raptor_mkr_writer* mkr_writer, raptor_term* term);
+int raptor_mkr_is_legal_mkr_qname(raptor_qname* qname);
+
 /**
  * raptor_json_writer:
  *
