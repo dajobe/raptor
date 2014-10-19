@@ -7,4 +7,4 @@ V=3.0.2
 
 wget http://ftp.gnu.org/gnu/bison/bison-$V.tar.gz
 tar -x -z -f bison-$V.tar.gz
-cd bison-$V && ./configure --prefix=/usr && make && make install
+cd bison-$V && ./configure --prefix=/usr && make && sudo make install
