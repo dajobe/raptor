@@ -1,3 +1,38 @@
+2014-10-19  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml, scripts/install-bison3.sh: Travis update attempt
+
+2014-10-12  Dave Beckett <dave@dajobe.org>
+
+	* tests/rdfa11/Makefile.am: doc
+
+	* tests/rdfa11/0297.out, tests/rdfa11/Makefile.am: 0297 passes
+
+	* tests/rdfa11/0303.out, tests/rdfa11/Makefile.am: 0303 passes
+
+	* tests/rdfa11/Makefile.am: 26 failures
+
+	* tests/rdfa11/0235.out, tests/rdfa11/Makefile.am: 0235 passes
+
+	* tests/rdfa11/Makefile.am: Fix error report again
+
+	* tests/rdfa11/0134.out: fix 134 out
+
+	* tests/rdfa11/0134.out, tests/rdfa11/Makefile.am: 0134 passes
+
+	* tests/rdfa11/0197.out, tests/rdfa11/Makefile.am: 0197 passes
+
+	* tests/rdfa11/Makefile.am: 0197 now fails, 0302 now passes.
+
+	* tests/rdfa11/Makefile.am: Tidy failure output
+
+	* tests/rdfa11/0295.out: Update 0295 output
+
+2014-10-10  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/curie.c: Support full URLs for typeof.
+	librdfa commit 5b73975a778ee00f328457356a69163911d540a5
+
 2014-10-09  Dave Beckett <dave@dajobe.org>
 
 	* src/Makefile.am: Further fix flex/bison rules to silence them in
