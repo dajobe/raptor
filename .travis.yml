@@ -4,22 +4,31 @@
 #   http://docs.travis-ci.com/user/build-configuration/
 #   http://docs.travis-ci.com/user/multi-os/
 #
+
 language: c
+
 branches:
   only:
     - master
+
 before_script:
-  - test $TRAVIS_OS_NAME = "linux" && ./scripts/install-bison3.sh
+  - test "$TRAVIS_OS_NAME" = "linux" && ./scripts/install-bison3.sh
+
 before_install:
-  - test $TRAVIS_OS_NAME = "linux" && sudo apt-get update -qq && sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
-  - test $TRAVIS_OS_NAME = "osx" && brew install bison gtk-doc yajl
+  - env | sort
+  - test "$TRAVIS_OS_NAME" = "linux" && sudo apt-get update -qq && sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
+  - test "$TRAVIS_OS_NAME" = "osx" && brew update && brew install bison gtk-doc yajl
+
 compiler:
   - gcc
   - clang
+
 before_script: ./autogen.sh
+
 os:
   - linux
   - osx
+
 matrix:
   allow_failures:
     - os: osx
