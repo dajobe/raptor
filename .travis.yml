@@ -7,6 +7,18 @@
 
 language: c
 
+compiler:
+  - gcc
+  - clang
+
+os:
+  - linux
+  - osx
+
+matrix:
+  allow_failures:
+    - os: osx
+
 branches:
   only:
     - master
@@ -17,16 +29,4 @@ install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install bison gtk-doc yajl; fi
 
-compiler:
-  - gcc
-  - clang
-
-before_script: ./autogen.sh
-
-os:
-  - linux
-  - osx
-
-matrix:
-  allow_failures:
-    - os: osx
+script: ./autogen.sh && make && make test
