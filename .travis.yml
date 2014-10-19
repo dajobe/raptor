@@ -9,10 +9,10 @@ branches:
   only:
     - master
 before_script:
-  - [ $TRAVIS_OS_NAME = "linux" ] && ./scripts/install-bison3.sh
+  - test $TRAVIS_OS_NAME = "linux" && ./scripts/install-bison3.sh
 before_install:
-  - [ $TRAVIS_OS_NAME = "linux" ] && sudo apt-get update -qq && sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
-  - [ $TRAVIS_OS_NAME = "osx" ] && brew install bison gtk-doc yajl
+  - test $TRAVIS_OS_NAME = "linux" && sudo apt-get update -qq && sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
+  - test $TRAVIS_OS_NAME = "osx" && brew install bison gtk-doc yajl
 compiler:
   - gcc
   - clang
