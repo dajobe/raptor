@@ -99,35 +99,6 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	set -e; exit $$result
 
 
-check-mkr-serialize-rdf: build-rdfdiff build-rapper
-	@set +e; result=0; \
-	RDF_TEST_FILES=`unset MAKELEVEL MAKEFLAGS; cd $(RDFXML_DIR) && $(MAKE) print-rdf-test-files | sed -e 's,^, ,' -e 's, ,$(RDFXML_DIR)/,g'`; \
-	$(RECHO) "Testing mkr serialization with legal rdf/xml"; \
-	for test in $$RDF_TEST_FILES $(TURTLE_SERIALIZE_RDF_FILES); do \
-	  name=`basename $$test .rdf` ; \
-	  baseuri=-; \
-	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri > $$name-turtle.ttl 2> $$name.err; \
-	  status1=$$?; \
-	  if test $$test = "$(RDFXML_DIR)/ex-38.rdf"; then \
-	    diff $(srcdir)/ex-38-mkr.out $$name-mkr.ttl > $$name.res 2> $$name.err; \
-	    status2=$$?; \
-	  else \
-	    $(RDFDIFF) -t mkr $(srcdir)/$$test $$name-mkr.ttl > $$name.res 2> $$name.err; \
-	    status2=$$?; \
-	  fi; \
-	  if test $$status1 = 0 -a $$status2 = 0; then \
-	    $(RECHO) "ok"; \
-	  else \
-	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri '>' $$name-mkr.ttl; \
-	    $(RECHO) $(RDFDIFF) -t mkr $(srcdir)/$$test $$name-mkr.ttl '>' $$name.res; \
-	    cat $$name.err; \
-	  fi; \
-	  rm -f $$name-mkr.ttl $$name.res $$name.err; \
-	done; \
-	set -e; exit $$result
-
 
 if MAINTAINER_MODE
 zip: tests.zip
