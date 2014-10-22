@@ -80,10 +80,8 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	    baseuri=$(RDF_NS_URI); \
 	  elif test $$name = rdfs-namespace; then \
 	    baseuri=$(RDFS_NS_URI); \
-	  elif test $$name = test-31 -o $$name = test-32; then \
-	    baseuri=-; \
 	  else \
-	    baseuri=$(BASE_URI)$$test; \
+	    baseuri=-; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
@@ -93,11 +91,10 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i mkr -o mkr $(srcdir)/$$test $$baseuri '>' $$name-mkr.ttl; \
 	    cat $$name.err; \
-	    diff -a -u $(srcdir)/$$name-out.ttl $$name-mkr.ttl; \
+	    diff -a -u $(srcdir)/$$name.out $$name.mkr; \
 	  fi; \
-	  rm -f $$name.out $$name.err; \
+	  rm -f $$name.out $$name.err \
 	done; \
 	set -e; exit $$result
 
