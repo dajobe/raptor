@@ -272,6 +272,9 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
                                  turtle_writer->iostr);
   raptor_iostream_counted_string_write(": ", 2, turtle_writer->iostr);
   raptor_turtle_writer_reference(turtle_writer, raptor_namespace_get_uri(ns));
+if(EMIT_MKR)
+  raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
+else
   raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
 }
 
@@ -290,6 +293,9 @@ raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
   if(base_uri) {
     raptor_iostream_counted_string_write("@base ", 6, turtle_writer->iostr);
     raptor_turtle_writer_reference(turtle_writer, base_uri);
+if(EMIT_MKR)
+    raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
+else
     raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
   }
 }

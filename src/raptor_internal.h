@@ -22,7 +22,7 @@
  * 
  */
 
-
+int EMIT_MKR;
 
 #ifndef RAPTOR_INTERNAL_H
 #define RAPTOR_INTERNAL_H
@@ -929,6 +929,7 @@ int raptor_init_serializer_rdfxmla(raptor_world* world);
 
 /* raptor_serialize_turtle.c */  
 int raptor_init_serializer_turtle(raptor_world* world);
+int raptor_init_serializer_mkr   (raptor_world* world);
 
 /* raptor_serialize_html.c */  
 int raptor_init_serializer_html(raptor_world* world);
