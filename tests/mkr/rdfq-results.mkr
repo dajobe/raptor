@@ -1,45 +1,57 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
-. is <file:///home/raptor/raptor2-2.0.14/tests/turtle/rdfq-results.ttl> ;
-    . has rs:resultVariable = "x", "y" ;
-    . has rs:size = 4 ;
-    . has rs:solution =  {. is _:genid12 ;
-        . has rs:binding =  {. is _:genid10 ;
-            . has rs:value = "anon2" ;
-            . has rs:variable = "x" ;
-            },  {. is _:genid11 ;
-            . has rs:value = _:a ;
-            . has rs:variable = "y" ;
-            } ;
-        . isu rs:ResultSolution ;
-        },  {. is _:genid3 ;
-        . has rs:binding =  {. is _:genid1 ;
-            . has rs:value = 123 ;
-            . has rs:variable = "x" ;
-            },  {. is _:genid2 ;
-            . has rs:value = <http://example.com/resource1> ;
-            . has rs:variable = "y" ;
-            } ;
-        . isu rs:ResultSolution ;
-        },  {. is _:genid6 ;
-        . has rs:binding =  {. is _:genid4 ;
-            . has rs:value = "2003-01-21" ;
-            . has rs:variable = "x" ;
-            },  {. is _:genid5 ;
-            . has rs:value = <http://example.com/resource2> ;
-            . has rs:variable = "y" ;
-            } ;
-        . isu rs:ResultSolution ;
-        },  {. is _:genid9 ;
-        . has rs:binding =  {. is _:genid7 ;
-            . has rs:value = "anon1" ;
-            . has rs:variable = "x" ;
-            },  {. is _:genid8 ;
-            . has rs:value = _:a ;
-            . has rs:variable = "y" ;
-            } ;
-        . isu rs:ResultSolution ;
-        } ;
-    . isu rs:ResultSet ;
-
+<file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> has 
+    rs:resultVariable = "x", "y" ,
+    rs:size = 4 ,
+    rs:solution = { 
+        genid12 has
+        rs:binding = { 
+            genid10 has
+            rs:value = "anon2" ,
+            rs:variable = "x"
+            }, { 
+            genid11 has
+            rs:value = _:a has  ,
+            rs:variable = "y"
+            } ,
+        rdf:type = rs:ResultSolution;
+        }, { 
+        genid3 has
+        rs:binding = { 
+            genid1 has
+            rs:value = 123 ,
+            rs:variable = "x"
+            }, { 
+            genid2 has
+            rs:value = <http://example.com/resource1> ,
+            rs:variable = "y"
+            } ,
+        rdf:type = rs:ResultSolution;
+        }, { 
+        genid6 has
+        rs:binding = { 
+            genid4 has
+            rs:value = "2003-01-21" ,
+            rs:variable = "x"
+            }, { 
+            genid5 has
+            rs:value = <http://example.com/resource2> ,
+            rs:variable = "y"
+            } ,
+        rdf:type = rs:ResultSolution;
+        }, { 
+        genid9 has
+        rs:binding = { 
+            genid7 has
+            rs:value = "anon1" ,
+            rs:variable = "x"
+            }, { 
+            genid8 has
+            rs:value = _:a has  ,
+            rs:variable = "y"
+            } ,
+        rdf:type = rs:ResultSolution;
+        } ,
+    rdf:type = rs:ResultSet ;
+    

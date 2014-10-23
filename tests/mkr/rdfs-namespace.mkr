@@ -1,184 +1,184 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
 @prefix : <http://www.w3.org/2000/01/rdf-schema#> ;
 
-. is rdf:Alt ;
-    . isu :Class ;
-    . has :comment = "A collection of alternatives."@en ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "Alt"@en ;
-    . has :subClassOf = :Container ;
-
-. is rdf:Bag ;
-    . isu :Class ;
-    . has :comment = "An unordered collection."@en ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "Bag"@en ;
-    . has :subClassOf = :Container ;
-
-. is rdf:Property ;
-    . isu :Class ;
-    . has :comment = "The concept of a property." ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "Property"@en ;
-    . has :subClassOf = :Resource ;
-
-. is rdf:Seq ;
-    . isu :Class ;
-    . has :comment = "An ordered collection."@en ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "Seq"@en ;
-    . has :subClassOf = :Container ;
-
-. is rdf:Statement ;
-    . isu :Class ;
-    . has :comment = "The class of RDF statements." ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "Statement"@en ;
-    . has :subClassOf = :Resource ;
-
-. is rdf:object ;
-    . isu rdf:Property ;
-    . has :comment = "The object of an RDF statement." ;
-    . has :domain = rdf:Statement ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "object"@en ;
-
-. is rdf:predicate ;
-    . isu rdf:Property ;
-    . has :comment = "the predicate of an RDF statement." ;
-    . has :domain = rdf:Statement ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "predicate"@en ;
-    . has :range = rdf:Property ;
-
-. is rdf:subject ;
-    . isu rdf:Property ;
-    . has :comment = "The subject of an RDF statement." ;
-    . has :domain = rdf:Statement ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "subject"@en ;
-    . has :range = :Resource ;
-
-. is rdf:type ;
-    . isu rdf:Property ;
-    . has :comment = "Indicates membership of a class" ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "type"@en ;
-    . has :range = :Class ;
-
-. is rdf:value ;
-    . isu rdf:Property ;
-    . has :comment = "Identifies the principal value (usually a string) of a property when the property value is a structured resource" ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-    . has :label = "value"@en ;
-
-. is <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :seeAlso = <http://www.w3.org/2000/01/rdf-schema-more> ;
-
-. is :Class ;
-    . isu :Class ;
-    . has :comment = "The concept of Class" ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "Class"@en ;
-    . has :subClassOf = :Resource ;
-
-. is :Container ;
-    . isu :Class ;
-    . has :comment = "This represents the set Containers." ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "Container"@en ;
-    . has :subClassOf = :Resource ;
-
-. is :ContainerMembershipProperty ;
-    . isu :Class ;
-    . has :comment = "The container membership properties, rdf:1, rdf:2, ..., all of which are sub-properties of 'member'." ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "ContainerMembershipProperty"@en ;
-    . has :subClassOf = rdf:Property ;
-
-. is :Literal ;
-    . isu :Class ;
-    . has :comment = "This represents the set of atomic values, eg. textual strings." ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "Literal"@en ;
-
-. is :Resource ;
-    . isu :Class ;
-    . has :comment = "The class resource, everything." ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "Resource"@en ;
-
-. is :comment ;
-    . isu rdf:Property ;
-    . has :comment = "Use this for descriptions" ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "comment"@en ;
-    . has :range = :Literal ;
-
-. is :domain ;
-    . isu rdf:Property ;
-    . has :comment = "A domain class for a property type" ;
-    . has :domain = rdf:Property ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "domain"@en ;
-    . has :range = :Class ;
-
-. is :isDefinedBy ;
-    . isu rdf:Property ;
-    . has :comment = "Indicates the namespace of a resource" ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "isDefinedBy"@en ;
-    . has :range = :Resource ;
-    . has :subPropertyOf = :seeAlso ;
-
-. is :label ;
-    . isu rdf:Property ;
-    . has :comment = "Provides a human-readable version of a resource name." ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "label"@en ;
-    . has :range = :Literal ;
-
-. is :member ;
-    . isu rdf:Property ;
-    . has :comment = "a member of a container" ;
-    . has :domain = :Container ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "member"@en ;
-
-. is :range ;
-    . isu rdf:Property ;
-    . has :comment = "A range class for a property type" ;
-    . has :domain = rdf:Property ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "range"@en ;
-    . has :range = :Class ;
-
-. is :seeAlso ;
-    . isu rdf:Property ;
-    . has :comment = "A resource that provides information about the subject resource" ;
-    . has :domain = :Resource ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "seeAlso"@en ;
-    . has :range = :Resource ;
-
-. is :subClassOf ;
-    . isu rdf:Property ;
-    . has :comment = "Indicates membership of a class" ;
-    . has :domain = :Class ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "subClassOf"@en ;
-    . has :range = :Class ;
-
-. is :subPropertyOf ;
-    . isu rdf:Property ;
-    . has :comment = "Indicates specialization of properties" ;
-    . has :domain = rdf:Property ;
-    . has :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ;
-    . has :label = "subPropertyOf"@en ;
-    . has :range = rdf:Property ;
-
+rdf:Alt has 
+    rdf:type = :Class ,
+    :comment = "A collection of alternatives."@en ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "Alt"@en ,
+    :subClassOf = :Container ;
+    
+rdf:Bag has 
+    rdf:type = :Class ,
+    :comment = "An unordered collection."@en ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "Bag"@en ,
+    :subClassOf = :Container ;
+    
+rdf:Property has 
+    rdf:type = :Class ,
+    :comment = "The concept of a property." ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "Property"@en ,
+    :subClassOf = :Resource ;
+    
+rdf:Seq has 
+    rdf:type = :Class ,
+    :comment = "An ordered collection."@en ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "Seq"@en ,
+    :subClassOf = :Container ;
+    
+rdf:Statement has 
+    rdf:type = :Class ,
+    :comment = "The class of RDF statements." ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "Statement"@en ,
+    :subClassOf = :Resource ;
+    
+rdf:object has 
+    rdf:type = rdf:Property ,
+    :comment = "The object of an RDF statement." ,
+    :domain = rdf:Statement ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "object"@en ;
+    
+rdf:predicate has 
+    rdf:type = rdf:Property ,
+    :comment = "the predicate of an RDF statement." ,
+    :domain = rdf:Statement ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "predicate"@en ,
+    :range = rdf:Property ;
+    
+rdf:subject has 
+    rdf:type = rdf:Property ,
+    :comment = "The subject of an RDF statement." ,
+    :domain = rdf:Statement ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "subject"@en ,
+    :range = :Resource ;
+    
+rdf:type has 
+    rdf:type = rdf:Property ,
+    :comment = "Indicates membership of a class" ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "type"@en ,
+    :range = :Class ;
+    
+rdf:value has 
+    rdf:type = rdf:Property ,
+    :comment = "Identifies the principal value (usually a string) of a property when the property value is a structured resource" ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ,
+    :label = "value"@en ;
+    
+<http://www.w3.org/2000/01/rdf-schema#> has 
+    :seeAlso = <http://www.w3.org/2000/01/rdf-schema-more> ;
+    
+:Class has 
+    rdf:type = :Class ,
+    :comment = "The concept of Class" ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "Class"@en ,
+    :subClassOf = :Resource ;
+    
+:Container has 
+    rdf:type = :Class ,
+    :comment = "This represents the set Containers." ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "Container"@en ,
+    :subClassOf = :Resource ;
+    
+:ContainerMembershipProperty has 
+    rdf:type = :Class ,
+    :comment = "The container membership properties, rdf:1, rdf:2, ..., all of which are sub-properties of 'member'." ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "ContainerMembershipProperty"@en ,
+    :subClassOf = rdf:Property ;
+    
+:Literal has 
+    rdf:type = :Class ,
+    :comment = "This represents the set of atomic values, eg. textual strings." ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "Literal"@en ;
+    
+:Resource has 
+    rdf:type = :Class ,
+    :comment = "The class resource, everything." ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "Resource"@en ;
+    
+:comment has 
+    rdf:type = rdf:Property ,
+    :comment = "Use this for descriptions" ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "comment"@en ,
+    :range = :Literal ;
+    
+:domain has 
+    rdf:type = rdf:Property ,
+    :comment = "A domain class for a property type" ,
+    :domain = rdf:Property ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "domain"@en ,
+    :range = :Class ;
+    
+:isDefinedBy has 
+    rdf:type = rdf:Property ,
+    :comment = "Indicates the namespace of a resource" ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "isDefinedBy"@en ,
+    :range = :Resource ,
+    :subPropertyOf = :seeAlso ;
+    
+:label has 
+    rdf:type = rdf:Property ,
+    :comment = "Provides a human-readable version of a resource name." ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "label"@en ,
+    :range = :Literal ;
+    
+:member has 
+    rdf:type = rdf:Property ,
+    :comment = "a member of a container" ,
+    :domain = :Container ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "member"@en ;
+    
+:range has 
+    rdf:type = rdf:Property ,
+    :comment = "A range class for a property type" ,
+    :domain = rdf:Property ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "range"@en ,
+    :range = :Class ;
+    
+:seeAlso has 
+    rdf:type = rdf:Property ,
+    :comment = "A resource that provides information about the subject resource" ,
+    :domain = :Resource ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "seeAlso"@en ,
+    :range = :Resource ;
+    
+:subClassOf has 
+    rdf:type = rdf:Property ,
+    :comment = "Indicates membership of a class" ,
+    :domain = :Class ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "subClassOf"@en ,
+    :range = :Class ;
+    
+:subPropertyOf has 
+    rdf:type = rdf:Property ,
+    :comment = "Indicates specialization of properties" ,
+    :domain = rdf:Property ,
+    :isDefinedBy = <http://www.w3.org/2000/01/rdf-schema#> ,
+    :label = "subPropertyOf"@en ,
+    :range = rdf:Property ;
+    

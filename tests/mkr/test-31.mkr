@@ -1,10 +1,11 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
 @prefix rss: <http://purl.org/rss/1.0/> ;
 
-. is <http://example.org/block> ;
-    . has rss:items = {. is _:genid1 ;
-        . has rdf:_1 = <http://example.org/first-item> ;
-        . has rdf:_2 = <http://example.org/second-item> ;
-        . isu rdf:Seq
-    } ;
-
+<http://example.org/block> has 
+    rss:items = { 
+        genid1 has
+        rdf:_1 = <http://example.org/first-item> ,
+        rdf:_2 = <http://example.org/second-item> ,
+        rdf:type = rdf:Seq ;
+        } ;
+    
