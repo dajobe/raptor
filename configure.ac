@@ -920,6 +920,7 @@ rdfxml_serializer=no
 ntriples_serializer=no
 rdfxml_abbrev_serializer=no
 turtle_serializer=no
+mkr_serializer=no
 rss_1_0_serializer=no
 atom_serializer=no
 dot_serializer=no
@@ -1335,6 +1336,7 @@ tests/rdfa11/Makefile
 tests/json/Makefile
 tests/rdfxml/Makefile
 tests/turtle/Makefile
+tests/mkr/Makefile
 tests/turtle-2013/Makefile
 tests/trig/Makefile
 utils/Makefile
