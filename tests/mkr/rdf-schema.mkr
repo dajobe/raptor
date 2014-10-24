@@ -1,5 +1,6 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-@prefix : <http://www.w3.org/2000/01/rdf-schema#> ;
+@base <http://www.w3.org/1999/02/22-rdf-syntax-ns> .
+@prefix rdf: <#> ;
+@prefix : <../../2000/01/rdf-schema#> ;
 
 rdf:Alt has 
     rdf:type = :Class ,
@@ -55,8 +56,8 @@ rdf:value has
     rdf:type = rdf:Property ,
     :label = "object"@en, "value"@fr ;
     
-<http://www.w3.org/2000/01/rdf-schema#> has 
-    :seeAlso = <http://www.w3.org/2000/01/rdf-schema-more> ;
+<../../2000/01/rdf-schema#> has 
+    :seeAlso = <../../2000/01/rdf-schema-more> ;
     
 :Class has 
     rdf:type = :Class ,
