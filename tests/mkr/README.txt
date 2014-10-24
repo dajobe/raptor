@@ -3,18 +3,10 @@ that must be passed by conformant systems.  See
   http://mkrmke.org/parser/
 for the full conformance information.
 
-The format is a set of good tests and bad tests.
+The format is a set of exact serialization format tests.
 
-Good tests are a pair of files:
-  abc.ttl abc.out
-which are the input Turtle file and the expected output RDF triples,
-written in N-Triples.
-
-bad tests are of the form
-  bad-XX.ttl
-which must fail.
-
-The tests should be performed with an assumed base URI
-of http://www.w3.org/2001/sw/DataAccess/df1/tests/
+Tests are a pair of files:
+  xxx.ttl xxx.mkr
+which are the input Turtle file and the expected output mKR file.
 
 Dick
