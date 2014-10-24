@@ -6,6 +6,6 @@
         genid1 has
         rdf:_1 = <http://example.org/first-item> ,
         rdf:_2 = <http://example.org/second-item> ,
-        rdf:type = rdf:Seq ;
-        } ;
+        rdf:type = rdf:Seq
+        ;} ;
     

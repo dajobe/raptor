@@ -763,7 +763,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(blank && depth > 1) {
       raptor_turtle_writer_newline(turtle_writer);
       if(EMIT_MKR) {
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"}", 1);
+            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)";}", 2);
       } else {
             raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
       }
