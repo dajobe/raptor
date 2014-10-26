@@ -3,9 +3,10 @@
 
 <http://example.org/block> has 
     rss:items = { 
-        genid1 has
-        rdf:_1 = <http://example.org/first-item> ,
-        rdf:_2 = <http://example.org/second-item> ,
-        rdf:type = rdf:Seq
+        _:genid1 has
+            rdf:_1 = <http://example.org/first-item> ,
+            rdf:_2 = <http://example.org/second-item> ,
+            rdf:type = rdf:Seq
         ;} ;
+    
     
