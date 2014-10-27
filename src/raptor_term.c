@@ -199,13 +199,22 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     *new_literal = '\0';
 
   if(language) {
+    unsigned char c;
+    unsigned char* l;
+    
     new_language = RAPTOR_MALLOC(unsigned char*, language_len + 1);
     if(!new_language) {
       RAPTOR_FREE(char*, new_literal);
       return NULL;
     }
-    memcpy(new_language, language, language_len);
-    new_language[language_len] = '\0';
+
+    l = new_language;
+    while((c = *language++)) {
+      if(c == '_')
+        c = '-';
+      *l++ = c;
+    }
+    *l = '\0';
   } else
     language_len = 0;
 

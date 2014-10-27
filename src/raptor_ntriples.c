@@ -87,10 +87,12 @@ raptor_ntriples_term_valid(unsigned char c, int position,
       break;
 
     case RAPTOR_TERM_CLASS_LANGUAGE:
-      /* ends on first non [a-zA-Z]+ ('-' [a-zA-Z0-9]+ )? */
+      /* ends on first non [a-zA-Z]+ ('-' [a-zA-Z0-9]+ )?
+       * Accept _ as synonym / typo for -.
+       */
       result = IS_ASCII_ALPHA(c);
       if(position)
-        result = (result || IS_ASCII_DIGIT(c) || c == '-');
+        result = (result || IS_ASCII_DIGIT(c) || c == '-' || c == '_');
       break;
 
     default:
@@ -575,10 +577,13 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
 
           /* Normalize language to lowercase
            * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
+           * Also convert _ to - as synonym / typo.
            */
           for(q = object_literal_language; *q; q++) {
             if(IS_ASCII_UPPER(*q))
               *q = TO_ASCII_LOWER(*q);
+            if(*q == '_')
+              *q = '-';
           }
 
         }
