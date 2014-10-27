@@ -882,6 +882,8 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   unsigned char *p;
   int i = integer;
   size_t length = 1;
+  int nobj;
+
   if(integer < 0) {
     length++;
     i= -integer;
@@ -900,7 +902,8 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   if(integer < 0)
     *p= '-';
   
-  return raptor_iostream_write_bytes(buf, 1, length, iostr);
+  nobj = raptor_iostream_write_bytes(buf, 1, length, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != length);
 }
 
 
@@ -921,7 +924,7 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
                                   raptor_iostream* iostr)
 {
   char *buf;
-  int rc;
+  int nobj;
 
   if(width < 1)
     return 1;
@@ -933,9 +936,9 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
   (void)raptor_format_integer(buf, width + 1, integer, /* base */ 16,
                               width, '0');
 
-  rc = raptor_iostream_write_bytes(buf, 1, width, iostr);
+  nobj = raptor_iostream_write_bytes(buf, 1, width, iostr);
   RAPTOR_FREE(char*, buf);
-  return rc;
+  return (nobj != width);
 }
 
 
