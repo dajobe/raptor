@@ -774,7 +774,8 @@ int
 raptor_iostream_string_write(const void *string, raptor_iostream *iostr)
 {
   size_t len = strlen((const char*)string);
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -792,7 +793,8 @@ int
 raptor_iostream_counted_string_write(const void *string, size_t len,
                                      raptor_iostream *iostr) 
 {
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -810,7 +812,8 @@ raptor_uri_write(raptor_uri* uri, raptor_iostream* iostr)
 {
   size_t len;
   const void *string = raptor_uri_as_counted_string(uri, &len);
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -855,9 +858,9 @@ raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr)
   
   length = raptor_stringbuffer_length(sb);
   if(length) {
-    int count = raptor_iostream_write_bytes(raptor_stringbuffer_as_string(sb),
+    int nobj = raptor_iostream_write_bytes(raptor_stringbuffer_as_string(sb),
                                             1, length, iostr);
-    return (RAPTOR_BAD_CAST(size_t, count) != length);
+    return (RAPTOR_BAD_CAST(size_t, nobj) != length);
   } else
     return 0;
 }
