@@ -319,7 +319,7 @@ raptor_world_default_generate_bnodeid_handler(void *user_data,
 
 /**
  * raptor_world_generate_bnodeid:
- * @world: #raptor_parser parser object
+ * @world: raptor_world object
  * 
  * Generate an new blank node ID
  *
