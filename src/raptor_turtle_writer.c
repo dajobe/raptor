@@ -148,6 +148,7 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_iostream* iostr)
 {
   raptor_turtle_writer* turtle_writer;
+  int EMIT_MKR = 0;  /* Non 0 for mKR serializer */
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
