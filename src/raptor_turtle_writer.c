@@ -74,9 +74,6 @@ struct raptor_turtle_writer_s {
   /* Turtle Writer flags - bits defined in enum raptor_turtle_writer_flags */
   int flags;
 
-  /* Non 0 for mKR serializer */
-  int emit_mkr;
-
   /* indentation per level if formatting */
   int indent;
 };
@@ -151,7 +148,6 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_iostream* iostr)
 {
   raptor_turtle_writer* turtle_writer;
-  int EMIT_MKR = 0;
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -165,9 +161,6 @@ raptor_new_turtle_writer(raptor_world* world,
 
   if(!turtle_writer)
     return NULL;
-
-  /* Non 0 for mKR serializer */
-  turtle_writer->emit_mkr = EMIT_MKR;
 
   turtle_writer->world = world;
 
@@ -926,7 +919,7 @@ main(int argc, char *argv[])
                               0);
 
 
-  raptor_turtle_writer_namespace_prefix(turtle_writer, ex_ns);
+  raptor_turtle_writer_namespace_prefix(turtle_writer, ex_ns, 0);
 
   raptor_turtle_writer_reference(turtle_writer, base_uri);
   
