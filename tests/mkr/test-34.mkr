@@ -2,5 +2,5 @@
 @prefix dbpedia: <http://dbpedia.org/resource/> ;
 
 <http://example.org> has 
-    <http://xmlns.com/foaf/0.1/page> = <http://dbpedia.org/resource/Babylon_A.D.> ;
-    
+    <http://xmlns.com/foaf/0.1/page> = [<http://dbpedia.org/resource/Babylon_A.D.>] ;
+

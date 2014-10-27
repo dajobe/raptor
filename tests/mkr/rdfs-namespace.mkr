@@ -3,183 +3,183 @@
 @prefix : <#> ;
 
 rdf:Alt has 
-    rdf:type = :Class ,
-    :comment = "A collection of alternatives."@en ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "Alt"@en ,
-    :subClassOf = :Container ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["A collection of alternatives."@en] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["Alt"@en] ,
+    :subClassOf = [:Container] ;
+
 rdf:Bag has 
-    rdf:type = :Class ,
-    :comment = "An unordered collection."@en ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "Bag"@en ,
-    :subClassOf = :Container ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["An unordered collection."@en] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["Bag"@en] ,
+    :subClassOf = [:Container] ;
+
 rdf:Property has 
-    rdf:type = :Class ,
-    :comment = "The concept of a property." ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "Property"@en ,
-    :subClassOf = :Resource ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["The concept of a property."] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["Property"@en] ,
+    :subClassOf = [:Resource] ;
+
 rdf:Seq has 
-    rdf:type = :Class ,
-    :comment = "An ordered collection."@en ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "Seq"@en ,
-    :subClassOf = :Container ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["An ordered collection."@en] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["Seq"@en] ,
+    :subClassOf = [:Container] ;
+
 rdf:Statement has 
-    rdf:type = :Class ,
-    :comment = "The class of RDF statements." ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "Statement"@en ,
-    :subClassOf = :Resource ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["The class of RDF statements."] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["Statement"@en] ,
+    :subClassOf = [:Resource] ;
+
 rdf:object has 
-    rdf:type = rdf:Property ,
-    :comment = "The object of an RDF statement." ,
-    :domain = rdf:Statement ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "object"@en ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["The object of an RDF statement."] ,
+    :domain = [rdf:Statement] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["object"@en] ;
+
 rdf:predicate has 
-    rdf:type = rdf:Property ,
-    :comment = "the predicate of an RDF statement." ,
-    :domain = rdf:Statement ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "predicate"@en ,
-    :range = rdf:Property ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["the predicate of an RDF statement."] ,
+    :domain = [rdf:Statement] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["predicate"@en] ,
+    :range = [rdf:Property] ;
+
 rdf:subject has 
-    rdf:type = rdf:Property ,
-    :comment = "The subject of an RDF statement." ,
-    :domain = rdf:Statement ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "subject"@en ,
-    :range = :Resource ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["The subject of an RDF statement."] ,
+    :domain = [rdf:Statement] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["subject"@en] ,
+    :range = [:Resource] ;
+
 rdf:type has 
-    rdf:type = rdf:Property ,
-    :comment = "Indicates membership of a class" ,
-    :domain = :Resource ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "type"@en ,
-    :range = :Class ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Indicates membership of a class"] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["type"@en] ,
+    :range = [:Class] ;
+
 rdf:value has 
-    rdf:type = rdf:Property ,
-    :comment = "Identifies the principal value (usually a string) of a property when the property value is a structured resource" ,
-    :domain = :Resource ,
-    :isDefinedBy = <../../1999/02/22-rdf-syntax-ns#> ,
-    :label = "value"@en ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Identifies the principal value (usually a string) of a property when the property value is a structured resource"] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<../../1999/02/22-rdf-syntax-ns#>] ,
+    :label = ["value"@en] ;
+
 <#> has 
-    :seeAlso = <rdf-schema-more> ;
-    
+    :seeAlso = [<rdf-schema-more>] ;
+
 :Class has 
-    rdf:type = :Class ,
-    :comment = "The concept of Class" ,
-    :isDefinedBy = <#> ,
-    :label = "Class"@en ,
-    :subClassOf = :Resource ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["The concept of Class"] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["Class"@en] ,
+    :subClassOf = [:Resource] ;
+
 :Container has 
-    rdf:type = :Class ,
-    :comment = "This represents the set Containers." ,
-    :isDefinedBy = <#> ,
-    :label = "Container"@en ,
-    :subClassOf = :Resource ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["This represents the set Containers."] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["Container"@en] ,
+    :subClassOf = [:Resource] ;
+
 :ContainerMembershipProperty has 
-    rdf:type = :Class ,
-    :comment = "The container membership properties, rdf:1, rdf:2, ..., all of which are sub-properties of 'member'." ,
-    :isDefinedBy = <#> ,
-    :label = "ContainerMembershipProperty"@en ,
-    :subClassOf = rdf:Property ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["The container membership properties, rdf:1, rdf:2, ..., all of which are sub-properties of 'member'."] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["ContainerMembershipProperty"@en] ,
+    :subClassOf = [rdf:Property] ;
+
 :Literal has 
-    rdf:type = :Class ,
-    :comment = "This represents the set of atomic values, eg. textual strings." ,
-    :isDefinedBy = <#> ,
-    :label = "Literal"@en ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["This represents the set of atomic values, eg. textual strings."] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["Literal"@en] ;
+
 :Resource has 
-    rdf:type = :Class ,
-    :comment = "The class resource, everything." ,
-    :isDefinedBy = <#> ,
-    :label = "Resource"@en ;
-    
+    rdf:type = [:Class] ,
+    :comment = ["The class resource, everything."] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["Resource"@en] ;
+
 :comment has 
-    rdf:type = rdf:Property ,
-    :comment = "Use this for descriptions" ,
-    :domain = :Resource ,
-    :isDefinedBy = <#> ,
-    :label = "comment"@en ,
-    :range = :Literal ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Use this for descriptions"] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["comment"@en] ,
+    :range = [:Literal] ;
+
 :domain has 
-    rdf:type = rdf:Property ,
-    :comment = "A domain class for a property type" ,
-    :domain = rdf:Property ,
-    :isDefinedBy = <#> ,
-    :label = "domain"@en ,
-    :range = :Class ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["A domain class for a property type"] ,
+    :domain = [rdf:Property] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["domain"@en] ,
+    :range = [:Class] ;
+
 :isDefinedBy has 
-    rdf:type = rdf:Property ,
-    :comment = "Indicates the namespace of a resource" ,
-    :domain = :Resource ,
-    :isDefinedBy = <#> ,
-    :label = "isDefinedBy"@en ,
-    :range = :Resource ,
-    :subPropertyOf = :seeAlso ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Indicates the namespace of a resource"] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["isDefinedBy"@en] ,
+    :range = [:Resource] ,
+    :subPropertyOf = [:seeAlso] ;
+
 :label has 
-    rdf:type = rdf:Property ,
-    :comment = "Provides a human-readable version of a resource name." ,
-    :domain = :Resource ,
-    :isDefinedBy = <#> ,
-    :label = "label"@en ,
-    :range = :Literal ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Provides a human-readable version of a resource name."] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["label"@en] ,
+    :range = [:Literal] ;
+
 :member has 
-    rdf:type = rdf:Property ,
-    :comment = "a member of a container" ,
-    :domain = :Container ,
-    :isDefinedBy = <#> ,
-    :label = "member"@en ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["a member of a container"] ,
+    :domain = [:Container] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["member"@en] ;
+
 :range has 
-    rdf:type = rdf:Property ,
-    :comment = "A range class for a property type" ,
-    :domain = rdf:Property ,
-    :isDefinedBy = <#> ,
-    :label = "range"@en ,
-    :range = :Class ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["A range class for a property type"] ,
+    :domain = [rdf:Property] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["range"@en] ,
+    :range = [:Class] ;
+
 :seeAlso has 
-    rdf:type = rdf:Property ,
-    :comment = "A resource that provides information about the subject resource" ,
-    :domain = :Resource ,
-    :isDefinedBy = <#> ,
-    :label = "seeAlso"@en ,
-    :range = :Resource ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["A resource that provides information about the subject resource"] ,
+    :domain = [:Resource] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["seeAlso"@en] ,
+    :range = [:Resource] ;
+
 :subClassOf has 
-    rdf:type = rdf:Property ,
-    :comment = "Indicates membership of a class" ,
-    :domain = :Class ,
-    :isDefinedBy = <#> ,
-    :label = "subClassOf"@en ,
-    :range = :Class ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Indicates membership of a class"] ,
+    :domain = [:Class] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["subClassOf"@en] ,
+    :range = [:Class] ;
+
 :subPropertyOf has 
-    rdf:type = rdf:Property ,
-    :comment = "Indicates specialization of properties" ,
-    :domain = rdf:Property ,
-    :isDefinedBy = <#> ,
-    :label = "subPropertyOf"@en ,
-    :range = rdf:Property ;
-    
+    rdf:type = [rdf:Property] ,
+    :comment = ["Indicates specialization of properties"] ,
+    :domain = [rdf:Property] ,
+    :isDefinedBy = [<#>] ,
+    :label = ["subPropertyOf"@en] ,
+    :range = [rdf:Property] ;
+

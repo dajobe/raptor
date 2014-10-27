@@ -2,56 +2,56 @@
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
 <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> has 
-    rs:resultVariable = "x", "y" ,
-    rs:size = 4 ,
-    rs:solution = { 
-        genid12 has
-        rs:binding = { 
-            genid10 has
-            rs:value = "anon2" ,
-            rs:variable = "x"
-            ;}, { 
-            genid11 has
-            rs:value = _:a has  ,
-            rs:variable = "y"
-            ;} ,
-        rdf:type = rs:ResultSolution
-        ;}, { 
-        genid3 has
-        rs:binding = { 
-            genid1 has
-            rs:value = 123 ,
-            rs:variable = "x"
-            ;}, { 
-            genid2 has
-            rs:value = <http://example.com/resource1> ,
-            rs:variable = "y"
-            ;} ,
-        rdf:type = rs:ResultSolution
-        ;}, { 
-        genid6 has
-        rs:binding = { 
-            genid4 has
-            rs:value = "2003-01-21" ,
-            rs:variable = "x"
-            ;}, { 
-            genid5 has
-            rs:value = <http://example.com/resource2> ,
-            rs:variable = "y"
-            ;} ,
-        rdf:type = rs:ResultSolution
-        ;}, { 
-        genid9 has
-        rs:binding = { 
-            genid7 has
-            rs:value = "anon1" ,
-            rs:variable = "x"
-            ;}, { 
-            genid8 has
-            rs:value = _:a has  ,
-            rs:variable = "y"
-            ;} ,
-        rdf:type = rs:ResultSolution
-        ;} ,
-    rdf:type = rs:ResultSet ;
-    
+    rs:resultVariable = ["x", "y"] ,
+    rs:size = [4] ,
+    rs:solution = [{ 
+    _:genid12 has
+        rs:binding = [{ 
+        _:genid10 has
+            rs:value = ["anon2"] ,
+            rs:variable = ["x"
+        ];}, { 
+        _:genid11 has
+            rs:value = [_:_:a has ] ,
+            rs:variable = ["y"
+        ];}] ,
+        rdf:type = [rs:ResultSolution
+    ];}, { 
+    _:genid3 has
+        rs:binding = [{ 
+        _:genid1 has
+            rs:value = [123] ,
+            rs:variable = ["x"
+        ];}, { 
+        _:genid2 has
+            rs:value = [<http://example.com/resource1>] ,
+            rs:variable = ["y"
+        ];}] ,
+        rdf:type = [rs:ResultSolution
+    ];}, { 
+    _:genid6 has
+        rs:binding = [{ 
+        _:genid4 has
+            rs:value = ["2003-01-21"] ,
+            rs:variable = ["x"
+        ];}, { 
+        _:genid5 has
+            rs:value = [<http://example.com/resource2>] ,
+            rs:variable = ["y"
+        ];}] ,
+        rdf:type = [rs:ResultSolution
+    ];}, { 
+    _:genid9 has
+        rs:binding = [{ 
+        _:genid7 has
+            rs:value = ["anon1"] ,
+            rs:variable = ["x"
+        ];}, { 
+        _:genid8 has
+            rs:value = [_:_:a has ] ,
+            rs:variable = ["y"
+        ];}] ,
+        rdf:type = [rs:ResultSolution
+    ];}] ,
+    rdf:type = [rs:ResultSet] ;
+
