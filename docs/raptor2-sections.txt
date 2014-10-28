@@ -16,6 +16,8 @@ raptor_world_is_serializer_name
 raptor_world_generate_bnodeid
 raptor_world_set_generate_bnodeid_handler
 raptor_world_set_generate_bnodeid_parameters
+raptor_world_get_parsers_count
+raptor_world_get_serializers_count
 </SECTION>
 
 <SECTION>

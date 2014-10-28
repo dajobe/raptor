@@ -247,6 +247,25 @@ raptor_world_get_parser_factory(raptor_world *world, const char *name)
 
 
 /**
+ * raptor_world_get_parsers_count:
+ * @world: world object
+ *
+ * Get number of parsers
+ *
+ * Return value: number of parsers
+ **/
+int
+raptor_world_get_parsers_count(raptor_world* world)
+{
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+
+  raptor_world_open(world);
+
+  return raptor_sequence_size(world->parsers);
+}
+
+
+/**
  * raptor_world_get_parser_description:
  * @world: world object
  * @counter: index into the list of parsers
