@@ -4,7 +4,7 @@
 result is <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl>;
 result is relation with 
     format = [x:1, y:2],
-    meaning = { x = $1; y = $2; },
+    meaning = { x := $1; y := $2; },
     size = 4;
 begin relation result;
 "anon2", _:_:a;
