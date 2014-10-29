@@ -1,57 +1,14 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
-<file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> has 
-    rs:resultVariable = ["x", "y"] ,
-    rs:size = [4] ,
-    rs:solution = [{ 
-    _:genid12 has
-        rs:binding = [{ 
-        _:genid10 has
-            rs:value = ["anon2"] ,
-            rs:variable = ["x"
-        ];}, { 
-        _:genid11 has
-            rs:value = [_:_:a has ] ,
-            rs:variable = ["y"
-        ];}] ,
-        rdf:type = [rs:ResultSolution
-    ];}, { 
-    _:genid3 has
-        rs:binding = [{ 
-        _:genid1 has
-            rs:value = [123] ,
-            rs:variable = ["x"
-        ];}, { 
-        _:genid2 has
-            rs:value = [<http://example.com/resource1>] ,
-            rs:variable = ["y"
-        ];}] ,
-        rdf:type = [rs:ResultSolution
-    ];}, { 
-    _:genid6 has
-        rs:binding = [{ 
-        _:genid4 has
-            rs:value = ["2003-01-21"] ,
-            rs:variable = ["x"
-        ];}, { 
-        _:genid5 has
-            rs:value = [<http://example.com/resource2>] ,
-            rs:variable = ["y"
-        ];}] ,
-        rdf:type = [rs:ResultSolution
-    ];}, { 
-    _:genid9 has
-        rs:binding = [{ 
-        _:genid7 has
-            rs:value = ["anon1"] ,
-            rs:variable = ["x"
-        ];}, { 
-        _:genid8 has
-            rs:value = [_:_:a has ] ,
-            rs:variable = ["y"
-        ];}] ,
-        rdf:type = [rs:ResultSolution
-    ];}] ,
-    rdf:type = [rs:ResultSet] ;
-
+result is <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl>;
+result is relation with 
+    format = [x:1, y:2],
+    meaning = { x = $1; y = $2; },
+    size = 4;
+begin relation result;
+"anon2", _:_:a;
+123, <http://example.com/resource1>;
+"2003-01-21", <http://example.com/resource2>;
+"anon1", _:_:a; 
+end relation result;
