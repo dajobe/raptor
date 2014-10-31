@@ -46,7 +46,7 @@ ALL_TEST_FILES = README.txt \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES)
 
-check-turtle-serialize-syntax:
+check-mkr-serialize-syntax:
 	@set +e; result=0; \
 	$(RECHO) "Testing mkr exact serialization output"; \
 	for test in $(TEST_SERIALIZE_FILES); do \
