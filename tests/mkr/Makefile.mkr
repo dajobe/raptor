@@ -48,7 +48,7 @@ ALL_TEST_FILES = README.txt \
 
 check-turtle-serialize-syntax:
 	@set +e; result=0; \
-	$(RECHO) "Testing turtle exact serialization output"; \
+	$(RECHO) "Testing mkr exact serialization output"; \
 	for test in $(TEST_SERIALIZE_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  if test $$name = rdf-schema; then \
