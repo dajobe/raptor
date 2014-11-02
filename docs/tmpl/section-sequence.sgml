@@ -177,6 +177,16 @@ where the items are added and removed from the end.
 @compare: 
 
 
+<!-- ##### FUNCTION raptor_sequence_sort_r ##### -->
+<para>
+
+</para>
+
+@seq: 
+@compare: 
+@user_data: 
+
+
 <!-- ##### FUNCTION raptor_sequence_swap ##### -->
 <para>
 

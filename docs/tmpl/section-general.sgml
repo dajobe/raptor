@@ -201,6 +201,18 @@ and various other utility functions.
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_sort_r ##### -->
+<para>
+
+</para>
+
+@base: 
+@nel: 
+@width: 
+@compar: 
+@user_data: 
+
+
 <!-- ##### USER_FUNCTION raptor_log_handler ##### -->
 <para>
 
@@ -280,6 +292,17 @@ and various other utility functions.
 
 @data1: 
 @data2: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION raptor_data_compare_arg_handler ##### -->
+<para>
+
+</para>
+
+@data1: 
+@data2: 
+@user_data: 
 @Returns: 
 
 
