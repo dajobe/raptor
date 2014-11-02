@@ -1,0 +1,2 @@
+<http://example.org#graph>
+ { <http://example.org#this> a <http://example.org#that> . }

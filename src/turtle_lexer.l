@@ -429,7 +429,7 @@ EXPONENT [eE][+-]?[0-9]+
                   yyterminate();  }
 
 
-{IRI}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
+{IRI}[\ \t\v\r\n]*("=")?[\ \t\v\r\n]*"{"   {
                   raptor_stringbuffer* sb;
                   unsigned char* uri_string;
 
@@ -461,7 +461,7 @@ EXPONENT [eE][+-]?[0-9]+
                     TURTLE_LEXER_OOM();
                 return GRAPH_NAME_LEFT_CURLY; }
 
-{QNAME}[\ \t\v\n]*("=")?[\ \t\v\n]*"{"   {
+{QNAME}[\ \t\v\r\n]*("=")?[\ \t\v\r\n]*"{"   {
                while(1) {
                   int c = yytext[yyleng - 1];
                   if(c == '{' || c == ' ' || c=='\t' || c == '\v' || c == '\n' ||
