@@ -459,11 +459,6 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         goto fail;
       }
 
-      if(!raptor_turtle_check_uri_string(dest)) {
-        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "URI '%s' contains bad character(s)", dest);
-        goto fail;
-      }
-
       if(1) {
         raptor_uri *uri;
 
