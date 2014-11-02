@@ -54,6 +54,7 @@ raptor_log_level_get_label
 raptor_domain
 raptor_domain_get_label
 raptor_data_compare_handler
+raptor_data_compare_arg_handler
 raptor_data_context_free_handler
 raptor_data_context_print_handler
 raptor_data_free_handler
