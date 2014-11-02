@@ -952,6 +952,12 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
     case ERROR_TOKEN:
       return "ERROR";
 
+    case LEFT_CURLY:
+      return "{";
+    
+    case RIGHT_CURLY:
+      return "}";
+
    default:
      RAPTOR_DEBUG2("UNKNOWN token %d - add a new case\n", token);
      return "(UNKNOWN)";
