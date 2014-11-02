@@ -1,14 +1,16 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
-result is <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl>;
-result is relation with 
-    format = [value:1, value:2],
-    meaning = { x := $1; y := $2; },
-    size = 4;
-begin relation result;
-"anon2", _:_:a;
-123, <http://example.com/resource1>;
-"2003-01-21", <http://example.com/resource2>;
-"anon1", _:_:a; 
-end relation result;
+<file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> has
+    rs:resultVariable = ["x", "y"], 
+    rs:size = [4] ;
+result is <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> ;
+result is relation with
+    format = [value:1, value:2], 
+    meaning = {x := $1; y := $2;} ;
+begin relation result ;
+"anon2", _:_:a ;
+123, <http://example.com/resource1> ;
+"2003-01-21", <http://example.com/resource2> ;
+"anon1", _:_:a ;
+end relation result ;

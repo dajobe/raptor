@@ -2,154 +2,154 @@
 @prefix rdf: <#> ;
 @prefix : <../../2000/01/rdf-schema#> ;
 
-rdf:Alt has 
-    rdf:type = [:Class] ,
-    :label = ["Alt"@en, "Choix"@fr] ,
+rdf:Alt has
+    rdf:type = [:Class], 
+    :label = ["Alt"@en, "Choix"@fr], 
     :subClassOf = [:Container] ;
 
-rdf:Bag has 
-    rdf:type = [:Class] ,
-    :label = ["Bag"@en, "Ensemble"@fr] ,
+rdf:Bag has
+    rdf:type = [:Class], 
+    :label = ["Bag"@en, "Ensemble"@fr], 
     :subClassOf = [:Container] ;
 
-rdf:Property has 
-    rdf:type = [:Class] ,
-    :comment = ["The concept of a property."] ,
-    :label = ["Property"@en, "Propriété"@fr] ,
+rdf:Property has
+    rdf:type = [:Class], 
+    :comment = ["The concept of a property."], 
+    :label = ["Property"@en, "Propriété"@fr], 
     :subClassOf = [:Resource] ;
 
-rdf:Seq has 
-    rdf:type = [:Class] ,
-    :label = ["Sequence"@en, "Séquence"@fr] ,
+rdf:Seq has
+    rdf:type = [:Class], 
+    :label = ["Sequence"@en, "Séquence"@fr], 
     :subClassOf = [:Container] ;
 
-rdf:Statement has 
-    rdf:type = [:Class] ,
-    :comment = ["This represents the set of reified statements."] ,
-    :label = ["Déclaration"@fr, "Statement"@en] ,
+rdf:Statement has
+    rdf:type = [:Class], 
+    :comment = ["This represents the set of reified statements."], 
+    :label = ["Déclaration"@fr, "Statement"@en], 
     :subClassOf = [:Resource] ;
 
-rdf:object has 
-    rdf:type = [rdf:Property] ,
-    :domain = [rdf:Statement] ,
+rdf:object has
+    rdf:type = [rdf:Property], 
+    :domain = [rdf:Statement], 
     :label = ["object"@en, "objet"@fr] ;
 
-rdf:predicate has 
-    rdf:type = [rdf:Property] ,
-    :domain = [rdf:Statement] ,
-    :label = ["predicate"@en, "prédicat"@fr] ,
+rdf:predicate has
+    rdf:type = [rdf:Property], 
+    :domain = [rdf:Statement], 
+    :label = ["predicate"@en, "prédicat"@fr], 
     :range = [rdf:Property] ;
 
-rdf:subject has 
-    rdf:type = [rdf:Property] ,
-    :domain = [rdf:Statement] ,
-    :label = ["subject"@en, "sujet"@fr] ,
+rdf:subject has
+    rdf:type = [rdf:Property], 
+    :domain = [rdf:Statement], 
+    :label = ["subject"@en, "sujet"@fr], 
     :range = [:Resource] ;
 
-rdf:type has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Indicates membership of a class"] ,
-    :label = ["type"@en, "type"@fr] ,
+rdf:type has
+    rdf:type = [rdf:Property], 
+    :comment = ["Indicates membership of a class"], 
+    :label = ["type"@en, "type"@fr], 
     :range = [:Class] ;
 
-rdf:value has 
-    rdf:type = [rdf:Property] ,
+rdf:value has
+    rdf:type = [rdf:Property], 
     :label = ["object"@en, "value"@fr] ;
 
-<../../2000/01/rdf-schema#> has 
+<../../2000/01/rdf-schema#> has
     :seeAlso = [<../../2000/01/rdf-schema-more>] ;
 
-:Class has 
-    rdf:type = [:Class] ,
-    :comment = ["The concept of Class"] ,
-    :label = ["Class"@en, "Classe"@fr] ,
+:Class has
+    rdf:type = [:Class], 
+    :comment = ["The concept of Class"], 
+    :label = ["Class"@en, "Classe"@fr], 
     :subClassOf = [:Resource] ;
 
-:ConstraintProperty has 
-    rdf:type = [:Class] ,
-    :comment = ["Properties used to express RDF Schema constraints."] ,
-    :label = ["ConstraintProperty"@en, "PropriétéContrainte"@fr] ,
+:ConstraintProperty has
+    rdf:type = [:Class], 
+    :comment = ["Properties used to express RDF Schema constraints."], 
+    :label = ["ConstraintProperty"@en, "PropriétéContrainte"@fr], 
     :subClassOf = [rdf:Property, :ConstraintResource] ;
 
-:ConstraintResource has 
-    rdf:type = [:Class] ,
-    :comment = ["Resources used to express RDF Schema constraints."] ,
-    :label = ["ConstraintResource"@en, "RessourceContrainte"@fr] ,
+:ConstraintResource has
+    rdf:type = [:Class], 
+    :comment = ["Resources used to express RDF Schema constraints."], 
+    :label = ["ConstraintResource"@en, "RessourceContrainte"@fr], 
     :subClassOf = [:Resource] ;
 
-:Container has 
-    rdf:type = [:Class] ,
-    :comment = ["This represents the set Containers."] ,
-    :label = ["Container"@en, "Enveloppe"@fr] ,
+:Container has
+    rdf:type = [:Class], 
+    :comment = ["This represents the set Containers."], 
+    :label = ["Container"@en, "Enveloppe"@fr], 
     :subClassOf = [:Resource] ;
 
-:ContainerMembershipProperty has 
-    rdf:type = [:Class] ,
-    :label = ["ContainerMembershipProperty"@en] ,
+:ContainerMembershipProperty has
+    rdf:type = [:Class], 
+    :label = ["ContainerMembershipProperty"@en], 
     :subClassOf = [rdf:Property] ;
 
-:Literal has 
-    rdf:type = [:Class] ,
-    :comment = ["This represents the set of atomic values, eg. textual strings."] ,
+:Literal has
+    rdf:type = [:Class], 
+    :comment = ["This represents the set of atomic values, eg. textual strings."], 
     :label = ["Literal"@en, "Littéral"@fr] ;
 
-:Resource has 
-    rdf:type = [:Class] ,
-    :comment = ["The most general class"] ,
+:Resource has
+    rdf:type = [:Class], 
+    :comment = ["The most general class"], 
     :label = ["Resource"@en, "Ressource"@fr] ;
 
-:comment has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Use this for descriptions"] ,
-    :domain = [:Resource] ,
-    :label = ["comment"@en, "commentaire"@fr] ,
+:comment has
+    rdf:type = [rdf:Property], 
+    :comment = ["Use this for descriptions"], 
+    :domain = [:Resource], 
+    :label = ["comment"@en, "commentaire"@fr], 
     :range = [:Literal] ;
 
-:domain has 
-    rdf:type = [:ConstraintProperty] ,
-    :comment = ["This is how we associate a class with properties that its instances can have"] ,
+:domain has
+    rdf:type = [:ConstraintProperty], 
+    :comment = ["This is how we associate a class with properties that its instances can have"], 
     :label = ["domain"@en, "domaine"@fr] ;
 
-:isDefinedBy has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Indicates a resource containing and defining the subject resource."] ,
-    :domain = [:Resource] ,
-    :label = ["esDéfiniPar"@fr, "isDefinedBy"@en] ,
-    :range = [:Resource] ,
+:isDefinedBy has
+    rdf:type = [rdf:Property], 
+    :comment = ["Indicates a resource containing and defining the subject resource."], 
+    :domain = [:Resource], 
+    :label = ["esDéfiniPar"@fr, "isDefinedBy"@en], 
+    :range = [:Resource], 
     :subPropertyOf = [:seeAlso] ;
 
-:label has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Provides a human-readable version of a resource name."] ,
-    :domain = [:Resource] ,
-    :label = ["label"@en, "label"@fr] ,
+:label has
+    rdf:type = [rdf:Property], 
+    :comment = ["Provides a human-readable version of a resource name."], 
+    :domain = [:Resource], 
+    :label = ["label"@en, "label"@fr], 
     :range = [:Literal] ;
 
-:range has 
-    rdf:type = [:ConstraintProperty] ,
-    :comment = ["Properties that can be used in a schema to provide constraints"] ,
-    :domain = [rdf:Property] ,
-    :label = ["range"@en, "étendue"@fr] ,
+:range has
+    rdf:type = [:ConstraintProperty], 
+    :comment = ["Properties that can be used in a schema to provide constraints"], 
+    :domain = [rdf:Property], 
+    :label = ["range"@en, "étendue"@fr], 
     :range = [:Class] ;
 
-:seeAlso has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Indicates a resource that provides information about the subject resource."] ,
-    :domain = [:Resource] ,
-    :label = ["seeAlso"@en, "voirAussi"@fr] ,
+:seeAlso has
+    rdf:type = [rdf:Property], 
+    :comment = ["Indicates a resource that provides information about the subject resource."], 
+    :domain = [:Resource], 
+    :label = ["seeAlso"@en, "voirAussi"@fr], 
     :range = [:Resource] ;
 
-:subClassOf has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Indicates membership of a class"] ,
-    :domain = [:Class] ,
-    :label = ["sousClasseDe"@fr, "subClassOf"@en] ,
+:subClassOf has
+    rdf:type = [rdf:Property], 
+    :comment = ["Indicates membership of a class"], 
+    :domain = [:Class], 
+    :label = ["sousClasseDe"@fr, "subClassOf"@en], 
     :range = [:Class] ;
 
-:subPropertyOf has 
-    rdf:type = [rdf:Property] ,
-    :comment = ["Indicates specialization of properties"] ,
-    :domain = [rdf:Property] ,
-    :label = ["sousPropriétéDe"@fr, "subPropertyOf"@en] ,
+:subPropertyOf has
+    rdf:type = [rdf:Property], 
+    :comment = ["Indicates specialization of properties"], 
+    :domain = [rdf:Property], 
+    :label = ["sousPropriétéDe"@fr, "subPropertyOf"@en], 
     :range = [rdf:Property] ;
 
