@@ -1,4 +1,140 @@
+2014-11-01  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l, tests/trig/Makefile.am,
+	tests/trig/bug-584-dos.out, tests/trig/bug-584-dos.trig,
+	tests/trig/bug-584-unix.out, tests/trig/bug-584-unix.trig: Handle
+	\r in TRiG "graph-name {"
+
+	Fixes Issue #0000584
+	http://bugs.librdf.org/mantis/view.php?id=584
+
+	* src/turtle_lexer.l:
+	(turtle_token_print): Add GRAPH_NAME_LEFT_CURLY
+
+	* src/turtle_lexer.l:
+	(turtle_token_print): Add LEFT/RIGHT_CURLY
+
+	* src/turtle_lexer.l:
+	(main): Fix turtle_lexer_test to pass in string, not use yyinput
+
+	* tests/ntriples/Makefile.am, tests/ntriples/bug-577.nt,
+	tests/ntriples/bug-577.out: Add ntriples test bug-577 for URI
+	escaping
+
+	* src/turtle_common.h, src/turtle_parser.y: Rename
+	raptor_turtle_expand_name_escapes to
+	raptor_turtle_expand_qname_escapes
+
+	* src/raptor_internal.h, src/turtle_common.c, src/turtle_lexer.l:
+	(raptor_stringbuffer_append_turtle_string): Enforce URI
+	restrictions.
+
+	Add is_uri argument to distinguish.  Report type label correctly.
+	URIs may not have \t \b \n \r \f or raw ' ' or \u0020 or \u003C or
+	\u003E
+
+	Update all raptor_stringbuffer_append_turtle_string callers to
+	pass URI flag.
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term_internal): Enforce URI restrictions.
+	URIs may not have \t \b \n \r \f or raw ' ' or \u0020 or \u003C or
+	\u003E
+
+	* src/raptor_internal.h, src/raptor_ntriples.c,
+	src/turtle_common.c, src/turtle_lexer.l:
+	Remove raptor_turtle_check_uri_string() which is at wrong level.
+
+	Needs to be checked in earlier lexing so e.g. illegal escapes in
+	URIs such as \b are found.  For example.
+
+2014-10-28  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-changes.tsv, docs/raptor2-sections.txt,
+	src/raptor2.h.in, src/raptor_parse.c, src/raptor_serialize.c:
+	(raptor_world_get_parsers_count,
+	raptor_world_get_serializers_count): Added
+
+	Fixes Issue #0000581
+	http://bugs.librdf.org/mantis/view.php?id=581
+
+2014-10-26  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: doc fix
+
+	Fixes Issue #0000579
+	http://bugs.librdf.org/mantis/view.php?id=579
+
+	* src/raptor_iostream.c: Code tidy; use nobj for
+	raptor_iostream_write_bytes() return value.
+
+	Related to Issue #0000575 fix
+
+	* src/raptor_iostream.c:
+	Fix return values for
+	raptor_iostream_{hexa,}decimal_write
+
+	(raptor_iostream_decimal_write,
+	raptor_iostream_hexadecimal_write): Return non-0 if number of
+	objects returned from raptor_iostream_write_bytes() does not match
+	expected length.
+
+	Fixes Issue #0000575
+	http://bugs.librdf.org/mantis/view.php?id=575
+
+	* src/raptor_ntriples.c, src/raptor_term.c,
+	tests/ntriples/Makefile.am, tests/ntriples/bug-574.nt,
+	tests/ntriples/bug-574.out: Accept '_' as alias/typo for '-' in
+	lang strings.
+
+	Replace on parsing.
+	Fixes Issue #0000574
+	http://bugs.librdf.org/mantis/view.php?id=574
+
+2014-10-20  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #16 from rhmccullough/rdf-nil do not change
+	"( )" to "rdf:nil"
+
 2014-10-19  Dave Beckett <dave@dajobe.org>
+
+	* docs/Makefile.am, docs/raptor-1-to-2-map.tsv,
+	docs/raptor-changes.tsv: Rename changes file to raptor-changes.tsv
+
+	Not just about v1 to v2
+
+	* scripts/process-changes.pl: Make process-changes.pl report wrong
+	fields count
+
+	* .travis.yml: run autogen.sh not configure twice
+
+	* scripts/install-bison3.sh:
+	delete working dir
+
+	* scripts/install-bison3.sh: sudo
+
+	* .travis.yml: Looks like Travis OS support is not generally
+	available
+
+	http://blog.travis-ci.com/2014-05-13-multi-os-feature-available/
+
+2014-10-19  Richard H. McCullough <rhmccullough@gmail.com>
+
+	* src/raptor_serialize_turtle.c: do not change "( )" to "rdf:nil"
+
+	In tests/turtle: rapper -i turtle -o turtle test-08.ttl
+	changes "( )" to "rdf:nil".
+	This change to src/raptor_serialize_turtle.c will produce "( )" in
+	the output file.
+
+2014-10-19  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: Quote TRAVIS_OS_NAME that doesn't always seem to be
+	defined
+
+	* .travis.yml: use test not [ ]
+
+	* RELEASE.html: 2.0.15
 
 	* .travis.yml, scripts/install-bison3.sh: Travis update attempt
 
