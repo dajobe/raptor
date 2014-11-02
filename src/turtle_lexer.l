@@ -1081,6 +1081,9 @@ main(int argc, char *argv[])
       break;
   }
 
+  if(buf)
+    RAPTOR_FREE(char*, buf);
+  
   yylex_destroy(scanner);
 
   raptor_namespaces_clear(&turtle_parser.namespaces);
