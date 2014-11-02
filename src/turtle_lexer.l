@@ -988,18 +988,23 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 
 #ifdef STANDALONE
 
+#define FILE_READ_BUF_SIZE 4096
+
 int
 main(int argc, char *argv[]) 
 {
+  char *turtle_string = NULL;
   raptor_parser rdf_parser;
   raptor_turtle_parser turtle_parser;
   yyscan_t scanner;
   int token = EOF;
-  FILE *fh;
   YYSTYPE lval;
   const unsigned char *uri_string;
   const char *filename = NULL;
+  char *buf = NULL;
+  size_t len;
   raptor_world* world;
+  FILE *fh;
   
   world = raptor_new_world();
   
@@ -1016,6 +1021,10 @@ main(int argc, char *argv[])
     fh = (FILE*)stdin;
   }
 
+  turtle_string = RAPTOR_CALLOC(char*, FILE_READ_BUF_SIZE, 1);
+  fread(turtle_string, FILE_READ_BUF_SIZE, 1, fh);
+  fclose(fh);
+
   memset(&rdf_parser, 0, sizeof(rdf_parser));
   memset(&turtle_parser, 0, sizeof(turtle_parser));
 
@@ -1028,7 +1037,14 @@ main(int argc, char *argv[])
 
   yylex_init(&turtle_parser.scanner);
   scanner = turtle_parser.scanner;
-  turtle_lexer_set_in(fh, scanner);
+
+  len =  strlen(RAPTOR_GOOD_CAST(const char*, turtle_string));
+  buf =  RAPTOR_MALLOC(char*, len + 3);
+  memcpy(buf, turtle_string, len);
+  buf[len] =  ' ';
+  buf[len + 1] =  buf[len + 2] = '\0'; /* YY_END_OF_BUFFER_CHAR; */
+  (void)turtle_lexer__scan_buffer(buf, len + 3, scanner);
+
   turtle_lexer_set_extra(&rdf_parser, scanner);
 
   /* Initialise enough of the parser and locator to get error messages */
@@ -1061,6 +1077,8 @@ main(int argc, char *argv[])
   raptor_namespaces_clear(&turtle_parser.namespaces);
   
   raptor_free_uri(rdf_parser.base_uri);
+
+  RAPTOR_FREE(char*, turtle_string);
 
   raptor_free_world(world);
 
