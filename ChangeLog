@@ -1,4 +1,7 @@
-2014-11-01  Dave Beckett <dave@dajobe.org>
+2014-11-01  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_15 for 2.0.15 release (GIT
+	84f115e74819722e9a54c43a4b5c5652fbf57c4a)
 
 	* src/turtle_lexer.l, tests/trig/Makefile.am,
 	tests/trig/bug-584-dos.out, tests/trig/bug-584-dos.trig,
