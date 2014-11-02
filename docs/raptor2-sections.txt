@@ -47,6 +47,7 @@ raptor_snprintf
 raptor_vasprintf
 raptor_vsnprintf
 raptor_vsnprintf2
+raptor_sort_r
 raptor_log_handler
 raptor_log_message
 raptor_log_level
@@ -301,6 +302,7 @@ raptor_sequence_set_at
 raptor_sequence_shift
 raptor_sequence_size
 raptor_sequence_sort
+raptor_sequence_sort_r
 raptor_sequence_swap
 raptor_sequence_unshift
 </SECTION>
