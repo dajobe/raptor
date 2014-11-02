@@ -290,7 +290,7 @@ EXPONENT [eE][+-]?[0-9]+
                       turtle_parser->lineno++;
                   }
 
-                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) { /* " */
+                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser, 0)) { /* " */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
@@ -353,7 +353,7 @@ EXPONENT [eE][+-]?[0-9]+
                       turtle_parser->lineno++;
                   }
 
-                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) { /* " */
+                  if(raptor_stringbuffer_append_turtle_string(turtle_parser->sb, (unsigned char*)yytext, yyleng, '"', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser, 0)) { /* " */
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
@@ -444,7 +444,7 @@ EXPONENT [eE][+-]?[0-9]+
                   /* start at yytext + 1 to skip '<' and operate over
                    * length-2 bytes to skip '<' and '>'
                    */
-                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-2, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
+                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-2, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser, 1)) {
                     raptor_free_stringbuffer(sb);
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
@@ -490,7 +490,7 @@ EXPONENT [eE][+-]?[0-9]+
                   sb = raptor_new_stringbuffer();
                   if(!sb)
                     TURTLE_LEXER_OOM();
-                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser)) {
+                  if(raptor_stringbuffer_append_turtle_string(sb, (unsigned char*)yytext+1, yyleng-1, '>', (raptor_simple_message_handler)turtle_lexer_syntax_error, rdf_parser, 1)) {
                     raptor_free_stringbuffer(sb);
                     YY_FATAL_ERROR_EOF("raptor_stringbuffer_append_turtle_string failed");
                   }
@@ -560,8 +560,8 @@ turtle_copy_string_token(raptor_parser* rdf_parser,
       return NULL;
     
     rc = raptor_stringbuffer_append_turtle_string(sb, string, len, delim,
-                                                (raptor_simple_message_handler)turtle_lexer_syntax_error,
-                                                rdf_parser);
+                                                  (raptor_simple_message_handler)turtle_lexer_syntax_error,
+                                                  rdf_parser, 0);
     if(rc) {
       raptor_free_stringbuffer(sb);
       return NULL;
