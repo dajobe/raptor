@@ -958,6 +958,9 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
     case RIGHT_CURLY:
       return "}";
 
+    case GRAPH_NAME_LEFT_CURLY:
+      return "GRAPH_NAME {";
+
    default:
      RAPTOR_DEBUG2("UNKNOWN token %d - add a new case\n", token);
      return "(UNKNOWN)";
