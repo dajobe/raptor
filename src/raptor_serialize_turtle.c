@@ -1023,6 +1023,8 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         raptor_turtle_writer_newline(turtle_writer);
       } /* !context->written_being */
     } else {
+        context->resultset = 0;
+        context->written_begin = 0;
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" .", 2);
         raptor_turtle_writer_newline(turtle_writer);
         raptor_turtle_writer_newline(turtle_writer);
