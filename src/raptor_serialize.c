@@ -235,12 +235,12 @@ raptor_get_serializer_factory(raptor_world* world, const char *name)
  *
  * Get number of serializers
  *
- * Return value: number of serializers
+ * Return value: number of serializers or <0 on failure
  **/
 int
 raptor_world_get_serializers_count(raptor_world* world)
 {
-  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, NULL);
+  RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(world, raptor_world, -1);
 
   raptor_world_open(world);
 
