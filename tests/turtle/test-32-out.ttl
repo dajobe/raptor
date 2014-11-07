@@ -5,4 +5,4 @@ ex:node1
     rdf:value (ex:item1
         ex:item2
     ) .
- 
+

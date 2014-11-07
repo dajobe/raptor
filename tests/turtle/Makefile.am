@@ -55,10 +55,10 @@ rdfs-namespace.out \
 rdfq-results.out
 
 TEST_SERIALIZE_FILES= \
-test-28.ttl test-31.ttl test-32.ttl test-34.ttl
+test-28.ttl test-31.ttl test-32.ttl test-34.ttl test-39.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
-test-28-out.ttl test-31-out.ttl test-32-out.ttl test-34-out.ttl
+test-28-out.ttl test-31-out.ttl test-32-out.ttl test-34-out.ttl test-39-out.ttl
 
 TURTLE_HACK_OUT_FILES= \
 ex-38-turtle.out
@@ -212,7 +212,7 @@ check-turtle-serialize-syntax: build-rapper $(check_turtle_serialize_syntax_deps
 	    baseuri=$(RDF_NS_URI); \
 	  elif test $$name = rdfs-namespace; then \
 	    baseuri=$(RDFS_NS_URI); \
-	  elif test $$name = test-31 -o $$name = test-32; then \
+	  elif test $$name = test-31 -o $$name = test-32 -o $$name = test-39; then \
 	    baseuri=-; \
 	  else \
 	    baseuri=$(BASE_URI)$$test; \
