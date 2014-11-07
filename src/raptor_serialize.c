@@ -2,7 +2,6 @@
  *
  * raptor_serialize.c - Raptor Serializer API
  *
- # modified for mKR Oct/11/2014 Richard H. McCullough
  * Copyright (C) 2004-2010, David Beckett http://www.dajobe.org/
  * Copyright (C) 2004-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
