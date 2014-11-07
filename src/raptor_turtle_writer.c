@@ -148,7 +148,7 @@ raptor_new_turtle_writer(raptor_world* world,
                          raptor_iostream* iostr)
 {
   raptor_turtle_writer* turtle_writer;
-  int EMIT_MKR = 0;  /* Non 0 for mKR serializer */
+  int emit_mkr = 0;  /* Non 0 for mKR serializer */
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -181,7 +181,7 @@ raptor_new_turtle_writer(raptor_world* world,
   turtle_writer->base_uri = NULL;
   /* Ensure any initial base URI is not written relative */
   if(base_uri && write_base_uri)
-    raptor_turtle_writer_base(turtle_writer, base_uri, EMIT_MKR);
+    raptor_turtle_writer_base(turtle_writer, base_uri, emit_mkr);
   turtle_writer->base_uri = base_uri;
 
   return turtle_writer;
@@ -265,7 +265,7 @@ raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer,
  */
 void
 raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
-                                      raptor_namespace* ns, int EMIT_MKR)
+                                      raptor_namespace* ns, int emit_mkr)
 {
   raptor_iostream_string_write("@prefix ", turtle_writer->iostr);
   if(ns->prefix)
@@ -273,7 +273,7 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
                                  turtle_writer->iostr);
   raptor_iostream_counted_string_write(": ", 2, turtle_writer->iostr);
   raptor_turtle_writer_reference(turtle_writer, raptor_namespace_get_uri(ns));
-if(EMIT_MKR) {
+if(emit_mkr) {
   raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
 } else {
   raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
@@ -290,12 +290,12 @@ if(EMIT_MKR) {
  */
 void
 raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
-                          raptor_uri* base_uri, int EMIT_MKR)
+                          raptor_uri* base_uri, int emit_mkr)
 {
   if(base_uri) {
     raptor_iostream_counted_string_write("@base ", 6, turtle_writer->iostr);
     raptor_turtle_writer_reference(turtle_writer, base_uri);
-if(EMIT_MKR) {
+if(emit_mkr) {
     raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
 } else {
     raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
