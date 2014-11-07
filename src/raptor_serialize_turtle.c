@@ -986,7 +986,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
     }    
     raptor_turtle_writer_increase_indent(turtle_writer);
+
     rc = raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
+
     raptor_turtle_writer_decrease_indent(turtle_writer);
     
     if(emit_mkr) {
@@ -1143,6 +1145,7 @@ raptor_turtle_emit(raptor_serializer *serializer)
     if(raptor_avltree_iterator_next(iter)) break;
   }
   if(iter) raptor_free_avltree_iterator(iter);
+
   return 0;
 }
 
@@ -1560,7 +1563,7 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
   factory->desc.mime_types = turtle_types;
 
   factory->desc.label = "Turtle Terse RDF Triple Language";
-  factory->desc.uri_strings   = turtle_uri_strings;
+  factory->desc.uri_strings = turtle_uri_strings;
 
   factory->context_length     = sizeof(raptor_turtle_context);
   
