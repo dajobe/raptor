@@ -411,8 +411,8 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     nodes = (raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     if(!nodes)
       break;
-    predicate= nodes[0];
-    object= nodes[1];
+    predicate = nodes[0];
+    object = nodes[1];
     
     if(!raptor_uri_equals(predicate->term->value.uri,
                           context->rdf_first_uri)) {
@@ -554,8 +554,8 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     nodes = (raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     if(!nodes)
       break;
-    predicate= nodes[0];
-    object= nodes[1];
+    predicate = nodes[0];
+    object = nodes[1];
     numobj = 2;  /* = raptor_sequence_size(xxx); */
 
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
@@ -695,8 +695,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
     nodes = (raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
     if(!nodes)
       break;
-    predicate= nodes[0];
-    object= nodes[1];
+    predicate = nodes[0];
+    object = nodes[1];
 
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) { /* else skip predicate */
       /* no object list abbreviation possible, terminate last object */
