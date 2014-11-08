@@ -539,9 +539,8 @@ while(<IN>) {
   next if /^#/;
 
   my(@fields)=split(/\t/);
-  my $actual_n_fields=scalar(@fields);
-  die "$program: Bad line has $actual_n_fields fields expected $expected_n_fields $.: $_\n"
-    unless $actual_n_fields == $expected_n_fields;
+  die "$program: Bad line $.: $_\n"
+    unless scalar(@fields) == $expected_n_fields;
 
   if($fields[1] eq 'type') {
     my($old_ver, $dummy1, $old_name, $old_args, $new_ver, $dummy2, $new_name, $new_args,$notes)=@fields;
