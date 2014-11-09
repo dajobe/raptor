@@ -116,7 +116,7 @@ raptor1-eol.html \
 $(man_MANS) \
 version.xml.in \
 upgrade-script.pl \
-raptor-1-to-2-map.tsv
+raptor-changes.tsv
 
 DISTCLEANFILES+= \
 raptor-fake.h
@@ -141,8 +141,8 @@ raptor-tutorial-parsing.xml: rdfcat.c
 
 raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
-raptor-changes.xml: $(srcdir)/raptor-1-to-2-map.tsv $(top_srcdir)/scripts/process-changes.pl
-	$(PERL) $(top_srcdir)/scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
+raptor-changes.xml: $(srcdir)/raptor-changes.tsv $(top_srcdir)/scripts/process-changes.pl
+	$(PERL) $(top_srcdir)/scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
 
 raptor-formats.xml: $(top_builddir)/scripts/build-formats
 	$(top_builddir)/scripts/build-formats > $@
@@ -150,8 +150,8 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats
 $(top_builddir)/scripts/build-formats:
 	cd $(top_builddir)/scripts && $(MAKE) build-formats
 
-upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-1-to-2-map.tsv
-	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-1-to-2-map.tsv
+upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-changes.tsv
+	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
 
 endif
 

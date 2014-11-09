@@ -9,21 +9,76 @@
 <h1 style="text-align:center">Raptor RDF Syntax Library - Release Notes</h1>
 
 
-<h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
+<h2 id="rel2_0_16"><a name="rel2_0_16">Raptor2 2.0.16 changes</a></h2>
 
 <p>Not yet released.
 </p>
 
+
+<h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
+
+
+<p>This release mainly made general bug fixes as well as several
+fixes to the Turtle / N-Triples family of parsers and serializers. It
+added utility functions for re-entrant sorting of objects and
+sequences and a few other useful methods.<br />
+</p>
+
+
 <p>Issues Fixed:</p>
 <ul>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=574">0000574</a>: Language tags with underscore</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=575">0000575</a>: Wrong API or wrong API documentation</li>
 <li><a href="http://bugs.librdf.org/mantis/view.php?id=576">0000576</a>: Wrong assert for a counted string being nul terminated</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=577">0000577</a>: iri parsing does not conform to REC-n-quads-20140225</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=579">0000579</a>: raptor_world_generate_bnodeid accepts world not parser</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=581">0000581</a>: My patch for parser and serializers count</li>
+<li><a href="http://bugs.librdf.org/mantis/view.php?id=584">0000584</a>: raptor fails to parse trig files with dos line endings</li>
 </ul>
 
-<h3>Parser class changes</h3>
+
+<h3>Parser changes</h3>
 
 <p>Fixed <code>raptor_grddl_filter_triples()</code> check for three
 URIs which has been broken since 2007 but just did more work.  Found
 via gcc5 warning.</p>
+
+<p>The TRiG parser now accepts \r newlines between the graph name and
+the following '{'.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=584">Issue #0000584</a>
+</p>
+
+<p>Turtle, TRiG, N-Triples and N-Quads parsers now check escapes
+correctly for URI strings. \t \b \n \r \f are forbidden.  Check that
+raw ' ' or \u0020, \u003C or \u003E are also not accepted.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=577">Issue #0000577</a>
+</p>
+
+<p>N-Triples / N-Quads parsers nwo accept '_' as an alias for '-' in
+lang strings. '_' is not legal.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=574">Issue #0000574</a>
+</p>
+
+<p>Updated RDFa parser (librdfa) to support full URLs for
+<code>typeof</code> from upstream. Re-checked several tests which
+have been passing for some time but the expected output was not a
+correct conversion from the testsuite sparql.</p>
+
+<h3>Serializer changes</h3>
+
+<p>Turtle serializer now writes <code>()</code> instead of
+<code>rdf:nil</code> via 
+<a href="https://github.com/dajobe/raptor/pull/16">Pull Request #16</a>
+from Richard H. McCullough. Thanks!
+</p>
+
+<h3>I/O-stream class changes</h3>
+
+<p><code>raptor_iostream_decimal_write()</code> and
+<code>raptor_iostream_hexadecimal_write</code> now return non-0 if
+they do not succeed in writing successfully.
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=575">Issue #0000575</a>
+</p>
 
 <h3>Term class changes</h3>
 
@@ -52,7 +107,17 @@ the length internally.
 Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
 </p>
 
+<h3>World class changes</h3>
+
+<p>Added <code>raptor_world_get_parsers_count()</code>
+and <code>raptor_world_get_serializers_count()</code>
+with patch from Victor Porton. Thanks!
+Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=581">Issue #0000581</a>.</p>
+
 <h3>Other Changes</h3>
+
+<p>Made raptor work with Travis CI again; have to download and
+install Bison 3.</p>
 
 <p>Added <code>raptor_sort_r()</code> and
 <code>raptor_sequence_sort_r()</code> re-entrant sort utility methods
@@ -66,6 +131,16 @@ terminate the output string.</p>
 
 <p>Fix a -99 &lt;= var &lt;= 99 timezone interval check.  Thanks to
 Richard Trieu for the report.</p>
+
+<p>Improve configure warning check using AC_LANG_WERROR</p>
+
+<p>Use C99 <code>__FUNCTION__</code> replacing <code>__func__</code>
+from C90.</p>
+
+<p>Improve build-time flex and bison output to be more silent.</p>
+
+<p>Added Intel C compiler (icc) support from Sebastian Freundt
+(hroptatyr on GitHub) - Thanks.</p>
 
 
 <h2 id="rel2_0_14"><a name="rel2_0_14">Raptor2 2.0.14 changes</a></h2>

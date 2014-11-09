@@ -428,6 +428,8 @@
 2.0.13	-	-	-	2.0.14	unsigned char*	raptor_uri_counted_filename_to_uri_string	(const char *filename, size_t filename_len)	-
 2.0.14	-	-	-	2.0.15	void	raptor_sort_r	(void *base, size_t nel, size_t width, raptor_data_compare_arg_handler compar, void *user_data)	-
 2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_data_compare_arg_handler compare, void* user_data)	Uses raptor_sort_r() internally.
+2.0.14	-	-	-	2.0.15	int	raptor_world_get_parsers_count	(raptor_world* world)	-
+2.0.14	-	-	-	2.0.15	int	raptor_world_get_serializers_count	(raptor_world* world)	-
 #
 # Types
 #

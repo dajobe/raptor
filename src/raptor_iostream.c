@@ -774,7 +774,8 @@ int
 raptor_iostream_string_write(const void *string, raptor_iostream *iostr)
 {
   size_t len = strlen((const char*)string);
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -792,7 +793,8 @@ int
 raptor_iostream_counted_string_write(const void *string, size_t len,
                                      raptor_iostream *iostr) 
 {
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -810,7 +812,8 @@ raptor_uri_write(raptor_uri* uri, raptor_iostream* iostr)
 {
   size_t len;
   const void *string = raptor_uri_as_counted_string(uri, &len);
-  return (raptor_iostream_write_bytes(string, 1, len, iostr) != RAPTOR_BAD_CAST(int, len));
+  int nobj = raptor_iostream_write_bytes(string, 1, len, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != len);
 }
 
 
@@ -855,9 +858,9 @@ raptor_stringbuffer_write(raptor_stringbuffer *sb, raptor_iostream* iostr)
   
   length = raptor_stringbuffer_length(sb);
   if(length) {
-    int count = raptor_iostream_write_bytes(raptor_stringbuffer_as_string(sb),
+    int nobj = raptor_iostream_write_bytes(raptor_stringbuffer_as_string(sb),
                                             1, length, iostr);
-    return (RAPTOR_BAD_CAST(size_t, count) != length);
+    return (RAPTOR_BAD_CAST(size_t, nobj) != length);
   } else
     return 0;
 }
@@ -882,6 +885,8 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   unsigned char *p;
   int i = integer;
   size_t length = 1;
+  int nobj;
+
   if(integer < 0) {
     length++;
     i= -integer;
@@ -900,7 +905,8 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   if(integer < 0)
     *p= '-';
   
-  return raptor_iostream_write_bytes(buf, 1, length, iostr);
+  nobj = raptor_iostream_write_bytes(buf, 1, length, iostr);
+  return (RAPTOR_BAD_CAST(size_t, nobj) != length);
 }
 
 
@@ -921,7 +927,7 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
                                   raptor_iostream* iostr)
 {
   char *buf;
-  int rc;
+  int nobj;
 
   if(width < 1)
     return 1;
@@ -933,9 +939,9 @@ raptor_iostream_hexadecimal_write(unsigned int integer, int width,
   (void)raptor_format_integer(buf, width + 1, integer, /* base */ 16,
                               width, '0');
 
-  rc = raptor_iostream_write_bytes(buf, 1, width, iostr);
+  nobj = raptor_iostream_write_bytes(buf, 1, width, iostr);
   RAPTOR_FREE(char*, buf);
-  return rc;
+  return (nobj != width);
 }
 
 

@@ -16,6 +16,8 @@ raptor_world_is_serializer_name
 raptor_world_generate_bnodeid
 raptor_world_set_generate_bnodeid_handler
 raptor_world_set_generate_bnodeid_parameters
+raptor_world_get_parsers_count
+raptor_world_get_serializers_count
 </SECTION>
 
 <SECTION>
@@ -45,6 +47,7 @@ raptor_snprintf
 raptor_vasprintf
 raptor_vsnprintf
 raptor_vsnprintf2
+raptor_sort_r
 raptor_log_handler
 raptor_log_message
 raptor_log_level
@@ -52,6 +55,7 @@ raptor_log_level_get_label
 raptor_domain
 raptor_domain_get_label
 raptor_data_compare_handler
+raptor_data_compare_arg_handler
 raptor_data_context_free_handler
 raptor_data_context_print_handler
 raptor_data_free_handler
@@ -298,6 +302,7 @@ raptor_sequence_set_at
 raptor_sequence_shift
 raptor_sequence_size
 raptor_sequence_sort
+raptor_sequence_sort_r
 raptor_sequence_swap
 raptor_sequence_unshift
 </SECTION>

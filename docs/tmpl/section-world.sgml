@@ -177,3 +177,21 @@ library-wide configuration flags and options.
 @base: 
 
 
+<!-- ##### FUNCTION raptor_world_get_parsers_count ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+
+<!-- ##### FUNCTION raptor_world_get_serializers_count ##### -->
+<para>
+
+</para>
+
+@world: 
+@Returns: 
+
+

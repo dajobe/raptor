@@ -26,14 +26,18 @@ nt2013-ex1.nt \
 nt2013-ex2.nt \
 nt2013-ex3.nt \
 nt2013-ex4.nt \
-bug-562.nt
+bug-562.nt \
+bug-574.nt \
+bug-577.nt
 
 NT_OUT_FILES = test.out \
 nt2013-ex1.out \
 nt2013-ex2.out \
 nt2013-ex3.out \
 nt2013-ex4.out \
-bug-562.out
+bug-562.out \
+bug-574.out \
+bug-577.out
 
 NT_BAD_TEST_FILES=bad-00.nt bad-02.nt bad-03.nt bad-04.nt \
 bad-05.nt bad-06.nt bad-07.nt

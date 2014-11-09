@@ -1,17 +1,32 @@
 # see
-#   http://about.travis-ci.org/docs/user/getting-started/
-#   http://about.travis-ci.org/docs/user/languages/c/
-#   http://about.travis-ci.org/docs/user/build-configuration/
+#   http://docs.travis-ci.com/user/getting-started/
+#   http://docs.travis-ci.com/user/languages/c/
+#   http://docs.travis-ci.com/user/build-configuration/
+#   http://docs.travis-ci.com/user/multi-os/
 #
+
 language: c
-branches:
-  only:
-    - master
-before_install:
-  - sudo apt-get update -qq
-  - sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
+
 compiler:
   - gcc
   - clang
-before_script: ./autogen.sh
 
+os:
+  - linux
+  - osx
+
+matrix:
+  allow_failures:
+    - os: osx
+
+branches:
+  only:
+    - master
+
+install:
+  - env | sort
+  - if [ "$TRAVIS_OS_NAME" = "" ]; then TRAVIS_OS_NAME=linux; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install bison gtk-doc yajl; fi
+
+script: ./autogen.sh && make && make test
