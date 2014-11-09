@@ -1583,11 +1583,6 @@ static const char* const turtle_uri_strings[3] = {
   "http://www.dajobe.org/2004/01/turtle/",
   NULL
 };
-static const char* const mkr_uri_strings[3] = {
-  "http://www.w3.org/ns/formats/mKR",
-  "http://www.dajobe.org/2004/01/mkr/",
-  NULL
-};
   
 #define TURTLE_TYPES_COUNT 6
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
