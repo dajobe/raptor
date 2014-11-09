@@ -722,7 +722,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   int i;
   int skip_object;
   int written_size;
-  static int size, arity;
+  static int size;
+  static int arity;
   static int ntuple = 0;
   static int nvalue = 0;
   char n[4];
