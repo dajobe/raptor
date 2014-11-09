@@ -98,7 +98,9 @@ typedef struct {
 
 /* prototypes for functions */
 
-void itoa(int n, char* s);
+static void raptor_mkr_itodn(int n, char* dn);
+static void raptor_mkr_itoa(int n, char* s);
+static void raptor_mkr_reverse(char* s);
 
 static int raptor_turtle_emit_resource(raptor_serializer *serializer,
                                        raptor_abbrev_node* node,
@@ -198,7 +200,11 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     return 1;
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
-      raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char *)"( )", 3);
+      if(emit_mkr) {
+          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char *)" ", 1);
+      } else {
+          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char *)"( )", 3);
+      }
       return 0;
   }
 
@@ -641,11 +647,55 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   return rv;
 }
 
-void
-itoa(int n, char* s)
+/*
+ * raptor_mkr_itodn:
+ * @n: integer argument number
+ * @dn: char* dollar variable name
+ * 
+ * convert integer to char* dollar variable using bash shell convention
+ * dn = $n   for  1 <= n <= 9
+ * dn = ${n} for 10 <= n
+ * 
+ **/
+
+static void
+raptor_mkr_itodn(int n, char* dn)
 {
-    s[0] = (char)(n + (int)'0');
-    s[1] = '\0';
+    char s[4];
+    raptor_mkr_itoa(n,s);
+    dn[0] = '$'; dn[1] = '\0';
+    if(n <= 9)
+        strcat(dn,s);
+    else {
+        strcat(dn,"{");
+        strcat(dn,s);
+        strcat(dn,"}");
+    }
+    strcat(dn,"\0");
+}
+
+/* convert integer to ascii string */
+static void
+raptor_mkr_itoa(int n, char* s)
+{
+    int i = 0;
+    do {
+        s[i++] = n % 10 + '0';
+    } while ((n /= 10) > 0);
+    s[i] = '\0';
+    raptor_mkr_reverse(s);
+}
+
+/* reverse string in place */
+static void
+raptor_mkr_reverse(char* s)
+{
+    int c, i, j;
+    for(i = 0, j = strlen(s)-1; i < j; i++, j--) {
+        c = s[i];
+        s[i] = s[j];
+        s[j] = c;
+    }
 }
 
 /*
@@ -676,6 +726,7 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   static int ntuple = 0;
   static int nvalue = 0;
   char n[4];
+  char dn[7];
   char variable[20];
   char format[120]; 
   char meaning[120];
@@ -739,7 +790,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
       } else if(qname && !context->written_begin) {
           if(!strcmp((const char*)qname->local_name, (const char*)"resultVariable")) {
               nvalue++;
-              itoa(nvalue, n);
+              raptor_mkr_itoa(nvalue, n);
+              raptor_mkr_itodn(nvalue, dn);
               strcpy(variable, (char *)object->term->value.literal.string);
               if(nvalue > 1) {
                   strcat(format, (char *)(const char*)", ");
@@ -748,8 +800,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               strcat(format, (const char*)"value:");
               strcat(format, n);
               strcat(meaning, variable);
-              strcat(meaning, (const char*)" := $");
-              strcat(meaning, n);
+              strcat(meaning, (const char*)" := ");
+              strcat(meaning, dn);
               strcat(meaning, (const char *)";");
               raptor_turtle_writer_qname(turtle_writer, qname);
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = [", 4);
@@ -828,7 +880,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
             if((i > 0) && !written_size) {
               /* append rest of format and meaning list */
               nvalue++;
-              itoa(nvalue, n);
+              raptor_mkr_itoa(nvalue, n);
+              raptor_mkr_itodn(nvalue, dn);
               strcpy(variable, (char *)object->term->value.literal.string);
               if(nvalue > 1) {
                   strcat(format, (char *)(const char*)", ");
@@ -837,8 +890,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               strcat(format, (const char*)"value:");
               strcat(format, n);
               strcat(meaning, variable);
-              strcat(meaning, (const char*)" := $");
-              strcat(meaning, n);
+              strcat(meaning, (const char*)" := ");
+              strcat(meaning, dn);
               strcat(meaning, (const char *)";");
             }
             rv = raptor_turtle_emit_literal(serializer, object, depth+1);
