@@ -91,10 +91,11 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out '2>' $$name.err; \
 	    cat $$name.err; \
 	    diff -a -u $(srcdir)/$$name.out $$name.mkr; \
 	  fi; \
-	  rm -f $$name.out $$name.err \
+	  rm -f $$name.out $$name.err; \
 	done; \
 	set -e; exit $$result
 
