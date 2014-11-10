@@ -98,10 +98,6 @@ typedef struct {
 
 /* prototypes for functions */
 
-static void raptor_mkr_itodn(int n, char* dn);
-static void raptor_mkr_itoa(int n, char* s);
-static void raptor_mkr_reverse(char* s);
-
 static int raptor_turtle_emit_resource(raptor_serializer *serializer,
                                        raptor_abbrev_node* node,
                                        int depth);
@@ -201,9 +197,9 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
       if(emit_mkr) {
-          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char *)" ", 1);
+          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char*)" ", 1);
       } else {
-          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char *)"( )", 3);
+          raptor_turtle_writer_raw_counted(turtle_writer,(const unsigned char*)"( )", 3);
       }
       return 0;
   }
@@ -647,56 +643,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   return rv;
 }
 
-/*
- * raptor_mkr_itodn:
- * @n: integer argument number
- * @dn: char* dollar variable name
- * 
- * convert integer to char* dollar variable using bash shell convention
- * dn = $n   for  1 <= n <= 9
- * dn = ${n} for 10 <= n
- * 
- **/
 
-static void
-raptor_mkr_itodn(int n, char* dn)
-{
-    char s[4];
-    raptor_mkr_itoa(n,s);
-    dn[0] = '$'; dn[1] = '\0';
-    if(n <= 9)
-        strcat(dn,s);
-    else {
-        strcat(dn,"{");
-        strcat(dn,s);
-        strcat(dn,"}");
-    }
-    strcat(dn,"\0");
-}
-
-/* convert integer to ascii string */
-static void
-raptor_mkr_itoa(int n, char* s)
-{
-    int i = 0;
-    do {
-        s[i++] = n % 10 + '0';
-    } while ((n /= 10) > 0);
-    s[i] = '\0';
-    raptor_mkr_reverse(s);
-}
-
-/* reverse string in place */
-static void
-raptor_mkr_reverse(char* s)
-{
-    int c, i, j;
-    for(i = 0, j = strlen(s)-1; i < j; i++, j--) {
-        c = s[i];
-        s[i] = s[j];
-        s[j] = c;
-    }
-}
 
 /*
  * raptor_mkr_emit_subject_resultset:
@@ -706,6 +653,10 @@ raptor_mkr_reverse(char* s)
  * 
  * Emit rdfq result set as mKR relation.
  * Emit rdfq solution as comma-separated values.
+ *
+ * convert integer to char* dollar variable using bash shell convention
+ * $n   for  1 <= n <= 9
+ * ${n} for 10 <= n
  * 
  * Return value: non-0 on failure
  **/
@@ -726,14 +677,11 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   static int arity;
   static int ntuple = 0;
   static int nvalue = 0;
-  char n[4];
-  char dn[7];
-  char variable[20];
-  char format[120]; 
-  char meaning[120];
+  raptor_stringbuffer *format = raptor_new_stringbuffer(); 
+  raptor_stringbuffer *meaning = raptor_new_stringbuffer();
   written_size = 0;
-  strcpy(format, (char *)"format = [");
-  strcpy(meaning, (char *)"meaning = {");
+  raptor_stringbuffer_append_string(format, (const unsigned char*)"format = [", 1);
+  raptor_stringbuffer_append_string(meaning, (const unsigned char*)"meaning = {", 1);
 
   RAPTOR_DEBUG_ABBREV_NODE("Emitting subject resultset", subject->node);
 
@@ -791,19 +739,21 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
       } else if(qname && !context->written_begin) {
           if(!strcmp((const char*)qname->local_name, (const char*)"resultVariable")) {
               nvalue++;
-              raptor_mkr_itoa(nvalue, n);
-              raptor_mkr_itodn(nvalue, dn);
-              strcpy(variable, (char *)object->term->value.literal.string);
               if(nvalue > 1) {
-                  strcat(format, (char *)(const char*)", ");
-                  strcat(meaning, (char *)(const char*)" ");
+                  raptor_stringbuffer_append_string(format, (const unsigned char*)", ", 1);
+                  raptor_stringbuffer_append_string(meaning, (const unsigned char*)" ", 1);
               }
-              strcat(format, (const char*)"value:");
-              strcat(format, n);
-              strcat(meaning, variable);
-              strcat(meaning, (const char*)" := ");
-              strcat(meaning, dn);
-              strcat(meaning, (const char *)";");
+              raptor_stringbuffer_append_string(format, (const unsigned char*)"value:", 1);
+              raptor_stringbuffer_append_decimal(format, nvalue);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)object->term->value.literal.string, 1);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)" := $", 1);
+              if(nvalue > 9)
+                raptor_stringbuffer_append_string(meaning, (const unsigned char*)"{", 1);
+              raptor_stringbuffer_append_decimal(meaning, nvalue);
+              if(nvalue > 9)
+                raptor_stringbuffer_append_string(meaning, (const unsigned char*)"}", 1);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)";", 1);
+
               raptor_turtle_writer_qname(turtle_writer, qname);
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = [", 4);
               skip_object = 0;
@@ -816,8 +766,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               skip_object = 0;
           } else if(!context->written_begin) {
               arity = nvalue;
-              strcat(format, (const char*)"], \0");
-              strcat(meaning, (const char*)"} ;\0");
+              raptor_stringbuffer_append_string(format, (const unsigned char*)"], ", 1);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)"} ;", 1);
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"result is ", 10);
               raptor_turtle_emit_resource(serializer, subject->node, depth+1);
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
@@ -826,13 +776,17 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"result is relation with", 23);
               raptor_turtle_writer_increase_indent(turtle_writer);
               raptor_turtle_writer_newline(turtle_writer);
-
-              raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)format, strlen(format));
+              raptor_turtle_writer_raw_counted(turtle_writer,
+                                               (const unsigned char*)raptor_stringbuffer_as_string(format),
+                                               raptor_stringbuffer_length(format));
               raptor_turtle_writer_newline(turtle_writer);
-
-              raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)meaning, strlen(meaning));
+              raptor_turtle_writer_raw_counted(turtle_writer,
+                                               (const unsigned char*)raptor_stringbuffer_as_string(meaning),
+                                               raptor_stringbuffer_length(meaning));
               raptor_turtle_writer_decrease_indent(turtle_writer);
               raptor_turtle_writer_newline(turtle_writer);
+              raptor_free_stringbuffer(format);
+              raptor_free_stringbuffer(meaning);
 
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"begin relation result ;", 23);
               raptor_turtle_writer_decrease_indent(turtle_writer);
@@ -881,19 +835,20 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
             if((i > 0) && !written_size) {
               /* append rest of format and meaning list */
               nvalue++;
-              raptor_mkr_itoa(nvalue, n);
-              raptor_mkr_itodn(nvalue, dn);
-              strcpy(variable, (char *)object->term->value.literal.string);
               if(nvalue > 1) {
-                  strcat(format, (char *)(const char*)", ");
-                  strcat(meaning, (char *)(const char*)" ");
+                  raptor_stringbuffer_append_string(format, (char*)(const char*)", ", 1);
+                  raptor_stringbuffer_append_string(meaning, (char*)(const char*)" ", 1);
               }
-              strcat(format, (const char*)"value:");
-              strcat(format, n);
-              strcat(meaning, variable);
-              strcat(meaning, (const char*)" := ");
-              strcat(meaning, dn);
-              strcat(meaning, (const char *)";");
+              raptor_stringbuffer_append_string(format, (const unsigned char*)"value:", 1);
+              raptor_stringbuffer_append_decimal(format, nvalue);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)object->term->value.literal.string, 1);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)" := $", 1);
+              if(nvalue > 9)
+                raptor_stringbuffer_append_string(meaning, (const unsigned char*)"{", 1);
+              raptor_stringbuffer_append_decimal(meaning, nvalue);
+              if(nvalue > 9)
+                raptor_stringbuffer_append_string(meaning, (const unsigned char*)"}", 1);
+              raptor_stringbuffer_append_string(meaning, (const unsigned char*)";", 1);
             }
             rv = raptor_turtle_emit_literal(serializer, object, depth+1);
             break;
