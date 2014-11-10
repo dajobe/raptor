@@ -1034,9 +1034,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
             
             if(blank && depth > 1) {
               if(!context->written_begin) {
-                raptor_turtle_writer_newline(turtle_writer);
                 if(numobj > 1)
                   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+                raptor_turtle_writer_newline(turtle_writer);
                 raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)";}", 2);
               }
             }
@@ -1058,9 +1058,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
             raptor_turtle_writer_decrease_indent(turtle_writer);
             
             if(blank && depth > 1) {
-                raptor_turtle_writer_newline(turtle_writer);
                 if(numobj > 1)
                   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+                raptor_turtle_writer_newline(turtle_writer);
                 raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)";}", 2);
             }
         }

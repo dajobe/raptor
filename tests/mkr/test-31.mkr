@@ -1,4 +1,5 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-31.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix rss: <http://purl.org/rss/1.0/> ;
 
 <http://example.org/block> has
@@ -6,6 +7,6 @@
     _:genid1 has
         rdf:_1 = [<http://example.org/first-item>], 
         rdf:_2 = [<http://example.org/second-item>], 
-        rdf:type = [rdf:Seq
-    ];}] ;
+        rdf:type = [rdf:Seq]
+    ;}] ;
 

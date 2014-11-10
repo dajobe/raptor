@@ -81,19 +81,19 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	  elif test $$name = rdfs-namespace; then \
 	    baseuri=$(RDFS_NS_URI); \
 	  else \
-	    baseuri=-; \
+            baseuri=$(BASE_URI)$$test; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $(srcdir)/$$name.out $$name.mkr; \
+	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out '2>' $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out; \
 	    cat $$name.err; \
-	    diff -a -u $(srcdir)/$$name.out $$name.mkr; \
+	    diff -a -u $$name.out $(srcdir)/$$name.mkr; \
 	  fi; \
 	  rm -f $$name.out $$name.err; \
 	done; \

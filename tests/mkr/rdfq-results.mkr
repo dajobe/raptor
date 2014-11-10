@@ -1,10 +1,11 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/rdfq-results.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
-<file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> has
+<> has
     rs:resultVariable = ["x", "y"], 
     rs:size = [4] ;
-result is <file:///cygdrive/c/Users/rhm/github/raptor/tests/mkr/rdfq-results.ttl> ;
+result is <> ;
 result is relation with
     format = [value:1, value:2], 
     meaning = {x := $1; y := $2;} ;
