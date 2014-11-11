@@ -793,9 +793,6 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               raptor_turtle_writer_newline(turtle_writer);
               context->written_begin = 1;
               skip_object = 0;
-              /* write mKR relation tuples:  "value:1, value:2, ..., value:n ;" */ /*
-              raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"# tuples #", 10);
-              raptor_turtle_writer_newline(turtle_writer); */
               ntuple = 1; nvalue = 0;
           } /* !context->written_begin */
       } else if(qname) {
