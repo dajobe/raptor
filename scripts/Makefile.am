@@ -29,6 +29,8 @@ rdfcompare
 
 CLEANFILES =
 
+AM_CPPFLAGS= -I$(top_srcdir)/src
+
 if MAINTAINER_MODE
 EXTRA_PROGRAMS = build-formats
 
