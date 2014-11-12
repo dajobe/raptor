@@ -833,8 +833,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
               /* append rest of format and meaning list */
               nvalue++;
               if(nvalue > 1) {
-                  raptor_stringbuffer_append_string(format, (char*)(const char*)", ", 1);
-                  raptor_stringbuffer_append_string(meaning, (char*)(const char*)" ", 1);
+                  raptor_stringbuffer_append_string(format, (const unsigned char*)", ", 1);
+                  raptor_stringbuffer_append_string(meaning, (const unsigned char*)" ", 1);
               }
               raptor_stringbuffer_append_string(format, (const unsigned char*)"value:", 1);
               raptor_stringbuffer_append_decimal(format, nvalue);
