@@ -929,6 +929,7 @@ int raptor_init_serializer_rdfxmla(raptor_world* world);
 
 /* raptor_serialize_turtle.c */  
 int raptor_init_serializer_turtle(raptor_world* world);
+int raptor_init_serializer_mkr(raptor_world* world);
 
 /* raptor_serialize_html.c */  
 int raptor_init_serializer_html(raptor_world* world);
@@ -1311,8 +1312,8 @@ RAPTOR_INTERNAL_API raptor_turtle_writer* raptor_new_turtle_writer(raptor_world*
 RAPTOR_INTERNAL_API void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
-RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
-void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns, int emit_mkr);
+void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri, int emit_mkr);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
@@ -1329,6 +1330,7 @@ void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const uns
 int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
 int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
 int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
+
 
 /**
  * raptor_json_writer:

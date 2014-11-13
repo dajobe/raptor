@@ -79,6 +79,10 @@ raptor_serializers_init(raptor_world* world)
   rc += raptor_init_serializer_turtle(world) != 0;
 #endif
 
+#ifdef RAPTOR_SERIALIZER_MKR
+  rc += raptor_init_serializer_mkr(world) != 0;
+#endif
+
 #ifdef RAPTOR_SERIALIZER_RDFXML_ABBREV
   rc += raptor_init_serializer_rdfxmla(world) != 0;
 #endif

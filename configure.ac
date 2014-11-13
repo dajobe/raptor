@@ -920,6 +920,7 @@ rdfxml_serializer=no
 ntriples_serializer=no
 rdfxml_abbrev_serializer=no
 turtle_serializer=no
+mkr_serializer=no
 rss_1_0_serializer=no
 atom_serializer=no
 dot_serializer=no
@@ -927,7 +928,7 @@ html_serializer=no
 json_serializer=no
 nquads_serializer=no
 
-rdf_serializers_available="rdfxml rdfxml-abbrev turtle ntriples rss-1.0 dot html json atom nquads"
+rdf_serializers_available="rdfxml rdfxml-abbrev turtle mkr ntriples rss-1.0 dot html json atom nquads"
 
 # This is needed because autoheader can't work out which computed
 # symbols must be pulled from acconfig.h into config.h.in
@@ -936,6 +937,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_TURTLE, 1, [Building Turtle serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_MKR,    1, [Building mKR    serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_DOT, 1, [Building GraphViz DOT serializer])
@@ -969,6 +971,7 @@ AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML, test $rdfxml_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_NTRIPLES, test $ntriples_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RDFXML_ABBREV, test $rdfxml_abbrev_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_TURTLE, test $turtle_serializer = yes)
+AM_CONDITIONAL(RAPTOR_SERIALIZER_MKR,    test $mkr_serializer    = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_RSS_1_0, test $rss_1_0_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_ATOM, test $atom_serializer = yes)
 AM_CONDITIONAL(RAPTOR_SERIALIZER_DOT, test $dot_serializer = yes)
@@ -1333,6 +1336,7 @@ tests/rdfa11/Makefile
 tests/json/Makefile
 tests/rdfxml/Makefile
 tests/turtle/Makefile
+tests/mkr/Makefile
 tests/turtle-2013/Makefile
 tests/trig/Makefile
 utils/Makefile

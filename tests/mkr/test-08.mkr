@@ -1,0 +1,7 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-08.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix : <http://example.org/stuff/1.0/> ;
+
+:a has
+    :b = [ ] ;
+
