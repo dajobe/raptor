@@ -1,4 +1,30 @@
-2014-11-01  Dave Beckett  <dave@dajobe.org>
+2014-11-14  Dave Beckett <dave@dajobe.org>
+
+	* README.html, docs/raptor-serializers.xml: Add mKR serializer
+	references to docs
+
+	* Merge pull request #18 from dajobe/mkr-serializer mKR serializer
+	- single commit
+
+2014-11-12  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-bison.pl, scripts/fix-gtkdoc-header.pl: Update perms
+
+	* scripts/Makefile.am: Add AM_CPPFLAGS
+
+2014-11-04  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_parse.c, src/raptor_serialize.c: Fix error returns in
+	new world methods
+
+	(raptor_world_get_parser_factory,
+	raptor_world_get_serializers_count): Fix return value in
+	assertions
+
+2014-11-01  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, NEWS.html, RELEASE.html, configure.ac: Bumped
+	version to 2.0.16
 
 	* Snapshotted raptor2_2_0_15 for 2.0.15 release (GIT 815e4a75a0e1f15a5cf35de48a3d0b32a14c5663)
 
