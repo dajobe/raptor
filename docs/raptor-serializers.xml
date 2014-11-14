@@ -60,6 +60,16 @@ design.
 </section>
 
 
+<section id="serializer-mkr">
+<title>mKR serializer - default (name <literal>mkr</literal>)</title>
+
+<para>A serializer for the
+<ulink url="http://contextknowledgesystems.org/CKS.html">mKR (my Knowledge Representation) Language</ulink>
+</para>
+
+</section>
+
+
 <section id="serializer-nquads">
 <title>N-Quads serializer - default (name <literal>nquads</literal>)</title>
 
