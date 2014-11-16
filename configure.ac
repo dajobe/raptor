@@ -937,7 +937,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_SERIALIZER_NTRIPLES, 1, [Building N-Triples serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RDFXML_ABBREV, 1, [Building RDF/XML-abbreviated serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_TURTLE, 1, [Building Turtle serializer])
-  AC_DEFINE(RAPTOR_SERIALIZER_MKR,    1, [Building mKR    serializer])
+  AC_DEFINE(RAPTOR_SERIALIZER_MKR,    1, [Building mKR serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_RSS_1_0, 1, [Building RSS 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_ATOM, 1, [Building Atom 1.0 serializer])
   AC_DEFINE(RAPTOR_SERIALIZER_DOT, 1, [Building GraphViz DOT serializer])
