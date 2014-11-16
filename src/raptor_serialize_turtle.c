@@ -1312,6 +1312,16 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
     raptor_free_uri(context->rdf_nil_uri);
     context->rdf_nil_uri = NULL;
   }
+
+  if(context->rs_ResultSet_uri) {
+    raptor_free_uri(context->rs_ResultSet_uri);
+    context->rs_ResultSet_uri = NULL;
+  }
+
+  if(context->rs_resultVariable_uri) {
+    raptor_free_uri(context->rs_resultVariable_uri);
+    context->rs_resultVariable_uri = NULL;
+  }
 }
 
 
