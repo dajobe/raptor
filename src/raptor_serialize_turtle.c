@@ -82,6 +82,8 @@ typedef struct {
 
   /* Non 0 for mKR serializer */
   int emit_mkr;
+  /* Flags for turtle writer */
+  int turtle_writer_flags;
 
   /* Non 0 if "begin relation result ;" has been written */
   int written_begin;
@@ -430,11 +432,11 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       continue;
 
     if(i > 0) {
-        if(emit_mkr)
-          raptor_turtle_writer_raw_counted(context->turtle_writer,
-                                           (const unsigned char*)", ", 1);
-        else
-          raptor_turtle_writer_newline(context->turtle_writer);
+      if(emit_mkr)
+        raptor_turtle_writer_raw_counted(context->turtle_writer,
+                                         (const unsigned char*)", ", 1);
+      else
+        raptor_turtle_writer_newline(context->turtle_writer);
     }
 
     switch(object->term->type) {
@@ -1161,10 +1163,12 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_uri *rdf_type_uri;
 
-  if(!strcmp(name,(const char*)"mkr"))
-      context->emit_mkr = 1;
-  else
-      context->emit_mkr = 0;
+  context->turtle_writer_flags = 0;
+  if(!strcmp(name,(const char*)"mkr")) {
+    context->emit_mkr = 1;
+    context->turtle_writer_flags |= TURTLE_WRITER_FLAG_MKR;
+  } else
+    context->emit_mkr = 0;
   context->resultset = 0;
   context->written_begin = 0;
 
@@ -1394,7 +1398,8 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
                                            serializer->base_uri,
                                            flag,
                                            context->nstack,
-                                           serializer->iostream);
+                                           serializer->iostream,
+                                           context->turtle_writer_flags);
   if(!turtle_writer)
     return 1;
 
@@ -1413,7 +1418,6 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
                                    raptor_turtle_context* context)
 {
   int i;
-  int emit_mkr = context->emit_mkr;
   raptor_turtle_writer* turtle_writer = context->turtle_writer;
 
   if(context->written_header)
@@ -1425,7 +1429,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
   for(i = 0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns;
     ns = (raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
-    raptor_turtle_writer_namespace_prefix(turtle_writer, ns, emit_mkr);
+    raptor_turtle_writer_namespace_prefix(turtle_writer, ns);
     raptor_namespace_stack_start_namespace(context->nstack, ns, 0);
   }
 
@@ -1647,7 +1651,7 @@ raptor_uri_turtle_write(raptor_world *world,
   int rc;
   raptor_turtle_writer* turtle_writer;
 
-  turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr);
+  turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr, 0);
   if(!turtle_writer)
     return 1;
 
@@ -1684,7 +1688,7 @@ raptor_term_turtle_write(raptor_iostream* iostr,
   raptor_turtle_writer* turtle_writer;
 
   turtle_writer = raptor_new_turtle_writer(term->world, base_uri, 0, nstack,
-                                           iostr);
+                                           iostr, 0);
   if(!turtle_writer)
     return 1;
 
@@ -1731,7 +1735,7 @@ raptor_uri_to_turtle_counted_string(raptor_world *world,
   if(!iostr)
     return NULL;
 
-  turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr);
+  turtle_writer = raptor_new_turtle_writer(world, base_uri, 0, nstack, iostr, 0);
   if(!turtle_writer)
     goto tidy;
 

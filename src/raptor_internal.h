@@ -1307,13 +1307,26 @@ raptor_qname* raptor_new_qname_from_resource(raptor_sequence* namespaces, raptor
  */
 typedef struct raptor_turtle_writer_s raptor_turtle_writer;
 
+/**
+ * raptor_turtle_writer_flags:
+ * @TURTLE_WRITER_FLAG_AUTO_INDENT: auto indent
+ * @TURTLE_WRITER_FLAG_MKR: write mkr not turtle
+ *
+ * Bit flags for raptor_new_turtle_writer()
+ */
+typedef enum {
+  TURTLE_WRITER_FLAG_AUTO_INDENT = 1,
+  TURTLE_WRITER_FLAG_MKR = 2
+} raptor_turtle_writer_flags;
+
+
 /* Turtle Writer Class (raptor_turtle_writer) */
-RAPTOR_INTERNAL_API raptor_turtle_writer* raptor_new_turtle_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr);
+RAPTOR_INTERNAL_API raptor_turtle_writer* raptor_new_turtle_writer(raptor_world* world, raptor_uri* base_uri, int write_base_uri, raptor_namespace_stack *nstack, raptor_iostream* iostr, int flags);
 RAPTOR_INTERNAL_API void raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
-RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns, int emit_mkr);
-void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri, int emit_mkr);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
+void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);

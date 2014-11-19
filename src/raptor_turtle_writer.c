@@ -50,12 +50,7 @@
 #ifndef STANDALONE
 
 
-typedef enum {
-  TURTLE_WRITER_AUTO_INDENT = 1
-} raptor_turtle_writer_flags;
-
-
-#define TURTLE_WRITER_AUTO_INDENT(turtle_writer) ((turtle_writer->flags & TURTLE_WRITER_AUTO_INDENT) != 0)
+#define TURTLE_WRITER_AUTO_INDENT(turtle_writer) ((turtle_writer->flags & TURTLE_WRITER_FLAG_AUTO_INDENT) != 0)
 
 struct raptor_turtle_writer_s {
   raptor_world* world;
@@ -136,6 +131,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
  * @write_base_uri: non-0 to write '@base' directive to output
  * @nstack: Namespace stack for the writer to start with (or NULL)
  * @iostr: I/O stream to write to
+ * @flags: bitflags from #raptor_turtle_writer_flags
  * 
  * Constructor - Create a new Turtle Writer writing Turtle to a raptor_iostream
  * 
@@ -145,10 +141,10 @@ raptor_turtle_writer*
 raptor_new_turtle_writer(raptor_world* world,
                          raptor_uri* base_uri, int write_base_uri,
                          raptor_namespace_stack *nstack,
-                         raptor_iostream* iostr)
+                         raptor_iostream* iostr,
+                         int flags)
 {
   raptor_turtle_writer* turtle_writer;
-  int emit_mkr = 0;  /* Non 0 for mKR serializer */
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
@@ -175,13 +171,13 @@ raptor_new_turtle_writer(raptor_world* world,
 
   turtle_writer->iostr = iostr;
 
-  turtle_writer->flags = 0;
+  turtle_writer->flags = flags;
   turtle_writer->indent = 2;
 
   turtle_writer->base_uri = NULL;
   /* Ensure any initial base URI is not written relative */
   if(base_uri && write_base_uri)
-    raptor_turtle_writer_base(turtle_writer, base_uri, emit_mkr);
+    raptor_turtle_writer_base(turtle_writer, base_uri);
   turtle_writer->base_uri = base_uri;
 
   return turtle_writer;
@@ -265,19 +261,20 @@ raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer,
  */
 void
 raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
-                                      raptor_namespace* ns, int emit_mkr)
+                                      raptor_namespace* ns)
 {
+  int emit_mkr = (turtle_writer->flags & TURTLE_WRITER_FLAG_MKR);
+
   raptor_iostream_string_write("@prefix ", turtle_writer->iostr);
   if(ns->prefix)
     raptor_iostream_string_write(raptor_namespace_get_prefix(ns),
                                  turtle_writer->iostr);
   raptor_iostream_counted_string_write(": ", 2, turtle_writer->iostr);
   raptor_turtle_writer_reference(turtle_writer, raptor_namespace_get_uri(ns));
-if(emit_mkr) {
-  raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
-} else {
-  raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
-}
+  if(emit_mkr)
+    raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
+  else
+    raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
 }
 
 
@@ -290,16 +287,17 @@ if(emit_mkr) {
  */
 void
 raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
-                          raptor_uri* base_uri, int emit_mkr)
+                          raptor_uri* base_uri)
 {
+  int emit_mkr = (turtle_writer->flags & TURTLE_WRITER_FLAG_MKR);
+
   if(base_uri) {
     raptor_iostream_counted_string_write("@base ", 6, turtle_writer->iostr);
     raptor_turtle_writer_reference(turtle_writer, base_uri);
-    if(emit_mkr) {
-        raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
-    } else {
-        raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
-    }
+    if(emit_mkr)
+      raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
+    else
+      raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
   }
 }
 
@@ -546,9 +544,9 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
   switch(option) {
     case RAPTOR_OPTION_WRITER_AUTO_INDENT:
       if(value)
-        turtle_writer->flags |= TURTLE_WRITER_AUTO_INDENT;
+        turtle_writer->flags |= TURTLE_WRITER_FLAG_AUTO_INDENT;
       else
-        turtle_writer->flags &= ~TURTLE_WRITER_AUTO_INDENT;        
+        turtle_writer->flags &= ~TURTLE_WRITER_FLAG_AUTO_INDENT;
       break;
 
     case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
@@ -905,7 +903,7 @@ main(int argc, char *argv[])
 
   base_uri = raptor_new_uri(world, base_uri_string);
 
-  turtle_writer = raptor_new_turtle_writer(world, base_uri, 1, nstack, iostr);
+  turtle_writer = raptor_new_turtle_writer(world, base_uri, 1, nstack, iostr, 0);
   if(!turtle_writer) {
     fprintf(stderr, "%s: Failed to create turtle_writer to iostream\n", program);
     exit(1);
@@ -920,7 +918,7 @@ main(int argc, char *argv[])
                               0);
 
 
-  raptor_turtle_writer_namespace_prefix(turtle_writer, ex_ns, 0);
+  raptor_turtle_writer_namespace_prefix(turtle_writer, ex_ns);
 
   raptor_turtle_writer_reference(turtle_writer, base_uri);
   
