@@ -1399,6 +1399,7 @@ struct raptor_world_s {
 
   /* sequence of serializer factories */
   raptor_sequence *serializers;
+  int emit_mkr;  /* Non 0 for mKR serializer */
 
   /* raptor_rss_common initialisation counter */
   int rss_common_initialised;
