@@ -322,11 +322,6 @@ raptor_new_serializer(raptor_world* world, const char *name)
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
   raptor_world_open(world);
-  /* set world->emit_mkr for use by raptor_turtle_writer_base() */
-  if(!strcmp(name, (const char*)"mkr"))
-    world->emit_mkr = 1;
-  else
-    world->emit_mkr = 0;
 
   factory = raptor_get_serializer_factory(world, name);
   if(!factory)

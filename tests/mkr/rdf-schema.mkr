@@ -1,4 +1,4 @@
-@base <http://www.w3.org/1999/02/22-rdf-syntax-ns> ;
+@base <http://www.w3.org/1999/02/22-rdf-syntax-ns> .
 @prefix rdf: <#> ;
 @prefix : <../../2000/01/rdf-schema#> ;
 
