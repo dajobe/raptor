@@ -144,11 +144,11 @@ raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 raptor-changes.xml: $(srcdir)/raptor-changes.tsv $(top_srcdir)/scripts/process-changes.pl
 	$(PERL) $(top_srcdir)/scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
 
-raptor-formats.xml: $(top_builddir)/scripts/build-formats
-	$(top_builddir)/scripts/build-formats > $@
+raptor-formats.xml: $(top_builddir)/scripts/build-formats$(EXEEXT)
+	$(top_builddir)/scripts/build-formats$(EXEEXT) > $@
 
-$(top_builddir)/scripts/build-formats:
-	cd $(top_builddir)/scripts && $(MAKE) build-formats
+$(top_builddir)/scripts/build-formats$(EXEEXT):
+	cd $(top_builddir)/scripts && $(MAKE) build-formats$(EXEEXT)
 
 upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-changes.tsv
 	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
