@@ -148,7 +148,11 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats
 	$(top_builddir)/scripts/build-formats > $@
 
 $(top_builddir)/scripts/build-formats:
-	cd $(top_builddir)/scripts && $(MAKE) build-formats
+	if [ $(build_os) = "cygwin" ]; then \
+	cd $(top_builddir)/scripts && $(MAKE) build-formats.exe; \
+	else \
+	cd $(top_builddir)/scripts && $(MAKE) build-formats; \
+	fi
 
 upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-changes.tsv
 	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
