@@ -870,6 +870,10 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
 
   if(iter)
     raptor_free_avltree_iterator(iter);
+  if(format)
+    raptor_free_stringbuffer(format);
+  if(meaning)
+    raptor_free_stringbuffer(meaning);
 
   return rv;
 }
