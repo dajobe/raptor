@@ -785,7 +785,9 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           raptor_turtle_writer_decrease_indent(turtle_writer);
           raptor_turtle_writer_newline(turtle_writer);
           raptor_free_stringbuffer(format);
+          format = NULL;
           raptor_free_stringbuffer(meaning);
+          meaning = NULL;
 
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"begin relation result ;", 23);
           raptor_turtle_writer_decrease_indent(turtle_writer);
@@ -870,6 +872,14 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
 
   if(iter)
     raptor_free_avltree_iterator(iter);
+  if(format) {
+    raptor_free_stringbuffer(format);
+    format = NULL;
+  }
+  if(meaning) {
+    raptor_free_stringbuffer(meaning);
+    meaning = NULL;
+  }
 
   return rv;
 }
