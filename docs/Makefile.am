@@ -125,8 +125,8 @@ raptor-fake.h: $(top_builddir)/src/raptor2.h $(top_srcdir)/scripts/fix-gtkdoc-he
 	$(PERL) $(top_srcdir)/scripts/fix-gtkdoc-header.pl < $< > $@
 
 if MAINTAINER_MODE
-libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(top_srcdir)/scripts/fix-groff-xhtml $@
+libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml.pl
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(top_srcdir)/scripts/fix-groff-xhtml.pl $@
 
 rdfcat.c: $(top_srcdir)/examples/rdfcat.c
 	$(install_sh_DATA) $? $@

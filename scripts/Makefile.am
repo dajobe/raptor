@@ -22,7 +22,7 @@
 EXTRA_DIST= \
 fix-bison.pl \
 fix-flex.pl \
-fix-groff-xhtml \
+fix-groff-xhtml.pl \
 fix-gtkdoc-header.pl \
 process-changes.pl \
 rdfcompare

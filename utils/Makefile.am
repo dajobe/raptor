@@ -65,8 +65,8 @@ rdfdiff_LDADD= $(top_builddir)/src/libraptor2.la
 
 
 if MAINTAINER_MODE
-rapper.html: $(srcdir)/rapper.1 $(srcdir)/../scripts/fix-groff-xhtml
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../scripts/fix-groff-xhtml $@
+rapper.html: $(srcdir)/rapper.1 $(srcdir)/../scripts/fix-groff-xhtml.pl
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(srcdir)/../scripts/fix-groff-xhtml.pl $@
 endif
 
 $(top_builddir)/src/libraptor2.la:
