@@ -23,6 +23,11 @@ branches:
   only:
     - master
 
+env:
+  matrix:
+    - CC=cc
+    - CC=c++
+
 install:
   - env | sort
   - if [ "$TRAVIS_OS_NAME" = "" ]; then TRAVIS_OS_NAME=linux; fi
