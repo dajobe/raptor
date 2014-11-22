@@ -10,6 +10,7 @@ language: c
 compiler:
   - gcc
   - clang
+  - c++
 
 os:
   - linux
@@ -22,11 +23,6 @@ matrix:
 branches:
   only:
     - master
-
-env:
-  matrix:
-    - CC=cc
-    - CC=c++
 
 install:
   - env | sort
