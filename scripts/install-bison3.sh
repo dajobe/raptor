@@ -5,6 +5,10 @@ set -x
 
 V=3.0.2
 
+# Bison requires CC is a C compiler
+CC=cc
+export CC
+
 cd /tmp
 wget http://ftp.gnu.org/gnu/bison/bison-$V.tar.gz
 tar -x -z -f bison-$V.tar.gz
