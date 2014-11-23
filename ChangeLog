@@ -1,4 +1,71 @@
+2014-11-22  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: docs
+
+	* scripts/install-bison3.sh: Install bison with a C compiler
+
+	* .travis.yml: try compile c++
+
+	* .travis.yml: Add matrix for CC=cc, CC=c++
+
+2014-11-21  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #21 from rhmccullough/master fix memory
+	leak with format, meaning
+
+	* docs/Makefile.am, scripts/Makefile.am, scripts/fix-groff-xhtml,
+	scripts/fix-groff-xhtml.pl, utils/Makefile.am: Rename
+	scripts/fix-groff-xhtml to scripts/fix-groff-xhtml.pl
+
+2014-11-20  Richard H. McCullough <rhmccullough@gmail.com>
+
+	* src/raptor_serialize_turtle.c: set pointers to NULL after
+	freeing memory
+
+	I even ran "make distcheck" this time.  I noticed a few permission
+	errors, but I don't worry about those because Windows ACLs often
+	take control of your files.
+
+	* src/raptor_serialize_turtle.c: fix memory leak with format,
+	meaning check just before return at end of function
+
+2014-11-19  Dave Beckett <dave@dajobe.org>
+
+	* docs/Makefile.am: Add $(EXEEXT) to build-formats exe name
+
+	* src/raptor_internal.h, src/raptor_serialize_turtle.c,
+	src/raptor_turtle_writer.c, tests/mkr/rdf-schema.mkr,
+	tests/mkr/rdfq-results.mkr, tests/mkr/rdfs-namespace.mkr,
+	tests/mkr/test-07.mkr, tests/mkr/test-08.mkr,
+	tests/mkr/test-16a.mkr, tests/mkr/test-28.mkr,
+	tests/mkr/test-31.mkr, tests/mkr/test-32.mkr,
+	tests/mkr/test-34.mkr: Add mkr turtle writer flag, move it out of
+	internal API.
+
+	@base ends in ; raptor_turtle_writer_flags is now part of internal
+	API with bitflag values TURTLE_WRITER_FLAG_AUTO_INDENT and
+	TURTLE_WRITER_FLAG_MKR
+
+	(raptor_new_turtle_writer): Gains flags arg.
+
+	(raptor_turtle_writer_namespace_prefix, raptor_turtle_writer_base):
+	Lose emit_mkr arg and take it from the turtle_writer struct flags
+	field.  Update mkr tests to end @base lines with ';' like other
+	mkr lines.
+
+2014-11-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Remove trailing ws from lines
+
+	* src/raptor_serialize_turtle.c: Code style fixes around mkr
+	serializer code
+
+	* src/raptor_serialize_turtle.c: Free rs_ResultSet_uri and
+	rs_resultVariable_uri
+
 2014-11-14  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html: 2.0.16
 
 	* README.html, docs/raptor-serializers.xml: Add mKR serializer
 	references to docs
