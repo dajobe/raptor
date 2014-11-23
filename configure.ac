@@ -217,7 +217,6 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 #
 # Too noisy:
 #  -Wconversion
-#  -Wformat-nonliteral : variables for format strings
 #  -Wmissing-field-initializers : too noisy in raptor_rss_common.c
 #  -Wsystem-headers   : not debugging system
 #  -Wsign-conversion: : many int / unsigned int / size_t
@@ -239,7 +238,7 @@ possible_warnings="\
 -Wendif-labels \
 -Werror-implicit-function-declaration \
 -Wfloat-equal \
--Wformat-security \
+-Wformat=2 \
 -Wframe-larger-than=4096 \
 -Winit-self \
 -Winline \
@@ -264,7 +263,6 @@ possible_warnings="\
 -Wshorten-64-to-32
 \
 -Wno-conversion \
--Wno-format-nonliteral \
 -Wno-missing-field-initializers \
 -Wno-sign-conversion \
 -Wno-system-headers \

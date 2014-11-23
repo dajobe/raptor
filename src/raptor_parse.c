@@ -899,6 +899,38 @@ raptor_parser_log_error_varargs(raptor_parser* parser,
 }
 
 
+/**
+ * raptor_parser_log_error:
+ * @parser: parser (or NULL)
+ * @level: log level
+ * @message: error format message
+ *
+ * Error from a parser - Internal.
+ */
+void
+raptor_parser_log_error(raptor_parser* parser,
+                        raptor_log_level level,
+                        const char *message, ...)
+{
+  va_list arguments;
+
+  va_start(arguments, message);
+
+  if(parser)
+    raptor_log_error_varargs(parser->world,
+                             level,
+                             &parser->locator,
+                             message, arguments);
+  else
+    raptor_log_error_varargs(NULL,
+                             level,
+                             NULL,
+                             message, arguments);
+
+  va_end(arguments);
+}
+
+
 /*
  * raptor_parser_warning - Warning from a parser - Internal
  */

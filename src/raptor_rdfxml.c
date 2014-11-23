@@ -1395,14 +1395,14 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
 
     if(!raptor_unicode_check_utf8_nfc_string(value, strlen((const char*)value),
                                              NULL)) {
-      const char *message;
+      raptor_log_level l;
 
-      message = "Property attribute '%s' has a string not in Unicode Normal Form C: %s";
       raptor_rdfxml_update_document_locator(rdf_parser);
-      if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL))
-        raptor_parser_error(rdf_parser, message, name, value);
-      else
-        raptor_parser_warning(rdf_parser, message, name, value);
+      l = (RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL)) ? RAPTOR_LOG_LEVEL_ERROR :
+                                                                                  RAPTOR_LOG_LEVEL_WARN;
+      raptor_parser_log_error(rdf_parser, l,
+                              "Property attribute '%s' has a string not in Unicode Normal Form C: %s",
+                              name, value);
       continue;
     }
     
@@ -1503,14 +1503,14 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
 
     if(object_is_literal &&
        !raptor_unicode_check_utf8_nfc_string(value, value_len, NULL)) {
-      const char *message;
-      message = "Property attribute '%s' has a string not in Unicode Normal Form C: %s";
+      raptor_log_level l;
+
       raptor_rdfxml_update_document_locator(rdf_parser);
-      if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL))
-        raptor_parser_error(rdf_parser, message,
-                            raptor_rdf_ns_terms_info[i].name, value);
-      else
-        raptor_parser_warning(rdf_parser, message,
+      l = (RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL)) ? RAPTOR_LOG_LEVEL_ERROR :
+                                                                                  RAPTOR_LOG_LEVEL_WARN;
+
+      raptor_parser_log_error(rdf_parser, l,
+                              "Property attribute '%s' has a string not in Unicode Normal Form C: %s",
                               raptor_rdf_ns_terms_info[i].name, value);
       continue;
     }
@@ -2779,13 +2779,15 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                    !raptor_unicode_check_utf8_nfc_string(literal,
                                                          xml_element->content_cdata_length,
                                                          NULL)) {
-                  const char *message;
-                  message = "Property element '%s' has a string not in Unicode Normal Form C: %s";
+                  raptor_log_level l;
+
                   raptor_rdfxml_update_document_locator(rdf_parser);
-                  if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL))
-                    raptor_parser_error(rdf_parser, message, el_name, literal);
-                  else
-                    raptor_parser_warning(rdf_parser, message, el_name, literal);
+                  l = (RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL)) ? RAPTOR_LOG_LEVEL_ERROR :
+                                                                                  RAPTOR_LOG_LEVEL_WARN;
+
+                  raptor_parser_log_error(rdf_parser, l,
+                                          "Property element '%s' has a string not in Unicode Normal Form C: %s",
+                                          el_name, literal);
                 }
 
                 object_term = raptor_new_term_from_literal(rdf_parser->world,
@@ -2832,13 +2834,15 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
               }
 
               if(!raptor_unicode_check_utf8_nfc_string(buffer, length, NULL)) {
-                const char *message;
-                message = "Property element '%s' has XML literal content not in Unicode Normal Form C: %s";
+                raptor_log_level l;
+
                 raptor_rdfxml_update_document_locator(rdf_parser);
-                if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL))
-                  raptor_parser_error(rdf_parser, message, el_name, buffer);
-                else
-                  raptor_parser_warning(rdf_parser, message, el_name, buffer);
+                l = (RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NON_NFC_FATAL)) ? RAPTOR_LOG_LEVEL_ERROR :
+                                                                                  RAPTOR_LOG_LEVEL_WARN;
+
+                raptor_parser_log_error(rdf_parser, l,
+                                         "Property element '%s' has XML literal content not in Unicode Normal Form C: %s",
+                                         el_name, buffer);
               }
 
               xmlliteral_term = raptor_new_term_from_literal(rdf_parser->world,
