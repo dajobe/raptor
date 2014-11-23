@@ -129,7 +129,7 @@ typedef struct {
 
 static int brief = 0;
 static char *program = NULL;
-static const char * const title_format_string="Raptor RDF diff utility %s\n";
+static const char * const title_string="Raptor RDF diff utility";
 static int ignore_errors = 0;
 static int ignore_warnings = 0;
 static int emit_from_header = 1;
@@ -790,7 +790,7 @@ main(int argc, char *argv[])
   
   if(usage) {
     if(usage > 1) {
-      fprintf(stderr, title_format_string, raptor_version_string);
+      fputs(title_string, stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
       fputs(raptor_short_copyright_string, stderr);
       fputc('\n', stderr);
     }
@@ -802,7 +802,7 @@ main(int argc, char *argv[])
 
   if(help) {
     printf("Usage: %s [OPTIONS] <from URI> <to URI>\n", program);
-    printf(title_format_string, raptor_version_string);
+    puts(title_string); puts(raptor_version_string); putchar('\n');
     puts(raptor_short_copyright_string);
     puts("Find differences between two RDF files.");
     puts("\nOPTIONS:");

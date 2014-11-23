@@ -220,8 +220,8 @@ static int warning_count = 0;
 static int ignore_warnings = 0;
 static int ignore_errors = 0;
 
-static const char * const title_format_string = 
-  "Raptor RDF syntax parsing and serializing utility %s\n";
+static const char * const title_string =
+  "Raptor RDF syntax parsing and serializing utility";
 
 
 static void
@@ -636,7 +636,7 @@ main(int argc, char *argv[])
   
   if(usage) {
     if(usage > 1) {
-      fprintf(stderr, title_format_string, raptor_version_string);
+      fputs(title_string, stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
       fputs("Raptor home page: ", stderr);
       fputs(raptor_home_url_string, stderr);
       fputc('\n', stderr);
@@ -655,7 +655,7 @@ main(int argc, char *argv[])
   if(help) {
     int i;
     
-    printf(title_format_string, raptor_version_string);
+    puts(title_string); puts(raptor_version_string); putchar('\n');
     puts("Parse RDF syntax from a source into serialized RDF triples.");
     printf("Usage: %s [OPTIONS] INPUT-URI [INPUT-BASE-URI]\n\n", program);
 
