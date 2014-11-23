@@ -216,7 +216,6 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 # http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 #
 # Too noisy:
-#  -Wconversion
 #  -Wmissing-field-initializers : too noisy in raptor_rss_common.c
 #  -Wsystem-headers   : not debugging system
 #  -Wsign-conversion: : many int / unsigned int / size_t
@@ -232,6 +231,7 @@ possible_warnings="\
 -Waggregate-return \
 -Wbad-function-cast \
 -Wcast-align \
+-Wconversion \
 -Wdeclaration-after-statement \
 -Wdisabled-optimization \
 -Wdiv-by-zero \
