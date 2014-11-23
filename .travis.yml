@@ -7,27 +7,31 @@
 
 language: c
 
+branches:
+  only:
+    - master
+
+# matrix of compilers
 compiler:
   - gcc
   - clang
   - c++
 
+# matrix of OSes (feature flagged; not enabled now)
 os:
   - linux
   - osx
 
+# overall matrix configuration
 matrix:
   allow_failures:
     - os: osx
 
-branches:
-  only:
-    - master
 
 install:
   - env | sort
   - if [ "$TRAVIS_OS_NAME" = "" ]; then TRAVIS_OS_NAME=linux; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get update -qq -y; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install bison gtk-doc yajl; fi
 
 script: ./autogen.sh && make && make test
