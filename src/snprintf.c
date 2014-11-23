@@ -433,8 +433,11 @@ main(int argc, char *argv[])
       /* len_ref = sprintf(buf_ref, fmt, arg);
          assert((size_t)len_ref == x + y - 2); */
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
       if(test_snprintf(len_ref, fmt, arg))
         errors++;
+#pragma GCC diagnostic pop
     }
   }
 
