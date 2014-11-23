@@ -214,6 +214,8 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
   /* Must be triple/quad */
 
   for(i = 0; i < MAX_NTRIPLES_TERMS + 1; i++) {
+    size_t term_len;
+
     if(!len) {
       if(ntriples_parser->is_nquads) {
         /* context is optional in nquads */
@@ -255,14 +257,14 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
 
-    rc = raptor_ntriples_parse_term(rdf_parser->world, &rdf_parser->locator,
-                                    p, &len, &terms[i], 0);
-    
-    if(!rc) {
+    term_len = raptor_ntriples_parse_term(rdf_parser->world, &rdf_parser->locator,
+                                          p, &len, &terms[i], 0);
+    if(!term_len) {
       rc = 1;
       goto cleanup;
     }
-    p += rc;
+
+    p += term_len;
     rc = 0;
 
     if(terms[i] && terms[i]->type == RAPTOR_TERM_TYPE_URI) {

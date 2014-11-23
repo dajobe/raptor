@@ -1384,7 +1384,7 @@ raptor_world_guess_parser_name(raptor_world* world,
                                          mime_type);
 
       if(c >= 0)
-        ((char*)buffer)[FIRSTN] = c;
+        ((char*)buffer)[FIRSTN] = RAPTOR_GOOD_CAST(char, c);
     }
 
     scores[i].score = score < 10 ? score : 10; 
@@ -1536,7 +1536,7 @@ raptor_parser_get_accept_header(raptor_parser* rdf_parser)
       *p++ = '=';
       *p++ = '0';
       *p++ = '.';
-      *p++ = '0' + (type_q->q);
+      *p++ = RAPTOR_GOOD_CAST(char, '0' + (type_q->q));
     }
     
     *p++ = ',';
@@ -1598,7 +1598,7 @@ raptor_parser_get_accept_header_all(raptor_world* world)
         *p++ = '=';
         *p++ = '0';
         *p++ = '.';
-        *p++ = '0' + (type_q->q);
+        *p++ = RAPTOR_GOOD_CAST(char, '0' + (type_q->q));
       }
       
       *p++ = ',';

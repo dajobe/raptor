@@ -94,31 +94,31 @@ raptor_unicode_utf8_string_put_char(raptor_unichar c,
   
   switch(size) {
     case 6:
-      output[5] = 0x80 | (unsigned char)(c & 0x3F);
+      output[5] = RAPTOR_GOOD_CAST(unsigned char, 0x80 | (unsigned char)(c & 0x3F));
       c= c >> 6;
        /* set bit 2 (bits 7,6,5,4,3,2 less 7,6,5,4,3 set below) on last byte */
       c |= 0x4000000; /* 0x10000 = 0x04 << 24 */
       /* FALLTHROUGH */
     case 5:
-      output[4] = 0x80 | (unsigned char)(c & 0x3F);
+      output[4] = RAPTOR_GOOD_CAST(unsigned char, 0x80 | (unsigned char)(c & 0x3F));
       c= c >> 6;
        /* set bit 3 (bits 7,6,5,4,3 less 7,6,5,4 set below) on last byte */
       c |= 0x200000; /* 0x10000 = 0x08 << 18 */
       /* FALLTHROUGH */
     case 4:
-      output[3] = 0x80 | (unsigned char)(c & 0x3F);
+      output[3] = RAPTOR_GOOD_CAST(unsigned char, 0x80 | (unsigned char)(c & 0x3F));
       c= c >> 6;
        /* set bit 4 (bits 7,6,5,4 less 7,6,5 set below) on last byte */
       c |= 0x10000; /* 0x10000 = 0x10 << 12 */
       /* FALLTHROUGH */
     case 3:
-      output[2] = 0x80 | (unsigned char)(c & 0x3F);
+      output[2] = RAPTOR_GOOD_CAST(unsigned char, 0x80 | (unsigned char)(c & 0x3F));
       c= c >> 6;
       /* set bit 5 (bits 7,6,5 less 7,6 set below) on last byte */
       c |= 0x800; /* 0x800 = 0x20 << 6 */
       /* FALLTHROUGH */
     case 2:
-      output[1] = 0x80 | (unsigned char)(c & 0x3F);
+      output[1] = RAPTOR_GOOD_CAST(unsigned char, 0x80 | (unsigned char)(c & 0x3F));
       c= c >> 6;
       /* set bits 7,6 on last byte */
       c |= 0xc0; 

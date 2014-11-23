@@ -282,7 +282,7 @@ raptor_stringbuffer_append_decimal(raptor_stringbuffer* stringbuffer,
   if(i < 0)
     i= -i;
   do {
-    *p-- ='0'+(i %10);
+    *p-- = RAPTOR_GOOD_CAST(unsigned char, '0'+(i %10));
     i /= 10;
   } while(i);
   if(integer < 0)
@@ -562,7 +562,7 @@ raptor_stringbuffer_append_hexadecimal(raptor_stringbuffer* stringbuffer,
   if(hex < 0 || hex > 0xF)
      return 1;
 
-  *buf = (hex < 10) ? ('0' + hex) : ('A' + hex - 10);
+  *buf = RAPTOR_GOOD_CAST(unsigned char, (hex < 10) ? ('0' + hex) : ('A' + hex - 10));
   buf[1] = '\0';
 
   return raptor_stringbuffer_append_counted_string(stringbuffer, buf, 1, 1);
@@ -604,12 +604,12 @@ raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb,
     return 0;
   
   for(i = 0; i < length; i++) {
-    int c = string[i];
+    char c = string[i];
     if(!c)
       break;
     
     if(IS_URI_SAFE(c)) {
-      *buf = c;
+      *buf = RAPTOR_GOOD_CAST(unsigned char, c);
 
       if(raptor_stringbuffer_append_counted_string(sb, buf, 1, 1))
         return 1;

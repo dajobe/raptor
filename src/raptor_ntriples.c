@@ -595,7 +595,7 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
            */
           for(q = object_literal_language; *q; q++) {
             if(IS_ASCII_UPPER(*q))
-              *q = TO_ASCII_LOWER(*q);
+              *q = RAPTOR_GOOD_CAST(unsigned char, TO_ASCII_LOWER(*q));
             if(*q == '_')
               *q = '-';
           }

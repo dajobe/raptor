@@ -777,11 +777,11 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           raptor_turtle_writer_newline(turtle_writer);
           raptor_turtle_writer_raw_counted(turtle_writer,
                                            (const unsigned char*)raptor_stringbuffer_as_string(format),
-                                           raptor_stringbuffer_length(format));
+                                           RAPTOR_GOOD_CAST(unsigned int, raptor_stringbuffer_length(format)));
           raptor_turtle_writer_newline(turtle_writer);
           raptor_turtle_writer_raw_counted(turtle_writer,
                                            (const unsigned char*)raptor_stringbuffer_as_string(meaning),
-                                           raptor_stringbuffer_length(meaning));
+                                           RAPTOR_GOOD_CAST(unsigned int, raptor_stringbuffer_length(meaning)));
           raptor_turtle_writer_decrease_indent(turtle_writer);
           raptor_turtle_writer_newline(turtle_writer);
           raptor_free_stringbuffer(format);

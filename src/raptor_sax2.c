@@ -743,7 +743,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
           
           while(*from) {
             if(isupper(*from))
-              *to++ = tolower(*from++);
+              *to++ = RAPTOR_GOOD_CAST(unsigned char, tolower(*from++));
             else
               *to++ = *from++;
           }

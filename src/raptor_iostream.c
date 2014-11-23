@@ -899,7 +899,7 @@ raptor_iostream_decimal_write(int integer, raptor_iostream* iostr)
   if(i < 0)
     i= -i;
   do {
-    *p-- ='0'+(i %10);
+    *p-- = RAPTOR_GOOD_CAST(unsigned char, '0' + (i %10));
     i /= 10;
   } while(i);
   if(integer < 0)

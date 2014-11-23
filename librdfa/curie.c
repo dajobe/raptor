@@ -609,7 +609,7 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
 
       for(ptr = term; *ptr; ptr++)
       {
-         *ptr = tolower(*ptr);
+        *ptr = RAPTOR_GOOD_CAST(char, tolower(*ptr));
       }
 
       rval = (char*)rdfa_get_mapping(context->term_mappings, term);

@@ -682,7 +682,7 @@ raptor_xml_escape_string_any(raptor_world *world,
     } else if(!quote && unichar == '>') {
       memcpy(q, "&gt;", 4);
       q+= 4;
-    } else if(quote && unichar == (unsigned long)quote) {
+    } else if(quote && unichar == RAPTOR_GOOD_CAST(unsigned long, quote)) {
       if(quote == '\'')  
         memcpy(q, "&apos;", 6);
       else
@@ -697,7 +697,7 @@ raptor_xml_escape_string_any(raptor_world *world,
       if(unichar == 0x09)
         *q++ = '9';
       else
-        *q++ = 'A'+ ((char)unichar-0x0a);
+        *q++ = RAPTOR_GOOD_CAST(unsigned char, 'A' + (RAPTOR_GOOD_CAST(char, unichar) - 0x0a));
       *q++= ';';
     } else if(unichar == 0x7f ||
                (unichar < 0x20 && unichar != 0x09 && unichar != 0x0a)) {

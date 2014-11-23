@@ -139,7 +139,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     www->final_uri = raptor_new_uri_relative_to_base_counted(www->world,
                                                              www->uri,
                                                              uri_str, uri_len);
-    uri_str[uri_len] = c;
+    uri_str[uri_len] = RAPTOR_GOOD_CAST(unsigned char, c);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
     if(www->final_uri)
