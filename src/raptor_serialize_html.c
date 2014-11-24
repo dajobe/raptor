@@ -153,7 +153,7 @@ raptor_term_html_write(const raptor_term *term, raptor_iostream* iostr)
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_log_error_formatted(term->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                 "Triple has unsupported term type %d",
+                                 "Triple has unsupported term type %u",
                                  term->type);
       return 1;
   }

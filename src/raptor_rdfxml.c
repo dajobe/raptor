@@ -2361,7 +2361,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_INVALID:
       default:
         raptor_parser_fatal_error(rdf_parser,
-                                  "%s Internal error - unexpected parser state %d - %s",
+                                  "%s Internal error - unexpected parser state %u - %s",
                                   __FUNCTION__,
                                   state, raptor_rdfxml_state_as_string(state));
         finished = 1;
@@ -2898,7 +2898,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
           case RAPTOR_RDFXML_ELEMENT_CONTENT_TYPE_LAST:
           default:
             raptor_parser_fatal_error(rdf_parser,
-                                      "%s: Internal error in state RAPTOR_STATE_PROPERTYELT - got unexpected content type %s (%d)",
+                                      "%s: Internal error in state RAPTOR_STATE_PROPERTYELT - got unexpected content type %s (%u)",
                                       __FUNCTION__,
                                       raptor_rdfxml_element_content_type_as_string(element->content_type),
                                       element->content_type);
@@ -2910,7 +2910,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
       case RAPTOR_STATE_INVALID:
       default:
         raptor_parser_fatal_error(rdf_parser,
-                                  "%s: Internal error - unexpected parser state %d - %s",
+                                  "%s: Internal error - unexpected parser state %u - %s",
                                   __FUNCTION__,
                                   state,
                                   raptor_rdfxml_state_as_string(state));

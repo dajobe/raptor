@@ -1543,7 +1543,7 @@ raptor_avltree_check(raptor_avltree* tree)
   
   raptor_avltree_check_internal(tree, tree->root, &count);
   if(count != tree->size) {
-    fprintf(stderr, "Tree %p nodes count is %u.  actual count %d\n",
+    fprintf(stderr, "Tree %p nodes count is %u.  actual count %u\n",
             tree, tree->size, count);
     abort();
   }

@@ -96,7 +96,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
       break;
 
     default:
-      RAPTOR_DEBUG2("Unknown N-Triples term class %d", term_class);
+      RAPTOR_DEBUG2("Unknown N-Triples term class %u", term_class);
   }
 
   return result;
@@ -161,7 +161,9 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
     }
 
     if(term_class == RAPTOR_TERM_CLASS_URI && c == ' ') {
-      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "URI error - illegal character %d (0x%02X) found.", c, c);
+      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
+                                 "URI error - illegal character %d (0x%02X) found.",
+                                 c, RAPTOR_GOOD_CAST(unsigned int, c));
       return 1;
     }
 
@@ -170,7 +172,9 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
       int unichar_len;
       unichar_len = raptor_unicode_utf8_string_get_char(p - 1, 1 + *lenp, NULL);
       if(unichar_len < 0 || RAPTOR_GOOD_CAST(size_t, unichar_len) > *lenp) {
-        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "UTF-8 encoding error at character %d (0x%02X) found.", c, c);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
+                                   "UTF-8 encoding error at character %d (0x%02X) found.",
+                                   c, RAPTOR_GOOD_CAST(unsigned int, c));
         /* UTF-8 encoding had an error or ended in the middle of a string */
         return 1;
       }

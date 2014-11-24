@@ -127,7 +127,7 @@ raptor_new_world_internal(unsigned int version_decimal)
   if(version_decimal < RAPTOR_MIN_VERSION_DECIMAL) {
     fprintf(stderr,
             "raptor_new_world() called via header from version %u but minimum supported version is %u\n",
-            version_decimal, RAPTOR_MIN_VERSION_DECIMAL);
+            version_decimal, RAPTOR_GOOD_CAST(unsigned int, RAPTOR_MIN_VERSION_DECIMAL));
     return NULL;
   }
   

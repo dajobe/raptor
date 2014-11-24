@@ -403,7 +403,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     raptor_free_uri(predicate_ns_uri);
   } else {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                               "Cannot serialize a triple with subject node type %d\n",
+                               "Cannot serialize a triple with subject node type %u\n",
                                statement->predicate->type);
     goto tidy;
   }
@@ -466,7 +466,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                 "Cannot serialize a triple with subject node type %d",
+                                 "Cannot serialize a triple with subject node type %u",
                                  statement->subject->type);
   }
 
@@ -599,7 +599,7 @@ raptor_rdfxml_serialize_statement(raptor_serializer* serializer,
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                 "Cannot serialize a triple with object node type %d",
+                                 "Cannot serialize a triple with object node type %u",
                                  object_type);
   }
 

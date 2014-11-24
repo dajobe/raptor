@@ -492,12 +492,12 @@ raptor_rss_model_add_common(raptor_rss_model* rss_model,
     return NULL;
 
   if(rss_model->common[type] == NULL) {
-    RAPTOR_DEBUG3("Adding common type %d - %s\n", type,
+    RAPTOR_DEBUG3("Adding common type %u - %s\n", type,
                   raptor_rss_items_info[type].name);
     rss_model->common[type] = item; 
   } else {
     raptor_rss_item* next;
-    RAPTOR_DEBUG3("Appending common type %d - %s\n", type, 
+    RAPTOR_DEBUG3("Appending common type %u - %s\n", type,
                   raptor_rss_items_info[type].name);
     for(next = rss_model->common[type]; next->next; next = next->next)
       ;

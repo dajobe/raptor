@@ -366,7 +366,7 @@ raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
         raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL, "Triple has unsupported term type %d",
+                                   NULL, "Triple has unsupported term type %u",
                                    object->term->type);
         break;
 
@@ -455,7 +455,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
         raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL, "Triple has unsupported term type %d",
+                                   NULL, "Triple has unsupported term type %u",
                                    object->term->type);
         break;
     }
@@ -623,7 +623,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       case RAPTOR_TERM_TYPE_UNKNOWN:
       default:
         raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                   NULL, "Triple has unsupported term type %d",
+                                   NULL, "Triple has unsupported term type %u",
                                    object->term->type);
         break;
     }
@@ -857,7 +857,7 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
         case RAPTOR_TERM_TYPE_UNKNOWN:
         default:
           raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                     NULL, "Triple has unsupported term type %d",
+                                     NULL, "Triple has unsupported term type %u",
                                      object->term->type);
           break;
       }
@@ -1463,7 +1463,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
   if(!(statement->subject->type == RAPTOR_TERM_TYPE_URI ||
        statement->subject->type == RAPTOR_TERM_TYPE_BLANK)) {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                               "Do not know how to serialize node type %d",
+                               "Do not know how to serialize node type %u",
                                statement->subject->type);
     return 1;
   }
@@ -1481,7 +1481,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
        object_type == RAPTOR_TERM_TYPE_BLANK ||
        object_type == RAPTOR_TERM_TYPE_LITERAL)) {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                               "Cannot serialize a triple with object node type %d",
+                               "Cannot serialize a triple with object node type %u",
                                object_type);
     return 1;
   }
@@ -1506,7 +1506,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
 
   } else {
     raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                               "Do not know how to serialize node type %d",
+                               "Do not know how to serialize node type %u",
                                statement->predicate->type);
     return 1;
   }

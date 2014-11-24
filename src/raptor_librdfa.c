@@ -219,7 +219,7 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
     raptor_free_uri(datatype_uri);
   } else {
     raptor_log_error_formatted(parser->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                               "Triple has unknown object term type %d", 
+                               "Triple has unknown object term type %u",
                                s->object->type);
     goto cleanup;
   }

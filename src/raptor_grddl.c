@@ -1108,7 +1108,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
     
     if(node->type != XML_ATTRIBUTE_NODE && 
        node->type != XML_ELEMENT_NODE) {
-      raptor_parser_error(rdf_parser, "Got unexpected node type %d",
+      raptor_parser_error(rdf_parser, "Got unexpected node type %u",
                           node->type);
       continue;
     }

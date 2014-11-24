@@ -253,7 +253,7 @@ raptor_dot_serializer_write_term(raptor_serializer * serializer,
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
-                                 NULL, "Triple has unsupported term type %d",
+                                 NULL, "Triple has unsupported term type %u",
                                  term->type);
   }
 }

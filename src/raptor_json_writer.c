@@ -333,7 +333,7 @@ raptor_json_writer_term(raptor_json_writer* json_writer,
       default:
         raptor_log_error_formatted(json_writer->world, RAPTOR_LOG_LEVEL_ERROR,
                                    NULL,
-                                   "Triple has unsupported term type %d",
+                                   "Triple has unsupported term type %u",
                                    term->type);
         rc = 1;
         break;

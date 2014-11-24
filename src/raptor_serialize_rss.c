@@ -333,7 +333,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
     if(s->object->type == RAPTOR_TERM_TYPE_BLANK) {
       raptor_rss10_set_item_group(rss_serializer, s->object, item);
 
-      RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %i - %s\n",
+      RAPTOR_DEBUG4("Moved anonymous value property URI <%s> for typed node %u - %s\n",
                     raptor_uri_as_string(s->predicate->value.uri),
                     type, raptor_rss_items_info[type].name);
       s = (raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
@@ -419,7 +419,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
     /* otherwise triple was not found as a field so store in triples
      * sequence 
      */
-    RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %i - %s\n",
+    RAPTOR_DEBUG4("UNKNOWN property URI <%s> for typed node %u - %s\n",
                   raptor_uri_as_string(s->predicate->value.uri),
                   type, raptor_rss_items_info[type].name);
     s = (raptor_statement*)raptor_sequence_delete_at(rss_serializer->triples,
@@ -430,7 +430,7 @@ raptor_rss10_move_statements(raptor_rss10_serializer_context *rss_serializer,
 
 #ifdef RAPTOR_DEBUG
   if(count > 0)
-    RAPTOR_DEBUG5("Moved %d triples to typed node %i - %s with uri <%s>\n",
+    RAPTOR_DEBUG5("Moved %d triples to typed node %u - %s with uri <%s>\n",
                   count, type, raptor_rss_items_info[type].name,
                   raptor_uri_as_string(item->uri));
 #endif
@@ -851,7 +851,7 @@ raptor_rss10_serialize_statement(raptor_serializer* serializer,
         if(1) {
           unsigned char* ts;
           ts = raptor_term_to_string(statement->subject);
-          RAPTOR_DEBUG4("Found typed node %i - %s with term %s\n", type,
+          RAPTOR_DEBUG4("Found typed node %u - %s with term %s\n", type,
                         raptor_rss_items_info[type].name, ts);
           RAPTOR_FREE(char*, ts);
         }
@@ -2046,7 +2046,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           raptor_xml_writer_cdata(xml_writer, (const unsigned char*)field->value);
         raptor_xml_writer_end_element(xml_writer, predicate);
       } else {
-        RAPTOR_DEBUG3("Field %d - %s had no URI or literal value\n",
+        RAPTOR_DEBUG3("Field %u - %s had no URI or literal value\n",
                       f, raptor_rss_fields_info[f].name);
       }
       raptor_free_xml_element(predicate);

@@ -445,11 +445,12 @@ raptor_rss_start_element_handler(void *user_data,
       raptor_rss_type old_type = rss_parser->prev_type;
 
       if(old_type != rss_parser->current_type && old_type != RAPTOR_RSS_NONE)
-        RAPTOR_DEBUG5("FOUND inner container type %d - %s INSIDE current container type %d - %s\n", rss_parser->current_type,
+        RAPTOR_DEBUG5("FOUND inner container type %u - %s INSIDE current container type %u - %s\n",
+                      rss_parser->current_type,
                       raptor_rss_items_info[rss_parser->current_type].name,
                       old_type, raptor_rss_items_info[old_type].name);
       else
-        RAPTOR_DEBUG3("FOUND container type %d - %s\n",
+        RAPTOR_DEBUG3("FOUND container type %u - %s\n",
                       rss_parser->current_type,
                       raptor_rss_items_info[rss_parser->current_type].name);
     }
@@ -536,7 +537,7 @@ raptor_rss_start_element_handler(void *user_data,
     
     block_type = raptor_rss_fields_info[rss_parser->current_field].block_type;
 
-    RAPTOR_DEBUG3("FOUND new block type %d - %s\n", block_type,
+    RAPTOR_DEBUG3("FOUND new block type %u - %s\n", block_type,
                   raptor_rss_items_info[block_type].name);
 
     update_item = raptor_rss_get_current_item(rss_parser);
@@ -594,7 +595,7 @@ raptor_rss_start_element_handler(void *user_data,
 
 
   /* Process field */
-  RAPTOR_DEBUG4("FOUND field %d - %s inside type %s\n",
+  RAPTOR_DEBUG4("FOUND field %u - %s inside type %s\n",
                 rss_parser->current_field,
                 raptor_rss_fields_info[rss_parser->current_field].name,
                 raptor_rss_items_info[rss_parser->current_type].name);
@@ -764,7 +765,7 @@ raptor_rss_end_element_handler(void *user_data,
 #ifdef RAPTOR_DEBUG
       if(!handled) {
         raptor_rss_type block_type = rss_parser->current_block->rss_type;
-        RAPTOR_DEBUG3("Ignoring cdata for block %d - %s\n",
+        RAPTOR_DEBUG3("Ignoring cdata for block %u - %s\n",
                       block_type, raptor_rss_items_info[block_type].name);
       }
 #endif
@@ -857,7 +858,7 @@ raptor_rss_end_element_handler(void *user_data,
       if(rss_parser->prev_type != RAPTOR_RSS_NONE) {
         rss_parser->current_type = rss_parser->prev_type;
         rss_parser->prev_type = RAPTOR_RSS_NONE;
-        RAPTOR_DEBUG3("Returning to type %d - %s\n", rss_parser->current_type, raptor_rss_items_info[rss_parser->current_type].name);
+        RAPTOR_DEBUG3("Returning to type %u - %s\n", rss_parser->current_type, raptor_rss_items_info[rss_parser->current_type].name);
       } else
         rss_parser->current_type = RAPTOR_RSS_NONE;
     }
@@ -866,7 +867,7 @@ raptor_rss_end_element_handler(void *user_data,
   if(rss_parser->current_block) {
 #ifdef RAPTOR_DEBUG
     raptor_rss_type block_type = rss_parser->current_block->rss_type;
-    RAPTOR_DEBUG3("Ending current block %d - %s\n",
+    RAPTOR_DEBUG3("Ending current block %u - %s\n",
                   block_type, raptor_rss_items_info[block_type].name);
 #endif
     rss_parser->current_block = NULL;

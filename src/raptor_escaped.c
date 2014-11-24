@@ -280,7 +280,7 @@ raptor_term_escaped_write(const raptor_term *term,
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
       raptor_log_error_formatted(term->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                                 "Triple has unsupported term type %d", 
+                                 "Triple has unsupported term type %u",
                                  term->type);
       return 1;
   }

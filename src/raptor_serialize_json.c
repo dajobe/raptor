@@ -271,7 +271,7 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
       default:
         raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
                                    NULL,
-                                   "Triple has unsupported subject term type %d", 
+                                   "Triple has unsupported subject term type %u",
                                    s1->subject->type);
         break;
     }
