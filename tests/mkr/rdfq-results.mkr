@@ -2,16 +2,12 @@
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
 
-<> has
-    rs:resultVariable = ["x", "y"], 
-    rs:size = [4] ;
 result is <> ;
-result is relation with
-    format = [value:1, value:2], 
-    meaning = {x := $1; y := $2;} ;
+result is relation with format = csv ;
 begin relation result ;
-"anon2", _:a ;
+x, y ;
+anon2, _:a ;
 123, <http://example.com/resource1> ;
-"2003-01-21", <http://example.com/resource2> ;
-"anon1", _:a ;
+2003-01-21, <http://example.com/resource2> ;
+anon1, _:a ;
 end relation result ;
