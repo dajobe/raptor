@@ -1345,7 +1345,6 @@ void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const uns
 int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
 int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
 int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
-RAPTOR_INTERNAL_API void raptor_turtle_writer_csv_string(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 
 
 /**
