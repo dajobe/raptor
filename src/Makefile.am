@@ -146,10 +146,9 @@ libraptor2_la_SOURCES += raptor_serialize_rdfxmla.c
 endif
 if RAPTOR_SERIALIZER_TURTLE
 libraptor2_la_SOURCES += raptor_serialize_turtle.c
-else
+endif
 if RAPTOR_SERIALIZER_MKR
 libraptor2_la_SOURCES += raptor_serialize_turtle.c
-endif
 endif
 if RAPTOR_SERIALIZER_RSS_1_0
 libraptor2_la_SOURCES += raptor_serialize_rss.c
