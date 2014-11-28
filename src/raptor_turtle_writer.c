@@ -129,7 +129,7 @@ raptor_turtle_writer_csv_string(raptor_turtle_writer *turtle_writer,
                                 const unsigned char *string)
 {
   raptor_iostream *iostr = turtle_writer->iostr;
-  size_t len = strlen(string);
+  size_t len = strlen((const char*)string);
   const char delim = '\x22';
   int quoting_needed = 0;
   size_t i;
