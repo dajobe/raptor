@@ -142,8 +142,10 @@ raptor_turtle_writer_csv_string(raptor_turtle_writer *turtle_writer,
       break;
     }
   }
-  if(!quoting_needed)
-    return raptor_iostream_counted_string_write(string, len, iostr);
+  if(!quoting_needed) {
+    raptor_iostream_counted_string_write(string, len, iostr);
+    return;
+  }
 
   raptor_iostream_write_byte(delim, iostr);
   for(i = 0; i < len; i++) {
