@@ -604,6 +604,7 @@ while(<IN>) {
     } elsif($old_return eq $new_return && $old_name eq $new_name &&
 	    $old_args eq $new_args) {
       # same
+      warn "$program: Line records no function change old: $old_return $old_name $old_args to new: $new_return $new_name $new_args\n$.: $_\n";
     } elsif($old_return eq $new_return && $old_name ne $new_name &&
 	    $old_args eq $new_args) {
       # renamed but nothing else changed
