@@ -636,7 +636,7 @@ main(int argc, char *argv[])
   
   if(usage) {
     if(usage > 1) {
-      fputs(title_string, stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
+      fputs(title_string, stderr); putc(' ', stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
       fputs("Raptor home page: ", stderr);
       fputs(raptor_home_url_string, stderr);
       fputc('\n', stderr);
@@ -655,7 +655,7 @@ main(int argc, char *argv[])
   if(help) {
     int i;
     
-    puts(title_string); puts(raptor_version_string); putchar('\n');
+    puts(title_string); putchar(' '); puts(raptor_version_string); putchar('\n');
     puts("Parse RDF syntax from a source into serialized RDF triples.");
     printf("Usage: %s [OPTIONS] INPUT-URI [INPUT-BASE-URI]\n\n", program);
 

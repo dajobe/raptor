@@ -790,7 +790,7 @@ main(int argc, char *argv[])
   
   if(usage) {
     if(usage > 1) {
-      fputs(title_string, stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
+      fputs(title_string, stderr); putc(' ', stderr); fputs(raptor_version_string, stderr); putc('\n', stderr);
       fputs(raptor_short_copyright_string, stderr);
       fputc('\n', stderr);
     }
@@ -802,7 +802,7 @@ main(int argc, char *argv[])
 
   if(help) {
     printf("Usage: %s [OPTIONS] <from URI> <to URI>\n", program);
-    puts(title_string); puts(raptor_version_string); putchar('\n');
+    puts(title_string); putchar(' '); puts(raptor_version_string); putchar('\n');
     puts(raptor_short_copyright_string);
     puts("Find differences between two RDF files.");
     puts("\nOPTIONS:");
