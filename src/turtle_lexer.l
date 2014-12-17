@@ -171,6 +171,9 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 /* Do not need input() to to read from stdin */
 #define YY_NO_INPUT 1
 
+#define YY_USER_ACTION				\
+  turtle_parser->consumed += yyleng;
+
 %}
 
 /* Tokens from Turtle 2013 spec - lex-ifyed to remove unicode ranges */
@@ -312,6 +315,11 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
+                    if(!turtle_parser->is_end) {
+                      /* next run will fix things, hopefully */
+                      return EOF;
+                    }
+                    /* otherwise abort */
                     turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
@@ -375,6 +383,11 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
+                    if(!turtle_parser->is_end) {
+                      /* next run will fix things, hopefully */
+                      return EOF;
+                    }
+                    /* otherwise abort */
                     turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
                     yyterminate();
 }
