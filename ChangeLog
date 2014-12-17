@@ -1,4 +1,73 @@
+2014-12-15  Dave Beckett <dave@dajobe.org>
+
+	* scripts/process-changes.pl: Warn if no difference seen in
+	functions
+
+2014-12-05  Dave Beckett <dave@dajobe.org>
+
+	* scripts/install-bison3.sh: Update install bison script to do
+	nothing if bison is new enough
+
+2014-11-25  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c: Disable "-Wformat-nonliteral" with GCC
+	pragma for GRDDL error format
+
+2014-11-24  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c, src/raptor_escaped.c,
+	src/raptor_general.c, src/raptor_grddl.c,
+	src/raptor_json_writer.c, src/raptor_librdfa.c,
+	src/raptor_ntriples.c, src/raptor_rdfxml.c, src/raptor_rss.c,
+	src/raptor_rss_common.c, src/raptor_serialize_dot.c,
+	src/raptor_serialize_html.c, src/raptor_serialize_json.c,
+	src/raptor_serialize_rdfxml.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c: Replace
+	type %d (for enums) with %u in error messages (-Wformat)
+
+2014-11-23  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac:
+	Redisable -Wconversion - generated lexer too  noisy
+
+	* librdfa/curie.c, src/ntriples_parse.c, src/raptor_grddl.c,
+	src/raptor_internal.h, src/raptor_iostream.c,
+	src/raptor_ntriples.c, src/raptor_parse.c, src/raptor_sax2.c,
+	src/raptor_serialize_turtle.c, src/raptor_stringbuffer.c,
+	src/raptor_unicode.c, src/raptor_www_curl.c, src/raptor_xml.c:
+	Fixes for -Wconversion
+	- casting into to char near tolower and constructing chars from
+	ints
+	- unsigned int foo : 1 for bit flag
+	- raptor_stringbuffer_length() to unsigned int
+
+	* configure.ac: Enable -Wconversion
+
+	* src/snprintf.c: Disable "-Wformat-nonliteral" with GCC pragma
+	for snprintf test code
+
 2014-11-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_libxml.c: Disable GCC -Wformat-literal in a few
+	places using GCC pragma
+
+	Using #pragma GCC diagnostic <...> from
+	https://gcc.gnu.org/onlinedocs/gcc/Diagnostic-Pragmas.html
+
+	* utils/rapper.c, utils/rdfdiff.c: Remove static string printfs in
+	utilities (-Wformat)
+
+	* configure.ac, src/raptor_internal.h, src/raptor_parse.c,
+	src/raptor_rdfxml.c: Enable -Wformat=2 for gcc and fix that
+
+	(raptor_parser_log_error): Added to allow passing in format
+	message and log level.
+
+	Use above in cases where a message can be an error or warning so
+	that -Wformat=2 will work with gcc: it can now check all
+	printf-style formats used in Raptor.
+
+	* RELEASE.html: 2.0.16
 
 	* .travis.yml: docs
 
