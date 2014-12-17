@@ -13,7 +13,7 @@ IF(RAPTOR_PARSER_RDFXML)
 	SET(raptor_libxml_libs ${LIBXML2_LIBRARIES})
 ENDIF(RAPTOR_PARSER_RDFXML)
 IF(RAPTOR_PARSER_NTRIPLES OR RAPTOR_PARSER_NQUADS)
-	SET(raptor_parser_ntriples_nquads_sources ntriples_parse.c)
+	SET(raptor_parser_ntriples_nquads_sources ntriples_parse.c raptor_ntriples.c)
 ENDIF(RAPTOR_PARSER_NTRIPLES OR RAPTOR_PARSER_NQUADS)
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 	SET(raptor_parser_turtle_trig_sources
@@ -118,6 +118,7 @@ ENDIF(RAPTOR_PARSEDATE)
 ADD_LIBRARY(raptor2
 	raptor_avltree.c
 	raptor_concepts.c
+	raptor_escaped.c
 	raptor_general.c
 	raptor_iostream.c
 	raptor_json_writer.c
@@ -144,6 +145,7 @@ ADD_LIBRARY(raptor2
 	raptor_xml.c
 	raptor_xml_writer.c
 	snprintf.c
+	sort_r.c
 	turtle_common.c
 	${raptor_parser_rdfxml_sources}
 	${raptor_parser_ntriples_nquads_sources}
@@ -253,6 +255,14 @@ ADD_EXECUTABLE(raptor_permute_test raptor_permute_test.c)
 TARGET_LINK_LIBRARIES(raptor_permute_test raptor2)
 ADD_TEST(raptor_permute_test raptor_permute_test)
 
+ADD_EXECUTABLE(raptor_snprintf_test snprintf.c)
+TARGET_LINK_LIBRARIES(raptor_snprintf_test raptor2)
+ADD_TEST(raptor_snprintf_test raptor_snprintf_test)
+
+ADD_EXECUTABLE(raptor_sort_r_test sort_r.c)
+TARGET_LINK_LIBRARIES(raptor_sort_r_test raptor2)
+ADD_TEST(raptor_sort_r_test raptor_sort_r_test)
+
 SET_TARGET_PROPERTIES(
 	turtle_lexer_test
 	#turtle_parser_test
@@ -270,6 +280,8 @@ SET_TARGET_PROPERTIES(
 	raptor_avltree_test
 	raptor_term_test
 	raptor_permute_test
+	raptor_snprintf_test
+	raptor_sort_r_test
 	PROPERTIES
 	COMPILE_DEFINITIONS "RAPTOR_INTERNAL;STANDALONE"
 )
