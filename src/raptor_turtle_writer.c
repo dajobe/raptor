@@ -124,6 +124,41 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
 }
 
 
+void
+raptor_turtle_writer_csv_string(raptor_turtle_writer *turtle_writer,
+                                const unsigned char *string)
+{
+  raptor_iostream *iostr = turtle_writer->iostr;
+  size_t len = strlen((const char*)string);
+  const char delim = '\x22';
+  int quoting_needed = 0;
+  size_t i;
+
+  for(i = 0; i < len; i++) {
+    char c = string[i];
+    /* Quoting needed for delim (double quote), comma, linefeed or return */
+    if(c == delim   || c == ',' || c == '\r' || c == '\n') {
+      quoting_needed++;
+      break;
+    }
+  }
+  if(!quoting_needed) {
+    raptor_iostream_counted_string_write(string, len, iostr);
+    return;
+  }
+
+  raptor_iostream_write_byte(delim, iostr);
+  for(i = 0; i < len; i++) {
+    char c = string[i];
+    if(c == delim)
+      raptor_iostream_write_byte(delim, iostr);
+    raptor_iostream_write_byte(c, iostr);
+  }
+  raptor_iostream_write_byte(delim, iostr);
+
+  return;
+}
+
 /**
  * raptor_new_turtle_writer:
  * @world: raptor_world object
