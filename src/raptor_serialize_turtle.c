@@ -571,7 +571,8 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
     object = nodes[1];
     numobj = 2;  /* = raptor_sequence_size(xxx) if available */
 
-    if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
+    if(!last_predicate ||
+       !raptor_abbrev_node_equals(predicate, last_predicate)) {
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
         if(emit_mkr && !context->resultset) {
