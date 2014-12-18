@@ -1,3 +1,25 @@
+2014-12-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c:
+	(raptor_mkr_emit_subject_resultset): code style
+
+	* src/raptor_serialize_turtle.c: Move
+	raptor_mkr_emit_subject_resultset statics into turtle context.
+
+	struct raptor_turtle_context gains fields mkr_rs_size / arity /
+	ntuple / nvalue / processing_value
+
+	(raptor_mkr_emit_subject_resultset): Switch statics to context
+	vars above.
+
+	* Merge pull request #25 from rhmccullough/master change mKR
+	relation to SPARQL compatible CSV format
+
+	* NEWS.html, RELEASE.html: 2.0.16
+
+	* utils/rapper.c, utils/rdfdiff.c: Restore space between title and
+	version
+
 2014-12-15  Dave Beckett <dave@dajobe.org>
 
 	* scripts/process-changes.pl: Warn if no difference seen in
