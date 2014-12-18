@@ -49,9 +49,6 @@ struct raptor_turtle_parser_s {
   /* buffer length */
   size_t buffer_length;
   
-  /* static statement for use in passing to user code */
-  raptor_statement statement;
-
   raptor_namespace_stack namespaces; /* static */
 
   /* for lexer to store result in */
