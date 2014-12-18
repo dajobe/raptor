@@ -696,23 +696,29 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) { /* else skip predicate */
+    if(!last_predicate ||
+       raptor_abbrev_node_equals(predicate, last_predicate)) {
+      /* predicate is different or first predicate or new predicate */
+
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
-        if(context->mkr_rs_arity == 0) { /* last variable in first row */
+        if(!context->mkr_rs_arity) {
+          /* last variable in first row */
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
           raptor_turtle_writer_newline(turtle_writer);
           context->mkr_rs_ntuple++; /* start count after variables */
-	} else if(context->mkr_rs_nvalue == 0) {
+	} else if(!context->mkr_rs_nvalue) {
           /* size not emitted */
-        } else if(context->mkr_rs_processing_value && (context->mkr_rs_nvalue == context->mkr_rs_arity)) {
+        } else if(context->mkr_rs_processing_value &&
+                  (context->mkr_rs_nvalue == context->mkr_rs_arity)) {
           /* previous value was last value of row */
           context->mkr_rs_processing_value = 0;
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
           raptor_turtle_writer_newline(turtle_writer);
           context->mkr_rs_nvalue = 0;
           context->mkr_rs_ntuple++;
-          if(context->mkr_rs_ntuple > context->mkr_rs_size) { /* previous row was last row of table */
+          if(context->mkr_rs_ntuple > context->mkr_rs_size) {
+            /* previous row was last row of table */
             raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"end relation result ;", 21);
             raptor_turtle_writer_newline(turtle_writer);
             break;
@@ -740,11 +746,6 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           context->mkr_rs_arity = context->mkr_rs_nvalue;
           context->mkr_rs_nvalue = 0;
           skip_object = 0;
-          /*
-          raptor_turtle_writer_qname(turtle_writer, qname);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = [", 4);
-          raptor_turtle_writer_decrease_indent(turtle_writer);
-          */
         } else if(!strcmp((const char*)qname->local_name, (const char*)"solution")) {
           skip_object = 0; /* get values */
         } else if(!strcmp((const char*)qname->local_name, (const char*)"binding")) {
@@ -759,7 +760,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           skip_object = 1;
         }
 
-      } else {  /* not qname */
+      } else {
+        /* not qname */
         raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
         skip_object = 0;
       } /* end predicate */
@@ -767,25 +769,31 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
       if(qname)
         raptor_free_qname(qname);
     } else { /* predicate was skipped */
-        if(context->mkr_rs_arity == 0) /* not last variable */
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
+      if(!context->mkr_rs_arity)
+        /* not last variable */
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
     }
 
-    if(!skip_object) { /* do not skip object */
+    if(!skip_object) {
+      /* do not skip object */
       switch(object->term->type) {
         case RAPTOR_TERM_TYPE_URI:
           rv = raptor_turtle_emit_resource(serializer, object, depth+1);
           break;
 
         case RAPTOR_TERM_TYPE_LITERAL:
-          if(context->mkr_rs_arity ==  0) { /* variables */
+          if(!context->mkr_rs_arity) {
+            /* variables */
             context->mkr_rs_nvalue++;
             raptor_turtle_writer_csv_string(turtle_writer, object->term->value.literal.string);
-          } else if(context->mkr_rs_nvalue == 0) { /* size */
+          } else if(!context->mkr_rs_nvalue) {
+            /* size */
             context->mkr_rs_size = atoi((const char*)object->term->value.literal.string);
-          } else { /* values */
+          } else {
+            /* values */
             raptor_turtle_writer_csv_string(turtle_writer, object->term->value.literal.string);
-            if(context->mkr_rs_nvalue < context->mkr_rs_arity) /* not last value */
+            if(context->mkr_rs_nvalue < context->mkr_rs_arity)
+              /* not last value */
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
           }
           break;
