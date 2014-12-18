@@ -697,7 +697,7 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
     object = nodes[1];
 
     if(!last_predicate ||
-       raptor_abbrev_node_equals(predicate, last_predicate)) {
+       !raptor_abbrev_node_equals(predicate, last_predicate)) {
       /* predicate is different or first predicate or new predicate */
 
       /* no object list abbreviation possible, terminate last object */
