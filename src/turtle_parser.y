@@ -1703,7 +1703,9 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
   rc = turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->consumable);
 #endif  
 
-  if(!is_end) {
+  if(turtle_parser->error_count) {
+    rc = 1;
+  } else if(!is_end) {
     /* move stuff to the beginning of the buffer */
     turtle_parser->consumed = turtle_parser->end_of_buffer - turtle_parser->processed;
     if(turtle_parser->consumed && turtle_parser->processed) {
