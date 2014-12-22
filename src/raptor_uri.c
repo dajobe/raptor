@@ -134,7 +134,7 @@ raptor_new_uri_from_counted_string(raptor_world* world,
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG1("Creating new URI '");
   fwrite(uri_string, sizeof(char), length, RAPTOR_DEBUG_FH);
-  fputs(RAPTOR_DEBUG_FH, "' in hash\n")
+  fputs("' in hash\n", RAPTOR_DEBUG_FH);
 #endif
 
   new_uri = RAPTOR_CALLOC(raptor_uri*, 1, sizeof(*new_uri));
