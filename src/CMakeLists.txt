@@ -115,7 +115,13 @@ IF(RAPTOR_PARSEDATE)
 	SET(raptor_parsedate_sources parsedate.c)
 ENDIF(RAPTOR_PARSEDATE)
 
-ADD_LIBRARY(raptor2
+IF(BUILD_SHARED_LIBS)
+	SET(LIB_TYPE SHARED)
+ELSE(BUILD_SHARED_LIBS)
+	SET(LIB_TYPE STATIC)
+ENDIF(BUILD_SHARED_LIBS)
+
+ADD_LIBRARY(raptor2 ${LIB_TYPE}
 	raptor_avltree.c
 	raptor_concepts.c
 	raptor_escaped.c

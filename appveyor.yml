@@ -1,0 +1,74 @@
+# http://www.appveyor.com/docs/build-configuration
+
+# version format
+version: 1.0.{build}
+
+# branches to build
+branches:
+  # whitelist
+  only:
+    - appveyor
+
+# Operating system (build VM template)
+#os: Windows Server 2012 R2
+# Get image with cygwin
+os: Unstable
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - echo Building Raptor for Windows
+  - git config --global core.autocrlf input
+
+# GIT clone directory
+clone_folder: c:\projects\raptor
+
+platform: x64
+configuration: Release
+
+environment:
+  CYG_ROOT: C:/cygwin
+  CYG_MIRROR: http://cygwin.mirror.constant.com
+  CYG_CACHE: C:/cygwin/var/cache/setup
+  DEST: "c:/projects/dest"
+  CMAKE_GENERATOR_STRING: '"Visual Studio 12 Win64"'
+
+install:
+  - cmd: 'echo Installing Perl, Bison and Flex from Cygwin'
+  - cmd: '%CYG_ROOT%\setup-x86.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P perl -P bison -P flex > NUL'
+  - cmd: 'echo Check Cygwin setup'
+  - cmd: '%CYG_ROOT%/bin/bash -lc "cygcheck -dc cygwin"'
+  - cmd: 'echo Done setting up Cygwin'
+  - cmd: '%CYG_ROOT%/bin/flex -V'
+  - cmd: '%CYG_ROOT%/bin/bison --version'
+  - cmd: '%CYG_ROOT%/bin/perl -v'
+
+before_build:
+  - cmd: 'echo Running Flex and Bison to generate sources'
+  - cmd: 'cd c:\projects\raptor\src'
+  - cmd: '%CYG_ROOT%/bin/flex -oturtle_lexer.c turtle_lexer.l'
+  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-flex.pl turtle_lexer.c > turtle_lexer.t'
+  - cmd: '%CYG_ROOT%/bin/mv -f turtle_lexer.t turtle_lexer.c'
+  - cmd: '%CYG_ROOT%/bin/bison turtle_parser.y'
+  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl turtle_parser.tab.c > turtle_parser.c'
+  - cmd: '%CYG_ROOT%/bin/mv -f turtle_parser.tab.h turtle_parser.h'
+  - cmd: '%CYG_ROOT%/bin/rm -f turtle_parser.tab.c'
+  - cmd: '%CYG_ROOT%/bin/bison parsedate.y'
+  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl parsedate.tab.c > parsedate.c'
+  - cmd: '%CYG_ROOT%/bin/mv -f parsedate.tab.h parsedate.h'
+  - cmd: '%CYG_ROOT%/bin/rm -f parsedate.tab.c'
+  - cmd: 'md c:\projects\dest'
+  - cmd: 'md c:\projects\raptor\bld'
+  - cmd: 'md c:\projects\raptor\bldstatic'
+
+# custom build script
+build_script:
+  - cmd: 'cd c:\projects\raptor\bldstatic'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
+  - cmd: 'cmake --build . --config Release --target INSTALL'
+  - cmd: 'cd %DEST%static'
+  - cmd: 'dir /s'
+  - cmd: 'cd c:\projects\raptor\bld'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
+  - cmd: 'cmake --build . --config Release --target INSTALL'
+  - cmd: 'cd %DEST%'
+  - cmd: 'dir /s'

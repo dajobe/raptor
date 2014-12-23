@@ -2176,6 +2176,7 @@ RAPTOR_API
 void* raptor_avltree_iterator_get(raptor_avltree_iterator* iterator);
 
 /* utility methods */
+RAPTOR_API
 void raptor_sort_r(void *base, size_t nel, size_t width, raptor_data_compare_arg_handler compar, void *user_data);
 
 

@@ -42,6 +42,7 @@
 #include "raptor_internal.h"
 
 #include <turtle_parser.h>
+#define YY_NO_UNISTD_H 1
 #include <turtle_lexer.h>
 #include <turtle_common.h>
 
