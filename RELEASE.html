@@ -14,6 +14,15 @@
 <p>Not yet released.
 </p>
 
+<h3>Parser changes</h3>
+
+<p>The Turtle parser was improved to process input in chunks, rather
+than all in one step (with a large memory buffer).  This allows
+Turtle to read and parse files much larger than the system memory;
+it splits the inputs after the end of a turtle "sentence" that ends
+in a <code>.</code>.    This improvment was contributed by
+Sebastian Freundt. Thanks</p>
+
 <h3>Serializer changes</h3>
 
 <p>Added a serializer for the
@@ -23,6 +32,10 @@ H. McCullough based on the Turtle serializer.  Thanks.
 </p>
 
 <h3>Other changes</h3>
+
+<p>Made Raptor build again with CMake under Windows via CI as a
+service Appveyor.  The resulting binaries and libraries were not
+tested.</p>
 
 <p>Made some code changes to quiet GCC extra warnings.</p>
 

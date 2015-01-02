@@ -1,4 +1,88 @@
+2015-01-01  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #27 from dajobe/appveyor
+	CMake and windows fixes targetted for Appveyor builds
+
+2014-12-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-general.sgml: tmpls
+
+2014-12-22  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #26 from hroptatyr/feat/turtle-chunk-parser
+	Provide turtle chunk parser
+
+2014-12-20  Sebastian Freundt <hroptatyr@fresse.org>
+
+	* src/turtle_parser.y: Stop passing chunks to turtle_parser if
+	there have been errors
+
+2014-12-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: code style
+
+2014-12-18  Sebastian Freundt <hroptatyr@fresse.org>
+
+	* src/turtle_common.h:
+	hygiene, kick superfluous slot `statement'
+
+	It seems the turtle parser routines will use the `statement' slot
+	from the rdf_parser structure only.
+
 2014-12-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: fix comment
+
+2014-12-17  Sebastian Freundt <hroptatyr@fresse.org>
+
+	* src/turtle_common.h, src/turtle_lexer.l, src/turtle_parser.y:
+	Provide turtle chunk parser
+
+	This changeset allows to parse huge turtle, trig and n3 files.
+	Huge hereby means file sizes bigger than the main memory.  It has
+	been tested on the GND dataset of the Deutsche Nationalbibliothek
+	(121 MTriples), the dbpedia dataset (583 MT) and a private
+	production dataset (1225 MT).
+
+	Previously, the turtle parser tried to stack up all input in a
+	huge buffer which it then proceeded to process at once.
+
+	This changeset introduces a parser that attempts to parse each
+	given chunk immediately.  Syntax errors that arise due to
+	end-of-buffer situations in the middle of a grammar rule are
+	accounted for by resolving statements using the special `error'
+	rule accompanied with error recovery that copies over the
+	remainder of the buffer to the beginning so it can be appended by
+	the next chunk.
+
+	Full turtle statements (the ones ending in DOT) will never be part
+	of the remainder.  However, because of blank nodes and collections
+	statements can't be issued immediately anymore, instead the
+	concept of deferring the emission of a statement is introduced.
+	This is to avoid dangling (bnodeid) statements in case a turtle
+	SPO statement isn't DOT ended yet but the blank node property list
+	or collection has been read already.
+
+	* struct raptor_turtle_parser_s: introduce slots for buffer book
+	keeping
+	* turtle_lexer.l: use YY_USER_ACTION to keep track of buffer
+	consumption
+	* turtle_parser.y:
+	(raptor_turtle_generate_statement): split in two, see following
+	(raptor_turtle_clone_statement): prepare statement for handling
+	(raptor_turtle_handle_statement): call a parser's statement handler
+	(raptor_turtle_defer_statement): like
+	raptor_turtle_generate_statement() but instead of calling the
+	statement handler immediately put it on a list of deferred
+	statements, called (handled) only if the statement rule path has
+	been taken (triples DOT)
+	(raptor_turtle_parse_chunk): begin parsing on chunks for every
+	call, only stack up things in buffers if the remainder of a chunk
+	has been resolved through the `error' rule.
+
+2014-12-17  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_turtle.c: Fix check
 
 	* src/raptor_serialize_turtle.c:
 	(raptor_mkr_emit_subject_resultset): code style
@@ -24,6 +108,11 @@
 
 	* scripts/process-changes.pl: Warn if no difference seen in
 	functions
+
+2014-12-14  Sebastian Freundt <hroptatyr@fresse.org>
+
+	* src/raptor_uri.c:
+	fix, do fputs() properly
 
 2014-12-05  Dave Beckett <dave@dajobe.org>
 
