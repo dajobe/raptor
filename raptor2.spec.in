@@ -92,6 +92,9 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 
 
 %changelog
+* Wed Jan 14 2015  Phil John <philjohn@gmail.com>
+- Fix for wrong libdir causing errors when running rpmbuild
+
 * Fri Jan 5 2007  Dave Beckett <dave@dajobe.org>
 - rename files for raptor 2.0.0
 - no more raptor-config
