@@ -85,10 +85,10 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc LICENSE-2.0.txt NOTICE
 
-%{_libdir}/libraptor*.so
+%{_libdir}/libraptor2*.*
 %{_libdir}/pkgconfig/raptor2.pc
 
-%{prefix}/include/raptor/*
+%{prefix}/include/raptor2/*
 
 
 %changelog
