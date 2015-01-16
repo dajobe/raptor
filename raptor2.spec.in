@@ -85,13 +85,16 @@ install -d $RPM_BUILD_ROOT%{_mandir}/man3
 %doc AUTHORS COPYING COPYING.LIB ChangeLog LICENSE.txt NEWS README
 %doc LICENSE-2.0.txt NOTICE
 
-%{_libdir}/libraptor*.so
+%{_libdir}/libraptor2*.*
 %{_libdir}/pkgconfig/raptor2.pc
 
-%{prefix}/include/raptor/*
+%{prefix}/include/raptor2/*
 
 
 %changelog
+* Wed Jan 14 2015  Phil John <philjohn@gmail.com>
+- Fix for wrong libdir causing errors when running rpmbuild
+
 * Fri Jan 5 2007  Dave Beckett <dave@dajobe.org>
 - rename files for raptor 2.0.0
 - no more raptor-config
