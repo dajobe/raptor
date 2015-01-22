@@ -158,7 +158,7 @@ static int LookupWord (YYSTYPE *lvalp, char *buff);
 
 /* directives */
 
-%require "3.0.0"
+%require "3.0"
 
 /* File prefix (bison -b) */
 %file-prefix "parsedate"

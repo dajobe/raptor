@@ -109,7 +109,7 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 
 /* directives */
 
-%require "3.0.0"
+%require "3.0"
 
 /* File prefix (bison -b) */
 %file-prefix "turtle_parser"
