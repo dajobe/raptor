@@ -411,6 +411,52 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
 
 
 /**
+ * raptor_new_uri_for_mkr_concept:
+ * @world: raptor_world object
+ * @name: MKR namespace concept
+ * 
+ * Constructor - create a raptor URI for the MKR namespace concept name.
+ *
+ * Example: u=raptor_new_uri_for_mkr_concept("value") creates a new
+ * URI for the mkr:value term.
+ * 
+ * Return value: a new #raptor_uri object or NULL on failure
+ **/
+raptor_uri*
+raptor_new_uri_for_mkr_concept(raptor_world* world, const unsigned char *name) 
+{
+  raptor_uri *new_uri;
+  unsigned char *new_uri_string;
+  const unsigned char *base_uri_string = raptor_mkr_namespace_uri;
+  size_t base_uri_string_len = raptor_mkr_namespace_uri_len;
+  size_t new_uri_string_len;
+  size_t name_len;
+  
+  RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
+
+  if(!name)
+    return NULL;
+  
+  raptor_world_open(world);
+
+  name_len = strlen((const char*)name);
+  new_uri_string_len = base_uri_string_len + name_len;
+  new_uri_string = RAPTOR_MALLOC(unsigned char*, new_uri_string_len + 1);
+  if(!new_uri_string)
+    return NULL;
+
+  memcpy(new_uri_string, base_uri_string, base_uri_string_len);
+  memcpy(new_uri_string + base_uri_string_len, name, name_len + 1); /* copy NUL */
+
+  new_uri = raptor_new_uri_from_counted_string(world, new_uri_string,
+                                               new_uri_string_len);
+  RAPTOR_FREE(char*, new_uri_string);
+  
+  return new_uri;
+}
+
+
+/**
  * raptor_new_uri_from_uri_or_file_string:
  * @world: raptor_world object
  * @base_uri: existing base URI

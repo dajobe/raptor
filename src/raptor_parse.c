@@ -95,6 +95,10 @@ raptor_parsers_init(raptor_world *world)
   rc+= raptor_init_parser_turtle(world) != 0;
 #endif
 
+#ifdef RAPTOR_PARSER_MKR
+  rc+= raptor_init_parser_mkr(world) != 0;
+#endif
+
 #ifdef RAPTOR_PARSER_TRIG
   rc+= raptor_init_parser_trig(world) != 0;
 #endif
@@ -105,12 +109,12 @@ raptor_parsers_init(raptor_world *world)
 
 #if defined(RAPTOR_PARSER_GRDDL)
   rc+= raptor_init_parser_grddl_common(world) != 0;
+#endif
 
 #ifdef RAPTOR_PARSER_GRDDL
   rc+= raptor_init_parser_grddl(world) != 0;
 #endif
 
-#endif
 
 #ifdef RAPTOR_PARSER_GUESS
   rc+= raptor_init_parser_guess(world) != 0;

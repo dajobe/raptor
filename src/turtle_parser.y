@@ -138,10 +138,94 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   raptor_term *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
+
+  /* mKR */
+  MKR_value *value;
+  MKR_nv *nv;
+  MKR_pp *pp;
 }
 
+/* tokens not currently used */
+/* quantifier */
+%token NO	"no"
+%token OPTIONAL	"optional"
+%token SOME	"some"
+%token MANY	"many"
+%token THE	"the"
+/* conditional */
+%token IF	"if"
+%token THEN	"then"
+%token ELSE	"else"
+%token UNKNOWN	"unknown"
+%token FI	"fi"
+%token NOT	"not"
+%token AND	"and"
+%token OR	"or"
+%token XOR	"xor"
+/* conjunction */
+%token IMPLIES	"implies"
+%token CAUSES	"causes"
+%token BECAUSE	"because"
+/* iterator */
+%token ANY	"any"
+%token ALL	"all"
+%token EVERY	"every"
+%token WHILE	"while"
+%token UNTIL	"until"
+%token WHEN	"when"
+%token FORSOME	"forSome"
+%token FORALL	"forAll"
+/* pronoun */
+%token ME	"me"
+%token I	"I"
+%token YOU	"you"
+%token IT	"it"
+%token HE	"he"
+%token SHE	"she"
+%token HERE	"here"
+%token NOW	"now"
 
-/* others */
+
+/* hoVerb */
+%token IS        "is"
+%token ISA       "isa"
+%token ISS       "iss"
+%token ISU       "isu"
+%token ISASTAR   "isa*"
+%token ISC       "isc"
+%token ISG       "isg"
+%token ISP       "isp"
+%token ISCSTAR   "isc*"
+/* hasVerb */
+%token HAS       "has"
+%token HASPART   "haspart"
+%token ISAPART   "isapart"
+/* doVerb */
+%token DO        "do"
+%token HDO       "hdo"
+%token BANG      "!"
+
+/* preposition */
+%token AT        "at"
+%token OF        "of"
+%token WITH      "with"
+%token OD        "od"
+%token FROM      "from"
+%token TO        "to"
+%token IN        "in"
+%token OUT       "out"
+%token WHERE     "where"
+%token HO        "ho"
+%token REL       "rel"
+/* other */
+%token mkrBEGIN  "begin"
+%token mkrEND    "end"
+%token EQUALS    "="
+%token ASSIGN    ":="
+%token LET       "let"
+%token DCOLON    "::"
+%token DSTAR     "**"
+
 
 %token A "a"
 %token HAT "^"
@@ -157,6 +241,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token TRUE_TOKEN "true"
 %token FALSE_TOKEN "false"
 %token PREFIX "@prefix"
+%token MKB "@mkb"
+%token MKE "@mke"
 %token BASE "@base"
 %token SPARQL_PREFIX "PREFIX"
 %token SPARQL_BASE "BASE"
@@ -173,18 +259,26 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token <string> FLOATING_LITERAL "floating point literal"
 %token <string> DECIMAL_LITERAL "decimal literal"
 
+/* mKR */
+%token <string> VARIABLE "variable"
+
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
-%type <sequence> objectList itemList predicateObjectList predicateObjectListOpt
+%type <identifier> subject predicate verb object literal resource blankNode collection
+%type <sequence> objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
+
+/* mKR */
+%type <value> "value"
+%type <nv> "nv"
+%type <pp> "pp"
 
 /* tidy up tokens after errors */
 
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG VARIABLE
 
 %destructor {
   if($$)
@@ -194,12 +288,12 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blankNode collection
+} subject predicate verb object literal resource blankNode collection
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList predicateObjectList predicateObjectListOpt
+} objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
 
 %%
 
@@ -1441,14 +1535,17 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)parser->context;
   raptor_statement *statement = &parser->statement;
 
-  if(!t->subject || !t->predicate || !t->object)
+  if(!t->subject || !t->predicate || !t->object) {
     return;
+  }
 
-  if(!parser->statement_handler)
+  if(!parser->statement_handler) {
     return;
+  }
 
-  if(turtle_parser->trig && turtle_parser->graph_name)
+  if(turtle_parser->trig && turtle_parser->graph_name) {
     statement->graph = raptor_term_copy(turtle_parser->graph_name);
+  }
 
   if(!parser->emitted_default_graph && !turtle_parser->graph_name) {
     /* for non-TRIG - start default graph at first triple */
@@ -1457,45 +1554,66 @@ raptor_turtle_generate_statement(raptor_parser *parser, raptor_statement *t)
   }
   
   /* Two choices for subject for Turtle */
-  if(t->subject->type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->subject = raptor_new_term_from_blank(parser->world,
+  switch(t->subject->type) {
+    case RAPTOR_TERM_TYPE_BLANK:
+      statement->subject = raptor_new_term_from_blank(parser->world,
                                                     t->subject->value.blank.string);
-  } else {
-    /* RAPTOR_TERM_TYPE_URI */
-    RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
+      break;
+
+    case RAPTOR_TERM_TYPE_URI:
+      RAPTOR_ASSERT(t->subject->type != RAPTOR_TERM_TYPE_URI,
                   "subject type is not resource");
-    statement->subject = raptor_new_term_from_uri(parser->world,
+      statement->subject = raptor_new_term_from_uri(parser->world,
                                                   t->subject->value.uri);
+      break;
+
+    default:
+      break;
   }
 
   /* Predicates are URIs but check for bad ordinals */
-  if(!strncmp((const char*)raptor_uri_as_string(t->predicate->value.uri),
-              "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
-    unsigned char* predicate_uri_string = raptor_uri_as_string(t->predicate->value.uri);
-    int predicate_ordinal = raptor_check_ordinal(predicate_uri_string+44);
-    if(predicate_ordinal <= 0)
-      raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
+  switch(t->predicate->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      if(!strncmp((const char*)raptor_uri_as_string(t->predicate->value.uri),
+                  "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
+        unsigned char* predicate_uri_string = raptor_uri_as_string(t->predicate->value.uri);
+        int predicate_ordinal = raptor_check_ordinal(predicate_uri_string+44);
+        if(predicate_ordinal <= 0)
+          raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
+      }
+      statement->predicate = raptor_new_term_from_uri(parser->world,
+                                                    t->predicate->value.uri);
+      break;
+
+    default:
+      break;
   }
-  
-  statement->predicate = raptor_new_term_from_uri(parser->world,
-                                                  t->predicate->value.uri);
   
 
   /* Three choices for object for Turtle */
-  if(t->object->type == RAPTOR_TERM_TYPE_URI) {
-    statement->object = raptor_new_term_from_uri(parser->world,
+  switch(t->object->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      statement->object = raptor_new_term_from_uri(parser->world,
                                                  t->object->value.uri);
-  } else if(t->object->type == RAPTOR_TERM_TYPE_BLANK) {
-    statement->object = raptor_new_term_from_blank(parser->world,
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      statement->object = raptor_new_term_from_blank(parser->world,
                                                    t->object->value.blank.string);
-  } else {
-    /* RAPTOR_TERM_TYPE_LITERAL */
-    RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
+      break;
+
+    case RAPTOR_TERM_TYPE_LITERAL:
+      RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
-    statement->object = raptor_new_term_from_literal(parser->world,
+      statement->object = raptor_new_term_from_literal(parser->world,
                                                      t->object->value.literal.string,
                                                      t->object->value.literal.datatype,
                                                      t->object->value.literal.language);
+      break;
+
+    default:
+printf("##### UNEXPECTED default: object->type = %d\n", t->object->type);
+      break;
   }
 
   /* Generate the statement */
@@ -1641,7 +1759,7 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
 }
 
 
-static raptor_uri*
+raptor_uri*
 raptor_turtle_get_graph(raptor_parser* rdf_parser)
 {
   raptor_turtle_parser *turtle_parser;

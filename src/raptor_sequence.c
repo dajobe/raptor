@@ -338,6 +338,9 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
 int
 raptor_sequence_push(raptor_sequence* seq, void *data)
 {
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("##### DEBUG: raptor_sequence_push: ");
+#endif
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->start + seq->size == seq->capacity) {
@@ -355,6 +358,9 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
   seq->sequence[seq->start + seq->size] = data;
   seq->size++;
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("exit raptor_sequence_push\n");
+#endif
   return 0;
 }
 
@@ -578,10 +584,12 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
 {
   int rc = 0;
   int i;
+  int parse_mkr = 1;
 
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
-  fputc('[', fh);
+  if(!parse_mkr)
+    fputc('[', fh);
   for(i = 0; i < seq->size; i++) {
     if(i)
       fputs(", ", fh);
@@ -594,7 +602,8 @@ raptor_sequence_print(raptor_sequence* seq, FILE* fh)
     } else
       fputs("(empty)", fh);
   }
-  fputc(']', fh);
+  if(!parse_mkr)
+    fputc(']', fh);
 
   return rc;
 }

@@ -1,0 +1,15 @@
+# RAPTOR/tests/mkr/command.mkr
+# Richard H. McCullough Jan/15/2015
+
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+do print od "The quick brown fox jumped over the lazy dog." ;
+
+do read from relation.mkr ;
+
+
+do select od $1, $3 from relation.mkr ;
+
+! wc od *.mkr ;
+
+do dbopen od mkr.ho, hierarchy, gdbm, existent ;

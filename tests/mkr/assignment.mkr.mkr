@@ -1,0 +1,18 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/assignment.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+print has rdf:type = action ;
+
+x has <http://mkrmke.net/ns/:=> = 10 ;
+
+y has <http://mkrmke.net/ns/:=> = _:5 has  ;
+
+z has <http://mkrmke.net/ns/:=> = "the big red one" ;
+
+( ) has print = [{
+od = (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
+}, {
+od = ("$x, $y, $z") ;
+}] ;
+

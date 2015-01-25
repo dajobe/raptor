@@ -1,0 +1,28 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/question.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix u: <http://mkrmke.net/ns/unit/> ;
+@prefix kb: <http://mkrmke.net/kb/> ;
+@prefix ke: <http://mkrmke.net/ke/> ;
+
+<http://mkrmke.net/ns/?s> has isa = <http://mkrmke.net/ns/?o>, 
+    <http://mkrmke.net/ns/isa*> = entity ;
+
+animal has isa = entity ;
+
+cat has <http://mkrmke.net/ns/?p> = entity, 
+isa = animal ;
+
+dog has isa = animal ;
+
+person has isa = entity ;
+
+u:Bob_McCullough has isa = person ;
+
+u:Dick_McCullough has isa = person ;
+
+u:Garfield has isa = cat, 
+<http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o> ;
+
+u:Odie has isa = dog ;
+

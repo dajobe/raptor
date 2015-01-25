@@ -62,6 +62,7 @@
 #cmakedefine RAPTOR_PARSER_RDFXML
 #cmakedefine RAPTOR_PARSER_NTRIPLES
 #cmakedefine RAPTOR_PARSER_TURTLE
+#cmakedefine RAPTOR_PARSER_MKR
 #cmakedefine RAPTOR_PARSER_TRIG
 #cmakedefine RAPTOR_PARSER_RSS
 #cmakedefine RAPTOR_PARSER_GRDDL

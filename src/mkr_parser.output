@@ -1,0 +1,2171 @@
+Nonterminals useless in grammar
+
+   valueList
+
+
+Terminals unused in grammar
+
+   "no"
+   "optional"
+   "some"
+   "many"
+   "the"
+   "if"
+   "then"
+   "else"
+   "unknown"
+   "fi"
+   "not"
+   "and"
+   "or"
+   "xor"
+   "implies"
+   "causes"
+   "because"
+   "any"
+   "all"
+   "every"
+   "while"
+   "until"
+   "when"
+   "forSome"
+   "forAll"
+   "me"
+   "I"
+   "you"
+   "it"
+   "he"
+   "she"
+   "here"
+   "now"
+   "let"
+   "**"
+   "a"
+   "."
+   "enum("
+   "list("
+   "multiset("
+   "set("
+   "PREFIX"
+   "BASE"
+   "Graph URI literal {"
+   ERROR_TOKEN
+
+
+Rules useless in grammar
+
+   98 valueList: valueList "," value
+   99          | value
+
+
+Rules useless in parser due to conflicts
+
+   15 viewOption: %empty
+
+
+State 2 conflicts: 25 shift/reduce
+State 30 conflicts: 1 shift/reduce
+State 53 conflicts: 25 shift/reduce
+State 58 conflicts: 25 shift/reduce
+State 139 conflicts: 25 shift/reduce
+
+
+Grammar
+
+    0 $accept: Document $end
+
+    1 Document: sentenceList
+
+    2 sentenceList: sentenceList sentence
+    3             | %empty
+
+    4 nv: predicate "=" value
+
+    5 pp: preposition objectList
+    6   | preposition nvList
+
+    7 value: object
+    8      | "[" objectList "]"
+    9      | "{" sentenceList "}"
+   10      | "[" "]"
+
+   11 prefix: "@prefix"
+   12       | "@mkb"
+   13       | "@mke"
+
+   14 viewOption: "in" variable
+   15           | %empty
+
+   16 nameOption: variable "::"
+   17           | %empty
+
+   18 sentence: viewOption nameOption sentence ";"
+   19         | "{" sentenceList "}" ";"
+   20         | "@base" "URI literal" ";"
+   21         | prefix "identifier" "URI literal" ";"
+   22         | "begin" variable subject ";"
+   23         | "ho" objectList ";"
+   24         | "rel" objectList ";"
+   25         | "end" variable subject ";"
+   26         | doVerb predicate ";"
+   27         | doVerb predicate ppList ";"
+   28         | variable ":=" value ";"
+   29         | subject isVerb object ppList ";"
+   30         | subject isVerb object ";"
+   31         | subject hoVerb objectList ";"
+   32         | subject hasVerb nvList ";"
+   33         | subject doVerb predicate ppList ";"
+   34         | error ";"
+
+   35 objectList: objectList "," object
+   36           | object
+
+   37 nvList: nvList "," nv
+   38       | nv
+
+   39 ppList: ppList pp
+   40       | pp
+
+   41 subject: resource
+   42        | blankNode
+   43        | collection
+   44        | literal
+   45        | variable
+
+   46 predicate: resource
+   47          | preposition
+   48          | variable
+
+   49 object: resource
+   50       | blankNode
+   51       | collection
+   52       | literal
+   53       | variable
+
+   54 variable: "variable"
+
+   55 isVerb: "is"
+
+   56 hoVerb: "isa"
+   57       | "isu"
+   58       | "iss"
+   59       | "isc"
+   60       | "isg"
+   61       | "isp"
+   62       | "isa*"
+   63       | "isc*"
+   64       | variable
+
+   65 hasVerb: "has"
+   66        | "haspart"
+   67        | "isapart"
+
+   68 doVerb: "do"
+   69       | "hdo"
+   70       | "!"
+
+   71 preposition: "at"
+   72            | "of"
+   73            | "with"
+   74            | "od"
+   75            | "from"
+   76            | "to"
+   77            | "in"
+   78            | "out"
+   79            | "where"
+   80            | "ho"
+   81            | "rel"
+
+   82 literal: "string literal" "langtag"
+   83        | "string literal" "langtag" "^" "URI literal"
+   84        | "string literal" "langtag" "^" "QName"
+   85        | "string literal" "^" "URI literal"
+   86        | "string literal" "^" "QName"
+   87        | "string literal"
+   88        | "integer literal"
+   89        | "floating point literal"
+   90        | "decimal literal"
+   91        | "true"
+   92        | "false"
+
+   93 resource: "URI literal"
+   94         | "QName"
+
+   95 blankNode: "blank node"
+
+   96 collection: "(" objectList ")"
+   97           | "(" ")"
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256) 34
+"no" (258)
+"optional" (259)
+"some" (260)
+"many" (261)
+"the" (262)
+"if" (263)
+"then" (264)
+"else" (265)
+"unknown" (266)
+"fi" (267)
+"not" (268)
+"and" (269)
+"or" (270)
+"xor" (271)
+"implies" (272)
+"causes" (273)
+"because" (274)
+"any" (275)
+"all" (276)
+"every" (277)
+"while" (278)
+"until" (279)
+"when" (280)
+"forSome" (281)
+"forAll" (282)
+"me" (283)
+"I" (284)
+"you" (285)
+"it" (286)
+"he" (287)
+"she" (288)
+"here" (289)
+"now" (290)
+"is" (291) 55
+"isa" (292) 56
+"iss" (293) 58
+"isu" (294) 57
+"isa*" (295) 62
+"isc" (296) 59
+"isg" (297) 60
+"isp" (298) 61
+"isc*" (299) 63
+"has" (300) 65
+"haspart" (301) 66
+"isapart" (302) 67
+"do" (303) 68
+"hdo" (304) 69
+"!" (305) 70
+"at" (306) 71
+"of" (307) 72
+"with" (308) 73
+"od" (309) 74
+"from" (310) 75
+"to" (311) 76
+"in" (312) 14 77
+"out" (313) 78
+"where" (314) 79
+"ho" (315) 23 80
+"rel" (316) 24 81
+"begin" (317) 22
+"end" (318) 25
+"=" (319) 4
+":=" (320) 28
+"let" (321)
+"::" (322) 16
+"**" (323)
+"a" (324)
+"^" (325) 83 84 85 86
+"." (326)
+"," (327) 35 37
+";" (328) 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34
+"[" (329) 8 10
+"]" (330) 8 10
+"enum(" (331)
+"list(" (332)
+"multiset(" (333)
+"set(" (334)
+"(" (335) 96 97
+")" (336) 96 97
+"{" (337) 9 19
+"}" (338) 9 19
+"true" (339) 91
+"false" (340) 92
+"@prefix" (341) 11
+"@mkb" (342) 12
+"@mke" (343) 13
+"@base" (344) 20
+"PREFIX" (345)
+"BASE" (346)
+"string literal" (347) 82 83 84 85 86 87
+"URI literal" (348) 20 21 83 85 93
+"Graph URI literal {" (349)
+"blank node" (350) 95
+"QName" (351) 84 86 94
+"identifier" (352) 21
+"langtag" (353) 82 83 84
+"integer literal" (354) 88
+"floating point literal" (355) 89
+"decimal literal" (356) 90
+"variable" (357) 54
+ERROR_TOKEN (358)
+
+
+Nonterminals, with rules where they appear
+
+$accept (104)
+    on left: 0
+Document (105)
+    on left: 1, on right: 0
+sentenceList (106)
+    on left: 2 3, on right: 1 2 9 19
+nv (107)
+    on left: 4, on right: 37 38
+pp (108)
+    on left: 5 6, on right: 39 40
+value (109)
+    on left: 7 8 9 10, on right: 4 28
+prefix (110)
+    on left: 11 12 13, on right: 21
+viewOption (111)
+    on left: 14 15, on right: 18
+nameOption (112)
+    on left: 16 17, on right: 18
+sentence (113)
+    on left: 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34, on right:
+    2 18
+objectList (114)
+    on left: 35 36, on right: 5 8 23 24 31 35 96
+nvList (115)
+    on left: 37 38, on right: 6 32 37
+ppList (116)
+    on left: 39 40, on right: 27 29 33 39
+subject (117)
+    on left: 41 42 43 44 45, on right: 22 25 29 30 31 32 33
+predicate (118)
+    on left: 46 47 48, on right: 4 26 27 33
+object (119)
+    on left: 49 50 51 52 53, on right: 7 29 30 35 36
+variable (120)
+    on left: 54, on right: 14 16 22 25 28 45 48 53 64
+isVerb (121)
+    on left: 55, on right: 29 30
+hoVerb (122)
+    on left: 56 57 58 59 60 61 62 63 64, on right: 31
+hasVerb (123)
+    on left: 65 66 67, on right: 32
+doVerb (124)
+    on left: 68 69 70, on right: 26 27 33
+preposition (125)
+    on left: 71 72 73 74 75 76 77 78 79 80 81, on right: 5 6 47
+literal (126)
+    on left: 82 83 84 85 86 87 88 89 90 91 92, on right: 44 52
+resource (127)
+    on left: 93 94, on right: 41 46 49
+blankNode (128)
+    on left: 95, on right: 42 50
+collection (129)
+    on left: 96 97, on right: 43 51
+
+
+State 0
+
+    0 $accept: . Document $end
+
+    $default  reduce using rule 3 (sentenceList)
+
+    Document      go to state 1
+    sentenceList  go to state 2
+
+
+State 1
+
+    0 $accept: Document . $end
+
+    $end  shift, and go to state 3
+
+
+State 2
+
+    1 Document: sentenceList .
+    2 sentenceList: sentenceList . sentence
+
+    error                     shift, and go to state 4
+    "do"                      shift, and go to state 5
+    "hdo"                     shift, and go to state 6
+    "!"                       shift, and go to state 7
+    "in"                      shift, and go to state 8
+    "ho"                      shift, and go to state 9
+    "rel"                     shift, and go to state 10
+    "begin"                   shift, and go to state 11
+    "end"                     shift, and go to state 12
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 14
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "@prefix"                 shift, and go to state 17
+    "@mkb"                    shift, and go to state 18
+    "@mke"                    shift, and go to state 19
+    "@base"                   shift, and go to state 20
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    $end                      reduce using rule 1 (Document)
+    error                     [reduce using rule 15 (viewOption)]
+    "do"                      [reduce using rule 15 (viewOption)]
+    "hdo"                     [reduce using rule 15 (viewOption)]
+    "!"                       [reduce using rule 15 (viewOption)]
+    "in"                      [reduce using rule 15 (viewOption)]
+    "ho"                      [reduce using rule 15 (viewOption)]
+    "rel"                     [reduce using rule 15 (viewOption)]
+    "begin"                   [reduce using rule 15 (viewOption)]
+    "end"                     [reduce using rule 15 (viewOption)]
+    "("                       [reduce using rule 15 (viewOption)]
+    "{"                       [reduce using rule 15 (viewOption)]
+    "true"                    [reduce using rule 15 (viewOption)]
+    "false"                   [reduce using rule 15 (viewOption)]
+    "@prefix"                 [reduce using rule 15 (viewOption)]
+    "@mkb"                    [reduce using rule 15 (viewOption)]
+    "@mke"                    [reduce using rule 15 (viewOption)]
+    "@base"                   [reduce using rule 15 (viewOption)]
+    "string literal"          [reduce using rule 15 (viewOption)]
+    "URI literal"             [reduce using rule 15 (viewOption)]
+    "blank node"              [reduce using rule 15 (viewOption)]
+    "QName"                   [reduce using rule 15 (viewOption)]
+    "integer literal"         [reduce using rule 15 (viewOption)]
+    "floating point literal"  [reduce using rule 15 (viewOption)]
+    "decimal literal"         [reduce using rule 15 (viewOption)]
+    "variable"                [reduce using rule 15 (viewOption)]
+
+    prefix      go to state 29
+    viewOption  go to state 30
+    sentence    go to state 31
+    subject     go to state 32
+    variable    go to state 33
+    doVerb      go to state 34
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 3
+
+    0 $accept: Document $end .
+
+    $default  accept
+
+
+State 4
+
+   34 sentence: error . ";"
+
+    ";"  shift, and go to state 39
+
+
+State 5
+
+   68 doVerb: "do" .
+
+    $default  reduce using rule 68 (doVerb)
+
+
+State 6
+
+   69 doVerb: "hdo" .
+
+    $default  reduce using rule 69 (doVerb)
+
+
+State 7
+
+   70 doVerb: "!" .
+
+    $default  reduce using rule 70 (doVerb)
+
+
+State 8
+
+   14 viewOption: "in" . variable
+
+    "variable"  shift, and go to state 28
+
+    variable  go to state 40
+
+
+State 9
+
+   23 sentence: "ho" . objectList ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    objectList  go to state 41
+    object      go to state 42
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 10
+
+   24 sentence: "rel" . objectList ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    objectList  go to state 48
+    object      go to state 42
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 11
+
+   22 sentence: "begin" . variable subject ";"
+
+    "variable"  shift, and go to state 28
+
+    variable  go to state 49
+
+
+State 12
+
+   25 sentence: "end" . variable subject ";"
+
+    "variable"  shift, and go to state 28
+
+    variable  go to state 50
+
+
+State 13
+
+   96 collection: "(" . objectList ")"
+   97           | "(" . ")"
+
+    "("                       shift, and go to state 13
+    ")"                       shift, and go to state 51
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    objectList  go to state 52
+    object      go to state 42
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 14
+
+   19 sentence: "{" . sentenceList "}" ";"
+
+    $default  reduce using rule 3 (sentenceList)
+
+    sentenceList  go to state 53
+
+
+State 15
+
+   91 literal: "true" .
+
+    $default  reduce using rule 91 (literal)
+
+
+State 16
+
+   92 literal: "false" .
+
+    $default  reduce using rule 92 (literal)
+
+
+State 17
+
+   11 prefix: "@prefix" .
+
+    $default  reduce using rule 11 (prefix)
+
+
+State 18
+
+   12 prefix: "@mkb" .
+
+    $default  reduce using rule 12 (prefix)
+
+
+State 19
+
+   13 prefix: "@mke" .
+
+    $default  reduce using rule 13 (prefix)
+
+
+State 20
+
+   20 sentence: "@base" . "URI literal" ";"
+
+    "URI literal"  shift, and go to state 54
+
+
+State 21
+
+   82 literal: "string literal" . "langtag"
+   83        | "string literal" . "langtag" "^" "URI literal"
+   84        | "string literal" . "langtag" "^" "QName"
+   85        | "string literal" . "^" "URI literal"
+   86        | "string literal" . "^" "QName"
+   87        | "string literal" .
+
+    "^"        shift, and go to state 55
+    "langtag"  shift, and go to state 56
+
+    $default  reduce using rule 87 (literal)
+
+
+State 22
+
+   93 resource: "URI literal" .
+
+    $default  reduce using rule 93 (resource)
+
+
+State 23
+
+   95 blankNode: "blank node" .
+
+    $default  reduce using rule 95 (blankNode)
+
+
+State 24
+
+   94 resource: "QName" .
+
+    $default  reduce using rule 94 (resource)
+
+
+State 25
+
+   88 literal: "integer literal" .
+
+    $default  reduce using rule 88 (literal)
+
+
+State 26
+
+   89 literal: "floating point literal" .
+
+    $default  reduce using rule 89 (literal)
+
+
+State 27
+
+   90 literal: "decimal literal" .
+
+    $default  reduce using rule 90 (literal)
+
+
+State 28
+
+   54 variable: "variable" .
+
+    $default  reduce using rule 54 (variable)
+
+
+State 29
+
+   21 sentence: prefix . "identifier" "URI literal" ";"
+
+    "identifier"  shift, and go to state 57
+
+
+State 30
+
+   18 sentence: viewOption . nameOption sentence ";"
+
+    "variable"  shift, and go to state 28
+
+    "variable"  [reduce using rule 17 (nameOption)]
+    $default    reduce using rule 17 (nameOption)
+
+    nameOption  go to state 58
+    variable    go to state 59
+
+
+State 31
+
+    2 sentenceList: sentenceList sentence .
+
+    $default  reduce using rule 2 (sentenceList)
+
+
+State 32
+
+   29 sentence: subject . isVerb object ppList ";"
+   30         | subject . isVerb object ";"
+   31         | subject . hoVerb objectList ";"
+   32         | subject . hasVerb nvList ";"
+   33         | subject . doVerb predicate ppList ";"
+
+    "is"        shift, and go to state 60
+    "isa"       shift, and go to state 61
+    "iss"       shift, and go to state 62
+    "isu"       shift, and go to state 63
+    "isa*"      shift, and go to state 64
+    "isc"       shift, and go to state 65
+    "isg"       shift, and go to state 66
+    "isp"       shift, and go to state 67
+    "isc*"      shift, and go to state 68
+    "has"       shift, and go to state 69
+    "haspart"   shift, and go to state 70
+    "isapart"   shift, and go to state 71
+    "do"        shift, and go to state 5
+    "hdo"       shift, and go to state 6
+    "!"         shift, and go to state 7
+    "variable"  shift, and go to state 28
+
+    variable  go to state 72
+    isVerb    go to state 73
+    hoVerb    go to state 74
+    hasVerb   go to state 75
+    doVerb    go to state 76
+
+
+State 33
+
+   28 sentence: variable . ":=" value ";"
+   45 subject: variable .
+
+    ":="  shift, and go to state 77
+
+    $default  reduce using rule 45 (subject)
+
+
+State 34
+
+   26 sentence: doVerb . predicate ";"
+   27         | doVerb . predicate ppList ";"
+
+    "at"           shift, and go to state 78
+    "of"           shift, and go to state 79
+    "with"         shift, and go to state 80
+    "od"           shift, and go to state 81
+    "from"         shift, and go to state 82
+    "to"           shift, and go to state 83
+    "in"           shift, and go to state 84
+    "out"          shift, and go to state 85
+    "where"        shift, and go to state 86
+    "ho"           shift, and go to state 87
+    "rel"          shift, and go to state 88
+    "URI literal"  shift, and go to state 22
+    "QName"        shift, and go to state 24
+    "variable"     shift, and go to state 28
+
+    predicate    go to state 89
+    variable     go to state 90
+    preposition  go to state 91
+    resource     go to state 92
+
+
+State 35
+
+   44 subject: literal .
+
+    $default  reduce using rule 44 (subject)
+
+
+State 36
+
+   41 subject: resource .
+
+    $default  reduce using rule 41 (subject)
+
+
+State 37
+
+   42 subject: blankNode .
+
+    $default  reduce using rule 42 (subject)
+
+
+State 38
+
+   43 subject: collection .
+
+    $default  reduce using rule 43 (subject)
+
+
+State 39
+
+   34 sentence: error ";" .
+
+    $default  reduce using rule 34 (sentence)
+
+
+State 40
+
+   14 viewOption: "in" variable .
+
+    $default  reduce using rule 14 (viewOption)
+
+
+State 41
+
+   23 sentence: "ho" objectList . ";"
+   35 objectList: objectList . "," object
+
+    ","  shift, and go to state 93
+    ";"  shift, and go to state 94
+
+
+State 42
+
+   36 objectList: object .
+
+    $default  reduce using rule 36 (objectList)
+
+
+State 43
+
+   53 object: variable .
+
+    $default  reduce using rule 53 (object)
+
+
+State 44
+
+   52 object: literal .
+
+    $default  reduce using rule 52 (object)
+
+
+State 45
+
+   49 object: resource .
+
+    $default  reduce using rule 49 (object)
+
+
+State 46
+
+   50 object: blankNode .
+
+    $default  reduce using rule 50 (object)
+
+
+State 47
+
+   51 object: collection .
+
+    $default  reduce using rule 51 (object)
+
+
+State 48
+
+   24 sentence: "rel" objectList . ";"
+   35 objectList: objectList . "," object
+
+    ","  shift, and go to state 93
+    ";"  shift, and go to state 95
+
+
+State 49
+
+   22 sentence: "begin" variable . subject ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    subject     go to state 96
+    variable    go to state 97
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 50
+
+   25 sentence: "end" variable . subject ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    subject     go to state 98
+    variable    go to state 97
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 51
+
+   97 collection: "(" ")" .
+
+    $default  reduce using rule 97 (collection)
+
+
+State 52
+
+   35 objectList: objectList . "," object
+   96 collection: "(" objectList . ")"
+
+    ","  shift, and go to state 93
+    ")"  shift, and go to state 99
+
+
+State 53
+
+    2 sentenceList: sentenceList . sentence
+   19 sentence: "{" sentenceList . "}" ";"
+
+    error                     shift, and go to state 4
+    "do"                      shift, and go to state 5
+    "hdo"                     shift, and go to state 6
+    "!"                       shift, and go to state 7
+    "in"                      shift, and go to state 8
+    "ho"                      shift, and go to state 9
+    "rel"                     shift, and go to state 10
+    "begin"                   shift, and go to state 11
+    "end"                     shift, and go to state 12
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 14
+    "}"                       shift, and go to state 100
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "@prefix"                 shift, and go to state 17
+    "@mkb"                    shift, and go to state 18
+    "@mke"                    shift, and go to state 19
+    "@base"                   shift, and go to state 20
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    error                     [reduce using rule 15 (viewOption)]
+    "do"                      [reduce using rule 15 (viewOption)]
+    "hdo"                     [reduce using rule 15 (viewOption)]
+    "!"                       [reduce using rule 15 (viewOption)]
+    "in"                      [reduce using rule 15 (viewOption)]
+    "ho"                      [reduce using rule 15 (viewOption)]
+    "rel"                     [reduce using rule 15 (viewOption)]
+    "begin"                   [reduce using rule 15 (viewOption)]
+    "end"                     [reduce using rule 15 (viewOption)]
+    "("                       [reduce using rule 15 (viewOption)]
+    "{"                       [reduce using rule 15 (viewOption)]
+    "true"                    [reduce using rule 15 (viewOption)]
+    "false"                   [reduce using rule 15 (viewOption)]
+    "@prefix"                 [reduce using rule 15 (viewOption)]
+    "@mkb"                    [reduce using rule 15 (viewOption)]
+    "@mke"                    [reduce using rule 15 (viewOption)]
+    "@base"                   [reduce using rule 15 (viewOption)]
+    "string literal"          [reduce using rule 15 (viewOption)]
+    "URI literal"             [reduce using rule 15 (viewOption)]
+    "blank node"              [reduce using rule 15 (viewOption)]
+    "QName"                   [reduce using rule 15 (viewOption)]
+    "integer literal"         [reduce using rule 15 (viewOption)]
+    "floating point literal"  [reduce using rule 15 (viewOption)]
+    "decimal literal"         [reduce using rule 15 (viewOption)]
+    "variable"                [reduce using rule 15 (viewOption)]
+
+    prefix      go to state 29
+    viewOption  go to state 30
+    sentence    go to state 31
+    subject     go to state 32
+    variable    go to state 33
+    doVerb      go to state 34
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 54
+
+   20 sentence: "@base" "URI literal" . ";"
+
+    ";"  shift, and go to state 101
+
+
+State 55
+
+   85 literal: "string literal" "^" . "URI literal"
+   86        | "string literal" "^" . "QName"
+
+    "URI literal"  shift, and go to state 102
+    "QName"        shift, and go to state 103
+
+
+State 56
+
+   82 literal: "string literal" "langtag" .
+   83        | "string literal" "langtag" . "^" "URI literal"
+   84        | "string literal" "langtag" . "^" "QName"
+
+    "^"  shift, and go to state 104
+
+    $default  reduce using rule 82 (literal)
+
+
+State 57
+
+   21 sentence: prefix "identifier" . "URI literal" ";"
+
+    "URI literal"  shift, and go to state 105
+
+
+State 58
+
+   18 sentence: viewOption nameOption . sentence ";"
+
+    error                     shift, and go to state 4
+    "do"                      shift, and go to state 5
+    "hdo"                     shift, and go to state 6
+    "!"                       shift, and go to state 7
+    "in"                      shift, and go to state 8
+    "ho"                      shift, and go to state 9
+    "rel"                     shift, and go to state 10
+    "begin"                   shift, and go to state 11
+    "end"                     shift, and go to state 12
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 14
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "@prefix"                 shift, and go to state 17
+    "@mkb"                    shift, and go to state 18
+    "@mke"                    shift, and go to state 19
+    "@base"                   shift, and go to state 20
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    error                     [reduce using rule 15 (viewOption)]
+    "do"                      [reduce using rule 15 (viewOption)]
+    "hdo"                     [reduce using rule 15 (viewOption)]
+    "!"                       [reduce using rule 15 (viewOption)]
+    "in"                      [reduce using rule 15 (viewOption)]
+    "ho"                      [reduce using rule 15 (viewOption)]
+    "rel"                     [reduce using rule 15 (viewOption)]
+    "begin"                   [reduce using rule 15 (viewOption)]
+    "end"                     [reduce using rule 15 (viewOption)]
+    "("                       [reduce using rule 15 (viewOption)]
+    "{"                       [reduce using rule 15 (viewOption)]
+    "true"                    [reduce using rule 15 (viewOption)]
+    "false"                   [reduce using rule 15 (viewOption)]
+    "@prefix"                 [reduce using rule 15 (viewOption)]
+    "@mkb"                    [reduce using rule 15 (viewOption)]
+    "@mke"                    [reduce using rule 15 (viewOption)]
+    "@base"                   [reduce using rule 15 (viewOption)]
+    "string literal"          [reduce using rule 15 (viewOption)]
+    "URI literal"             [reduce using rule 15 (viewOption)]
+    "blank node"              [reduce using rule 15 (viewOption)]
+    "QName"                   [reduce using rule 15 (viewOption)]
+    "integer literal"         [reduce using rule 15 (viewOption)]
+    "floating point literal"  [reduce using rule 15 (viewOption)]
+    "decimal literal"         [reduce using rule 15 (viewOption)]
+    "variable"                [reduce using rule 15 (viewOption)]
+
+    prefix      go to state 29
+    viewOption  go to state 30
+    sentence    go to state 106
+    subject     go to state 32
+    variable    go to state 33
+    doVerb      go to state 34
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 59
+
+   16 nameOption: variable . "::"
+
+    "::"  shift, and go to state 107
+
+
+State 60
+
+   55 isVerb: "is" .
+
+    $default  reduce using rule 55 (isVerb)
+
+
+State 61
+
+   56 hoVerb: "isa" .
+
+    $default  reduce using rule 56 (hoVerb)
+
+
+State 62
+
+   58 hoVerb: "iss" .
+
+    $default  reduce using rule 58 (hoVerb)
+
+
+State 63
+
+   57 hoVerb: "isu" .
+
+    $default  reduce using rule 57 (hoVerb)
+
+
+State 64
+
+   62 hoVerb: "isa*" .
+
+    $default  reduce using rule 62 (hoVerb)
+
+
+State 65
+
+   59 hoVerb: "isc" .
+
+    $default  reduce using rule 59 (hoVerb)
+
+
+State 66
+
+   60 hoVerb: "isg" .
+
+    $default  reduce using rule 60 (hoVerb)
+
+
+State 67
+
+   61 hoVerb: "isp" .
+
+    $default  reduce using rule 61 (hoVerb)
+
+
+State 68
+
+   63 hoVerb: "isc*" .
+
+    $default  reduce using rule 63 (hoVerb)
+
+
+State 69
+
+   65 hasVerb: "has" .
+
+    $default  reduce using rule 65 (hasVerb)
+
+
+State 70
+
+   66 hasVerb: "haspart" .
+
+    $default  reduce using rule 66 (hasVerb)
+
+
+State 71
+
+   67 hasVerb: "isapart" .
+
+    $default  reduce using rule 67 (hasVerb)
+
+
+State 72
+
+   64 hoVerb: variable .
+
+    $default  reduce using rule 64 (hoVerb)
+
+
+State 73
+
+   29 sentence: subject isVerb . object ppList ";"
+   30         | subject isVerb . object ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    object      go to state 108
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 74
+
+   31 sentence: subject hoVerb . objectList ";"
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    objectList  go to state 109
+    object      go to state 42
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 75
+
+   32 sentence: subject hasVerb . nvList ";"
+
+    "at"           shift, and go to state 78
+    "of"           shift, and go to state 79
+    "with"         shift, and go to state 80
+    "od"           shift, and go to state 81
+    "from"         shift, and go to state 82
+    "to"           shift, and go to state 83
+    "in"           shift, and go to state 84
+    "out"          shift, and go to state 85
+    "where"        shift, and go to state 86
+    "ho"           shift, and go to state 87
+    "rel"          shift, and go to state 88
+    "URI literal"  shift, and go to state 22
+    "QName"        shift, and go to state 24
+    "variable"     shift, and go to state 28
+
+    nv           go to state 110
+    nvList       go to state 111
+    predicate    go to state 112
+    variable     go to state 90
+    preposition  go to state 91
+    resource     go to state 92
+
+
+State 76
+
+   33 sentence: subject doVerb . predicate ppList ";"
+
+    "at"           shift, and go to state 78
+    "of"           shift, and go to state 79
+    "with"         shift, and go to state 80
+    "od"           shift, and go to state 81
+    "from"         shift, and go to state 82
+    "to"           shift, and go to state 83
+    "in"           shift, and go to state 84
+    "out"          shift, and go to state 85
+    "where"        shift, and go to state 86
+    "ho"           shift, and go to state 87
+    "rel"          shift, and go to state 88
+    "URI literal"  shift, and go to state 22
+    "QName"        shift, and go to state 24
+    "variable"     shift, and go to state 28
+
+    predicate    go to state 113
+    variable     go to state 90
+    preposition  go to state 91
+    resource     go to state 92
+
+
+State 77
+
+   28 sentence: variable ":=" . value ";"
+
+    "["                       shift, and go to state 114
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 115
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    value       go to state 116
+    object      go to state 117
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 78
+
+   71 preposition: "at" .
+
+    $default  reduce using rule 71 (preposition)
+
+
+State 79
+
+   72 preposition: "of" .
+
+    $default  reduce using rule 72 (preposition)
+
+
+State 80
+
+   73 preposition: "with" .
+
+    $default  reduce using rule 73 (preposition)
+
+
+State 81
+
+   74 preposition: "od" .
+
+    $default  reduce using rule 74 (preposition)
+
+
+State 82
+
+   75 preposition: "from" .
+
+    $default  reduce using rule 75 (preposition)
+
+
+State 83
+
+   76 preposition: "to" .
+
+    $default  reduce using rule 76 (preposition)
+
+
+State 84
+
+   77 preposition: "in" .
+
+    $default  reduce using rule 77 (preposition)
+
+
+State 85
+
+   78 preposition: "out" .
+
+    $default  reduce using rule 78 (preposition)
+
+
+State 86
+
+   79 preposition: "where" .
+
+    $default  reduce using rule 79 (preposition)
+
+
+State 87
+
+   80 preposition: "ho" .
+
+    $default  reduce using rule 80 (preposition)
+
+
+State 88
+
+   81 preposition: "rel" .
+
+    $default  reduce using rule 81 (preposition)
+
+
+State 89
+
+   26 sentence: doVerb predicate . ";"
+   27         | doVerb predicate . ppList ";"
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+    ";"      shift, and go to state 118
+
+    pp           go to state 119
+    ppList       go to state 120
+    preposition  go to state 121
+
+
+State 90
+
+   48 predicate: variable .
+
+    $default  reduce using rule 48 (predicate)
+
+
+State 91
+
+   47 predicate: preposition .
+
+    $default  reduce using rule 47 (predicate)
+
+
+State 92
+
+   46 predicate: resource .
+
+    $default  reduce using rule 46 (predicate)
+
+
+State 93
+
+   35 objectList: objectList "," . object
+
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    object      go to state 122
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 94
+
+   23 sentence: "ho" objectList ";" .
+
+    $default  reduce using rule 23 (sentence)
+
+
+State 95
+
+   24 sentence: "rel" objectList ";" .
+
+    $default  reduce using rule 24 (sentence)
+
+
+State 96
+
+   22 sentence: "begin" variable subject . ";"
+
+    ";"  shift, and go to state 123
+
+
+State 97
+
+   45 subject: variable .
+
+    $default  reduce using rule 45 (subject)
+
+
+State 98
+
+   25 sentence: "end" variable subject . ";"
+
+    ";"  shift, and go to state 124
+
+
+State 99
+
+   96 collection: "(" objectList ")" .
+
+    $default  reduce using rule 96 (collection)
+
+
+State 100
+
+   19 sentence: "{" sentenceList "}" . ";"
+
+    ";"  shift, and go to state 125
+
+
+State 101
+
+   20 sentence: "@base" "URI literal" ";" .
+
+    $default  reduce using rule 20 (sentence)
+
+
+State 102
+
+   85 literal: "string literal" "^" "URI literal" .
+
+    $default  reduce using rule 85 (literal)
+
+
+State 103
+
+   86 literal: "string literal" "^" "QName" .
+
+    $default  reduce using rule 86 (literal)
+
+
+State 104
+
+   83 literal: "string literal" "langtag" "^" . "URI literal"
+   84        | "string literal" "langtag" "^" . "QName"
+
+    "URI literal"  shift, and go to state 126
+    "QName"        shift, and go to state 127
+
+
+State 105
+
+   21 sentence: prefix "identifier" "URI literal" . ";"
+
+    ";"  shift, and go to state 128
+
+
+State 106
+
+   18 sentence: viewOption nameOption sentence . ";"
+
+    ";"  shift, and go to state 129
+
+
+State 107
+
+   16 nameOption: variable "::" .
+
+    $default  reduce using rule 16 (nameOption)
+
+
+State 108
+
+   29 sentence: subject isVerb object . ppList ";"
+   30         | subject isVerb object . ";"
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+    ";"      shift, and go to state 130
+
+    pp           go to state 119
+    ppList       go to state 131
+    preposition  go to state 121
+
+
+State 109
+
+   31 sentence: subject hoVerb objectList . ";"
+   35 objectList: objectList . "," object
+
+    ","  shift, and go to state 93
+    ";"  shift, and go to state 132
+
+
+State 110
+
+   38 nvList: nv .
+
+    $default  reduce using rule 38 (nvList)
+
+
+State 111
+
+   32 sentence: subject hasVerb nvList . ";"
+   37 nvList: nvList . "," nv
+
+    ","  shift, and go to state 133
+    ";"  shift, and go to state 134
+
+
+State 112
+
+    4 nv: predicate . "=" value
+
+    "="  shift, and go to state 135
+
+
+State 113
+
+   33 sentence: subject doVerb predicate . ppList ";"
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+
+    pp           go to state 119
+    ppList       go to state 136
+    preposition  go to state 121
+
+
+State 114
+
+    8 value: "[" . objectList "]"
+   10      | "[" . "]"
+
+    "]"                       shift, and go to state 137
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    objectList  go to state 138
+    object      go to state 42
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 115
+
+    9 value: "{" . sentenceList "}"
+
+    $default  reduce using rule 3 (sentenceList)
+
+    sentenceList  go to state 139
+
+
+State 116
+
+   28 sentence: variable ":=" value . ";"
+
+    ";"  shift, and go to state 140
+
+
+State 117
+
+    7 value: object .
+
+    $default  reduce using rule 7 (value)
+
+
+State 118
+
+   26 sentence: doVerb predicate ";" .
+
+    $default  reduce using rule 26 (sentence)
+
+
+State 119
+
+   40 ppList: pp .
+
+    $default  reduce using rule 40 (ppList)
+
+
+State 120
+
+   27 sentence: doVerb predicate ppList . ";"
+   39 ppList: ppList . pp
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+    ";"      shift, and go to state 141
+
+    pp           go to state 142
+    preposition  go to state 121
+
+
+State 121
+
+    5 pp: preposition . objectList
+    6   | preposition . nvList
+
+    "at"                      shift, and go to state 78
+    "of"                      shift, and go to state 79
+    "with"                    shift, and go to state 80
+    "od"                      shift, and go to state 81
+    "from"                    shift, and go to state 82
+    "to"                      shift, and go to state 83
+    "in"                      shift, and go to state 84
+    "out"                     shift, and go to state 85
+    "where"                   shift, and go to state 86
+    "ho"                      shift, and go to state 87
+    "rel"                     shift, and go to state 88
+    "("                       shift, and go to state 13
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    nv           go to state 110
+    objectList   go to state 143
+    nvList       go to state 144
+    predicate    go to state 112
+    object       go to state 42
+    variable     go to state 145
+    preposition  go to state 91
+    literal      go to state 44
+    resource     go to state 146
+    blankNode    go to state 46
+    collection   go to state 47
+
+
+State 122
+
+   35 objectList: objectList "," object .
+
+    $default  reduce using rule 35 (objectList)
+
+
+State 123
+
+   22 sentence: "begin" variable subject ";" .
+
+    $default  reduce using rule 22 (sentence)
+
+
+State 124
+
+   25 sentence: "end" variable subject ";" .
+
+    $default  reduce using rule 25 (sentence)
+
+
+State 125
+
+   19 sentence: "{" sentenceList "}" ";" .
+
+    $default  reduce using rule 19 (sentence)
+
+
+State 126
+
+   83 literal: "string literal" "langtag" "^" "URI literal" .
+
+    $default  reduce using rule 83 (literal)
+
+
+State 127
+
+   84 literal: "string literal" "langtag" "^" "QName" .
+
+    $default  reduce using rule 84 (literal)
+
+
+State 128
+
+   21 sentence: prefix "identifier" "URI literal" ";" .
+
+    $default  reduce using rule 21 (sentence)
+
+
+State 129
+
+   18 sentence: viewOption nameOption sentence ";" .
+
+    $default  reduce using rule 18 (sentence)
+
+
+State 130
+
+   30 sentence: subject isVerb object ";" .
+
+    $default  reduce using rule 30 (sentence)
+
+
+State 131
+
+   29 sentence: subject isVerb object ppList . ";"
+   39 ppList: ppList . pp
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+    ";"      shift, and go to state 147
+
+    pp           go to state 142
+    preposition  go to state 121
+
+
+State 132
+
+   31 sentence: subject hoVerb objectList ";" .
+
+    $default  reduce using rule 31 (sentence)
+
+
+State 133
+
+   37 nvList: nvList "," . nv
+
+    "at"           shift, and go to state 78
+    "of"           shift, and go to state 79
+    "with"         shift, and go to state 80
+    "od"           shift, and go to state 81
+    "from"         shift, and go to state 82
+    "to"           shift, and go to state 83
+    "in"           shift, and go to state 84
+    "out"          shift, and go to state 85
+    "where"        shift, and go to state 86
+    "ho"           shift, and go to state 87
+    "rel"          shift, and go to state 88
+    "URI literal"  shift, and go to state 22
+    "QName"        shift, and go to state 24
+    "variable"     shift, and go to state 28
+
+    nv           go to state 148
+    predicate    go to state 112
+    variable     go to state 90
+    preposition  go to state 91
+    resource     go to state 92
+
+
+State 134
+
+   32 sentence: subject hasVerb nvList ";" .
+
+    $default  reduce using rule 32 (sentence)
+
+
+State 135
+
+    4 nv: predicate "=" . value
+
+    "["                       shift, and go to state 114
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 115
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    value       go to state 149
+    object      go to state 117
+    variable    go to state 43
+    literal     go to state 44
+    resource    go to state 45
+    blankNode   go to state 46
+    collection  go to state 47
+
+
+State 136
+
+   33 sentence: subject doVerb predicate ppList . ";"
+   39 ppList: ppList . pp
+
+    "at"     shift, and go to state 78
+    "of"     shift, and go to state 79
+    "with"   shift, and go to state 80
+    "od"     shift, and go to state 81
+    "from"   shift, and go to state 82
+    "to"     shift, and go to state 83
+    "in"     shift, and go to state 84
+    "out"    shift, and go to state 85
+    "where"  shift, and go to state 86
+    "ho"     shift, and go to state 87
+    "rel"    shift, and go to state 88
+    ";"      shift, and go to state 150
+
+    pp           go to state 142
+    preposition  go to state 121
+
+
+State 137
+
+   10 value: "[" "]" .
+
+    $default  reduce using rule 10 (value)
+
+
+State 138
+
+    8 value: "[" objectList . "]"
+   35 objectList: objectList . "," object
+
+    ","  shift, and go to state 93
+    "]"  shift, and go to state 151
+
+
+State 139
+
+    2 sentenceList: sentenceList . sentence
+    9 value: "{" sentenceList . "}"
+
+    error                     shift, and go to state 4
+    "do"                      shift, and go to state 5
+    "hdo"                     shift, and go to state 6
+    "!"                       shift, and go to state 7
+    "in"                      shift, and go to state 8
+    "ho"                      shift, and go to state 9
+    "rel"                     shift, and go to state 10
+    "begin"                   shift, and go to state 11
+    "end"                     shift, and go to state 12
+    "("                       shift, and go to state 13
+    "{"                       shift, and go to state 14
+    "}"                       shift, and go to state 152
+    "true"                    shift, and go to state 15
+    "false"                   shift, and go to state 16
+    "@prefix"                 shift, and go to state 17
+    "@mkb"                    shift, and go to state 18
+    "@mke"                    shift, and go to state 19
+    "@base"                   shift, and go to state 20
+    "string literal"          shift, and go to state 21
+    "URI literal"             shift, and go to state 22
+    "blank node"              shift, and go to state 23
+    "QName"                   shift, and go to state 24
+    "integer literal"         shift, and go to state 25
+    "floating point literal"  shift, and go to state 26
+    "decimal literal"         shift, and go to state 27
+    "variable"                shift, and go to state 28
+
+    error                     [reduce using rule 15 (viewOption)]
+    "do"                      [reduce using rule 15 (viewOption)]
+    "hdo"                     [reduce using rule 15 (viewOption)]
+    "!"                       [reduce using rule 15 (viewOption)]
+    "in"                      [reduce using rule 15 (viewOption)]
+    "ho"                      [reduce using rule 15 (viewOption)]
+    "rel"                     [reduce using rule 15 (viewOption)]
+    "begin"                   [reduce using rule 15 (viewOption)]
+    "end"                     [reduce using rule 15 (viewOption)]
+    "("                       [reduce using rule 15 (viewOption)]
+    "{"                       [reduce using rule 15 (viewOption)]
+    "true"                    [reduce using rule 15 (viewOption)]
+    "false"                   [reduce using rule 15 (viewOption)]
+    "@prefix"                 [reduce using rule 15 (viewOption)]
+    "@mkb"                    [reduce using rule 15 (viewOption)]
+    "@mke"                    [reduce using rule 15 (viewOption)]
+    "@base"                   [reduce using rule 15 (viewOption)]
+    "string literal"          [reduce using rule 15 (viewOption)]
+    "URI literal"             [reduce using rule 15 (viewOption)]
+    "blank node"              [reduce using rule 15 (viewOption)]
+    "QName"                   [reduce using rule 15 (viewOption)]
+    "integer literal"         [reduce using rule 15 (viewOption)]
+    "floating point literal"  [reduce using rule 15 (viewOption)]
+    "decimal literal"         [reduce using rule 15 (viewOption)]
+    "variable"                [reduce using rule 15 (viewOption)]
+
+    prefix      go to state 29
+    viewOption  go to state 30
+    sentence    go to state 31
+    subject     go to state 32
+    variable    go to state 33
+    doVerb      go to state 34
+    literal     go to state 35
+    resource    go to state 36
+    blankNode   go to state 37
+    collection  go to state 38
+
+
+State 140
+
+   28 sentence: variable ":=" value ";" .
+
+    $default  reduce using rule 28 (sentence)
+
+
+State 141
+
+   27 sentence: doVerb predicate ppList ";" .
+
+    $default  reduce using rule 27 (sentence)
+
+
+State 142
+
+   39 ppList: ppList pp .
+
+    $default  reduce using rule 39 (ppList)
+
+
+State 143
+
+    5 pp: preposition objectList .
+   35 objectList: objectList . "," object
+
+    ","  shift, and go to state 93
+
+    $default  reduce using rule 5 (pp)
+
+
+State 144
+
+    6 pp: preposition nvList .
+   37 nvList: nvList . "," nv
+
+    ","  shift, and go to state 133
+
+    $default  reduce using rule 6 (pp)
+
+
+State 145
+
+   48 predicate: variable .
+   53 object: variable .
+
+    "="       reduce using rule 48 (predicate)
+    $default  reduce using rule 53 (object)
+
+
+State 146
+
+   46 predicate: resource .
+   49 object: resource .
+
+    "="       reduce using rule 46 (predicate)
+    $default  reduce using rule 49 (object)
+
+
+State 147
+
+   29 sentence: subject isVerb object ppList ";" .
+
+    $default  reduce using rule 29 (sentence)
+
+
+State 148
+
+   37 nvList: nvList "," nv .
+
+    $default  reduce using rule 37 (nvList)
+
+
+State 149
+
+    4 nv: predicate "=" value .
+
+    $default  reduce using rule 4 (nv)
+
+
+State 150
+
+   33 sentence: subject doVerb predicate ppList ";" .
+
+    $default  reduce using rule 33 (sentence)
+
+
+State 151
+
+    8 value: "[" objectList "]" .
+
+    $default  reduce using rule 8 (value)
+
+
+State 152
+
+    9 value: "{" sentenceList "}" .
+
+    $default  reduce using rule 9 (value)

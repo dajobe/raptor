@@ -189,6 +189,9 @@ PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_C
 
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
 
+/* mKR */
+VARIABLE [\$\?]?[A-Za-z\*][A-Za-z0-9_\-\.\*]*|"\?"|"\$"[0-9]+|"\$\{"[1-9][0-9]+"\}"|[0-9]+"-"[0-9]+"-"[0-9]+
+
 UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
 IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
 
@@ -196,6 +199,8 @@ INTEGER [-+]?[0-9]+
 DECIMAL [-+]?[0-9]*"."[0-9]+
 DOUBLE [-+]?([0-9]+"."[0-9]*{EXPONENT}|"."[0-9]+{EXPONENT}|[0-9]+{EXPONENT})
 EXPONENT [eE][+-]?[0-9]+
+
+CSV_NAME [\x00-\x21\x23-\xFF]+
 
 
 %x PREF LONG_DLITERAL LONG_SLITERAL
@@ -220,8 +225,82 @@ EXPONENT [eE][+-]?[0-9]+
 [\ \t\v]+   { /* empty */ }
 
 
-"a" { return A; }
 
+"no"		{ return NO;	}
+"optional"	{ return OPTIONAL;}
+"some"		{ return SOME;	}
+"many"		{ return MANY;	}
+"the"		{ return THE;	}
+
+"if"		{ return IF;	}
+"then"		{ return THEN;	}
+"else"		{ return ELSE;	}
+"unknown"	{ return UNKNOWN;}
+"fi"		{ return FI;	}
+"not"		{ return NOT;	}
+"and"		{ return AND;	}
+"or"		{ return OR;	}
+"xor"		{ return XOR;	}
+
+"implies"	{ return IMPLIES;}
+"causes"	{ return CAUSES;}
+"because"	{ return BECAUSE;}
+
+"any"		{ return ANY;	}
+"all"		{ return ALL;	}
+"every"		{ return EVERY;	}
+"while"		{ return WHILE;	}
+"until"		{ return UNTIL;	}
+"when"		{ return WHEN;	}
+"forSome"	{ return FORSOME;}
+"forAll"	{ return FORALL;}
+
+"me"		{ return ME;	}
+"I"		{ return I;	}
+"you"		{ return YOU;	}
+"it"		{ return IT;	}
+"he"		{ return HE;	}
+"she"		{ return SHE;	}
+"here"		{ return HERE;	}
+"now"		{ return NOW;	}
+
+
+"is"      { return IS;      }
+"isu"     { return ISU;     }
+"isp"     { return ISP;     }
+"iss"     { return ISS;     }
+"isg"     { return ISG;     }
+"isa"     { return ISA;     }
+"isa*"    { return ISASTAR; }
+"isc"     { return ISC;     }
+"isc*"    { return ISCSTAR; }
+"has"     { return HAS;     }
+"haspart" { return HASPART; }
+"isapart" { return ISAPART; }
+"do"      { return DO;      }
+"hdo"     { return HDO;     }
+"!"       { return BANG;    }
+"at"      { return AT;      }
+"of"      { return OF;      }
+"with"    { return WITH;    }
+"od"      { return OD;      }
+"from"    { return FROM;    }
+"to"      { return TO;      }
+"in"      { return IN;      }
+"out"     { return OUT;     }
+"where"   { return WHERE;   }
+"begin"   { return mkrBEGIN;}
+"end"     { return mkrEND;  }
+"="       { return EQUALS;  }
+":="      { return ASSIGN;  }
+"let"     { return LET;     }
+"::"      { return DCOLON;  }
+"**"      { return DSTAR;   }
+"ho"      { return HO;      }
+"rel"     { return REL;     }
+
+
+"a" { return A; }
 "."       { return DOT; } 
 ","       { return COMMA; } 
 ";"       { return SEMICOLON; }
@@ -230,6 +309,8 @@ EXPONENT [eE][+-]?[0-9]+
 "@prefix" { BEGIN(PREF); return PREFIX; }
 [Pp][Rr][Ee][Ff][Ii][Xx] { BEGIN(PREF);
 		return SPARQL_PREFIX; }
+"@mkb"   { BEGIN(PREF); return MKB; }
+"@mke"   { BEGIN(PREF); return MKE; }
 "@base"   { return BASE; }
 [Bb][Aa][Ss][Ee] { return SPARQL_BASE; }
 "^^"      { return HAT; }
@@ -389,7 +470,6 @@ EXPONENT [eE][+-]?[0-9]+
             turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_ERROR, "Failed to convert qname %s to URI", yytext);
             yyterminate();
           }
-
                           return QNAME_LITERAL; }
 
 {DECIMAL}	{ yylval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
@@ -415,6 +495,7 @@ EXPONENT [eE][+-]?[0-9]+
                               YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           BEGIN(INITIAL);
                           return IDENTIFIER; }
+
 <PREF>":"	{ BEGIN(INITIAL);
 		  yylval->string = turtle_copy_token((unsigned char*)yytext, 0);
       if(!yylval->string)
@@ -508,6 +589,11 @@ EXPONENT [eE][+-]?[0-9]+
                   if(!yylval->string)
                     YY_FATAL_ERROR_EOF("turtle_copy_token failed");
                           return LANGTAG; }
+
+{VARIABLE}	{ yylval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                 if(!yylval->string)
+                   YY_FATAL_ERROR_EOF("turtle_copy_token failed");
+                          return VARIABLE; }
 
 \#[^\r\n]*(\r\n|\r|\n)	{ /* # comment */
 		turtle_parser->lineno++;
@@ -882,8 +968,95 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
     return "<<EOF>>";
   
   switch(token) {
+
+    case IS:
+      return "IS";
+    case ISU:
+      return "ISU";
+    case ISP:
+      return "ISP";
+    case ISS:
+      return "ISS";
+    case ISG:
+      return "ISG";
+    case ISA:
+      return "ISA";
+    case ISASTAR:
+      return "ISASTAR";
+    case ISC:
+      return "ISC";
+    case ISCSTAR:
+      return "ISCSTAR";
+    case HAS:
+      return "HAS";
+    case HASPART:
+      return "HASPART";
+    case ISAPART:
+      return "ISAPART";
+    case DO:
+      return "DO";
+    case HDO:
+      return "HDO";
+    case BANG:
+      return "BANG";
+    case AT:
+      return "AT";
+    case OF:
+      return "OF";
+    case WITH:
+      return "WITH";
+    case OD:
+      return "OD";
+    case FROM:
+      return "FROM";
+    case TO:
+      return "TO";
+    case IN:
+      return "IN";
+    case OUT:
+      return "OUT";
+    case WHERE:
+      return "WHERE";
+    case mkrBEGIN:
+      return "mkrBEGIN";
+    case mkrEND:
+      return "mkrEND";
+    case EQUALS:
+      return "EQUALS";
+    case ASSIGN:
+      return "ASSIGN";
+    case LET:
+      return "LET";
+    case DCOLON:
+      return "DCOLON";
+    case DSTAR:
+      return "DSTAR";
+    case HO:
+      return "HO";
+    case REL:
+      return "REL";
+    case ENUM_LEFT_ROUND:
+      return "ENUM_LEFT_ROUND";
+    case LIST_LEFT_ROUND:
+      return "LIST_LEFT_ROUND";
+    case MULTISET_LEFT_ROUND:
+      return "MULTISET_LEFT_ROUND";
+    case SET_LEFT_ROUND:
+      return "SET_LEFT_ROUND";
+    case LEFT_ROUND:
+      return "LEFT_ROUND";
+    case RIGHT_ROUND:
+      return "RIGHT_ROUND";
+
+
     case PREFIX:
       return "PREFIX";
+
+    case MKB:
+      return "MKB";
+
+    case MKE:
+      return "MKE";
 
     case BASE:
       return "BASE";
@@ -940,6 +1113,11 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
               (lval->string ? (char*)lval->string : ""));
       return buffer;
 
+    case VARIABLE:
+      sprintf(buffer, "VARIABLE(%s)", 
+              (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
     case LANGTAG:
       sprintf(buffer, "LANGTAG(%s)", 
               (lval->string ? (char*)lval->string : ""));
@@ -980,6 +1158,7 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
     case STRING_LITERAL:
     case BLANK_LITERAL:
     case IDENTIFIER:
+    case VARIABLE:
       if(lval->string)
         RAPTOR_FREE(char*, lval->string);
       break;

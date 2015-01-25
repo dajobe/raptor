@@ -42,6 +42,7 @@ Blank Node (%RAPTOR_TERM_TYPE_BLANK).
 @world: 
 @usage: 
 @type: 
+@mkrtype: 
 @value: 
 
 <!-- ##### UNION raptor_term_value ##### -->

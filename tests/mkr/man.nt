@@ -1,0 +1,5 @@
+<http://mkrmke.net/ns/man> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/animal> .
+<http://mkrmke.net/ns/man> <http://mkrmke.net/ns/animal> _:genid1 .
+<http://mkrmke.net/ns/man> <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/animal> .
+_:genid1 <http://mkrmke.net/ns/with> _:genid2 .
+_:genid2 <http://mkrmke.net/ns/rational> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .

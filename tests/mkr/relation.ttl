@@ -1,0 +1,24 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix mkr: <http://mkrmke.net/ns/> .
+@prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> .
+
+mkr:RELATION
+    mkr:rel (mkr:anon1
+        _:a
+    ), (mkr:anon2
+        _:a
+    ), (123
+        <http://example.com/resource1>
+    ), (<http://mkrmke.net/ns/2003-01-21>
+        <http://example.com/resource2>
+    ) .
+
+mkr:result
+    mkr:begin mkr:relation ;
+    mkr:end mkr:relation ;
+    mkr:format mkr:mkr ;
+    mkr:isa mkr:relation ;
+    mkr:relVariable (mkr:x
+        mkr:y
+    ) .
+

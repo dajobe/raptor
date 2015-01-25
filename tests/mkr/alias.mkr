@@ -1,0 +1,17 @@
+# RAPTOR/tests/mkr/alias.mkr
+# Richard H. McCullough Jan/15/2015
+
+# using "is" and "owl:sameAs"
+
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ;
+@prefix owl: <http://www.w3.org/2002/07/owl#> ;
+
+rdfs:Resource is owl:Thing ;
+rdfs:Resource is existent ;
+rdf:Property is characteristic ;
+rdf:Bag is multiset ;
+
+owl:sameAs is mkr:is ;
+Dick owl:sameAs Richard_H_McCullough ;

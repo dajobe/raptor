@@ -1,0 +1,14 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/alias.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
+@prefix owl: <../../../../../2002/07/owl#> ;
+
+rdf:Bag has is = multiset ;
+
+rdf:Property has is = characteristic ;
+
+rdfs:Resource has is = [existent, owl:Thing] ;
+
+owl:sameAs has is = is ;
+

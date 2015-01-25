@@ -1,0 +1,16 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/relation.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
+
+result has genus = relation, 
+    rel = ((anon2, _:a), (123, <http://example.com/resource1>), (<http://mkrmke.net/ns/2003-01-21>, <http://example.com/resource2>), (anon1, _:a)), 
+    relation = {
+        with = {
+                format = mkr, 
+                    relVariable = (x, y) ;
+                } ;
+            }, 
+            rdf:type = relation ;
+        
+    

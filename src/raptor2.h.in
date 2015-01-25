@@ -244,6 +244,22 @@ RAPTOR_API
 extern const unsigned int raptor_rdf_namespace_uri_len;
 
 /**
+ * raptor_mkr_namespace_uri:
+ *
+ * MKR (mkr:) Namespace URI string.
+ */
+RAPTOR_API
+extern const unsigned char * const raptor_mkr_namespace_uri;
+
+/**
+ * raptor_mkr_namespace_uri_len:
+ *
+ * Length of #raptor_mkr_namespace_uri string
+ */
+RAPTOR_API
+extern const unsigned int raptor_mkr_namespace_uri_len;
+
+/**
  * raptor_rdf_schema_namespace_uri:
  *
  * RDF Schema (rdfs:) Namespace URI string.
@@ -431,6 +447,8 @@ typedef enum {
   RAPTOR_TERM_TYPE_BLANK   = 4
 } raptor_term_type;
 
+/* mKR types */
+#include "mkrtype.h"
 
 /**
  * raptor_locator:
@@ -634,6 +652,8 @@ typedef union {
   raptor_term_literal_value literal;
 
   raptor_term_blank_value blank;
+
+  mkr_value mkrvalue;
 } raptor_term_value;
 
 
@@ -653,6 +673,8 @@ typedef struct {
   int usage;
 
   raptor_term_type type;
+
+  mkr_type mkrtype;
 
   raptor_term_value value;
 
@@ -1302,6 +1324,8 @@ raptor_uri* raptor_new_uri_from_uri_or_file_string(raptor_world* world, raptor_u
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name);
 RAPTOR_API
+raptor_uri* raptor_new_uri_for_mkr_concept(raptor_world* world, const unsigned char *name);
+RAPTOR_API
 raptor_uri* raptor_new_uri_for_xmlbase(raptor_uri* old_uri);
 RAPTOR_API
 raptor_uri* raptor_new_uri_for_retrieval(raptor_uri* old_uri);
@@ -1420,6 +1444,15 @@ int raptor_uri_uri_string_is_absolute(const unsigned char* uri_string);
  */
 #define RAPTOR_OWL_URI raptor_owl_namespace_uri
 
+/**
+ * RAPTOR_MKR_URI:
+ *
+ * MKR Namespace URI (mkr:).
+ *
+ * Copy with raptor_uri_copy() to use.
+ */
+#define RAPTOR_MKR_URI raptor_mkr_namespace_uri
+
 
 /* raptor_www */
 RAPTOR_API
@@ -1487,6 +1520,8 @@ RAPTOR_API
 const unsigned char* raptor_qname_get_counted_value(raptor_qname* name, size_t* length_p);
 RAPTOR_API
 int raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr);
+RAPTOR_API
+int mkr_qname_write(raptor_qname *qname, raptor_iostream* iostr);
 
 /* QName String utility functions */
 RAPTOR_API
@@ -1597,6 +1632,11 @@ RAPTOR_API
 int raptor_sequence_print(raptor_sequence* seq, FILE* fh);
 RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
+
+
+/* mKR structures and prototypes ?using raptor_term and raptor_sequence */
+#include "mkr.h"
+
 
 
 /* Unicode and UTF8 */

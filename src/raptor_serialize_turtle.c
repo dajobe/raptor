@@ -52,6 +52,7 @@
 typedef struct {
   raptor_namespace_stack *nstack;       /* Namespace stack */
   raptor_namespace *rdf_nspace;         /* the rdf: namespace */
+  raptor_namespace *mkr_nspace;         /* the mkr: namespace */
   raptor_turtle_writer *turtle_writer;  /* where the xml is being written */
   raptor_sequence *namespaces;          /* User declared namespaces */
   raptor_avltree *subjects;             /* subject items */
@@ -71,22 +72,8 @@ typedef struct {
   /* URI of rdf:nil */
   raptor_uri* rdf_nil_uri;
 
-  /* URI of rs:ResultSet */
-  raptor_uri* rs_ResultSet_uri;
-
-  /* URI of rs:resultVariable */
-  raptor_uri* rs_resultVariable_uri;
-
-  /* Non 0 for rs:ResultSet */
-  int resultset;
-
-  /* Non 0 for mKR serializer */
-  int emit_mkr;
   /* Flags for turtle writer */
   int turtle_writer_flags;
-
-  /* Non 0 if "begin relation result ;" has been written */
-  int written_begin;
 
   /* non zero if header is finished being written
    * (and thus no new namespaces can be declared).
@@ -95,6 +82,34 @@ typedef struct {
 
   /* for labeling namespaces */
   int namespace_count;
+
+  /* variables for mKR serializer */
+  /* Non 0 for mKR serializer */
+  int emit_mkr;
+
+  /* Non 0 to emit mKR blank subject */
+  int mkr_blank;
+
+  /* Non 0 for rs:ResultSet */
+  int resultset;
+
+  /* URI of rs:ResultSet */
+  raptor_uri* rs_ResultSet_uri;
+
+  /* URI of rs:resultVariable */
+  raptor_uri* rs_resultVariable_uri;
+
+  /* Non 0 if "begin relation result ;" has been written */
+  int written_begin;
+
+  /* current groupType or NULL */
+  const char* groupType;
+
+  /* current groupName or NULL */
+  raptor_term* groupName;
+
+  /* current groupList or NULL */
+  raptor_sequence* groupList;
 } raptor_turtle_context;
 
 
@@ -119,6 +134,13 @@ static int raptor_turtle_emit_subject_collection_items(raptor_serializer* serial
 static int raptor_turtle_emit_subject_properties(raptor_serializer *serializer,
                                                  raptor_abbrev_subject* subject,
                                                  int depth);
+static int raptor_mkr_emit_subject_properties(raptor_serializer *serializer,
+                                              raptor_abbrev_subject* subject,
+                                              int depth);
+static int raptor_mkr_emit_po(raptor_serializer* serializer,
+                              raptor_abbrev_node* predicate,
+                              raptor_sequence* objectSequence,
+                              int depth);
 static int raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
                                              raptor_abbrev_subject* subject,
                                              int depth);
@@ -180,8 +202,7 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
  * Emit a description of a resource using an XML Element
  *
  * Return value: non-0 on failure
- **/
-static int
+ **/ static int
 raptor_turtle_emit_resource(raptor_serializer *serializer,
                             raptor_abbrev_node* node,
                             int depth)
@@ -199,7 +220,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
     if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
     else
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
     return 0;
@@ -208,15 +229,16 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
   qname = raptor_new_qname_from_namespace_uri(context->nstack,
                                               node->term->value.uri, 10);
 
+  /* mKR mynames allow leading '?" and '$' and no ':' */
   /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname) && !emit_mkr) {
     raptor_free_qname(qname);
     qname = NULL;
   }
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
     if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
     else
       raptor_turtle_writer_raw_counted(turtle_writer ,(const unsigned char*)"( )", 3);
     return 0;
@@ -312,8 +334,11 @@ raptor_turtle_emit_blank(raptor_serializer *serializer,
     raptor_turtle_writer_bnodeid(context->turtle_writer,
                                  node->term->value.blank.string,
                                  node->term->value.blank.string_len);
-    if(emit_mkr && !context->resultset)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has", 4);
+    if(emit_mkr && !context->resultset && !context->groupType) {
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has ", 5);
+      raptor_turtle_writer_increase_indent(turtle_writer);
+      /* no newline for first predicate */
+    }
   }
 
   RAPTOR_DEBUG_ABBREV_NODE("Emitted blank node", node);
@@ -434,7 +459,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     if(i > 0) {
       if(emit_mkr)
         raptor_turtle_writer_raw_counted(context->turtle_writer,
-                                         (const unsigned char*)", ", 1);
+                                         (const unsigned char*)", ", 2);
       else
         raptor_turtle_writer_newline(context->turtle_writer);
     }
@@ -501,7 +526,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
       is_new_subject = 1;
 
     } else {
-      if(object->term->type != RAPTOR_TERM_TYPE_URI ||
+      if((object->term->type != RAPTOR_TERM_TYPE_URI) ||
          !raptor_uri_equals(object->term->value.uri, context->rdf_nil_uri)) {
         raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                          "Malformed collection - last rdf:rest resource is not rdf:nil");
@@ -536,8 +561,6 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
-  int emit_mkr = context->emit_mkr;
-  int numobj = 2; /* "[" "]" around all object lists (any size) */
   raptor_abbrev_node* last_predicate = NULL;
   int rv = 0;
   raptor_avltree_iterator* iter = NULL;
@@ -562,18 +585,11 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       break;
     predicate = nodes[0];
     object = nodes[1];
-    numobj = 2;  /* = raptor_sequence_size(xxx) if available */
 
     if(!(last_predicate && raptor_abbrev_node_equals(predicate, last_predicate))) {
       /* no object list abbreviation possible, terminate last object */
       if(last_predicate) {
-        if(emit_mkr && !context->resultset) {
-          if(numobj > 1)
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
-        } else {
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
-        }
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
         raptor_turtle_writer_newline(turtle_writer);
       }
 
@@ -582,22 +598,13 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
                                                   10);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type)) {
-        if(emit_mkr)
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"rdf:type", 8);
-        else
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"a", 1);
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"a", 1);
       } else if(qname) {
         raptor_turtle_writer_qname(turtle_writer, qname);
       } else {
         raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
       }
-      if(emit_mkr) {
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = ", 3);
-        if(numobj > 1)
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
-      } else {
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
-      }
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
 
       if(qname)
@@ -642,6 +649,219 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
 }
 
 
+/*********************************************************************************/
+
+/*
+ * raptor_mkr_emit_subject_properties:
+ * @serializer: #raptor_serializer object
+ * @subject: subject node
+ * @depth: depth into tree
+ *
+ * Emit the properties about a subject node.
+ * use object sequence
+ *
+ * Return value: non-0 on failure
+ **/
+static int
+raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
+                                      raptor_abbrev_subject* subject,
+                                      int depth)
+{
+  raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
+  raptor_turtle_writer *turtle_writer = context->turtle_writer;
+  raptor_avltree_iterator* iter = NULL;
+  raptor_abbrev_node* last_predicate = NULL;
+  raptor_sequence* objectSequence = NULL;
+  int numpred = 0;
+  int numobj = 0;
+  int ri = 0;
+  int rv = 0;
+  int i;
+
+  RAPTOR_DEBUG_ABBREV_NODE("Emitting subject properties", subject->node);
+
+  /* Emit any rdf:_n properties collected */
+  if(raptor_sequence_size(subject->list_items) > 0)
+    rv = raptor_turtle_emit_subject_list_items(serializer, subject, depth+1);
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("\nsubject = ");
+  raptor_term_print_as_ntriples(subject->node->term, stdout);
+  printf("\n");
+#endif
+  for(i = 0, (iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+      iter && !ri;
+      i++, (ri = raptor_avltree_iterator_next(iter))) {
+    raptor_abbrev_node** nodes;
+    raptor_abbrev_node* predicate;
+    raptor_abbrev_node* object;
+
+    nodes = (raptor_abbrev_node**)raptor_avltree_iterator_get(iter);
+    if(!nodes)
+      break;
+    predicate = nodes[0];
+    object = nodes[1];
+
+    /* create object sequence for each property */
+    if(!last_predicate) {
+      /* start first predicate */
+      numobj = 1;
+      objectSequence = raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node, NULL);
+      raptor_sequence_push(objectSequence, object);
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+      printf("i=%u: ", i); raptor_term_print_as_ntriples(predicate->term, stdout);
+      printf(" numobj=%u: ", numobj); raptor_term_print_as_ntriples(object->term, stdout);
+      printf("\n");
+#endif
+
+    } else if(raptor_abbrev_node_equals(last_predicate, predicate)) {
+      numobj++;
+      raptor_sequence_push(objectSequence, object);
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+      printf("i=%u: ", i); raptor_term_print_as_ntriples(predicate->term, stdout);
+      printf(" numobj=%u: ", numobj); raptor_term_print_as_ntriples(object->term, stdout);
+      printf("\n");
+#endif
+
+    } else {
+
+      /* emit last_predicate */
+      numpred++;
+      rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth);
+      if(!ri) { /* more predicates */
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
+        raptor_turtle_writer_newline(turtle_writer);
+      }
+      /* Return error if emitting something failed */
+      if(rv)
+        return rv;
+
+      /* start next predicate */
+      objectSequence = raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node, NULL);
+      numobj = 1;
+      raptor_sequence_push(objectSequence, object);
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+      printf("i=%u: ", i); raptor_term_print_as_ntriples(predicate->term, stdout);
+      printf(" numobj=%u: ", numobj); raptor_term_print_as_ntriples(object->term, stdout);
+      printf("\n");
+#endif
+
+    }
+    last_predicate = predicate;
+    /* continue processing this predicate */
+  }
+
+  /* emit last_predicate */
+  rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth);
+  raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
+  /* Return error if emitting something failed */
+  if(rv)
+    return rv;
+
+  if(iter)
+    raptor_free_avltree_iterator(iter);
+/*
+  if(objectSequence)
+    raptor_free_sequence(objectSequence); objectSequence = NULL;
+*/
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("exit raptor_mkr_emit_subject_properties\n");
+#endif
+  return rv;
+}
+
+/*********************************************************************************/
+
+static int
+raptor_mkr_emit_po(raptor_serializer* serializer,
+                   raptor_abbrev_node* predicate,
+                   raptor_sequence* objectSequence,
+                   int depth)
+{
+  raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
+  raptor_turtle_writer *turtle_writer = context->turtle_writer;
+  raptor_abbrev_node* object = NULL;
+  raptor_qname *qname = NULL;
+  int rv = 0;
+  int j;
+ 
+  /* emit predicate */
+  qname = raptor_new_qname_from_namespace_uri(context->nstack,
+                                              predicate->term->value.uri,
+                                              10);
+  if(raptor_abbrev_node_equals(predicate, context->rdf_type)) {
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"rdf:type", 8);
+
+  } else if(qname) {
+      raptor_turtle_writer_qname(turtle_writer, qname);
+  
+      if((qname->nspace->prefix_length > 0) && !strcmp("mkr", (char*)qname->nspace->prefix)) {
+        if(!strcmp("ho", (char*)qname->local_name))
+            context->groupType = "hierarchy";
+        else if(!strcmp("rel", (char*)qname->local_name))
+            context->groupType = "relation";
+        else if(!strcmp("groupList", (char*)qname->local_name))
+            context->groupType = "group";
+        else
+            context->groupType = NULL;
+      }
+
+  } else {
+      raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
+  }
+  raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = ", 3);
+
+  if(qname)
+    raptor_free_qname(qname);
+  
+  /* emit object sequence for predicate */
+  if(raptor_sequence_size(objectSequence) > 1)
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
+  for(j = 0; j < raptor_sequence_size(objectSequence); j++) {
+    object = (raptor_abbrev_node*)raptor_sequence_get_at(objectSequence, j);
+    switch(object->term->type) {
+      case RAPTOR_TERM_TYPE_URI:
+        rv = raptor_turtle_emit_resource(serializer, object, depth+1);
+        break;
+
+      case RAPTOR_TERM_TYPE_LITERAL:
+        rv = raptor_turtle_emit_literal(serializer, object, depth+1);
+        break;
+
+      case RAPTOR_TERM_TYPE_BLANK:
+        rv = raptor_turtle_emit_blank(serializer, object, depth+1);
+        break;
+
+      case RAPTOR_TERM_TYPE_UNKNOWN:
+      default:
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, "Triple has unsupported term type %u",
+                                   object->term->type);
+        break;
+    }
+    if(j < raptor_sequence_size(objectSequence) - 1)
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
+      
+  }
+  if(raptor_sequence_size(objectSequence) > 1)
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+
+/*
+    if(objectSequence)
+      raptor_free_sequence(objectSequence); objectSequence = NULL;
+*/
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("exit raptor_mkr_emit_po\n");
+#endif
+  return rv;
+}
+
+/********************************************************************************/
 
 /*
  * raptor_mkr_emit_subject_resultset:
@@ -661,18 +881,24 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
   raptor_abbrev_node* last_predicate = NULL;
-  int rv = 0;
   raptor_avltree_iterator* iter = NULL;
-  int i;
+  static raptor_qname* qsubject = NULL;
   int skip_object;
   static int size = 0;
   static int arity = 0;
   static int ntuple = 0;
   static int nvalue = 0;
   static int processing_value = 0;
+  int rv = 0;
+  int i;
 
 
   RAPTOR_DEBUG_ABBREV_NODE("Emitting subject resultset", subject->node);
+
+  if(!qsubject)
+    qsubject = raptor_new_qname_from_namespace_uri(context->nstack,
+                                                   subject->node->term->value.uri,
+                                                   10);
 
   /* Emit any rdf:_n properties collected */
   if(raptor_sequence_size(subject->list_items) > 0)
@@ -711,7 +937,9 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           nvalue = 0;
           ntuple++;
           if(ntuple > size) { /* previous row was last row of table */
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"end relation result ;", 21);
+            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"end relation ", 13);
+            raptor_turtle_writer_qname(turtle_writer, qsubject);
+            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
             raptor_turtle_writer_newline(turtle_writer);
             break;
           }
@@ -726,12 +954,16 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
       } else if(qname) {
         /* check predicate name */
         if(!strcmp((const char*)qname->local_name, (const char*)"resultVariable")) {
+
           /* emit mKR relation header */
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"result is relation with format = csv ;", 38);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" is relation with format = csv ;", 32);
           raptor_turtle_writer_newline(turtle_writer);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"begin relation result ;", 23);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"begin relation ", 15);
+          raptor_turtle_writer_qname(turtle_writer, qsubject);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
           raptor_turtle_writer_decrease_indent(turtle_writer);
           raptor_turtle_writer_newline(turtle_writer);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"rel ", 4);
           skip_object = 0;
 
         } else if(!strcmp((const char*)qname->local_name, (const char*)"size")) {
@@ -782,6 +1014,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
           } else if(nvalue == 0) { /* size */
             size = atoi((const char*)object->term->value.literal.string);
           } else { /* values */
+            if(nvalue == 1)
+              raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"rel ", 4);
             raptor_turtle_writer_csv_string(turtle_writer, object->term->value.literal.string);
             if(nvalue < arity) /* not last value */
               raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
@@ -814,6 +1048,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   return rv;
 }
 
+/*********************************************************************************/
+
 /*
  * raptor_turtle_emit_subject:
  * @serializer: #raptor_serializer object
@@ -832,7 +1068,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer* turtle_writer = context->turtle_writer;
   int emit_mkr = context->emit_mkr;
-  int numobj = 2;
+  int mkr_blank = context->mkr_blank;
   int blank = 1;
   int collection = 0;
   int rc = 0;
@@ -854,7 +1090,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     return 0;
   }
 
-  /* check if we can do collection abbreviation */
+  /* check if we can do object abbreviation */
   if(raptor_avltree_size(subject->properties) >= 2) {
     raptor_avltree_iterator* iter = NULL;
     raptor_abbrev_node* pred1;
@@ -871,6 +1107,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     pred2 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_free_avltree_iterator(iter);
 
+    /* check for collection */
     if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        pred2->term->type == RAPTOR_TERM_TYPE_URI &&
        (
@@ -882,10 +1119,16 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         )
        ) {
       collection = 1;
+      subject->node->term->mkrtype = MKR_RDFLIST;
+    } else if(subject->node->term->mkrtype == MKR_RDFLIST) {
+      collection = 1;
+    } else
     /* check for rs:ResultSet */
-    } else if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
-       raptor_uri_equals(pred1->term->value.uri, context->rs_resultVariable_uri)) {
+    if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
+       raptor_uri_equals(pred1->term->value.uri, context->rs_resultVariable_uri)
+      ) {
         context->resultset = 1;
+        subject->node->term->mkrtype = MKR_RESULTSET;
     }
   }
 
@@ -893,14 +1136,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   if(subject->node->term->type == RAPTOR_TERM_TYPE_URI) {
     if(emit_mkr) {
       if(context->resultset && !context->written_begin) {
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"result is ", 10);
         rc = raptor_turtle_emit_resource(serializer, subject->node, depth+1);
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
-        raptor_turtle_writer_decrease_indent(turtle_writer);
-        raptor_turtle_writer_newline(turtle_writer);
       } else {
         rc = raptor_turtle_emit_resource(serializer, subject->node, depth+1);
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has", 4);
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has ", 5);
+        /* no newline for first predicate */
       }
     } else {
       rc = raptor_turtle_emit_resource(serializer, subject->node, depth+1);
@@ -910,15 +1150,15 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     blank = 0;
     collection = 0;
 
-  } else if(subject->node->term->type == RAPTOR_TERM_TYPE_BLANK) {
+  } else if((subject->node->term->type == RAPTOR_TERM_TYPE_BLANK) ||
+            (subject->node->term->mkrtype == MKR_RDFLIST) ||
+            (subject->node->term->mkrtype == MKR_SENTENCE)
+            ) {
     if((subject->node->count_as_subject == 1 &&
         subject->node->count_as_object == 0) && depth > 1) {
       blank = 1;
     } else if(subject->node->count_as_object == 0) {
-      if(emit_mkr)
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"{}", 2);
-      else
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[]", 2);
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[]", 2);
       blank = 0;
     } else if(!collection && subject->node->count_as_object > 1) {
       /* Referred to (used as an object), so needs a nodeID */
@@ -927,7 +1167,9 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
           raptor_turtle_writer_bnodeid(turtle_writer,
                                        subject->node->term->value.blank.string,
                                        subject->node->term->value.blank.string_len);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has", 4);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has ", 5);
+          raptor_turtle_writer_increase_indent(turtle_writer);
+          /* no newline for first predicate */
         }
       } else {
         raptor_turtle_writer_bnodeid(turtle_writer,
@@ -937,72 +1179,81 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     }
   }
 
+  /* emit subject properties */
   if(collection) {
-    if(!emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
     raptor_turtle_writer_increase_indent(turtle_writer);
 
     rc = raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
 
     raptor_turtle_writer_decrease_indent(turtle_writer);
 
-    if(!emit_mkr) {
+    if(!emit_mkr)
       raptor_turtle_writer_newline(turtle_writer);
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
-    }
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
 
-  } else {
-    if(emit_mkr) {
-      if(context->resultset) {
-        /* mKR relation with format = csv */
-        if(blank && depth > 1) {
-          /* skip */
-        }
-
-        raptor_mkr_emit_subject_resultset(serializer, subject, depth+1);
-
-        raptor_turtle_writer_decrease_indent(turtle_writer);
-
-        if(blank && depth > 1) {
-          /* skip */
-        }
-      } else {
-        /* mKR not relation */
-        if(blank && depth > 1) {
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"{ ", 2);
-          raptor_turtle_writer_newline(turtle_writer);
-          raptor_turtle_writer_bnodeid(turtle_writer,
-                                       subject->node->term->value.blank.string,
-                                       subject->node->term->value.blank.string_len);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has", 4);
-        }
-        raptor_turtle_writer_increase_indent(turtle_writer);
-        raptor_turtle_writer_newline(turtle_writer);
-
-        raptor_turtle_emit_subject_properties(serializer, subject, depth+1);
-
-        raptor_turtle_writer_decrease_indent(turtle_writer);
-
-        if(blank && depth > 1) {
-          if(numobj > 1)
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
-          raptor_turtle_writer_newline(turtle_writer);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)";}", 2);
-        }
+  } else if(context->resultset && emit_mkr) {
+      /* mKR relation with format = csv */
+      if(blank && depth > 1) {
+        /* skip */
       }
-    } else {
-      /* Turtle */
-      if(blank && depth > 1)
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
 
-      raptor_turtle_writer_increase_indent(turtle_writer);
-      raptor_turtle_writer_newline(turtle_writer);
-
-      raptor_turtle_emit_subject_properties(serializer, subject, depth+1);
+      raptor_mkr_emit_subject_resultset(serializer, subject, depth+1);
 
       raptor_turtle_writer_decrease_indent(turtle_writer);
 
       if(blank && depth > 1) {
+        /* skip */
+      }
+  } else {
+    if(blank && depth > 1) {
+      if(emit_mkr) {
+        if(mkr_blank) {
+          /* emit mkr blank object */
+          raptor_turtle_writer_bnodeid(turtle_writer,
+                                       subject->node->term->value.blank.string,
+                                       subject->node->term->value.blank.string_len);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
+          raptor_turtle_writer_newline(turtle_writer);
+        }
+
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"{", 1);
+        raptor_turtle_writer_increase_indent(turtle_writer);
+        raptor_turtle_writer_newline(turtle_writer);
+
+        if(mkr_blank) {
+          /* emit mkr blank subject */
+          raptor_turtle_writer_increase_indent(turtle_writer);
+          raptor_turtle_writer_newline(turtle_writer);
+          raptor_turtle_writer_bnodeid(turtle_writer,
+                                       subject->node->term->value.blank.string,
+                                       subject->node->term->value.blank.string_len);
+          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has ", 5);
+          raptor_turtle_writer_increase_indent(turtle_writer);
+          /* no newline for first predicate */
+        }
+      } else {
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
+      }
+    }
+
+    raptor_turtle_writer_increase_indent(turtle_writer);
+    if(!emit_mkr)
+      raptor_turtle_writer_newline(turtle_writer);
+
+    if(emit_mkr) {
+      raptor_mkr_emit_subject_properties(serializer, subject, depth+1);
+    } else {
+      raptor_turtle_emit_subject_properties(serializer, subject, depth+1);
+    }
+
+    raptor_turtle_writer_decrease_indent(turtle_writer);
+    raptor_turtle_writer_newline(turtle_writer);
+
+    if(blank && depth > 1) {
+      if(emit_mkr) {
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"}", 1);
+      } else {
         raptor_turtle_writer_newline(turtle_writer);
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
       }
@@ -1017,10 +1268,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
      */
     if(emit_mkr) {
       if(!context->resultset) {
-        if(numobj > 1)
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
-        raptor_turtle_writer_newline(turtle_writer);
+        raptor_turtle_writer_decrease_indent(turtle_writer);
         raptor_turtle_writer_newline(turtle_writer);
       }
       context->resultset = 0;
@@ -1101,10 +1349,15 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->turtle_writer_flags = 0;
   if(!strcmp(name,(const char*)"mkr")) {
     context->emit_mkr = 1;
+    context->mkr_blank = 0;
     context->turtle_writer_flags |= TURTLE_WRITER_FLAG_MKR;
-  } else
+  } else {
     context->emit_mkr = 0;
+  }
   context->resultset = 0;
+  context->groupType = NULL;
+  context->groupName = NULL;
+  context->groupList = NULL;
   context->written_begin = 0;
 
   context->nstack = raptor_new_namespaces(serializer->world, 1);
@@ -1113,6 +1366,10 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->rdf_nspace = raptor_new_namespace(context->nstack,
                                              (const unsigned char*)"rdf",
                                              (const unsigned char*)raptor_rdf_namespace_uri,
+                                              0);
+  context->mkr_nspace = raptor_new_namespace(context->nstack,
+                                             (const unsigned char*)"mkr",
+                                             (const unsigned char*)raptor_mkr_namespace_uri,
                                               0);
 
   context->namespaces = raptor_new_sequence(NULL, NULL);
@@ -1149,7 +1406,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->rs_ResultSet_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://jena.hpl.hp.com/2003/03/result-set#ResultSet");
   context->rs_resultVariable_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://jena.hpl.hp.com/2003/03/result-set#resultVariable");
 
-  if(!context->rdf_nspace || !context->namespaces ||
+  if(!context->rdf_nspace || !context->mkr_nspace || !context->namespaces ||
      !context->subjects || !context->blanks || !context->nodes ||
      !context->rdf_xml_literal_uri || !context->rdf_first_uri ||
      !context->rdf_rest_uri || !context->rdf_nil_uri || !context->rdf_type ||
@@ -1161,6 +1418,12 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
 
   /* Note: item 0 in the list is rdf:RDF's namespace */
   if(raptor_sequence_push(context->namespaces, context->rdf_nspace)) {
+    raptor_turtle_serialize_terminate(serializer);
+    return 1;
+  }
+
+  /* Note: item 1 in the list is mkr:mKR's namespace */
+  if(raptor_sequence_push(context->namespaces, context->mkr_nspace)) {
     raptor_turtle_serialize_terminate(serializer);
     return 1;
   }
@@ -1185,11 +1448,17 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
     context->rdf_nspace = NULL;
   }
 
+  if(context->mkr_nspace) {
+    raptor_free_namespace(context->mkr_nspace);
+    context->mkr_nspace = NULL;
+  }
+
   if(context->namespaces) {
     int i;
 
     /* Note: item 0 in the list is rdf:RDF's namespace and freed above */
-    for(i = 1; i< raptor_sequence_size(context->namespaces); i++) {
+    /* Note: item 1 in the list is mkr:mKR's namespace and freed above */
+    for(i = 2; i< raptor_sequence_size(context->namespaces); i++) {
       raptor_namespace* ns;
       ns =(raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
       if(ns)
@@ -1353,6 +1622,7 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
                                    raptor_turtle_context* context)
 {
   int i;
+  int emit_mkr = context->emit_mkr;
   raptor_turtle_writer* turtle_writer = context->turtle_writer;
 
   if(context->written_header)
@@ -1363,6 +1633,8 @@ raptor_turtle_ensure_writen_header(raptor_serializer* serializer,
 
   for(i = 0; i< raptor_sequence_size(context->namespaces); i++) {
     raptor_namespace* ns;
+    if(!emit_mkr && (i == 1)) /* skip mKR namespace */
+      continue;
     ns = (raptor_namespace*)raptor_sequence_get_at(context->namespaces, i);
     raptor_turtle_writer_namespace_prefix(turtle_writer, ns);
     raptor_namespace_stack_start_namespace(context->nstack, ns, 0);
@@ -1478,6 +1750,14 @@ static const char* const turtle_uri_strings[3] = {
   NULL
 };
 
+static const char* const mkr_uri_strings[5] = {
+  "http://www.w3.org/ns/formats/Turtle",
+  "http://www.dajobe.org/2004/01/turtle/",
+  "http://mkrmke.net/ns/",
+  "http://mkrmke.net/mkb/",
+  NULL
+};
+
 #define TURTLE_TYPES_COUNT 6
 static const raptor_type_q turtle_types[TURTLE_TYPES_COUNT + 1] = {
   { "text/turtle", 11, 10},
@@ -1529,7 +1809,7 @@ raptor_mkr_serializer_register_factory(raptor_serializer_factory *factory)
   factory->desc.mime_types = mkr_types;
 
   factory->desc.label = "mKR my Knowledge Representation Language";
-  factory->desc.uri_strings   = turtle_uri_strings;
+  factory->desc.uri_strings   = mkr_uri_strings;
 
   factory->context_length     = sizeof(raptor_turtle_context);
 

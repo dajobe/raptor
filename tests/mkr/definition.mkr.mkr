@@ -1,0 +1,61 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/definition.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
+
+enum has genus = group, 
+    group = {
+        with = {
+                exclusive = true, 
+                    order = false ;
+                } ;
+            }, 
+            rdf:type = group ;
+        
+    list has genus = group, 
+        group = {
+            with = {
+                    inclusive = true, 
+                        order = true ;
+                    } ;
+                }, 
+                rdf:type = group ;
+            
+        man has animal = {
+                with = {
+                        rational = true ;
+                        } ;
+                    }, 
+                    genus = animal, 
+                    rdf:type = animal ;
+                
+            multiset has genus = group, 
+                group = {
+                    with = {
+                            duplicate = true, 
+                                inclusive = true, 
+                                order = false ;
+                            } ;
+                        }, 
+                        rdf:type = group ;
+                    
+                result has genus = relation, 
+                    relation = {
+                        with = {
+                                format = mkr, 
+                                    relVariable = (x, y) ;
+                                } ;
+                            }, 
+                            rdf:type = relation ;
+                        
+                    set has genus = group, 
+                        group = {
+                            with = {
+                                    duplicate = false, 
+                                        inclusive = true, 
+                                        order = false ;
+                                    } ;
+                                }, 
+                                rdf:type = group ;
+                            
+                        

@@ -25,7 +25,7 @@
 lib_LTLIBRARIES = libraptor2.la
 
 pkginclude_HEADERS = raptor.h
-nodist_pkginclude_HEADERS = raptor2.h
+nodist_pkginclude_HEADERS = raptor2.h mkr.h mkrtype.h
 
 noinst_HEADERS = raptor_internal.h
 
@@ -45,7 +45,8 @@ turtle_lexer_test turtle_parser_test \
 git-version.h
 
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
-turtle_parser.c turtle_parser.h turtle_parser.output
+turtle_parser.c turtle_parser.h turtle_parser.output \
+mkr_parser.c mkr_parser.h mkr_parser.output
 
 # Memory debugging
 MEM=@MEM@
@@ -61,7 +62,8 @@ ANALYZE_COMMAND = $(ANALYZE) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) \
 	$(ANALYZE_FLAGS)
 
-BUILT_SOURCES = turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h
+BUILT_SOURCES = turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h \
+	mkr_parser.c mkr_parser.h
 
 libraptor2_la_SOURCES = raptor_parse.c raptor_serialize.c \
 raptor_rfc2396.c raptor_uri.c raptor_log.c raptor_locator.c \
@@ -84,11 +86,15 @@ endif
 if RAPTOR_PARSER_RDFXML
 libraptor2_la_SOURCES += raptor_rdfxml.c
 endif
+if RAPTOR_PARSER_MKR
+libraptor2_la_SOURCES += mkr_parser.c mkr_sentence.c mkr_parser.h mkr_common.h mkr_sentence.c turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+else
 if RAPTOR_PARSER_TURTLE
 libraptor2_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
 else
 if RAPTOR_PARSER_TRIG
 libraptor2_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+endif
 endif
 endif
 if RAPTOR_PARSER_NTRIPLES
@@ -193,6 +199,7 @@ raptor_nfc_test.c \
 raptor_win32.c \
 $(man_MANS) \
 turtle_lexer.l turtle_parser.y \
+mkr_parser.y mkr_sentence.c \
 parsedate.y
 
 
@@ -223,6 +230,17 @@ turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison.pl
 	rm -f turtle_parser.tab.c
 
 turtle_parser.h: turtle_parser.c ; @exit 0
+
+
+mkr_parser.c: $(srcdir)/mkr_parser.y $(top_srcdir)/scripts/fix-bison.pl $(top_srcdir)/scripts/fix-mkr-parser.sh
+	$(AM_V_GEN) \
+	$(BISON) $(srcdir)/mkr_parser.y; \
+	$(PERL) $(top_srcdir)/scripts/fix-bison.pl mkr_parser.tab.c > $@; \
+	mv -f mkr_parser.tab.h mkr_parser.h; \
+	rm -f mkr_parser.tab.c; \
+	$(top_srcdir)/scripts/fix-mkr-parser.sh
+
+mkr_parser.h: mkr_parser.c ; @exit 0
 
 parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison.pl
 	$(AM_V_GEN) \

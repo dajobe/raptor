@@ -75,6 +75,9 @@ struct raptor_turtle_parser_s {
 
   /* Allow TRIG extensions */
   int trig;
+
+  /* Non 0 for mKR parser */
+  int mkr;
 };
 
 

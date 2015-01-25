@@ -1,0 +1,31 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/command.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+dbopen has rdf:type = action ;
+
+print has rdf:type = action ;
+
+read has rdf:type = action ;
+
+select has rdf:type = action ;
+
+wc has rdf:type = action ;
+
+( ) has dbopen = {
+od = (mkr.ho, hierarchy, gdbm, existent) ;
+}, 
+print = {
+od = ("The quick brown fox jumped over the lazy dog.") ;
+}, 
+read = {
+from = (relation.mkr) ;
+}, 
+select = {
+from = (relation.mkr), 
+    od = (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
+}, 
+wc = {
+    od = (<http://mkrmke.net/ns/*.mkr>) ;
+    } ;
+

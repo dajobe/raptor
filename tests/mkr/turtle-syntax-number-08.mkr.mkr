@@ -1,0 +1,6 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/turtle-syntax-number-08.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+<s> has <p> = 123 ;
+

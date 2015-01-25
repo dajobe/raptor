@@ -1,0 +1,11 @@
+# RAPTOR/tests/mkr/variable.mkr
+# Richard H. McCullough Jan/15/2015
+
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+x := 10 ;
+y := _:5 ;
+z := "the big red one" ;
+
+do print od $x, $y, $z ;
+do print od "$x, $y, $z" ;

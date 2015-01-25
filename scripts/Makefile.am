@@ -20,6 +20,7 @@
 # 
 
 EXTRA_DIST= \
+fix-mkr-parser.sh \
 fix-bison.pl \
 fix-flex.pl \
 fix-groff-xhtml.pl \
