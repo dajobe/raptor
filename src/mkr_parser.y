@@ -54,7 +54,6 @@
 #undef RAPTOR_DEBUG
 #define RAPTOR_DEBUG 3
 #endif
-#define RAPTOR_DEBUG 2
 
 
 /* Make verbose error messages for syntax errors */
@@ -1256,7 +1255,7 @@ mkr_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char *local)
   raptor_term_print_as_ntriples(term, stdout);
   printf("\n");
 #endif
-  /* raptor_free_uri(uri); */
+  raptor_free_uri(uri);
   return term;
 }
 
@@ -2192,7 +2191,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
 /* #endif */
       break;
   }
-exit(1);
+
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
 
