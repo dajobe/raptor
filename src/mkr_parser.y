@@ -54,6 +54,7 @@
 #undef RAPTOR_DEBUG
 #define RAPTOR_DEBUG 3
 #endif
+#define RAPTOR_DEBUG 2
 
 
 /* Make verbose error messages for syntax errors */
@@ -2132,6 +2133,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
 
   /* Predicates are URIs but check for bad ordinals */
   switch(t->predicate->type) {
+
     case RAPTOR_TERM_TYPE_URI:
       if(!strncmp((const char*)raptor_uri_as_string(t->predicate->value.uri),
                   "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
@@ -2145,6 +2147,13 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
+      if((t->predicate->mkrtype == MKR_DEFINITION) ||
+         (t->predicate->mkrtype == MKR_ACTION) ||
+         (t->predicate->mkrtype == MKR_COMMAND)
+         ) {
+        statement->predicate = raptor_term_copy(t->predicate);
+        break;
+      }
     case RAPTOR_TERM_TYPE_LITERAL:
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
@@ -2183,6 +2192,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
 /* #endif */
       break;
   }
+exit(1);
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
 

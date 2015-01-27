@@ -48,11 +48,6 @@
 
 #include <turtle_common.h>
 
-/* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
-#if 0
-#undef RAPTOR_DEBUG
-#define RAPTOR_DEBUG 3
-#endif
 
 
 /* Make verbose error messages for syntax errors */
@@ -70,10 +65,6 @@
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
 #undef YYDEBUG
 #define YYDEBUG 1
-#endif
-
-#ifdef RAPTOR_DEBUG
-const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #endif
 
 
@@ -373,12 +364,12 @@ mkr_rel(raptor_parser* rdf_parser, raptor_sequence* var2)
 #endif
 }
 
-/*****************************************************************************/
-/* type:    MKR_DEFINITION | MKR_ACTION | MKR_COMMAND */
-/* sentence: subject isVerb genus   [= gen  ]  pplist SEMICOLON */
-/*         | subject doVerb action  [= event]  ppList SEMICOLON */
-/*         |         doVerb command [= event]  ppList SEMICOLON */
-/************************** predicate ***************/
+/***************************************************************/
+/* type: MKR_DEFINITION | MKR_ACTION | MKR_COMMAND              */
+/* sentence: subject isVerb [= blank] genus   pplist SEMICOLON */
+/*         | subject doVerb [= blank] action  ppList SEMICOLON */
+/*         |         doVerb [= blank] command ppList SEMICOLON */
+/************************************ predicate ****************/
 void
 mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist)
 {
@@ -387,8 +378,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
   raptor_term* t1 = NULL;
   raptor_term* t2 = NULL;
   raptor_term* t3 = NULL;
-  raptor_term* gen = NULL;
-  raptor_term* event = NULL;
+  raptor_term* blank = NULL;
   raptor_term* nvblank = NULL;
   raptor_sequence* seq = NULL;
   raptor_term* rdflist = NULL;
@@ -398,20 +388,30 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_pplist: %s: ", MKR_TYPE_NAME(type));
-  raptor_term_print_as_ntriples(subject, stdout);
-  printf(" ");
-  raptor_term_print_as_ntriples(verb, stdout);
-  printf(" ");
-  raptor_term_print_as_ntriples(predicate, stdout);
-  printf(" ");
-  raptor_sequence_print(pplist, stdout);
-  printf(";\n");
+  raptor_term_print_as_ntriples(subject, stdout); printf(" ");
+  raptor_term_print_as_ntriples(verb, stdout); printf(" ");
+  raptor_term_print_as_ntriples(predicate, stdout); printf(" ");
+  raptor_sequence_print(pplist, stdout); printf(";\n");
 #endif
+
+  if(subject)
+    sub = raptor_term_copy(subject);
+  else
+    sub = raptor_term_copy(raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world)));
 
   switch(type) {
     case MKR_DEFINITION:
+      break;
+
     case MKR_ACTION:
     case MKR_COMMAND:
+      /* predicate iss action */
+      t1 = raptor_term_copy(predicate);
+      t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"iss");
+      t3 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"action");
+      triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
+      raptor_mkr_generate_statement(rdf_parser, triple);
+      raptor_free_statement(triple); triple = NULL;
       break;
 
     default:
@@ -420,102 +420,41 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
       break;
   }
 
-  if(subject)
-    sub = raptor_term_copy(subject);
-  else
-    sub = raptor_term_copy(raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world)));
 
 #if defined(RAPTOR_DEBUG)
-printf("sub = ");
-raptor_term_print_as_ntriples(sub, stdout);
-printf("\n");
+  printf("sub = "); raptor_term_print_as_ntriples(sub, stdout); printf("\n");
 #endif
 
-  t2 = raptor_term_copy(RAPTOR_RDF_type_term(world));
-  switch(type) {
-    case MKR_DEFINITION:
-      /* sub rdf:type predicate . */
-      t1 = raptor_term_copy(sub);
-      t3 = raptor_term_copy(predicate);
-      break;
-
-    case MKR_ACTION:
-    case MKR_COMMAND:
-      /* predicate rdf:type action . */
-      t1 = raptor_term_copy(predicate);
-      t3 = raptor_term_copy(mkr_new_variable(rdf_parser, MKR_ACTION, (unsigned char*)"action"));
-      break;
-  }
+  /* subject blank predicate */
+  blank = raptor_term_copy(verb);  /* RAPTOR_TERM_TYPE_URI) */
+  blank->mkrtype = type;
+  t1 = raptor_term_copy(sub);
+  t2 = raptor_term_copy(blank);
+  t3 = raptor_term_copy(predicate);
   triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
   raptor_mkr_generate_statement(rdf_parser, triple);
   raptor_free_statement(triple); triple = NULL;
 
-  switch(type) {
-    case MKR_DEFINITION:
-      /* sub predicate gen . */
-      /* sub genus predicate . */
-      gen = mkr_new_blankNode(rdf_parser);
-#if defined(RAPTOR_DEBUG)
-printf("gen = ");
-raptor_term_print_as_ntriples(gen, stdout);
-printf("\n");
-#endif
-      t1 = raptor_term_copy(sub);
-      t2 = raptor_term_copy(predicate);
-      t3 = raptor_term_copy(gen);
-      triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
-      raptor_mkr_generate_statement(rdf_parser, triple);
-      raptor_free_statement(triple); triple = NULL;
+  /* blank isu verb */
+  t1 = raptor_term_copy(blank);
+  t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"isu");
+  t3 = raptor_term_copy(verb);
+  triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
+  raptor_mkr_generate_statement(rdf_parser, triple);
+  raptor_free_statement(triple); triple = NULL;
 
-
-      t1 = raptor_term_copy(sub);
-      t2 = raptor_term_copy(mkr_new_variable(rdf_parser, MKR_GENUS, (unsigned char*)"genus"));
-      t3 = raptor_term_copy(predicate);
-      triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
-      raptor_mkr_generate_statement(rdf_parser, triple);
-      raptor_free_statement(triple); triple = NULL;
-      break;
-
-
-    case MKR_ACTION:
-    case MKR_COMMAND:
-      /* sub predicate event . */
-      event = mkr_new_blankNode(rdf_parser);
-#if defined(RAPTOR_DEBUG)
-printf("event = ");
-raptor_term_print_as_ntriples(event, stdout);
-printf("\n");
-#endif
-      t1 = raptor_term_copy(sub);
-      t2 = raptor_term_copy(predicate);
-      t3 = raptor_term_copy(event);
-      triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
-      raptor_mkr_generate_statement(rdf_parser, triple);
-      raptor_free_statement(triple); triple = NULL;
-      break;
-  }
-
-  /* gen   ppPreposition ppValue . */
-  /* event ppPreposition ppValue . */
+  /* blank pplist */
   for(i = 0; i < raptor_sequence_size(pplist); i++) {
     MKR_pp *pp = (MKR_pp*)raptor_sequence_get_at(pplist, i);
 #if defined(RAPTOR_DEBUG)
-printf("pp = ");
-mkr_pp_print(pp, stdout);
-printf("\n");
+    printf("pp = "); mkr_pp_print(pp, stdout); printf("\n");
 #endif
     raptor_term* preposition = pp->ppPreposition;
     raptor_sequence* ppValue = pp->ppValue;
     switch(pp->ppType) {
       case MKR_PPOBJ:
-        /* gen   preposition rdflist . */
-        /* event preposition rdflist . */
         rdflist = mkr_new_rdflist(rdf_parser, ppValue);
-        switch(type) {
-          case MKR_DEFINITION: t1 = raptor_term_copy(gen);   break;
-          case MKR_ACTION:     t1 = raptor_term_copy(event); break;
-          case MKR_COMMAND:    t1 = raptor_term_copy(event); break;
-        }
+        t1 = raptor_term_copy(blank);
         t2 = raptor_term_copy(preposition);
         t3 = raptor_term_copy(rdflist);
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
@@ -525,19 +464,12 @@ printf("\n");
         break;
 
       case MKR_PPNV:
-        /* gen   preposition nvlist . */
-        /* event preposition nvlist . */
+        /* blank preposition nvlist . */
         nvblank = mkr_new_blankNode(rdf_parser);
 #if defined(RAPTOR_DEBUG)
-printf("nvblank = ");
-raptor_term_print_as_ntriples(nvblank, stdout);
-printf("\n");
+        printf("nvblank = "); raptor_term_print_as_ntriples(nvblank, stdout); printf("\n");
 #endif
-        switch(type) {
-          case MKR_DEFINITION: t1 = raptor_term_copy(gen);   break;
-          case MKR_ACTION:     t1 = raptor_term_copy(event); break;
-          case MKR_COMMAND:    t1 = raptor_term_copy(event); break;
-        }
+        t1 = raptor_term_copy(blank);
         t2 = raptor_term_copy(preposition);
         t3 = raptor_term_copy(nvblank);
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
@@ -549,9 +481,7 @@ printf("\n");
           /* nvblank name value . */
           MKR_nv* nv = (MKR_nv*)raptor_sequence_get_at(ppValue, j);
 #if defined(RAPTOR_DEBUG)
-printf("nv = ");
-mkr_nv_print(nv, stdout);
-printf("\n");
+          printf("nv = "); mkr_nv_print(nv, stdout); printf("\n");
 #endif
           raptor_term* name = nv->nvName;
           MKR_value* value = nv->nvValue;
@@ -572,16 +502,10 @@ printf("\n");
             case MKR_SENTENCELIST:
             case MKR_RAPTOR_SEQUENCE:
               seq = (raptor_sequence*)value->mkrvalue;
-#if defined(RAPTOR_DEBUG)
-printf("seq = ");
-raptor_sequence_print(seq, stdout);
-printf("\n");
-#endif
               rdflist = mkr_new_rdflist(rdf_parser, seq);
 #if defined(RAPTOR_DEBUG)
-printf("rdflist = ");
-mkr_rdflist_print(rdflist, stdout);
-printf("\n");
+              printf("seq = "); raptor_sequence_print(seq, stdout); printf("\n");
+              printf("rdflist = "); mkr_rdflist_print(rdflist, stdout); printf("\n");
 #endif
               t3 = raptor_term_copy(rdflist);
               break;
@@ -596,7 +520,10 @@ printf("\n");
           raptor_free_statement(triple); triple = NULL;
 
 
-          /* mkr_free_nv(nv); */
+/*
+          if(nv)
+            mkr_free_nv(nv); nv = NULL;
+*/
         }
         if(nvblank)
           raptor_free_term(nvblank); nvblank = NULL;
@@ -606,16 +533,17 @@ printf("\n");
         printf("##### ERROR: mkr_pplist: not ppList type: %s\n", MKR_TYPE_NAME(pp->ppType));
         break;
     }
-    /* mkr_free_pp(pp); */
+/*
+    if(pp)
+      mkr_free_pp(pp); pp = NULL;
+*/
   }
 
 /*
   if(sub)
     raptor_free_term(sub); sub = NULL;
-  if(gen)
-    raptor_free_term(gen); gen = NULL;
-  if(event)
-    raptor_free_term(event); event = NULL;
+  if(blank)
+    raptor_free_term(blank); blank = NULL;
 */
 
 #if defined(RAPTOR_DEBUG)
