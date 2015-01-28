@@ -313,7 +313,7 @@ Document : sentenceList
 ;;
 
 sentenceList: sentenceList sentence
-| %empty {$$ = NULL;}
+| %empty
 ;
 
 nv: predicate EQUALS value {$$ = mkr_new_nv(rdf_parser, MKR_NV, $1, $3);}
@@ -343,6 +343,7 @@ nameOption: variable DCOLON {$$ = $1;}
 ;
 
 /* question is sentence with at least one ?variable */
+
 sentence: viewOption nameOption sentence SEMICOLON {mkr_sentence(rdf_parser, $1, $2, $3);}
 | LEFT_CURLY sentenceList RIGHT_CURLY    SEMICOLON {mkr_view(rdf_parser, $2);}
 | BASE URI_LITERAL                       SEMICOLON {mkr_base(rdf_parser, $2);}
@@ -746,14 +747,14 @@ hoVerb: ISA      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isa
 |       variable {$$ = $1;}
 ;
 
-hasVerb: HAS      {$$ = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"has");}
-|        HASPART  {$$ = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"haspart");}
-|        ISAPART  {$$ = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"isapart");}
+hasVerb: HAS      {$$ = mkr_new_verb(rdf_parser, MKR_HAS,     (unsigned char*)"has");}
+|        HASPART  {$$ = mkr_new_verb(rdf_parser, MKR_HASPART, (unsigned char*)"haspart");}
+|        ISAPART  {$$ = mkr_new_verb(rdf_parser, MKR_ISAPART, (unsigned char*)"isapart");}
 ;
 
-doVerb: DO    {$$ = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"do");}
-|       HDO   {$$ = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"hdo");}
-|       BANG  {$$ = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"!");}
+doVerb: DO    {$$ = mkr_new_verb(rdf_parser, MKR_DO,   (unsigned char*)"do");}
+|       HDO   {$$ = mkr_new_verb(rdf_parser, MKR_HDO,  (unsigned char*)"hdo");}
+|       BANG  {$$ = mkr_new_verb(rdf_parser, MKR_BANG, (unsigned char*)"!");}
 ;
 
 preposition: AT     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"at");}
@@ -1262,7 +1263,7 @@ mkr_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char *local)
 
 /*****************************************************************************/
 raptor_term*
-mkr_new_blankNode(raptor_parser* rdf_parser)
+mkr_new_blankTerm(raptor_parser* rdf_parser)
 {
   raptor_world* world = rdf_parser->world;
   const unsigned char *id = NULL;
@@ -1281,6 +1282,9 @@ mkr_new_blankNode(raptor_parser* rdf_parser)
   }
 
   blank_error:
+  printf("##### DEBUG: mkr_new_blankTerm: ");
+  raptor_term_print_as_ntriples(blankNode, stdout);
+  printf("\n");
   return blankNode;
 }
 
@@ -1450,7 +1454,7 @@ mkr_new_pp(raptor_parser* rdf_parser, mkr_type type, raptor_term* preposition, r
       }
       pp->ppType = type;
       pp->ppPreposition = raptor_term_copy(preposition);
-      pp->ppValue = value;
+      pp->ppSequence = value;
       break;
 
     default:
@@ -1482,9 +1486,9 @@ return;
         raptor_free_term(pp->ppPreposition);
         pp->ppPreposition = NULL;
       }
-      if(pp->ppValue) {
-        raptor_free_sequence(pp->ppValue);
-        pp->ppValue = NULL;
+      if(pp->ppSequence) {
+        raptor_free_sequence(pp->ppSequence);
+        pp->ppSequence = NULL;
       }
       RAPTOR_FREE(MKR_pp, pp);
       pp = NULL;
@@ -1516,7 +1520,7 @@ mkr_pp_print(MKR_pp* pp, FILE* fh)
       printf("%s(", MKR_TYPE_NAME(type));
       raptor_term_print_as_ntriples(pp->ppPreposition, stdout);
       printf(" ");
-      raptor_sequence_print(pp->ppValue, stdout);
+      raptor_sequence_print(pp->ppSequence, stdout);
       printf(")");
       break;
 
@@ -1529,7 +1533,7 @@ mkr_pp_print(MKR_pp* pp, FILE* fh)
 /*****************************************************************************/
 /*****************************************************************************/
 MKR_value*
-mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
+mkr_new_value(raptor_parser* rdf_parser, mkr_type type, mkr_value* value)
 {
   raptor_world* world = rdf_parser->world;
   MKR_value* val = NULL;
@@ -1540,7 +1544,7 @@ mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
   printf("%s(", MKR_TYPE_NAME(type));
   switch(type) {
     case MKR_NIL:
-      printf("[ ]");
+      printf("( )");
       break;
 
     case MKR_OBJECT:
@@ -1579,26 +1583,26 @@ mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
     case MKR_NIL:
       /* if(!val)
         YYERROR; */
-      val->mkrvalue = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
+      val->mkrvalue = (void*)raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
       break;
 
     case MKR_OBJECT:
     case MKR_RDFLIST:
     case MKR_SENTENCE:
-      val->mkrvalue = raptor_term_copy((raptor_term*)value);
+      val->mkrvalue = (void*)raptor_term_copy((raptor_term*)value);
       break;
 
     case MKR_VALUELIST:
     case MKR_OBJECTLIST:
       val->mkrtype = MKR_RDFLIST;
       rdflist = mkr_new_rdflist(rdf_parser, (raptor_sequence*)value);
-      val->mkrvalue = raptor_term_copy(rdflist);
+      val->mkrvalue = (void*)raptor_term_copy(rdflist);
       break;
 
     case MKR_VALUESET:
     case MKR_OBJECTSET:
     case MKR_SENTENCELIST:
-      val->mkrvalue = (raptor_sequence*)value;
+      val->mkrvalue = (void*)value;
       break;
 
     default:
@@ -1656,7 +1660,7 @@ mkr_free_value(MKR_value* value)
   }
   /* RAPTOR_FREE(MKR_value, value);  causes core dump */
   value = NULL;
-#if defined(RAPTOR_DEBUG) && RAPTOR > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_free_value\n");
 #endif
 }
@@ -1715,18 +1719,25 @@ mkr_new_rdflist(raptor_parser* rdf_parser, raptor_sequence* seq)
   raptor_statement* triple = NULL;
   char const *errmsg = NULL;
 
+#if defined(RAPTOR_DEBUG)
+  printf("##### DEBUG: mkr_new_rdflist: ");
+#endif
+
 /* collection:  LEFT_SQUARE RIGHT_SQUARE */
   if(!seq) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("collection\n empty\n");
+    printf("collection\n empty\n");
 #endif
 
-  rdflist = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
+    rdflist = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
 
-  if(!rdflist)
-    /*YYERROR;*/ printf("##### ERROR: mkr_rdflist: can't create nil term");
+    if(!rdflist)
+      /*YYERROR;*/ printf("##### ERROR: mkr_rdflist: can't create nil term");
 
-  return rdflist;
+#if defined(RAPTOR_DEBUG)
+    printf("return from mkr_new_rdflist\n");
+#endif
+    return rdflist;
   }
 
 /* collection: LEFT_SQUARE seq RIGHT_SQUARE */
@@ -1825,6 +1836,9 @@ mkr_new_rdflist(raptor_parser* rdf_parser, raptor_sequence* seq)
     /* YYERROR_MSG(errmsg); */ printf("##### ERROR: mkr_rdflist: %s\n", errmsg);
   }
 
+#if defined(RAPTOR_DEBUG)
+  printf("return from mkr_new_rdflist\n");
+#endif
   rdflist->mkrtype = MKR_RDFLIST;
   return rdflist;
 }
@@ -1848,7 +1862,7 @@ mkr_new_sentence(raptor_parser* rdf_parser, raptor_statement *triple)
   raptor_statement* s = NULL;
   raptor_term* sentence = NULL;
 
-  sentence = mkr_new_blankNode(rdf_parser);
+  sentence = mkr_new_blankTerm(rdf_parser);
   t1 = raptor_term_copy(sentence);
   uri = raptor_new_uri_for_rdf_concept(world, (const unsigned char*)"subject");
   t2 = raptor_new_term_from_uri(world, uri);
@@ -2085,9 +2099,23 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
   raptor_turtle_parser *mkr_parser = (raptor_turtle_parser*)parser->context;
   raptor_statement *statement = &parser->statement;
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: raptor_mkr_generate_statement: ");
-#endif
+  if(!t) {
+    printf("##### ERROR: raptor_mkr_generate_statement: ignore NULL statement\n");
+    return;
+  }
+
+  if(!t->subject) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL subject\n");
+    return;
+  }
+  if(!t->predicate) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL predicate\n");
+    return;
+  }
+  if(!t->object) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL object\n");
+    return;
+  }
 
   if(!t->subject || !t->predicate || !t->object) {
     return;
@@ -2107,6 +2135,12 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
     parser->emitted_default_graph++;
   }
   
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("##### DEBUG: raptor_mkr_generate_statement: ");
+  mkr_statement_print(t, stdout);
+  printf("\n");
+#endif
+
   /* Two choices for subject for Turtle */
   switch(t->subject->type) {
     case RAPTOR_TERM_TYPE_BLANK:
@@ -2142,7 +2176,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
           raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
       }
       statement->predicate = raptor_new_term_from_uri(parser->world,
-                                                    t->predicate->value.uri);
+                                                  t->predicate->value.uri);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
@@ -2150,9 +2184,13 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
          (t->predicate->mkrtype == MKR_ACTION) ||
          (t->predicate->mkrtype == MKR_COMMAND)
          ) {
-        statement->predicate = raptor_term_copy(t->predicate);
-        break;
+        statement->predicate = raptor_new_term_from_blank(parser->world,
+                                                    t->predicate->value.blank.string);
+      } else {
+        printf("##### WARNING: unexpected blank predicate->mkrtype: %s\n", MKR_TYPE_NAME(t->predicate->mkrtype));
       }
+      break;
+
     case RAPTOR_TERM_TYPE_LITERAL:
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
@@ -2196,7 +2234,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
   (*parser->statement_handler)(parser->user_data, statement);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("free spo: ");
+  printf(" free spo: ");
 #endif
   raptor_free_term(statement->subject); statement->subject = NULL;
   raptor_free_term(statement->predicate); statement->predicate = NULL;
@@ -2205,7 +2243,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
     raptor_free_term(statement->graph); statement->graph = NULL;
   }
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("exit\n");
+  printf("exit raptor_mkr_generate_statement\n");
 #endif
 }
 

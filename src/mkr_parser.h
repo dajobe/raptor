@@ -118,34 +118,30 @@ extern int mkr_parser_debug;
     SEMICOLON = 328,
     LEFT_SQUARE = 329,
     RIGHT_SQUARE = 330,
-    ENUM_LEFT_ROUND = 331,
-    LIST_LEFT_ROUND = 332,
-    MULTISET_LEFT_ROUND = 333,
-    SET_LEFT_ROUND = 334,
-    LEFT_ROUND = 335,
-    RIGHT_ROUND = 336,
-    LEFT_CURLY = 337,
-    RIGHT_CURLY = 338,
-    TRUE_TOKEN = 339,
-    FALSE_TOKEN = 340,
-    PREFIX = 341,
-    MKB = 342,
-    MKE = 343,
-    BASE = 344,
-    SPARQL_PREFIX = 345,
-    SPARQL_BASE = 346,
-    STRING_LITERAL = 347,
-    URI_LITERAL = 348,
-    GRAPH_NAME_LEFT_CURLY = 349,
-    BLANK_LITERAL = 350,
-    QNAME_LITERAL = 351,
-    IDENTIFIER = 352,
-    LANGTAG = 353,
-    INTEGER_LITERAL = 354,
-    FLOATING_LITERAL = 355,
-    DECIMAL_LITERAL = 356,
-    VARIABLE = 357,
-    ERROR_TOKEN = 358
+    LEFT_ROUND = 331,
+    RIGHT_ROUND = 332,
+    LEFT_CURLY = 333,
+    RIGHT_CURLY = 334,
+    TRUE_TOKEN = 335,
+    FALSE_TOKEN = 336,
+    PREFIX = 337,
+    MKB = 338,
+    MKE = 339,
+    BASE = 340,
+    SPARQL_PREFIX = 341,
+    SPARQL_BASE = 342,
+    STRING_LITERAL = 343,
+    URI_LITERAL = 344,
+    GRAPH_NAME_LEFT_CURLY = 345,
+    BLANK_LITERAL = 346,
+    QNAME_LITERAL = 347,
+    IDENTIFIER = 348,
+    LANGTAG = 349,
+    INTEGER_LITERAL = 350,
+    FLOATING_LITERAL = 351,
+    DECIMAL_LITERAL = 352,
+    VARIABLE = 353,
+    ERROR_TOKEN = 354
   };
 #endif
 
@@ -166,7 +162,7 @@ union YYSTYPE
   MKR_nv *nv;
   MKR_pp *pp;
 
-#line 170 "mkr_parser.tab.h" /* yacc.c:1909  */
+#line 166 "mkr_parser.tab.h" /* yacc.c:1909  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1

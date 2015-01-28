@@ -49,12 +49,6 @@
 #include <turtle_common.h>
 
 
-/* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
-#if 0
-#undef RAPTOR_DEBUG
-#define RAPTOR_DEBUG 3
-#endif
-
 
 /* Make verbose error messages for syntax errors */
 #define YYERROR_VERBOSE 1
@@ -92,7 +86,7 @@ void mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_te
 /*********************************/
 /* mKR parser sentence functions */
 /*********************************/
-   int mkr_statement_print(const raptor_statement* statement, FILE *stream);
+/* int mkr_statement_print(const raptor_statement* statement, FILE *stream); */
 /* raptor_uri* raptor_new_uri_for_mkr_concept(raptor_world* world, const unsigned char *name); */
 /* raptor_term_print_as_ntriples(raptor_term* t, stdout);   */
 /* raptor_sequence_print(raptor_sequence* s, stdout);       */
@@ -367,7 +361,7 @@ mkr_rel(raptor_parser* rdf_parser, raptor_sequence* var2)
   raptor_sequence_push(groupList, t4);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: mkr_rel: exit\n");
+  printf("##### DEBUG: exit mkr_rel\n");
 #endif
 }
 
@@ -406,16 +400,25 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
   else switch(verb->mkrtype) {
     case MKR_DO:
     case MKR_HDO:
-      sub = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"ke");
+      sub = mkr_new_variable(rdf_parser, MKR_SUBJECT, (unsigned char*)"ke");
       break;
 
     case MKR_BANG:
-      sub = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"sh");
+      sub = mkr_new_variable(rdf_parser, MKR_SUBJECT, (unsigned char*)"sh");
+      break;
+
+    default:
+      printf("##### ERROR: mkr_pplist: unexpected verb mkrtype: %s\n", MKR_TYPE_NAME(type));
+      return;
       break;
   }
-    sub = raptor_term_copy(raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world)));
+  if(!sub) {
+    printf("##### ERROR: mkr_pplist: NULL subject\n");
+    return;
+  }
+  sub = raptor_term_copy(sub);
 
-  event = mkr_new_blankNode(rdf_parser);
+  event = mkr_new_blankTerm(rdf_parser);
   event->mkrtype = type;
 
 #if defined(RAPTOR_DEBUG)
@@ -439,11 +442,12 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 
       /* predicate iss action */
       t1 = raptor_term_copy(predicate);
-      t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"iss");
-      t3 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"action");
+      t2 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_HOVERB, (unsigned char*)"iss") );
+      t3 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_ACTION, (unsigned char*)"action") );
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
+printf("predicate iss action: done\n");
       break;
 
     default:
@@ -454,16 +458,20 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 
 /******************************************************************************/
 
-  t1 = raptor_term_copy(sub);
   switch(type) {
     case MKR_DEFINITION:
       /* sub definition event .   */
       t1 = raptor_term_copy(sub);
-      t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"definition");
+      t2 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_DEFINITION, (unsigned char*)"definition") );
+      if(!t2) {
+        printf("##### ERROR: mkr_pplist: NULL definition term\n");
+        return;
+      }
       t3 = raptor_term_copy(event);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
+printf("sub definition event: done\n");
       break;
 
     case MKR_ACTION:
@@ -475,44 +483,39 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
+printf("sub predicate event: done\n");
       break;
   }
-  triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
-  raptor_mkr_generate_statement(rdf_parser, triple);
-  raptor_free_statement(triple); triple = NULL;
 
 /**********************************************************/
 
-  t1 = raptor_term_copy(event);
   switch(type) {
     case MKR_DEFINITION:
       /* event genus predicate . */
       t1 = raptor_term_copy(event);
-      t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"genus");
+      t2 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_GENUS, (unsigned char*)"genus") );
       t3 = raptor_term_copy(predicate);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
+printf("event genus predicate: done\n");
       break;
 
     case MKR_ACTION:
     case MKR_COMMAND:
       /* event agent sub .     */
       t1 = raptor_term_copy(event);
-      t2 = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"agent");
+      t2 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_AGENT, (unsigned char*)"agent") );
       t3 = raptor_term_copy(sub);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
+printf("event agent sub: done\n");
       break;
   }
-  triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
-  raptor_mkr_generate_statement(rdf_parser, triple);
-  raptor_free_statement(triple); triple = NULL;
 
 /**********************************************************/
 
-  t1 = raptor_term_copy(event);
   switch(type) {
     case MKR_DEFINITION:
     case MKR_ACTION:
@@ -526,22 +529,25 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
     printf("pp = "); mkr_pp_print(pp, stdout); printf("\n");
 #endif
     raptor_term* preposition = pp->ppPreposition;
-    raptor_sequence* ppValue = pp->ppValue;
+    raptor_sequence* ppSequence = pp->ppSequence;
     switch(pp->ppType) {
       case MKR_PPOBJ:
-        rdflist = mkr_new_rdflist(rdf_parser, ppValue);
+        /* event preposition rdflist */
+        rdflist = mkr_new_rdflist(rdf_parser, ppSequence);
         t1 = raptor_term_copy(event);
         t2 = raptor_term_copy(preposition);
         t3 = raptor_term_copy(rdflist);
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
         raptor_mkr_generate_statement(rdf_parser, triple);
         raptor_free_statement(triple); triple = NULL;
-
+printf("event preposition rdflist: done\n");
         break;
 
       case MKR_PPNV:
-        /* event preposition nvlist . */
-        nvevent = mkr_new_blankNode(rdf_parser);
+        /* event preposition nvevent . */
+        nvevent = mkr_new_blankTerm(rdf_parser);
+        nvevent->mkrtype = type;
+
 #if defined(RAPTOR_DEBUG)
         printf("nvevent = "); raptor_term_print_as_ntriples(nvevent, stdout); printf("\n");
 #endif
@@ -551,11 +557,12 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
         raptor_mkr_generate_statement(rdf_parser, triple);
         raptor_free_statement(triple); triple = NULL;
+printf("event preposition nvevent: done\n");
 
 
-        for(j = 0; j < raptor_sequence_size(ppValue); j++) {
+        for(j = 0; j < raptor_sequence_size(ppSequence); j++) {
           /* nvevent name value . */
-          MKR_nv* nv = (MKR_nv*)raptor_sequence_get_at(ppValue, j);
+          MKR_nv* nv = (MKR_nv*)raptor_sequence_get_at(ppSequence, j);
 #if defined(RAPTOR_DEBUG)
           printf("nv = "); mkr_nv_print(nv, stdout); printf("\n");
 #endif
@@ -594,6 +601,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
           triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
           raptor_mkr_generate_statement(rdf_parser, triple);
           raptor_free_statement(triple); triple = NULL;
+printf("nvevent name value->mkrvalue: done\n");
 
 
 /*
@@ -626,6 +634,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
     raptor_free_term(blank); blank = NULL;
 */
 
+  printf("exit mkr_pplist: \n");
 #if defined(RAPTOR_DEBUG)
   printf("exit mkr_pplist: \n");
 #endif
@@ -1005,7 +1014,7 @@ printf("##### DEBUG: mkr_statement_print: ");
       default:
       case RAPTOR_TERM_TYPE_LITERAL:
       case RAPTOR_TERM_TYPE_UNKNOWN:
-        printf("##### ERROR: mkr_statement_print: unexpected subject term type: %s\n", RAPTOR_TERM_TYPE_NAME(type));
+        printf("(subject term type: %s)", RAPTOR_TERM_TYPE_NAME(type));
         break;
     }
   }
@@ -1027,7 +1036,7 @@ printf("##### DEBUG: mkr_statement_print: ");
       default:
       case RAPTOR_TERM_TYPE_LITERAL:
       case RAPTOR_TERM_TYPE_UNKNOWN:
-        printf("##### ERROR: mkr_statement_print: unexpected predicate term type: %s\n", RAPTOR_TERM_TYPE_NAME(type));
+        printf("(predicate term type: %s)", RAPTOR_TERM_TYPE_NAME(type));
         break;
     }
   }
@@ -1066,7 +1075,7 @@ printf("##### DEBUG: mkr_statement_print: ");
 
       default:
       case RAPTOR_TERM_TYPE_UNKNOWN:
-        printf("##### ERROR: mkr_statement_print: unexpected object term type: %s\n", RAPTOR_TERM_TYPE_NAME(type));
+        printf("(object term type: %s)", RAPTOR_TERM_TYPE_NAME(type));
         break;
     }
   }
@@ -1090,7 +1099,7 @@ printf("##### DEBUG: mkr_statement_print: ");
       default:
       case RAPTOR_TERM_TYPE_LITERAL:
       case RAPTOR_TERM_TYPE_UNKNOWN:
-        printf("##### ERROR: mkr_statement_print: unexpected graph term type: %s\n", RAPTOR_TERM_TYPE_NAME(type));
+        printf("(graph term type: %s)", RAPTOR_TERM_TYPE_NAME(type));
         break;
     }
   }
@@ -1108,7 +1117,7 @@ RAPTOR_TERM_TYPE_NAME(raptor_term_type n)
 {
   switch(n) {
     default:
-      printf("##### ERROR: RAPTOR_TERM_TYPE_NAME: not raptor_term_type: %u\n",n);
+      printf("(not raptor_term_type: %u)",n);
       return NULL;
       break;
     case RAPTOR_TERM_TYPE_UNKNOWN: 		return "RAPTOR_TERM_TYPE_UNKNOWN";		break;
@@ -1124,7 +1133,7 @@ MKR_TYPE_NAME(mkr_type n)
 {
   switch(n) {
     default:
-      printf("##### ERROR: MKR_TYPE_NAME: not mkr_type: %u\n",n);
+      printf("(not mkr_type: %u)",n);
       return NULL;
       break;
     case MKR_UNKNOWN:		return "MKR_UNKNOWN";			break;
@@ -1200,6 +1209,7 @@ MKR_TYPE_NAME(mkr_type n)
     case MKR_ATTRIBUTE:		return "MKR_ATTRIBUTE";			break;
     case MKR_PART:		return "MKR_PART";			break;
     case MKR_ACTION:		return "MKR_ACTION";			break;
+    case MKR_AGENT:		return "MKR_AGENT";			break;
     case MKR_SPACE:		return "MKR_SPACE";			break;
     case MKR_TIME:		return "MKR_TIME";			break;
     case MKR_VIEW:		return "MKR_VIEW";			break;

@@ -1,3 +1,4 @@
+@base        <http://example.org/> .
 @prefix mkr: <http://mkrmke.net/ns/> .
 @prefix :    <http://www.example.com/ns#> .
 

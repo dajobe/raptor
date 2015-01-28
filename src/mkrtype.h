@@ -21,7 +21,7 @@
  * 
  */
 
-typedef void* mkr_value;
+typedef void mkr_value;
 
 /**
  * mkr_type
@@ -51,7 +51,7 @@ typedef void* mkr_value;
     * @MKR_DVARIABLE:
     * @MKR_QVARIABLE:
   * @MKR_VALUE:
-    * @MKR_NIL:            [ ]
+    * @MKR_NIL:            ( )
     * @MKR_OBJECT:         object
     * @MKR_RDFLIST:        first,rest,nil
     * @MKR_VALUESET:       ( valueList )
@@ -99,6 +99,7 @@ typedef void* mkr_value;
       * @MKR_PART:
       * @MKR_ACTION:
         * @MKR_METHOD:
+        * @MKR_AGENT: subject of action
     * MKR_SENTENCE:
       * @MKR_CONTEXT:
         * @MKR_SPACE:
@@ -199,6 +200,7 @@ typedef enum {
       MKR_PART,
       MKR_ACTION,
         MKR_METHOD,
+        MKR_AGENT,
     MKR_SENTENCE,
       MKR_CONTEXT,
         MKR_SPACE,

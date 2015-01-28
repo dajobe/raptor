@@ -3,8 +3,10 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix : <http://example.org/ns#> ;
 
-:a has :b = :c1, 
-    :x = [:c2, :c3], 
-    :y = :c4, 
-    :z = [:c10, :c5, :c6, :c7, :c8, :c9] ;
+:a
+    has :b = :c1, 
+        :x = [:c2, :c3], 
+        :y = :c4, 
+        :z = [:c10, :c5, :c6, :c7, :c8, :c9]
+     ;
 

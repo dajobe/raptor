@@ -42,10 +42,6 @@ Terminals unused in grammar
    "**"
    "a"
    "."
-   "enum("
-   "list("
-   "multiset("
-   "set("
    "PREFIX"
    "BASE"
    "Graph URI literal {"
@@ -274,90 +270,86 @@ error (256) 34
 ";" (328) 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34
 "[" (329) 8 10
 "]" (330) 8 10
-"enum(" (331)
-"list(" (332)
-"multiset(" (333)
-"set(" (334)
-"(" (335) 96 97
-")" (336) 96 97
-"{" (337) 9 19
-"}" (338) 9 19
-"true" (339) 91
-"false" (340) 92
-"@prefix" (341) 11
-"@mkb" (342) 12
-"@mke" (343) 13
-"@base" (344) 20
-"PREFIX" (345)
-"BASE" (346)
-"string literal" (347) 82 83 84 85 86 87
-"URI literal" (348) 20 21 83 85 93
-"Graph URI literal {" (349)
-"blank node" (350) 95
-"QName" (351) 84 86 94
-"identifier" (352) 21
-"langtag" (353) 82 83 84
-"integer literal" (354) 88
-"floating point literal" (355) 89
-"decimal literal" (356) 90
-"variable" (357) 54
-ERROR_TOKEN (358)
+"(" (331) 96 97
+")" (332) 96 97
+"{" (333) 9 19
+"}" (334) 9 19
+"true" (335) 91
+"false" (336) 92
+"@prefix" (337) 11
+"@mkb" (338) 12
+"@mke" (339) 13
+"@base" (340) 20
+"PREFIX" (341)
+"BASE" (342)
+"string literal" (343) 82 83 84 85 86 87
+"URI literal" (344) 20 21 83 85 93
+"Graph URI literal {" (345)
+"blank node" (346) 95
+"QName" (347) 84 86 94
+"identifier" (348) 21
+"langtag" (349) 82 83 84
+"integer literal" (350) 88
+"floating point literal" (351) 89
+"decimal literal" (352) 90
+"variable" (353) 54
+ERROR_TOKEN (354)
 
 
 Nonterminals, with rules where they appear
 
-$accept (104)
+$accept (100)
     on left: 0
-Document (105)
+Document (101)
     on left: 1, on right: 0
-sentenceList (106)
+sentenceList (102)
     on left: 2 3, on right: 1 2 9 19
-nv (107)
+nv (103)
     on left: 4, on right: 37 38
-pp (108)
+pp (104)
     on left: 5 6, on right: 39 40
-value (109)
+value (105)
     on left: 7 8 9 10, on right: 4 28
-prefix (110)
+prefix (106)
     on left: 11 12 13, on right: 21
-viewOption (111)
+viewOption (107)
     on left: 14 15, on right: 18
-nameOption (112)
+nameOption (108)
     on left: 16 17, on right: 18
-sentence (113)
+sentence (109)
     on left: 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34, on right:
     2 18
-objectList (114)
+objectList (110)
     on left: 35 36, on right: 5 8 23 24 31 35 96
-nvList (115)
+nvList (111)
     on left: 37 38, on right: 6 32 37
-ppList (116)
+ppList (112)
     on left: 39 40, on right: 27 29 33 39
-subject (117)
+subject (113)
     on left: 41 42 43 44 45, on right: 22 25 29 30 31 32 33
-predicate (118)
+predicate (114)
     on left: 46 47 48, on right: 4 26 27 33
-object (119)
+object (115)
     on left: 49 50 51 52 53, on right: 7 29 30 35 36
-variable (120)
+variable (116)
     on left: 54, on right: 14 16 22 25 28 45 48 53 64
-isVerb (121)
+isVerb (117)
     on left: 55, on right: 29 30
-hoVerb (122)
+hoVerb (118)
     on left: 56 57 58 59 60 61 62 63 64, on right: 31
-hasVerb (123)
+hasVerb (119)
     on left: 65 66 67, on right: 32
-doVerb (124)
+doVerb (120)
     on left: 68 69 70, on right: 26 27 33
-preposition (125)
+preposition (121)
     on left: 71 72 73 74 75 76 77 78 79 80 81, on right: 5 6 47
-literal (126)
+literal (122)
     on left: 82 83 84 85 86 87 88 89 90 91 92, on right: 44 52
-resource (127)
+resource (123)
     on left: 93 94, on right: 41 46 49
-blankNode (128)
+blankNode (124)
     on left: 95, on right: 42 50
-collection (129)
+collection (125)
     on left: 96 97, on right: 43 51
 
 

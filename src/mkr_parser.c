@@ -251,34 +251,30 @@ extern int mkr_parser_debug;
     SEMICOLON = 328,
     LEFT_SQUARE = 329,
     RIGHT_SQUARE = 330,
-    ENUM_LEFT_ROUND = 331,
-    LIST_LEFT_ROUND = 332,
-    MULTISET_LEFT_ROUND = 333,
-    SET_LEFT_ROUND = 334,
-    LEFT_ROUND = 335,
-    RIGHT_ROUND = 336,
-    LEFT_CURLY = 337,
-    RIGHT_CURLY = 338,
-    TRUE_TOKEN = 339,
-    FALSE_TOKEN = 340,
-    PREFIX = 341,
-    MKB = 342,
-    MKE = 343,
-    BASE = 344,
-    SPARQL_PREFIX = 345,
-    SPARQL_BASE = 346,
-    STRING_LITERAL = 347,
-    URI_LITERAL = 348,
-    GRAPH_NAME_LEFT_CURLY = 349,
-    BLANK_LITERAL = 350,
-    QNAME_LITERAL = 351,
-    IDENTIFIER = 352,
-    LANGTAG = 353,
-    INTEGER_LITERAL = 354,
-    FLOATING_LITERAL = 355,
-    DECIMAL_LITERAL = 356,
-    VARIABLE = 357,
-    ERROR_TOKEN = 358
+    LEFT_ROUND = 331,
+    RIGHT_ROUND = 332,
+    LEFT_CURLY = 333,
+    RIGHT_CURLY = 334,
+    TRUE_TOKEN = 335,
+    FALSE_TOKEN = 336,
+    PREFIX = 337,
+    MKB = 338,
+    MKE = 339,
+    BASE = 340,
+    SPARQL_PREFIX = 341,
+    SPARQL_BASE = 342,
+    STRING_LITERAL = 343,
+    URI_LITERAL = 344,
+    GRAPH_NAME_LEFT_CURLY = 345,
+    BLANK_LITERAL = 346,
+    QNAME_LITERAL = 347,
+    IDENTIFIER = 348,
+    LANGTAG = 349,
+    INTEGER_LITERAL = 350,
+    FLOATING_LITERAL = 351,
+    DECIMAL_LITERAL = 352,
+    VARIABLE = 353,
+    ERROR_TOKEN = 354
   };
 #endif
 
@@ -299,7 +295,7 @@ union YYSTYPE
   MKR_nv *nv;
   MKR_pp *pp;
 
-#line 303 "mkr_parser.c" /* yacc.c:355  */
+#line 299 "mkr_parser.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -313,7 +309,7 @@ int mkr_parser_parse (raptor_parser* rdf_parser, void* yyscanner);
 
 /* Copy the second part of user declarations.  */
 
-#line 317 "mkr_parser.c" /* yacc.c:358  */
+#line 313 "mkr_parser.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -553,10 +549,10 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  3
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   549
+#define YYLAST   509
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  104
+#define YYNTOKENS  100
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  26
 /* YYNRULES -- Number of rules.  */
@@ -567,7 +563,7 @@ union yyalloc
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   358
+#define YYMAXUTOK   354
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -611,23 +607,23 @@ static const yytype_uint8 yytranslate[] =
       65,    66,    67,    68,    69,    70,    71,    72,    73,    74,
       75,    76,    77,    78,    79,    80,    81,    82,    83,    84,
       85,    86,    87,    88,    89,    90,    91,    92,    93,    94,
-      95,    96,    97,    98,    99,   100,   101,   102,   103
+      95,    96,    97,    98,    99
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   316,   316,   319,   320,   323,   326,   327,   330,   332,
-     333,   334,   337,   338,   339,   342,   343,   345,   346,   350,
-     351,   352,   353,   354,   355,   356,   357,   358,   359,   360,
-     361,   362,   363,   364,   365,   367,   372,   405,   516,   549,
-     587,   620,   658,   662,   666,   670,   680,   687,   691,   695,
-     702,   706,   710,   720,   730,   736,   739,   742,   743,   744,
-     745,   746,   747,   748,   749,   750,   753,   754,   755,   758,
-     759,   760,   763,   764,   765,   766,   767,   768,   769,   770,
-     771,   772,   773,   778,   790,   813,   836,   852,   867,   878,
-     891,   904,   921,   934,   950,   964,   982,  1066,  1173
+       0,   312,   312,   315,   316,   319,   322,   323,   326,   328,
+     329,   330,   333,   334,   335,   338,   339,   341,   342,   347,
+     348,   349,   350,   351,   352,   353,   354,   355,   356,   357,
+     358,   359,   360,   361,   362,   364,   369,   402,   513,   546,
+     584,   617,   655,   659,   663,   667,   677,   684,   688,   692,
+     699,   703,   707,   717,   727,   733,   736,   739,   740,   741,
+     742,   743,   744,   745,   746,   747,   750,   751,   752,   755,
+     756,   757,   760,   761,   762,   763,   764,   765,   766,   767,
+     768,   769,   770,   775,   787,   810,   833,   849,   864,   875,
+     888,   901,   918,   931,   947,   961,   979,  1063,  1170
 };
 #endif
 
@@ -648,8 +644,7 @@ static const char *const yytname[] =
   "\"with\"", "\"od\"", "\"from\"", "\"to\"", "\"in\"", "\"out\"",
   "\"where\"", "\"ho\"", "\"rel\"", "\"begin\"", "\"end\"", "\"=\"",
   "\":=\"", "\"let\"", "\"::\"", "\"**\"", "\"a\"", "\"^\"", "\".\"",
-  "\",\"", "\";\"", "\"[\"", "\"]\"", "\"enum(\"", "\"list(\"",
-  "\"multiset(\"", "\"set(\"", "\"(\"", "\")\"", "\"{\"", "\"}\"",
+  "\",\"", "\";\"", "\"[\"", "\"]\"", "\"(\"", "\")\"", "\"{\"", "\"}\"",
   "\"true\"", "\"false\"", "\"@prefix\"", "\"@mkb\"", "\"@mke\"",
   "\"@base\"", "\"PREFIX\"", "\"BASE\"", "\"string literal\"",
   "\"URI literal\"", "\"Graph URI literal {\"", "\"blank node\"",
@@ -677,8 +672,7 @@ static const yytype_uint16 yytoknum[] =
      315,   316,   317,   318,   319,   320,   321,   322,   323,   324,
      325,   326,   327,   328,   329,   330,   331,   332,   333,   334,
      335,   336,   337,   338,   339,   340,   341,   342,   343,   344,
-     345,   346,   347,   348,   349,   350,   351,   352,   353,   354,
-     355,   356,   357,   358
+     345,   346,   347,   348,   349,   350,   351,   352,   353,   354
 };
 # endif
 
@@ -696,21 +690,21 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-    -114,     3,    93,  -114,   -53,  -114,  -114,  -114,   -75,   447,
-     447,   -75,   -75,   235,  -114,  -114,  -114,  -114,  -114,  -114,
-     -51,   -59,  -114,  -114,  -114,  -114,  -114,  -114,  -114,   -45,
-     -75,  -114,   179,   -11,   324,  -114,  -114,  -114,  -114,  -114,
-    -114,   -35,  -114,  -114,  -114,  -114,  -114,  -114,   -32,   447,
-     447,  -114,   -56,   151,   -16,   -72,    11,   -10,   261,    -3,
+    -114,    20,    93,  -114,   -48,  -114,  -114,  -114,   -46,   400,
+     400,   -46,   -46,   366,  -114,  -114,  -114,  -114,  -114,  -114,
+     -32,   -67,  -114,  -114,  -114,  -114,  -114,  -114,  -114,   -22,
+     -46,  -114,   309,   -11,   324,  -114,  -114,  -114,  -114,  -114,
+    -114,   -35,  -114,  -114,  -114,  -114,  -114,  -114,   -33,   400,
+     400,  -114,   -61,   144,    -9,   -68,     2,    -8,   246,    13,
     -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,
-    -114,  -114,  -114,   447,   447,   324,   324,   345,  -114,  -114,
-    -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,   397,
-    -114,  -114,  -114,   447,  -114,  -114,    13,  -114,    15,  -114,
-      19,  -114,  -114,  -114,   -67,    23,    26,  -114,   408,   -29,
-    -114,    -6,    20,   106,     5,  -114,    35,  -114,  -114,  -114,
-     431,   313,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,
-    -114,   442,  -114,   324,  -114,   345,   465,  -114,   -39,   206,
-    -114,  -114,  -114,    38,    39,    31,    48,  -114,  -114,  -114,
+    -114,  -114,  -114,   400,   400,   324,   324,   343,  -114,  -114,
+    -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,   106,
+    -114,  -114,  -114,   400,  -114,  -114,    15,  -114,    19,  -114,
+      22,  -114,  -114,  -114,   -63,    23,    26,  -114,   157,   -31,
+    -114,   -29,    44,   448,     9,  -114,    37,  -114,  -114,  -114,
+     208,   313,  -114,  -114,  -114,  -114,  -114,  -114,  -114,  -114,
+    -114,   259,  -114,   324,  -114,   343,   414,  -114,   -39,   195,
+    -114,  -114,  -114,    11,    14,    47,    48,  -114,  -114,  -114,
     -114,  -114,  -114
 };
 
@@ -741,8 +735,8 @@ static const yytype_uint8 yydefact[] =
 static const yytype_int8 yypgoto[] =
 {
     -114,  -114,   -13,   -20,  -113,   -18,  -114,  -114,  -114,    56,
-      -5,    -1,   -91,    22,   -21,   -58,    -2,  -114,  -114,  -114,
-      83,   -30,    10,     0,    12,    29
+      -5,    -6,   -91,    17,   -21,   -58,    -2,  -114,  -114,  -114,
+      86,   -30,    10,     0,    12,    29
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
@@ -758,157 +752,149 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-      33,    53,    36,     3,    91,    48,    40,   142,    52,    49,
-      50,    55,    35,    89,    37,   108,    93,   131,   142,   117,
-      39,   102,   136,   142,   103,    99,   126,    28,    59,   127,
-      72,    38,    90,    93,    92,   122,   151,    93,    94,    56,
-      93,    95,    54,    93,   132,    91,    91,    97,    97,    36,
-      36,    33,    57,    36,    77,   113,    33,   101,    36,    35,
-      35,    37,    37,    35,   107,    37,   133,   134,    35,   109,
-      37,    96,    98,    90,    90,    92,    92,   117,    38,    38,
-     137,   104,    38,   105,   135,    13,   123,    38,   124,    15,
-      16,    91,   125,    -2,     4,   -49,   128,    21,    22,   129,
-      23,    24,   139,    91,    25,    26,    27,    28,   140,   138,
-      93,   133,   -47,   148,   106,    76,   143,   149,     0,   145,
-     144,   146,     0,     0,     0,     0,     0,     0,     0,     0,
+      33,    53,    36,    55,    91,    48,    40,   142,    52,    49,
+      50,    93,    35,    89,    37,   108,    99,   131,   142,   117,
+       3,   102,   136,   142,   103,    39,   126,    56,    59,   127,
+      72,    38,    90,    93,    92,   122,   151,    93,    94,    93,
+      95,    93,   132,   133,   134,    91,    91,    97,    97,    36,
+      36,    33,    28,    36,    77,   113,    33,    54,    36,    35,
+      35,    37,    37,    35,   101,    37,    96,    98,    35,   109,
+      37,    57,   104,    90,    90,    92,    92,   117,    38,    38,
+     107,   105,    38,    93,   137,    13,   133,    38,   123,    15,
+      16,    91,   124,    -2,     4,   125,   128,    21,    22,   129,
+      23,    24,   139,    91,    25,    26,    27,    28,   135,   138,
+     140,   -49,   -47,   148,   106,   144,   143,   149,    76,   145,
+       0,   146,     0,     0,     0,     0,     0,     0,     0,     0,
        0,    90,     0,    92,     0,     0,     0,    33,     0,    36,
-       0,     5,     6,     7,     0,     0,     0,     0,     0,    35,
-       8,    37,     4,     9,    10,    11,    12,    78,    79,    80,
-      81,    82,    83,    84,    85,    86,    87,    88,    38,     0,
-       0,     0,     0,    13,     0,    14,     0,    15,    16,    17,
-      18,    19,    20,     0,     0,    21,    22,     0,    23,    24,
-       0,     0,    25,    26,    27,    28,     0,     0,     0,     5,
-       6,     7,     0,     0,     0,     0,     0,     4,     8,     0,
-       0,     9,    10,    11,    12,    60,    61,    62,    63,    64,
-      65,    66,    67,    68,    69,    70,    71,     5,     6,     7,
-       0,    13,     0,    14,   100,    15,    16,    17,    18,    19,
-      20,     0,     0,    21,    22,     0,    23,    24,     0,     0,
-      25,    26,    27,    28,     5,     6,     7,     0,     0,     0,
-       0,     0,     4,     8,     0,     0,     9,    10,    11,    12,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,    28,     0,     0,     0,     0,    13,     0,    14,   152,
-      15,    16,    17,    18,    19,    20,     0,     0,    21,    22,
-       0,    23,    24,     0,     0,    25,    26,    27,    28,     5,
-       6,     7,     0,     0,     0,    13,    51,     0,     8,    15,
-      16,     9,    10,    11,    12,     0,     0,    21,    22,     0,
-      23,    24,     0,     0,    25,    26,    27,    28,     0,     0,
-       0,    13,     0,    14,     0,    15,    16,    17,    18,    19,
-      20,     0,     0,    21,    22,     0,    23,    24,     0,     0,
-      25,    26,    27,    28,    78,    79,    80,    81,    82,    83,
-      84,    85,    86,    87,    88,    78,    79,    80,    81,    82,
-      83,    84,    85,    86,    87,    88,     0,     0,     0,     0,
-       0,     0,     0,    13,     0,     0,     0,    15,    16,     0,
-       0,     0,     0,     0,     0,    21,    22,     0,    23,    24,
-       0,     0,    25,    26,    27,    28,     0,    22,     0,   114,
-      24,     0,     0,     0,     0,    13,    28,   115,     0,    15,
-      16,     0,     0,     0,     0,     0,     0,    21,    22,     0,
-      23,    24,     0,     0,    25,    26,    27,    28,    78,    79,
-      80,    81,    82,    83,    84,    85,    86,    87,    88,    78,
+       0,     5,     6,     7,     0,     4,     0,     0,     0,    35,
+       8,    37,     0,     9,    10,    11,    12,    78,    79,    80,
+      81,    82,    83,    84,    85,    86,    87,    88,    38,    13,
+       0,    14,     0,    15,    16,    17,    18,    19,    20,   118,
+       0,    21,    22,     0,    23,    24,     0,     0,    25,    26,
+      27,    28,     5,     6,     7,     0,     4,     0,     0,     0,
+       0,     8,     0,     0,     9,    10,    11,    12,    78,    79,
+      80,    81,    82,    83,    84,    85,    86,    87,    88,     0,
+      13,     0,    14,   100,    15,    16,    17,    18,    19,    20,
+     130,     0,    21,    22,     0,    23,    24,     0,     0,    25,
+      26,    27,    28,     5,     6,     7,     0,     4,     0,     0,
+       0,     0,     8,     0,     0,     9,    10,    11,    12,    78,
       79,    80,    81,    82,    83,    84,    85,    86,    87,    88,
-     118,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,   130,    78,    79,    80,    81,    82,    83,    84,    85,
-      86,    87,    88,    78,    79,    80,    81,    82,    83,    84,
-      85,    86,    87,    88,   141,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,   147,    78,    79,    80,    81,
-      82,    83,    84,    85,    86,    87,    88,    13,     0,     0,
-       0,    15,    16,     0,     0,     0,     0,     0,   150,    21,
-      22,     0,    23,    24,     0,     0,    25,    26,    27,    28
+       0,    13,     0,    14,   152,    15,    16,    17,    18,    19,
+      20,   141,     0,    21,    22,     0,    23,    24,     0,     0,
+      25,    26,    27,    28,     5,     6,     7,     0,     0,     0,
+       0,     0,     0,     8,     0,     0,     9,    10,    11,    12,
+      78,    79,    80,    81,    82,    83,    84,    85,    86,    87,
+      88,     0,    13,     0,    14,     0,    15,    16,    17,    18,
+      19,    20,   147,     0,    21,    22,     0,    23,    24,     0,
+       0,    25,    26,    27,    28,    60,    61,    62,    63,    64,
+      65,    66,    67,    68,    69,    70,    71,     5,     6,     7,
+       0,     0,     0,     0,    78,    79,    80,    81,    82,    83,
+      84,    85,    86,    87,    88,    78,    79,    80,    81,    82,
+      83,    84,    85,    86,    87,    88,     0,     0,     0,    13,
+       0,     0,     0,    15,    16,     0,     0,     0,     0,     0,
+       0,    21,    22,     0,    23,    24,     0,    28,    25,    26,
+      27,    28,     0,    22,     0,     0,    24,   114,     0,    13,
+       0,   115,    28,    15,    16,     0,     0,     0,     0,     0,
+       0,    21,    22,     0,    23,    24,     0,     0,    25,    26,
+      27,    28,    13,    51,     0,     0,    15,    16,     0,     0,
+       0,     0,     0,     0,    21,    22,     0,    23,    24,     0,
+       0,    25,    26,    27,    28,    78,    79,    80,    81,    82,
+      83,    84,    85,    86,    87,    88,    13,     0,     0,     0,
+      15,    16,     0,     0,     0,     0,     0,   150,    21,    22,
+       0,    23,    24,     0,     0,    25,    26,    27,    28,    78,
+      79,    80,    81,    82,    83,    84,    85,    86,    87,    88
 };
 
 static const yytype_int16 yycheck[] =
 {
-       2,    14,     2,     0,    34,    10,     8,   120,    13,    11,
-      12,    70,     2,    34,     2,    73,    72,   108,   131,    77,
-      73,    93,   113,   136,    96,    81,    93,   102,    30,    96,
-      32,     2,    34,    72,    34,    93,    75,    72,    73,    98,
-      72,    73,    93,    72,    73,    75,    76,    49,    50,    49,
-      50,    53,    97,    53,    65,    76,    58,    73,    58,    49,
-      50,    49,    50,    53,    67,    53,    72,    73,    58,    74,
-      58,    49,    50,    75,    76,    75,    76,   135,    49,    50,
-      75,    70,    53,    93,    64,    80,    73,    58,    73,    84,
-      85,   121,    73,     0,     1,    64,    73,    92,    93,    73,
-      95,    96,   115,   133,    99,   100,   101,   102,    73,   114,
-      72,    72,    64,   133,    58,    32,   121,   135,    -1,   121,
-     121,   121,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+       2,    14,     2,    70,    34,    10,     8,   120,    13,    11,
+      12,    72,     2,    34,     2,    73,    77,   108,   131,    77,
+       0,    89,   113,   136,    92,    73,    89,    94,    30,    92,
+      32,     2,    34,    72,    34,    93,    75,    72,    73,    72,
+      73,    72,    73,    72,    73,    75,    76,    49,    50,    49,
+      50,    53,    98,    53,    65,    76,    58,    89,    58,    49,
+      50,    49,    50,    53,    73,    53,    49,    50,    58,    74,
+      58,    93,    70,    75,    76,    75,    76,   135,    49,    50,
+      67,    89,    53,    72,    75,    76,    72,    58,    73,    80,
+      81,   121,    73,     0,     1,    73,    73,    88,    89,    73,
+      91,    92,   115,   133,    95,    96,    97,    98,    64,   114,
+      73,    64,    64,   133,    58,   121,   121,   135,    32,   121,
+      -1,   121,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
       -1,   133,    -1,   133,    -1,    -1,    -1,   139,    -1,   139,
-      -1,    48,    49,    50,    -1,    -1,    -1,    -1,    -1,   139,
-      57,   139,     1,    60,    61,    62,    63,    51,    52,    53,
-      54,    55,    56,    57,    58,    59,    60,    61,   139,    -1,
-      -1,    -1,    -1,    80,    -1,    82,    -1,    84,    85,    86,
-      87,    88,    89,    -1,    -1,    92,    93,    -1,    95,    96,
-      -1,    -1,    99,   100,   101,   102,    -1,    -1,    -1,    48,
-      49,    50,    -1,    -1,    -1,    -1,    -1,     1,    57,    -1,
-      -1,    60,    61,    62,    63,    36,    37,    38,    39,    40,
-      41,    42,    43,    44,    45,    46,    47,    48,    49,    50,
-      -1,    80,    -1,    82,    83,    84,    85,    86,    87,    88,
-      89,    -1,    -1,    92,    93,    -1,    95,    96,    -1,    -1,
-      99,   100,   101,   102,    48,    49,    50,    -1,    -1,    -1,
-      -1,    -1,     1,    57,    -1,    -1,    60,    61,    62,    63,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,   102,    -1,    -1,    -1,    -1,    80,    -1,    82,    83,
-      84,    85,    86,    87,    88,    89,    -1,    -1,    92,    93,
-      -1,    95,    96,    -1,    -1,    99,   100,   101,   102,    48,
-      49,    50,    -1,    -1,    -1,    80,    81,    -1,    57,    84,
-      85,    60,    61,    62,    63,    -1,    -1,    92,    93,    -1,
-      95,    96,    -1,    -1,    99,   100,   101,   102,    -1,    -1,
-      -1,    80,    -1,    82,    -1,    84,    85,    86,    87,    88,
-      89,    -1,    -1,    92,    93,    -1,    95,    96,    -1,    -1,
-      99,   100,   101,   102,    51,    52,    53,    54,    55,    56,
-      57,    58,    59,    60,    61,    51,    52,    53,    54,    55,
-      56,    57,    58,    59,    60,    61,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    80,    -1,    -1,    -1,    84,    85,    -1,
-      -1,    -1,    -1,    -1,    -1,    92,    93,    -1,    95,    96,
-      -1,    -1,    99,   100,   101,   102,    -1,    93,    -1,    74,
-      96,    -1,    -1,    -1,    -1,    80,   102,    82,    -1,    84,
-      85,    -1,    -1,    -1,    -1,    -1,    -1,    92,    93,    -1,
-      95,    96,    -1,    -1,    99,   100,   101,   102,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,    61,    51,
+      -1,    48,    49,    50,    -1,     1,    -1,    -1,    -1,   139,
+      57,   139,    -1,    60,    61,    62,    63,    51,    52,    53,
+      54,    55,    56,    57,    58,    59,    60,    61,   139,    76,
+      -1,    78,    -1,    80,    81,    82,    83,    84,    85,    73,
+      -1,    88,    89,    -1,    91,    92,    -1,    -1,    95,    96,
+      97,    98,    48,    49,    50,    -1,     1,    -1,    -1,    -1,
+      -1,    57,    -1,    -1,    60,    61,    62,    63,    51,    52,
+      53,    54,    55,    56,    57,    58,    59,    60,    61,    -1,
+      76,    -1,    78,    79,    80,    81,    82,    83,    84,    85,
+      73,    -1,    88,    89,    -1,    91,    92,    -1,    -1,    95,
+      96,    97,    98,    48,    49,    50,    -1,     1,    -1,    -1,
+      -1,    -1,    57,    -1,    -1,    60,    61,    62,    63,    51,
       52,    53,    54,    55,    56,    57,    58,    59,    60,    61,
-      73,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    73,    51,    52,    53,    54,    55,    56,    57,    58,
-      59,    60,    61,    51,    52,    53,    54,    55,    56,    57,
-      58,    59,    60,    61,    73,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    73,    51,    52,    53,    54,
-      55,    56,    57,    58,    59,    60,    61,    80,    -1,    -1,
-      -1,    84,    85,    -1,    -1,    -1,    -1,    -1,    73,    92,
-      93,    -1,    95,    96,    -1,    -1,    99,   100,   101,   102
+      -1,    76,    -1,    78,    79,    80,    81,    82,    83,    84,
+      85,    73,    -1,    88,    89,    -1,    91,    92,    -1,    -1,
+      95,    96,    97,    98,    48,    49,    50,    -1,    -1,    -1,
+      -1,    -1,    -1,    57,    -1,    -1,    60,    61,    62,    63,
+      51,    52,    53,    54,    55,    56,    57,    58,    59,    60,
+      61,    -1,    76,    -1,    78,    -1,    80,    81,    82,    83,
+      84,    85,    73,    -1,    88,    89,    -1,    91,    92,    -1,
+      -1,    95,    96,    97,    98,    36,    37,    38,    39,    40,
+      41,    42,    43,    44,    45,    46,    47,    48,    49,    50,
+      -1,    -1,    -1,    -1,    51,    52,    53,    54,    55,    56,
+      57,    58,    59,    60,    61,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,    61,    -1,    -1,    -1,    76,
+      -1,    -1,    -1,    80,    81,    -1,    -1,    -1,    -1,    -1,
+      -1,    88,    89,    -1,    91,    92,    -1,    98,    95,    96,
+      97,    98,    -1,    89,    -1,    -1,    92,    74,    -1,    76,
+      -1,    78,    98,    80,    81,    -1,    -1,    -1,    -1,    -1,
+      -1,    88,    89,    -1,    91,    92,    -1,    -1,    95,    96,
+      97,    98,    76,    77,    -1,    -1,    80,    81,    -1,    -1,
+      -1,    -1,    -1,    -1,    88,    89,    -1,    91,    92,    -1,
+      -1,    95,    96,    97,    98,    51,    52,    53,    54,    55,
+      56,    57,    58,    59,    60,    61,    76,    -1,    -1,    -1,
+      80,    81,    -1,    -1,    -1,    -1,    -1,    73,    88,    89,
+      -1,    91,    92,    -1,    -1,    95,    96,    97,    98,    51,
+      52,    53,    54,    55,    56,    57,    58,    59,    60,    61
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,   105,   106,     0,     1,    48,    49,    50,    57,    60,
-      61,    62,    63,    80,    82,    84,    85,    86,    87,    88,
-      89,    92,    93,    95,    96,    99,   100,   101,   102,   110,
-     111,   113,   117,   120,   124,   126,   127,   128,   129,    73,
-     120,   114,   119,   120,   126,   127,   128,   129,   114,   120,
-     120,    81,   114,   106,    93,    70,    98,    97,   112,   120,
+       0,   101,   102,     0,     1,    48,    49,    50,    57,    60,
+      61,    62,    63,    76,    78,    80,    81,    82,    83,    84,
+      85,    88,    89,    91,    92,    95,    96,    97,    98,   106,
+     107,   109,   113,   116,   120,   122,   123,   124,   125,    73,
+     116,   110,   115,   116,   122,   123,   124,   125,   110,   116,
+     116,    77,   110,   102,    89,    70,    94,    93,   108,   116,
       36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    47,   120,   121,   122,   123,   124,    65,    51,    52,
-      53,    54,    55,    56,    57,    58,    59,    60,    61,   118,
-     120,   125,   127,    72,    73,    73,   117,   120,   117,    81,
-      83,    73,    93,    96,    70,    93,   113,    67,   119,   114,
-     107,   115,   118,   118,    74,    82,   109,   119,    73,   108,
-     116,   125,   119,    73,    73,    73,    93,    96,    73,    73,
-      73,   116,    73,    72,    73,    64,   116,    75,   114,   106,
-      73,    73,   108,   114,   115,   120,   127,    73,   107,   109,
-      73,    75,    83
+      46,    47,   116,   117,   118,   119,   120,    65,    51,    52,
+      53,    54,    55,    56,    57,    58,    59,    60,    61,   114,
+     116,   121,   123,    72,    73,    73,   113,   116,   113,    77,
+      79,    73,    89,    92,    70,    89,   109,    67,   115,   110,
+     103,   111,   114,   114,    74,    78,   105,   115,    73,   104,
+     112,   121,   115,    73,    73,    73,    89,    92,    73,    73,
+      73,   112,    73,    72,    73,    64,   112,    75,   110,   102,
+      73,    73,   104,   110,   111,   116,   123,    73,   103,   105,
+      73,    75,    79
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,   104,   105,   106,   106,   107,   108,   108,   109,   109,
-     109,   109,   110,   110,   110,   111,   111,   112,   112,   113,
-     113,   113,   113,   113,   113,   113,   113,   113,   113,   113,
-     113,   113,   113,   113,   113,   113,   114,   114,   115,   115,
-     116,   116,   117,   117,   117,   117,   117,   118,   118,   118,
-     119,   119,   119,   119,   119,   120,   121,   122,   122,   122,
-     122,   122,   122,   122,   122,   122,   123,   123,   123,   124,
-     124,   124,   125,   125,   125,   125,   125,   125,   125,   125,
-     125,   125,   125,   126,   126,   126,   126,   126,   126,   126,
-     126,   126,   126,   126,   127,   127,   128,   129,   129
+       0,   100,   101,   102,   102,   103,   104,   104,   105,   105,
+     105,   105,   106,   106,   106,   107,   107,   108,   108,   109,
+     109,   109,   109,   109,   109,   109,   109,   109,   109,   109,
+     109,   109,   109,   109,   109,   109,   110,   110,   111,   111,
+     112,   112,   113,   113,   113,   113,   113,   114,   114,   114,
+     115,   115,   115,   115,   115,   116,   117,   118,   118,   118,
+     118,   118,   118,   118,   118,   118,   119,   119,   119,   120,
+     120,   120,   121,   121,   121,   121,   121,   121,   121,   121,
+     121,   121,   121,   122,   122,   122,   122,   122,   122,   122,
+     122,   122,   122,   122,   123,   123,   124,   125,   125
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -1351,301 +1337,301 @@ yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, raptor_parser* rdf
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   switch (yytype)
     {
-          case 92: /* "string literal"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+          case 88: /* "string literal"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1361 "mkr_parser.c" /* yacc.c:1257  */
+#line 1347 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 93: /* "URI literal"  */
-#line 283 "./mkr_parser.y" /* yacc.c:1257  */
+    case 89: /* "URI literal"  */
+#line 279 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).uri))
     raptor_free_uri(((*yyvaluep).uri));
 }
-#line 1370 "mkr_parser.c" /* yacc.c:1257  */
+#line 1356 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 95: /* "blank node"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 91: /* "blank node"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1379 "mkr_parser.c" /* yacc.c:1257  */
+#line 1365 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 96: /* "QName"  */
-#line 283 "./mkr_parser.y" /* yacc.c:1257  */
+    case 92: /* "QName"  */
+#line 279 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).uri))
     raptor_free_uri(((*yyvaluep).uri));
 }
-#line 1388 "mkr_parser.c" /* yacc.c:1257  */
+#line 1374 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 97: /* "identifier"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 93: /* "identifier"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1397 "mkr_parser.c" /* yacc.c:1257  */
+#line 1383 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 98: /* "langtag"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 94: /* "langtag"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1406 "mkr_parser.c" /* yacc.c:1257  */
+#line 1392 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 99: /* "integer literal"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 95: /* "integer literal"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1415 "mkr_parser.c" /* yacc.c:1257  */
+#line 1401 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 100: /* "floating point literal"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 96: /* "floating point literal"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1424 "mkr_parser.c" /* yacc.c:1257  */
+#line 1410 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 101: /* "decimal literal"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 97: /* "decimal literal"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1433 "mkr_parser.c" /* yacc.c:1257  */
+#line 1419 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 102: /* "variable"  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 98: /* "variable"  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1442 "mkr_parser.c" /* yacc.c:1257  */
+#line 1428 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 106: /* sentenceList  */
-#line 293 "./mkr_parser.y" /* yacc.c:1257  */
+    case 102: /* sentenceList  */
+#line 289 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).sequence))
     raptor_free_sequence(((*yyvaluep).sequence));
 }
-#line 1451 "mkr_parser.c" /* yacc.c:1257  */
+#line 1437 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 107: /* nv  */
-#line 303 "./mkr_parser.y" /* yacc.c:1257  */
+    case 103: /* nv  */
+#line 299 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).nv))
     mkr_free_nv(((*yyvaluep).nv));
 }
-#line 1460 "mkr_parser.c" /* yacc.c:1257  */
+#line 1446 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 108: /* pp  */
-#line 308 "./mkr_parser.y" /* yacc.c:1257  */
+    case 104: /* pp  */
+#line 304 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).pp))
     mkr_free_pp(((*yyvaluep).pp));
 }
-#line 1469 "mkr_parser.c" /* yacc.c:1257  */
+#line 1455 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 109: /* value  */
-#line 298 "./mkr_parser.y" /* yacc.c:1257  */
+    case 105: /* value  */
+#line 294 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).value))
     mkr_free_value(((*yyvaluep).value));
 }
-#line 1478 "mkr_parser.c" /* yacc.c:1257  */
+#line 1464 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 110: /* prefix  */
-#line 278 "./mkr_parser.y" /* yacc.c:1257  */
+    case 106: /* prefix  */
+#line 274 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).string))
     RAPTOR_FREE(char*, ((*yyvaluep).string));
 }
-#line 1487 "mkr_parser.c" /* yacc.c:1257  */
+#line 1473 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 111: /* viewOption  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 107: /* viewOption  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1496 "mkr_parser.c" /* yacc.c:1257  */
+#line 1482 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 112: /* nameOption  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 108: /* nameOption  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1505 "mkr_parser.c" /* yacc.c:1257  */
+#line 1491 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 114: /* objectList  */
-#line 293 "./mkr_parser.y" /* yacc.c:1257  */
+    case 110: /* objectList  */
+#line 289 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).sequence))
     raptor_free_sequence(((*yyvaluep).sequence));
 }
-#line 1514 "mkr_parser.c" /* yacc.c:1257  */
+#line 1500 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 115: /* nvList  */
-#line 293 "./mkr_parser.y" /* yacc.c:1257  */
+    case 111: /* nvList  */
+#line 289 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).sequence))
     raptor_free_sequence(((*yyvaluep).sequence));
 }
-#line 1523 "mkr_parser.c" /* yacc.c:1257  */
+#line 1509 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 116: /* ppList  */
-#line 293 "./mkr_parser.y" /* yacc.c:1257  */
+    case 112: /* ppList  */
+#line 289 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).sequence))
     raptor_free_sequence(((*yyvaluep).sequence));
 }
-#line 1532 "mkr_parser.c" /* yacc.c:1257  */
+#line 1518 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 117: /* subject  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 113: /* subject  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1541 "mkr_parser.c" /* yacc.c:1257  */
+#line 1527 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 118: /* predicate  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 114: /* predicate  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1550 "mkr_parser.c" /* yacc.c:1257  */
+#line 1536 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 119: /* object  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 115: /* object  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1559 "mkr_parser.c" /* yacc.c:1257  */
+#line 1545 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 120: /* variable  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 116: /* variable  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1568 "mkr_parser.c" /* yacc.c:1257  */
+#line 1554 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 121: /* isVerb  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 117: /* isVerb  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1577 "mkr_parser.c" /* yacc.c:1257  */
+#line 1563 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 122: /* hoVerb  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 118: /* hoVerb  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1586 "mkr_parser.c" /* yacc.c:1257  */
+#line 1572 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 123: /* hasVerb  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 119: /* hasVerb  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1595 "mkr_parser.c" /* yacc.c:1257  */
+#line 1581 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 124: /* doVerb  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 120: /* doVerb  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1604 "mkr_parser.c" /* yacc.c:1257  */
+#line 1590 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 125: /* preposition  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 121: /* preposition  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1613 "mkr_parser.c" /* yacc.c:1257  */
+#line 1599 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 126: /* literal  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 122: /* literal  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1622 "mkr_parser.c" /* yacc.c:1257  */
+#line 1608 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 127: /* resource  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 123: /* resource  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1631 "mkr_parser.c" /* yacc.c:1257  */
+#line 1617 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 128: /* blankNode  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 124: /* blankNode  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1640 "mkr_parser.c" /* yacc.c:1257  */
+#line 1626 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
-    case 129: /* collection  */
-#line 288 "./mkr_parser.y" /* yacc.c:1257  */
+    case 125: /* collection  */
+#line 284 "./mkr_parser.y" /* yacc.c:1257  */
       {
   if(((*yyvaluep).identifier))
     raptor_free_term(((*yyvaluep).identifier));
 }
-#line 1649 "mkr_parser.c" /* yacc.c:1257  */
+#line 1635 "mkr_parser.c" /* yacc.c:1257  */
         break;
 
 
@@ -1908,200 +1894,194 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 4:
-#line 320 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.sequence) = NULL;}
-#line 1915 "mkr_parser.c" /* yacc.c:1646  */
-    break;
-
-  case 5:
-#line 323 "./mkr_parser.y" /* yacc.c:1646  */
+        case 5:
+#line 319 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.nv) = mkr_new_nv(rdf_parser, MKR_NV, (yyvsp[-2].identifier), (yyvsp[0].value));}
-#line 1921 "mkr_parser.c" /* yacc.c:1646  */
+#line 1901 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 326 "./mkr_parser.y" /* yacc.c:1646  */
+#line 322 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.pp) = mkr_new_pp(rdf_parser, MKR_PPOBJ, (yyvsp[-1].identifier), (yyvsp[0].sequence));}
-#line 1927 "mkr_parser.c" /* yacc.c:1646  */
+#line 1907 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 327 "./mkr_parser.y" /* yacc.c:1646  */
+#line 323 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.pp) = mkr_new_pp(rdf_parser, MKR_PPNV,  (yyvsp[-1].identifier), (yyvsp[0].sequence));}
-#line 1933 "mkr_parser.c" /* yacc.c:1646  */
+#line 1913 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 330 "./mkr_parser.y" /* yacc.c:1646  */
+#line 326 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.value) = mkr_new_value(rdf_parser, MKR_OBJECT,       (yyvsp[0].identifier));}
-#line 1939 "mkr_parser.c" /* yacc.c:1646  */
+#line 1919 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 332 "./mkr_parser.y" /* yacc.c:1646  */
+#line 328 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.value) = mkr_new_value(rdf_parser, MKR_OBJECTSET,    (yyvsp[-1].sequence));}
-#line 1945 "mkr_parser.c" /* yacc.c:1646  */
+#line 1925 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 333 "./mkr_parser.y" /* yacc.c:1646  */
+#line 329 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.value) = mkr_new_value(rdf_parser, MKR_SENTENCELIST, (yyvsp[-1].sequence));}
-#line 1951 "mkr_parser.c" /* yacc.c:1646  */
+#line 1931 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 334 "./mkr_parser.y" /* yacc.c:1646  */
+#line 330 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.value) = mkr_new_value(rdf_parser, MKR_NIL,        NULL);}
-#line 1957 "mkr_parser.c" /* yacc.c:1646  */
+#line 1937 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 337 "./mkr_parser.y" /* yacc.c:1646  */
+#line 333 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.string) = (unsigned char*)"@prefix";}
-#line 1963 "mkr_parser.c" /* yacc.c:1646  */
+#line 1943 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 338 "./mkr_parser.y" /* yacc.c:1646  */
+#line 334 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.string) = (unsigned char*)"@mkb";}
-#line 1969 "mkr_parser.c" /* yacc.c:1646  */
+#line 1949 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 339 "./mkr_parser.y" /* yacc.c:1646  */
+#line 335 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.string) = (unsigned char*)"@mke";}
-#line 1975 "mkr_parser.c" /* yacc.c:1646  */
+#line 1955 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 342 "./mkr_parser.y" /* yacc.c:1646  */
+#line 338 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = (yyvsp[0].identifier);}
-#line 1981 "mkr_parser.c" /* yacc.c:1646  */
+#line 1961 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 343 "./mkr_parser.y" /* yacc.c:1646  */
+#line 339 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = NULL;}
-#line 1987 "mkr_parser.c" /* yacc.c:1646  */
+#line 1967 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 345 "./mkr_parser.y" /* yacc.c:1646  */
+#line 341 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = (yyvsp[-1].identifier);}
-#line 1993 "mkr_parser.c" /* yacc.c:1646  */
+#line 1973 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 346 "./mkr_parser.y" /* yacc.c:1646  */
+#line 342 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = NULL;}
-#line 1999 "mkr_parser.c" /* yacc.c:1646  */
+#line 1979 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 350 "./mkr_parser.y" /* yacc.c:1646  */
+#line 347 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_sentence(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].identifier));}
-#line 2005 "mkr_parser.c" /* yacc.c:1646  */
+#line 1985 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 351 "./mkr_parser.y" /* yacc.c:1646  */
+#line 348 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_view(rdf_parser, (yyvsp[-2].sequence));}
-#line 2011 "mkr_parser.c" /* yacc.c:1646  */
+#line 1991 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 352 "./mkr_parser.y" /* yacc.c:1646  */
+#line 349 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_base(rdf_parser, (yyvsp[-1].uri));}
-#line 2017 "mkr_parser.c" /* yacc.c:1646  */
+#line 1997 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 353 "./mkr_parser.y" /* yacc.c:1646  */
+#line 350 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_prefix(rdf_parser, (yyvsp[-3].string), (yyvsp[-2].string), (yyvsp[-1].uri));}
-#line 2023 "mkr_parser.c" /* yacc.c:1646  */
+#line 2003 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 354 "./mkr_parser.y" /* yacc.c:1646  */
+#line 351 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_group(rdf_parser, MKR_BEGIN, (yyvsp[-2].identifier), (yyvsp[-1].identifier));}
-#line 2029 "mkr_parser.c" /* yacc.c:1646  */
+#line 2009 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 355 "./mkr_parser.y" /* yacc.c:1646  */
+#line 352 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_ho(rdf_parser, (yyvsp[-1].sequence));}
-#line 2035 "mkr_parser.c" /* yacc.c:1646  */
+#line 2015 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 356 "./mkr_parser.y" /* yacc.c:1646  */
+#line 353 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_rel(rdf_parser, (yyvsp[-1].sequence));}
-#line 2041 "mkr_parser.c" /* yacc.c:1646  */
+#line 2021 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 357 "./mkr_parser.y" /* yacc.c:1646  */
+#line 354 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_group(rdf_parser, MKR_END, (yyvsp[-2].identifier), (yyvsp[-1].identifier));}
-#line 2047 "mkr_parser.c" /* yacc.c:1646  */
+#line 2027 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 358 "./mkr_parser.y" /* yacc.c:1646  */
+#line 355 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_command(rdf_parser, (yyvsp[-2].identifier), (yyvsp[-1].identifier), NULL);}
-#line 2053 "mkr_parser.c" /* yacc.c:1646  */
+#line 2033 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 359 "./mkr_parser.y" /* yacc.c:1646  */
+#line 356 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_command(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].sequence));}
-#line 2059 "mkr_parser.c" /* yacc.c:1646  */
+#line 2039 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 360 "./mkr_parser.y" /* yacc.c:1646  */
+#line 357 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_assignment(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-1].value));}
-#line 2065 "mkr_parser.c" /* yacc.c:1646  */
+#line 2045 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 361 "./mkr_parser.y" /* yacc.c:1646  */
+#line 358 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_definition(rdf_parser, (yyvsp[-4].identifier), (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].sequence));}
-#line 2071 "mkr_parser.c" /* yacc.c:1646  */
+#line 2051 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 362 "./mkr_parser.y" /* yacc.c:1646  */
+#line 359 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_alias(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].identifier));}
-#line 2077 "mkr_parser.c" /* yacc.c:1646  */
+#line 2057 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 363 "./mkr_parser.y" /* yacc.c:1646  */
+#line 360 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_hierarchy(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].sequence));}
-#line 2083 "mkr_parser.c" /* yacc.c:1646  */
+#line 2063 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 364 "./mkr_parser.y" /* yacc.c:1646  */
+#line 361 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_attribute(rdf_parser, (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].sequence));}
-#line 2089 "mkr_parser.c" /* yacc.c:1646  */
+#line 2069 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 365 "./mkr_parser.y" /* yacc.c:1646  */
+#line 362 "./mkr_parser.y" /* yacc.c:1646  */
     {mkr_action(rdf_parser, (yyvsp[-4].identifier), (yyvsp[-3].identifier), (yyvsp[-2].identifier), (yyvsp[-1].sequence));}
-#line 2095 "mkr_parser.c" /* yacc.c:1646  */
+#line 2075 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 367 "./mkr_parser.y" /* yacc.c:1646  */
+#line 364 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = NULL;}
-#line 2101 "mkr_parser.c" /* yacc.c:1646  */
+#line 2081 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 373 "./mkr_parser.y" /* yacc.c:1646  */
+#line 370 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 1\n");
@@ -2134,11 +2114,11 @@ yyreduce:
 #endif
   }
 }
-#line 2138 "mkr_parser.c" /* yacc.c:1646  */
+#line 2118 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 406 "./mkr_parser.y" /* yacc.c:1646  */
+#line 403 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("objectList 2\n");
@@ -2175,11 +2155,11 @@ yyreduce:
 #endif
   }
 }
-#line 2179 "mkr_parser.c" /* yacc.c:1646  */
+#line 2159 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 517 "./mkr_parser.y" /* yacc.c:1646  */
+#line 514 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("nvList 1\n");
@@ -2212,11 +2192,11 @@ yyreduce:
 #endif
   }
 }
-#line 2216 "mkr_parser.c" /* yacc.c:1646  */
+#line 2196 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 550 "./mkr_parser.y" /* yacc.c:1646  */
+#line 547 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("nvList 2\n");
@@ -2252,11 +2232,11 @@ yyreduce:
 #endif
   }
 }
-#line 2256 "mkr_parser.c" /* yacc.c:1646  */
+#line 2236 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 588 "./mkr_parser.y" /* yacc.c:1646  */
+#line 585 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("ppList 1\n");
@@ -2289,11 +2269,11 @@ yyreduce:
 #endif
   }
 }
-#line 2293 "mkr_parser.c" /* yacc.c:1646  */
+#line 2273 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 621 "./mkr_parser.y" /* yacc.c:1646  */
+#line 618 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("ppList 2\n");
@@ -2329,35 +2309,35 @@ yyreduce:
 #endif
   }
 }
-#line 2333 "mkr_parser.c" /* yacc.c:1646  */
+#line 2313 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 659 "./mkr_parser.y" /* yacc.c:1646  */
+#line 656 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2341 "mkr_parser.c" /* yacc.c:1646  */
+#line 2321 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 663 "./mkr_parser.y" /* yacc.c:1646  */
+#line 660 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2349 "mkr_parser.c" /* yacc.c:1646  */
+#line 2329 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 667 "./mkr_parser.y" /* yacc.c:1646  */
+#line 664 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2357 "mkr_parser.c" /* yacc.c:1646  */
+#line 2337 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 671 "./mkr_parser.y" /* yacc.c:1646  */
+#line 668 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("subject literal=");
@@ -2367,67 +2347,67 @@ yyreduce:
 
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2371 "mkr_parser.c" /* yacc.c:1646  */
+#line 2351 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 681 "./mkr_parser.y" /* yacc.c:1646  */
+#line 678 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2379 "mkr_parser.c" /* yacc.c:1646  */
+#line 2359 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 688 "./mkr_parser.y" /* yacc.c:1646  */
+#line 685 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2387 "mkr_parser.c" /* yacc.c:1646  */
+#line 2367 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 692 "./mkr_parser.y" /* yacc.c:1646  */
+#line 689 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2395 "mkr_parser.c" /* yacc.c:1646  */
+#line 2375 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 696 "./mkr_parser.y" /* yacc.c:1646  */
+#line 693 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2403 "mkr_parser.c" /* yacc.c:1646  */
+#line 2383 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 703 "./mkr_parser.y" /* yacc.c:1646  */
+#line 700 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2411 "mkr_parser.c" /* yacc.c:1646  */
+#line 2391 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 707 "./mkr_parser.y" /* yacc.c:1646  */
+#line 704 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2419 "mkr_parser.c" /* yacc.c:1646  */
+#line 2399 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 711 "./mkr_parser.y" /* yacc.c:1646  */
+#line 708 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2427 "mkr_parser.c" /* yacc.c:1646  */
+#line 2407 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 721 "./mkr_parser.y" /* yacc.c:1646  */
+#line 718 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("object literal=");
@@ -2437,187 +2417,187 @@ yyreduce:
 
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2441 "mkr_parser.c" /* yacc.c:1646  */
+#line 2421 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 731 "./mkr_parser.y" /* yacc.c:1646  */
+#line 728 "./mkr_parser.y" /* yacc.c:1646  */
     {
   (yyval.identifier) = (yyvsp[0].identifier);
 }
-#line 2449 "mkr_parser.c" /* yacc.c:1646  */
+#line 2429 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 736 "./mkr_parser.y" /* yacc.c:1646  */
+#line 733 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_variable(rdf_parser, MKR_VARIABLE, (yyvsp[0].string));}
-#line 2455 "mkr_parser.c" /* yacc.c:1646  */
+#line 2435 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 739 "./mkr_parser.y" /* yacc.c:1646  */
+#line 736 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_ISVERB, (unsigned char*)"is");}
-#line 2461 "mkr_parser.c" /* yacc.c:1646  */
+#line 2441 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 742 "./mkr_parser.y" /* yacc.c:1646  */
+#line 739 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isa");}
-#line 2467 "mkr_parser.c" /* yacc.c:1646  */
+#line 2447 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 743 "./mkr_parser.y" /* yacc.c:1646  */
+#line 740 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isu");}
-#line 2473 "mkr_parser.c" /* yacc.c:1646  */
+#line 2453 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 744 "./mkr_parser.y" /* yacc.c:1646  */
+#line 741 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"iss");}
-#line 2479 "mkr_parser.c" /* yacc.c:1646  */
+#line 2459 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 745 "./mkr_parser.y" /* yacc.c:1646  */
+#line 742 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isc");}
-#line 2485 "mkr_parser.c" /* yacc.c:1646  */
+#line 2465 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 746 "./mkr_parser.y" /* yacc.c:1646  */
+#line 743 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isg");}
-#line 2491 "mkr_parser.c" /* yacc.c:1646  */
+#line 2471 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 747 "./mkr_parser.y" /* yacc.c:1646  */
+#line 744 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isp");}
-#line 2497 "mkr_parser.c" /* yacc.c:1646  */
+#line 2477 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 748 "./mkr_parser.y" /* yacc.c:1646  */
+#line 745 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isa*");}
-#line 2503 "mkr_parser.c" /* yacc.c:1646  */
+#line 2483 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 749 "./mkr_parser.y" /* yacc.c:1646  */
+#line 746 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isc*");}
-#line 2509 "mkr_parser.c" /* yacc.c:1646  */
+#line 2489 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 750 "./mkr_parser.y" /* yacc.c:1646  */
+#line 747 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = (yyvsp[0].identifier);}
-#line 2515 "mkr_parser.c" /* yacc.c:1646  */
+#line 2495 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 753 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"has");}
-#line 2521 "mkr_parser.c" /* yacc.c:1646  */
+#line 750 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HAS,     (unsigned char*)"has");}
+#line 2501 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 754 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"haspart");}
-#line 2527 "mkr_parser.c" /* yacc.c:1646  */
+#line 751 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HASPART, (unsigned char*)"haspart");}
+#line 2507 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 755 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HASVERB, (unsigned char*)"isapart");}
-#line 2533 "mkr_parser.c" /* yacc.c:1646  */
+#line 752 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_ISAPART, (unsigned char*)"isapart");}
+#line 2513 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 758 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"do");}
-#line 2539 "mkr_parser.c" /* yacc.c:1646  */
+#line 755 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_DO,   (unsigned char*)"do");}
+#line 2519 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 759 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"hdo");}
-#line 2545 "mkr_parser.c" /* yacc.c:1646  */
+#line 756 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_HDO,  (unsigned char*)"hdo");}
+#line 2525 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 760 "./mkr_parser.y" /* yacc.c:1646  */
-    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_DOVERB, (unsigned char*)"!");}
-#line 2551 "mkr_parser.c" /* yacc.c:1646  */
+#line 757 "./mkr_parser.y" /* yacc.c:1646  */
+    {(yyval.identifier) = mkr_new_verb(rdf_parser, MKR_BANG, (unsigned char*)"!");}
+#line 2531 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 763 "./mkr_parser.y" /* yacc.c:1646  */
+#line 760 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"at");}
-#line 2557 "mkr_parser.c" /* yacc.c:1646  */
+#line 2537 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 764 "./mkr_parser.y" /* yacc.c:1646  */
+#line 761 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"of");}
-#line 2563 "mkr_parser.c" /* yacc.c:1646  */
+#line 2543 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 765 "./mkr_parser.y" /* yacc.c:1646  */
+#line 762 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"with");}
-#line 2569 "mkr_parser.c" /* yacc.c:1646  */
+#line 2549 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 766 "./mkr_parser.y" /* yacc.c:1646  */
+#line 763 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"od");}
-#line 2575 "mkr_parser.c" /* yacc.c:1646  */
+#line 2555 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 767 "./mkr_parser.y" /* yacc.c:1646  */
+#line 764 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"from");}
-#line 2581 "mkr_parser.c" /* yacc.c:1646  */
+#line 2561 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 768 "./mkr_parser.y" /* yacc.c:1646  */
+#line 765 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"to");}
-#line 2587 "mkr_parser.c" /* yacc.c:1646  */
+#line 2567 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 769 "./mkr_parser.y" /* yacc.c:1646  */
+#line 766 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"in");}
-#line 2593 "mkr_parser.c" /* yacc.c:1646  */
+#line 2573 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 770 "./mkr_parser.y" /* yacc.c:1646  */
+#line 767 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"out");}
-#line 2599 "mkr_parser.c" /* yacc.c:1646  */
+#line 2579 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 771 "./mkr_parser.y" /* yacc.c:1646  */
+#line 768 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"where");}
-#line 2605 "mkr_parser.c" /* yacc.c:1646  */
+#line 2585 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 772 "./mkr_parser.y" /* yacc.c:1646  */
+#line 769 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"ho");}
-#line 2611 "mkr_parser.c" /* yacc.c:1646  */
+#line 2591 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 773 "./mkr_parser.y" /* yacc.c:1646  */
+#line 770 "./mkr_parser.y" /* yacc.c:1646  */
     {(yyval.identifier) = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"rel");}
-#line 2617 "mkr_parser.c" /* yacc.c:1646  */
+#line 2597 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 779 "./mkr_parser.y" /* yacc.c:1646  */
+#line 776 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language string=\"%s\"\n", (yyvsp[-1].string));
@@ -2629,11 +2609,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2633 "mkr_parser.c" /* yacc.c:1646  */
+#line 2613 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 791 "./mkr_parser.y" /* yacc.c:1646  */
+#line 788 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", (yyvsp[-3].string), (yyvsp[-2].string), raptor_uri_as_string((yyvsp[0].uri)));
@@ -2656,11 +2636,11 @@ yyreduce:
     (yyval.identifier) = NULL;
     
 }
-#line 2660 "mkr_parser.c" /* yacc.c:1646  */
+#line 2640 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 814 "./mkr_parser.y" /* yacc.c:1646  */
+#line 811 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", (yyvsp[-3].string), (yyvsp[-2].string), raptor_uri_as_string((yyvsp[0].uri)));
@@ -2683,11 +2663,11 @@ yyreduce:
     (yyval.identifier) = NULL;
 
 }
-#line 2687 "mkr_parser.c" /* yacc.c:1646  */
+#line 2667 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 837 "./mkr_parser.y" /* yacc.c:1646  */
+#line 834 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + datatype string=\"%s\" uri=\"%s\"\n", (yyvsp[-2].string), raptor_uri_as_string((yyvsp[0].uri)));
@@ -2703,11 +2683,11 @@ yyreduce:
     (yyval.identifier) = NULL;
     
 }
-#line 2707 "mkr_parser.c" /* yacc.c:1646  */
+#line 2687 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 853 "./mkr_parser.y" /* yacc.c:1646  */
+#line 850 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal + datatype string=\"%s\" qname URI=<%s>\n", (yyvsp[-2].string), raptor_uri_as_string((yyvsp[0].uri)));
@@ -2722,11 +2702,11 @@ yyreduce:
   } else
     (yyval.identifier) = NULL;
 }
-#line 2726 "mkr_parser.c" /* yacc.c:1646  */
+#line 2706 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 868 "./mkr_parser.y" /* yacc.c:1646  */
+#line 865 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("literal string=\"%s\"\n", (yyvsp[0].string));
@@ -2737,11 +2717,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2741 "mkr_parser.c" /* yacc.c:1646  */
+#line 2721 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 879 "./mkr_parser.y" /* yacc.c:1646  */
+#line 876 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_uri *uri;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2754,11 +2734,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2758 "mkr_parser.c" /* yacc.c:1646  */
+#line 2738 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 892 "./mkr_parser.y" /* yacc.c:1646  */
+#line 889 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_uri *uri;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2771,11 +2751,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2775 "mkr_parser.c" /* yacc.c:1646  */
+#line 2755 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 905 "./mkr_parser.y" /* yacc.c:1646  */
+#line 902 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_uri *uri;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2792,11 +2772,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2796 "mkr_parser.c" /* yacc.c:1646  */
+#line 2776 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 922 "./mkr_parser.y" /* yacc.c:1646  */
+#line 919 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_uri *uri;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2809,11 +2789,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2813 "mkr_parser.c" /* yacc.c:1646  */
+#line 2793 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 935 "./mkr_parser.y" /* yacc.c:1646  */
+#line 932 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_uri *uri;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2826,11 +2806,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2830 "mkr_parser.c" /* yacc.c:1646  */
+#line 2810 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 951 "./mkr_parser.y" /* yacc.c:1646  */
+#line 948 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource URI=<%s>\n", raptor_uri_as_string((yyvsp[0].uri)));
@@ -2844,11 +2824,11 @@ yyreduce:
   } else
     (yyval.identifier) = NULL;
 }
-#line 2848 "mkr_parser.c" /* yacc.c:1646  */
+#line 2828 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 965 "./mkr_parser.y" /* yacc.c:1646  */
+#line 962 "./mkr_parser.y" /* yacc.c:1646  */
     {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource qname URI=<%s>\n", raptor_uri_as_string((yyvsp[0].uri)));
@@ -2862,11 +2842,11 @@ yyreduce:
   } else
     (yyval.identifier) = NULL;
 }
-#line 2866 "mkr_parser.c" /* yacc.c:1646  */
+#line 2846 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 983 "./mkr_parser.y" /* yacc.c:1646  */
+#line 980 "./mkr_parser.y" /* yacc.c:1646  */
     {
   const unsigned char *id;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -2882,11 +2862,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 2886 "mkr_parser.c" /* yacc.c:1646  */
+#line 2866 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 1067 "./mkr_parser.y" /* yacc.c:1646  */
+#line 1064 "./mkr_parser.y" /* yacc.c:1646  */
     {
   int i;
   raptor_world* world = rdf_parser->world;
@@ -2993,11 +2973,11 @@ yyreduce:
     YYERROR_MSG(errmsg);
   }
 }
-#line 2997 "mkr_parser.c" /* yacc.c:1646  */
+#line 2977 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 1174 "./mkr_parser.y" /* yacc.c:1646  */
+#line 1171 "./mkr_parser.y" /* yacc.c:1646  */
     {
   raptor_world* world = rdf_parser->world;
 
@@ -3009,11 +2989,11 @@ yyreduce:
   if(!(yyval.identifier))
     YYERROR;
 }
-#line 3013 "mkr_parser.c" /* yacc.c:1646  */
+#line 2993 "mkr_parser.c" /* yacc.c:1646  */
     break;
 
 
-#line 3017 "mkr_parser.c" /* yacc.c:1646  */
+#line 2997 "mkr_parser.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -3241,7 +3221,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 1188 "./mkr_parser.y" /* yacc.c:1906  */
+#line 1185 "./mkr_parser.y" /* yacc.c:1906  */
 
 
 /******************************************************************************/
@@ -3316,14 +3296,14 @@ mkr_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char *local)
   raptor_term_print_as_ntriples(term, stdout);
   printf("\n");
 #endif
-  /* raptor_free_uri(uri); */
+  raptor_free_uri(uri);
   return term;
 }
 
 
 /*****************************************************************************/
 raptor_term*
-mkr_new_blankNode(raptor_parser* rdf_parser)
+mkr_new_blankTerm(raptor_parser* rdf_parser)
 {
   raptor_world* world = rdf_parser->world;
   const unsigned char *id = NULL;
@@ -3342,6 +3322,9 @@ mkr_new_blankNode(raptor_parser* rdf_parser)
   }
 
   blank_error:
+  printf("##### DEBUG: mkr_new_blankTerm: ");
+  raptor_term_print_as_ntriples(blankNode, stdout);
+  printf("\n");
   return blankNode;
 }
 
@@ -3511,7 +3494,7 @@ mkr_new_pp(raptor_parser* rdf_parser, mkr_type type, raptor_term* preposition, r
       }
       pp->ppType = type;
       pp->ppPreposition = raptor_term_copy(preposition);
-      pp->ppValue = value;
+      pp->ppSequence = value;
       break;
 
     default:
@@ -3543,9 +3526,9 @@ return;
         raptor_free_term(pp->ppPreposition);
         pp->ppPreposition = NULL;
       }
-      if(pp->ppValue) {
-        raptor_free_sequence(pp->ppValue);
-        pp->ppValue = NULL;
+      if(pp->ppSequence) {
+        raptor_free_sequence(pp->ppSequence);
+        pp->ppSequence = NULL;
       }
       RAPTOR_FREE(MKR_pp, pp);
       pp = NULL;
@@ -3577,7 +3560,7 @@ mkr_pp_print(MKR_pp* pp, FILE* fh)
       printf("%s(", MKR_TYPE_NAME(type));
       raptor_term_print_as_ntriples(pp->ppPreposition, stdout);
       printf(" ");
-      raptor_sequence_print(pp->ppValue, stdout);
+      raptor_sequence_print(pp->ppSequence, stdout);
       printf(")");
       break;
 
@@ -3590,7 +3573,7 @@ mkr_pp_print(MKR_pp* pp, FILE* fh)
 /*****************************************************************************/
 /*****************************************************************************/
 MKR_value*
-mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
+mkr_new_value(raptor_parser* rdf_parser, mkr_type type, mkr_value* value)
 {
   raptor_world* world = rdf_parser->world;
   MKR_value* val = NULL;
@@ -3601,7 +3584,7 @@ mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
   printf("%s(", MKR_TYPE_NAME(type));
   switch(type) {
     case MKR_NIL:
-      printf("[ ]");
+      printf("( )");
       break;
 
     case MKR_OBJECT:
@@ -3640,26 +3623,26 @@ mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value)
     case MKR_NIL:
       /* if(!val)
         YYERROR; */
-      val->mkrvalue = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
+      val->mkrvalue = (void*)raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
       break;
 
     case MKR_OBJECT:
     case MKR_RDFLIST:
     case MKR_SENTENCE:
-      val->mkrvalue = raptor_term_copy((raptor_term*)value);
+      val->mkrvalue = (void*)raptor_term_copy((raptor_term*)value);
       break;
 
     case MKR_VALUELIST:
     case MKR_OBJECTLIST:
       val->mkrtype = MKR_RDFLIST;
       rdflist = mkr_new_rdflist(rdf_parser, (raptor_sequence*)value);
-      val->mkrvalue = raptor_term_copy(rdflist);
+      val->mkrvalue = (void*)raptor_term_copy(rdflist);
       break;
 
     case MKR_VALUESET:
     case MKR_OBJECTSET:
     case MKR_SENTENCELIST:
-      val->mkrvalue = (raptor_sequence*)value;
+      val->mkrvalue = (void*)value;
       break;
 
     default:
@@ -3717,7 +3700,7 @@ mkr_free_value(MKR_value* value)
   }
   /* RAPTOR_FREE(MKR_value, value);  causes core dump */
   value = NULL;
-#if defined(RAPTOR_DEBUG) && RAPTOR > 1
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_free_value\n");
 #endif
 }
@@ -3776,18 +3759,25 @@ mkr_new_rdflist(raptor_parser* rdf_parser, raptor_sequence* seq)
   raptor_statement* triple = NULL;
   char const *errmsg = NULL;
 
+#if defined(RAPTOR_DEBUG)
+  printf("##### DEBUG: mkr_new_rdflist: ");
+#endif
+
 /* collection:  LEFT_SQUARE RIGHT_SQUARE */
   if(!seq) {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("collection\n empty\n");
+    printf("collection\n empty\n");
 #endif
 
-  rdflist = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
+    rdflist = raptor_new_term_from_uri(world, RAPTOR_RDF_nil_URI(world));
 
-  if(!rdflist)
-    /*YYERROR;*/ printf("##### ERROR: mkr_rdflist: can't create nil term");
+    if(!rdflist)
+      /*YYERROR;*/ printf("##### ERROR: mkr_rdflist: can't create nil term");
 
-  return rdflist;
+#if defined(RAPTOR_DEBUG)
+    printf("return from mkr_new_rdflist\n");
+#endif
+    return rdflist;
   }
 
 /* collection: LEFT_SQUARE seq RIGHT_SQUARE */
@@ -3886,6 +3876,9 @@ mkr_new_rdflist(raptor_parser* rdf_parser, raptor_sequence* seq)
     /* YYERROR_MSG(errmsg); */ printf("##### ERROR: mkr_rdflist: %s\n", errmsg);
   }
 
+#if defined(RAPTOR_DEBUG)
+  printf("return from mkr_new_rdflist\n");
+#endif
   rdflist->mkrtype = MKR_RDFLIST;
   return rdflist;
 }
@@ -3909,7 +3902,7 @@ mkr_new_sentence(raptor_parser* rdf_parser, raptor_statement *triple)
   raptor_statement* s = NULL;
   raptor_term* sentence = NULL;
 
-  sentence = mkr_new_blankNode(rdf_parser);
+  sentence = mkr_new_blankTerm(rdf_parser);
   t1 = raptor_term_copy(sentence);
   uri = raptor_new_uri_for_rdf_concept(world, (const unsigned char*)"subject");
   t2 = raptor_new_term_from_uri(world, uri);
@@ -4146,9 +4139,23 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
   raptor_turtle_parser *mkr_parser = (raptor_turtle_parser*)parser->context;
   raptor_statement *statement = &parser->statement;
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: raptor_mkr_generate_statement: ");
-#endif
+  if(!t) {
+    printf("##### ERROR: raptor_mkr_generate_statement: ignore NULL statement\n");
+    return;
+  }
+
+  if(!t->subject) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL subject\n");
+    return;
+  }
+  if(!t->predicate) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL predicate\n");
+    return;
+  }
+  if(!t->object) {
+    printf("##### WARNING: raptor_mkr_generate_statement: ignore NULL object\n");
+    return;
+  }
 
   if(!t->subject || !t->predicate || !t->object) {
     return;
@@ -4168,6 +4175,12 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
     parser->emitted_default_graph++;
   }
   
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("##### DEBUG: raptor_mkr_generate_statement: ");
+  mkr_statement_print(t, stdout);
+  printf("\n");
+#endif
+
   /* Two choices for subject for Turtle */
   switch(t->subject->type) {
     case RAPTOR_TERM_TYPE_BLANK:
@@ -4193,6 +4206,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
 
   /* Predicates are URIs but check for bad ordinals */
   switch(t->predicate->type) {
+
     case RAPTOR_TERM_TYPE_URI:
       if(!strncmp((const char*)raptor_uri_as_string(t->predicate->value.uri),
                   "http://www.w3.org/1999/02/22-rdf-syntax-ns#_", 44)) {
@@ -4202,10 +4216,21 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
           raptor_parser_error(parser, "Illegal ordinal value %d in property '%s'.", predicate_ordinal, predicate_uri_string);
       }
       statement->predicate = raptor_new_term_from_uri(parser->world,
-                                                    t->predicate->value.uri);
+                                                  t->predicate->value.uri);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:
+      if((t->predicate->mkrtype == MKR_DEFINITION) ||
+         (t->predicate->mkrtype == MKR_ACTION) ||
+         (t->predicate->mkrtype == MKR_COMMAND)
+         ) {
+        statement->predicate = raptor_new_term_from_blank(parser->world,
+                                                    t->predicate->value.blank.string);
+      } else {
+        printf("##### WARNING: unexpected blank predicate->mkrtype: %s\n", MKR_TYPE_NAME(t->predicate->mkrtype));
+      }
+      break;
+
     case RAPTOR_TERM_TYPE_LITERAL:
     case RAPTOR_TERM_TYPE_UNKNOWN:
     default:
@@ -4244,11 +4269,12 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
 /* #endif */
       break;
   }
+
   /* Generate the statement */
   (*parser->statement_handler)(parser->user_data, statement);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("free spo: ");
+  printf(" free spo: ");
 #endif
   raptor_free_term(statement->subject); statement->subject = NULL;
   raptor_free_term(statement->predicate); statement->predicate = NULL;
@@ -4257,7 +4283,7 @@ raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *t)
     raptor_free_term(statement->graph); statement->graph = NULL;
   }
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("exit\n");
+  printf("exit raptor_mkr_generate_statement\n");
 #endif
 }
 

@@ -26,8 +26,8 @@ NTRIPLES_DIR = ../ntriples
 
 TEST_SERIALIZE_FILES= \
 base.ttl \
-rdf-schema.ttl \
 rdfq-results.ttl \
+rdf-schema.ttl \
 rdfs-namespace.ttl \
 test-07.ttl \
 test-08.ttl \
@@ -46,8 +46,8 @@ turtle-syntax-number-08.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
 base.mkr \
-rdf-schema.mkr \
 rdfq-results.mkr \
+rdf-schema.mkr \
 rdfs-namespace.mkr \
 test-07.mkr \
 test-08.mkr \
@@ -74,8 +74,8 @@ hierarchy.mkr \
 hoVerb.mkr \
 man.mkr \
 question.mkr \
-rdf-schema.mkr \
 rdfq-results.mkr \
+rdf-schema.mkr \
 rdfs-namespace.mkr \
 relation.mkr \
 test-07.mkr \
@@ -102,8 +102,8 @@ hierarchy.nt \
 hoVerb.nt \
 man.nt \
 question.nt \
-rdf-schema.nt \
 rdfq-results.nt \
+rdf-schema.nt \
 rdfs-namespace.nt \
 relation.nt \
 test-07.nt \
@@ -132,8 +132,8 @@ hierarchy.mkr.mkr \
 hoVerb.mkr.mkr \
 man.mkr.mkr \
 question.mkr.mkr \
-rdf-schema.mkr.mkr \
 rdfq-results.mkr.mkr \
+rdf-schema.mkr.mkr \
 rdfs-namespace.mkr.mkr \
 relation.mkr.mkr \
 test-07.mkr.mkr \
@@ -215,7 +215,7 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	    cat $$name.err; \
 	    diff -a -u $$name.out $(srcdir)/$$name.mkr; \
 	  fi; \
-	  #rm -f $$name.out $$name.err; \
+	  rm -f $$name.out $$name.err; \
 	done; \
 	set -e; exit $$result
 
@@ -244,7 +244,7 @@ check-mkr-parser-syntax: build-rapper $(check_mkr_parser_syntax_deps)
 	    cat $$name.err; \
 	    diff -a -u $$name.out $(srcdir)/$$name.nt; \
 	  fi; \
-	  #rm -f $$name.out $$name.err; \
+	  rm -f $$name.out $$name.err; \
 	done; \
 	set -e; exit $$result
 
@@ -273,7 +273,7 @@ check-mkr-roundtrip: build-rapper $(check_mkr_roundtrip_deps)
 	    cat $$name.err; \
 	    diff -a -u $$name.out $(srcdir)/$$name.mkr.mkr; \
 	  fi; \
-	  #rm -f $$name.out $$name.err; \
+	  rm -f $$name.out $$name.err; \
 	done; \
 	set -e; exit $$result
 

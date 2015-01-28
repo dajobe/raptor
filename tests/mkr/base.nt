@@ -8,6 +8,7 @@
      ;
 
 :cat
-    :isa :animal
-     ;
-
+    has :isa = :animal
+         ;
+    
+    

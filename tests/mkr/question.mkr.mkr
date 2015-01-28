@@ -5,24 +5,42 @@
 @prefix kb: <http://mkrmke.net/kb/> ;
 @prefix ke: <http://mkrmke.net/ke/> ;
 
-<http://mkrmke.net/ns/?s> has isa = <http://mkrmke.net/ns/?o>, 
-    <http://mkrmke.net/ns/isa*> = entity ;
+<http://mkrmke.net/ns/?s>
+    isa <http://mkrmke.net/ns/?o>, 
+    <http://mkrmke.net/ns/isa*> = entity
+     ;
 
-animal has isa = entity ;
+animal
+    isa entity
+     ;
 
-cat has <http://mkrmke.net/ns/?p> = entity, 
-isa = animal ;
+cat
+    <http://mkrmke.net/ns/?p> = entity, 
+    isa animal
+     ;
 
-dog has isa = animal ;
+dog
+    isa animal
+     ;
 
-person has isa = entity ;
+person
+    isa entity
+     ;
 
-u:Bob_McCullough has isa = person ;
+u:Bob_McCullough
+    isa person
+     ;
 
-u:Dick_McCullough has isa = person ;
+u:Dick_McCullough
+    isa person
+     ;
 
-u:Garfield has isa = cat, 
-<http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o> ;
+u:Garfield
+    isa cat, 
+    <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o>
+     ;
 
-u:Odie has isa = dog ;
+u:Odie
+    isa dog
+     ;
 

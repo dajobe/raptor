@@ -78,14 +78,14 @@ typedef struct MKR_nv_s {
  * MKR_pp
  * @ppType: MKR_PP
  * @ppPreposition: raptor_term*
- * @ppValue: raptor_sequence*
+ * @ppSequence: raptor_sequence*
  * 
  * preposition phrase
  */
 typedef struct MKR_pp_s {
   mkr_type  ppType;
   raptor_term     *ppPreposition;
-  raptor_sequence *ppValue;
+  raptor_sequence *ppSequence;
 } MKR_pp;
 
 /**
@@ -298,7 +298,7 @@ raptor_term* mkr_new_conjunction(raptor_parser *parser, mkr_type type, unsigned 
 raptor_term* mkr_new_quantifier(raptor_parser *parser, mkr_type type, unsigned char* name);
 raptor_term* mkr_new_iterator(raptor_parser *parser, mkr_type type, unsigned char* name);
 
-MKR_value* mkr_new_value(raptor_parser* rdf_parser, mkr_type type, void* value);
+MKR_value* mkr_new_value(raptor_parser* rdf_parser, mkr_type type, mkr_value* value);
 void mkr_free_value(MKR_value* value);
 void mkr_value_print(MKR_value* value, FILE* fh);
 
@@ -341,7 +341,8 @@ void mkr_part(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, r
 void mkr_action(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3, raptor_sequence* var4);
 
 void raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *triple);
+int mkr_statement_print(const raptor_statement* statement, FILE *stream);
 raptor_term* mkr_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char* local);
-raptor_term* mkr_new_blankNode(raptor_parser* rdf_parser);
+raptor_term* mkr_new_blankTerm(raptor_parser* rdf_parser);
 raptor_uri* raptor_mkr_get_graph(raptor_parser* rdf_parser);
 int raptorstring_to_csvstring(unsigned char *string, unsigned char *csvstr);

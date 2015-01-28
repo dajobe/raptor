@@ -1,16 +1,26 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/hierarchy.mkr> ;
+##### DEBUG: mkr_new_blankTerm: _:genid1
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid2
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
 
-mkr.ho has genus = hierarchy, 
-    hierarchy = {
-        with = {
-                format = mkr ;
-                } ;
-            }, 
-            ho = ((0, U:existent), (1, entity), (2, array), (2, hierarchy), (2, relation), (2, set), (2, mset), (2, list), (2, alt), (2, enum), (2, animal), (3, person), (4, u:Richard_H_McCullough), (1, characteristic), (2, part), (2, attribute), (2, action), (3, method), (1, sentence), (2, context), (3, space), (3, time), (3, view), (2, statement), (3, definition), (2, question), (2, command), (2, assignment), (2, conditional), (2, iteration), (2, hierarchy_group), (2, relation_group)), 
-            rdf:type = hierarchy ;
-        
-    
+mkr.ho
+    has definition = {
+            has genus = hierarchy, 
+                with {
+                    has format = mkr
+                    
+                }
+            
+        }, 
+        ho ((0, U:existent), (1, entity), (2, array), (2, hierarchy), (2, relation), (2, set), (2, mset), (2, list), (2, alt), (2, enum), (2, animal), (3, person), (4, u:Richard_H_McCullough), (1, characteristic), (2, part), (2, attribute), (2, action), (3, method), (1, sentence), (2, context), (3, space), (3, time), (3, view), (2, statement), (3, definition), (2, question), (2, command), (2, assignment), (2, conditional), (2, iteration), (2, hierarchy_group), (2, relation_group)), 
+        isu hierarchy
+     ;
+

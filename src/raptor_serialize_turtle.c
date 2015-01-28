@@ -710,6 +710,8 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
   raptor_term_print_as_ntriples(subject->node->term, stdout);
   printf("\n");
 #endif
+
+  context->indent_count++;
   for(i = 0, (iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
       iter && !ri;
       i++, (ri = raptor_avltree_iterator_next(iter))) {
@@ -727,7 +729,6 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
     if(!last_predicate) {
       /* start first predicate */
       context->has_count = 0;
-      context->indent_count++;
       numpred = 1;
       numobj = 1;
       objectSequence = raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node, NULL);
@@ -781,8 +782,9 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
 
   /* emit the last last_predicate */
   rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth+1);
-  if(--context->indent_count > 0)
-    raptor_turtle_writer_decrease_indent(turtle_writer);
+  if(context->has_count > 0)
+    if(context->indent_count-- > 0)
+      raptor_turtle_writer_decrease_indent(turtle_writer);
   raptor_turtle_writer_newline(turtle_writer);
 
   /* Return error if emitting something failed */
@@ -848,8 +850,9 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
        strcmp(local, "isu") && strcmp(local, "do") && strcmp(local, "is") &&
        strcmp(local, "at") && strcmp(local, "of") && strcmp(local, "with") &&
        strcmp(local, "od") && strcmp(local, "in") && strcmp(local, "out") &&
-       strcmp(local, "where") && strcmp(local, "ho") && strcmp(local, "rel")
-      ) {
+       strcmp(local, "where") && strcmp(local, "ho") && strcmp(local, "rel") &&
+       strcmp(local, "iss") && strcmp(local, "isa") && strcmp(local, "isa*")
+       ) {
       /* not one of the above */ 
       context->has_count++;
       if(context->has_count == 1) {
@@ -1312,6 +1315,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
       }
       context->resultset = 0;
       context->written_begin = 0;
+      context->indent_count = 0;
     } else {
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" .", 2);
       raptor_turtle_writer_newline(turtle_writer);

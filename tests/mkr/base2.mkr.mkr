@@ -3,5 +3,7 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix : <http://www.example.com/ns#> ;
 
-goat has isa = animal ;
+goat
+    isa animal
+     ;
 

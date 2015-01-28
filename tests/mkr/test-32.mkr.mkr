@@ -3,5 +3,7 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix ex: <http://example.org/ns#> ;
 
-ex:node1 has rdf:value = (ex:item1, ex:item2) ;
+ex:node1
+    has rdf:value = (ex:item1, ex:item2)
+     ;
 

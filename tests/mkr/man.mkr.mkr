@@ -1,13 +1,22 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/man.mkr> ;
+##### DEBUG: mkr_new_blankTerm: _:genid1
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid2
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
-man has animal = {
-        with = {
-                rational = true ;
-                } ;
-            }, 
-            genus = animal, 
-            rdf:type = animal ;
-        
-    
+man
+    has definition = {
+            has genus = animal, 
+                with {
+                    has rational = true
+                    
+                }
+            
+        }
+     ;
+

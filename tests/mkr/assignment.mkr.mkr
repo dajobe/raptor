@@ -1,18 +1,44 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/assignment.mkr> ;
+##### DEBUG: mkr_new_blankTerm: _:genid1
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid5
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
-print has rdf:type = action ;
+ke
+    has print = [{
+            has agent = ke, 
+                od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>)
+            
+        }, {
+            has agent = ke, 
+                od ("$x, $y, $z")
+            
+        }]
+     ;
 
-x has <http://mkrmke.net/ns/:=> = 10 ;
+print
+    iss action
+     ;
 
-y has <http://mkrmke.net/ns/:=> = _:5 has  ;
+x
+    <http://mkrmke.net/ns/:=> = 10
+     ;
 
-z has <http://mkrmke.net/ns/:=> = "the big red one" ;
+y
+    <http://mkrmke.net/ns/:=> = _:5
+     ;
 
-( ) has print = [{
-od = (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
-}, {
-od = ("$x, $y, $z") ;
-}] ;
+z
+    <http://mkrmke.net/ns/:=> = "the big red one"
+     ;
 

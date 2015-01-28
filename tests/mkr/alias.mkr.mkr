@@ -4,11 +4,19 @@
 @prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
 @prefix owl: <../../../../../2002/07/owl#> ;
 
-rdf:Bag has is = multiset ;
+rdf:Bag
+    is multiset
+     ;
 
-rdf:Property has is = characteristic ;
+rdf:Property
+    is characteristic
+     ;
 
-rdfs:Resource has is = [existent, owl:Thing] ;
+rdfs:Resource
+    is [existent, owl:Thing]
+     ;
 
-owl:sameAs has is = is ;
+owl:sameAs
+    is is
+     ;
 

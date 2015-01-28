@@ -3,5 +3,7 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix dbpedia: <http://dbpedia.org/resource/> ;
 
-<http://example.org> has <http://xmlns.com/foaf/0.1/page> = dbpedia:Babylon_A.D. ;
+<http://example.org>
+    <http://xmlns.com/foaf/0.1/page> = dbpedia:Babylon_A.D.
+     ;
 

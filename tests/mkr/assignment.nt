@@ -1,8 +1,13 @@
 <http://mkrmke.net/ns/x> <http://mkrmke.net/ns/:=> "10"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://mkrmke.net/ns/y> <http://mkrmke.net/ns/:=> _:5 .
 <http://mkrmke.net/ns/z> <http://mkrmke.net/ns/:=> "the big red one" .
-<http://mkrmke.net/ns/print> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/action> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> <http://mkrmke.net/ns/print> _:genid1 .
+##### DEBUG: mkr_new_blankTerm: _:genid1
+<http://mkrmke.net/ns/print> <http://mkrmke.net/ns/iss> <http://mkrmke.net/ns/action> .
+predicate iss action: done
+<http://mkrmke.net/ns/ke> <http://mkrmke.net/ns/print> _:genid1 .
+sub predicate event: done
+_:genid1 <http://mkrmke.net/ns/agent> <http://mkrmke.net/ns/ke> .
+event agent sub: done
 _:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/ns/$z> .
 _:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
 _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/ns/$y> .
@@ -10,8 +15,17 @@ _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:genid2 .
 _:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/ns/$x> .
 _:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:genid3 .
 _:genid1 <http://mkrmke.net/ns/od> _:genid4 .
-<http://mkrmke.net/ns/print> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/action> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> <http://mkrmke.net/ns/print> _:genid5 .
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid5
+<http://mkrmke.net/ns/print> <http://mkrmke.net/ns/iss> <http://mkrmke.net/ns/action> .
+predicate iss action: done
+<http://mkrmke.net/ns/ke> <http://mkrmke.net/ns/print> _:genid5 .
+sub predicate event: done
+_:genid5 <http://mkrmke.net/ns/agent> <http://mkrmke.net/ns/ke> .
+event agent sub: done
 _:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "$x, $y, $z" .
 _:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
 _:genid5 <http://mkrmke.net/ns/od> _:genid6 .
+event preposition rdflist: done
+exit mkr_pplist: 

@@ -1,0 +1,15 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/rdfq-results.ttl> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
+
+<> is result ;
+    result is relation with format = csv ;
+    begin relation result ;
+    rel x, y ;
+    rel anon2, _:a ;
+    rel 123, <http://example.com/resource1> ;
+    rel 2003-01-21, <http://example.com/resource2> ;
+    rel anon1, _:a ;
+    end relation result ;
+    

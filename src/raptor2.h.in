@@ -653,7 +653,7 @@ typedef union {
 
   raptor_term_blank_value blank;
 
-  mkr_value mkrvalue;
+  mkr_value *mkrvalue;
 } raptor_term_value;
 
 

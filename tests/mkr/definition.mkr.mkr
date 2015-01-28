@@ -1,61 +1,127 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/definition.mkr> ;
+##### DEBUG: mkr_new_blankTerm: _:genid1
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid2
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid3
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid4
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid5
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid6
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid7
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid8
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid9
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid10
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid13
+sub definition event: done
+event genus predicate: done
+##### DEBUG: mkr_new_blankTerm: _:genid14
+event preposition nvevent: done
+nvevent name value->mkrvalue: done
+nvevent name value->mkrvalue: done
+exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
 
-enum has genus = group, 
-    group = {
-        with = {
-                exclusive = true, 
-                    order = false ;
-                } ;
-            }, 
-            rdf:type = group ;
-        
-    list has genus = group, 
-        group = {
-            with = {
-                    inclusive = true, 
-                        order = true ;
-                    } ;
-                }, 
-                rdf:type = group ;
-            
-        man has animal = {
-                with = {
-                        rational = true ;
-                        } ;
-                    }, 
-                    genus = animal, 
-                    rdf:type = animal ;
-                
-            multiset has genus = group, 
-                group = {
-                    with = {
-                            duplicate = true, 
-                                inclusive = true, 
-                                order = false ;
-                            } ;
-                        }, 
-                        rdf:type = group ;
+enum
+    has definition = {
+            has genus = group, 
+                with {
+                    has exclusive = true, 
+                        order = false
                     
-                result has genus = relation, 
-                    relation = {
-                        with = {
-                                format = mkr, 
-                                    relVariable = (x, y) ;
-                                } ;
-                            }, 
-                            rdf:type = relation ;
-                        
-                    set has genus = group, 
-                        group = {
-                            with = {
-                                    duplicate = false, 
-                                        inclusive = true, 
-                                        order = false ;
-                                    } ;
-                                }, 
-                                rdf:type = group ;
-                            
-                        
+                }
+            
+        }
+     ;
+
+list
+    has definition = {
+            has genus = group, 
+                with {
+                    has inclusive = true, 
+                        order = true
+                    
+                }
+            
+        }
+     ;
+
+man
+    has definition = {
+            has genus = animal, 
+                with {
+                    has rational = true
+                    
+                }
+            
+        }
+     ;
+
+multiset
+    has definition = {
+            has genus = group, 
+                with {
+                    has duplicate = true, 
+                        inclusive = true, 
+                        order = false
+                    
+                }
+            
+        }
+     ;
+
+result
+    has definition = {
+            has genus = relation, 
+                with {
+                    has format = mkr, 
+                        relVariable = (x, y)
+                    
+                }
+            
+        }
+     ;
+
+set
+    has definition = {
+            has genus = group, 
+                with {
+                    has duplicate = false, 
+                        inclusive = true, 
+                        order = false
+                    
+                }
+            
+        }
+     ;
+

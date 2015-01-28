@@ -1,31 +1,87 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/command.mkr> ;
+##### DEBUG: mkr_new_blankTerm: _:genid1
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid3
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid5
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid9
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
+##### DEBUG: mkr_new_blankTerm: _:genid11
+predicate iss action: done
+sub predicate event: done
+event agent sub: done
+event preposition rdflist: done
+exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
-dbopen has rdf:type = action ;
+dbopen
+    iss action
+     ;
 
-print has rdf:type = action ;
+ke
+    has dbopen = {
+            has agent = ke, 
+                od (mkr.ho, hierarchy, gdbm, existent)
+            
+        }, 
+        print = {
+            has agent = ke, 
+                od ("The quick brown fox jumped over the lazy dog.")
+            
+        }, 
+        read = {
+            has agent = ke, 
+                from = (relation.mkr)
+            
+        }, 
+        select = {
+            has agent = ke, 
+                from = (relation.mkr), 
+                od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>)
+            
+        }
+     ;
 
-read has rdf:type = action ;
+print
+    iss action
+     ;
 
-select has rdf:type = action ;
+read
+    iss action
+     ;
 
-wc has rdf:type = action ;
+select
+    iss action
+     ;
 
-( ) has dbopen = {
-od = (mkr.ho, hierarchy, gdbm, existent) ;
-}, 
-print = {
-od = ("The quick brown fox jumped over the lazy dog.") ;
-}, 
-read = {
-from = (relation.mkr) ;
-}, 
-select = {
-from = (relation.mkr), 
-    od = (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
-}, 
-wc = {
-    od = (<http://mkrmke.net/ns/*.mkr>) ;
-    } ;
+sh
+    has wc = {
+            has agent = sh, 
+                od (<http://mkrmke.net/ns/*.mkr>)
+            
+        }
+     ;
+
+wc
+    iss action
+     ;
 

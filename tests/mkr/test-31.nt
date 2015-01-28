@@ -1,4 +1,15 @@
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://example.org/first-item> .
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://example.org/second-item> .
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
-<http://example.org/block> <http://purl.org/rss/1.0/items> _:genid1 .
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-31.ttl> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rss: <http://purl.org/rss/1.0/> ;
+
+<http://example.org/block>
+    has rss:items = {
+            has rdf:_1 = <http://example.org/first-item>, 
+                rdf:_2 = <http://example.org/second-item>, 
+                isu rdf:Seq
+            
+        }
+         ;
+    
+    
