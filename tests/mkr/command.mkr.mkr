@@ -3,54 +3,42 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
 dbopen
-    iss action
-     ;
-
+    iss action ;
+    
 ke
     has dbopen = {
             has agent = ke, 
-                od (mkr.ho, hierarchy, gdbm, existent)
-            
-        }, 
+                od (mkr.ho, hierarchy, gdbm, existent) ;
+            }, 
         print = {
             has agent = ke, 
-                od ("The quick brown fox jumped over the lazy dog.")
-            
-        }, 
+                od ("The quick brown fox jumped over the lazy dog.") ;
+            }, 
         read = {
             has agent = ke, 
-                from = (relation.mkr)
-            
-        }, 
+                from = (relation.mkr) ;
+            }, 
         select = {
             has agent = ke, 
                 from = (relation.mkr), 
-                od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>)
-            
-        }
-     ;
-
+                od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
+            } ;
+    
 print
-    iss action
-     ;
-
+    iss action ;
+    
 read
-    iss action
-     ;
-
+    iss action ;
+    
 select
-    iss action
-     ;
-
+    iss action ;
+    
 sh
     has wc = {
             has agent = sh, 
-                od (<http://mkrmke.net/ns/*.mkr>)
-            
-        }
-     ;
-
+                od (<http://mkrmke.net/ns/*.mkr>) ;
+            } ;
+    
 wc
-    iss action
-     ;
-
+    iss action ;
+    

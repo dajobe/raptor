@@ -4,6 +4,5 @@
 @prefix : <../../2000/01/rdf-schema#> ;
 
 <../../2000/01/rdf-schema#>
-    has :seeAlso = <../../2000/01/rdf-schema-more>
-     ;
-
+    has :seeAlso = <../../2000/01/rdf-schema-more> ;
+    

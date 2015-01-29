@@ -5,28 +5,21 @@
 ke
     has print = [{
             has agent = ke, 
-                od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>)
-            
-        }, {
+                od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
+            }, {
             has agent = ke, 
-                od ("$x, $y, $z")
-            
-        }]
-     ;
-
+                od ("$x, $y, $z") ;
+            }] ;
+    
 print
-    iss action
-     ;
-
+    iss action ;
+    
 x
-    <http://mkrmke.net/ns/:=> = 10
-     ;
-
+    <http://mkrmke.net/ns/:=> = 10 ;
+    
 y
-    <http://mkrmke.net/ns/:=> = _:5
-     ;
-
+    <http://mkrmke.net/ns/:=> = _:5 ;
+    
 z
-    <http://mkrmke.net/ns/:=> = "the big red one"
-     ;
-
+    <http://mkrmke.net/ns/:=> = "the big red one" ;
+    

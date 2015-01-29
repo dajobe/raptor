@@ -4,6 +4,5 @@
 @prefix : <http://www.example.com/ns#> ;
 
 goat
-    isa animal
-     ;
-
+    isa animal ;
+    

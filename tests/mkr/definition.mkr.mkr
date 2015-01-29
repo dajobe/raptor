@@ -8,71 +8,53 @@ enum
             has genus = group, 
                 with {
                     has exclusive = true, 
-                        order = false
-                    
-                }
-            
-        }
-     ;
-
+                        order = false ;
+                    } ;
+            } ;
+    
 list
     has definition = {
             has genus = group, 
                 with {
                     has inclusive = true, 
-                        order = true
-                    
-                }
-            
-        }
-     ;
-
+                        order = true ;
+                    } ;
+            } ;
+    
 man
     has definition = {
             has genus = animal, 
                 with {
-                    has rational = true
-                    
-                }
-            
-        }
-     ;
-
+                    has rational = true ;
+                    } ;
+            } ;
+    
 multiset
     has definition = {
             has genus = group, 
                 with {
                     has duplicate = true, 
                         inclusive = true, 
-                        order = false
-                    
-                }
-            
-        }
-     ;
-
+                        order = false ;
+                    } ;
+            } ;
+    
 result
     has definition = {
             has genus = relation, 
                 with {
                     has format = mkr, 
-                        relVariable = (x, y)
-                    
-                }
-            
-        }
-     ;
-
+                        relVariable = (x, y) ;
+                    } ;
+            } ;
+    
 set
     has definition = {
             has genus = group, 
                 with {
                     has duplicate = false, 
                         inclusive = true, 
-                        order = false
-                    
-                }
-            
-        }
-     ;
-
+                        order = false ;
+                    } ;
+            } ;
+    

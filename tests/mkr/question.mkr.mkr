@@ -7,40 +7,31 @@
 
 <http://mkrmke.net/ns/?s>
     isa <http://mkrmke.net/ns/?o>, 
-    <http://mkrmke.net/ns/isa*> = entity
-     ;
-
+    <http://mkrmke.net/ns/isa*> = entity ;
+    
 animal
-    isa entity
-     ;
-
+    isa entity ;
+    
 cat
     <http://mkrmke.net/ns/?p> = entity, 
-    isa animal
-     ;
-
+    isa animal ;
+    
 dog
-    isa animal
-     ;
-
+    isa animal ;
+    
 person
-    isa entity
-     ;
-
+    isa entity ;
+    
 u:Bob_McCullough
-    isa person
-     ;
-
+    isa person ;
+    
 u:Dick_McCullough
-    isa person
-     ;
-
+    isa person ;
+    
 u:Garfield
     isa cat, 
-    <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o>
-     ;
-
+    <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o> ;
+    
 u:Odie
-    isa dog
-     ;
-
+    isa dog ;
+    

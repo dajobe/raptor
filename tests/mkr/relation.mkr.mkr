@@ -8,12 +8,9 @@ result
             has genus = relation, 
                 with {
                     has format = mkr, 
-                        relVariable = (x, y)
-                    
-                }
-            
-        }, 
+                        relVariable = (x, y) ;
+                    } ;
+            }, 
         rel ((anon2, _:a), (123, <http://example.com/resource1>), (<http://mkrmke.net/ns/2003-01-21>, <http://example.com/resource2>), (anon1, _:a)), 
-        isu relation
-     ;
-
+        isu relation ;
+    

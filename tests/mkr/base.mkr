@@ -4,10 +4,8 @@
 @prefix : <http://www.example.com/ns#> ;
 
 <http://example.org/dog>
-    <http://example.org/isa> = <http://example.org/animal>
-     ;
-
+    <http://example.org/isa> = <http://example.org/animal> ;
+    
 :cat
-    :isa :animal
-     ;
-
+    :isa :animal ;
+    

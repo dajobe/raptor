@@ -3,6 +3,5 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
 <s>
-    <p> = 123
-     ;
-
+    <p> = 123 ;
+    

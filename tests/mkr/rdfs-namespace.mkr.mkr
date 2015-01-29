@@ -4,6 +4,5 @@
 @prefix : <#> ;
 
 <#>
-    has :seeAlso = <rdf-schema-more>
-     ;
-
+    has :seeAlso = <rdf-schema-more> ;
+    

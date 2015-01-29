@@ -123,10 +123,11 @@ typedef struct {
   /* current groupList or NULL */
   raptor_sequence* groupList;
 
-  /* state for raptor_mkr_emit_po() and
-               raptor_mkr_emit_subject_properties() */
+  /* state for raptor_mkr_emit_subject_properties()
+           and raptor_mkr_emit_po() */
   int has_count;
   int indent_count;
+  int curly_count;
 
   /* state for raptor_mkr_emit_subject_resultset() */
   int mkr_rs_size;
@@ -782,6 +783,8 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
 
   /* emit the last last_predicate */
   rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth+1);
+
+  raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
   if(context->has_count > 0)
     if(context->indent_count-- > 0)
       raptor_turtle_writer_decrease_indent(turtle_writer);
@@ -886,7 +889,7 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
     raptor_free_qname(qname);
   
   /* emit object sequence for predicate */
-  if(raptor_sequence_size(objectSequence) > 1)
+  if((raptor_sequence_size(objectSequence) > 1) && !context->curly_count)
     raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
   for(j = 0; j < raptor_sequence_size(objectSequence); j++) {
     object = (raptor_abbrev_node*)raptor_sequence_get_at(objectSequence, j);
@@ -914,7 +917,7 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
       
   }
-  if(raptor_sequence_size(objectSequence) > 1)
+  if((raptor_sequence_size(objectSequence) > 1) && !context->curly_count)
     raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
 
 /*
@@ -1264,6 +1267,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         }
 
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"{", 1);
+        context->curly_count++;
 
         if(mkr_blank) { /* write mkr blank as subject */
           raptor_turtle_writer_increase_indent(turtle_writer);
@@ -1271,8 +1275,6 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
           raptor_turtle_writer_bnodeid(turtle_writer,
                                        subject->node->term->value.blank.string,
                                        subject->node->term->value.blank.string_len);
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" has ", 5);
-          raptor_turtle_writer_increase_indent(turtle_writer);
         }
       } else {
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
@@ -1290,11 +1292,13 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     raptor_turtle_writer_decrease_indent(turtle_writer);
 
     if(blank && depth > 1) {
-      raptor_turtle_writer_newline(turtle_writer);
-      if(emit_mkr)
+      if(emit_mkr) {
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"}", 1);
-      else
+        context->curly_count--;
+      } else {
+        raptor_turtle_writer_newline(turtle_writer);
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+      }
     }
   }
 
@@ -1309,13 +1313,12 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 #endif
     if(emit_mkr) {
       if(!context->resultset) {
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
-        raptor_turtle_writer_newline(turtle_writer);
         raptor_turtle_writer_newline(turtle_writer);
       }
       context->resultset = 0;
       context->written_begin = 0;
       context->indent_count = 0;
+      context->curly_count = 0;
     } else {
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" .", 2);
       raptor_turtle_writer_newline(turtle_writer);
@@ -1393,16 +1396,17 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   if(!strcmp(name,(const char*)"mkr")) {
     context->emit_mkr = 1;
     context->mkr_blank = 0;
+    context->curly_count = 0;
     context->indent_count = 0;
     context->turtle_writer_flags |= TURTLE_WRITER_FLAG_MKR;
   } else {
     context->emit_mkr = 0;
   }
   context->resultset = 0;
+  context->written_begin = 0;
   context->groupType = NULL;
   context->groupName = NULL;
   context->groupList = NULL;
-  context->written_begin = 0;
 
   context->nstack = raptor_new_namespaces(serializer->world, 1);
   if(!context->nstack)

@@ -5,18 +5,14 @@
 @prefix owl: <../../../../../2002/07/owl#> ;
 
 rdf:Bag
-    is multiset
-     ;
-
+    is multiset ;
+    
 rdf:Property
-    is characteristic
-     ;
-
+    is characteristic ;
+    
 rdfs:Resource
-    is [existent, owl:Thing]
-     ;
-
+    is [existent, owl:Thing] ;
+    
 owl:sameAs
-    is is
-     ;
-
+    is is ;
+    

@@ -8,31 +8,24 @@
 ex:Garfield
     isa <http://mkrmke.net/ns/?x>, 
     <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?y>, 
-    isu <http://mkrmke.net/ns/?x>
-     ;
-
+    isu <http://mkrmke.net/ns/?x> ;
+    
 ex:Odie
-    isu ex:dog
-     ;
-
+    isu ex:dog ;
+    
 ex:animal
-    has isc = [ex:cat, ex:dog]
-     ;
-
+    has isc = [ex:cat, ex:dog] ;
+    
 ex:person
-    isa ex:homosapien
-     ;
-
+    isa ex:homosapien ;
+    
 <http://mkrmke.net/ns/$top>
-    <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?>
-     ;
-
+    <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
+    
 entity
     has isc = <http://mkrmke.net/ns/?z>, 
-        <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?z>
-     ;
-
+        <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?z> ;
+    
 u:Garfield
-    isa [ex:cat, <http://mkrmke.net/ns/?x>]
-     ;
-
+    isa [ex:cat, <http://mkrmke.net/ns/?x>] ;
+    
