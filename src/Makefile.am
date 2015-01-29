@@ -25,7 +25,7 @@
 lib_LTLIBRARIES = libraptor2.la
 
 pkginclude_HEADERS = raptor.h
-nodist_pkginclude_HEADERS = raptor2.h mkr.h mkrtype.h
+nodist_pkginclude_HEADERS = raptor2.h
 
 noinst_HEADERS = raptor_internal.h
 
@@ -87,7 +87,7 @@ if RAPTOR_PARSER_RDFXML
 libraptor2_la_SOURCES += raptor_rdfxml.c
 endif
 if RAPTOR_PARSER_MKR
-libraptor2_la_SOURCES += mkr_parser.c mkr_sentence.c mkr_parser.h mkr_common.h mkr_sentence.c turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
+libraptor2_la_SOURCES += mkr_parser.c mkr_sentence.c mkr.h mkrtype.h mkr_parser.h mkr_common.h turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
 else
 if RAPTOR_PARSER_TURTLE
 libraptor2_la_SOURCES += turtle_lexer.c turtle_lexer.h turtle_parser.c turtle_parser.h turtle_common.h
