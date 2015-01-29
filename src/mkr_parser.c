@@ -3322,9 +3322,11 @@ mkr_new_blankTerm(raptor_parser* rdf_parser)
   }
 
   blank_error:
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("##### DEBUG: mkr_new_blankTerm: ");
   raptor_term_print_as_ntriples(blankNode, stdout);
   printf("\n");
+#endif
   return blankNode;
 }
 

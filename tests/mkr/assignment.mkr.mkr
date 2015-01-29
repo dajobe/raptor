@@ -1,16 +1,4 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/assignment.mkr> ;
-##### DEBUG: mkr_new_blankTerm: _:genid1
-predicate iss action: done
-sub predicate event: done
-event agent sub: done
-event preposition rdflist: done
-exit mkr_pplist: 
-##### DEBUG: mkr_new_blankTerm: _:genid5
-predicate iss action: done
-sub predicate event: done
-event agent sub: done
-event preposition rdflist: done
-exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 

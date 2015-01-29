@@ -447,7 +447,6 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
-printf("predicate iss action: done\n");
       break;
 
     default:
@@ -471,7 +470,6 @@ printf("predicate iss action: done\n");
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
-printf("sub definition event: done\n");
       break;
 
     case MKR_ACTION:
@@ -483,7 +481,6 @@ printf("sub definition event: done\n");
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
-printf("sub predicate event: done\n");
       break;
   }
 
@@ -498,7 +495,6 @@ printf("sub predicate event: done\n");
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
-printf("event genus predicate: done\n");
       break;
 
     case MKR_ACTION:
@@ -510,7 +506,6 @@ printf("event genus predicate: done\n");
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple); triple = NULL;
-printf("event agent sub: done\n");
       break;
   }
 
@@ -540,7 +535,6 @@ printf("event agent sub: done\n");
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
         raptor_mkr_generate_statement(rdf_parser, triple);
         raptor_free_statement(triple); triple = NULL;
-printf("event preposition rdflist: done\n");
         break;
 
       case MKR_PPNV:
@@ -557,8 +551,6 @@ printf("event preposition rdflist: done\n");
         triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
         raptor_mkr_generate_statement(rdf_parser, triple);
         raptor_free_statement(triple); triple = NULL;
-printf("event preposition nvevent: done\n");
-
 
         for(j = 0; j < raptor_sequence_size(ppSequence); j++) {
           /* nvevent name value . */
@@ -601,7 +593,6 @@ printf("event preposition nvevent: done\n");
           triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
           raptor_mkr_generate_statement(rdf_parser, triple);
           raptor_free_statement(triple); triple = NULL;
-printf("nvevent name value->mkrvalue: done\n");
 
 
 /*
@@ -634,7 +625,6 @@ printf("nvevent name value->mkrvalue: done\n");
     raptor_free_term(blank); blank = NULL;
 */
 
-  printf("exit mkr_pplist: \n");
 #if defined(RAPTOR_DEBUG)
   printf("exit mkr_pplist: \n");
 #endif

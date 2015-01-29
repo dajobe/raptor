@@ -1,11 +1,4 @@
-##### DEBUG: mkr_new_blankTerm: _:genid1
 <http://mkrmke.net/ns/man> <http://mkrmke.net/ns/definition> _:genid1 .
-sub definition event: done
 _:genid1 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/animal> .
-event genus predicate: done
-##### DEBUG: mkr_new_blankTerm: _:genid2
 _:genid1 <http://mkrmke.net/ns/with> _:genid2 .
-event preposition nvevent: done
 _:genid2 <http://mkrmke.net/ns/rational> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-nvevent name value->mkrvalue: done
-exit mkr_pplist: 

@@ -5,20 +5,34 @@
 @prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
 @prefix ex: <http://example.org/ex#> ;
 
-ex:Garfield has isa = <http://mkrmke.net/ns/?x>, 
+ex:Garfield
+    isa <http://mkrmke.net/ns/?x>, 
     <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?y>, 
-    isu = <http://mkrmke.net/ns/?x> ;
+    isu <http://mkrmke.net/ns/?x>
+     ;
 
-ex:Odie has isu = ex:dog ;
+ex:Odie
+    isu ex:dog
+     ;
 
-ex:animal has isc = [ex:cat, ex:dog] ;
+ex:animal
+    has isc = [ex:cat, ex:dog]
+     ;
 
-ex:person has isa = ex:homosapien ;
+ex:person
+    isa ex:homosapien
+     ;
 
-<http://mkrmke.net/ns/$top> has <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
+<http://mkrmke.net/ns/$top>
+    <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?>
+     ;
 
-entity has isc = <http://mkrmke.net/ns/?z>, 
-<http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?z> ;
+entity
+    has isc = <http://mkrmke.net/ns/?z>, 
+        <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?z>
+     ;
 
-u:Garfield has isa = [ex:cat, <http://mkrmke.net/ns/?x>] ;
+u:Garfield
+    isa [ex:cat, <http://mkrmke.net/ns/?x>]
+     ;
 

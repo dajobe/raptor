@@ -2,19 +2,11 @@ _:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/n
 _:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
 _:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/ns/x> .
 _:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> _:genid1 .
-##### DEBUG: mkr_new_blankTerm: _:genid3
 <http://mkrmke.net/ns/result> <http://mkrmke.net/ns/definition> _:genid3 .
-sub definition event: done
 _:genid3 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/relation> .
-event genus predicate: done
-##### DEBUG: mkr_new_blankTerm: _:genid4
 _:genid3 <http://mkrmke.net/ns/with> _:genid4 .
-event preposition nvevent: done
 _:genid4 <http://mkrmke.net/ns/format> <http://mkrmke.net/ns/mkr> .
-nvevent name value->mkrvalue: done
 _:genid4 <http://mkrmke.net/ns/relVariable> _:genid2 .
-nvevent name value->mkrvalue: done
-exit mkr_pplist: 
 <http://mkrmke.net/ns/result> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/relation> .
 _:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> _:a .
 _:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .

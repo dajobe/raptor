@@ -1,11 +1,4 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/rdfq-results.mkr> ;
-##### DEBUG: mkr_new_blankTerm: _:genid1
-sub definition event: done
-event genus predicate: done
-##### DEBUG: mkr_new_blankTerm: _:genid2
-event preposition nvevent: done
-nvevent name value->mkrvalue: done
-exit mkr_pplist: 
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
