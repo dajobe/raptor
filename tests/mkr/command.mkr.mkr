@@ -16,11 +16,11 @@ ke
         }, 
     has read = {
         has agent = ke, 
-        has from = (relation.mkr) ;
+        from (relation.mkr) ;
         }, 
     has select = {
         has agent = ke, 
-        has from = (relation.mkr), 
+        from (relation.mkr), 
         od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
         } ;
     

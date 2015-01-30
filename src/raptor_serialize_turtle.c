@@ -851,12 +851,14 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
 
   } else if(qname) {
     local = (char*)qname->local_name;
-    if(strcmp(local, "has") &&
-       strcmp(local, "isu") && strcmp(local, "do") && strcmp(local, "is") &&
+    if(strcmp(local, "has") && strcmp(local, "do") && strcmp(local, "is") &&
+       strcmp(local, "isu") && strcmp(local, "iss") && strcmp(local, "isa") &&
+       strcmp(local, "isp") && strcmp(local, "isg") && strcmp(local, "isc") &&
+       strcmp(local, "isa*") && strcmp(local, "isc*") &&
        strcmp(local, "at") && strcmp(local, "of") && strcmp(local, "with") &&
-       strcmp(local, "od") && strcmp(local, "in") && strcmp(local, "out") &&
-       strcmp(local, "where") && strcmp(local, "ho") && strcmp(local, "rel") &&
-       strcmp(local, "iss") && strcmp(local, "isa") && strcmp(local, "isa*")
+       strcmp(local, "od") && strcmp(local, "from") && strcmp(local, "to") &&
+       strcmp(local, "in") && strcmp(local, "out") && strcmp(local, "where") &&
+       strcmp(local, "ho") && strcmp(local, "rel")
        ) {
       /* not one of the above */ 
       context->has_count++;

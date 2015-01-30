@@ -20,7 +20,7 @@
     <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
     
 entity
-    has isc = <http://mkrmke.net/ns/?z> ;
+    isc <http://mkrmke.net/ns/?z> ;
     
 u:Garfield
     isa [:cat, <http://mkrmke.net/ns/?x>] ;
