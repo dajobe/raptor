@@ -4,6 +4,6 @@
 @prefix : <http://example.org/ns#> ;
 
 :a
-    has :b = [:c1, :c2, :c3, :c4, :c5], 
-        :x = [:c10, :c6, :c7, :c8, :c9] ;
+    has :b = (:c1, :c2, :c3, :c4, :c5), 
+    has :x = (:c10, :c6, :c7, :c8, :c9) ;
     

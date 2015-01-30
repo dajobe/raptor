@@ -37,10 +37,11 @@ typedef void mkr_value;
       * @MKR_ENUM:        unordered
     * @MKR_INGROUP:     inclusive
       * @MKR_LIST:        ordered
-      * @MKR_RDFLIST:  ordered (list with first,rest,nil)
-      * @MKR_RESULTSET:  rs:ResultSet
+      * @MKR_RDFLIST:     ordered (list with first,rest,nil)
       * @MKR_SET:         unordered
+      * @MKR_RDFSET:      unordered (set with first,rest,nil)
       * @MKR_MULTISET:    unordered, counted
+      * @MKR_RESULTSET: rs:ResultSet
       * @MKR_ARRAY:     key,value pairs
       * @MKR_HIERARCHY: isa,isu,iss relation
       * @MKR_RELATION:  list of values
@@ -54,11 +55,12 @@ typedef void mkr_value;
     * @MKR_NIL:            ( )
     * @MKR_OBJECT:         object
     * @MKR_RDFLIST:        first,rest,nil
-    * @MKR_VALUESET:       ( valueList )
     * @MKR_VALUELIST:      [ valueList ]
-    * @MKR_OBJECTSET:      ( objectList )
     * @MKR_OBJECTLIST:     [ objectList ]
     * @MKR_SENTENCELIST:   { sentenceList }
+    * @MKR_VALUESET:       ( valueList )
+    * @MKR_OBJECTSET:      ( objectList )
+    * @MKR_SENTENCESET:    { sentenceSet }
 
   * @MKR_WORD:
     * @MKR_PRONOUN:
@@ -156,12 +158,14 @@ typedef enum {
     MKR_NIL,
     MKR_OBJECT,
     MKR_RDFLIST,
-    MKR_RESULTSET,
-    MKR_VALUESET,
     MKR_VALUELIST,
-    MKR_OBJECTSET,
     MKR_OBJECTLIST,
+    MKR_RDFSET,
+    MKR_VALUESET,
+    MKR_OBJECTSET,
+    MKR_RESULTSET,
     MKR_SENTENCELIST,
+    MKR_SENTENCESET,
   MKR_WORD,
     MKR_PRONOUN,
     MKR_PREPOSITION,

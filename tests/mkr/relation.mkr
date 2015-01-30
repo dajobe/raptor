@@ -1,17 +1,8 @@
-# RAPTOR/tests/mkr/relation.mkr
-# Richard H. McCullough Jan/22/2015
+result is relation with format = mkr, relVariable = (x, y);
 
-@prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-@prefix rs: <http://jena.hpl.hp.com/2003/03/result-set#> ;
-
-result is relation with
-    format = mkr, 
-    relVariable = (x, y) ;
-begin relation result;
+begin relation result ;
 rel anon2, _:a ;
 rel 123, <http://example.com/resource1> ;
-rel <http://mkrmke.net/ns/2003-01-21>, <http://example.com/resource2> ;
+rel 2003-01-21, <http://example.com/resource2> ;
 rel anon1, _:a ;
-end relation result;
-
+end relation result ;

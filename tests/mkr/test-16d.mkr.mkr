@@ -4,8 +4,8 @@
 @prefix : <http://example.org/ns#> ;
 
 :a
-    has :b = [:c1, :c10, :c6, :c7, :c8, :c9], 
-        :x = [:c2, :c3], 
-        :y = :c4, 
-        :z = :c5 ;
+    has :b = (:c1, :c10, :c6, :c7, :c8, :c9), 
+    has :x = (:c2, :c3), 
+    has :y = :c4, 
+    has :z = :c5 ;
     

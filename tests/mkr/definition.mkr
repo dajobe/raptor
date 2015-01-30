@@ -1,18 +1,6 @@
-# RAPTOR/tests/mkr/definition.icn
-# Richard H. McCullough Jan/15/2015
-
-@prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ;
-
 man is animal with rational = true ;
-
-enum is group with exclusive = true, order = false ; 
-
-set is group with inclusive = true, order = false, duplicate = false ;
-
+enum is group with exclusive = true, order = false ;
+set is group with inclusive = true, order = false ;
 multiset is group with inclusive = true, order = false, duplicate = true ;
- 
 list is group with inclusive = true, order = true ;
-
 result is relation with format = mkr, relVariable = (x, y) ;

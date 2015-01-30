@@ -1,12 +1,8 @@
-# <html><xmp>
-# RAPTOR/tests/mkr/hierarchy.mkr
-# Richard H. McCullough Jan/23/2015
-
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
 
-mkr.ho is hierarchy with format = mkr;
+mkr.ho is hierarchy with format = mkr ;
 
 begin hierarchy mkr.ho ;
 ho 0, U:existent ;
@@ -42,5 +38,3 @@ ho 2,     iteration ;
 ho 2,     hierarchy_group ;
 ho 2,     relation_group ;
 end hierarchy mkr.ho ;
-
-# </xmp></html>

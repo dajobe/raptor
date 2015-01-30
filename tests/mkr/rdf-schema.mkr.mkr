@@ -3,6 +3,154 @@
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix : <../../2000/01/rdf-schema#> ;
 
+rdf:Alt
+    isu :Class, 
+    has :label = ("Alt"@en, "Choix"@fr), 
+    has :subClassOf = :Container ;
+    
+rdf:Bag
+    isu :Class, 
+    has :label = ("Bag"@en, "Ensemble"@fr), 
+    has :subClassOf = :Container ;
+    
+rdf:Property
+    isu :Class, 
+    has :comment = "The concept of a property.", 
+    has :label = ("Property"@en, "Propriété"@fr), 
+    has :subClassOf = :Resource ;
+    
+rdf:Seq
+    isu :Class, 
+    has :label = ("Sequence"@en, "Séquence"@fr), 
+    has :subClassOf = :Container ;
+    
+rdf:Statement
+    isu :Class, 
+    has :comment = "This represents the set of reified statements.", 
+    has :label = ("Déclaration"@fr, "Statement"@en), 
+    has :subClassOf = :Resource ;
+    
+rdf:object
+    isu rdf:Property, 
+    has :domain = rdf:Statement, 
+    has :label = ("object"@en, "objet"@fr) ;
+    
+rdf:predicate
+    isu rdf:Property, 
+    has :domain = rdf:Statement, 
+    has :label = ("predicate"@en, "prédicat"@fr), 
+    has :range = rdf:Property ;
+    
+rdf:subject
+    isu rdf:Property, 
+    has :domain = rdf:Statement, 
+    has :label = ("subject"@en, "sujet"@fr), 
+    has :range = :Resource ;
+    
+rdf:type
+    isu rdf:Property, 
+    has :comment = "Indicates membership of a class", 
+    has :label = ("type"@en, "type"@fr), 
+    has :range = :Class ;
+    
+rdf:value
+    isu rdf:Property, 
+    has :label = ("object"@en, "value"@fr) ;
+    
 <../../2000/01/rdf-schema#>
     has :seeAlso = <../../2000/01/rdf-schema-more> ;
+    
+:Class
+    isu :Class, 
+    has :comment = "The concept of Class", 
+    has :label = ("Class"@en, "Classe"@fr), 
+    has :subClassOf = :Resource ;
+    
+:ConstraintProperty
+    isu :Class, 
+    has :comment = "Properties used to express RDF Schema constraints.", 
+    has :label = ("ConstraintProperty"@en, "PropriétéContrainte"@fr), 
+    has :subClassOf = (rdf:Property, :ConstraintResource) ;
+    
+:ConstraintResource
+    isu :Class, 
+    has :comment = "Resources used to express RDF Schema constraints.", 
+    has :label = ("ConstraintResource"@en, "RessourceContrainte"@fr), 
+    has :subClassOf = :Resource ;
+    
+:Container
+    isu :Class, 
+    has :comment = "This represents the set Containers.", 
+    has :label = ("Container"@en, "Enveloppe"@fr), 
+    has :subClassOf = :Resource ;
+    
+:ContainerMembershipProperty
+    isu :Class, 
+    has :label = "ContainerMembershipProperty"@en, 
+    has :subClassOf = rdf:Property ;
+    
+:Literal
+    isu :Class, 
+    has :comment = "This represents the set of atomic values, eg. textual strings.", 
+    has :label = ("Literal"@en, "Littéral"@fr) ;
+    
+:Resource
+    isu :Class, 
+    has :comment = "The most general class", 
+    has :label = ("Resource"@en, "Ressource"@fr) ;
+    
+:comment
+    isu rdf:Property, 
+    has :comment = "Use this for descriptions", 
+    has :domain = :Resource, 
+    has :label = ("comment"@en, "commentaire"@fr), 
+    has :range = :Literal ;
+    
+:domain
+    isu :ConstraintProperty, 
+    has :comment = "This is how we associate a class with properties that its instances can have", 
+    has :label = ("domain"@en, "domaine"@fr) ;
+    
+:isDefinedBy
+    isu rdf:Property, 
+    has :comment = "Indicates a resource containing and defining the subject resource.", 
+    has :domain = :Resource, 
+    has :label = ("esDéfiniPar"@fr, "isDefinedBy"@en), 
+    has :range = :Resource, 
+    has :subPropertyOf = :seeAlso ;
+    
+:label
+    isu rdf:Property, 
+    has :comment = "Provides a human-readable version of a resource name.", 
+    has :domain = :Resource, 
+    has :label = ("label"@en, "label"@fr), 
+    has :range = :Literal ;
+    
+:range
+    isu :ConstraintProperty, 
+    has :comment = "Properties that can be used in a schema to provide constraints", 
+    has :domain = rdf:Property, 
+    has :label = ("range"@en, "étendue"@fr), 
+    has :range = :Class ;
+    
+:seeAlso
+    isu rdf:Property, 
+    has :comment = "Indicates a resource that provides information about the subject resource.", 
+    has :domain = :Resource, 
+    has :label = ("seeAlso"@en, "voirAussi"@fr), 
+    has :range = :Resource ;
+    
+:subClassOf
+    isu rdf:Property, 
+    has :comment = "Indicates membership of a class", 
+    has :domain = :Class, 
+    has :label = ("sousClasseDe"@fr, "subClassOf"@en), 
+    has :range = :Class ;
+    
+:subPropertyOf
+    isu rdf:Property, 
+    has :comment = "Indicates specialization of properties", 
+    has :domain = rdf:Property, 
+    has :label = ("sousPropriétéDe"@fr, "subPropertyOf"@en), 
+    has :range = rdf:Property ;
     

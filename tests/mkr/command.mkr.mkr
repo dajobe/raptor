@@ -7,22 +7,22 @@ dbopen
     
 ke
     has dbopen = {
-            has agent = ke, 
-                od (mkr.ho, hierarchy, gdbm, existent) ;
-            }, 
-        print = {
-            has agent = ke, 
-                od ("The quick brown fox jumped over the lazy dog.") ;
-            }, 
-        read = {
-            has agent = ke, 
-                from = (relation.mkr) ;
-            }, 
-        select = {
-            has agent = ke, 
-                from = (relation.mkr), 
-                od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
-            } ;
+        has agent = ke, 
+        od (mkr.ho, hierarchy, gdbm, existent) ;
+        }, 
+    has print = {
+        has agent = ke, 
+        od ("The quick brown fox jumped over the lazy dog") ;
+        }, 
+    has read = {
+        has agent = ke, 
+        has from = (relation.mkr) ;
+        }, 
+    has select = {
+        has agent = ke, 
+        has from = (relation.mkr), 
+        od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
+        } ;
     
 print
     iss action ;
@@ -35,9 +35,9 @@ select
     
 sh
     has wc = {
-            has agent = sh, 
-                od (<http://mkrmke.net/ns/*.mkr>) ;
-            } ;
+        has agent = sh, 
+        od (<http://mkrmke.net/ns/*.mkr>) ;
+        } ;
     
 wc
     iss action ;

@@ -1,31 +1,27 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/hoVerb.mkr> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
-@prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
-@prefix ex: <http://example.org/ex#> ;
+@prefix : <http://example.org/> ;
 
-ex:Garfield
+:Garfield
     isa <http://mkrmke.net/ns/?x>, 
     <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?y>, 
-    isu <http://mkrmke.net/ns/?x> ;
+    isu <http://mkrmke.net/ns/?z> ;
     
-ex:Odie
-    isu ex:dog ;
+:Odie
+    isu :dog ;
     
-ex:animal
-    has isc = [ex:cat, ex:dog] ;
-    
-ex:person
-    isa ex:homosapien ;
+:person
+    isa :homosapien ;
     
 <http://mkrmke.net/ns/$top>
     <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
     
 entity
-    has isc = <http://mkrmke.net/ns/?z>, 
-        <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?z> ;
+    has isc = <http://mkrmke.net/ns/?z> ;
     
 u:Garfield
-    isa [ex:cat, <http://mkrmke.net/ns/?x>] ;
+    isa [:cat, <http://mkrmke.net/ns/?x>] ;
     

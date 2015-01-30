@@ -1,15 +1,6 @@
-# RAPTOR/tests/mkr/test-31a.mkr
-# Richard H. McCullough Jan/11/2015
-
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-@prefix rss: <http://purl.org/rss/1.0/> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
 
-<http://example.org/block> has
-    rss:items = _:genid1 ;
-        {
-        _:genid1 has
-            rdf:_1 = <http://example.org/first-item>, 
-            rdf:_2 = <http://example.org/second-item>, 
-            rdf:type = rdf:Seq ;
-        } ;
-
+<http://example.org/block>
+    <http://purl.org/rss/1.0/items> = _:genid1 ;
+    

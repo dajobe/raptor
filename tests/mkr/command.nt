@@ -1,7 +1,7 @@
 <http://mkrmke.net/ns/print> <http://mkrmke.net/ns/iss> <http://mkrmke.net/ns/action> .
 <http://mkrmke.net/ns/ke> <http://mkrmke.net/ns/print> _:genid1 .
 _:genid1 <http://mkrmke.net/ns/agent> <http://mkrmke.net/ns/ke> .
-_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "The quick brown fox jumped over the lazy dog." .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> "The quick brown fox jumped over the lazy dog" .
 _:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#rest> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
 _:genid1 <http://mkrmke.net/ns/od> _:genid2 .
 <http://mkrmke.net/ns/read> <http://mkrmke.net/ns/iss> <http://mkrmke.net/ns/action> .

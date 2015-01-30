@@ -331,14 +331,17 @@ void mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* var2, rapt
 void mkr_ho(raptor_parser* rdf_parser, raptor_sequence* var2);
 void mkr_rel(raptor_parser* rdf_parser, raptor_sequence* var2);
 void mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist);
-void mkr_command(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_sequence* var3);
+void mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* var1, raptor_term* var2, raptor_sequence* var3);
 void mkr_assignment(raptor_parser* rdf_parser, raptor_term* var1, MKR_value* var3);
-void mkr_alias(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3);
-void mkr_definition(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3, raptor_sequence* var4);
-void mkr_hierarchy(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_sequence* var3);
-void mkr_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_sequence* var3);
-void mkr_part(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_sequence* var3);
+
+void mkr_poList(raptor_parser* rdf_parser, raptor_term* var1, raptor_sequence* var2);
+raptor_statement* mkr_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, MKR_nv* var3);
+raptor_statement* mkr_part(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, MKR_nv* var3);
+raptor_statement* mkr_hierarchy(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3);
+raptor_statement* mkr_alias(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3);
+
 void mkr_action(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3, raptor_sequence* var4);
+void mkr_definition(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_term* var3, raptor_sequence* var4);
 
 void raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *triple);
 int mkr_statement_print(const raptor_statement* statement, FILE *stream);

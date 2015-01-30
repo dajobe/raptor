@@ -1,22 +1,20 @@
-# RAPTOR/tests/mkr/question.mkr
-# Richard H. McCullough Jan/15/2015
-
-@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix mkr: <http://mkrmke.net/ns> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
-@mkb kb: <http://mkrmke.net/kb/> ;
-@mke ke: <http://mkrmke.net/ke/> ;
 
 animal isa entity ;
-person isa entity ;
 cat isa animal ;
 dog isa animal ;
-u:Garfield isa cat ;
-u:Odie isa dog ;
+person isa entity ;
 u:Bob_McCullough isa person ;
 u:Dick_McCullough isa person ;
+u:Garfield isa cat, 
+u:Odie isa dog ;
 
+entity isc* ? ;
 ?s isa* entity ;
 cat ?p entity ;
 u:Garfield isa* ?o ;
-?s isa ?o ;
 
+?s isa ?o ;
+?s ?p ?o ;

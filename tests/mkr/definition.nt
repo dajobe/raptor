@@ -12,7 +12,6 @@ _:genid5 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/group> .
 _:genid5 <http://mkrmke.net/ns/with> _:genid6 .
 _:genid6 <http://mkrmke.net/ns/inclusive> "true"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 _:genid6 <http://mkrmke.net/ns/order> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
-_:genid6 <http://mkrmke.net/ns/duplicate> "false"^^<http://www.w3.org/2001/XMLSchema#boolean> .
 <http://mkrmke.net/ns/multiset> <http://mkrmke.net/ns/definition> _:genid7 .
 _:genid7 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/group> .
 _:genid7 <http://mkrmke.net/ns/with> _:genid8 .

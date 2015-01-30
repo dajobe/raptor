@@ -1,4 +1,0 @@
-<http://example.org/block> <http://purl.org/rss/1.0/items> _:genid1 .
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://example.org/first-item> .
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://example.org/second-item> .
-_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .

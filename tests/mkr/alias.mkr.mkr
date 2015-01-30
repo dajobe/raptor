@@ -1,18 +1,8 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/alias.mkr> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
-@prefix owl: <../../../../../2002/07/owl#> ;
+@prefix : <http://example.org/> ;
 
-rdf:Bag
-    is multiset ;
-    
-rdf:Property
-    is characteristic ;
-    
-rdfs:Resource
-    is [existent, owl:Thing] ;
-    
-owl:sameAs
-    is is ;
+goat
+    isa animal ;
     

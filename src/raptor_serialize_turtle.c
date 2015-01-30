@@ -712,7 +712,7 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
   printf("\n");
 #endif
 
-  context->indent_count++;
+  /* context->indent_count++; */
   for(i = 0, (iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
       iter && !ri;
       i++, (ri = raptor_avltree_iterator_next(iter))) {
@@ -785,9 +785,11 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
   rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth+1);
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
+/*
   if(context->has_count > 0)
     if(context->indent_count-- > 0)
       raptor_turtle_writer_decrease_indent(turtle_writer);
+*/
   raptor_turtle_writer_newline(turtle_writer);
 
   /* Return error if emitting something failed */
@@ -860,7 +862,9 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
       context->has_count++;
       if(context->has_count == 1) {
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"has ", 4);
-        raptor_turtle_writer_increase_indent(turtle_writer);
+        /* raptor_turtle_writer_increase_indent(turtle_writer); */
+      } else {
+        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"has ", 4);
       }
       raptor_turtle_writer_qname(turtle_writer, qname);
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" =", 2);

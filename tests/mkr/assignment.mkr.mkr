@@ -4,12 +4,12 @@
 
 ke
     has print = [{
-            has agent = ke, 
-                od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
-            }, {
-            has agent = ke, 
-                od ("$x, $y, $z") ;
-            }] ;
+        has agent = ke, 
+        od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
+        }, {
+        has agent = ke, 
+        od ("$x, $y, $z") ;
+        }] ;
     
 print
     iss action ;

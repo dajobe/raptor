@@ -1,5 +1,1 @@
-<http://www.w3.org/2000/01/rdf-schema#Resource> <http://mkrmke.net/ns/is> <http://www.w3.org/2002/07/owl#Thing> .
-<http://www.w3.org/2000/01/rdf-schema#Resource> <http://mkrmke.net/ns/is> <http://mkrmke.net/ns/existent> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> <http://mkrmke.net/ns/is> <http://mkrmke.net/ns/characteristic> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> <http://mkrmke.net/ns/is> <http://mkrmke.net/ns/multiset> .
-<http://www.w3.org/2002/07/owl#sameAs> <http://mkrmke.net/ns/is> <http://mkrmke.net/ns/is> .
+<http://mkrmke.net/ns/goat> <http://mkrmke.net/ns/isa> <http://mkrmke.net/ns/animal> .

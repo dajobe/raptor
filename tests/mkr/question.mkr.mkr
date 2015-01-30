@@ -1,11 +1,11 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/question.mkr> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
-@prefix kb: <http://mkrmke.net/kb/> ;
-@prefix ke: <http://mkrmke.net/ke/> ;
 
 <http://mkrmke.net/ns/?s>
+    <http://mkrmke.net/ns/?p> = <http://mkrmke.net/ns/?o>, 
     isa <http://mkrmke.net/ns/?o>, 
     <http://mkrmke.net/ns/isa*> = entity ;
     
@@ -19,6 +19,9 @@ cat
 dog
     isa animal ;
     
+entity
+    <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
+    
 person
     isa entity ;
     
@@ -29,9 +32,5 @@ u:Dick_McCullough
     isa person ;
     
 u:Garfield
-    isa cat, 
     <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o> ;
-    
-u:Odie
-    isa dog ;
     

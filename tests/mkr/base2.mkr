@@ -1,9 +1,1 @@
-# RAPTOR/tests/mkr/base2.mkr
-# Richard H. McCullough Jan/15/2015
-
-@prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix : <http://www.example.com/ns#> ;
-
-:cat :isa :animal ;
-<dog> <isa> <animal> ;
 goat isa animal ;

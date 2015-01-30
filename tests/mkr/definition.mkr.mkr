@@ -1,60 +1,58 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/definition.mkr> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix rdfs: <../../../../../2000/01/rdf-schema#> ;
 
 enum
     has definition = {
-            has genus = group, 
-                with {
-                    has exclusive = true, 
-                        order = false ;
-                    } ;
+        has genus = group, 
+        with {
+            has exclusive = true, 
+            has order = false ;
             } ;
+        } ;
     
 list
     has definition = {
-            has genus = group, 
-                with {
-                    has inclusive = true, 
-                        order = true ;
-                    } ;
+        has genus = group, 
+        with {
+            has inclusive = true, 
+            has order = true ;
             } ;
+        } ;
     
 man
     has definition = {
-            has genus = animal, 
-                with {
-                    has rational = true ;
-                    } ;
+        has genus = animal, 
+        with {
+            has rational = true ;
             } ;
+        } ;
     
 multiset
     has definition = {
-            has genus = group, 
-                with {
-                    has duplicate = true, 
-                        inclusive = true, 
-                        order = false ;
-                    } ;
+        has genus = group, 
+        with {
+            has duplicate = true, 
+            has inclusive = true, 
+            has order = false ;
             } ;
+        } ;
     
 result
     has definition = {
-            has genus = relation, 
-                with {
-                    has format = mkr, 
-                        relVariable = (x, y) ;
-                    } ;
+        has genus = relation, 
+        with {
+            has format = mkr, 
+            has relVariable = (x, y) ;
             } ;
+        } ;
     
 set
     has definition = {
-            has genus = group, 
-                with {
-                    has duplicate = false, 
-                        inclusive = true, 
-                        order = false ;
-                    } ;
+        has genus = group, 
+        with {
+            has inclusive = true, 
+            has order = false ;
             } ;
+        } ;
     

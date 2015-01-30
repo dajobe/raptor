@@ -4,9 +4,9 @@
 
 man
     has definition = {
-            has genus = animal, 
-                with {
-                    has rational = true ;
-                    } ;
+        has genus = animal, 
+        with {
+            has rational = true ;
             } ;
+        } ;
     

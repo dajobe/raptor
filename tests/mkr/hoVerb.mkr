@@ -1,25 +1,18 @@
-# RAPTOR/tests/mkr/hoVerb.mkr
-# Richard H. McCullough Jan/15/2015
-
-# hierarchy verbs and questions
-
 @prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
-@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> ;
-@prefix ex: <http://example.org/ex#> ;
+@prefix : <http://example.org/> ;
 
-ex:person isa ex:homosapien ;
-u:Garfield isa ex:cat ;
-ex:Odie isu ex:dog ;
+u:Garfield isa :cat ;
+:Odie isu :dog ;
+:person isa :homosapien ;
 
-ex:animal isc ex:cat, ex:dog ;
-ex:animal, ex:person isa entity ;
+u:Garfield isa ?x ;
+:Garfield isa ?x ;
+:Garfield isu ?z ;
 
-ex:Garfield isu  ?x ;
-u:Garfield  isa  ?x ;
-ex:Garfield isa  ?x ;
-ex:Garfield isa* ?y ;
-entity isc  ?z ;
-entity isc* ?z ;
 $top isc* ? ;
+entity isc ?z ;
+
+:Garfield isa* ?y ;
+:animal isc :cat, :dog;
