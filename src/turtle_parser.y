@@ -266,7 +266,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate verb object literal resource blankNode collection
+%type <identifier> subject predicate object verb literal resource blankNode collection
 %type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
 
 /* mKR */
@@ -289,7 +289,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate verb object literal resource blankNode collection
+} subject predicate object verb literal resource blankNode collection
 
 %destructor {
   if($$)
