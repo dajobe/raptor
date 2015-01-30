@@ -266,8 +266,8 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 /* syntax error */
 %token ERROR_TOKEN
 
-%type <identifier> subject predicate object verb literal resource blankNode collection
-%type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
+%type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
+%type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt
 
 /* mKR */
 %type <value> "value"
