@@ -592,6 +592,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0176.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0176.xml"
 		0176-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0176.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0176.out 0176-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0177
@@ -664,6 +665,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0190.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0190.xml"
 		0190-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0190.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0190.out 0190-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0196
@@ -682,6 +684,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0198.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0198.xml"
 		0198-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0198.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0198.out 0198-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0201
@@ -694,12 +697,14 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0202.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0202.xml"
 		0202-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0202.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0202.out 0202-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0203
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0203.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0203.xml"
 		0203-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0203.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0203.out 0203-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0206
@@ -850,24 +855,28 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0236.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0236.xml"
 		0236-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0236.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0236.out 0236-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0237
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0237.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0237.xml"
 		0237-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0237.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0237.out 0237-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0238
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0238.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0238.xml"
 		0238-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0238.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0238.out 0238-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0239
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0239.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0239.xml"
 		0239-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0239.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0239.out 0239-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0246
@@ -934,6 +943,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0256.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0256.xml"
 		0256-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0256.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0256.out 0256-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0257
@@ -1030,66 +1040,77 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0272.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0272.xml"
 		0272-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0272.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0272.out 0272-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0273
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0273.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0273.xml"
 		0273-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0273.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0273.out 0273-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0274
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0274.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0274.xml"
 		0274-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0274.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0274.out 0274-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0275
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0275.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0275.xml"
 		0275-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0275.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0275.out 0275-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0276
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0276.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0276.xml"
 		0276-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0276.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0276.out 0276-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0277
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0277.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0277.xml"
 		0277-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0277.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0277.out 0277-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0278
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0278.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0278.xml"
 		0278-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0278.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0278.out 0278-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0279
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0279.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0279.xml"
 		0279-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0279.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0279.out 0279-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0280
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0280.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0280.xml"
 		0280-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0280.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0280.out 0280-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0281
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0281.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0281.xml"
 		0281-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0281.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0281.out 0281-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0282
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0282.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0282.xml"
 		0282-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0282.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0282.out 0282-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0283
@@ -1108,18 +1129,21 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0285.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0285.xml"
 		0285-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0285.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0285.out 0285-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0286
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0286.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0286.xml"
 		0286-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0286.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0286.out 0286-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0287
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0287.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0287.xml"
 		0287-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0287.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0287.out 0287-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0289
@@ -1156,6 +1180,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0295.xml"
 		0295-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0295.out 0295-res.nt"
+		EXPECTED_FAILURE
 	)
 
 	RAPPER_RDFDIFF_TEST(rdfa11.0296
@@ -1210,6 +1235,7 @@ IF(RAPTOR_PARSER_RDFA)
 		"${RAPPER} -f noNet -q -i rdfa11 -I http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0304.xml -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0304.xml"
 		0304-res.nt
 		"${RDFDIFF} -f ntriples -u http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0304.xml -t ntriples ${CMAKE_CURRENT_SOURCE_DIR}/0304.out 0304-res.nt"
+		EXPECTED_FAILURE
 	)
 
 ENDIF(RAPTOR_PARSER_RDFA)
