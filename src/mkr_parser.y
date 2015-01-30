@@ -329,7 +329,9 @@ pp: preposition objectList {$$ = mkr_new_pp(rdf_parser, MKR_PPOBJ, $1, $2);}
 ;
 
 value: object                          {$$ = mkr_new_value(rdf_parser, MKR_OBJECT,       $1);}  /* includes list and set */
-| LEFT_CURLY sentenceList RIGHT_CURLY  {$$ = mkr_new_value(rdf_parser, MKR_SENTENCELIST, $2);}  /* graph */
+| LEFT_CURLY sentenceList RIGHT_CURLY  {$$ = mkr_new_value(rdf_parser, MKR_SENTENCELIST, $2);}  /* view */
+
+/* | LEFT_CURLY sentenceSet RIGHT_CURLY  {$$ = mkr_new_value(rdf_parser, MKR_SENTENCESET, $2);}    graph - not distinguished from view */
 ;
 
 prefix: PREFIX {$$ = (unsigned char*)"@prefix";}
@@ -337,13 +339,51 @@ prefix: PREFIX {$$ = (unsigned char*)"@prefix";}
 | MKE          {$$ = (unsigned char*)"@mke";}
 ;
 
-viewOption: IN variable {$$ = $2;}
+viewOption: AT variable {$$ = $2;}
 | %empty                {$$ = NULL;}
 ;
 nameOption: variable DCOLON {$$ = $1;}
 | %empty                    {$$ = NULL;}
 ;
 
+
+subject: resource       { $$ = $1; }
+| blankNode             { $$ = $1; }
+| collection            { $$ = $1; }
+| set                   { $$ = $1; }
+| literal               { $$ = $1; }
+| variable              { $$ = $1; }
+;
+
+predicate: resource     { $$ = $1; }
+| preposition           { $$ = $1; }
+| variable              { $$ = $1; }
+;
+
+object: resource        { $$ = $1; }
+| blankNode             { $$ = $1; }
+| collection            { $$ = $1; }
+| set                   { $$ = $1; }
+| literal               { $$ = $1; }
+| variable              { $$ = $1; }
+/*
+| blankNodePropertyList { $$ = $1; }
+*/
+;
+
+/* RDF list unsing first, rest, nil */
+collection: LEFT_ROUND RIGHT_ROUND   {$$ = raptor_new_term_from_uri(rdf_parser->world, RAPTOR_RDF_nil_URI(rdf_parser->world)); $$->mkrtype = MKR_LIST;}
+| LEFT_ROUND objectList RIGHT_ROUND  {$$ = mkr_new_rdflist(rdf_parser, $2); $$->mkrtype = MKR_RDFLIST;}
+;
+
+/* RDF set unsing first, rest, nil */
+set: LEFT_SQUARE RIGHT_SQUARE          {$$ = raptor_new_term_from_uri(rdf_parser->world, RAPTOR_RDF_nil_URI(rdf_parser->world)); $$->mkrtype = MKR_SET;}
+| LEFT_SQUARE objectList RIGHT_SQUARE  {$$ = mkr_new_rdflist(rdf_parser, $2); $$->mkrtype = MKR_OBJECTSET;}
+;
+
+
+/* further details in mkr_sentence.c */
+/* variable: no ':', yes '?' '$' '*' */
 /* question is sentence with at least one ?variable */
 
 sentence: viewOption nameOption sentence SEMICOLON {mkr_sentence(rdf_parser, $1, $2, $3);}
@@ -358,19 +398,27 @@ sentence: viewOption nameOption sentence SEMICOLON {mkr_sentence(rdf_parser, $1,
 | doVerb  object                         SEMICOLON {mkr_command(rdf_parser, NULL, $1, $2, NULL);}
 | doVerb  object ppList                  SEMICOLON {mkr_command(rdf_parser, NULL, $1, $2, $3);}
 
-/* Turtle style */
-| subject predicateObjectList            SEMICOLON {mkr_poList(rdf_parser, $1, $2);}
-/*
-| subject hasVerb nv                     SEMICOLON {mkr_attribute(rdf_parser, $1, $2, $3);}
-| subject hoVerb  object                 SEMICOLON {mkr_hierarchy(rdf_parser, $1, $2, $3);}
-| subject isVerb  object                 SEMICOLON {mkr_alias(rdf_parser, $1, $2, $3);}
-*/
 | subject doVerb  object                 SEMICOLON {mkr_action(rdf_parser, $1, $2, $3, NULL);}
 | subject doVerb  object ppList          SEMICOLON {mkr_action(rdf_parser, $1, $2, $3, $4);}
 | subject isVerb  object ppList          SEMICOLON {mkr_definition(rdf_parser, $1, $2, $3, $4);}
 
+/* Turtle style */
+| subject predicateObjectList            SEMICOLON {mkr_poList(rdf_parser, $1, $2);}
+
+/* old mKR stye - not accepted
+| subject hasVerb nvList                 SEMICOLON {$$ = mkr_attribute(rdf_parser, $1, $2, $3);}
+| subject hoVerb  objectList             SEMICOLON {$$ = mkr_hierarchy(rdf_parser, $1, $2, $3);}
+| subject isVerb  objectList             SEMICOLON {$$ = mkr_alias(rdf_parser, $1, $2, $3);}
+*/
+
 | error SEMICOLON {$$ = NULL;}
 ;
+
+predicateObject: hasVerb nv {$$ = mkr_attribute(rdf_parser, NULL, $1, $2);}
+| hoVerb  object            {$$ = mkr_hierarchy(rdf_parser, NULL, $1, $2);}
+| isVerb  object            {$$ = mkr_alias(rdf_parser, NULL, $1, $2);}
+;
+
 
 predicateObjectList: predicateObjectList COMMA predicateObject
 {
@@ -443,22 +491,6 @@ predicateObjectList: predicateObjectList COMMA predicateObject
   }
 }
 ;
-
-predicateObject: hasVerb nv {$$ = mkr_attribute(rdf_parser, NULL, $1, $2);}
-| hoVerb  object            {$$ = mkr_hierarchy(rdf_parser, NULL, $1, $2);}
-| isVerb  object            {$$ = mkr_alias(rdf_parser, NULL, $1, $2);}
-;
-
-/* RDF list unsing first, rest, nil */
-collection: LEFT_ROUND RIGHT_ROUND   {$$ = raptor_new_term_from_uri(rdf_parser->world, RAPTOR_RDF_nil_URI(rdf_parser->world)); $$->mkrtype = MKR_LIST;}
-| LEFT_ROUND objectList RIGHT_ROUND  {$$ = mkr_new_rdflist(rdf_parser, $2); $$->mkrtype = MKR_RDFLIST;}
-;
-
-/* RDF set unsing first, rest, nil */
-set: LEFT_SQUARE RIGHT_SQUARE          {$$ = raptor_new_term_from_uri(rdf_parser->world, RAPTOR_RDF_nil_URI(rdf_parser->world)); $$->mkrtype = MKR_SET;}
-| LEFT_SQUARE objectList RIGHT_SQUARE  {$$ = mkr_new_rdflist(rdf_parser, $2); $$->mkrtype = MKR_OBJECTSET;}
-;
-
 
 
 objectList: objectList COMMA object
@@ -746,93 +778,6 @@ ppList: ppList pp
   }
 }
 ;
-
-subject: resource
-{
-  $$ = $1;
-}
-| blankNode
-{
-  $$ = $1;
-}
-| collection
-{
-  $$ = $1;
-}
-| set
-{
-  $$ = $1;
-}
-| literal
-{
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("subject literal=");
-  raptor_term_print_as_ntriples($1, stdout);
-  printf("\n");
-#endif
-
-  $$ = $1;
-}
-| variable
-{
-  $$ = $1;
-}
-;
-
-
-predicate: resource
-{
-  $$ = $1;
-}
-| preposition
-{
-  $$ = $1;
-}
-| variable
-{
-  $$ = $1;
-}
-;
-
-
-object: resource
-{
-  $$ = $1;
-}
-| blankNode
-{
-  $$ = $1;
-}
-| collection
-{
-  $$ = $1;
-}
-| set
-{
-  $$ = $1;
-}
-/*************************
-| blankNodePropertyList
-{
-  $$ = $1;
-}
-*************************/
-| literal
-{
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("object literal=");
-  raptor_term_print_as_ntriples($1, stdout);
-  printf("\n");
-#endif
-
-  $$ = $1;
-}
-| variable
-{
-  $$ = $1;
-}
-;
-
 variable: VARIABLE {$$ = mkr_new_variable(rdf_parser, MKR_VARIABLE, $1);}
 ;
 
