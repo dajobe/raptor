@@ -76,8 +76,17 @@ struct raptor_turtle_parser_s {
   /* Allow TRIG extensions */
   int trig;
 
+  /* Last run of many */
+  int is_end;
+
+  /* mKR parser */
   /* Non 0 for mKR parser */
   int mkr;
+
+  /* global variables for ho,rel groups */
+  raptor_term* groupType;
+  raptor_term* groupName;
+  raptor_sequence* groupList;
 };
 
 

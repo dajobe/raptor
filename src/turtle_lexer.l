@@ -232,7 +232,6 @@ CSV_NAME [\x00-\x21\x23-\xFF]+
 "many"		{ return MANY;	}
 "the"		{ return THE;	}
 
-"if"		{ return IF;	}
 "then"		{ return THEN;	}
 "else"		{ return ELSE;	}
 "unknown"	{ return UNKNOWN;}
@@ -242,6 +241,7 @@ CSV_NAME [\x00-\x21\x23-\xFF]+
 "or"		{ return OR;	}
 "xor"		{ return XOR;	}
 
+"iff"		{ return IFF;	}
 "implies"	{ return IMPLIES;}
 "causes"	{ return CAUSES;}
 "because"	{ return BECAUSE;}

@@ -72,11 +72,6 @@
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
 
 
-/* global variables */
-extern raptor_term* groupType = NULL;
-extern raptor_term* groupName = NULL;
-extern raptor_sequence* groupList = NULL;
-
 /* Prototypes for testing */
 void mkr_spo(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* predicate, raptor_term* object);
 void mkr_attribute_po(raptor_parser* rdf_parser, raptor_term* var1, unsigned char* var2, raptor_sequence* var3);
@@ -268,6 +263,7 @@ void
 mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* var2, raptor_term* var3)
 {
   raptor_world* world = rdf_parser->world;
+  raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
   raptor_term* t1 = NULL;
   raptor_term* t2 = NULL;
   raptor_term* t3 = NULL;
@@ -288,50 +284,50 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* var2, raptor_te
   printf(";\n");
 #endif
 
-  groupType = raptor_term_copy(var2);
-  groupName = raptor_term_copy(var3);
+  mkr_parser->groupType = raptor_term_copy(var2);
+  mkr_parser->groupName = raptor_term_copy(var3);
   switch(type) {
     case MKR_BEGIN:
-      t1 = raptor_term_copy(groupName);
+      t1 = raptor_term_copy(mkr_parser->groupName);
       t2 = raptor_term_copy(RAPTOR_RDF_type_term(world));
-      t3 = raptor_term_copy(groupType);
+      t3 = raptor_term_copy(mkr_parser->groupType);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple);
-      groupList = raptor_new_sequence((raptor_data_free_handler)raptor_free_term,
-                                     (raptor_data_print_handler)raptor_term_print_as_ntriples);
+      mkr_parser->groupList = raptor_new_sequence((raptor_data_free_handler)raptor_free_term,
+                                                  (raptor_data_print_handler)raptor_term_print_as_ntriples);
       break;
 
     case MKR_END:
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       printf("groupList = (");
-      raptor_sequence_print(groupList, stdout);  /* core dump ? */
+      raptor_sequence_print(mkr_parser->groupList, stdout);  /* core dump ? */
       printf(")\n");
 #endif
 
-      t1 = raptor_term_copy(groupName);
-      if(raptor_term_equals(groupType, mkr_new_variable(rdf_parser, MKR_VARIABLE, (unsigned char*)"hierarchy")))
+      t1 = raptor_term_copy(mkr_parser->groupName);
+      if(raptor_term_equals(mkr_parser->groupType, mkr_new_variable(rdf_parser, MKR_VARIABLE, (unsigned char*)"hierarchy")))
         t2 = raptor_term_copy(mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"ho"));
-      else if(raptor_term_equals(groupType, mkr_new_variable(rdf_parser, MKR_VARIABLE, (unsigned char*)"relation")))
+      else if(raptor_term_equals(mkr_parser->groupType, mkr_new_variable(rdf_parser, MKR_VARIABLE, (unsigned char*)"relation")))
         t2 = raptor_term_copy(mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"rel"));
       else
         t2 = raptor_term_copy(mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"groupList"));
-      t4 = raptor_term_copy(mkr_new_rdflist(rdf_parser, groupList));
+      t4 = raptor_term_copy(mkr_new_rdflist(rdf_parser, mkr_parser->groupList));
       triple = raptor_new_statement_from_nodes(world, t1, t2, t4, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple);
 
-      if(groupType) {
-        raptor_free_term(groupType);
-        groupType = NULL;
+      if(mkr_parser->groupType) {
+        raptor_free_term(mkr_parser->groupType);
+        mkr_parser->groupType = NULL;
       }
-      if(groupName) {
-        raptor_free_term(groupName);
-        groupName = NULL;
+      if(mkr_parser->groupName) {
+        raptor_free_term(mkr_parser->groupName);
+        mkr_parser->groupName = NULL;
       }
-      if(groupList) {
-        /* raptor_free_sequence(groupList);  core dump */
-        groupList = NULL;
+      if(mkr_parser->groupList) {
+        /* raptor_free_sequence(mkr_parser->groupList);  core dump */
+        mkr_parser->groupList = NULL;
       }
       break;
   }
@@ -347,6 +343,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* var2, raptor_te
 void
 mkr_ho(raptor_parser* rdf_parser, raptor_sequence* var2)
 {
+  raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
   raptor_term* hoList = NULL;
   raptor_term* t4 = NULL;
 
@@ -358,10 +355,10 @@ mkr_ho(raptor_parser* rdf_parser, raptor_sequence* var2)
   
   hoList = mkr_new_rdflist(rdf_parser, var2);
   t4 = raptor_term_copy(hoList);
-  raptor_sequence_push(groupList, t4);
+  raptor_sequence_push(mkr_parser->groupList, t4);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: mkr_ho: exit\n");
+  printf("exit mkr_ho\n");
 #endif
 }
 
@@ -370,6 +367,7 @@ mkr_ho(raptor_parser* rdf_parser, raptor_sequence* var2)
 void
 mkr_rel(raptor_parser* rdf_parser, raptor_sequence* var2)
 {
+  raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
   raptor_term* relList = NULL;
   raptor_term* t4 = NULL;
 
@@ -381,10 +379,10 @@ mkr_rel(raptor_parser* rdf_parser, raptor_sequence* var2)
 
   relList = mkr_new_rdflist(rdf_parser, var2);
   t4 = raptor_term_copy(relList);
-  raptor_sequence_push(groupList, t4);
+  raptor_sequence_push(mkr_parser->groupList, t4);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: exit mkr_rel\n");
+  printf("exit mkr_rel\n");
 #endif
 }
 
@@ -883,6 +881,9 @@ mkr_part(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, MKR_nv
   raptor_world* world = rdf_parser->world;
   mkr_type type = MKR_UNKNOWN;
   MKR_value* value = NULL;
+  raptor_term* t1 = NULL;
+  raptor_term* t2 = NULL;
+  raptor_term* t3 = NULL;
   raptor_statement* triple = NULL;
 
 #if defined(RAPTOR_DEBUG)
@@ -897,9 +898,8 @@ mkr_part(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, MKR_nv
 
   { /* nvList */
      MKR_nv* nv = (MKR_nv*)var3;
-     raptor_term* t1 = raptor_term_copy(var1);
-     raptor_term* t2 = nv->nvName;
-     raptor_term* t3 = nv->nvValue;
+     t1 = raptor_term_copy(var1);
+     t2 = nv->nvName;
      value = nv->nvValue;
      switch(type = value->mkrtype) {
        case MKR_RAPTOR_TERM:
@@ -1170,7 +1170,10 @@ MKR_TYPE_NAME(mkr_type n)
     case MKR_IF:		return "MKR_IF";			break;
     case MKR_THEN:		return "MKR_THEN";			break;
     case MKR_ELSE:		return "MKR_ELSE";			break;
-    case MKR_FI:		return "MKR_CONJUNCTION";		break;
+    case MKR_FI:		return "MKR_FI";			break;
+    case MKR_AND:		return "MKR_AND";			break;
+    case MKR_OR:		return "MKR_OR";			break;
+    case MKR_XOR:		return "MKR_XOR";			break;
     case MKR_IFF:		return "MKR_IFF";			break;
     case MKR_IMPLIES:		return "MKR_IMPLIES";			break;
     case MKR_CAUSES:		return "MKR_CAUSES";			break;

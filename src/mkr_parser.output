@@ -6,8 +6,10 @@ Nonterminals useless in grammar
 
 Terminals unused in grammar
 
-   "no"
+   "any"
+   "all"
    "optional"
+   "no"
    "some"
    "many"
    "the"
@@ -20,11 +22,10 @@ Terminals unused in grammar
    "and"
    "or"
    "xor"
+   "iff"
    "implies"
    "causes"
    "because"
-   "any"
-   "all"
    "every"
    "while"
    "until"
@@ -205,166 +206,167 @@ Terminals, with rules where they appear
 
 $end (0) 0
 error (256) 50
-"no" (258)
-"optional" (259)
-"some" (260)
-"many" (261)
-"the" (262)
-"if" (263)
-"then" (264)
-"else" (265)
-"unknown" (266)
-"fi" (267)
-"not" (268)
-"and" (269)
-"or" (270)
-"xor" (271)
-"implies" (272)
-"causes" (273)
-"because" (274)
-"any" (275)
-"all" (276)
-"every" (277)
-"while" (278)
-"until" (279)
-"when" (280)
-"forSome" (281)
-"forAll" (282)
-"me" (283)
-"I" (284)
-"you" (285)
-"it" (286)
-"he" (287)
-"she" (288)
-"here" (289)
-"now" (290)
-"is" (291) 63
-"isa" (292) 66
-"iss" (293) 65
-"isu" (294) 64
-"isa*" (295) 67
-"isc" (296) 70
-"isg" (297) 69
-"isp" (298) 68
-"isc*" (299) 71
-"has" (300) 73
-"haspart" (301) 74
-"isapart" (302) 75
-"do" (303) 76
-"hdo" (304) 77
-"!" (305) 78
-"at" (306) 12 79
-"of" (307) 80
-"with" (308) 81
-"od" (309) 82
-"from" (310) 83
-"to" (311) 84
-"in" (312) 85
-"out" (313) 86
-"where" (314) 87
-"ho" (315) 40
-"rel" (316) 41
-"begin" (317) 39
-"end" (318) 42
-"=" (319) 4
-":=" (320) 43
-"let" (321)
-"::" (322) 14
-"**" (323)
-"a" (324)
-"^" (325) 89 90 91 92
-"." (326)
-"," (327) 54 56 58
-";" (328) 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
-"[" (329) 33 34
-"]" (330) 33 34
-"(" (331) 31 32
-")" (332) 31 32
-"{" (333) 8 36
-"}" (334) 8 36
-"true" (335) 97
-"false" (336) 98
-"@prefix" (337) 9
-"@mkb" (338) 10
-"@mke" (339) 11
-"@base" (340) 37
-"PREFIX" (341)
-"BASE" (342)
-"string literal" (343) 88 89 90 91 92 93
-"URI literal" (344) 37 38 89 91 99
-"Graph URI literal {" (345)
-"blank node" (346) 101
-"QName" (347) 90 92 100
-"identifier" (348) 38
-"langtag" (349) 88 89 90
-"integer literal" (350) 94
-"floating point literal" (351) 95
-"decimal literal" (352) 96
-"variable" (353) 62
-ERROR_TOKEN (354)
+"any" (258)
+"all" (259)
+"optional" (260)
+"no" (261)
+"some" (262)
+"many" (263)
+"the" (264)
+"if" (265)
+"then" (266)
+"else" (267)
+"unknown" (268)
+"fi" (269)
+"not" (270)
+"and" (271)
+"or" (272)
+"xor" (273)
+"iff" (274)
+"implies" (275)
+"causes" (276)
+"because" (277)
+"every" (278)
+"while" (279)
+"until" (280)
+"when" (281)
+"forSome" (282)
+"forAll" (283)
+"me" (284)
+"I" (285)
+"you" (286)
+"it" (287)
+"he" (288)
+"she" (289)
+"here" (290)
+"now" (291)
+"is" (292) 63
+"isa" (293) 66
+"iss" (294) 65
+"isu" (295) 64
+"isa*" (296) 67
+"isc" (297) 70
+"isg" (298) 69
+"isp" (299) 68
+"isc*" (300) 71
+"has" (301) 73
+"haspart" (302) 74
+"isapart" (303) 75
+"do" (304) 76
+"hdo" (305) 77
+"!" (306) 78
+"at" (307) 12 79
+"of" (308) 80
+"with" (309) 81
+"od" (310) 82
+"from" (311) 83
+"to" (312) 84
+"in" (313) 85
+"out" (314) 86
+"where" (315) 87
+"begin" (316) 39
+"end" (317) 42
+"ho" (318) 40
+"rel" (319) 41
+"=" (320) 4
+":=" (321) 43
+"let" (322)
+"::" (323) 14
+"**" (324)
+"a" (325)
+"^" (326) 89 90 91 92
+"." (327)
+"," (328) 54 56 58
+";" (329) 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50
+"[" (330) 33 34
+"]" (331) 33 34
+"(" (332) 31 32
+")" (333) 31 32
+"{" (334) 8 36
+"}" (335) 8 36
+"true" (336) 97
+"false" (337) 98
+"@prefix" (338) 9
+"@mkb" (339) 10
+"@mke" (340) 11
+"@base" (341) 37
+"PREFIX" (342)
+"BASE" (343)
+"string literal" (344) 88 89 90 91 92 93
+"URI literal" (345) 37 38 89 91 99
+"Graph URI literal {" (346)
+"blank node" (347) 101
+"QName" (348) 90 92 100
+"identifier" (349) 38
+"langtag" (350) 88 89 90
+"integer literal" (351) 94
+"floating point literal" (352) 95
+"decimal literal" (353) 96
+"variable" (354) 62
+ERROR_TOKEN (355)
 
 
 Nonterminals, with rules where they appear
 
-$accept (100)
+$accept (101)
     on left: 0
-Document (101)
+Document (102)
     on left: 1, on right: 0
-sentenceList (102)
+sentenceList (103)
     on left: 2 3, on right: 1 2 8 36
-nv (103)
+nv (104)
     on left: 4, on right: 51 58 59
-pp (104)
+pp (105)
     on left: 5 6, on right: 60 61
-value (105)
+value (106)
     on left: 7 8, on right: 4 43
-prefix (106)
+prefix (107)
     on left: 9 10 11, on right: 38
-viewOption (107)
+viewOption (108)
     on left: 12 13, on right: 35
-nameOption (108)
+nameOption (109)
     on left: 14 15, on right: 35
-subject (109)
+subject (110)
     on left: 16 17 18 19 20 21, on right: 39 42 46 47 48 49
-predicate (110)
+predicate (111)
     on left: 22 23 24, on right: 4
-object (111)
+object (112)
     on left: 25 26 27 28 29 30, on right: 7 44 45 46 47 48 52 53 56
     57
-collection (112)
+collection (113)
     on left: 31 32, on right: 18 27
-set (113)
+set (114)
     on left: 33 34, on right: 19 28
-sentence (114)
+sentence (115)
     on left: 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50, on right:
     2 35
-predicateObject (115)
+predicateObject (116)
     on left: 51 52 53, on right: 54 55
-predicateObjectList (116)
+predicateObjectList (117)
     on left: 54 55, on right: 49 54
-objectList (117)
+objectList (118)
     on left: 56 57, on right: 5 32 34 40 41 56
-nvList (118)
+nvList (119)
     on left: 58 59, on right: 6 58
-ppList (119)
+ppList (120)
     on left: 60 61, on right: 45 47 48 60
-variable (120)
+variable (121)
     on left: 62, on right: 12 14 21 24 30 39 42 43 72
-isVerb (121)
+isVerb (122)
     on left: 63, on right: 48 53
-hoVerb (122)
+hoVerb (123)
     on left: 64 65 66 67 68 69 70 71 72, on right: 52
-hasVerb (123)
+hasVerb (124)
     on left: 73 74 75, on right: 51
-doVerb (124)
+doVerb (125)
     on left: 76 77 78, on right: 44 45 46 47
-preposition (125)
+preposition (126)
     on left: 79 80 81 82 83 84 85 86 87, on right: 5 6 23
-literal (126)
+literal (127)
     on left: 88 89 90 91 92 93 94 95 96 97 98, on right: 20 29
-resource (127)
+resource (128)
     on left: 99 100, on right: 16 22 25
-blankNode (128)
+blankNode (129)
     on left: 101, on right: 17 26
 
 
@@ -395,10 +397,10 @@ State 2
     "hdo"                     shift, and go to state 6
     "!"                       shift, and go to state 7
     "at"                      shift, and go to state 8
-    "ho"                      shift, and go to state 9
-    "rel"                     shift, and go to state 10
-    "begin"                   shift, and go to state 11
-    "end"                     shift, and go to state 12
+    "begin"                   shift, and go to state 9
+    "end"                     shift, and go to state 10
+    "ho"                      shift, and go to state 11
+    "rel"                     shift, and go to state 12
     "["                       shift, and go to state 13
     "("                       shift, and go to state 14
     "{"                       shift, and go to state 15
@@ -423,10 +425,10 @@ State 2
     "hdo"                     [reduce using rule 13 (viewOption)]
     "!"                       [reduce using rule 13 (viewOption)]
     "at"                      [reduce using rule 13 (viewOption)]
-    "ho"                      [reduce using rule 13 (viewOption)]
-    "rel"                     [reduce using rule 13 (viewOption)]
     "begin"                   [reduce using rule 13 (viewOption)]
     "end"                     [reduce using rule 13 (viewOption)]
+    "ho"                      [reduce using rule 13 (viewOption)]
+    "rel"                     [reduce using rule 13 (viewOption)]
     "["                       [reduce using rule 13 (viewOption)]
     "("                       [reduce using rule 13 (viewOption)]
     "{"                       [reduce using rule 13 (viewOption)]
@@ -504,6 +506,24 @@ State 8
 
 State 9
 
+   39 sentence: "begin" . variable subject ";"
+
+    "variable"  shift, and go to state 29
+
+    variable  go to state 43
+
+
+State 10
+
+   42 sentence: "end" . variable subject ";"
+
+    "variable"  shift, and go to state 29
+
+    variable  go to state 44
+
+
+State 11
+
    40 sentence: "ho" . objectList ";"
 
     "["                       shift, and go to state 13
@@ -519,17 +539,17 @@ State 9
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    object      go to state 43
-    collection  go to state 44
-    set         go to state 45
-    objectList  go to state 46
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    object      go to state 45
+    collection  go to state 46
+    set         go to state 47
+    objectList  go to state 48
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
-State 10
+State 12
 
    41 sentence: "rel" . objectList ";"
 
@@ -546,32 +566,14 @@ State 10
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    object      go to state 43
-    collection  go to state 44
-    set         go to state 45
-    objectList  go to state 51
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
-
-
-State 11
-
-   39 sentence: "begin" . variable subject ";"
-
-    "variable"  shift, and go to state 29
-
-    variable  go to state 52
-
-
-State 12
-
-   42 sentence: "end" . variable subject ";"
-
-    "variable"  shift, and go to state 29
-
-    variable  go to state 53
+    object      go to state 45
+    collection  go to state 46
+    set         go to state 47
+    objectList  go to state 53
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 13
@@ -593,14 +595,14 @@ State 13
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    object      go to state 43
-    collection  go to state 44
-    set         go to state 45
+    object      go to state 45
+    collection  go to state 46
+    set         go to state 47
     objectList  go to state 55
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 14
@@ -622,14 +624,14 @@ State 14
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    object      go to state 43
-    collection  go to state 44
-    set         go to state 45
+    object      go to state 45
+    collection  go to state 46
+    set         go to state 47
     objectList  go to state 57
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 15
@@ -850,12 +852,12 @@ State 37
     "variable"                shift, and go to state 29
 
     object      go to state 85
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 38
@@ -895,73 +897,6 @@ State 42
 
 State 43
 
-   57 objectList: object .
-
-    $default  reduce using rule 57 (objectList)
-
-
-State 44
-
-   27 object: collection .
-
-    $default  reduce using rule 27 (object)
-
-
-State 45
-
-   28 object: set .
-
-    $default  reduce using rule 28 (object)
-
-
-State 46
-
-   40 sentence: "ho" objectList . ";"
-   56 objectList: objectList . "," object
-
-    ","  shift, and go to state 86
-    ";"  shift, and go to state 87
-
-
-State 47
-
-   30 object: variable .
-
-    $default  reduce using rule 30 (object)
-
-
-State 48
-
-   29 object: literal .
-
-    $default  reduce using rule 29 (object)
-
-
-State 49
-
-   25 object: resource .
-
-    $default  reduce using rule 25 (object)
-
-
-State 50
-
-   26 object: blankNode .
-
-    $default  reduce using rule 26 (object)
-
-
-State 51
-
-   41 sentence: "rel" objectList . ";"
-   56 objectList: objectList . "," object
-
-    ","  shift, and go to state 86
-    ";"  shift, and go to state 88
-
-
-State 52
-
    39 sentence: "begin" variable . subject ";"
 
     "["                       shift, and go to state 13
@@ -977,16 +912,16 @@ State 52
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    subject     go to state 89
+    subject     go to state 86
     collection  go to state 33
     set         go to state 34
-    variable    go to state 90
+    variable    go to state 87
     literal     go to state 38
     resource    go to state 39
     blankNode   go to state 40
 
 
-State 53
+State 44
 
    42 sentence: "end" variable . subject ";"
 
@@ -1003,13 +938,80 @@ State 53
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    subject     go to state 91
+    subject     go to state 88
     collection  go to state 33
     set         go to state 34
-    variable    go to state 90
+    variable    go to state 87
     literal     go to state 38
     resource    go to state 39
     blankNode   go to state 40
+
+
+State 45
+
+   57 objectList: object .
+
+    $default  reduce using rule 57 (objectList)
+
+
+State 46
+
+   27 object: collection .
+
+    $default  reduce using rule 27 (object)
+
+
+State 47
+
+   28 object: set .
+
+    $default  reduce using rule 28 (object)
+
+
+State 48
+
+   40 sentence: "ho" objectList . ";"
+   56 objectList: objectList . "," object
+
+    ","  shift, and go to state 89
+    ";"  shift, and go to state 90
+
+
+State 49
+
+   30 object: variable .
+
+    $default  reduce using rule 30 (object)
+
+
+State 50
+
+   29 object: literal .
+
+    $default  reduce using rule 29 (object)
+
+
+State 51
+
+   25 object: resource .
+
+    $default  reduce using rule 25 (object)
+
+
+State 52
+
+   26 object: blankNode .
+
+    $default  reduce using rule 26 (object)
+
+
+State 53
+
+   41 sentence: "rel" objectList . ";"
+   56 objectList: objectList . "," object
+
+    ","  shift, and go to state 89
+    ";"  shift, and go to state 91
 
 
 State 54
@@ -1024,7 +1026,7 @@ State 55
    34 set: "[" objectList . "]"
    56 objectList: objectList . "," object
 
-    ","  shift, and go to state 86
+    ","  shift, and go to state 89
     "]"  shift, and go to state 92
 
 
@@ -1040,7 +1042,7 @@ State 57
    32 collection: "(" objectList . ")"
    56 objectList: objectList . "," object
 
-    ","  shift, and go to state 86
+    ","  shift, and go to state 89
     ")"  shift, and go to state 93
 
 
@@ -1054,10 +1056,10 @@ State 58
     "hdo"                     shift, and go to state 6
     "!"                       shift, and go to state 7
     "at"                      shift, and go to state 8
-    "ho"                      shift, and go to state 9
-    "rel"                     shift, and go to state 10
-    "begin"                   shift, and go to state 11
-    "end"                     shift, and go to state 12
+    "begin"                   shift, and go to state 9
+    "end"                     shift, and go to state 10
+    "ho"                      shift, and go to state 11
+    "rel"                     shift, and go to state 12
     "["                       shift, and go to state 13
     "("                       shift, and go to state 14
     "{"                       shift, and go to state 15
@@ -1082,10 +1084,10 @@ State 58
     "hdo"                     [reduce using rule 13 (viewOption)]
     "!"                       [reduce using rule 13 (viewOption)]
     "at"                      [reduce using rule 13 (viewOption)]
-    "ho"                      [reduce using rule 13 (viewOption)]
-    "rel"                     [reduce using rule 13 (viewOption)]
     "begin"                   [reduce using rule 13 (viewOption)]
     "end"                     [reduce using rule 13 (viewOption)]
+    "ho"                      [reduce using rule 13 (viewOption)]
+    "rel"                     [reduce using rule 13 (viewOption)]
     "["                       [reduce using rule 13 (viewOption)]
     "("                       [reduce using rule 13 (viewOption)]
     "{"                       [reduce using rule 13 (viewOption)]
@@ -1160,10 +1162,10 @@ State 63
     "hdo"                     shift, and go to state 6
     "!"                       shift, and go to state 7
     "at"                      shift, and go to state 8
-    "ho"                      shift, and go to state 9
-    "rel"                     shift, and go to state 10
-    "begin"                   shift, and go to state 11
-    "end"                     shift, and go to state 12
+    "begin"                   shift, and go to state 9
+    "end"                     shift, and go to state 10
+    "ho"                      shift, and go to state 11
+    "rel"                     shift, and go to state 12
     "["                       shift, and go to state 13
     "("                       shift, and go to state 14
     "{"                       shift, and go to state 15
@@ -1187,10 +1189,10 @@ State 63
     "hdo"                     [reduce using rule 13 (viewOption)]
     "!"                       [reduce using rule 13 (viewOption)]
     "at"                      [reduce using rule 13 (viewOption)]
-    "ho"                      [reduce using rule 13 (viewOption)]
-    "rel"                     [reduce using rule 13 (viewOption)]
     "begin"                   [reduce using rule 13 (viewOption)]
     "end"                     [reduce using rule 13 (viewOption)]
+    "ho"                      [reduce using rule 13 (viewOption)]
+    "rel"                     [reduce using rule 13 (viewOption)]
     "["                       [reduce using rule 13 (viewOption)]
     "("                       [reduce using rule 13 (viewOption)]
     "{"                       [reduce using rule 13 (viewOption)]
@@ -1355,12 +1357,12 @@ State 80
     "variable"                shift, and go to state 29
 
     object      go to state 104
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 81
@@ -1381,12 +1383,12 @@ State 81
     "variable"                shift, and go to state 29
 
     object      go to state 105
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 82
@@ -1432,12 +1434,12 @@ State 83
     "variable"                shift, and go to state 29
 
     object      go to state 120
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 84
@@ -1460,12 +1462,12 @@ State 84
 
     value       go to state 122
     object      go to state 123
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 85
@@ -1491,6 +1493,27 @@ State 85
 
 State 86
 
+   39 sentence: "begin" variable subject . ";"
+
+    ";"  shift, and go to state 128
+
+
+State 87
+
+   21 subject: variable .
+
+    $default  reduce using rule 21 (subject)
+
+
+State 88
+
+   42 sentence: "end" variable subject . ";"
+
+    ";"  shift, and go to state 129
+
+
+State 89
+
    56 objectList: objectList "," . object
 
     "["                       shift, and go to state 13
@@ -1506,48 +1529,27 @@ State 86
     "decimal literal"         shift, and go to state 28
     "variable"                shift, and go to state 29
 
-    object      go to state 128
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    object      go to state 130
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
-State 87
+State 90
 
    40 sentence: "ho" objectList ";" .
 
     $default  reduce using rule 40 (sentence)
 
 
-State 88
+State 91
 
    41 sentence: "rel" objectList ";" .
 
     $default  reduce using rule 41 (sentence)
-
-
-State 89
-
-   39 sentence: "begin" variable subject . ";"
-
-    ";"  shift, and go to state 129
-
-
-State 90
-
-   21 subject: variable .
-
-    $default  reduce using rule 21 (subject)
-
-
-State 91
-
-   42 sentence: "end" variable subject . ";"
-
-    ";"  shift, and go to state 130
 
 
 State 92
@@ -1888,37 +1890,37 @@ State 127
 
     nv           go to state 146
     predicate    go to state 116
-    object       go to state 43
-    collection   go to state 44
-    set          go to state 45
+    object       go to state 45
+    collection   go to state 46
+    set          go to state 47
     objectList   go to state 147
     nvList       go to state 148
     variable     go to state 149
     preposition  go to state 118
-    literal      go to state 48
+    literal      go to state 50
     resource     go to state 150
-    blankNode    go to state 50
+    blankNode    go to state 52
 
 
 State 128
-
-   56 objectList: objectList "," object .
-
-    $default  reduce using rule 56 (objectList)
-
-
-State 129
 
    39 sentence: "begin" variable subject ";" .
 
     $default  reduce using rule 39 (sentence)
 
 
-State 130
+State 129
 
    42 sentence: "end" variable subject ";" .
 
     $default  reduce using rule 42 (sentence)
+
+
+State 130
+
+   56 objectList: objectList "," object .
+
+    $default  reduce using rule 56 (objectList)
 
 
 State 131
@@ -1981,12 +1983,12 @@ State 137
     "variable"                shift, and go to state 29
 
     object      go to state 151
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 138
@@ -2029,12 +2031,12 @@ State 139
 
     value       go to state 153
     object      go to state 123
-    collection  go to state 44
-    set         go to state 45
-    variable    go to state 47
-    literal     go to state 48
-    resource    go to state 49
-    blankNode   go to state 50
+    collection  go to state 46
+    set         go to state 47
+    variable    go to state 49
+    literal     go to state 50
+    resource    go to state 51
+    blankNode   go to state 52
 
 
 State 140
@@ -2074,10 +2076,10 @@ State 142
     "hdo"                     shift, and go to state 6
     "!"                       shift, and go to state 7
     "at"                      shift, and go to state 8
-    "ho"                      shift, and go to state 9
-    "rel"                     shift, and go to state 10
-    "begin"                   shift, and go to state 11
-    "end"                     shift, and go to state 12
+    "begin"                   shift, and go to state 9
+    "end"                     shift, and go to state 10
+    "ho"                      shift, and go to state 11
+    "rel"                     shift, and go to state 12
     "["                       shift, and go to state 13
     "("                       shift, and go to state 14
     "{"                       shift, and go to state 15
@@ -2102,10 +2104,10 @@ State 142
     "hdo"                     [reduce using rule 13 (viewOption)]
     "!"                       [reduce using rule 13 (viewOption)]
     "at"                      [reduce using rule 13 (viewOption)]
-    "ho"                      [reduce using rule 13 (viewOption)]
-    "rel"                     [reduce using rule 13 (viewOption)]
     "begin"                   [reduce using rule 13 (viewOption)]
     "end"                     [reduce using rule 13 (viewOption)]
+    "ho"                      [reduce using rule 13 (viewOption)]
+    "rel"                     [reduce using rule 13 (viewOption)]
     "["                       [reduce using rule 13 (viewOption)]
     "("                       [reduce using rule 13 (viewOption)]
     "{"                       [reduce using rule 13 (viewOption)]
@@ -2170,7 +2172,7 @@ State 147
     5 pp: preposition objectList .
    56 objectList: objectList . "," object
 
-    ","  shift, and go to state 86
+    ","  shift, and go to state 89
 
     $default  reduce using rule 5 (pp)
 

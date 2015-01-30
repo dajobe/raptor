@@ -140,10 +140,12 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
   MKR_pp *pp;
 }
 
-/* tokens not currently used */
+/* mKR tokens not currently used */
 /* quantifier */
-%token NO	"no"
+%token ANY	"any"
+%token ALL	"all"
 %token OPTIONAL	"optional"
+%token NO	"no"
 %token SOME	"some"
 %token MANY	"many"
 %token THE	"the"
@@ -157,16 +159,15 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %token AND	"and"
 %token OR	"or"
 %token XOR	"xor"
+%token IFF	"iff"
 %token IMPLIES	"implies"
 %token CAUSES	"causes"
 %token BECAUSE	"because"
 /* iterator */
-%token ANY	"any"
-%token ALL	"all"
 %token EVERY	"every"
 %token WHILE	"while"
 %token UNTIL	"until"
-%token WHEN     "when"
+%token WHEN	"when"
 %token FORSOME	"forSome"
 %token FORALL	"forAll"
 /* pronoun */
@@ -180,6 +181,7 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %token NOW	"now"
 
 
+/* mKR tokens */
 /* hoVerb */
 %token IS        "is"
 %token ISA       "isa"
@@ -208,11 +210,11 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %token IN        "in"
 %token OUT       "out"
 %token WHERE     "where"
-%token HO        "ho"
-%token REL       "rel"
 /* other */
 %token mkrBEGIN  "begin"
 %token mkrEND    "end"
+%token HO        "ho"
+%token REL       "rel"
 
 %token EQUALS    "="
 %token ASSIGN    ":="
@@ -1970,7 +1972,10 @@ raptor_mkr_parse_init(raptor_parser* rdf_parser, const char *name)
   if(raptor_namespaces_init(rdf_parser->world, &mkr_parser->namespaces, 0))
     return 1;
 
-  mkr_parser->trig = !strcmp(name, "trig");
+  mkr_parser->mkr = 1;
+  mkr_parser->groupType = NULL;
+  mkr_parser->groupName = NULL;
+  mkr_parser->groupList = NULL;
 
   return 0;
 }

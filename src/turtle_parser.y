@@ -145,14 +145,16 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
   MKR_pp *pp;
 }
 
-/* tokens not currently used */
+/* mKR tokens not currently used */
 /* quantifier */
-%token NO	"no"
+%token ANY	"any"
+%token ALL	"all"
 %token OPTIONAL	"optional"
+%token NO	"no"
 %token SOME	"some"
 %token MANY	"many"
 %token THE	"the"
-/* conditional */
+/* conjunction */
 %token IF	"if"
 %token THEN	"then"
 %token ELSE	"else"
@@ -162,13 +164,11 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token AND	"and"
 %token OR	"or"
 %token XOR	"xor"
-/* conjunction */
+%token IFF	"iff"
 %token IMPLIES	"implies"
 %token CAUSES	"causes"
 %token BECAUSE	"because"
 /* iterator */
-%token ANY	"any"
-%token ALL	"all"
 %token EVERY	"every"
 %token WHILE	"while"
 %token UNTIL	"until"
@@ -186,6 +186,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token NOW	"now"
 
 
+/* mKR tokens */
 /* hoVerb */
 %token IS        "is"
 %token ISA       "isa"
@@ -215,11 +216,11 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token IN        "in"
 %token OUT       "out"
 %token WHERE     "where"
-%token HO        "ho"
-%token REL       "rel"
 /* other */
 %token mkrBEGIN  "begin"
 %token mkrEND    "end"
+%token HO        "ho"
+%token REL       "rel"
 %token EQUALS    "="
 %token ASSIGN    ":="
 %token LET       "let"
@@ -266,7 +267,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %token ERROR_TOKEN
 
 %type <identifier> subject predicate verb object literal resource blankNode collection
-%type <sequence> objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
+%type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
 
 /* mKR */
 %type <value> "value"
@@ -293,7 +294,7 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
+} triples objectList itemList predicateObjectList predicateObjectListOpt blankNodePropertyList
 
 %%
 

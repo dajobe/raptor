@@ -32,16 +32,16 @@ extern "C" {
 
 
 /* mKR.y */
-RAPTOR_INTERNAL_API int mKR(raptor_parser *rdf_parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
-RAPTOR_INTERNAL_API raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
+RAPTOR_INTERNAL_API int mkr_syntax_error(raptor_parser *rdf_parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
+RAPTOR_INTERNAL_API raptor_uri* mkr_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len);
 RAPTOR_INTERNAL_API size_t raptor_turtle_expand_qname_escapes(unsigned char *name, size_t len, raptor_simple_message_handler error_handler, void *error_data);
 
-/* mkr_lexer.l */
+/* turtle_lexer.l */
 extern void turtle_token_free(raptor_world* world, int token, YYSTYPE *lval);
 
 
 /*
- * Turtle parser object
+ * mKR parser object
  */
 struct raptor_turtle_parser_s {
   /* buffer */
@@ -77,8 +77,17 @@ struct raptor_turtle_parser_s {
   /* Allow TRIG extensions */
   int trig;
 
+  /* Last run of many */
+  int is_end;
+
+  /* mKR parser */
   /* Non 0 for mKR parser */
   int mkr;
+
+  /* global variables for ho,rel groups */
+  raptor_term* groupType;
+  raptor_term* groupName;
+  raptor_sequence* groupList;
 };
 
 
