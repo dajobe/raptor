@@ -1,1 +1,5 @@
+@prefix : <http://example.org/> ;
+
+:cat isa :animal ;
+<dog> isa <animal> ;
 goat isa animal ;

@@ -836,17 +836,17 @@ object: resource
 variable: VARIABLE {$$ = mkr_new_variable(rdf_parser, MKR_VARIABLE, $1);}
 ;
 
-isVerb: IS  {$$ = mkr_new_verb(rdf_parser, MKR_ISVERB, (unsigned char*)"is");}
+isVerb: IS  {$$ = mkr_new_verb(rdf_parser, MKR_IS, (unsigned char*)"is");}
 ;
 
-hoVerb: ISA      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isa");}
-|       ISU      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isu");}
-|       ISS      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"iss");}
-|       ISC      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isc");}
-|       ISG      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isg");}
-|       ISP      {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isp");}
-|       ISASTAR  {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isa*");}
-|       ISCSTAR  {$$ = mkr_new_verb(rdf_parser, MKR_HOVERB, (unsigned char*)"isc*");}
+hoVerb: ISU      {$$ = mkr_new_verb(rdf_parser, MKR_ISU, (unsigned char*)"isu");}
+|       ISS      {$$ = mkr_new_verb(rdf_parser, MKR_ISS, (unsigned char*)"iss");}
+|       ISA      {$$ = mkr_new_verb(rdf_parser, MKR_ISA, (unsigned char*)"isa");}
+|       ISASTAR  {$$ = mkr_new_verb(rdf_parser, MKR_ISASTAR, (unsigned char*)"isa*");}
+|       ISP      {$$ = mkr_new_verb(rdf_parser, MKR_ISP, (unsigned char*)"isp");}
+|       ISG      {$$ = mkr_new_verb(rdf_parser, MKR_ISG, (unsigned char*)"isg");}
+|       ISC      {$$ = mkr_new_verb(rdf_parser, MKR_ISC, (unsigned char*)"isc");}
+|       ISCSTAR  {$$ = mkr_new_verb(rdf_parser, MKR_ISCSTAR, (unsigned char*)"isc*");}
 |       variable {$$ = $1;}
 ;
 
@@ -860,17 +860,15 @@ doVerb: DO    {$$ = mkr_new_verb(rdf_parser, MKR_DO,   (unsigned char*)"do");}
 |       BANG  {$$ = mkr_new_verb(rdf_parser, MKR_BANG, (unsigned char*)"!");}
 ;
 
-preposition: AT     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"at");}
-|            OF     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"of");}
-|            WITH   {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"with");}
-|            OD     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"od");}
-|            FROM   {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"from");}
-|            TO     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"to");}
-|            IN     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"in");}
-|            OUT    {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"out");}
-|            WHERE  {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"where");}
-|            HO     {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"ho");}
-|            REL    {$$ = mkr_new_preposition(rdf_parser, MKR_PREPOSITION, (unsigned char*)"rel");}
+preposition: AT     {$$ = mkr_new_preposition(rdf_parser, MKR_AT,    (unsigned char*)"at");}
+|            OF     {$$ = mkr_new_preposition(rdf_parser, MKR_OF,    (unsigned char*)"of");}
+|            WITH   {$$ = mkr_new_preposition(rdf_parser, MKR_WITH,  (unsigned char*)"with");}
+|            OD     {$$ = mkr_new_preposition(rdf_parser, MKR_OD,    (unsigned char*)"od");}
+|            FROM   {$$ = mkr_new_preposition(rdf_parser, MKR_FROM,  (unsigned char*)"from");}
+|            TO     {$$ = mkr_new_preposition(rdf_parser, MKR_TO,    (unsigned char*)"to");}
+|            IN     {$$ = mkr_new_preposition(rdf_parser, MKR_IN,    (unsigned char*)"in");}
+|            OUT    {$$ = mkr_new_preposition(rdf_parser, MKR_OUT,   (unsigned char*)"out");}
+|            WHERE  {$$ = mkr_new_preposition(rdf_parser, MKR_WHERE, (unsigned char*)"where");}
 ;
 
 
@@ -1176,7 +1174,7 @@ mkr_new_variable(raptor_parser *parser, mkr_type type, unsigned char* name)
 raptor_term*
 mkr_new_preposition(raptor_parser *parser, mkr_type type, unsigned char* name)
 {
-  return mkr_new_variable(parser, MKR_PREPOSITION, name);
+  return mkr_new_variable(parser, type, name);
 }
 
 raptor_term*
@@ -1188,25 +1186,25 @@ mkr_new_verb(raptor_parser *parser, mkr_type type, unsigned char* name)
 raptor_term*
 mkr_new_pronoun(raptor_parser *parser, mkr_type type, unsigned char* name)
 {
-  return mkr_new_variable(parser, MKR_PRONOUN, name);
+  return mkr_new_variable(parser, type, name);
 }
 
 raptor_term*
 mkr_new_conjunction(raptor_parser *parser, mkr_type type, unsigned char* name)
 {
-  return mkr_new_variable(parser, MKR_CONJUNCTION, name);
+  return mkr_new_variable(parser, type, name);
 }
 
 raptor_term*
 mkr_new_quantifier(raptor_parser *parser, mkr_type type, unsigned char* name)
 {
-  return mkr_new_variable(parser, MKR_QUANTIFIER, name);
+  return mkr_new_variable(parser, type, name);
 }
 
 raptor_term*
 mkr_new_iterator(raptor_parser *parser, mkr_type type, unsigned char* name)
 {
-  return mkr_new_variable(parser, MKR_ITERATOR, name);
+  return mkr_new_variable(parser, type, name);
 }
 
 

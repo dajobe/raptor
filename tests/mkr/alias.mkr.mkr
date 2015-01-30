@@ -1,8 +1,17 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/alias.mkr> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
-@prefix : <http://example.org/> ;
+@prefix owl: <../../../../../2002/07/owl#> ;
 
-goat
-    isa animal ;
+rdf:Property
+    is characteristic ;
+    
+rdf:Resource
+    is existent ;
+    
+owl:Thing
+    is existent ;
+    
+owl:sameAs
+    is is ;
     

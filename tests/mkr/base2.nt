@@ -1,1 +1,3 @@
+<http://example.org/cat> <http://mkrmke.net/ns/isa> <http://example.org/animal> .
+<http://www.w3.org/2001/sw/DataAccess/df1/tests/dog> <http://mkrmke.net/ns/isa> <http://www.w3.org/2001/sw/DataAccess/df1/tests/animal> .
 <http://mkrmke.net/ns/goat> <http://mkrmke.net/ns/isa> <http://mkrmke.net/ns/animal> .

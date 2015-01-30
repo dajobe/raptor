@@ -64,26 +64,74 @@ typedef void mkr_value;
 
   * @MKR_WORD:
     * @MKR_PRONOUN:
+      * @MKR_I:
+      * @MKR_ME:
+      * @MKR_YOU:
+      * @MKR_HE:
+      * @MKR_SHE:
+      * @MKR_IT:
+      * @MKR_HERE:
+      * @MKR_NOW:
     * @MKR_PREPOSITION:
+      * @MKR_AT:
+      * @MKR_OF:
+      * @MKR_WITH:
+      * @MKR_OD:
+      * @MKR_FROM:
+      * @MKR_TO:
+      * @MKR_IN:
+      * @MKR_OUT:
+      * @MKR_WHERE:
     * @MKR_QUANTIFIER:
+      * @MKR_OPTIONAL:
+      * @MKR_NO:
+      * @MKR_ANY:
+      * @MKR_SOME:
+      * @MKR_MANY:
+      * @MKR_ALL:
     * @MKR_CONJUNCTION:
+      * @MKR_AND:
+      * @MKR_OR:
+      * @MKR_XOR:
+      * @MKR_CAUSES:
+      * @MKR_BECAUSE:
+      * @MKR_IF
+      * @MKR_THEN
+      * @MKR_ELSE
+      * @MKR_UNKNOWN
+      * @MKR_FI
+      * @MKR_IFF:
+      * @MKR_IMPLIES:
     * @MKR_ITERATOR:
+      * @MKR_EVERY:
+      * @MKR_WHILE:
+      * @MKR_UNTIL:
+      * @MKR_WHEN:
+      * @MKR_FORSOME:
+      * @MKR_FORALL:
   * @MKR_PHRASE:
     * @MKR_NV:
     * @MKR_PP:
-      * @MKR_PPOJB: preposition objectList
+      * @MKR_PPOBJ: preposition objectList
       * @MKR_PPNV:  preposition nvList
   * @MKR_SUBJECT:
   * @MKR_VERB:
     * @MKR_ISVERB
       * @MKR_IS:
     * @MKR_HOVERB
+      * @MKR_ISU:
+      * @MKR_ISS:
       * @MKR_ISA:
+      * @MKR_ISASTAR:
+      * @MKR_ISP:
+      * @MKR_ISG:
       * @MKR_ISC:
+      * @MKR_ISCSTAR:
     * @MKR_HASVERB
       * @MKR_HAS:
       * @MKR_HASPART:
       * @MKR_ISAPART:
+    * @MKR_DOVERB
     * @MKR_DOVERB
       * @MKR_DO:
       * @MKR_HDO:
@@ -168,10 +216,50 @@ typedef enum {
     MKR_SENTENCESET,
   MKR_WORD,
     MKR_PRONOUN,
+      MKR_I,
+      MKR_ME,
+      MKR_YOU,
+      MKR_HE,
+      MKR_SHE,
+      MKR_IT,
+      MKR_HERE,
+      MKR_NOW,
     MKR_PREPOSITION,
+      MKR_AT,
+      MKR_OF,
+      MKR_WITH,
+      MKR_OD,
+      MKR_FROM,
+      MKR_TO,
+      MKR_IN,
+      MKR_OUT,
+      MKR_WHERE,
     MKR_QUANTIFIER,
+      MKR_OPTIONAL,
+      MKR_NO,
+      MKR_ANY,
+      MKR_SOME,
+      MKR_MANY,
+      MKR_ALL,
     MKR_CONJUNCTION,
+      MKR_AND,
+      MKR_OR,
+      MKR_XOR,
+      MKR_IF,
+      MKR_THEN,
+      MKR_ELSE,
+      MKR_FI,
+      MKR_IFF,
+      MKR_IMPLIES,
+      MKR_CAUSES,
+      MKR_BECAUSE,
     MKR_ITERATOR,
+      MKR_EVERY,
+      MKR_WHILE,
+      MKR_UNTIL,
+      MKR_WHEN,
+      MKR_FORSOME,
+      MKR_FORALL,
   MKR_PHRASE,
     MKR_NV,
     MKR_PP,
@@ -182,8 +270,14 @@ typedef enum {
     MKR_ISVERB,
       MKR_IS,
     MKR_HOVERB,
+      MKR_ISU,
+      MKR_ISS,
       MKR_ISA,
+      MKR_ISASTAR,
+      MKR_ISP,
+      MKR_ISG,
       MKR_ISC,
+      MKR_ISCSTAR,
     MKR_HASVERB,
       MKR_HAS,
       MKR_HASPART,

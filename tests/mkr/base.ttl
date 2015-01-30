@@ -1,7 +1,5 @@
-@base        <http://example.org/> .
 @prefix mkr: <http://mkrmke.net/ns/> .
-@prefix :    <http://www.example.com/ns#> .
+@prefix :    <http://example.org/> .
 
-:cat  :isa  :animal .
-<dog> <isa> <animal> .
-goat  isa   animal .
+:cat  mkr:isa  :animal .
+<dog> mkr:isa  <animal> .
