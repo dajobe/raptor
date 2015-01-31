@@ -1,7 +1,8 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-32.ttl> ;
 @prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix ex: <http://example.org/ns#> ;
 
-ex:node1 has
-    rdf:value = [ex:item1,ex:item2] ;
-
+ex:node1
+    has rdf:value = (ex:item1, ex:item2) ;
+    

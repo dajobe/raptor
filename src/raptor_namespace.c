@@ -87,10 +87,12 @@
 const unsigned char * const raptor_xml_namespace_uri = (const unsigned char *)"http://www.w3.org/XML/1998/namespace";
 const unsigned char * const raptor_rdf_namespace_uri = (const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const unsigned int raptor_rdf_namespace_uri_len = 43;
+const unsigned int raptor_mkr_namespace_uri_len = 21;
 const unsigned char * const raptor_rdf_schema_namespace_uri = (const unsigned char *)"http://www.w3.org/2000/01/rdf-schema#";
 const unsigned int raptor_rdf_schema_namespace_uri_len = 37;
 const unsigned char * const raptor_xmlschema_datatypes_namespace_uri = (const unsigned char *)"http://www.w3.org/2001/XMLSchema#";
 const unsigned char * const raptor_owl_namespace_uri = (const unsigned char *)"http://www.w3.org/2002/07/owl#";
+const unsigned char * const raptor_mkr_namespace_uri = (const unsigned char *)"http://mkrmke.net/ns/";
 
 
 /* hash function to hash namespace prefix strings (usually short strings)
@@ -122,7 +124,7 @@ raptor_hash_ns_string(const unsigned char *str, int length)
  *
  * This sets up the stack optionally with some common RDF namespaces.
  *
- * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL
+ * @defaults can be 0 for none, 1 for just XML, 2 for RDF, RDFS, OWL, MKR
  * and XSD (RDQL uses this) or 3+ undefined.
  *
  * Return value: non-0 on error
@@ -179,6 +181,9 @@ raptor_namespaces_init(raptor_world* world,
       failures += raptor_namespaces_start_namespace_full(nstack,
                                                          (const unsigned char*)"owl",
                                                          raptor_owl_namespace_uri, 0);
+      failures += raptor_namespaces_start_namespace_full(nstack,
+                                                         (const unsigned char*)"mkr",
+                                                         raptor_mkr_namespace_uri, 0);
     }
   }
   return failures;
