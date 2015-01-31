@@ -852,6 +852,7 @@ raptor_mkr_emit_po(raptor_serializer* serializer,
     }
 
   } else {
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"has ", 4);
     raptor_turtle_writer_reference(turtle_writer, predicate->term->value.uri);
     raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" =", 2);
   }
