@@ -120,7 +120,8 @@ my(\$path,\$name)=@ARGV;
 exit 0 if !-f \$path;
 die "\$prog: \$path not found\n" if !-r \$path;
 
-my \$mname=\$name; \$mname =~ s/^g(libtoolize)\$/\$1/;
+# Remove leading g and make it optional for glibtoolize etc.
+my \$mname=\$name; \$mname =~ s/^g//;
 
 my(@vnums);
 for my \$varg (qw(--version -version)) {
@@ -129,7 +130,8 @@ for my \$varg (qw(--version -version)) {
   while(<PIPE>) {
     chomp;
     next if @vnums; # drain pipe if we got a vnums
-    next unless /^\$mname/i;
+    # Add optional leading g
+    next unless /^g?\$mname/i;
     my(\$v)=/(\S+)\$/i; \$v =~ s/-.*\$//;
     @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
   }
