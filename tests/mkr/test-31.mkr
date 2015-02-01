@@ -5,8 +5,10 @@
 
 <http://example.org/block>
     has rss:items = {
-        has rdf:_1 = <http://example.org/first-item>, 
-        has rdf:_2 = <http://example.org/second-item>, 
-        isu rdf:Seq ;
-        } ;
+        _:genid1
+            has rdf:_1 = <http://example.org/first-item>, 
+            has rdf:_2 = <http://example.org/second-item>, 
+            isu rdf:Seq ;
+            } ;
+        
     

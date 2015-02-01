@@ -1222,7 +1222,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 #endif
     if(blank && depth > 1) {
       if(emit_mkr) {
-        if(mkr_blank) { /* write mkr blank as object */
+        if(!mkr_blank) { /* write mkr blank as object */
           raptor_turtle_writer_bnodeid(turtle_writer,
                                        subject->node->term->value.blank.string,
                                        subject->node->term->value.blank.string_len);
@@ -1359,7 +1359,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->turtle_writer_flags = 0;
   if(!strcmp(name,(const char*)"mkr")) {
     context->emit_mkr = 1;
-    context->mkr_blank = 0;
+    context->mkr_blank = 1;
     context->curly_count = 0;
     context->indent_count = 0;
     context->turtle_writer_flags |= TURTLE_WRITER_FLAG_MKR;
