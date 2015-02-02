@@ -447,7 +447,6 @@ typedef enum {
   RAPTOR_TERM_TYPE_BLANK   = 4
 } raptor_term_type;
 
-
 /**
  * raptor_locator:
  * @uri: URI of location (or NULL)
@@ -634,6 +633,8 @@ typedef struct {
   unsigned int string_len;
 } raptor_term_blank_value;
 
+/* pointer to an mkr structure: */
+typedef void* mkr_value;
 
 /**
  * raptor_term_value:
@@ -650,8 +651,12 @@ typedef union {
   raptor_term_literal_value literal;
 
   raptor_term_blank_value blank;
+
+  mkr_value mkrvalue;
 } raptor_term_value;
 
+/* mKR types */
+#include "mkrtype.h"
 
 /**
  * raptor_term:
@@ -669,6 +674,8 @@ typedef struct {
   int usage;
 
   raptor_term_type type;
+
+  mkr_type mkrtype;
 
   raptor_term_value value;
 
@@ -1628,6 +1635,10 @@ RAPTOR_API
 int raptor_sequence_join(raptor_sequence* dest, raptor_sequence *src);
 
 
+/* mKR structures and prototypes
+ * using raptor_term and raptor_sequence
+ */
+#include "mkr.h"
 
 
 /* Unicode and UTF8 */
