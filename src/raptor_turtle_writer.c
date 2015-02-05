@@ -362,6 +362,7 @@ raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer,
  * @qname: qname to write
  *
  * Write a QName to the Turtle writer.
+ * omit "mkr:" for mKR serializer
  *
  **/
 void
@@ -369,16 +370,23 @@ raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer,
                            raptor_qname* qname)
 {
   raptor_iostream* iostr = turtle_writer->iostr;
+  int emit_mkr = (turtle_writer->flags & TURTLE_WRITER_FLAG_MKR);
   
-  if(qname->nspace && qname->nspace->prefix_length > 0)
-    raptor_iostream_counted_string_write(qname->nspace->prefix,
-                                         qname->nspace->prefix_length,
-                                         iostr);
-  raptor_iostream_write_byte(':', iostr);
-  
-  raptor_iostream_counted_string_write(qname->local_name,
+  if(emit_mkr && (qname->nspace && qname->nspace->prefix_length > 0)
+              && !strcmp("mkr",(char*)qname->nspace->prefix)) {
+    raptor_iostream_counted_string_write(qname->local_name,
                                        qname->local_name_length,
                                        iostr);
+  } else {
+    if(qname->nspace && qname->nspace->prefix_length > 0)
+      raptor_iostream_counted_string_write(qname->nspace->prefix,
+                                           qname->nspace->prefix_length,
+                                           iostr);
+    raptor_iostream_write_byte(':', iostr);
+    raptor_iostream_counted_string_write(qname->local_name,
+                                       qname->local_name_length,
+                                       iostr);
+  }
   return;
 }
 
@@ -827,6 +835,7 @@ raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer,
                          raptor_uri* uri)
 {
   raptor_qname* qname;
+  int emit_mkr = (turtle_writer->flags & TURTLE_WRITER_FLAG_MKR);
   int rc = 0;
 
   if(!uri)
@@ -834,8 +843,9 @@ raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer,
 
   qname = raptor_new_qname_from_namespace_uri(turtle_writer->nstack, uri, 10);
 
+  /* mKR mynames allow leading '?' and '$' and no ':' */
   /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname) && !emit_mkr) {
     raptor_free_qname(qname);
     qname = NULL;
   }

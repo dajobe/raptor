@@ -72,22 +72,8 @@ typedef struct {
   /* URI of rdf:nil */
   raptor_uri* rdf_nil_uri;
 
-  /* URI of rs:ResultSet */
-  raptor_uri* rs_ResultSet_uri;
-
-  /* URI of rs:resultVariable */
-  raptor_uri* rs_resultVariable_uri;
-
-  /* Non 0 for rs:ResultSet */
-  int resultset;
-
-  /* Non 0 for mKR serializer */
-  int emit_mkr;
   /* Flags for turtle writer */
   int turtle_writer_flags;
-
-  /* Non 0 if "begin relation result ;" has been written */
-  int written_begin;
 
   /* non zero if header is finished being written
    * (and thus no new namespaces can be declared).
@@ -97,21 +83,49 @@ typedef struct {
   /* for labeling namespaces */
   int namespace_count;
 
-  /* state for raptor_mkr_emit_subject_resultset() */
-  int mkr_rs_size;
-  int mkr_rs_arity;
-  int mkr_rs_ntuple;
-  int mkr_rs_nvalue;
-  int mkr_rs_processing_value;
+  /* variables for mKR serializer */
+  /* Non 0 for mKR serializer */
+  int emit_mkr;
 
   /* Non 0 to emit mKR blank subject */
   int mkr_blank;
+
+  /* Non 0 for rs:ResultSet */
+  int resultset;
+
+  /* URI of mkr:has */
+  raptor_uri* mkr_has_uri;
+
+  /* URI of mkr:isu */
+  raptor_uri* mkr_isu_uri;
+
+  /* URI of mkr:do */
+  raptor_uri* mkr_do_uri;
+
+  /* URI of mkr:is */
+  raptor_uri* mkr_is_uri;
+
+  /* URI of rs:ResultSet */
+  raptor_uri* rs_ResultSet_uri;
+
+  /* URI of rs:resultVariable */
+  raptor_uri* rs_resultVariable_uri;
+
+  /* Non 0 if "begin relation result ;" has been written */
+  int written_begin;
 
   /* state for raptor_mkr_emit_subject_properties()
            and raptor_mkr_emit_po() */
   int has_count;
   int indent_count;
   int curly_count;
+
+  /* state for raptor_mkr_emit_subject_resultset() */
+  int mkr_rs_size;
+  int mkr_rs_arity;
+  int mkr_rs_ntuple;
+  int mkr_rs_nvalue;
+  int mkr_rs_processing_value;
 } raptor_turtle_context;
 
 
@@ -762,11 +776,9 @@ raptor_mkr_emit_subject_properties(raptor_serializer* serializer,
   rv = raptor_mkr_emit_po(serializer, last_predicate, objectSequence, depth+1);
 
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
-/*
-  if(context->has_count > 0)
-    if(context->indent_count-- > 0)
-      raptor_turtle_writer_decrease_indent(turtle_writer);
-*/
+
+  if(context->curly_count > 0)
+    raptor_turtle_writer_decrease_indent(turtle_writer);
   raptor_turtle_writer_newline(turtle_writer);
 
   /* Return error if emitting something failed */
@@ -924,10 +936,10 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
   raptor_abbrev_node* last_predicate = NULL;
-  int rv = 0;
   raptor_avltree_iterator* iter = NULL;
-  int i;
   int skip_object;
+  int rv = 0;
+  int i;
 
 
   RAPTOR_DEBUG_ABBREV_NODE("Emitting subject resultset", subject->node);
@@ -1162,10 +1174,14 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         )
        ) {
       collection = 1;
+      subject->node->term->mkrtype = MKR_RDFLIST;
+    } else if(subject->node->term->mkrtype == MKR_RDFLIST) {
+      collection = 1;
     /* check for rs:ResultSet */
     } else if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals(pred1->term->value.uri, context->rs_resultVariable_uri)) {
         context->resultset = 1;
+        subject->node->term->mkrtype = MKR_RESULTSET;
     }
   }
 
@@ -1180,6 +1196,11 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   } else if(subject->node->term->type == RAPTOR_TERM_TYPE_BLANK) {
     if((subject->node->count_as_subject == 1 &&
         subject->node->count_as_object == 0) && depth > 1) {
+      blank = 1;
+    } else if((subject->node->term->mkrtype == MKR_DEFINITION) ||
+              (subject->node->term->mkrtype == MKR_ACTION) ||
+              (subject->node->term->mkrtype == MKR_COMMAND)
+      ) {
       blank = 1;
     } else if(subject->node->count_as_object == 0) {
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[]", 2);
@@ -1412,6 +1433,12 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
   context->rdf_rest_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
   context->rdf_nil_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
 
+  /* for mKR serializer */
+  context->mkr_has_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://mkrmke.net/ns/has");
+  context->mkr_isu_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://mkrmke.net/ns/isu");
+  context->mkr_do_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://mkrmke.net/ns/do");
+  context->mkr_is_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://mkrmke.net/ns/is");
+
   context->rs_ResultSet_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://jena.hpl.hp.com/2003/03/result-set#ResultSet");
   context->rs_resultVariable_uri = raptor_new_uri(serializer->world, (const unsigned char*)"http://jena.hpl.hp.com/2003/03/result-set#resultVariable");
 
@@ -1419,6 +1446,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
      !context->subjects || !context->blanks || !context->nodes ||
      !context->rdf_xml_literal_uri || !context->rdf_first_uri ||
      !context->rdf_rest_uri || !context->rdf_nil_uri || !context->rdf_type ||
+     !context->mkr_has_uri || !context->mkr_isu_uri || !context->mkr_do_uri || !context->mkr_is_uri ||
      !context->rs_ResultSet_uri || !context->rs_resultVariable_uri)
   {
     raptor_turtle_serialize_terminate(serializer);
@@ -1520,6 +1548,26 @@ raptor_turtle_serialize_terminate(raptor_serializer* serializer)
   if(context->rdf_nil_uri) {
     raptor_free_uri(context->rdf_nil_uri);
     context->rdf_nil_uri = NULL;
+  }
+
+  if(context->mkr_has_uri) {
+    raptor_free_uri(context->mkr_has_uri);
+    context->mkr_has_uri = NULL;
+  }
+
+  if(context->mkr_isu_uri) {
+    raptor_free_uri(context->mkr_isu_uri);
+    context->mkr_isu_uri = NULL;
+  }
+
+  if(context->mkr_do_uri) {
+    raptor_free_uri(context->mkr_do_uri);
+    context->mkr_do_uri = NULL;
+  }
+
+  if(context->mkr_is_uri) {
+    raptor_free_uri(context->mkr_is_uri);
+    context->mkr_is_uri = NULL;
   }
 
   if(context->rs_ResultSet_uri) {

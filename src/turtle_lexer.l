@@ -192,6 +192,9 @@ PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_C
 
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
 
+/* mKR */
+VARIABLE [\$\?]?[A-Za-z\*][A-Za-z0-9_\-\.\*]*|"\?"|"\$"[0-9]+|"\$\{"[1-9][0-9]+"\}"|[0-9]+"-"[0-9]+"-"[0-9]+
+
 UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
 IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
 
@@ -222,6 +225,42 @@ EXPONENT [eE][+-]?[0-9]+
  
 [\ \t\v]+   { /* empty */ }
 
+
+"is"      { return IS;      }
+"isu"     { return ISU;     }
+"isp"     { return ISP;     }
+"iss"     { return ISS;     }
+"isg"     { return ISG;     }
+"isa"     { return ISA;     }
+"isa*"    { return ISASTAR; }
+"isc"     { return ISC;     }
+"isc*"    { return ISCSTAR; }
+"has"     { return HAS;     }
+"haspart" { return HASPART; }
+"isapart" { return ISAPART; }
+"do"      { return DO;      }
+"hdo"     { return HDO;     }
+"!"       { return BANG;    }
+"at"      { return AT;      }
+"of"      { return OF;      }
+"with"    { return WITH;    }
+"od"      { return OD;      }
+"from"    { return FROM;    }
+"to"      { return TO;      }
+"in"      { return IN;      }
+"out"     { return OUT;     }
+"where"   { return WHERE;   }
+"begin"   { return mkrBEGIN;}
+"end"     { return mkrEND;  }
+"ho"      { return HO;      }
+"rel"     { return REL;     }
+"="       { return EQUALS;  }
+":="      { return ASSIGN;  }
+"let"     { return LET;     }
+"::"      { return DCOLON;  }
+"**"      { return DSTAR;   }
+"@mkb"    { BEGIN(PREF); return MKB; }
+"@mke"    { BEGIN(PREF); return MKE; }
 
 "a" { return A; }
 
@@ -404,6 +443,11 @@ EXPONENT [eE][+-]?[0-9]+
           }
 
                           return QNAME_LITERAL; }
+
+{VARIABLE}	{ yylval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                 if(!yylval->string)
+                   YY_FATAL_ERROR_EOF("turtle_copy_token failed");
+                          return VARIABLE; }
 
 {DECIMAL}	{ yylval->string = turtle_copy_token((unsigned char*)yytext, yyleng);
                   if(!yylval->string)
@@ -953,6 +997,11 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
               (lval->string ? (char*)lval->string : ""));
       return buffer;
 
+    case VARIABLE:
+      sprintf(buffer, "VARIABLE(%s)", 
+              (lval->string ? (char*)lval->string : ""));
+      return buffer;
+
     case LANGTAG:
       sprintf(buffer, "LANGTAG(%s)", 
               (lval->string ? (char*)lval->string : ""));
@@ -993,6 +1042,7 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
     case STRING_LITERAL:
     case BLANK_LITERAL:
     case IDENTIFIER:
+    case VARIABLE:
       if(lval->string)
         RAPTOR_FREE(char*, lval->string);
       break;

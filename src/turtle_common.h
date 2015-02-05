@@ -88,6 +88,20 @@ struct raptor_turtle_parser_s {
 
   /* Last run of many */
   int is_end;
+
+#ifdef RAPTOR_PARSER_MKR
+  /* mKR parser */
+  /* static statement for use in passing to user code */
+  raptor_statement statement;
+  
+  /* Non 0 for mKR parser */
+  int mkr;
+
+  /* global variables for ho,rel groups */
+  raptor_term* groupType;
+  raptor_term* groupName;
+  raptor_sequence* groupList;
+#endif
 };
 
 

@@ -784,6 +784,7 @@ dnl RDF Parsers
 rdfxml_parser=no
 ntriples_parser=no
 turtle_parser=no
+mkr_parser=no
 trig_parser=no
 rss_parser=no
 grddl_parser=no
@@ -792,7 +793,7 @@ rdfa_parser=no
 json_parser=no
 nquads_parser=no
 
-rdf_parsers_available="rdfxml ntriples turtle trig guess rss-tag-soup rdfa nquads"
+rdf_parsers_available="rdfxml ntriples turtle mkr trig guess rss-tag-soup rdfa nquads"
 rdf_parsers_enabled=
 
 
@@ -824,6 +825,7 @@ if test "x" = "y"; then
   AC_DEFINE(RAPTOR_PARSER_RDFXML, 1, [Building RDF/XML parser])
   AC_DEFINE(RAPTOR_PARSER_NTRIPLES, 1, [Building N-Triples parser])
   AC_DEFINE(RAPTOR_PARSER_TURTLE, 1, [Building Turtle parser])
+  AC_DEFINE(RAPTOR_PARSER_MKR,    1, [Building mKR parser])
   AC_DEFINE(RAPTOR_PARSER_TRIG, 1, [Building TRiG parser])
   AC_DEFINE(RAPTOR_PARSER_RSS, 1, [Building RSS Tag Soup parser])
   AC_DEFINE(RAPTOR_PARSER_GRDDL, 1, [Building GRDDL parser])
@@ -902,6 +904,7 @@ fi
 AM_CONDITIONAL(RAPTOR_PARSER_RDFXML, test $rdfxml_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_NTRIPLES, test $ntriples_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TURTLE, test $turtle_parser = yes)
+AM_CONDITIONAL(RAPTOR_PARSER_MKR,    test $mkr_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_TRIG, test $trig_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_RSS, test $rss_parser = yes)
 AM_CONDITIONAL(RAPTOR_PARSER_GRDDL, test $grddl_parser = yes)

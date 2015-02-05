@@ -142,7 +142,59 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
   raptor_term *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
+
+  /* mKR */
+  raptor_term *variable;
+  MKR_value *value;
+  MKR_nv *nv;
+  MKR_pp *pp;
 }
+
+
+/* mKR tokens */
+/* isVerb */
+%token IS        "is"
+/* hoVerb */
+%token ISA       "isa"
+%token ISS       "iss"
+%token ISU       "isu"
+%token ISASTAR   "isa*"
+%token ISC       "isc"
+%token ISG       "isg"
+%token ISP       "isp"
+%token ISCSTAR   "isc*"
+/* hasVerb */
+%token HAS       "has"
+%token HASPART   "haspart"
+%token ISAPART   "isapart"
+/* doVerb */
+%token DO        "do"
+%token HDO       "hdo"
+%token BANG      "!"
+/* preposition */
+%token AT        "at"
+%token OF        "of"
+%token WITH      "with"
+%token OD        "od"
+%token FROM      "from"
+%token TO        "to"
+%token IN        "in"
+%token OUT       "out"
+%token WHERE     "where"
+/* hierarchy, relation */
+%token mkrBEGIN  "begin"
+%token mkrEND    "end"
+%token HO        "ho"
+%token REL       "rel"
+/* other */
+%token EQUALS    "="
+%token ASSIGN    ":="
+%token LET       "let"
+%token DCOLON    "::"
+%token DSTAR     "**"
+%token MKB "@mkb"
+%token MKE "@mke"
+
 
 
 /* others */
@@ -177,18 +229,29 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %token <string> FLOATING_LITERAL "floating point literal"
 %token <string> DECIMAL_LITERAL "decimal literal"
 
+
+/* mKR */
+%token <string> VARIABLE "variable"
+
 /* syntax error */
 %token ERROR_TOKEN
 
 %type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
 %type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt
+%type <string> prefix
+
+/* mKR */
+%type <identifier> variable
+%type <value> value
+%type <nv> nv
+%type <pp> pp
 
 /* tidy up tokens after errors */
 
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG VARIABLE
 
 %destructor {
   if($$)
@@ -198,12 +261,33 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blankNode collection
+} subject predicate object verb literal resource blankNode collection variable
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} triples objectList itemList predicateObjectList predicateObjectListOpt
+} triples objectList itemlist predicateObjectList predicateObjectListOpt
+
+%destructor {
+  if($$)
+    raptor_free_statement($$);
+} triple
+
+%destructor {
+  if($$)
+    mkr_free_value($$);
+} value
+
+%destructor {
+  if($$)
+    mkr_free_nv($$);
+} nv
+
+%destructor {
+  if($$)
+    mkr_free_pp($$);
+} pp
+
 
 %%
 
