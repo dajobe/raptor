@@ -1,0 +1,9 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-16b.ttl> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix : <http://example.org/ns#> ;
+
+:a
+    has :b = [:c1, :c2, :c3, :c4, :c5], 
+    has :x = [:c10, :c6, :c7, :c8, :c9] ;
+    

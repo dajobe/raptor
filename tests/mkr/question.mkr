@@ -1,0 +1,20 @@
+@prefix mkr: <http://mkrmke.net/ns> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
+@prefix u: <http://mkrmke.net/ns/unit/> ;
+
+animal isa entity ;
+cat isa animal ;
+dog isa animal ;
+person isa entity ;
+u:Bob_McCullough isa person ;
+u:Dick_McCullough isa person ;
+u:Garfield isa cat, 
+u:Odie isa dog ;
+
+entity isc* ? ;
+?s isa* entity ;
+cat ?p entity ;
+u:Garfield isa* ?o ;
+
+?s isa ?o ;
+?s ?p ?o ;

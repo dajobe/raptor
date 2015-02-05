@@ -1,0 +1,8 @@
+result is relation with format = mkr, relVariable = (x, y);
+
+begin relation result ;
+rel anon2, _:a ;
+rel 123, <http://example.com/resource1> ;
+rel 2003-01-21, <http://example.com/resource2> ;
+rel anon1, _:a ;
+end relation result ;

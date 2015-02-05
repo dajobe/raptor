@@ -1,0 +1,9 @@
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@prefix owl: <http://www.w3.org/2002/07/owl#> ;
+
+rdf:Resource is mkr:existent ;
+rdf:Property is mkr:characteristic ;
+
+owl:Thing is mkr:existent ;
+owl:sameAs is mkr:is ;

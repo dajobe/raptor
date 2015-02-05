@@ -1,0 +1,4 @@
+@prefix : <http://example.org/stuff/1.0/> .
+:a :b "apple"; 
+   :b "banana" .
+

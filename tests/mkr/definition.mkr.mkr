@@ -1,0 +1,70 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/definition.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+enum
+    has definition = {
+        _:genid3
+            has genus = group, 
+            with {
+                _:genid4
+                    has exclusive = true, 
+                    has order = false ;
+                } ;
+        } ;
+    
+list
+    has definition = {
+        _:genid9
+            has genus = group, 
+            with {
+                _:genid10
+                    has inclusive = true, 
+                    has order = true ;
+                } ;
+        } ;
+    
+man
+    has definition = {
+        _:genid1
+            has genus = animal, 
+            with {
+                _:genid2
+                    has rational = true ;
+                } ;
+        } ;
+    
+multiset
+    has definition = {
+        _:genid7
+            has genus = group, 
+            with {
+                _:genid8
+                    has duplicate = true, 
+                    has inclusive = true, 
+                    has order = false ;
+                } ;
+        } ;
+    
+result
+    has definition = {
+        _:genid13
+            has genus = relation, 
+            with {
+                _:genid14
+                    has format = mkr, 
+                    has relVariable = (x, y) ;
+                } ;
+        } ;
+    
+set
+    has definition = {
+        _:genid5
+            has genus = group, 
+            with {
+                _:genid6
+                    has inclusive = true, 
+                    has order = false ;
+                } ;
+        } ;
+    

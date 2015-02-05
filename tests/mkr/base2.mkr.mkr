@@ -1,0 +1,14 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/base2.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix : <http://example.org/> ;
+
+:cat
+    isa :animal ;
+    
+goat
+    isa animal ;
+    
+<dog>
+    isa <animal> ;
+    

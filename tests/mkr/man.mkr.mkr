@@ -1,0 +1,14 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/man.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+man
+    has definition = {
+        _:genid1
+            has genus = animal, 
+            with {
+                _:genid2
+                    has rational = true ;
+                } ;
+        } ;
+    

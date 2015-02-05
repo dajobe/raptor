@@ -3,10 +3,19 @@ that must be passed by conformant systems.  See
   http://mkrmke.org/parser/
 for the full conformance information.
 
-The format is a set of exact serialization format tests.
+The format is a set of exact parser and serializer format tests.
 
-Tests are a pair of files:
+Parser tests are a pair of files:
+  xxx.mkr xxx.nt
+which are the input mKR file and the expected output NTriples file.
+
+Serializer tests are a pair of files:
   xxx.ttl xxx.mkr
 which are the input Turtle file and the expected output mKR file.
+which are the input mKR file and the expected output NTriples file.
 
-Dick
+Roundtrip tests are a pair of files:
+  xxx.mkr xxx.mkr.mkr
+which are the input mKR file and the expected output mKR file.
+
+Richard H. McCullough Dec/23/2015

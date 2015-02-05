@@ -1,0 +1,5 @@
+do print od "The quick brown fox jumped over the lazy dog" ;
+do read from relation.mkr ;
+do select od $1, $3 from relation.mkr ;
+! wc od *.mkr ;
+do dbopen od mkr.ho, hierarchy, gdbm, existent ;

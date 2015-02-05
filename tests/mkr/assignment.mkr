@@ -1,0 +1,6 @@
+x := 10 ;
+y := _:5 ;
+z := "the big red one" ;
+
+do print od $x, $y, $z ;
+do print od "$x, $y, $z" ;

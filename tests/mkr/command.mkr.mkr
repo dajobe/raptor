@@ -1,0 +1,49 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/command.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+dbopen
+    iss action ;
+    
+ke
+    has dbopen = {
+        _:genid11
+            has agent = ke, 
+            od (mkr.ho, hierarchy, gdbm, existent) ;
+        }, 
+    has print = {
+        _:genid1
+            has agent = ke, 
+            od ("The quick brown fox jumped over the lazy dog") ;
+        }, 
+    has read = {
+        _:genid3
+            has agent = ke, 
+            from (relation.mkr) ;
+        }, 
+    has select = {
+        _:genid5
+            has agent = ke, 
+            from (relation.mkr), 
+            od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
+        } ;
+    
+print
+    iss action ;
+    
+read
+    iss action ;
+    
+select
+    iss action ;
+    
+sh
+    has wc = {
+        _:genid9
+            has agent = sh, 
+            od (<http://mkrmke.net/ns/*.mkr>) ;
+        } ;
+    
+wc
+    iss action ;
+    

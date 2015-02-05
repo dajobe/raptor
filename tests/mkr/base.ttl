@@ -1,0 +1,5 @@
+@prefix mkr: <http://mkrmke.net/ns/> .
+@prefix :    <http://example.org/> .
+
+:cat  mkr:isa  :animal .
+<dog> mkr:isa  <animal> .

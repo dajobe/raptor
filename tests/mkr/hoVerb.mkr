@@ -1,0 +1,18 @@
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix U: <http://mkrmke.net/ns/universe/> ;
+@prefix u: <http://mkrmke.net/ns/unit/> ;
+@prefix : <http://example.org/> ;
+
+u:Garfield isa :cat ;
+:Odie isu :dog ;
+:person isa :homosapien ;
+
+u:Garfield isa ?x ;
+:Garfield isa ?x ;
+:Garfield isu ?z ;
+
+$top isc* ? ;
+entity isc ?z ;
+
+:Garfield isa* ?y ;
+:animal isc :cat, :dog;
