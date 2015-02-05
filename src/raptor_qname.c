@@ -530,6 +530,36 @@ raptor_qname_write(raptor_qname *qname, raptor_iostream* iostr)
 
 
 /**
+ * mkr_qname_write:
+ * @qname: QName to write
+ * @iostr: raptor iosteram
+ * 
+ * Write a formatted qname to an iostream
+ * omit "mkr:"
+ * 
+ * Return value: non-0 on failure
+ **/
+int
+mkr_qname_write(raptor_qname *qname, raptor_iostream* iostr)
+{
+  const char *MKR = "mkr";
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    if(strcmp(MKR,(char*)qname->nspace->prefix)) {
+      raptor_iostream_counted_string_write(qname->nspace->prefix,
+                                           qname->nspace->prefix_length,
+                                           iostr);
+      raptor_iostream_write_byte(':', iostr);
+    }
+  }
+  
+  raptor_iostream_counted_string_write(qname->local_name,
+                                       qname->local_name_length,
+                                       iostr);
+  return 0;
+}
+
+
+/**
  * raptor_qname_to_counted_name:
  * @qname: QName to write
  * @length_p: pointer to variable to store length of name (or NULL)

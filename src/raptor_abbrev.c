@@ -82,7 +82,7 @@ raptor_new_abbrev_node(raptor_world* world, raptor_term *term)
 
 
 /**
- * raptor_new_abbrev_node:
+ * raptor_free_abbrev_node:
  * @node: raptor abbrev node
  *
  * INTERNAL - Destructor for raptor_abbrev_node

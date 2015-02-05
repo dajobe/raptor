@@ -95,6 +95,10 @@ raptor_parsers_init(raptor_world *world)
   rc+= raptor_init_parser_turtle(world) != 0;
 #endif
 
+#ifdef RAPTOR_PARSER_MKR
+  rc+= raptor_init_parser_mkr(world) != 0;
+#endif
+
 #ifdef RAPTOR_PARSER_TRIG
   rc+= raptor_init_parser_trig(world) != 0;
 #endif

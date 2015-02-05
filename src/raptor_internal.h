@@ -808,6 +808,7 @@ size_t raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len);
 int raptor_init_parser_rdfxml(raptor_world* world);
 int raptor_init_parser_ntriples(raptor_world* world);
 int raptor_init_parser_turtle(raptor_world* world);
+int raptor_init_parser_mkr(raptor_world* world);
 int raptor_init_parser_trig(raptor_world* world);
 int raptor_init_parser_n3(raptor_world* world);
 int raptor_init_parser_grddl_common(raptor_world* world);
