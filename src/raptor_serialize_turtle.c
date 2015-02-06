@@ -1126,6 +1126,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   int mkr_blank = context->mkr_blank;
   int blank = 1;
   int collection = 0;
+  int set = 0;
   int rc = 0;
 
   if(!raptor_abbrev_subject_valid(subject)) return 0;
@@ -1162,7 +1163,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     pred2 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_free_avltree_iterator(iter);
 
-    /* check for collection */
+    /* check for collection or set */
     if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        pred2->term->type == RAPTOR_TERM_TYPE_URI &&
        (
@@ -1174,9 +1175,14 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         )
        ) {
       collection = 1;
-      subject->node->term->mkrtype = MKR_RDFLIST;
-    } else if(subject->node->term->mkrtype == MKR_RDFLIST) {
-      collection = 1;
+      /* check for mKR set */
+#if defined(RAPTOR_DEBUG)
+      printf("subject->node->term->mkrtype = %u\n", subject->node->term->mkrtype);
+#endif
+      if(subject->node->term->mkrtype == MKR_RDFLIST)
+        set = 0;
+      else if(subject->node->term->mkrtype == MKR_OBJECTSET)
+        set = 1;
     /* check for rs:ResultSet */
     } else if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals(pred1->term->value.uri, context->rs_resultVariable_uri)) {
@@ -1197,6 +1203,10 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if((subject->node->count_as_subject == 1 &&
         subject->node->count_as_object == 0) && depth > 1) {
       blank = 1;
+    /* check for mKR ppList */
+#if defined(RAPTOR_DEBUG)
+      printf("subject->node->term->mkrtype = %u\n", subject->node->term->mkrtype);
+#endif
     } else if((subject->node->term->mkrtype == MKR_DEFINITION) ||
               (subject->node->term->mkrtype == MKR_ACTION) ||
               (subject->node->term->mkrtype == MKR_COMMAND)
@@ -1216,16 +1226,22 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
   /* emit subject properties */
   if(collection) {
 #if defined(RAPTOR_DEBUG)
-    printf("collection: ");
+    printf("emit subject collection or set: ");
 #endif
-    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
+    if(emit_mkr & set)
+       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
+    else
+       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
     raptor_turtle_writer_increase_indent(turtle_writer);
 
     rc = raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
 
     raptor_turtle_writer_decrease_indent(turtle_writer);
     if(!emit_mkr) raptor_turtle_writer_newline(turtle_writer);
-    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
+    if(emit_mkr & set)
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+    else
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
 
   } else if(context->resultset && emit_mkr) {
 #if defined(RAPTOR_DEBUG)
