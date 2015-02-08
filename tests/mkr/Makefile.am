@@ -96,7 +96,7 @@ test-16d.mkr \
 test-16e.mkr \
 test-16f.mkr \
 test-16g.mkr \
-test-31a.mkr \
+test-31.mkr \
 test-32.mkr \
 test-34.mkr \
 turtle-syntax-number-08.mkr
@@ -127,7 +127,7 @@ test-16d.nt \
 test-16e.nt \
 test-16f.nt \
 test-16g.nt \
-test-31a.nt \
+test-31.nt \
 test-32.nt \
 test-34.nt \
 turtle-syntax-number-08.nt
@@ -160,7 +160,7 @@ test-16d.mkr.mkr \
 test-16e.mkr.mkr \
 test-16f.mkr.mkr \
 test-16g.mkr.mkr \
-test-31a.mkr.mkr \
+test-31.mkr.mkr \
 test-32.mkr.mkr \
 test-34.mkr.mkr \
 turtle-syntax-number-08.mkr.mkr

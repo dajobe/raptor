@@ -1500,6 +1500,8 @@ raptor_uri* raptor_www_get_final_uri(raptor_www* www);
 RAPTOR_API
 raptor_qname* raptor_new_qname(raptor_namespace_stack *nstack, const unsigned char *name, const unsigned char *value);
 RAPTOR_API
+raptor_qname* mkr_new_qname_from_term(raptor_namespace_stack *nstack, raptor_term* t);
+RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_local_name(raptor_world* world, raptor_namespace *ns, const unsigned char *local_name, const unsigned char *value);
 
 /* methods */

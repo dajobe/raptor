@@ -48,12 +48,12 @@ multiset
     
 result
     has definition = {
-        _:genid13
+        _:genid15
             has genus = relation, 
             with {
-                _:genid14
+                _:genid16
                     has format = mkr, 
-                    has relVariable = (x, y) ;
+                    has relVariable = (, x, y, ) ;
                 } ;
         } ;
     

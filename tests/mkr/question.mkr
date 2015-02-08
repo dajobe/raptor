@@ -8,7 +8,7 @@ dog isa animal ;
 person isa entity ;
 u:Bob_McCullough isa person ;
 u:Dick_McCullough isa person ;
-u:Garfield isa cat, 
+u:Garfield isa cat; 
 u:Odie isa dog ;
 
 entity isc* ? ;

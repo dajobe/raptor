@@ -15,4 +15,4 @@ $top isc* ? ;
 entity isc ?z ;
 
 :Garfield isa* ?y ;
-:animal isc :cat, :dog;
+:animal isc [:cat, :dog];

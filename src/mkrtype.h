@@ -52,6 +52,7 @@
     * @MKR_QVARIABLE:
   * @MKR_VALUE:
     * @MKR_NIL:            ( )
+    * @MKR_EMPTYSET:       [ ]
     * @MKR_OBJECT:         object
     * @MKR_RDFLIST:        first,rest,nil
     * @MKR_VALUELIST:      [ valueList ]
@@ -154,6 +155,7 @@
         * @MKR_SPACE:
         * @MKR_TIME:
         * @MKR_VIEW:
+        * @MKR_GRAPH:
       * @MKR_STATEMENT:
         * @MKR_DEFINITION:
           * @MKR_GENUS:
@@ -203,6 +205,7 @@ typedef enum {
     MKR_QVARIABLE,
   MKR_VALUE,
     MKR_NIL,
+    MKR_EMPTYSET,
     MKR_OBJECT,
     MKR_RDFLIST,
     MKR_VALUELIST,
@@ -303,6 +306,7 @@ typedef enum {
         MKR_SPACE,
         MKR_TIME,
         MKR_VIEW,
+        MKR_GRAPH,
       MKR_STATEMENT,
         MKR_DEFINITION,
           MKR_GENUS,

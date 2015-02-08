@@ -4,14 +4,14 @@
 
 result
     has definition = {
-        _:genid3
+        _:genid5
             has genus = relation, 
             with {
-                _:genid4
+                _:genid6
                     has format = mkr, 
-                    has relVariable = (x, y) ;
+                    has relVariable = (, x, y, ) ;
                 } ;
         }, 
-    rel ((anon2, _:a), (123, <http://example.com/resource1>), (<http://mkrmke.net/ns/2003-01-21>, <http://example.com/resource2>), (anon1, _:a)), 
+    rel ((anon2, _:a), (123, <http://example.com/resource1>, (2003-01-21, <http://example.com/resource2>, (anon1, _:2)), 
     isu relation ;
     

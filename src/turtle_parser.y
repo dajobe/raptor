@@ -145,7 +145,6 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 
   /* mKR */
   raptor_term *variable;
-  MKR_value *value;
   MKR_nv *nv;
   MKR_pp *pp;
 }
@@ -242,7 +241,6 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 
 /* mKR */
 %type <identifier> variable
-%type <value> value
 %type <nv> nv
 %type <pp> pp
 
@@ -272,11 +270,6 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
   if($$)
     raptor_free_statement($$);
 } triple
-
-%destructor {
-  if($$)
-    mkr_free_value($$);
-} value
 
 %destructor {
   if($$)

@@ -291,6 +291,61 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
 
 
 /**
+ * mkr_new_qname_from_term:
+ * @ns: raptor_namespace*
+ * @term: raptor_term*
+ *
+ * Constructor - create a new XML qname.
+ * 
+ * Create a new qname from the raptor term
+ * 
+ * Return value: a new #raptor_qname object or NULL on failure
+ **/
+raptor_qname*
+mkr_new_qname_from_term(raptor_namespace_stack* nstack, raptor_term* t)
+{
+  raptor_qname* qname = NULL;
+  if(!t)
+    return NULL;
+
+  switch(t->type) {
+    case RAPTOR_TERM_TYPE_URI:
+      qname = raptor_new_qname_from_namespace_uri(nstack, t->value.uri, 10);
+      break;
+
+    case RAPTOR_TERM_TYPE_BLANK:
+      qname = RAPTOR_CALLOC(raptor_qname*, 1, sizeof(*qname));
+      if(!qname)
+        return NULL;
+      t->usage++;
+      qname->world = t->world;
+      qname->local_name = t->value.blank.string;
+      qname->local_name_length = strlen((const char*)qname->local_name);
+      qname->nspace = NULL;
+      break;
+
+    case RAPTOR_TERM_TYPE_LITERAL:
+      qname = RAPTOR_CALLOC(raptor_qname*, 1, sizeof(*qname));
+      if(!qname)
+        return NULL;
+      t->usage++;
+      qname->world = t->world;
+      qname->local_name = t->value.literal.string;
+      qname->local_name_length = strlen((const char*)qname->local_name);
+      qname->nspace = NULL;
+      break;
+
+    case RAPTOR_TERM_TYPE_UNKNOWN:
+    default:
+      fprintf(stderr,"##### ERROR: mkr_new_qname_from_term: RAPTOR_TERM_TYPE_UNKNOWN\n");
+      break;
+  }
+
+  return qname;
+}
+
+
+/**
  * raptor_qname_copy:
  * @qname: existing qname
  *
