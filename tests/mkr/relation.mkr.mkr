@@ -1,17 +1,23 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/relation.mkr> ;
-@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
 result
     has definition = {
-        _:genid5
+        _:genid2
             has genus = relation, 
             with {
-                _:genid6
+                _:genid3
                     has format = mkr, 
-                    has relVariable = (, x, y, ) ;
+                    has relVariable = {
+                        _:genid1
+                            isu rdf:Seq, 
+                            has size = 2, 
+                            has rdf:_1 = x, 
+                            has rdf:_2 = y ;
+                        } ;
                 } ;
         }, 
-    rel ((anon2, _:a), (123, <http://example.com/resource1>, (2003-01-21, <http://example.com/resource2>, (anon1, _:2)), 
+    rel (123, <http://example.com/resource1>), 
     isu relation ;
     

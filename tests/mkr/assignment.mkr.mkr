@@ -10,7 +10,7 @@ ke
         }, {
         _:genid5
             has agent = ke, 
-            od ("$x, $y, $z") ;
+            od "$x, $y, $z" ;
         }] ;
     
 print

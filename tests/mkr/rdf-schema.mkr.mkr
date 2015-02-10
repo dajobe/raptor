@@ -1,61 +1,121 @@
 @base <http://www.w3.org/1999/02/22-rdf-syntax-ns> ;
-@prefix rdf: <#> ;
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>@prefix rdf: <#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix : <../../2000/01/rdf-schema#> ;
 
 rdf:Alt
     isu :Class, 
-    has :label = [, "Alt"@en, "Choix"@fr, ], 
+    has :label = {
+        _:genid1
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Alt"@en, 
+            has rdf:_2 = "Choix"@fr ;
+        }, 
     has :subClassOf = :Container ;
     
 rdf:Bag
     isu :Class, 
-    has :label = [, "Bag"@en, "Ensemble"@fr, ], 
+    has :label = {
+        _:genid2
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Bag"@en, 
+            has rdf:_2 = "Ensemble"@fr ;
+        }, 
     has :subClassOf = :Container ;
     
 rdf:Property
     isu :Class, 
     has :comment = "The concept of a property.", 
-    has :label = [, "Property"@en, "Propriété"@fr, ], 
+    has :label = {
+        _:genid3
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Property"@en, 
+            has rdf:_2 = "Propriété"@fr ;
+        }, 
     has :subClassOf = :Resource ;
     
 rdf:Seq
     isu :Class, 
-    has :label = [, "Sequence"@en, "Séquence"@fr, ], 
+    has :label = {
+        _:genid4
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Sequence"@en, 
+            has rdf:_2 = "Séquence"@fr ;
+        }, 
     has :subClassOf = :Container ;
     
 rdf:Statement
     isu :Class, 
     has :comment = "This represents the set of reified statements.", 
-    has :label = [, "Déclaration"@fr, "Statement"@en, ], 
+    has :label = {
+        _:genid5
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Déclaration"@fr, 
+            has rdf:_2 = "Statement"@en ;
+        }, 
     has :subClassOf = :Resource ;
     
 rdf:object
     isu rdf:Property, 
     has :domain = rdf:Statement, 
-    has :label = [, "object"@en, "objet"@fr, ] ;
+    has :label = {
+        _:genid6
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "object"@en, 
+            has rdf:_2 = "objet"@fr ;
+        } ;
     
 rdf:predicate
     isu rdf:Property, 
     has :domain = rdf:Statement, 
-    has :label = [, "predicate"@en, "prédicat"@fr, ], 
+    has :label = {
+        _:genid7
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "predicate"@en, 
+            has rdf:_2 = "prédicat"@fr ;
+        }, 
     has :range = rdf:Property ;
     
 rdf:subject
     isu rdf:Property, 
     has :domain = rdf:Statement, 
-    has :label = [, "subject"@en, "sujet"@fr, ], 
+    has :label = {
+        _:genid8
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "subject"@en, 
+            has rdf:_2 = "sujet"@fr ;
+        }, 
     has :range = :Resource ;
     
 rdf:type
     isu rdf:Property, 
     has :comment = "Indicates membership of a class", 
-    has :label = [, "type"@en, "type"@fr, ], 
+    has :label = {
+        _:genid9
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "type"@en, 
+            has rdf:_2 = "type"@fr ;
+        }, 
     has :range = :Class ;
     
 rdf:value
     isu rdf:Property, 
-    has :label = [, "object"@en, "value"@fr, ] ;
+    has :label = {
+        _:genid10
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "object"@en, 
+            has rdf:_2 = "value"@fr ;
+        } ;
     
 <../../2000/01/rdf-schema#>
     has :seeAlso = <../../2000/01/rdf-schema-more> ;
@@ -63,25 +123,55 @@ rdf:value
 :Class
     isu :Class, 
     has :comment = "The concept of Class", 
-    has :label = [, "Class"@en, "Classe"@fr, ], 
+    has :label = {
+        _:genid11
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Class"@en, 
+            has rdf:_2 = "Classe"@fr ;
+        }, 
     has :subClassOf = :Resource ;
     
 :ConstraintProperty
     isu :Class, 
     has :comment = "Properties used to express RDF Schema constraints.", 
-    has :label = [, "ConstraintProperty"@en, "PropriétéContrainte"@fr, ], 
-    has :subClassOf = [, rdf:Property, :ConstraintResource, ] ;
+    has :label = {
+        _:genid12
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "ConstraintProperty"@en, 
+            has rdf:_2 = "PropriétéContrainte"@fr ;
+        }, 
+    has :subClassOf = {
+        _:genid13
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = rdf:Property, 
+            has rdf:_2 = :ConstraintResource ;
+        } ;
     
 :ConstraintResource
     isu :Class, 
     has :comment = "Resources used to express RDF Schema constraints.", 
-    has :label = [, "ConstraintResource"@en, "RessourceContrainte"@fr, ], 
+    has :label = {
+        _:genid14
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "ConstraintResource"@en, 
+            has rdf:_2 = "RessourceContrainte"@fr ;
+        }, 
     has :subClassOf = :Resource ;
     
 :Container
     isu :Class, 
     has :comment = "This represents the set Containers.", 
-    has :label = [, "Container"@en, "Enveloppe"@fr, ], 
+    has :label = {
+        _:genid15
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Container"@en, 
+            has rdf:_2 = "Enveloppe"@fr ;
+        }, 
     has :subClassOf = :Resource ;
     
 :ContainerMembershipProperty
@@ -92,30 +182,60 @@ rdf:value
 :Literal
     isu :Class, 
     has :comment = "This represents the set of atomic values, eg. textual strings.", 
-    has :label = [, "Literal"@en, "Littéral"@fr, ] ;
+    has :label = {
+        _:genid16
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Literal"@en, 
+            has rdf:_2 = "Littéral"@fr ;
+        } ;
     
 :Resource
     isu :Class, 
     has :comment = "The most general class", 
-    has :label = [, "Resource"@en, "Ressource"@fr, ] ;
+    has :label = {
+        _:genid17
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "Resource"@en, 
+            has rdf:_2 = "Ressource"@fr ;
+        } ;
     
 :comment
     isu rdf:Property, 
     has :comment = "Use this for descriptions", 
     has :domain = :Resource, 
-    has :label = [, "comment"@en, "commentaire"@fr, ], 
+    has :label = {
+        _:genid18
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "comment"@en, 
+            has rdf:_2 = "commentaire"@fr ;
+        }, 
     has :range = :Literal ;
     
 :domain
     isu :ConstraintProperty, 
     has :comment = "This is how we associate a class with properties that its instances can have", 
-    has :label = [, "domain"@en, "domaine"@fr, ] ;
+    has :label = {
+        _:genid19
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "domain"@en, 
+            has rdf:_2 = "domaine"@fr ;
+        } ;
     
 :isDefinedBy
     isu rdf:Property, 
     has :comment = "Indicates a resource containing and defining the subject resource.", 
     has :domain = :Resource, 
-    has :label = [, "esDéfiniPar"@fr, "isDefinedBy"@en, ], 
+    has :label = {
+        _:genid20
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "esDéfiniPar"@fr, 
+            has rdf:_2 = "isDefinedBy"@en ;
+        }, 
     has :range = :Resource, 
     has :subPropertyOf = :seeAlso ;
     
@@ -123,34 +243,64 @@ rdf:value
     isu rdf:Property, 
     has :comment = "Provides a human-readable version of a resource name.", 
     has :domain = :Resource, 
-    has :label = [, "label"@en, "label"@fr, ], 
+    has :label = {
+        _:genid21
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "label"@en, 
+            has rdf:_2 = "label"@fr ;
+        }, 
     has :range = :Literal ;
     
 :range
     isu :ConstraintProperty, 
     has :comment = "Properties that can be used in a schema to provide constraints", 
     has :domain = rdf:Property, 
-    has :label = [, "range"@en, "étendue"@fr, ], 
+    has :label = {
+        _:genid22
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "range"@en, 
+            has rdf:_2 = "étendue"@fr ;
+        }, 
     has :range = :Class ;
     
 :seeAlso
     isu rdf:Property, 
     has :comment = "Indicates a resource that provides information about the subject resource.", 
     has :domain = :Resource, 
-    has :label = [, "seeAlso"@en, "voirAussi"@fr, ], 
+    has :label = {
+        _:genid23
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "seeAlso"@en, 
+            has rdf:_2 = "voirAussi"@fr ;
+        }, 
     has :range = :Resource ;
     
 :subClassOf
     isu rdf:Property, 
     has :comment = "Indicates membership of a class", 
     has :domain = :Class, 
-    has :label = [, "sousClasseDe"@fr, "subClassOf"@en, ], 
+    has :label = {
+        _:genid24
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "sousClasseDe"@fr, 
+            has rdf:_2 = "subClassOf"@en ;
+        }, 
     has :range = :Class ;
     
 :subPropertyOf
     isu rdf:Property, 
     has :comment = "Indicates specialization of properties", 
     has :domain = rdf:Property, 
-    has :label = [, "sousPropriétéDe"@fr, "subPropertyOf"@en, ], 
+    has :label = {
+        _:genid25
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = "sousPropriétéDe"@fr, 
+            has rdf:_2 = "subPropertyOf"@en ;
+        }, 
     has :range = rdf:Property ;
     

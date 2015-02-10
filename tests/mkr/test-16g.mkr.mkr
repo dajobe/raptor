@@ -1,11 +1,37 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-16g.mkr> ;
-@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_3><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2><http://www.w3.org/1999/02/22-rdf-syntax-ns#_3>@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix : <http://example.org/ns#> ;
 
 :a
-    has :b = (, :c1, :c2, :c3, ), 
-    has :x = [, :c4, :c5, ], 
+    has :b = {
+        _:genid1
+            isu rdf:Seq, 
+            has size = 3, 
+            has rdf:_1 = :c1, 
+            has rdf:_2 = :c2, 
+            has rdf:_3 = :c3 ;
+        }, 
+    has :x = {
+        _:genid2
+            isu rdf:Bag, 
+            has size = 2, 
+            has rdf:_1 = :c4, 
+            has rdf:_2 = :c5 ;
+        }, 
     has :y = :c6, 
-    has :z = [, :c10, :c7, (, :c8, :c9, ), ] ;
+    has :z = {
+        _:genid4
+            isu rdf:Bag, 
+            has size = 3, 
+            has rdf:_1 = :c10, 
+            has rdf:_2 = :c7, 
+            has rdf:_3 = {
+                _:genid3
+                    isu rdf:Seq, 
+                    has size = 2, 
+                    has rdf:_1 = :c8, 
+                    has rdf:_2 = :c9 ;
+                } ;
+        } ;
     

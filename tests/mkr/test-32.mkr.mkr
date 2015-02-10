@@ -1,8 +1,14 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-32.mkr> ;
-@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix ex: <http://example.org/ns#> ;
 
 ex:node1
-    has rdf:value = (, ex:item1, ex:item2, ) ;
+    has rdf:value = {
+        _:genid1
+            isu rdf:Seq, 
+            has size = 2, 
+            has rdf:_1 = ex:item1, 
+            has rdf:_2 = ex:item2 ;
+        } ;
     

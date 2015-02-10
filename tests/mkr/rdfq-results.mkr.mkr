@@ -12,7 +12,7 @@ result
                     has format = csv ;
                 } ;
         }, 
-    rel ((x, y), (anon2, _:a), (123, <http://example.com/resource1>, (2003-01-21, <http://example.com/resource2>, (anon1, _:2)), 
+    rel ((x, y), (123, <http://example.com/resource1>)), 
     isu relation ;
     
 <rdfq-results.ttl>

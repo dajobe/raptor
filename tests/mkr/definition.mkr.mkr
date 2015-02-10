@@ -1,5 +1,5 @@
 @base <http://www.w3.org/2001/sw/DataAccess/df1/tests/definition.mkr> ;
-@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1><http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 
 enum
@@ -48,12 +48,18 @@ multiset
     
 result
     has definition = {
-        _:genid15
+        _:genid12
             has genus = relation, 
             with {
-                _:genid16
+                _:genid13
                     has format = mkr, 
-                    has relVariable = (, x, y, ) ;
+                    has relVariable = {
+                        _:genid11
+                            isu rdf:Seq, 
+                            has size = 2, 
+                            has rdf:_1 = x, 
+                            has rdf:_2 = y ;
+                        } ;
                 } ;
         } ;
     

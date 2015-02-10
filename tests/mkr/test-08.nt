@@ -1,1 +1,3 @@
-<http://example.org/stuff/1.0/a> <http://example.org/stuff/1.0/b> <http://www.w3.org/1999/02/22-rdf-syntax-ns#nil> .
+_:genid1 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
+_:genid1 <http://mkrmke.net/ns/size> "-1"^^<http://www.w3.org/2001/XMLSchema#integer> .
+<http://example.org/stuff/1.0/a> <http://example.org/stuff/1.0/b> _:genid1 .
