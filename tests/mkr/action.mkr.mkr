@@ -1,0 +1,36 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/action.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+
+dbopen
+    iss action ;
+    
+email
+    iss action ;
+    
+ke
+    has dbopen = {
+        _:genid7
+            has agent = ke, 
+            od (notes, relation) ;
+        } ;
+    
+mKE
+    has read = {
+        _:genid1
+            has agent = mKE, 
+            from KEHOME/kb/mkr.view.html, 
+            od mkr.ho ;
+        } ;
+    
+read
+    iss action ;
+    
+sh
+    has email = {
+        _:genid4
+            has agent = sh, 
+            od letter, 
+            to Bob ;
+        } ;
+    

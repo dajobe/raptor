@@ -140,6 +140,7 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %union {
   unsigned char *string;
   raptor_term *identifier;
+  raptor_statement *statement;
   raptor_sequence *sequence;
   raptor_uri *uri;
 
@@ -236,6 +237,7 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %token ERROR_TOKEN
 
 %type <identifier> subject predicate object verb literal resource blankNode collection blankNodePropertyList
+%type <statement> sentence
 %type <sequence> triples objectList itemList predicateObjectList predicateObjectListOpt
 %type <string> prefix
 
@@ -264,12 +266,12 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} triples objectList itemlist predicateObjectList predicateObjectListOpt
+} triples objectList itemList predicateObjectList predicateObjectListOpt
 
 %destructor {
   if($$)
     raptor_free_statement($$);
-} triple
+} sentence
 
 %destructor {
   if($$)

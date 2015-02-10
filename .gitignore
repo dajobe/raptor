@@ -28,6 +28,9 @@ gtk-doc.make
 install-sh
 libtool
 mkinstalldirs
+mkr_parser.c
+mkr_parser.h
+mkr_parser.output
 not-used
 old
 raptor2.pc

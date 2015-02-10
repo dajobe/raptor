@@ -1,0 +1,5 @@
+<http://example.org/animals> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://example.org/lion> .
+<http://example.org/animals> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://example.org/tiger> .
+<http://example.org/animals> <http://www.w3.org/1999/02/22-rdf-syntax-ns#_3> <http://example.org/gorilla> .
+<http://example.org/animals> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
+<http://example.org/zoo> <http://example.org/contains> <http://example.org/animals> .

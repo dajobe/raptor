@@ -80,10 +80,12 @@ typedef struct {
    */
   int written_header;
 
+
   /* for labeling namespaces */
+
   int namespace_count;
 
-  /* variables for mKR serializer */
+  /***** variables for mKR serializer *****/
   /* Non 0 for mKR serializer */
   int emit_mkr;
 
@@ -113,6 +115,10 @@ typedef struct {
 
   /* Non 0 if "begin relation result ;" has been written */
   int written_begin;
+
+  /* state for raptor_mkr_emit_subject_collection_items()
+           and mkr_new_sequence_from_rdflist() */
+  mkr_type mkrtype;
 
   /* state for raptor_mkr_emit_subject_properties()
            and raptor_mkr_emit_po() */
@@ -147,15 +153,17 @@ static int raptor_turtle_emit_subject_list_items(raptor_serializer* serializer,
 static int raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
                                                        raptor_abbrev_subject* subject,
                                                        int depth);
-static int raptor_mkr_emit_subject_collection_items(raptor_serializer* serializer,
-                                                    raptor_abbrev_subject* subject,
-                                                    int depth);
-raptor_sequence* mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
-                                               raptor_abbrev_subject* subject,
-                                               int depth);
 static int raptor_turtle_emit_subject_properties(raptor_serializer *serializer,
                                                  raptor_abbrev_subject* subject,
                                                  int depth);
+
+static int raptor_mkr_emit_subject_collection_items(raptor_serializer* serializer,
+                                                    raptor_abbrev_subject* subject,
+                                                    int depth);
+mkr_type mkr_get_gtype(raptor_serializer* serializer, raptor_term* gterm);
+raptor_sequence* mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
+                                               raptor_abbrev_subject* subject,
+                                               int depth);
 static int raptor_mkr_emit_subject_properties(raptor_serializer *serializer,
                                               raptor_abbrev_subject* subject,
                                               int depth);
@@ -166,6 +174,7 @@ static int raptor_mkr_emit_po(raptor_serializer* serializer,
 static int raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
                                              raptor_abbrev_subject* subject,
                                              int depth);
+
 static int raptor_turtle_emit_subject(raptor_serializer *serializer,
                                       raptor_abbrev_subject* subject,
                                       int depth);
@@ -461,6 +470,7 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
+
     if(!raptor_uri_equals(predicate->term->value.uri,
                           context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
@@ -558,6 +568,48 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
   return rv;
 }
 
+/*
+ * mkr_get_gtype
+ * @serializer: #raptor_serializer object
+ * @gterm: object term of isu or rdf:type
+ *
+ * get mkr_type for this group
+ *
+ * Return value: MKR_UNKNOWN on failure
+ **/
+mkr_type
+mkr_get_gtype(raptor_serializer* serializer, raptor_term* gterm)
+{
+  raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
+  mkr_type mkrtype = MKR_UNKNOWN;
+  raptor_qname* qname = NULL;
+  char* local = NULL;
+
+  if(!gterm)
+    return mkrtype;
+
+  qname = mkr_new_qname_from_term(context->nstack, gterm);
+  if(!qname)
+    return mkrtype;
+  local = (char*)qname->local_name;
+  if(!local)
+    return mkrtype;
+
+  if(!strcmp(local, "list"))
+    mkrtype = MKR_LIST;
+  else if(!strcmp(local, "set"))
+    mkrtype = MKR_SET;
+  else if(!strcmp(local, "view"))
+    mkrtype = MKR_VIEW;
+  else if(!strcmp(local, "graph"))
+    mkrtype = MKR_GRAPH;
+  else if(!strcmp(local, "hierarchy"))
+    mkrtype = MKR_HIERARCHY;
+  else if(!strcmp(local, "relation"))
+    mkrtype = MKR_RELATION;
+
+  return mkrtype;
+}
 
 /*
  * mkr_new_sequence_from_rdflist
@@ -572,23 +624,26 @@ raptor_turtle_emit_subject_collection_items(raptor_serializer* serializer,
  **/
 raptor_sequence*
 mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
-                                            raptor_abbrev_subject* subject,
-                                            int depth)
+                              raptor_abbrev_subject* subject,
+                              int depth)
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
-#if defined(RAPTOR_DEBUG)
-  raptor_turtle_writer* turtle_writer = context->turtle_writer;
-#endif
-  raptor_sequence* seq = NULL;
-  int rv = 0;
   raptor_avltree_iterator* iter = NULL;
+  int rv = 0;
   int i;
   int is_new_subject = 0;
 
+  raptor_sequence* seq = NULL;
+
+#if defined(RAPTOR_DEBUG)
+  raptor_turtle_writer* turtle_writer = context->turtle_writer;
+  raptor_turtle_writer_raw(turtle_writer, (unsigned char*)"##### DEBUG: ");
+#endif
+
   RAPTOR_DEBUG_ABBREV_NODE("creating raptor_sequence from subject collection items", subject->node);
 
-  seq = raptor_new_sequence((raptor_data_free_handler)raptor_free_term,
-                            (raptor_data_print_handler)raptor_term_print_as_ntriples);
+  seq = raptor_new_sequence((raptor_data_free_handler)raptor_free_abbrev_node,
+                            (raptor_data_print_handler)NULL);
 
   /* if just saw a new subject (is_new_subject is true) then there is no need
    * to advance the iterator - it was just reset
@@ -608,8 +663,11 @@ mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!raptor_uri_equals(predicate->term->value.uri,
-                          context->rdf_first_uri)) {
+    if(!raptor_uri_equals(predicate->term->value.uri, context->mkr_isu_uri)) {
+      context->mkrtype = mkr_get_gtype(serializer, object->term);
+    } else if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_type->term->value.uri)) {
+      context->mkrtype = mkr_get_gtype(serializer, object->term);
+    } else if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - first predicate is not rdf:first");
       raptor_free_avltree_iterator(iter);
@@ -619,7 +677,31 @@ mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
     if(!object)
       continue;
 
-    raptor_sequence_push(seq, object->term);
+
+    switch(object->term->type) {
+      case RAPTOR_TERM_TYPE_URI:
+        raptor_sequence_push(seq, object);
+        /* rv = raptor_turtle_emit_resource(serializer, object, depth+1); */
+        break;
+
+      case RAPTOR_TERM_TYPE_LITERAL:
+        raptor_sequence_push(seq, object);
+        /* rv = raptor_turtle_emit_literal(serializer, object, depth+1); */
+        break;
+
+      case RAPTOR_TERM_TYPE_BLANK:
+        raptor_sequence_push(seq, object);
+        /* rv = raptor_turtle_emit_blank(serializer, object, depth+1); */
+        break;
+
+      case RAPTOR_TERM_TYPE_UNKNOWN:
+      default:
+        raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR,
+                                   NULL, "Triple has unsupported term type %u",
+                                   object->term->type);
+        break;
+    }
+
 
     /* last item */
     rv = raptor_avltree_iterator_next(iter);
@@ -670,7 +752,9 @@ mkr_new_sequence_from_rdflist(raptor_serializer* serializer,
   if(iter)
     raptor_free_avltree_iterator(iter);
 
+#if defined(RAPTOR_DEBUG)
   raptor_sequence_print(seq, stdout);
+#endif
   return seq;
 }
 
@@ -693,13 +777,32 @@ raptor_mkr_emit_subject_collection_items(raptor_serializer* serializer,
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer* turtle_writer = context->turtle_writer;
   raptor_qname* qname = NULL;
-  char* local = NULL;
   int rv = 0;
   raptor_avltree_iterator* iter = NULL;
   int i;
   int is_new_subject = 0;
 
+  mkr_type mkrtype = MKR_UNKNOWN;
+  raptor_sequence* seq = NULL;
+  int size = 0;
+
   RAPTOR_DEBUG_ABBREV_NODE("Emitting subject collection items", subject->node);
+
+  seq = mkr_new_sequence_from_rdflist(serializer, subject, depth);
+  size = raptor_sequence_size(seq);
+
+  context->mkrtype = subject->node->term->mkrtype;
+
+  /* write type begin string */
+  if(size && (size > 1))
+    switch(context->mkrtype) {
+      case MKR_LIST:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"(", 1); break;
+      case MKR_SET:   raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"[", 1); break;
+      case MKR_VIEW:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"{(", 2); break;
+      case MKR_GRAPH: raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"{[", 2); break;
+
+      default:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"(", 1); break;
+    }
 
   /* if just saw a new subject (is_new_subject is true) then there is no need
    * to advance the iterator - it was just reset
@@ -719,36 +822,22 @@ raptor_mkr_emit_subject_collection_items(raptor_serializer* serializer,
     predicate = nodes[0];
     object = nodes[1];
 
-    if(!raptor_uri_equals(predicate->term->value.uri,
-                          context->rdf_first_uri)) {
+    if(!raptor_uri_equals(predicate->term->value.uri, context->mkr_isu_uri)) {
+      context->mkrtype = mkr_get_gtype(serializer, object->term);
+    } else if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_type->term->value.uri)) {
+      context->mkrtype = mkr_get_gtype(serializer, object->term);
+    } else if(!raptor_uri_equals(predicate->term->value.uri, context->rdf_first_uri)) {
       raptor_log_error(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                        "Malformed collection - first predicate is not rdf:first");
       raptor_free_avltree_iterator(iter);
-      return 1;
+      return NULL;
     }
 
     if(!object)
       continue;
 
-    /* emit ", " except after "(" "[" "{" and before ")" "]" "}" */
-    if(i > 0) {
-      raptor_turtle_writer_raw_counted(turtle_writer,
-                                       (const unsigned char*)", ", 2);
-    }
-
-    /* emit collection "(" if needed */
-    qname = mkr_new_qname_from_term(context->nstack, object->term);
-    if(qname) {
-#if defined(RAPTOR_DEBUG)
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"qname = ");
-      raptor_turtle_writer_qname(turtle_writer, qname);
-      raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"\n");
-#endif
-      local = (char*)qname->local_name;
-      if(local && (i == 0) && strcmp(local, "(") && strcmp(local, "[") && strcmp(local, "{"))
-        raptor_turtle_writer_raw_counted(turtle_writer,
-                                         (const unsigned char*)"(", 1);
-    }
+    if(i > 0)
+      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
 
     switch(object->term->type) {
       case RAPTOR_TERM_TYPE_URI:
@@ -821,22 +910,24 @@ raptor_mkr_emit_subject_collection_items(raptor_serializer* serializer,
       }
       break;
     }
+
+
+    /* last item */
   }
 
-  /* emit collection ")" if needed */
-  if(qname) {
-#if defined(RAPTOR_DEBUG)
-    raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"qname = ");
-    raptor_turtle_writer_qname(turtle_writer, qname);
-    raptor_turtle_writer_raw(turtle_writer, (const unsigned char*)"\n");
-#endif
-    local = (char*)qname->local_name;
-    if(local && strcmp(local, ")") && strcmp(local, "]") && strcmp(local, "}"))
-      raptor_turtle_writer_raw_counted(context->turtle_writer,
-                                       (const unsigned char*)")", 1);
-  }
-  if(iter)
-    raptor_free_avltree_iterator(iter);
+  context->mkrtype = subject->node->term->mkrtype;
+
+  /* write type end string */
+  if(size && (size > 1))
+    switch(context->mkrtype) {
+      case MKR_LIST:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)")", 1); break;
+      case MKR_SET:   raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"]", 1); break;
+      case MKR_VIEW:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)")}", 2); break;
+      case MKR_GRAPH: raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)"]}", 2); break;
+
+      default:  raptor_turtle_writer_raw_counted(turtle_writer, (unsigned char*)")", 1); break;
+    }
+
   if(qname)
     raptor_free_qname(qname);
 
@@ -1453,7 +1544,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     pred2 = ((raptor_abbrev_node**)raptor_avltree_iterator_get(iter))[0];
     raptor_free_avltree_iterator(iter);
 
-    /* check for collection (includes MKR_LIST, MKR_SET, MKR_VIEW) */
+    /* check for collection (includes MKR_LIST, MKR_SET, MKR_VIEW, MKR_GRAPH) */
     if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        pred2->term->type == RAPTOR_TERM_TYPE_URI &&
        (
@@ -1465,11 +1556,13 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
         )
        ) {
       collection = 1;
+      subject->node->term->mkrtype = MKR_LIST;
 
     /* check for rs:ResultSet */
     } else if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        raptor_uri_equals(pred1->term->value.uri, context->rs_resultVariable_uri)) {
         context->resultset = 1;
+        subject->node->term->mkrtype = MKR_RELATION;
     }
   }
 
@@ -1676,6 +1769,7 @@ raptor_turtle_serialize_init(raptor_serializer* serializer, const char *name)
     context->curly_count = 0;
     context->indent_count = 0;
     context->turtle_writer_flags |= TURTLE_WRITER_FLAG_MKR;
+    context->mkrtype = MKR_LIST;
   } else {
     context->emit_mkr = 0;
   }

@@ -1,0 +1,14 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/seq.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix : <http://example.org/> ;
+
+:animals
+    isu rdf:Seq, 
+    has rdf:_1 = :lion, 
+    has rdf:_2 = :tiger, 
+    has rdf:_3 = :gorilla ;
+    
+:zoo
+    has :contains = :animals ;
+    

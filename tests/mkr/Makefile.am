@@ -25,10 +25,12 @@ NTRIPLES_DIR = ../ntriples
 
 
 TEST_SERIALIZE_FILES= \
+bag.ttl \
 base.ttl \
 rdfq-results.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
+seq.ttl \
 test-07.ttl \
 test-07a.ttl \
 test-07b.ttl \
@@ -48,10 +50,12 @@ test-34.ttl \
 turtle-syntax-number-08.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
+bag.mkr \
 base.mkr \
 rdfq-results.mkr \
 rdf-schema.mkr \
 rdfs-namespace.mkr \
+seq.mkr \
 test-07.mkr \
 test-07a.mkr \
 test-07b.mkr \
@@ -71,8 +75,10 @@ test-34.mkr \
 turtle-syntax-number-08.ttl
 
 TEST_PARSER_FILES= \
+action.mkr \
 alias.mkr \
 assignment.mkr \
+bag.mkr \
 base2.mkr \
 command.mkr \
 definition.mkr \
@@ -84,6 +90,7 @@ rdfq-results.mkr \
 rdf-schema.mkr \
 rdfs-namespace.mkr \
 relation.mkr \
+seq.mkr \
 test-07.mkr \
 test-07a.mkr \
 test-07b.mkr \
@@ -102,8 +109,10 @@ test-34.mkr \
 turtle-syntax-number-08.mkr
 
 TEST_PARSER_OUT_FILES= \
+action.nt \
 alias.nt \
 assignment.nt \
+bag.nt \
 base2.nt \
 command.nt \
 definition.nt \
@@ -115,6 +124,7 @@ rdfq-results.nt \
 rdf-schema.nt \
 rdfs-namespace.nt \
 relation.nt \
+seq.nt \
 test-07.nt \
 test-07a.nt \
 test-07b.nt \
@@ -135,8 +145,10 @@ turtle-syntax-number-08.nt
 TEST_ROUNDTRIP_FILES = $(TEST_PARSER_FILES)
 
 TEST_ROUNDTRIP_OUT_FILES= \
+action.mkr.mkr \
 alias.mkr.mkr \
 assignment.mkr.mkr \
+bag.mkr.mkr \
 base2.mkr.mkr \
 command.mkr.mkr \
 definition.mkr.mkr \
@@ -148,6 +160,7 @@ rdfq-results.mkr.mkr \
 rdf-schema.mkr.mkr \
 rdfs-namespace.mkr.mkr \
 relation.mkr.mkr \
+seq.mkr.mkr \
 test-07.mkr.mkr \
 test-07a.mkr.mkr \
 test-07b.mkr.mkr \

@@ -89,7 +89,7 @@ struct raptor_turtle_parser_s {
   /* Last run of many */
   int is_end;
 
-#ifdef RAPTOR_PARSER_MKR
+/* #ifdef RAPTOR_PARSER_MKR */
   /* mKR parser */
   /* static statement for use in passing to user code */
   raptor_statement statement;
@@ -101,7 +101,7 @@ struct raptor_turtle_parser_s {
   raptor_term* groupType;
   raptor_term* groupName;
   raptor_sequence* groupList;
-#endif
+/* #endif */
 };
 
 

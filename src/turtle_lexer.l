@@ -193,7 +193,7 @@ PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_C
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
 
 /* mKR */
-VARIABLE [\$\?]?[A-Za-z\*][A-Za-z0-9_\-\.\*]*|"\?"|"\$"[0-9]+|"\$\{"[1-9][0-9]+"\}"|[0-9]+"-"[0-9]+"-"[0-9]+
+VARIABLE [\$\?][A-Za-z0-9]*|[A-Za-z\_\-\*\.\/\\]+
 
 UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
 IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"
@@ -228,11 +228,11 @@ EXPONENT [eE][+-]?[0-9]+
 
 "is"      { return IS;      }
 "isu"     { return ISU;     }
-"isp"     { return ISP;     }
 "iss"     { return ISS;     }
-"isg"     { return ISG;     }
 "isa"     { return ISA;     }
 "isa*"    { return ISASTAR; }
+"isp"     { return ISP;     }
+"isg"     { return ISG;     }
 "isc"     { return ISC;     }
 "isc*"    { return ISCSTAR; }
 "has"     { return HAS;     }
@@ -536,6 +536,11 @@ EXPONENT [eE][+-]?[0-9]+
                 }
 
                 return GRAPH_NAME_LEFT_CURLY; }
+
+{VARIABLE}	{ yylval->string=turtle_copy_token((unsigned char*)yytext, yyleng);
+                 if(!yylval->string)
+                   YY_FATAL_ERROR_EOF("turtle_copy_token failed");
+                          return VARIABLE; }
 
 {IRI}   { if(yyleng == 2) 
                   yylval->uri = raptor_uri_copy(rdf_parser->base_uri);
