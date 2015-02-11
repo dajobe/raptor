@@ -74,6 +74,15 @@ test-32.mkr \
 test-34.mkr \
 turtle-syntax-number-08.ttl
 
+TEST_SERIALIZE_RDF_FILES= \
+ex-38.rdf \
+ex-54.rdf
+
+TEST_SERIALIZE_RDF_OUT_FILES= \
+ex-38.mkr \
+ex-54.mkr
+
+
 TEST_PARSER_FILES= \
 action.mkr \
 alias.mkr \
@@ -191,6 +200,8 @@ MKR_BASE_URI=http://mkrmke.net/tests/mkr/
 ALL_TEST_FILES= README.txt \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) \
+	$(TEST_SERIALIZE_RDF_FILES) \
+	$(TEST_SERIALIZE_RDF_OUT_FILES) \
 	$(TEST_PARSER_FILES) \
 	$(TEST_PARSER_OUT_FILES) \
 	$(TEST_ROUNDTRIP_OUT_FILES)
@@ -209,12 +220,14 @@ build-rdfdiff:
 
 check-local: \
 check-mkr-serialize-syntax \
+check-mkr-serialize-rdf-syntax \
 check-mkr-parser-syntax \
 check-mkr-roundtrip
 
 
 if MAINTAINER_MODE
 check_mkr_serialize_syntax_deps = $(TEST_SERIALIZE_FILES) $(TEST_SERIALIZE_OUT_FILES)
+check_mkr_serialize_rdf_syntax_deps = $(TEST_SERIALIZE_RDF_FILES) $(TEST_SERIALIZE_RDF_OUT_FILES)
 check_mkr_parser_syntax_deps = $(TEST_PARSER_FILES) $(TEST_PARSER_OUT_FILES)
 check_mkr_roundtrip_deps = $(TEST_ROUNDTRIP_FILES) $(TEST_ROUNDTRIP_OUT_FILES)
 endif
@@ -233,6 +246,34 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
+	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
+	  status=$$?; \
+	  if test $$status = 0; then \
+	    $(RECHO) "ok"; \
+	  else \
+	    $(RECHO) "FAILED"; result=1; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out; \
+	    cat $$name.err; \
+	    diff -a -u $$name.out $(srcdir)/$$name.mkr; \
+	  fi; \
+	  rm -f $$name.out $$name.err; \
+	done; \
+	set -e; exit $$result
+
+check-mkr-serialize-rdf-syntax: build-rapper $(check_mkr_serialize_rdf_syntax_deps)
+	@set +e; result=0; \
+	$(RECHO) "Testing mkr exact serialization output with rdf input"; \
+	for test in $(TEST_SERIALIZE_RDF_FILES); do \
+	  name=`basename $$test .rdf` ; \
+	  if test $$name = rdf-schema; then \
+	    baseuri=$(RDF_NS_URI); \
+	  elif test $$name = rdfs-namespace; then \
+	    baseuri=$(RDFS_NS_URI); \
+	  else \
+            baseuri=$(BASE_URI)$$test; \
+	  fi; \
+	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
+	  $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
 	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
 	  status=$$?; \
 	  if test $$status = 0; then \

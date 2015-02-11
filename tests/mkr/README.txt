@@ -10,12 +10,12 @@ Parser tests are a pair of files:
 which are the input mKR file and the expected output NTriples file.
 
 Serializer tests are a pair of files:
-  xxx.ttl xxx.mkr
-which are the input Turtle file and the expected output mKR file.
+  xxx.ttl xxx.mkr  or  xxx.rdf xxx.mkr
+which are the input Turtle or RDF file and the expected output mKR file.
 which are the input mKR file and the expected output NTriples file.
 
 Roundtrip tests are a pair of files:
   xxx.mkr xxx.mkr.mkr
 which are the input mKR file and the expected output mKR file.
 
-Richard H. McCullough Dec/23/2015
+Richard H. McCullough Jan/10/2015
