@@ -1,4 +1,8 @@
 /* Isaac Turner 29 April 2014 Public Domain */
+
+/* Cannot detect Cygwin OS */
+#define __linux__
+
 #ifndef SORT_R_H_
 #define SORT_R_H_
 
@@ -32,10 +36,6 @@ void sort_r(void *base, size_t nel, size_t width,
 #elif (defined _WIN32 || defined _WIN64 || defined __WINDOWS__)
 #  define _SORT_R_WINDOWS
 #else
-
-/* Cannot detect Cygwin OS */
-#define __linux__
-
 #  error Cannot detect operating system
 #endif
 
