@@ -99,6 +99,7 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
 {
   raptor_statement* triple = NULL;
   int i;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_poList: ");
@@ -132,6 +133,7 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
       raptor_free_statement(triple);
     }
   }
+  return rc;
 }
 
 
@@ -140,18 +142,24 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
 /* prefixes */
 
 /* sentence: BASE URI_LITERAL SEMICOLON */
+/* base: "@base" | "@mkr" */
 raptor_statement*
-mkr_base(raptor_parser* rdf_parser, raptor_uri* var2)
+mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2)
 {
+  unsigned char* basetype = var1;
   raptor_uri *uri = var2;
+  int rc = 0;
+
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  printf("##### DEBUG: mkr_base: @base ");
-  printf("<%s> ;\n", raptor_uri_as_string(var2));
+  printf("##### DEBUG: mkr_base: %s ", var1);
+  printf("%s <%s> ;\n", basetype, raptor_uri_as_string(var2));
 #endif
 
   if(rdf_parser->base_uri)
     raptor_free_uri(rdf_parser->base_uri);
   rdf_parser->base_uri = uri;
+
+  return rc;
 }
 
 /*****************************************************************************/
@@ -160,13 +168,15 @@ mkr_base(raptor_parser* rdf_parser, raptor_uri* var2)
 raptor_statement*
 mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, raptor_uri* var3)
 {
+  unsigned char* prefixtype = var1;
   unsigned char *prefix = var2;
   raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)(rdf_parser->context);
   raptor_namespace *ns;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("##### DEBUG: mkr_prefix: ");
-  printf("%s %s <%s> ;\n", var1, var2, raptor_uri_as_string(var3));
+  printf("%s %s <%s> ;\n", prefixtype, prefix, raptor_uri_as_string(var3));
 #endif
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -188,8 +198,11 @@ mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, 
   if(ns) {
     raptor_namespaces_start_namespace(&mkr_parser->namespaces, ns);
     raptor_parser_start_namespace(rdf_parser, ns);
-  } else
+  } else {
     printf("##### ERROR: mkr_prefix: can't create new namespace for %s\n", (char*)prefix);
+    rc = 1;
+  }
+  return rc;
 
 }
 
@@ -200,6 +213,7 @@ mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, 
 raptor_statement*
 mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_term* sentence)
 {
+  int rc = 0;
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_sentence: mkrtype = %s\n", MKR_TYPE_NAME(type));
   printf("in ");
@@ -212,6 +226,9 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
 #endif
 
   printf("##### WARNING: mkr_sentence: not implemented\n");
+  rc = 1;
+
+  return rc;
 }
 
 
@@ -221,6 +238,7 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
 raptor_statement*
 mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist)
 {
+  int rc = 0;
   raptor_term* command = predicate;
 
 #if defined(RAPTOR_DEBUG)
@@ -237,6 +255,8 @@ mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, 
   command = raptor_term_copy(command);
   pplist = pplist;
   mkr_pplist(rdf_parser, MKR_COMMAND, subject, verb, command, pplist);
+
+  return rc;
 }
 
 /*****************************************************************************/
@@ -252,6 +272,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   raptor_term* t3 = NULL;
   raptor_term* t4 = NULL;
   raptor_statement* triple = NULL;
+  int rc = 0;
 #if defined(RAPTOR_DEBUG)
   const char* event = NULL;
 
@@ -318,6 +339,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   printf("exit mkr_group\n");
 #endif
 
+  return rc;
 }
 
 /*****************************************************************************/
@@ -506,7 +528,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 
     default:
       printf("##### ERROR: mkr_pplist: unexpected verb mkrtype: %s\n", MKR_TYPE_NAME(predicate->mkrtype));
-      return;
+      return NULL;
       break;
   }
   if(!sub) {
@@ -548,7 +570,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 
     default:
       printf("##### ERROR: mkr_pplist: unexpected sentence type: %s\n", MKR_TYPE_NAME(type));
-      return;
+      return NULL;
       break;
   }
 
@@ -561,7 +583,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
       t2 = raptor_term_copy( mkr_new_variable(rdf_parser, MKR_DEFINITION, (unsigned char*)"definition") );
       if(!t2) {
         printf("##### ERROR: mkr_pplist: NULL definition term\n");
-        return;
+        return NULL;
       }
       t3 = raptor_term_copy(event);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
@@ -704,6 +726,7 @@ mkr_assignment(raptor_parser* rdf_parser, raptor_term* variable, raptor_term* va
   raptor_term *t2 = NULL;
   raptor_term *t3 = NULL;
   raptor_statement* triple = NULL;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_assignment: ");
@@ -723,6 +746,8 @@ mkr_assignment(raptor_parser* rdf_parser, raptor_term* variable, raptor_term* va
 #if defined(RAPTOR_DEBUG)
   printf("exit mkr_asssignment: \n");
 #endif
+
+  return rc;
 }
 
 /*****************************************************************************/
@@ -759,6 +784,7 @@ mkr_alias(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, ra
 raptor_statement*
 mkr_definition(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* genus, raptor_sequence* pplist)
 {
+  int rc = 0;
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_definition: ");
   raptor_term_print_as_ntriples(subject, stdout);
@@ -776,7 +802,9 @@ mkr_definition(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* ver
   genus = raptor_term_copy(genus);
   pplist = pplist;
 
-  mkr_pplist(rdf_parser, MKR_DEFINITION, subject, verb, genus, pplist);
+  rc = mkr_pplist(rdf_parser, MKR_DEFINITION, subject, verb, genus, pplist);
+
+  return rc;
 }
 
 
@@ -897,6 +925,7 @@ raptor_statement*
 mkr_action(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist)
 {
   raptor_term* action = predicate;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_action: ");
@@ -915,7 +944,9 @@ mkr_action(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, r
   action = raptor_term_copy(action);
   pplist = pplist;
 
-  mkr_pplist(rdf_parser, MKR_ACTION, subject, verb, action, pplist);
+  rc = mkr_pplist(rdf_parser, MKR_ACTION, subject, verb, action, pplist);
+
+  return rc;
 }
 
 /************************************************************************************/
@@ -1288,6 +1319,7 @@ mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* v
 /* triples: blankNodePropertyList predicateObjectListOpt */
 {
   int i;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("triples 2\n blankNodePropertyList=");
@@ -1324,6 +1356,8 @@ mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* v
     raptor_free_sequence(var3);
   if(var2)
     raptor_free_term(var2);
+
+  return rc;
 }
 
 /*****************************************************************************/
@@ -1335,6 +1369,7 @@ mkr_spo(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* predicate,
   raptor_term* t1 = subject;
   raptor_term* t3 = object;
   raptor_statement *triple = NULL;
+  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_spo: ");
@@ -1350,4 +1385,5 @@ mkr_spo(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* predicate,
   raptor_mkr_generate_statement(rdf_parser, triple);
   raptor_free_statement(triple);
 
+  return rc;
 }

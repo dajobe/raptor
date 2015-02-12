@@ -192,8 +192,9 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %token LET       "let"
 %token DCOLON    "::"
 %token DSTAR     "**"
-%token MKB "@mkb"
-%token MKE "@mke"
+%token atMKR     "@mkr"
+%token atMKB     "@mkb"
+%token atMKE     "@mke"
 
 
 

@@ -20,6 +20,15 @@
  * 
  * 
  * mKR is defined in http://mkrmke.org/parser/
+ *     question is sentence with at least one ?variable
+ *
+ * In this simplified implementation
+ *     no pronouns
+ *     no quantifiers
+ *     no conditional
+ *     no iteration
+ *     variable has no ':', may have '?' '$' '*'
+ *     mkr_sentence.c has most of the action functions
  */
 
 %{
@@ -185,8 +194,9 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %token LET       "let"
 %token DCOLON    "::"
 %token DSTAR     "**"
-%token MKB "@mkb"
-%token MKE "@mke"
+%token atMKR     "@mkr"
+%token atMKB     "@mkb"
+%token atMKE     "@mke"
 
 /* Turtle tokens */
 %token A "a"
@@ -228,7 +238,7 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %type <identifier> subject predicate object literal resource blankNode
 %type <statement> predicateObject sentence
 %type <sequence> objectList nvList ppList sentenceList predicateObjectList
-%type <string> prefix
+%type <string> mkrbase mkrprefix
 
 /* mKR */
 %type <identifier> variable preposition isVerb hoVerb hasVerb doVerb nameOption sentenceName list set view graph
@@ -240,7 +250,7 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG VARIABLE prefix
+} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG VARIABLE mkrbase mkrprefix
 
 %destructor {
   if($$)
@@ -291,16 +301,24 @@ pp: preposition objectList  {$$ = mkr_new_pp(rdf_parser, MKR_PPOBJ, $1, $2);}
 
 list: LEFT_ROUND            RIGHT_ROUND   {$$ = mkr_new_list(rdf_parser, NULL);}
 |     LEFT_ROUND objectList RIGHT_ROUND   {$$ = mkr_new_list(rdf_parser, $2);}
+;
 set: LEFT_SQUARE            RIGHT_SQUARE  {$$ = mkr_new_set(rdf_parser, NULL);}
 |    LEFT_SQUARE objectList RIGHT_SQUARE  {$$ = mkr_new_set(rdf_parser, $2);}
+;
 
 view:  LEFT_CURLY             sentenceList              RIGHT_CURLY {$$ = mkr_new_view(rdf_parser, $2);}
 |      LEFT_CURLY LEFT_ROUND  sentenceList  RIGHT_ROUND RIGHT_CURLY {$$ = mkr_new_view(rdf_parser, $3);}
+;
 graph: LEFT_CURLY LEFT_SQUARE sentenceList RIGHT_SQUARE RIGHT_CURLY {$$ = mkr_new_graph(rdf_parser, $3);}
+;
 
-prefix: PREFIX {$$ = (unsigned char*)"@prefix";}
-| MKB          {$$ = (unsigned char*)"@mkb";}
-| MKE          {$$ = (unsigned char*)"@mke";}
+mkrbase: BASE     {$$ = (unsigned char*)"@base";}
+|        atMKR    {$$ = (unsigned char*)"@mkr";}
+;
+
+mkrprefix: PREFIX {$$ = (unsigned char*)"@prefix";}
+|          atMKB  {$$ = (unsigned char*)"@mkb";}
+|          atMKE  {$$ = (unsigned char*)"@mke";}
 ;
 
 /* view | graph | hierarchy | relation */
@@ -323,9 +341,9 @@ subject: resource    { $$ = $1; }
 ;
 
 verb: hasVerb
+| hoVerb
 | isVerb
 | doVerb
-| hoVerb
 | variable
 ;
 
@@ -342,20 +360,13 @@ object: resource     { $$ = $1; }
 | set                { $$ = $1; }
 | view               { $$ = $1; }
 | graph              { $$ = $1; }
-/*
-| blankNodePropertyList { $$ = $1; }
-*/
 ;
 
 
-/* further details in mkr_sentence.c */
-/* variable: no ':', yes '?' '$' '*' */
-/* question is sentence with at least one ?variable */
-
 sentence: contextOption nameOption view  SEMICOLON {$$ = mkr_sentence(rdf_parser, MKR_VIEW, $1, $2, $3);}
 |         contextOption nameOption graph SEMICOLON {$$ = mkr_sentence(rdf_parser, MKR_GRAPH, $1, $2, $3);}
-| BASE URI_LITERAL                       SEMICOLON {$$ = mkr_base(rdf_parser, $2);}
-| prefix IDENTIFIER URI_LITERAL          SEMICOLON {$$ = mkr_prefix(rdf_parser, $<string>1, $2, $3);}
+| mkrbase URI_LITERAL                    SEMICOLON {$$ = mkr_base(rdf_parser, $<string>1, $2);}
+| mkrprefix IDENTIFIER URI_LITERAL       SEMICOLON {$$ = mkr_prefix(rdf_parser, $<string>1, $2, $3);}
 
 | mkrBEGIN variable subject              SEMICOLON {$$ = mkr_group(rdf_parser, MKR_BEGIN, $2, $3);}
 | HO       objectList                    SEMICOLON {$$ = mkr_ho(rdf_parser, $2);}

@@ -259,8 +259,9 @@ EXPONENT [eE][+-]?[0-9]+
 "let"     { return LET;     }
 "::"      { return DCOLON;  }
 "**"      { return DSTAR;   }
-"@mkb"    { BEGIN(PREF); return MKB; }
-"@mke"    { BEGIN(PREF); return MKE; }
+"@mkr"    { BEGIN(PREF); return atMKR; }
+"@mkb"    { BEGIN(PREF); return atMKB; }
+"@mke"    { BEGIN(PREF); return atMKE; }
 
 "a" { return A; }
 

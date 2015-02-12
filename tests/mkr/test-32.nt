@@ -1,5 +1,5 @@
 _:genid1 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://example.org/ns#item1> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://example.org/ns#item2> .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://example.org/ns#item1> .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://example.org/ns#item2> .
 _:genid1 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://example.org/ns#node1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> _:genid1 .

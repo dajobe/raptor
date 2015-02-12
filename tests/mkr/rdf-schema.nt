@@ -1,109 +1,109 @@
 _:genid1 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Alt"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Choix"@fr .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Alt"@en .
+_:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Choix"@fr .
 _:genid1 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt> <http://www.w3.org/2000/01/rdf-schema#label> _:genid1 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Alt> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Container> .
 _:genid2 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Bag"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Ensemble"@fr .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Bag"@en .
+_:genid2 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Ensemble"@fr .
 _:genid2 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> <http://www.w3.org/2000/01/rdf-schema#label> _:genid2 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Container> .
 _:genid3 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Property"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Propri\u00E9t\u00E9"@fr .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Property"@en .
+_:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Propri\u00E9t\u00E9"@fr .
 _:genid3 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> <http://www.w3.org/2000/01/rdf-schema#comment> "The concept of a property." .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> <http://www.w3.org/2000/01/rdf-schema#label> _:genid3 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid4 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Sequence"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "S\u00E9quence"@fr .
+_:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Sequence"@en .
+_:genid4 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "S\u00E9quence"@fr .
 _:genid4 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> <http://www.w3.org/2000/01/rdf-schema#label> _:genid4 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Seq> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Container> .
 _:genid5 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "D\u00E9claration"@fr .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Statement"@en .
+_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "D\u00E9claration"@fr .
+_:genid5 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Statement"@en .
 _:genid5 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> <http://www.w3.org/2000/01/rdf-schema#comment> "This represents the set of reified statements." .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> <http://www.w3.org/2000/01/rdf-schema#label> _:genid5 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid6 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "object"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "objet"@fr .
+_:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "object"@en .
+_:genid6 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "objet"@fr .
 _:genid6 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#object> <http://www.w3.org/2000/01/rdf-schema#label> _:genid6 .
 _:genid7 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "predicate"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "pr\u00E9dicat"@fr .
+_:genid7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "predicate"@en .
+_:genid7 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "pr\u00E9dicat"@fr .
 _:genid7 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/2000/01/rdf-schema#label> _:genid7 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 _:genid8 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "subject"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "sujet"@fr .
+_:genid8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "subject"@en .
+_:genid8 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "sujet"@fr .
 _:genid8 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://www.w3.org/2000/01/rdf-schema#label> _:genid8 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#subject> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid9 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "type"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "type"@fr .
+_:genid9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "type"@en .
+_:genid9 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "type"@fr .
 _:genid9 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates membership of a class" .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#label> _:genid9 .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Class> .
 _:genid10 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "object"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "value"@fr .
+_:genid10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "object"@en .
+_:genid10 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "value"@fr .
 _:genid10 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> <http://www.w3.org/2000/01/rdf-schema#label> _:genid10 .
 <http://www.w3.org/2000/01/rdf-schema#> <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/2000/01/rdf-schema-more> .
 _:genid11 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Class"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Classe"@fr .
+_:genid11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Class"@en .
+_:genid11 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Classe"@fr .
 _:genid11 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#Class> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Class> <http://www.w3.org/2000/01/rdf-schema#comment> "The concept of Class" .
 <http://www.w3.org/2000/01/rdf-schema#Class> <http://www.w3.org/2000/01/rdf-schema#label> _:genid11 .
 <http://www.w3.org/2000/01/rdf-schema#Class> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid12 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "ConstraintProperty"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Propri\u00E9t\u00E9Contrainte"@fr .
+_:genid12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "ConstraintProperty"@en .
+_:genid12 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Propri\u00E9t\u00E9Contrainte"@fr .
 _:genid12 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 _:genid13 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> .
+_:genid13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
+_:genid13 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> .
 _:genid13 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://www.w3.org/2000/01/rdf-schema#comment> "Properties used to express RDF Schema constraints." .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://www.w3.org/2000/01/rdf-schema#label> _:genid12 .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> _:genid13 .
 _:genid14 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "ConstraintResource"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "RessourceContrainte"@fr .
+_:genid14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "ConstraintResource"@en .
+_:genid14 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "RessourceContrainte"@fr .
 _:genid14 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#comment> "Resources used to express RDF Schema constraints." .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#label> _:genid14 .
 <http://www.w3.org/2000/01/rdf-schema#ConstraintResource> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid15 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid15 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Container"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid15 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Enveloppe"@fr .
+_:genid15 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Container"@en .
+_:genid15 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Enveloppe"@fr .
 _:genid15 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#Container> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Container> <http://www.w3.org/2000/01/rdf-schema#comment> "This represents the set Containers." .
@@ -113,22 +113,22 @@ _:genid15 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty> <http://www.w3.org/2000/01/rdf-schema#label> "ContainerMembershipProperty"@en .
 <http://www.w3.org/2000/01/rdf-schema#ContainerMembershipProperty> <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 _:genid16 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid16 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Literal"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid16 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Litt\u00E9ral"@fr .
+_:genid16 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Literal"@en .
+_:genid16 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Litt\u00E9ral"@fr .
 _:genid16 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/2000/01/rdf-schema#comment> "This represents the set of atomic values, eg. textual strings." .
 <http://www.w3.org/2000/01/rdf-schema#Literal> <http://www.w3.org/2000/01/rdf-schema#label> _:genid16 .
 _:genid17 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Resource"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Ressource"@fr .
+_:genid17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "Resource"@en .
+_:genid17 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "Ressource"@fr .
 _:genid17 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#Resource> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#Class> .
 <http://www.w3.org/2000/01/rdf-schema#Resource> <http://www.w3.org/2000/01/rdf-schema#comment> "The most general class" .
 <http://www.w3.org/2000/01/rdf-schema#Resource> <http://www.w3.org/2000/01/rdf-schema#label> _:genid17 .
 _:genid18 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid18 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "comment"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid18 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "commentaire"@fr .
+_:genid18 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "comment"@en .
+_:genid18 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "commentaire"@fr .
 _:genid18 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#comment> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#comment> <http://www.w3.org/2000/01/rdf-schema#comment> "Use this for descriptions" .
@@ -136,15 +136,15 @@ _:genid18 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#comment> <http://www.w3.org/2000/01/rdf-schema#label> _:genid18 .
 <http://www.w3.org/2000/01/rdf-schema#comment> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
 _:genid19 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "domain"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "domaine"@fr .
+_:genid19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "domain"@en .
+_:genid19 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "domaine"@fr .
 _:genid19 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#domain> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> .
 <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2000/01/rdf-schema#comment> "This is how we associate a class with properties that its instances can have" .
 <http://www.w3.org/2000/01/rdf-schema#domain> <http://www.w3.org/2000/01/rdf-schema#label> _:genid19 .
 _:genid20 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "esD\u00E9finiPar"@fr .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "isDefinedBy"@en .
+_:genid20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "esD\u00E9finiPar"@fr .
+_:genid20 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "isDefinedBy"@en .
 _:genid20 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates a resource containing and defining the subject resource." .
@@ -153,8 +153,8 @@ _:genid20 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 <http://www.w3.org/2000/01/rdf-schema#isDefinedBy> <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#seeAlso> .
 _:genid21 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid21 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "label"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid21 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "label"@fr .
+_:genid21 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "label"@en .
+_:genid21 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "label"@fr .
 _:genid21 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#label> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#comment> "Provides a human-readable version of a resource name." .
@@ -162,8 +162,8 @@ _:genid21 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#label> _:genid21 .
 <http://www.w3.org/2000/01/rdf-schema#label> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Literal> .
 _:genid22 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid22 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "range"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid22 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "\u00E9tendue"@fr .
+_:genid22 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "range"@en .
+_:genid22 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "\u00E9tendue"@fr .
 _:genid22 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#range> <http://mkrmke.net/ns/isu> <http://www.w3.org/2000/01/rdf-schema#ConstraintProperty> .
 <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#comment> "Properties that can be used in a schema to provide constraints" .
@@ -171,8 +171,8 @@ _:genid22 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#label> _:genid22 .
 <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Class> .
 _:genid23 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid23 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "seeAlso"@en .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid23 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "voirAussi"@fr .
+_:genid23 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "seeAlso"@en .
+_:genid23 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "voirAussi"@fr .
 _:genid23 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates a resource that provides information about the subject resource." .
@@ -180,8 +180,8 @@ _:genid23 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/2000/01/rdf-schema#label> _:genid23 .
 <http://www.w3.org/2000/01/rdf-schema#seeAlso> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Resource> .
 _:genid24 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid24 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "sousClasseDe"@fr .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid24 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "subClassOf"@en .
+_:genid24 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "sousClasseDe"@fr .
+_:genid24 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "subClassOf"@en .
 _:genid24 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates membership of a class" .
@@ -189,8 +189,8 @@ _:genid24 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#int
 <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#label> _:genid24 .
 <http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://www.w3.org/2000/01/rdf-schema#range> <http://www.w3.org/2000/01/rdf-schema#Class> .
 _:genid25 <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Bag> .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_1>_:genid25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "sousPropri\u00E9t\u00E9De"@fr .
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#_2>_:genid25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "subPropertyOf"@en .
+_:genid25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_1> "sousPropri\u00E9t\u00E9De"@fr .
+_:genid25 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> "subPropertyOf"@en .
 _:genid25 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://mkrmke.net/ns/isu> <http://www.w3.org/1999/02/22-rdf-syntax-ns#Property> .
 <http://www.w3.org/2000/01/rdf-schema#subPropertyOf> <http://www.w3.org/2000/01/rdf-schema#comment> "Indicates specialization of properties" .
