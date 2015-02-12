@@ -1107,6 +1107,17 @@ MKR_TYPE_NAME(mkr_type n)
     case MKR_NAME:		return "MKR_NAME";			break;
     case MKR_METHOD:		return "MKR_METHOD";			break;
 
+
+    case MKR_RDFCOLLECTION:	return "MKR_RDFCOLLECTION";		break;
+    case MKR_RDFALT:		return "MKR_RDFALT";			break;
+    case MKR_RDFBAG:		return "MKR_RDFBAG";			break;
+    case MKR_RDFSEQ:		return "MKR_RDFSEQ";			break;
+
+    case MKR_RDFLIST:		return "MKR_RDFLIST";			break;
+    case MKR_RDFSET:		return "MKR_RDFSET";			break;
+    case MKR_RESULTSET:		return "MKR_RESULTSET";			break;
+
+
     case MKR_WORD:		return "MKR_WORD";			break;
     case MKR_PRONOUN:		return "MKR_PRONOUN";			break;
     case MKR_I:			return "MKR_I";				break;
@@ -1227,12 +1238,9 @@ MKR_TYPE_NAME(mkr_type n)
     case MKR_OBJECTLIST:	return "MKR_OBJECTLIST";		break;
     case MKR_VALUELIST:		return "MKR_VALUELIST";			break;
     case MKR_SENTENCELIST:	return "MKR_SENTENCELIST";		break;
-    case MKR_RDFLIST:		return "MKR_RDFLIST";			break;
     case MKR_OBJECTSET:		return "MKR_OBJECTSET";			break;
     case MKR_VALUESET:		return "MKR_VALUESET";			break;
     case MKR_SENTENCESET:	return "MKR_SENTENCESET";		break;
-    case MKR_RDFSET:		return "MKR_RDFSET";			break;
-    case MKR_RESULTSET:		return "MKR_RESULTSET";			break;
   }
 }
 

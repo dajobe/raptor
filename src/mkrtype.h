@@ -36,14 +36,22 @@
       * @MKR_ENUM:        unordered
     * @MKR_INGROUP:     inclusive
       * @MKR_LIST:        ordered
-      * @MKR_RDFLIST:     ordered (list with first,rest,nil)
       * @MKR_SET:         unordered
-      * @MKR_RDFSET:      unordered (set with first,rest,nil)
       * @MKR_MULTISET:    unordered, counted
-      * @MKR_RESULTSET: rs:ResultSet
       * @MKR_ARRAY:     key,value pairs
       * @MKR_HIERARCHY: isa,isu,iss relation
       * @MKR_RELATION:  list of values
+
+
+   * @MKR_RDFLIST:     ordered (list with first,rest,nil)
+   * @MKR_RDFSET:      unordered (set with first,rest,nil)
+   * @MKR_RESULTSET:   rs:ResultSet
+
+   * @MKR_RDFCOLLECTION:
+   * @MKR_RDFALT:
+   * @MKR_RDFBAG:
+   * @MKR_RDFSEQ:
+
 
   * @MKR_NAME:
   * @MKR_VARIABLE:
@@ -197,6 +205,17 @@ typedef enum {
       MKR_ARRAY,
       MKR_HIERARCHY,
       MKR_RELATION,
+
+
+  MKR_RDFALT,
+  MKR_RDFBAG,
+  MKR_RDFSEQ,
+  MKR_RDFCOLLECTION,
+
+  MKR_RDFLIST,
+  MKR_RDFSET,
+  MKR_RESULTSET,
+
 
   MKR_NAME,
   MKR_VARIABLE,

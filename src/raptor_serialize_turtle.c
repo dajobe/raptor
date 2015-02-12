@@ -200,6 +200,10 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
   const char* prefix_name;
   const char* local_name;
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("\n##### DEBUG: raptor_turtle_is_legal_turtle_qname: ");
+#endif
+
   if(!qname)
     return 0;
 
@@ -212,6 +216,10 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
       return 0;
   }
 
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf("prefix_name = (%s) ok", prefix_name);
+#endif
+
   local_name = (const char*)qname->local_name;
   if(local_name) {
     /* nameStartChar: must have leading [A-Z][a-z][0-9]_  */
@@ -220,6 +228,10 @@ raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
        strchr(local_name, '.'))
       return 0;
   }
+
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+  printf(" local_name = (%s) ok\n", local_name);
+#endif
 
   return 1;
 }

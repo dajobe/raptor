@@ -1027,7 +1027,6 @@ mkr_new_index_term(raptor_world* world, int ordinal)
 
   uri = raptor_new_uri_from_rdf_ordinal(world, ordinal);
   term = raptor_new_term_from_uri(world, uri); /* RAPTOR_TERM_TYPE_URI */
-  raptor_term_print_as_ntriples(term, stdout);
 
   raptor_free_uri(uri);
 #if defined(RAPTOR_DEBUG)
