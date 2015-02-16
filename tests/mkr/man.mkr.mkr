@@ -5,10 +5,10 @@
 man
     has definition = {
         _:genid1
-            has genus = animal, 
-            with {
+            has differentia = {
                 _:genid2
                     has rational = true ;
-                } ;
+                }, 
+            has genus = animal ;
         } ;
     

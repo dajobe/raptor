@@ -74,11 +74,11 @@ test-32.mkr \
 test-34.mkr \
 turtle-syntax-number-08.ttl
 
-TEST_SERIALIZE_RDF_FILES= \
+MKR_SERIALIZE_RDF_FILES= \
 ex-38.rdf \
 ex-54.rdf
 
-TEST_SERIALIZE_RDF_OUT_FILES= \
+MKR_SERIALIZE_RDF_OUT_FILES= \
 ex-38.mkr \
 ex-54.mkr
 
@@ -91,6 +91,8 @@ bag.mkr \
 base2.mkr \
 command.mkr \
 definition.mkr \
+ex-38.mkr \
+ex-54.mkr \
 hierarchy.mkr \
 hoVerb.mkr \
 man.mkr \
@@ -125,6 +127,8 @@ bag.nt \
 base2.nt \
 command.nt \
 definition.nt \
+ex-38.nt \
+ex-54.nt \
 hierarchy.nt \
 hoVerb.nt \
 man.nt \
@@ -161,6 +165,8 @@ bag.mkr.mkr \
 base2.mkr.mkr \
 command.mkr.mkr \
 definition.mkr.mkr \
+ex-38.mkr.mkr \
+ex-54.mkr.mkr \
 hierarchy.mkr.mkr \
 hoVerb.mkr.mkr \
 man.mkr.mkr \
@@ -200,8 +206,8 @@ MKR_BASE_URI=http://mkrmke.net/tests/mkr/
 ALL_TEST_FILES= README.txt \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) \
-	$(TEST_SERIALIZE_RDF_FILES) \
-	$(TEST_SERIALIZE_RDF_OUT_FILES) \
+	$(MKR_SERIALIZE_RDF_FILES) \
+	$(MKR_SERIALIZE_RDF_OUT_FILES) \
 	$(TEST_PARSER_FILES) \
 	$(TEST_PARSER_OUT_FILES) \
 	$(TEST_ROUNDTRIP_OUT_FILES)
@@ -220,14 +226,14 @@ build-rdfdiff:
 
 check-local: \
 check-mkr-serialize-syntax \
-check-mkr-serialize-rdf-syntax \
+check-mkr-serialize-rdf \
 check-mkr-parser-syntax \
 check-mkr-roundtrip
 
 
 if MAINTAINER_MODE
 check_mkr_serialize_syntax_deps = $(TEST_SERIALIZE_FILES) $(TEST_SERIALIZE_OUT_FILES)
-check_mkr_serialize_rdf_syntax_deps = $(TEST_SERIALIZE_RDF_FILES) $(TEST_SERIALIZE_RDF_OUT_FILES)
+check_mkr_serialize_rdf_deps = $(MKR_SERIALIZE_RDF_FILES) $(MKR_SERIALIZE_RDF_OUT_FILES)
 check_mkr_parser_syntax_deps = $(TEST_PARSER_FILES) $(TEST_PARSER_OUT_FILES)
 check_mkr_roundtrip_deps = $(TEST_ROUNDTRIP_FILES) $(TEST_ROUNDTRIP_OUT_FILES)
 endif
@@ -246,7 +252,7 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
+	  cmp -s $(srcdir)/$$name.mkr $$name.out; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
@@ -260,34 +266,37 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	done; \
 	set -e; exit $$result
 
-check-mkr-serialize-rdf-syntax: build-rapper $(check_mkr_serialize_rdf_syntax_deps)
+check-mkr-serialize-rdf: build-rdfdiff build-rapper $(check_mkr_serialize_rdf_deps)
 	@set +e; result=0; \
-	$(RECHO) "Testing mkr exact serialization output with rdf input"; \
-	for test in $(TEST_SERIALIZE_RDF_FILES); do \
+	$(RECHO) "Testing mkr serialization with legal rdf/xml"; \
+	for test in $(MKR_SERIALIZE_RDF_FILES); do \
 	  name=`basename $$test .rdf` ; \
-	  if test $$name = rdf-schema; then \
-	    baseuri=$(RDF_NS_URI); \
-	  elif test $$name = rdfs-namespace; then \
-	    baseuri=$(RDFS_NS_URI); \
-	  else \
-            baseuri=$(BASE_URI)$$test; \
-	  fi; \
+	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
-	  status=$$?; \
-	  if test $$status = 0; then \
+	  $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri > $$name-mkr.out 2> $$name.err; \
+	  status1=$$?; \
+	  if test $$test = "ex-38.rdf"; then \
+            $(RECHO) "(execute diff) $(RECHO_C)"; \
+	    diff $(srcdir)/ex-38.mkr $$name-mkr.out > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  else \
+            $(RECHO) "(execute rdfdiff) $(RECHO_C)"; \
+	    $(RDFDIFF) -t mkr $(srcdir)/$$test $$name-mkr.out > $$name.res 2> $$name.err; \
+	    status2=$$?; \
+	  fi; \
+	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out; \
+	    $(RECHO) $(RAPPER) -q -o mkr $(srcdir)/$$test $$baseuri '>' $$name-mkr.out; \
+	    $(RECHO) diff $(srcdir)/ex-38.mkr $$name-mkr.out '>' $$name.res; \
+	    $(RECHO) $(RDFDIFF) -t mkr $(srcdir)/$$test $$name-mkr.out '>' $$name.res; \
 	    cat $$name.err; \
-	    diff -a -u $$name.out $(srcdir)/$$name.mkr; \
+	    cat $$name.res; \
 	  fi; \
-	  rm -f $$name.out $$name.err; \
+	  rm -f $$name-mkr.out $$name.res $$name.err; \
 	done; \
 	set -e; exit $$result
-
 
 check-mkr-parser-syntax: build-rapper $(check_mkr_parser_syntax_deps)
 	@set +e; result=0; \
@@ -303,7 +312,7 @@ check-mkr-parser-syntax: build-rapper $(check_mkr_parser_syntax_deps)
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i mkr -o ntriples $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $$name.out $(srcdir)/$$name.nt; \
+	  cmp -s $(srcdir)/$$name.nt $$name.out; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
@@ -311,12 +320,11 @@ check-mkr-parser-syntax: build-rapper $(check_mkr_parser_syntax_deps)
 	    $(RECHO) "FAILED"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i mkr -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.out; \
 	    cat $$name.err; \
-	    diff -a -u $$name.out $(srcdir)/$$name.nt; \
+	    diff -a -u $(srcdir)/$$name.nt $$name.out; \
 	  fi; \
 	  rm -f $$name.out $$name.err; \
 	done; \
 	set -e; exit $$result
-
 
 check-mkr-roundtrip: build-rapper $(check_mkr_roundtrip_deps)
 	@set +e; result=0; \
@@ -332,7 +340,7 @@ check-mkr-roundtrip: build-rapper $(check_mkr_roundtrip_deps)
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  $(RAPPER) -q -i mkr -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $$name.out $(srcdir)/$$name.mkr.mkr; \
+	  cmp -s $(srcdir)/$$name.mkr.mkr $$name.out; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
@@ -340,7 +348,7 @@ check-mkr-roundtrip: build-rapper $(check_mkr_roundtrip_deps)
 	    $(RECHO) "FAILED"; result=1; \
 	    $(RECHO) $(RAPPER) -q -i mkr -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out; \
 	    cat $$name.err; \
-	    diff -a -u $$name.out $(srcdir)/$$name.mkr.mkr; \
+	    diff -a -u $(srcdir)/$$name.mkr.mkr $$name.out; \
 	  fi; \
 	  rm -f $$name.out $$name.err; \
 	done; \

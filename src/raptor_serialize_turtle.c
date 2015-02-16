@@ -263,28 +263,21 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     return 1;
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
-    if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
-    else
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
+    raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
     return 0;
   }
 
   qname = raptor_new_qname_from_namespace_uri(context->nstack,
                                               node->term->value.uri, 10);
 
-  /* mKR mynames allow leading '?" and '$' and no ':' */
   /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname) && !emit_mkr) {
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
     raptor_free_qname(qname);
     qname = NULL;
   }
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
-    if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
-    else
-      raptor_turtle_writer_raw_counted(turtle_writer ,(const unsigned char*)"( )", 3);
+    raptor_turtle_writer_raw_counted(turtle_writer ,(const unsigned char*)"( )", 3);
     return 0;
   }
 

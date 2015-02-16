@@ -1005,14 +1005,8 @@ raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,
       /* uri_string is a prefix of ns_uri_string */
       name = uri_string + ns_uri_len;
 
-#ifdef RAPTOR_PARSER_MKR
-#else
-#ifdef RAPTOR_SERIALIZER_MKR
-#else
       if(!raptor_xml_name_check(name, uri_len-ns_uri_len, xml_version))
         name = NULL;
-#endif
-#endif
       
       /* If name is set, we've found a prefix with a legal XML name value */
       if(name)

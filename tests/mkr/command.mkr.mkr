@@ -7,9 +7,9 @@ dbopen
     
 ke
     has dbopen = {
-        _:genid11
+        _:genid15
             has agent = ke, 
-            od (mkr.ho, hierarchy, gdbm, existent) ;
+            od (<http://mkrmke.net/ns/mkr.ho>, hierarchy, gdbm, existent) ;
         }, 
     has print = {
         _:genid1
@@ -17,15 +17,15 @@ ke
             od "The quick brown fox jumped over the lazy dog" ;
         }, 
     has read = {
-        _:genid3
+        _:genid4
             has agent = ke, 
-            from relation.mkr ;
+            from <http://mkrmke.net/ns/relation.mkr> ;
         }, 
     has select = {
-        _:genid5
+        _:genid7
             has agent = ke, 
-            from relation.mkr, 
-            od ($1, $3) ;
+            from <http://mkrmke.net/ns/relation.mkr>, 
+            od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
         } ;
     
 print
@@ -39,9 +39,9 @@ select
     
 sh
     has wc = {
-        _:genid9
+        _:genid12
             has agent = sh, 
-            od *.mkr ;
+            od <http://mkrmke.net/ns/*.mkr> ;
         } ;
     
 wc

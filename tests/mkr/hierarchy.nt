@@ -1,6 +1,6 @@
 <http://mkrmke.net/ns/mkr.ho> <http://mkrmke.net/ns/definition> _:genid1 .
 _:genid1 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/hierarchy> .
-_:genid1 <http://mkrmke.net/ns/with> _:genid2 .
+_:genid1 <http://mkrmke.net/ns/differentia> _:genid2 .
 _:genid2 <http://mkrmke.net/ns/format> <http://mkrmke.net/ns/mkr> .
 <http://mkrmke.net/ns/mkr.ho> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/hierarchy> .
 _:genid3 <http://www.w3.org/1999/02/22-rdf-syntax-ns#first> <http://mkrmke.net/ns/universe/existent> .

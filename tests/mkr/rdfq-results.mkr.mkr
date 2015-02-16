@@ -6,11 +6,11 @@
 result
     has definition = {
         _:genid1
-            has genus = relation, 
-            with {
+            has differentia = {
                 _:genid2
                     has format = csv ;
-                } ;
+                }, 
+            has genus = relation ;
         }, 
     rel ((x, y), (123, <http://example.com/resource1>)), 
     isu relation ;

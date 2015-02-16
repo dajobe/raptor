@@ -1,4 +1,5 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> ;
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/ex-54.mkr> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
 @prefix mkr: <http://mkrmke.net/ns/> ;
 @prefix ex: <http://example.org/> ;
 

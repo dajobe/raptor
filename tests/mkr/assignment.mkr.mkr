@@ -6,9 +6,9 @@ ke
     has print = [{
         _:genid1
             has agent = ke, 
-            od ($x, $y, $z) ;
+            od (<http://mkrmke.net/ns/$x>, <http://mkrmke.net/ns/$y>, <http://mkrmke.net/ns/$z>) ;
         }, {
-        _:genid5
+        _:genid6
             has agent = ke, 
             od "$x, $y, $z" ;
         }] ;
@@ -17,11 +17,11 @@ print
     iss action ;
     
 x
-    := 10 ;
+    has <http://mkrmke.net/ns/:=> = 10 ;
     
 y
-    := _:5 ;
+    has <http://mkrmke.net/ns/:=> = _:5 ;
     
 z
-    := "the big red one" ;
+    has <http://mkrmke.net/ns/:=> = "the big red one" ;
     

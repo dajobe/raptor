@@ -843,9 +843,8 @@ raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer,
 
   qname = raptor_new_qname_from_namespace_uri(turtle_writer->nstack, uri, 10);
 
-  /* mKR mynames allow leading '?' and '$' and no ':' */
   /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname) && !emit_mkr) {
+  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
     raptor_free_qname(qname);
     qname = NULL;
   }

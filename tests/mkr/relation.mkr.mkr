@@ -5,8 +5,7 @@
 result
     has definition = {
         _:genid2
-            has genus = relation, 
-            with {
+            has differentia = {
                 _:genid3
                     has format = mkr, 
                     has relVariable = {
@@ -16,7 +15,8 @@ result
                             has rdf:_1 = x, 
                             has rdf:_2 = y ;
                         } ;
-                } ;
+                }, 
+            has genus = relation ;
         }, 
     rel (123, <http://example.com/resource1>), 
     isu relation ;

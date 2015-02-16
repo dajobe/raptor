@@ -4,7 +4,7 @@ _:genid1 <http://www.w3.org/1999/02/22-rdf-syntax-ns#_2> <http://mkrmke.net/ns/y
 _:genid1 <http://mkrmke.net/ns/size> "2"^^<http://www.w3.org/2001/XMLSchema#integer> .
 <http://mkrmke.net/ns/result> <http://mkrmke.net/ns/definition> _:genid2 .
 _:genid2 <http://mkrmke.net/ns/genus> <http://mkrmke.net/ns/relation> .
-_:genid2 <http://mkrmke.net/ns/with> _:genid3 .
+_:genid2 <http://mkrmke.net/ns/differentia> _:genid3 .
 _:genid3 <http://mkrmke.net/ns/format> <http://mkrmke.net/ns/mkr> .
 _:genid3 <http://mkrmke.net/ns/relVariable> _:genid1 .
 <http://mkrmke.net/ns/result> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://mkrmke.net/ns/relation> .

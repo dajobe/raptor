@@ -6,9 +6,9 @@
 @prefix : <http://example.org/> ;
 
 :Garfield
-    isa ?x, 
-    isa* ?y, 
-    isu ?z ;
+    isa <http://mkrmke.net/ns/?x>, 
+    has <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?y>, 
+    isu <http://mkrmke.net/ns/?z> ;
     
 :Odie
     isu :dog ;
@@ -25,12 +25,12 @@
 :person
     isa :homosapien ;
     
-$top
-    isc* ? ;
+<http://mkrmke.net/ns/$top>
+    has <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
     
 entity
-    isc ?z ;
+    isc <http://mkrmke.net/ns/?z> ;
     
-unit/Garfield
-    isa [:cat, ?x] ;
+u:Garfield
+    isa [:cat, <http://mkrmke.net/ns/?x>] ;
     

@@ -273,15 +273,10 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   raptor_term* t4 = NULL;
   raptor_statement* triple = NULL;
   int rc = 0;
-#if defined(RAPTOR_DEBUG)
   const char* event = NULL;
 
-  switch(type) {
-    case MKR_BEGIN: event = "begin"; break;
-    case MKR_END:   event = "end";   break;
-  }
-  printf("##### DEBUG: mkr_group: ");
-  printf("%s ", event);
+#if defined(RAPTOR_DEBUG)
+  printf("##### DEBUG: mkr_group: %s ", MKR_TYPE_NAME(type));
   raptor_term_print_as_ntriples(gtype, stdout);
   printf(" ");
   raptor_term_print_as_ntriples(gname, stdout);
@@ -292,6 +287,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   mkr_parser->groupName = raptor_term_copy(gname);
   switch(type) {
     case MKR_BEGIN:
+      event = "begin";
       t1 = raptor_term_copy(mkr_parser->groupName);
       t2 = raptor_term_copy(RAPTOR_RDF_type_term(world));
       t3 = raptor_term_copy(mkr_parser->groupType);
@@ -303,6 +299,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
       break;
 
     case MKR_END:
+      event = "end";
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       printf("groupList = (");
       raptor_sequence_print(mkr_parser->groupList, stdout);  /* core dump ? */
@@ -537,7 +534,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
   }
   if(!sub) {
     printf("##### ERROR: mkr_pplist: NULL subject\n");
-    return;
+    return NULL;
   }
   sub = raptor_term_copy(sub);
 
@@ -652,7 +649,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
     ppsize = raptor_sequence_size(pplist);
     if(ppsize != 1)
       printf("##### WARNING: unexpected pplist size: %d\n", ppsize);
-    pp = raptor_sequence_get_at(pplist, 0);
+    pp = (MKR_pp*)raptor_sequence_get_at(pplist, 0);
     preposition = pp->ppPreposition;
     nvList = pp->ppSequence;
     for(j = 0; j < raptor_sequence_size(nvList); j++) {
@@ -766,6 +763,7 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
 #if defined(RAPTOR_DEBUG)
   printf("exit mkr_pplist: \n");
 #endif
+  return triple;
 }
 /*******************************************************************/
 /*******************************************************************/

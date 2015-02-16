@@ -10,7 +10,7 @@ email
     
 ke
     has dbopen = {
-        _:genid7
+        _:genid9
             has agent = ke, 
             od (notes, relation) ;
         } ;
@@ -19,8 +19,8 @@ mKE
     has read = {
         _:genid1
             has agent = mKE, 
-            from KEHOME/kb/mkr.view.html, 
-            od mkr.ho ;
+            from <http://mkrmke.net/ns/KEHOME/kb/mkr.view.html>, 
+            od <http://mkrmke.net/ns/mkr.ho> ;
         } ;
     
 read
@@ -28,7 +28,7 @@ read
     
 sh
     has email = {
-        _:genid4
+        _:genid5
             has agent = sh, 
             od letter, 
             to Bob ;
