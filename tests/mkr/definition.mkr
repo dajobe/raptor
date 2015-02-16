@@ -3,4 +3,4 @@ enum is group with exclusive = true, order = false ;
 set is group with inclusive = true, order = false ;
 multiset is group with inclusive = true, order = false, duplicate = true ;
 list is group with inclusive = true, order = true ;
-result is relation with format = mkr, relVariable = (x, y) ;
+result is relation with format = mkr, variable = (x, y) ;

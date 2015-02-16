@@ -5,72 +5,72 @@
 enum
     has definition = {
         _:genid3
-            has genus = group, 
-            with {
+            has differentia = {
                 _:genid4
                     has exclusive = true, 
                     has order = false ;
-                } ;
+                }, 
+            has genus = group ;
         } ;
     
 list
     has definition = {
         _:genid9
-            has genus = group, 
-            with {
+            has differentia = {
                 _:genid10
                     has inclusive = true, 
                     has order = true ;
-                } ;
+                }, 
+            has genus = group ;
         } ;
     
 man
     has definition = {
         _:genid1
-            has genus = animal, 
-            with {
+            has differentia = {
                 _:genid2
                     has rational = true ;
-                } ;
+                }, 
+            has genus = animal ;
         } ;
     
 multiset
     has definition = {
         _:genid7
-            has genus = group, 
-            with {
+            has differentia = {
                 _:genid8
                     has duplicate = true, 
                     has inclusive = true, 
                     has order = false ;
-                } ;
+                }, 
+            has genus = group ;
         } ;
     
 result
     has definition = {
         _:genid12
-            has genus = relation, 
-            with {
+            has differentia = {
                 _:genid13
                     has format = mkr, 
-                    has relVariable = {
+                    has variable = {
                         _:genid11
                             isu rdf:Seq, 
                             has size = 2, 
                             has rdf:_1 = x, 
                             has rdf:_2 = y ;
                         } ;
-                } ;
+                }, 
+            has genus = relation ;
         } ;
     
 set
     has definition = {
         _:genid5
-            has genus = group, 
-            with {
+            has differentia = {
                 _:genid6
                     has inclusive = true, 
                     has order = false ;
-                } ;
+                }, 
+            has genus = group ;
         } ;
     
