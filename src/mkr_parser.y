@@ -241,7 +241,7 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %type <string> mkrbase mkrprefix
 
 /* mKR */
-%type <identifier> variable preposition isVerb hoVerb hasVerb doVerb nameOption sentenceName list set view graph
+%type <identifier> variable preposition isVerb hoVerb hasVerb doVerb nameOption sentenceName list set view graph ho rel
 %type <nv> nv contextOption
 %type <pp> pp
 
@@ -260,7 +260,7 @@ int mkr_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object literal resource blankNode variable preposition isVerb hoVerb hasVerb doVerb nameOption sentenceName list set view graph
+} subject predicate object literal resource blankNode variable preposition isVerb hoVerb hasVerb doVerb nameOption sentenceName list set view graph ho rel
 
 %destructor {
   if($$)
@@ -362,15 +362,18 @@ object: resource     { $$ = $1; }
 | graph              { $$ = $1; }
 ;
 
+ho:  HO   {$$ = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"ho");}
+rel: REL  {$$ = mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"rel");}
 
-sentence: contextOption nameOption view  SEMICOLON {$$ = mkr_sentence(rdf_parser, MKR_VIEW, $1, $2, $3);}
+
+sentence: contextOption nameOption view  SEMICOLON {$$ = mkr_sentence(rdf_parser, MKR_VIEW,  $1, $2, $3);}
 |         contextOption nameOption graph SEMICOLON {$$ = mkr_sentence(rdf_parser, MKR_GRAPH, $1, $2, $3);}
 | mkrbase URI_LITERAL                    SEMICOLON {$$ = mkr_base(rdf_parser, $<string>1, $2);}
 | mkrprefix IDENTIFIER URI_LITERAL       SEMICOLON {$$ = mkr_prefix(rdf_parser, $<string>1, $2, $3);}
 
 | mkrBEGIN variable subject              SEMICOLON {$$ = mkr_group(rdf_parser, MKR_BEGIN, $2, $3);}
-| HO       objectList                    SEMICOLON {$$ = mkr_ho(rdf_parser, $2);}
-| REL      objectList                    SEMICOLON {$$ = mkr_rel(rdf_parser, $2);}
+| ho       objectList                    SEMICOLON {$$ = mkr_ho(rdf_parser,  $1, $2);}
+| rel      objectList                    SEMICOLON {$$ = mkr_rel(rdf_parser, $1, $2);}
 | mkrEND   variable subject              SEMICOLON {$$ = mkr_group(rdf_parser, MKR_END, $2, $3);}
 
 | variable ASSIGN object                 SEMICOLON {$$ = mkr_assignment(rdf_parser, $1, $3);}

@@ -252,7 +252,6 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
                             int depth)
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
-  int emit_mkr = context->emit_mkr;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
 
   raptor_qname* qname = NULL;

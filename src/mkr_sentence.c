@@ -99,7 +99,6 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
 {
   raptor_statement* triple = NULL;
   int i;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_poList: ");
@@ -133,7 +132,7 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
       raptor_free_statement(triple);
     }
   }
-  return rc;
+  return triple;
 }
 
 
@@ -146,9 +145,9 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
 raptor_statement*
 mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2)
 {
+  raptor_statement* triple = NULL;
   unsigned char* basetype = var1;
   raptor_uri *uri = var2;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("##### DEBUG: mkr_base: %s ", var1);
@@ -159,7 +158,7 @@ mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2)
     raptor_free_uri(rdf_parser->base_uri);
   rdf_parser->base_uri = uri;
 
-  return rc;
+  return triple;
 }
 
 /*****************************************************************************/
@@ -168,11 +167,11 @@ mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2)
 raptor_statement*
 mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, raptor_uri* var3)
 {
+  raptor_statement* triple = NULL;
+  raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)(rdf_parser->context);
   unsigned char* prefixtype = var1;
   unsigned char *prefix = var2;
-  raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)(rdf_parser->context);
   raptor_namespace *ns;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("##### DEBUG: mkr_prefix: ");
@@ -200,9 +199,8 @@ mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, 
     raptor_parser_start_namespace(rdf_parser, ns);
   } else {
     printf("##### ERROR: mkr_prefix: can't create new namespace for %s\n", (char*)prefix);
-    rc = 1;
   }
-  return rc;
+  return triple;
 
 }
 
@@ -211,9 +209,8 @@ mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, 
 /* sentence: viewOption nameOption sentence SEMICOLON */
 /* sentence: view SEMICOLON */
 raptor_statement*
-mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_term* sentence)
+mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_statement* sentence)
 {
-  int rc = 0;
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_sentence: mkrtype = %s\n", MKR_TYPE_NAME(type));
   printf("in ");
@@ -226,9 +223,8 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
 #endif
 
   printf("##### WARNING: mkr_sentence: not implemented\n");
-  rc = 1;
 
-  return rc;
+  return sentence;
 }
 
 
@@ -238,7 +234,7 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
 raptor_statement*
 mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist)
 {
-  int rc = 0;
+  raptor_statement* triple = NULL;
   raptor_term* command = predicate;
 
 #if defined(RAPTOR_DEBUG)
@@ -254,9 +250,9 @@ mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, 
   verb = raptor_term_copy(verb);
   command = raptor_term_copy(command);
 
-  rc = mkr_pplist(rdf_parser, MKR_COMMAND, subject, verb, command, pplist);
+  triple = mkr_pplist(rdf_parser, MKR_COMMAND, subject, verb, command, pplist);
 
-  return rc;
+  return triple;
 }
 
 /*****************************************************************************/
@@ -272,7 +268,6 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   raptor_term* t3 = NULL;
   raptor_term* t4 = NULL;
   raptor_statement* triple = NULL;
-  int rc = 0;
   const char* event = NULL;
 
 #if defined(RAPTOR_DEBUG)
@@ -336,7 +331,7 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   printf("exit mkr_group\n");
 #endif
 
-  return rc;
+  return triple;
 }
 
 /*****************************************************************************/
@@ -424,11 +419,15 @@ mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor
 /*****************************************************************************/
 /* ho objectList; */
 raptor_statement*
-mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList)
+mkr_ho(raptor_parser* rdf_parser, raptor_term* hoterm, raptor_sequence* objectList)
 {
   raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
+  raptor_world* world = rdf_parser->world;
   raptor_term* hoList = NULL;
-  raptor_term* t4 = NULL;
+  raptor_term* t1 = NULL;
+  raptor_term* t2 = NULL;
+  raptor_term* t3 = NULL;
+  raptor_statement* triple = NULL;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_ho: ho ");
@@ -436,24 +435,30 @@ mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList)
   printf(";\n");
 #endif
   
+  t2 = raptor_term_copy(hoterm);
   hoList = mkr_new_rdflist(rdf_parser, objectList);
-  t4 = raptor_term_copy(hoList);
-  raptor_sequence_push(mkr_parser->groupList, t4);
+  t3 = raptor_term_copy(hoList);
+  raptor_sequence_push(mkr_parser->groupList, t3);
 
+  triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_ho\n");
 #endif
-  return hoList;
+  return triple;
 }
 
 
 /* rel objectList; */
 raptor_statement*
-mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList)
+mkr_rel(raptor_parser* rdf_parser, raptor_term* relterm, raptor_sequence* objectList)
 {
   raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
+  raptor_world* world = rdf_parser->world;
   raptor_term* relList = NULL;
-  raptor_term* t4 = NULL;
+  raptor_term* t1 = NULL;
+  raptor_term* t2 = NULL;
+  raptor_term* t3 = NULL;
+  raptor_statement* triple = NULL;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_rel: rel ");
@@ -461,14 +466,17 @@ mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList)
   printf(";\n");
 #endif
 
+  t2 = raptor_term_copy(relterm);
   relList = mkr_new_rdflist(rdf_parser, objectList);
-  t4 = raptor_term_copy(relList);
-  raptor_sequence_push(mkr_parser->groupList, t4);
+  t3 = raptor_term_copy(relList);
+  raptor_sequence_push(mkr_parser->groupList, t3);
 
+
+  triple = raptor_new_statement_from_nodes(world, t1, t2, t3, NULL);
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_rel\n");
 #endif
-  return relList;
+  return triple;
 }
 
 
@@ -490,7 +498,6 @@ mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, rapto
   raptor_term* sub = NULL;
   raptor_term* event = NULL;
   raptor_term* nvevent = NULL;
-  raptor_sequence* seq = NULL;
   raptor_term* rdflist = NULL;
   int ppsize = 0;
   MKR_pp* pp = NULL;
@@ -781,7 +788,6 @@ mkr_assignment(raptor_parser* rdf_parser, raptor_term* variable, raptor_term* va
   raptor_term *t2 = NULL;
   raptor_term *t3 = NULL;
   raptor_statement* triple = NULL;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_assignment: ");
@@ -802,7 +808,7 @@ mkr_assignment(raptor_parser* rdf_parser, raptor_term* variable, raptor_term* va
   printf("exit mkr_asssignment: \n");
 #endif
 
-  return rc;
+  return triple;
 }
 
 /*****************************************************************************/
@@ -839,7 +845,8 @@ mkr_alias(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, ra
 raptor_statement*
 mkr_definition(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* genus, raptor_sequence* pplist)
 {
-  int rc = 0;
+  raptor_statement* triple = NULL;
+
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_definition: ");
   raptor_term_print_as_ntriples(subject, stdout);
@@ -856,9 +863,9 @@ mkr_definition(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* ver
   verb = raptor_term_copy(verb);
   genus = raptor_term_copy(genus);
 
-  rc = mkr_pplist(rdf_parser, MKR_DEFINITION, subject, verb, genus, pplist);
+  triple = mkr_pplist(rdf_parser, MKR_DEFINITION, subject, verb, genus, pplist);
 
-  return rc;
+  return triple;
 }
 
 
@@ -979,7 +986,7 @@ raptor_statement*
 mkr_action(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist)
 {
   raptor_term* action = predicate;
-  int rc = 0;
+  raptor_statement* triple = NULL;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_action: ");
@@ -997,9 +1004,9 @@ mkr_action(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, r
   verb = raptor_term_copy(verb);
   action = raptor_term_copy(action);
 
-  rc = mkr_pplist(rdf_parser, MKR_ACTION, subject, verb, action, pplist);
+  triple = mkr_pplist(rdf_parser, MKR_ACTION, subject, verb, action, pplist);
 
-  return rc;
+  return triple;
 }
 
 /************************************************************************************/
@@ -1371,8 +1378,8 @@ raptor_statement*
 mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* var2, raptor_sequence* var3)
 /* triples: blankNodePropertyList predicateObjectListOpt */
 {
+  raptor_statement* triple = NULL;
   int i;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("triples 2\n blankNodePropertyList=");
@@ -1391,8 +1398,8 @@ mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* v
   if(var2 && var3) {
     /* have subject and non-empty predicate object list, handle it  */
     for(i = 0; i < raptor_sequence_size(var3); i++) {
-      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at(var3, i);
-      t2->subject = raptor_term_copy(var2);
+      triple = (raptor_statement*)raptor_sequence_get_at(var3, i);
+      triple->subject = raptor_term_copy(var2);
     }
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
     printf(" after substitution predicateObjectListOpt=");
@@ -1400,17 +1407,12 @@ mkr_blank_attribute(raptor_parser* rdf_parser, raptor_term* var1, raptor_term* v
     printf("\n\n");
 #endif
     for(i = 0; i < raptor_sequence_size(var3); i++) {
-      raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at(var3, i);
-      raptor_mkr_generate_statement(rdf_parser, t2);
+      triple = (raptor_statement*)raptor_sequence_get_at(var3, i);
+      raptor_mkr_generate_statement(rdf_parser, triple);
     }
   }
 
-  if(var3)
-    raptor_free_sequence(var3);
-  if(var2)
-    raptor_free_term(var2);
-
-  return rc;
+  return triple;
 }
 
 /*****************************************************************************/
@@ -1422,7 +1424,6 @@ mkr_spo(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* predicate,
   raptor_term* t1 = subject;
   raptor_term* t3 = object;
   raptor_statement *triple = NULL;
-  int rc = 0;
 
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_spo: ");
@@ -1438,5 +1439,5 @@ mkr_spo(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* predicate,
   raptor_mkr_generate_statement(rdf_parser, triple);
   raptor_free_statement(triple);
 
-  return rc;
+  return triple;
 }

@@ -300,13 +300,13 @@ raptor_term* mkr_new_sentence(raptor_parser* rdf_parser, raptor_statement* tripl
 
 /* Prototypes for mKR sentence functions - see mkr_sentence.c */
 
-raptor_statement* mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_term* sentence);
+raptor_statement* mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_statement* sentence);
 raptor_statement* mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2);
 raptor_statement* mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* prefix, raptor_uri* uri);
 raptor_statement* mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
-MKR_nv* mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
-raptor_statement* mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList);
-raptor_statement* mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList);
+MKR_nv*           mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
+raptor_statement* mkr_ho(raptor_parser* rdf_parser, raptor_term* hoterm, raptor_sequence* objectList);
+raptor_statement* mkr_rel(raptor_parser* rdf_parser, raptor_term* relterm, raptor_sequence* objectList);
 raptor_statement* mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist);
 raptor_statement* mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* command, raptor_sequence* pplist);
 raptor_statement* mkr_assignment(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* object);
@@ -319,18 +319,18 @@ raptor_statement* mkr_alias(raptor_parser* rdf_parser,     raptor_term* subject,
 
 raptor_statement* mkr_action(raptor_parser* rdf_parser,     raptor_term* subject, raptor_term* verb, raptor_term* action, raptor_sequence* pplist);
 raptor_statement* mkr_definition(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* genus, raptor_sequence* pplist);
-void mkr_generate_type_statement(raptor_parser* rdf_parser, raptor_term* concept, raptor_term* genus);
+void              mkr_generate_type_statement(raptor_parser* rdf_parser, raptor_term* concept, raptor_term* genus);
 
 void raptor_mkr_generate_statement(raptor_parser *parser, raptor_statement *triple);
 void raptor_mkr_clone_statement(raptor_parser *parser, raptor_statement *triple);
 void raptor_mkr_handle_statement(raptor_parser *parser, raptor_statement *triple);
 void raptor_mkr_defer_statement(raptor_parser *parser, raptor_statement *triple);
 
-int mkr_statement_print(const raptor_statement* statement, FILE *stream);
+int          mkr_statement_print(const raptor_statement* statement, FILE *stream);
 raptor_term* mkr_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char* local);
 raptor_term* rdf_local_to_raptor_term(raptor_parser* rdf_parser, unsigned char* local);
 raptor_term* mkr_new_blank_term(raptor_parser* rdf_parser);
 raptor_term* mkr_new_integer_term(raptor_world* world, int ordinal);
 raptor_term* mkr_new_index_term(raptor_world* world, int ordinal);
-raptor_uri* raptor_mkr_get_graph(raptor_parser* rdf_parser);
-int raptorstring_to_csvstring(unsigned char *string, unsigned char *csvstr);
+raptor_uri*  raptor_mkr_get_graph(raptor_parser* rdf_parser);
+int          raptorstring_to_csvstring(unsigned char *string, unsigned char *csvstr);
