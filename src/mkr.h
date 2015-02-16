@@ -305,8 +305,8 @@ raptor_statement* mkr_base(raptor_parser* rdf_parser, unsigned char* var1, rapto
 raptor_statement* mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* prefix, raptor_uri* uri);
 raptor_statement* mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
 MKR_nv* mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
-raptor_sequence* mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList);
-raptor_sequence* mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList);
+raptor_statement* mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList);
+raptor_statement* mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList);
 raptor_statement* mkr_pplist(raptor_parser* rdf_parser, mkr_type type, raptor_term* subject, raptor_term* verb, raptor_term* predicate, raptor_sequence* pplist);
 raptor_statement* mkr_command(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* verb, raptor_term* command, raptor_sequence* pplist);
 raptor_statement* mkr_assignment(raptor_parser* rdf_parser, raptor_term* subject, raptor_term* object);

@@ -423,7 +423,7 @@ mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor
 
 /*****************************************************************************/
 /* ho objectList; */
-raptor_sequence*
+raptor_statement*
 mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList)
 {
   raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
@@ -443,12 +443,12 @@ mkr_ho(raptor_parser* rdf_parser, raptor_sequence* objectList)
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_ho\n");
 #endif
-  return mkr_parser->groupList;
+  return hoList;
 }
 
 
 /* rel objectList; */
-raptor_sequence*
+raptor_statement*
 mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList)
 {
   raptor_turtle_parser* mkr_parser = (raptor_turtle_parser*)rdf_parser->context;
@@ -468,7 +468,7 @@ mkr_rel(raptor_parser* rdf_parser, raptor_sequence* objectList)
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   printf("exit mkr_rel\n");
 #endif
-  return mkr_parser->groupList;
+  return relList;
 }
 
 
