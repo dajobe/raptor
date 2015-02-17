@@ -209,8 +209,11 @@ mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* var2, 
 /* sentence: viewOption nameOption sentence SEMICOLON */
 /* sentence: view SEMICOLON */
 raptor_statement*
-mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_statement* sentence)
+mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_term* view)
 {
+  raptor_world* world = rdf_parser->world;
+  raptor_statement* triple = NULL;
+
 #if defined(RAPTOR_DEBUG)
   printf("##### DEBUG: mkr_sentence: mkrtype = %s\n", MKR_TYPE_NAME(type));
   printf("in ");
@@ -222,9 +225,9 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
   printf(" ;\n");
 #endif
 
-  printf("##### WARNING: mkr_sentence: not implemented\n");
+  triple = raptor_new_statement_from_nodes(world, NULL, NULL, NULL, view);
 
-  return sentence;
+  return triple;
 }
 
 

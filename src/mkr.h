@@ -300,7 +300,7 @@ raptor_term* mkr_new_sentence(raptor_parser* rdf_parser, raptor_statement* tripl
 
 /* Prototypes for mKR sentence functions - see mkr_sentence.c */
 
-raptor_statement* mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_statement* sentence);
+raptor_statement* mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, raptor_term* nameOption, raptor_term* view);
 raptor_statement* mkr_base(raptor_parser* rdf_parser, unsigned char* var1, raptor_uri* var2);
 raptor_statement* mkr_prefix(raptor_parser* rdf_parser, unsigned char* var1, unsigned char* prefix, raptor_uri* uri);
 raptor_statement* mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_term* gname);
