@@ -1,4 +1,4 @@
-result is relation with format = mkr, relVariable = (x, y);
+result is relation with format = mkr, variable = (x, y);
 
 begin relation result ;
 rel anon2, _:a ;

@@ -8,7 +8,7 @@ result
             has differentia = {
                 _:genid3
                     has format = mkr, 
-                    has relVariable = {
+                    has variable = {
                         _:genid1
                             isu rdf:Seq, 
                             has size = 2, 
@@ -18,6 +18,6 @@ result
                 }, 
             has genus = relation ;
         }, 
-    rel (123, <http://example.com/resource1>), 
+    rel ((anon2, _:a), (123, <http://example.com/resource1>), (<http://mkrmke.net/ns/2003-01-21>, <http://example.com/resource2>), (anon1, _:a)), 
     isu relation ;
     

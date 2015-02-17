@@ -43,10 +43,12 @@ test-16d.ttl \
 test-16e.ttl \
 test-16f.ttl \
 test-16g.ttl \
+test-22.ttl \
 test-28.ttl \
 test-31.ttl \
 test-32.ttl \
 test-34.ttl \
+turtle-syntax-number-05.ttl \
 turtle-syntax-number-08.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
@@ -68,10 +70,12 @@ test-16d.mkr \
 test-16e.mkr \
 test-16f.mkr \
 test-16g.mkr \
+test-22.mkr \
 test-28.mkr \
 test-31.mkr \
 test-32.mkr \
 test-34.mkr \
+turtle-syntax-number-05.ttl \
 turtle-syntax-number-08.ttl
 
 MKR_SERIALIZE_RDF_FILES= \
@@ -114,9 +118,11 @@ test-16d.mkr \
 test-16e.mkr \
 test-16f.mkr \
 test-16g.mkr \
+test-22.mkr \
 test-31.mkr \
 test-32.mkr \
 test-34.mkr \
+turtle-syntax-number-05.mkr \
 turtle-syntax-number-08.mkr
 
 TEST_PARSER_OUT_FILES= \
@@ -150,9 +156,11 @@ test-16d.nt \
 test-16e.nt \
 test-16f.nt \
 test-16g.nt \
+test-22.nt \
 test-31.nt \
 test-32.nt \
 test-34.nt \
+turtle-syntax-number-05.nt \
 turtle-syntax-number-08.nt
 
 TEST_ROUNDTRIP_FILES = $(TEST_PARSER_FILES)
@@ -188,9 +196,11 @@ test-16d.mkr.mkr \
 test-16e.mkr.mkr \
 test-16f.mkr.mkr \
 test-16g.mkr.mkr \
+test-22.mkr.mkr \
 test-31.mkr.mkr \
 test-32.mkr.mkr \
 test-34.mkr.mkr \
+turtle-syntax-number-05.mkr.mkr \
 turtle-syntax-number-08.mkr.mkr
 
 # Used to make N-triples output consistent

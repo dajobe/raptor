@@ -124,7 +124,7 @@ mkr_poList(raptor_parser* rdf_parser, raptor_term* subject, raptor_sequence* poL
 
     for(i = 0; i < raptor_sequence_size(poList); i++) {
 #if defined(RAPTOR_DEBUG)
-      printf("##### DEBUG: mkr_poList: i=%d: \n");
+      printf("##### DEBUG: mkr_poList: i=%d: \n", i);
 #endif
       triple = (raptor_statement*)raptor_sequence_get_at(poList, i);
       triple->subject = raptor_term_copy(subject);
@@ -221,7 +221,7 @@ mkr_sentence(raptor_parser* rdf_parser, mkr_type type, MKR_nv* contextOption, ra
   printf(" ");
   raptor_term_print_as_ntriples(nameOption, stdout);
   printf(" :: ");
-  raptor_term_print_as_ntriples(sentence, stdout);
+  raptor_term_print_as_ntriples(view, stdout);
   printf(" ;\n");
 #endif
 
@@ -273,8 +273,14 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   raptor_statement* triple = NULL;
   const char* event = NULL;
 
+
+  switch(type) {
+    case MKR_BEGIN: event = "begin"; break;
+    case MKR_END:   event = "end";   break;
+  }
+
 #if defined(RAPTOR_DEBUG)
-  printf("##### DEBUG: mkr_group: %s ", MKR_TYPE_NAME(type));
+  printf("##### DEBUG: mkr_group: %s : %s ", MKR_TYPE_NAME(type), event);
   raptor_term_print_as_ntriples(gtype, stdout);
   printf(" ");
   raptor_term_print_as_ntriples(gname, stdout);
@@ -285,7 +291,6 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
   mkr_parser->groupName = raptor_term_copy(gname);
   switch(type) {
     case MKR_BEGIN:
-      event = "begin";
       t1 = raptor_term_copy(mkr_parser->groupName);
       t2 = raptor_term_copy(RAPTOR_RDF_type_term(world));
       t3 = raptor_term_copy(mkr_parser->groupType);
@@ -297,7 +302,6 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
       break;
 
     case MKR_END:
-      event = "end";
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       printf("groupList = (");
       raptor_sequence_print(mkr_parser->groupList, stdout);  /* core dump ? */
@@ -311,7 +315,8 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
         t2 = raptor_term_copy(mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"rel"));
       else
         t2 = raptor_term_copy(mkr_local_to_raptor_term(rdf_parser, (unsigned char*)"groupList"));
-      t4 = raptor_term_copy(mkr_new_rdflist(rdf_parser, mkr_parser->groupList));
+      t3 = mkr_new_rdflist(rdf_parser, mkr_parser->groupList);
+      t4 = raptor_term_copy(t3);
       triple = raptor_new_statement_from_nodes(world, t1, t2, t4, NULL);
       raptor_mkr_generate_statement(rdf_parser, triple);
       raptor_free_statement(triple);
@@ -324,16 +329,12 @@ mkr_group(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor_t
         raptor_free_term(mkr_parser->groupName);
         mkr_parser->groupName = NULL;
       }
-      if(mkr_parser->groupList) {
-        /* raptor_free_sequence(mkr_parser->groupList);  core dump */
-        mkr_parser->groupList = NULL;
-      }
       break;
   }
+
 #if defined(RAPTOR_DEBUG)
   printf("exit mkr_group\n");
 #endif
-
   return triple;
 }
 
@@ -412,7 +413,7 @@ mkr_context(raptor_parser* rdf_parser, mkr_type type, raptor_term* gtype, raptor
       break;
   }
 #if defined(RAPTOR_DEBUG)
-  printf("exit mkr_group\n");
+  printf("exit mkr_context\n");
 #endif
 
   return nv;

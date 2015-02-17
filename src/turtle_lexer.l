@@ -193,7 +193,7 @@ PN_LOCAL ({PN_CHARS_BASE}|"_"|[0-9]|":"|{PLX})(({PN_CHARS}|"."|":"|{PLX})*({PN_C
 QNAME {PN_PREFIX}?":"{PN_LOCAL}?
 
 /* mKR */
-VARIABLE [\$\?][A-Za-z0-9]*|[A-Za-z\_\-\*\.\/\\]+
+VARIABLE [\$\?][A-Za-z0-9]*|[A-Za-z\_\*\/\\][A-Za-z0-9\_\-\*\.\/\\]*|[0-9]+"-"[0-9]+"-"[0-9]+|[0-9]+"/"[0-9]+"/"[0-9]+
 
 UCHAR "\\u"{HEX}{HEX}{HEX}{HEX}|"\\U"{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}{HEX}
 IRI "<"([^\x00-\x20<>\"{}\|^`\\]|{UCHAR})*">"

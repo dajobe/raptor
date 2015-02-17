@@ -1047,7 +1047,7 @@ mkr_new_index_term(raptor_world* world, int ordinal)
   printf("##### DEBUG: mkr_new_index_term: ");
   printf("ordinal = %u: term = ", ordinal);
   raptor_term_print_as_ntriples(term, stdout);
-  print("\n");
+  printf("\n");
 #endif
   return term;
 }

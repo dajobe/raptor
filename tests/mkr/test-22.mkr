@@ -1,0 +1,14 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/test-22.ttl> ;
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> ;
+@prefix mkr: <http://mkrmke.net/ns/> ;
+@prefix : <http://example.org#> ;
+
+:a
+    has :b = -1.0 ;
+    
+:c
+    has :d = -1 ;
+    
+:e
+    has :f = -1.0e0 ;
+    
