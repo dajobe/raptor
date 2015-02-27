@@ -24,7 +24,7 @@
 
 lib_LTLIBRARIES = libraptor2.la
 
-pkginclude_HEADERS = raptor.h
+pkginclude_HEADERS = raptor.h mkrtype.h mkr.h
 nodist_pkginclude_HEADERS = raptor2.h
 
 noinst_HEADERS = raptor_internal.h
