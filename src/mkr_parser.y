@@ -289,7 +289,16 @@ Document : sentenceList
 ;;
 
 sentenceList: sentenceList sentence
-| %empty
+{
+  if(!$1) {
+    $1 = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement,
+                             (raptor_data_print_handler)mkr_statement_print);
+  }
+  if($2)
+    raptor_sequence_push($1, $2);
+  $$ = $1;
+}
+| %empty {$$ = NULL;}
 ;
 
 nv: predicate EQUALS object {$$ = mkr_new_nv(rdf_parser, MKR_NV, $1, $3);}

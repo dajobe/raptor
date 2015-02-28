@@ -4,37 +4,37 @@
 @prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
 
-<http://mkrmke.net/ns/?s>
-    has <http://mkrmke.net/ns/?p> = <http://mkrmke.net/ns/?o>, 
-    isa <http://mkrmke.net/ns/?o>, 
-    has <http://mkrmke.net/ns/isa*> = entity ;
+?s
+    has ?p = ?o, 
+    isa ?o, 
+    isa* entity ;
     
 animal
     isa entity ;
     
 cat
-    has <http://mkrmke.net/ns/?p> = entity, 
+    has ?p = entity, 
     isa animal ;
     
 dog
     isa animal ;
     
 entity
-    has <http://mkrmke.net/ns/isc*> = <http://mkrmke.net/ns/?> ;
+    isc* ? ;
     
 person
     isa entity ;
     
-u:Bob_McCullough
+unit/Bob_McCullough
     isa person ;
     
-u:Dick_McCullough
+unit/Dick_McCullough
     isa person ;
     
-u:Garfield
+unit/Garfield
     isa cat, 
-    has <http://mkrmke.net/ns/isa*> = <http://mkrmke.net/ns/?o> ;
+    isa* ?o ;
     
-u:Odie
+unit/Odie
     isa dog ;
     

@@ -4,7 +4,7 @@
 @prefix U: <http://mkrmke.net/ns/universe/> ;
 @prefix u: <http://mkrmke.net/ns/unit/> ;
 
-<http://mkrmke.net/ns/mkr.ho>
+mkr.ho
     has definition = {
         _:genid1
             has differentia = {
@@ -13,6 +13,6 @@
                 }, 
             has genus = hierarchy ;
         }, 
-    ho ((0, U:existent), (1, entity), (2, array), (2, hierarchy), (2, relation), (2, set), (2, mset), (2, list), (2, alt), (2, enum), (2, animal), (3, person), (4, u:Richard_H_McCullough), (1, characteristic), (2, part), (2, attribute), (2, action), (3, method), (1, sentence), (2, context), (3, space), (3, time), (3, view), (2, statement), (3, definition), (2, question), (2, command), (2, assignment), (2, conditional), (2, iteration), (2, hierarchy_group), (2, relation_group)), 
+    ho ((0, universe/existent), (1, entity), (2, array), (2, hierarchy), (2, relation), (2, set), (2, mset), (2, list), (2, alt), (2, enum), (2, animal), (3, person), (4, unit/Richard_H_McCullough), (1, characteristic), (2, part), (2, attribute), (2, action), (3, method), (1, sentence), (2, context), (3, space), (3, time), (3, view), (2, statement), (3, definition), (2, question), (2, command), (2, assignment), (2, conditional), (2, iteration), (2, hierarchy_group), (2, relation_group)), 
     isu hierarchy ;
     

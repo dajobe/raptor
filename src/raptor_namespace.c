@@ -1024,6 +1024,74 @@ raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,
 }
 
 
+/**
+ * mkr_new_qname_from_namespace_uri:
+ * @nstack: namespace stack
+ * @uri: URI to use to make qname
+ * @xml_version: XML Version
+ * 
+ * Make an appropriate XML Qname from the namespaces on a namespace stack
+ * 
+ * Makes a qname from the in-scope namespaces in a stack if the URI matches
+ * the prefix and the rest is a legal XML name.
+ *
+ * Return value: #raptor_qname for the URI or NULL on failure
+ **/
+raptor_qname*
+mkr_new_qname_from_namespace_uri(raptor_namespace_stack *nstack, 
+                                    raptor_uri *uri, int xml_version)
+{
+  unsigned char *uri_string;
+  size_t uri_len;
+  raptor_namespace* ns = NULL;
+  unsigned char *ns_uri_string;
+  size_t ns_uri_len;
+  unsigned char *name = NULL;
+  int bucket;
+
+  if(!uri)
+    return NULL;
+  
+  uri_string = raptor_uri_as_counted_string(uri, &uri_len);
+
+  for(bucket = 0; bucket < nstack->table_size; bucket++) {
+    for(ns = nstack->table[bucket]; ns ; ns = ns->next) {
+      if(!ns->uri)
+        continue;
+      
+      ns_uri_string = raptor_uri_as_counted_string(ns->uri,
+                                                      &ns_uri_len);
+      if(ns_uri_len >= uri_len)
+        continue;
+      if(strncmp((const char*)uri_string, (const char*)ns_uri_string,
+                 ns_uri_len))
+        continue;
+      
+      /* uri_string is a prefix of ns_uri_string */
+      name = uri_string + ns_uri_len;
+
+      /* check for '#' or final '.' or final '/' in mKR local name */
+      if((strchr((const char*)name, '#')) ||
+         (name[strlen((char*)name) - 1] == '.') ||
+         (name[strlen((char*)name) - 1] == '/'))
+          name = NULL;
+
+      /* If name is set, we've found a prefix with a legal mKR name value */
+      if(name)
+        break;
+    }
+    if(name)
+      break;
+  }
+  
+  if(!ns)
+    return NULL;
+
+  return raptor_new_qname_from_namespace_local_name(nstack->world, ns,
+                                                    name,  NULL);
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_namespace_print(FILE *stream, raptor_namespace* ns) 

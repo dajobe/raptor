@@ -19,8 +19,8 @@ mKE
     has read = {
         _:genid1
             has agent = mKE, 
-            from <http://mkrmke.net/ns/KEHOME/kb/mkr.view.html>, 
-            od <http://mkrmke.net/ns/mkr.ho> ;
+            from KEHOME/kb/mkr.view.html, 
+            od mkr.ho ;
         } ;
     
 read

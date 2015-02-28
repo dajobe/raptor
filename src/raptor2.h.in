@@ -1561,6 +1561,8 @@ RAPTOR_API
 int raptor_namespaces_namespace_in_scope(raptor_namespace_stack *nstack, const raptor_namespace *nspace);
 RAPTOR_API
 raptor_qname* raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,  raptor_uri *uri, int xml_version);
+RAPTOR_API
+raptor_qname* mkr_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,  raptor_uri *uri, int xml_version);
 
 
 /* XML Namespace Class */

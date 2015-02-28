@@ -310,7 +310,7 @@ mkr_new_qname_from_term(raptor_namespace_stack* nstack, raptor_term* t)
 
   switch(t->type) {
     case RAPTOR_TERM_TYPE_URI:
-      qname = raptor_new_qname_from_namespace_uri(nstack, t->value.uri, 10);
+      qname = mkr_new_qname_from_namespace_uri(nstack, t->value.uri, 10);
       break;
 
     case RAPTOR_TERM_TYPE_BLANK:

@@ -253,6 +253,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 {
   raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
   raptor_turtle_writer *turtle_writer = context->turtle_writer;
+  int emit_mkr = context->emit_mkr;
 
   raptor_qname* qname = NULL;
 
@@ -266,13 +267,17 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     return 0;
   }
 
-  qname = raptor_new_qname_from_namespace_uri(context->nstack,
-                                              node->term->value.uri, 10);
-
-  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
-    raptor_free_qname(qname);
-    qname = NULL;
+  if(emit_mkr) {
+    qname = mkr_new_qname_from_namespace_uri(context->nstack,
+                                                node->term->value.uri, 10);
+  } else {
+    qname = raptor_new_qname_from_namespace_uri(context->nstack,
+                                                node->term->value.uri, 10);
+    /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
+    if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
+      raptor_free_qname(qname);
+      qname = NULL;
+    }
   }
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {

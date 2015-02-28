@@ -9,7 +9,7 @@ ke
     has dbopen = {
         _:genid15
             has agent = ke, 
-            od (<http://mkrmke.net/ns/mkr.ho>, hierarchy, gdbm, existent) ;
+            od (mkr.ho, hierarchy, gdbm, existent) ;
         }, 
     has print = {
         _:genid1
@@ -19,13 +19,13 @@ ke
     has read = {
         _:genid4
             has agent = ke, 
-            from <http://mkrmke.net/ns/relation.mkr> ;
+            from relation.mkr ;
         }, 
     has select = {
         _:genid7
             has agent = ke, 
-            from <http://mkrmke.net/ns/relation.mkr>, 
-            od (<http://mkrmke.net/ns/$1>, <http://mkrmke.net/ns/$3>) ;
+            from relation.mkr, 
+            od ($1, $3) ;
         } ;
     
 print
@@ -41,7 +41,7 @@ sh
     has wc = {
         _:genid12
             has agent = sh, 
-            od <http://mkrmke.net/ns/*.mkr> ;
+            od *.mkr ;
         } ;
     
 wc
