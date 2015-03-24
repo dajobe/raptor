@@ -2,7 +2,7 @@
  *
  * raptor_serialize_rss.c - Raptor RSS 1.0 and Atom 1.0 serializers
  *
- * Copyright (C) 2003-2010, David Beckett http://www.dajobe.org/
+ * Copyright (C) 2003-2015, David Beckett http://www.dajobe.org/
  * Copyright (C) 2003-2005, University of Bristol, UK http://www.bristol.ac.uk/
  * 
  * This package is Free Software and part of Redland http://librdf.org/
@@ -80,6 +80,9 @@ typedef struct {
    * this is destroyed when nstack above is deleted 
    */
   raptor_namespace* default_nspace;
+
+  /* rdf namespace in @nspaces array */
+  raptor_namespace* rdf_nspace;
 
   /* the xml: namespace */
   raptor_namespace *xml_nspace;
@@ -1034,14 +1037,13 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
   raptor_uri *base_uri = serializer->base_uri;
   raptor_xml_element *element;
   raptor_qname *qname;
+  int root_ns_id;
   const unsigned char *root_local_name;
   int i;
   int is_atom;
   const raptor_rss_item_info *item_node_type;
   int item_node_typei;
-  const unsigned char* ns_uri;
   int default_ns_id;
-  const unsigned char *default_prefix;
   int size;
 
   rss_serializer = (raptor_rss10_serializer_context*)serializer->context;
@@ -1050,33 +1052,17 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
 
   if(is_atom) {
     default_ns_id = ATOM1_0_NS;
-    ns_uri = raptor_atom_namespace_uri;
+    root_ns_id = ATOM1_0_NS;
     root_local_name = (is_entry ? (const unsigned char*)"entry" :
                                   (const unsigned char*)"feed");
     item_node_typei = RAPTOR_ATOM_ENTRY;
   } else {
     default_ns_id = RSS1_0_NS;
-    ns_uri = raptor_rdf_namespace_uri;
+    root_ns_id = RDF_NS;
     root_local_name = (const unsigned char*)"RDF";
     item_node_typei = RAPTOR_RSS_ITEM;
   }
   item_node_type = &raptor_rss_items_info[item_node_typei];
-
-  if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_PREFIX_ELEMENTS))
-    /* declare this NS with standard prefix */
-    default_prefix = (const unsigned char*)raptor_rss_namespaces_info[default_ns_id].prefix;
-  else
-    default_prefix = NULL;
-
-  rss_serializer->default_nspace = raptor_new_namespace(rss_serializer->nstack,
-                                                        default_prefix, ns_uri,
-                                                        0);
-  rss_serializer->free_default_nspace = 1;
-
-  if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_PREFIX_ELEMENTS)) {
-    rss_serializer->nspaces[default_ns_id] = rss_serializer->default_nspace;
-    rss_serializer->free_default_nspace = 0;
-  }
 
   rss_serializer->xml_nspace = raptor_new_namespace(rss_serializer->nstack,
                                                     (const unsigned char*)"xml",
@@ -1094,21 +1080,29 @@ raptor_rss10_build_xml_names(raptor_serializer *serializer, int is_entry)
       continue;
     
     if(i == default_ns_id) {
-      if(RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_PREFIX_ELEMENTS))
+      if(!RAPTOR_OPTIONS_GET_NUMERIC(serializer, RAPTOR_OPTION_PREFIX_ELEMENTS))
         prefix = NULL;
     }
-    
+
     if(uri) {
       raptor_namespace* nspace;
       nspace = raptor_new_namespace_from_uri(rss_serializer->nstack, prefix,
                                              uri, 0);
       rss_serializer->nspaces[i] = nspace;
+
+      if(i == default_ns_id) {
+        rss_serializer->default_nspace = nspace;
+        rss_serializer->free_default_nspace = 0;
+      }
     }
+
+    if(i == RDF_NS)
+      rss_serializer->rdf_nspace = rss_serializer->nspaces[i];
   }
 
 
   qname = raptor_new_qname_from_namespace_local_name(serializer->world,
-                                                     rss_serializer->nspaces[default_ns_id],
+                                                     rss_serializer->nspaces[root_ns_id],
                                                      root_local_name,
                                                      NULL);
   if(base_uri)
@@ -1384,7 +1378,7 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
   xml_writer = rss_serializer->xml_writer;
 
   rdf_Seq_qname = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                             rss_serializer->default_nspace,
+                                                             rss_serializer->rdf_nspace,
                                                              (const unsigned char*)"Seq",
                                                              NULL);
   
@@ -1410,7 +1404,7 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
     
     item_item = (raptor_rss_item*)raptor_sequence_get_at(rss_serializer->items, i);
     rdf_li_qname = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                              rss_serializer->default_nspace,
+                                                              rss_serializer->rdf_nspace,
                                                               (const unsigned char*)"li",
                                                               NULL);
     base_uri_copy = base_uri ? raptor_uri_copy(base_uri) : NULL;
@@ -1418,7 +1412,7 @@ raptor_rss10_emit_rss_items(raptor_serializer *serializer)
     attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
     ruri_string = raptor_uri_to_relative_uri_string(base_uri, item_item->uri);
     attrs[0] = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                          rss_serializer->default_nspace,
+                                                          rss_serializer->rdf_nspace,
                                                           (const unsigned char*)"resource",
                                                           ruri_string);
     raptor_free_memory(ruri_string);
@@ -1782,7 +1776,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
       attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
       ruri_string = raptor_uri_to_relative_uri_string(base_uri, item->uri);
       attrs[0] = raptor_new_qname_from_namespace_local_name(serializer->world,
-                                                            rss_serializer->default_nspace,
+                                                            rss_serializer->rdf_nspace,
                                                             (const unsigned char*)"about",
                                                             ruri_string);
       raptor_free_memory(ruri_string);
@@ -1971,7 +1965,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
             attrs = RAPTOR_CALLOC(raptor_qname**, 3, sizeof(raptor_qname*));
             ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
             attrs[attr_count] = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                                           rss_serializer->default_nspace,
+                                                                           rss_serializer->rdf_nspace,
                                                                            (const unsigned char*)"resource",
                                                                            ruri_string);
             raptor_free_memory(ruri_string);
@@ -2003,7 +1997,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
           attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
           ruri_string = raptor_uri_to_relative_uri_string(base_uri, field->uri);
           attrs[0] = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                                rss_serializer->default_nspace,
+                                                                rss_serializer->rdf_nspace,
                                                                 (const unsigned char*)"resource",
                                                                 ruri_string);
           raptor_free_memory(ruri_string);
@@ -2026,7 +2020,7 @@ raptor_rss10_emit_item(raptor_serializer* serializer,
                                                                             (const unsigned char*)"xhtml");
           else
             predicate_attrs[0] = raptor_new_qname_from_namespace_local_name(rss_serializer->world,
-                                                                            rss_serializer->default_nspace,
+                                                                            rss_serializer->rdf_nspace,
                                                                             (const unsigned char*)"parseType",
                                                                             (const unsigned char*)"Literal");
           raptor_xml_element_set_attributes(predicate, predicate_attrs, 1);
