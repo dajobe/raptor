@@ -27,12 +27,15 @@ configuration: Release
 
 environment:
   CYG_ROOT: C:/cygwin
+  CYG_SETUP_URL: http://www.cygwin.com/setup-x86.exe
   CYG_MIRROR: http://cygwin.mirror.constant.com
   CYG_CACHE: C:/cygwin/var/cache/setup
   DEST: "c:/projects/dest"
   CMAKE_GENERATOR_STRING: '"Visual Studio 12 Win64"'
 
 install:
+  - ps:  echo Installing Cygwin from $env:CYG_SETUP_URL to $env:CYG_ROOT\setup-x86.exe
+  - ps:  Invoke-WebRequest $env:CYG_SETUP_URL -OutFile $env:CYG_ROOT\setup-x86.exe
   - cmd: 'echo Installing Perl, Bison and Flex from Cygwin'
   - cmd: '%CYG_ROOT%\setup-x86.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P perl -P bison -P flex > NUL'
   - cmd: 'echo Check Cygwin setup'
@@ -43,19 +46,19 @@ install:
   - cmd: '%CYG_ROOT%/bin/perl -v'
 
 before_build:
-  - cmd: 'echo Running Flex and Bison to generate sources'
-  - cmd: 'cd c:\projects\raptor\src'
-  - cmd: '%CYG_ROOT%/bin/flex -oturtle_lexer.c turtle_lexer.l'
-  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-flex.pl turtle_lexer.c > turtle_lexer.t'
-  - cmd: '%CYG_ROOT%/bin/mv -f turtle_lexer.t turtle_lexer.c'
-  - cmd: '%CYG_ROOT%/bin/bison turtle_parser.y'
-  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl turtle_parser.tab.c > turtle_parser.c'
-  - cmd: '%CYG_ROOT%/bin/mv -f turtle_parser.tab.h turtle_parser.h'
-  - cmd: '%CYG_ROOT%/bin/rm -f turtle_parser.tab.c'
-  - cmd: '%CYG_ROOT%/bin/bison parsedate.y'
-  - cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl parsedate.tab.c > parsedate.c'
-  - cmd: '%CYG_ROOT%/bin/mv -f parsedate.tab.h parsedate.h'
-  - cmd: '%CYG_ROOT%/bin/rm -f parsedate.tab.c'
+  #- cmd: 'echo Running Flex and Bison to generate sources'
+  #- cmd: 'cd c:\projects\raptor\src'
+  #- cmd: '%CYG_ROOT%/bin/flex -oturtle_lexer.c turtle_lexer.l'
+  #- cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-flex.pl turtle_lexer.c > turtle_lexer.t'
+  #- cmd: '%CYG_ROOT%/bin/mv -f turtle_lexer.t turtle_lexer.c'
+  #- cmd: '%CYG_ROOT%/bin/bison turtle_parser.y'
+  #- cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl turtle_parser.tab.c > turtle_parser.c'
+  #- cmd: '%CYG_ROOT%/bin/mv -f turtle_parser.tab.h turtle_parser.h'
+  #- cmd: '%CYG_ROOT%/bin/rm -f turtle_parser.tab.c'
+  #- cmd: '%CYG_ROOT%/bin/bison parsedate.y'
+  #- cmd: '%CYG_ROOT%/bin/perl ../scripts/fix-bison.pl parsedate.tab.c > parsedate.c'
+  #- cmd: '%CYG_ROOT%/bin/mv -f parsedate.tab.h parsedate.h'
+  #- cmd: '%CYG_ROOT%/bin/rm -f parsedate.tab.c'
   - cmd: 'md c:\projects\dest'
   - cmd: 'md c:\projects\raptor\bld'
   - cmd: 'md c:\projects\raptor\bldstatic'
@@ -63,12 +66,12 @@ before_build:
 # custom build script
 build_script:
   - cmd: 'cd c:\projects\raptor\bldstatic'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPERL_EXECUTABLE=%CYG_ROOT%/bin/perl -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%static'
   - cmd: 'dir /s'
   - cmd: 'cd c:\projects\raptor\bld'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPERL_EXECUTABLE=%CYG_ROOT%/bin/perl -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%'
   - cmd: 'dir /s'
