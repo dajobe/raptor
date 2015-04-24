@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<atom:feed xmlns:at="http://purl.org/syndication/atomtriples/1"
+<feed xmlns:at="http://purl.org/syndication/atomtriples/1"
    xmlns:atom="http://www.w3.org/2005/Atom"
    xmlns:content="http://purl.org/rss/1.0/modules/content/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -9,15 +9,15 @@
    xmlns:rss091="http://purl.org/rss/1.0/modules/rss091#"
    xmlns:rss="http://purl.org/rss/1.0/"
    xmlns="http://www.w3.org/2005/Atom">
-  <atom:id>http://example.org/whatsnew</atom:id>
-  <atom:title>example feed with 3 items</atom:title>
-  <atom:updated>2006-03-28T20:57:15Z</atom:updated>
-  <atom:author>
-    <atom:email>bob@bob.com</atom:email>
-    <atom:name>unknown</atom:name>
-    <atom:uri>http://bob.com/</atom:uri>
-  </atom:author>
-  <atom:link href="/whatsnew"
+  <id>http://example.org/whatsnew</id>
+  <title>example feed with 3 items</title>
+  <updated>2006-03-28T20:57:15Z</updated>
+  <author>
+    <email>bob@bob.com</email>
+    <name>unknown</name>
+    <uri>http://bob.com/</uri>
+  </author>
+  <link href="/whatsnew"
      rel="self"/>
   <at:feedmap>
     <at:feedmap property="http://purl.org/rss/1.0/link">atom:id</at:feedmap>
@@ -36,49 +36,49 @@
     <at:entrymap property="http://purl.org/rss/1.0/modules/content/encoded">rss:description</at:entrymap>
   </at:entrymap>
 
-  <atom:entry>
-    <atom:id>http://example.org/2006/03/03/blog-item</atom:id>
-    <atom:title>blog item title 2006-02</atom:title>
-    <atom:updated>2006-03-03T23:59:59Z</atom:updated>
-    <atom:content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">a literal XML atom:content with
+  <entry>
+    <id>http://example.org/2006/03/03/blog-item</id>
+    <title>blog item title 2006-02</title>
+    <updated>2006-03-03T23:59:59Z</updated>
+    <content type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">a literal XML atom:content with
 <b>tags</b> and
-newlines</div></atom:content>
-    <atom:summary>the summary of the item</atom:summary>
+newlines</div></content>
+    <summary>the summary of the item</summary>
     <at:md/>
-  </atom:entry>
+  </entry>
 
-  <atom:entry>
-    <atom:id>http://example.org/2006/02/02/blog-item</atom:id>
-    <atom:title>blog item title 2006-02</atom:title>
-    <atom:updated>2006-02-02T00:00:02Z</atom:updated>
-    <atom:link href="/2006/02/02/blog-item"
+  <entry>
+    <id>http://example.org/2006/02/02/blog-item</id>
+    <title>blog item title 2006-02</title>
+    <updated>2006-02-02T00:00:02Z</updated>
+    <link href="/2006/02/02/blog-item"
        rel="alternate"/>
-    <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">a content:encoded description with
+    <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">a content:encoded description with
 <b xmlns="http://www.w3.org/1999/xhtml">tags</b> and
-newlines</div></atom:summary>
+newlines</div></summary>
     <at:md/>
-  </atom:entry>
+  </entry>
 
-  <atom:entry>
-    <atom:id>http://example.org/2006/01/01/blog-item</atom:id>
-    <atom:title>blog item title 2006-01</atom:title>
-    <atom:updated>2006-01-01T00:00:01Z</atom:updated>
-    <atom:link href="/2006/01/01/blog-item"
+  <entry>
+    <id>http://example.org/2006/01/01/blog-item</id>
+    <title>blog item title 2006-01</title>
+    <updated>2006-01-01T00:00:01Z</updated>
+    <link href="/2006/01/01/blog-item"
        rel="alternate"/>
-    <atom:summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">The atom:summary description including
+    <summary type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">The atom:summary description including
 <b>tags</b>
-over several lines.</div></atom:summary>
+over several lines.</div></summary>
     <at:md/>
-  </atom:entry>
+  </entry>
 
-  <atom:entry>
-    <atom:id>http://example.org/2005/12/12/blog-item</atom:id>
-    <atom:title>blog item title 2005-12</atom:title>
-    <atom:updated>2005-12-12T00:00:00Z</atom:updated>
-    <atom:content src="http://external.example.org/"
+  <entry>
+    <id>http://example.org/2005/12/12/blog-item</id>
+    <title>blog item title 2005-12</title>
+    <updated>2005-12-12T00:00:00Z</updated>
+    <content src="http://external.example.org/"
        type="text/html"/>
-    <atom:summary>the rss description</atom:summary>
+    <summary>the rss description</summary>
     <at:md/>
-  </atom:entry>
+  </entry>
 
-</atom:feed>
+</feed>
