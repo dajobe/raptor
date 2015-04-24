@@ -2,3 +2,4 @@
 .libs
 *.o
 build-formats
+build-formats.exe

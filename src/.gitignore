@@ -14,11 +14,10 @@
 *test
 *test.exe
 .deps
-.gdb_history
 .libs
 TAGS
-dmalloc*
 example?
+git-version.h
 parsedate.c
 parsedate.h
 parsedate.output

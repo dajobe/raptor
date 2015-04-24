@@ -17,17 +17,12 @@ TODO
 aclocal.m4
 autom4te.cache
 bugs
-compile
 config.cache
 config.log
 config.status
 configure
-dmalloc*
-git-version.h
 gtk-doc.make
-install-sh
 libtool
-mkinstalldirs
 not-used
 old
 raptor2.pc
