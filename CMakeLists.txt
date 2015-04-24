@@ -23,12 +23,15 @@ SET(CMAKE_INCLUDE_CURRENT_DIR 1)
 
 ################################################################
 
-# Third-party libraries
+# Third-party libraries/dependencies
 
 FIND_PACKAGE(CURL)
 FIND_PACKAGE(LibXml2)
 FIND_PACKAGE(LibXslt)
 #FIND_PACKAGE(YAJL)
+FIND_PACKAGE(Perl  REQUIRED)
+FIND_PACKAGE(BISON 3 REQUIRED)
+FIND_PACKAGE(FLEX  REQUIRED)
 
 if(EXISTS ${CURL_INCLUDE_DIRS})
   INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
@@ -38,9 +41,9 @@ if(EXISTS ${EXPAT_INCLUDE_DIRS})
   INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
 endif(EXISTS ${EXPAT_INCLUDE_DIRS})
 
-if(EXISTS ${LIBXML2_INCLUDE_DIRS})
-  INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIRS})
-endif(EXISTS ${LIBXML2_INCLUDE_DIRS})
+if(EXISTS ${LIBXML2_INCLUDE_DIR})
+  INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIR})
+endif(EXISTS ${LIBXML2_INCLUDE_DIR})
 
 if(EXISTS ${LIBXSLT_INCLUDE_DIRS})
   INCLUDE_DIRECTORIES(${LIBXSLT_INCLUDE_DIRS})
@@ -278,6 +281,40 @@ CONFIGURE_FILE(
 	@ONLY
 )
 
+################################################################
+
+message(STATUS "
+################################################################
+Raptor Configuration Summary
+################################################################
+
+    http://librdf.org/raptor/
+
+    Configured on host $ENV{COMPUTERNAME} ${HOSTNAME}
+      host OS                   ${CMAKE_SYSTEM_NAME}
+      host architecture         ${CMAKE_SYSTEM_PROCESSOR}
+
+    General flags:
+      CC                        ${CMAKE_C_COMPILER}
+      CXX (not used)            ${CMAKE_CXX_COMPILER}
+      CFLAGS                    ${CMAKE_C_FLAGS}
+      CXXFLAGS                  ${CMAKE_CXX_FLAGS}
+      LDFLAGS                   ${CMAKE_EXE_LINKER_FLAGS}
+
+    Installation prefix:        ${CMAKE_INSTALL_PREFIX}
+
+    Dependencies (packages marked with *** are required):
+    "
+)
+
+message( "  *** Perl                        ${PERL_EXECUTABLE}")
+message( "  *** Bison                       ${BISON_EXECUTABLE}")
+message( "  *** Flex                        ${FLEX_EXECUTABLE}")
+message( "  *** libxml2 (lib)               ${LIBXML2_LIBRARIES}")
+message( "  *** libxml2 (include)           ${LIBXML2_INCLUDE_DIR}")
+
+################################################################
+
 # On Windows, the test/utility programs usually have DLL dependencies that
 # make them cumbersome to invoke within IDE environments, so we enable the
 # test suite only when makefiles are being used.
@@ -327,8 +364,28 @@ CONFIGURE_FILE(
 	ADD_TEST("${NAME_PREFIX}:cmp" ${CMAKE_COMMAND} -E compare_files ${REFERENCE} ${OUTPUT})
 ENDMACRO(RAPPER_TEST NAME_PREFIX COMMAND OUTPUT REFERENCE)
 
-MACRO(RAPPER_RDFDIFF_TEST NAME RAPPER_COMMAND RAPPER_OUTPUT RDFDIFF_COMMAND)
-	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME}.cmake "
+INCLUDE(CMakeParseArguments)
+
+FUNCTION(RAPPER_RDFDIFF_TEST TEST_NAME RAPPER_COMMAND RAPPER_OUTPUT RDFDIFF_COMMAND)
+  # http://www.cmake.org/pipermail/cmake/2012-July/051309.html
+  SET(options EXPECTED_FAILURE)
+  SET(oneValueArgs )
+  SET(multiValueArgs )
+  CMAKE_PARSE_ARGUMENTS(RRT "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+  SET(TEST_NAME ${ARGV0})
+  SET(RAPPER_COMMAND ${ARGV1})
+  SET(RAPPER_OUTPUT ${ARGV2})
+  SET(RDFDIFF_COMMAND ${ARGV3})
+
+  # workaround because TRUE is not true in a CMake IF
+  IF(RRT_EXPECTED_FAILURE)
+    SET(EXPECT_FAILURE 1)
+  ELSE()
+    SET(EXPECT_FAILURE 0)
+  ENDIF()
+
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${TEST_NAME}.cmake "
 SET(rdfdiff_status -1)
 
 EXECUTE_PROCESS(
@@ -349,13 +406,19 @@ IF(rapper_status EQUAL 0 OR rapper_status EQUAL 2)
 	)
 ENDIF(rapper_status EQUAL 0 OR rapper_status EQUAL 2)
 
-IF(NOT rdfdiff_status EQUAL 0)
-	MESSAGE(FATAL_ERROR \"Test failed.\")
-ENDIF(NOT rdfdiff_status EQUAL 0)
+IF(${EXPECT_FAILURE})
+  IF(rdfdiff_status EQUAL 0)
+    MESSAGE(FATAL_ERROR \"Test succeeded, but expected to fail.\")
+  ENDIF(rdfdiff_status EQUAL 0)
+ELSE()
+  IF(NOT rdfdiff_status EQUAL 0)
+    MESSAGE(FATAL_ERROR \"Test failed.\")
+  ENDIF(NOT rdfdiff_status EQUAL 0)
+ENDIF()
 ")
 
-	ADD_TEST(${NAME} ${CMAKE_COMMAND} -P test-${NAME}.cmake)
-ENDMACRO(RAPPER_RDFDIFF_TEST NAME RAPPER_COMMAND RAPPER_OUTPUT RDFDIFF_COMMAND)
+	ADD_TEST(${TEST_NAME} ${CMAKE_COMMAND} -P test-${TEST_NAME}.cmake)
+ENDFUNCTION(RAPPER_RDFDIFF_TEST)
 
 SUBDIRS(tests/feeds)
 SUBDIRS(tests/grddl)

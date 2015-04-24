@@ -3,27 +3,61 @@
 # Original listfile by Daniel Richard G. <skunk@iSKUNK.ORG>
 # This file is in the public domain.
 #
+# Changes 01/20/15 J Kyle Medley
+#
 
 IF(RAPTOR_PARSER_RDFA)
 	INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/librdfa)
 ENDIF(RAPTOR_PARSER_RDFA)
 
+# ** Parser sources **
+
+# XML parser enabled
 IF(RAPTOR_PARSER_RDFXML)
 	SET(raptor_parser_rdfxml_sources raptor_rdfxml.c)
 	SET(raptor_libxml_libs ${LIBXML2_LIBRARIES})
 ENDIF(RAPTOR_PARSER_RDFXML)
+
+# N triples parser enabled
 IF(RAPTOR_PARSER_NTRIPLES OR RAPTOR_PARSER_NQUADS)
 	SET(raptor_parser_ntriples_nquads_sources ntriples_parse.c raptor_ntriples.c)
 ENDIF(RAPTOR_PARSER_NTRIPLES OR RAPTOR_PARSER_NQUADS)
+
+# Turtle parser enabled
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
-	SET(raptor_parser_turtle_trig_sources
-		turtle_common.h
-		turtle_lexer.c
-		turtle_lexer.h
-		turtle_parser.c
-		turtle_parser.h
-	)
+  SET(raptor_parser_turtle_trig_sources
+#     turtle_common.h
+    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+#     turtle_lexer.h
+    ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+#     turtle_parser.h
+  )
+
+  # Generate the turtle parser
+  ADD_CUSTOM_TARGET(turtle_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c
+    COMMAND ${BISON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y)
+
+  ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c > ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+    DEPENDS turtle_tables_tgt)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.h ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
+
+  # Generate the turtle lexer
+  ADD_CUSTOM_TARGET(turtle_flex_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+    COMMAND ${FLEX_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l)
+
+  ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t > ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+    DEPENDS turtle_flex_tgt)
 ENDIF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
+
+# RSS feed parser enabled
 IF(RAPTOR_PARSER_RSS OR RAPTOR_SERIALIZER_RSS_1_0)
 	SET(raptor_rss_common_sources raptor_rss_common.c raptor_rss.h)
 ENDIF(RAPTOR_PARSER_RSS OR RAPTOR_SERIALIZER_RSS_1_0)
@@ -31,20 +65,30 @@ IF(RAPTOR_PARSER_RSS)
 	SET(raptor_parser_rss_sources raptor_rss.c)
 	SET(raptor_libxml_libs ${LIBXML2_LIBRARIES})
 ENDIF(RAPTOR_PARSER_RSS)
+
+# GRDDL parser enabled
 IF(RAPTOR_PARSER_GRDDL)
 	SET(raptor_parser_grddl_sources raptor_grddl.c)
 	SET(raptor_libxml_libs ${LIBXML2_LIBRARIES})
 	SET(raptor_libxslt_libs ${LIBXSLT_LIBRARIES})
 ENDIF(RAPTOR_PARSER_GRDDL)
+
+# Guess which parser to use based on context
 IF(RAPTOR_PARSER_GUESS)
 	SET(raptor_parser_guess_sources raptor_guess.c)
 ENDIF(RAPTOR_PARSER_GUESS)
+
+# RDFA parser enabled
 IF(RAPTOR_PARSER_RDFA)
 	SET(raptor_parser_rdfa_sources raptor_librdfa.c)
 ENDIF(RAPTOR_PARSER_RDFA)
+
+# JSON parser enabled
 IF(RAPTOR_PARSER_JSON)
 	SET(raptor_parser_json_sources raptor_json.c)
 ENDIF(RAPTOR_PARSER_JSON)
+
+# ** Serializers **
 
 IF(RAPTOR_SERIALIZER_RDFXML)
 	SET(raptor_serializer_rdfxml_sources raptor_serialize_rdfxml.c)
@@ -103,16 +147,30 @@ IF(RAPTOR_PARSER_RDFA)
 		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.c
 		${CMAKE_SOURCE_DIR}/librdfa/subject.c
 		${CMAKE_SOURCE_DIR}/librdfa/triple.c
-		${CMAKE_SOURCE_DIR}/librdfa/rdfa.h
-		${CMAKE_SOURCE_DIR}/librdfa/rdfa_utils.h
-		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.h
+# 		${CMAKE_SOURCE_DIR}/librdfa/rdfa.h
+# 		${CMAKE_SOURCE_DIR}/librdfa/rdfa_utils.h
+# 		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.h
 	)
 ENDIF(RAPTOR_PARSER_RDFA)
+
 IF(NOT HAVE_STRCASECMP AND NOT HAVE_STRICMP)
 	SET(raptor_strcasecmp_sources strcasecmp.c)
 ENDIF(NOT HAVE_STRCASECMP AND NOT HAVE_STRICMP)
+
 IF(RAPTOR_PARSEDATE)
-	SET(raptor_parsedate_sources parsedate.c)
+  SET(raptor_parsedate_sources ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c)
+
+  # Generate the date/time parser
+  ADD_CUSTOM_TARGET(parsedate_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c
+    COMMAND ${BISON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y)
+
+  ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c > ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+    DEPENDS parsedate_tables_tgt)
+  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.h ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
 ENDIF(RAPTOR_PARSEDATE)
 
 IF(BUILD_SHARED_LIBS)
@@ -177,6 +235,12 @@ ADD_LIBRARY(raptor2 ${LIB_TYPE}
 	${raptor_strcasecmp_sources}
 	${raptor_parsedate_sources}
 )
+IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
+  add_dependencies(raptor2 turtle_parser_tgt turtle_lexer_tgt)
+ENDIF()
+IF(RAPTOR_PARSEDATE)
+  add_dependencies(raptor2 parsedate_tgt)
+ENDIF()
 
 TARGET_LINK_LIBRARIES(raptor2
 	${raptor_libxslt_libs}
