@@ -40,10 +40,11 @@
 char* rdfa_create_bnode(rdfacontext* context)
 {
    char* rval = NULL;
-   char buffer[64];
+   #defined BNODE_BUFFER_LEN 64
+   char buffer[BNODE_BUFFER_LEN];
    
    /* print and increment the bnode count */
-   snprintf(buffer, 64, "_:bnode%i", (int)context->bnode_count++);
+   snprintf(buffer, BNODE_BUFFER_LEN, "_:bnode%i", (int)context->bnode_count++);
    rval = rdfa_replace_string(rval, buffer);
 
    return rval;
