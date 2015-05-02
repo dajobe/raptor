@@ -122,9 +122,10 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   if(!triple->subject || !triple->predicate || !triple->object) {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Triple has NULL parts\n");
-#endif
+#else
     rdfa_free_triple(triple);
     return;
+#endif
   }
   
   if(triple->predicate[0] == '_') {
@@ -138,9 +139,10 @@ raptor_librdfa_generate_statement(rdftriple* triple, void* callback_data)
   if(triple->object_type == RDF_TYPE_NAMESPACE_PREFIX) {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Triple has namespace object type\n");
-#endif
+#else
     rdfa_free_triple(triple);
     return;
+#endif
   }
   
   if((triple->subject[0] == '_') && (triple->subject[1] == ':')) {

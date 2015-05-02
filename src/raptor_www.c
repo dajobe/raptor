@@ -531,23 +531,13 @@ raptor_www_set_ssl_verify_options(raptor_www* www, int verify_peer,
 void*
 raptor_www_get_connection(raptor_www* www) 
 {
-#ifdef RAPTOR_WWW_NONE
-  return NULL;
-#endif
-
-#ifdef RAPTOR_WWW_LIBCURL
+#if defined(RAPTOR_WWW_LIBCURL)
   return www->curl_handle;
-#endif
-
-#ifdef RAPTOR_WWW_LIBXML
+#elif defined(RAPTOR_WWW_LIBXML)
   return www->ctxt;
-#endif
-
-#ifdef RAPTOR_WWW_LIBFETCH
+#else
   return NULL;
 #endif
-
-  return NULL;
 }
 
 
