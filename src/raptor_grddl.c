@@ -204,11 +204,11 @@ raptor_grddl_xsltGenericError_handler(void *user_data, const char *msg, ...)
       nmsg[length-1] = '\0';
   }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+  IGNORE_FORMAT_NONLITERAL_START
   raptor_parser_log_error_varargs(rdf_parser, RAPTOR_LOG_LEVEL_ERROR,
                                   nmsg ? nmsg : msg, arguments);
-#pragma GCC diagnostic pop
+  IGNORE_FORMAT_NONLITERAL_END
+
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
 

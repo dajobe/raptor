@@ -379,14 +379,13 @@ raptor_libxml_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
   
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+  IGNORE_FORMAT_NONLITERAL_START
   raptor_log_error_varargs(sax2->world,
                            RAPTOR_LOG_LEVEL_WARN,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
-#pragma GCC diagnostic pop
+  IGNORE_FORMAT_NONLITERAL_END
 
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
@@ -438,14 +437,13 @@ raptor_libxml_error_common(void* user_data, const char *msg, va_list args,
 
   l = (is_fatal) ? RAPTOR_LOG_LEVEL_FATAL: RAPTOR_LOG_LEVEL_ERROR;
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+  IGNORE_FORMAT_NONLITERAL_START
   raptor_log_error_varargs(world,
                            l,
                            locator,
                            nmsg ? nmsg : msg,
                            args);
-#pragma GCC diagnostic pop
+  IGNORE_FORMAT_NONLITERAL_END
   
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
@@ -487,13 +485,12 @@ raptor_libxml_generic_error(void* user_data, const char *msg, ...)
       nmsg[length-1]='\0';
   }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+  IGNORE_FORMAT_NONLITERAL_START
   raptor_log_error_varargs(world, RAPTOR_LOG_LEVEL_ERROR,
                            /* locator */ NULL,
                            nmsg ? nmsg : msg, 
                            args);
-#pragma GCC diagnostic pop
+  IGNORE_FORMAT_NONLITERAL_END
   
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
@@ -549,14 +546,13 @@ raptor_libxml_validation_warning(void* user_data, const char *msg, ...)
       nmsg[length-2]='\0';
   }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+  IGNORE_FORMAT_NONLITERAL_START
   raptor_log_error_varargs(sax2->world,
                            RAPTOR_LOG_LEVEL_WARN,
                            sax2->locator, 
                            nmsg ? nmsg : msg, 
                            args);
-#pragma GCC diagnostic pop
+  IGNORE_FORMAT_NONLITERAL_END
 
   if(nmsg)
     RAPTOR_FREE(char*, nmsg);
