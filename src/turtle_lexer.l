@@ -889,7 +889,8 @@ void turtle_lexer_free(void *ptr, yyscan_t yyscanner)
 const char *
 turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 {
-  static char buffer[2048];
+  #define TTP_DEBUG_BUFFER_SIZE 2048
+  static char buffer[TTP_DEBUG_BUFFER_SIZE];
 
   if(!token)
     return "<<EOF>>";
@@ -923,43 +924,48 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
       return "HAT";
 
     case STRING_LITERAL:
-      sprintf(buffer, "STRING_LITERAL(%s)", lval->string);
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "STRING_LITERAL(%s)",
+               lval->string);
       return buffer;
 
     case URI_LITERAL:
-      sprintf(buffer, "URI_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "URI_LITERAL(%s)", 
+               (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case BLANK_LITERAL:
-      sprintf(buffer, "BLANK_LITERAL(%s)", lval->string);
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "BLANK_LITERAL(%s)",
+               lval->string);
       return buffer;
 
     case QNAME_LITERAL:
-      sprintf(buffer, "QNAME_LITERAL(%s)", 
-              (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "QNAME_LITERAL(%s)", 
+               (lval->uri ? (char*)raptor_uri_as_string(lval->uri) : ""));
       return buffer;
 
     case INTEGER_LITERAL:
-      sprintf(buffer, "INTEGER_LITERAL(%s)", lval->string);
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "INTEGER_LITERAL(%s)",
+               lval->string);
       return buffer;
 
     case FLOATING_LITERAL:
-      sprintf(buffer, "FLOATING_LITERAL(%s)", lval->string);
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "FLOATING_LITERAL(%s)",
+               lval->string);
       return buffer;
 
     case IDENTIFIER:
-      sprintf(buffer, "IDENTIFIER(%s)", 
-              (lval->string ? (char*)lval->string : ""));
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "IDENTIFIER(%s)", 
+               (lval->string ? (char*)lval->string : ""));
       return buffer;
 
     case LANGTAG:
-      sprintf(buffer, "LANGTAG(%s)", 
-              (lval->string ? (char*)lval->string : ""));
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "LANGTAG(%s)", 
+               (lval->string ? (char*)lval->string : ""));
       return buffer;
 
     case DECIMAL_LITERAL:
-      sprintf(buffer, "DECIMAL_LITERAL(%s)", lval->string);
+      snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "DECIMAL_LITERAL(%s)",
+               lval->string);
       return buffer;
 
     case ERROR_TOKEN:
