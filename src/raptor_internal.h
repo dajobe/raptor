@@ -95,7 +95,7 @@ void raptor_sign_free(void *ptr);
 #define RAPTOR_DEBUG6(msg, arg1, arg2, arg3, arg4, arg5) do {fprintf(RAPTOR_DEBUG_FH, "%s:%d:%s: " msg, __FILE__, __LINE__, __FUNCTION__, arg1, arg2, arg3, arg4, arg5);} while(0)
 
 #ifndef RAPTOR_ASSERT_DIE
-#define RAPTOR_ASSERT_DIE abort();
+#define RAPTOR_ASSERT_DIE(x) abort();
 #endif
 
 #else
@@ -113,7 +113,7 @@ void raptor_sign_free(void *ptr);
 #define SYSTEM_FREE(ptr)   free(ptr)
 
 #ifndef RAPTOR_ASSERT_DIE
-#define RAPTOR_ASSERT_DIE
+#define RAPTOR_ASSERT_DIE(x) x;
 #endif
 
 #endif
@@ -141,31 +141,28 @@ void raptor_sign_free(void *ptr);
 #define RAPTOR_ASSERT(condition, msg) do { \
   if(condition) { \
     RAPTOR_ASSERT_REPORT(msg) \
-    RAPTOR_ASSERT_DIE \
+    RAPTOR_ASSERT_DIE() \
   } \
 } while(0)
 
 #define RAPTOR_ASSERT_RETURN(condition, msg, ret) do { \
   if(condition) { \
     RAPTOR_ASSERT_REPORT(msg) \
-    RAPTOR_ASSERT_DIE \
-    return ret; \
+    RAPTOR_ASSERT_DIE(return ret) \
   } \
 } while(0)
 
 #define RAPTOR_ASSERT_OBJECT_POINTER_RETURN(pointer, type) do { \
   if(!pointer) { \
     RAPTOR_ASSERT_REPORT("object pointer of type " #type " is NULL.") \
-    RAPTOR_ASSERT_DIE \
-    return; \
+    RAPTOR_ASSERT_DIE(return) \
   } \
 } while(0)
 
 #define RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(pointer, type, ret) do { \
   if(!pointer) { \
     RAPTOR_ASSERT_REPORT("object pointer of type " #type " is NULL.") \
-    RAPTOR_ASSERT_DIE \
-    return ret; \
+    RAPTOR_ASSERT_DIE(return ret) \
   } \
 } while(0)
 
