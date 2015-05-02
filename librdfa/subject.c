@@ -40,7 +40,7 @@
 char* rdfa_create_bnode(rdfacontext* context)
 {
    char* rval = NULL;
-   #defined BNODE_BUFFER_LEN 64
+#define BNODE_BUFFER_LEN 64
    char buffer[BNODE_BUFFER_LEN];
    
    /* print and increment the bnode count */
