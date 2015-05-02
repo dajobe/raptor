@@ -1024,8 +1024,8 @@ static void end_element(void* parser_context, const char* name,
       context_stack->items[context_stack->num_items - 1]->data;
 
    /* append the text to the current context's XML literal */
-   size_t name_len = strlen(name) + 3;
-   char* buffer = (char*)malloc(name_len + 1);
+   size_t name_len = strlen(name);
+   char* buffer = (char*)malloc(name_len + 3 + 1);
 
 #if defined(DEBUG) && DEBUG > 0
    printf("DEBUG: </%s>\n", name);
@@ -1035,9 +1035,10 @@ static void end_element(void* parser_context, const char* name,
 #endif
 
    buffer[0] = '<';
-   memcpy(buffer + 1, name, name_len);
-   buffer[name_len + 1] = '>';
-   buffer[name_len + 2] = '\0';
+   buffer[1] = '/';
+   memcpy(buffer + 2, name, name_len);
+   buffer[name_len + 2] = '>';
+   buffer[name_len + 3] = '\0';
    if(context->xml_literal == NULL)
    {
       context->xml_literal =
