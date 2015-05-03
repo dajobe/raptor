@@ -143,7 +143,6 @@ static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 #define YY_FATAL_ERROR(msg) do {                                  \
     turtle_lexer_error(yyscanner, RAPTOR_LOG_LEVEL_FATAL, msg);   \
     longjmp(turtle_lexer_fatal_error_longjmp_env, 1);             \
-    abort();                                                      \
 } while(0)
 #else
 #define YY_FATAL_ERROR(msg) do {                                   \
