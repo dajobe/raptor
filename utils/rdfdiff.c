@@ -179,9 +179,12 @@ rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syn
 {
   rdfdiff_file* file = RAPTOR_CALLOC(rdfdiff_file*, 1, sizeof(*file));
   if(file) {
+    size_t name_len = strlen((const char*)name);
     file->world = world;
-    file->name = RAPTOR_MALLOC(char*, strlen((const char*)name) + 1);
-    strcpy((char*)file->name, (const char*)name);
+    file->name = RAPTOR_MALLOC(char*, name_len + 1);
+    if(!file->name)
+      return(0);
+    memcpy(file->name, name, name_len + 1);
     
     file->parser = raptor_new_parser(world, syntax);
     if(file->parser) {
@@ -236,9 +239,13 @@ rdfdiff_new_blank(raptor_world* world, char *blank_id)
   rdfdiff_blank *blank = RAPTOR_CALLOC(rdfdiff_blank*, 1, sizeof(*blank));
 
   if(blank) {
+    size_t blank_id_len = strlen(blank_id);
     blank->world = world;
-    blank->blank_id = RAPTOR_MALLOC(char*, strlen(blank_id) + 1);
-    strcpy((char*)blank->blank_id, (const char*)blank_id);
+    blank->blank_id = RAPTOR_MALLOC(char*, blank_id_len + 1);
+    if(!blank->blank_id)
+      return NULL;
+
+    memcpy(blank->blank_id, blank_id, blank_id_len + 1);
   }
   
   return blank;

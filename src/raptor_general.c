@@ -750,7 +750,7 @@ raptor_check_world_internal(raptor_world* world, const char* name)
 
   if(!world) {
     fprintf(stderr, "%s called with NULL world object\n", name);
-    RAPTOR_ASSERT_DIE
+    RAPTOR_ASSERT_DIE()
   }
   
   /* In Raptor V1 ABI the first int of raptor_world is the 'opened' field */

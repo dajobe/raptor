@@ -377,8 +377,9 @@ raptor_rss_block_set_field(raptor_world *world, raptor_uri *base_uri,
   } else {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL2("Found unknown attribute_type %d\n", attribute_type);
-#endif
+#else
     return 1;
+#endif
   }
 
   return 0;

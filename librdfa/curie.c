@@ -222,7 +222,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       char* dfence = dptr;
 
       memset(src, 0, rlen + 4);
-      strcpy(src, rval);
+      memcpy(src, rval, rlen);
       strncpy(dest, rval, hlen);
 
       /* Process the path portion of the IRI */
@@ -329,7 +329,8 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
       /* Copy the remaining query parameters */
       if(sptr[0] == '?')
       {
-         strcpy(dptr, sptr);
+         size_t rest_len = strlen(sptr);
+         memcpy(dptr, sptr, rest_len + 1);
       }
       else
       {
@@ -413,9 +414,9 @@ char* rdfa_resolve_curie(
       char* prefix = NULL;
       char* curie_reference = NULL;
       const char* expanded_prefix = NULL;
-
-      working_copy = (char*)malloc(strlen(uri) + 1);
-      strcpy(working_copy, uri);/*rdfa_replace_string(working_copy, uri);*/
+      size_t uri_len = strlen(uri);
+      working_copy = (char*)malloc(uri_len + 1);
+      memcpy(working_copy, uri, uri_len + 1);/*rdfa_replace_string(working_copy, uri);*/
 
       /* if this is a safe CURIE, chop off the beginning and the end */
       if(ctype == CURIE_TYPE_SAFE)

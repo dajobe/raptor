@@ -197,7 +197,7 @@ grapper_view_set_triples_count(grapper_state *state, int count)
   if(count>0)
     snprintf(buf, TC_BUF_LEN, "Triples: %d", count);
   else
-    strcpy(buf, "Triples");
+    memcpy(buf, "Triples", 8);
   
   gtk_frame_set_label(GTK_FRAME(state->triples_frame), buf);
 }
@@ -241,7 +241,7 @@ grapper_view_update_error_count(grapper_state *state)
   if(count>0)
     snprintf(buf, EC_BUF_LEN, "Errors: %d", count);
   else
-    strcpy(buf, "Errors");
+    memcpy(buf, "Errors", 7);
 
   gtk_frame_set_label(GTK_FRAME(state->errors_frame), buf);
 }
@@ -298,7 +298,6 @@ grapper_model_set_url(grapper_state *state, const unsigned char *url)
   }
   
   state->url = (unsigned char*)g_strdup((const char*)url);
-  strcpy((char*)state->url, (const char*)url);
 
   grapper_view_url_changed(state);
 }

@@ -1919,7 +1919,8 @@ main(int argc, char *argv[])
 #ifndef WIN32
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
-  unsigned char uri_buffer[16]; /* strlen("file:///DIR/foo")+1 */  
+  #define URI_BUFFER_LEN 16
+  unsigned char uri_buffer[URI_BUFFER_LEN]; /* strlen("file:///DIR/foo")+1 */  
   int i;
   const char *dir;
 #endif
@@ -1992,7 +1993,7 @@ main(int argc, char *argv[])
             "%s: WARNING: Found no convenient directory - not testing relative files\n",
             program);
   else {
-    sprintf((char*)uri_buffer, "file://%s/foo", dir);
+    snprintf((char*)uri_buffer, URI_BUFFER_LEN, "file://%s/foo", dir);
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
     fprintf(stderr,
             "%s: Checking relative file name 'foo' in dir %s expecting URI %s\n",

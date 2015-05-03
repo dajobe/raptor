@@ -567,8 +567,9 @@ raptor_new_qname_from_resource(raptor_sequence* namespaces,
   if(node->term->type != RAPTOR_TERM_TYPE_URI) {
 #ifdef RAPTOR_DEBUG
     RAPTOR_FATAL1("Node must be a URI\n");
-#endif
+#else
     return NULL;
+#endif
   }
 
   qname = raptor_new_qname_from_namespace_uri(nstack, node->term->value.uri, 10);

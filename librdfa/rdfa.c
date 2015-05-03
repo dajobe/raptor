@@ -607,6 +607,7 @@ static void start_element(void *parser_context, const char* name,
          char* attrns;
          char* literal_text;
          size_t value_length = 0;
+         size_t literal_text_length;
 
          attr = attributes[ci];
          attrns = (char*)attributes[ci + 1];
@@ -614,10 +615,11 @@ static void start_element(void *parser_context, const char* name,
 
          /* append the attribute-value pair to the XML literal */
          value = (char*)malloc(value_length + 1);
-         literal_text = (char*)malloc(strlen(attr) + value_length + 5);
          snprintf(value, value_length, "%s", attributes[ci + 3]);
 
-         sprintf(literal_text, " %s=\"%s\"", attr, value);
+         literal_text_length = strlen(attr) + value_length + 4;
+         literal_text = (char*)malloc(literal_text_length + 1);
+         snprintf(literal_text, literal_text_length, " %s=\"%s\"", attr, value);
          context->xml_literal = rdfa_n_append_string(
             context->xml_literal, &context->xml_literal_size,
             literal_text, strlen(literal_text));
@@ -1022,7 +1024,8 @@ static void end_element(void* parser_context, const char* name,
       context_stack->items[context_stack->num_items - 1]->data;
 
    /* append the text to the current context's XML literal */
-   char* buffer = (char*)malloc(strlen(name) + 4);
+   size_t name_len = strlen(name);
+   char* buffer = (char*)malloc(name_len + 3 + 1);
 
 #if defined(DEBUG) && DEBUG > 0
    printf("DEBUG: </%s>\n", name);
@@ -1031,7 +1034,11 @@ static void end_element(void* parser_context, const char* name,
          (print_mapping_value_fp)rdfa_print_triple_list);
 #endif
 
-   sprintf(buffer, "</%s>", name);
+   buffer[0] = '<';
+   buffer[1] = '/';
+   memcpy(buffer + 2, name, name_len);
+   buffer[name_len + 2] = '>';
+   buffer[name_len + 3] = '\0';
    if(context->xml_literal == NULL)
    {
       context->xml_literal =
