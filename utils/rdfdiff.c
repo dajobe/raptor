@@ -182,8 +182,10 @@ rdfdiff_new_file(raptor_world *world, const unsigned char *name, const char *syn
     size_t name_len = strlen((const char*)name);
     file->world = world;
     file->name = RAPTOR_MALLOC(char*, name_len + 1);
-    if(!file->name)
+    if(!file->name) {
+      rdfdiff_free_file(file);
       return(0);
+    }
     memcpy(file->name, name, name_len + 1);
     
     file->parser = raptor_new_parser(world, syntax);
