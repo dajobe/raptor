@@ -244,8 +244,10 @@ rdfdiff_new_blank(raptor_world* world, char *blank_id)
     size_t blank_id_len = strlen(blank_id);
     blank->world = world;
     blank->blank_id = RAPTOR_MALLOC(char*, blank_id_len + 1);
-    if(!blank->blank_id)
+    if(!blank->blank_id) {
+      rdfdiff_free_blank(blank);
       return NULL;
+    }
 
     memcpy(blank->blank_id, blank_id, blank_id_len + 1);
   }
