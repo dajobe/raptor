@@ -1,5 +1,9 @@
 #!/bin/sh
 # Helper script to install bison 3 (primarily for travis CI)
+#
+# USAGE: install-bison3.sh INSTALL-PREFIX
+
+INSTALL_PREFIX="$1"
 
 set -x
 
@@ -27,10 +31,12 @@ installed_version_dec=`echo $installed_version | $AWK -F. '{printf("%d\n", 10000
 min_version_dec=`echo $MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
 if test $installed_version_dec -ge $min_version_dec; then
     echo "$PACKAGE $installed_version is new enough"
+elif [ -d $INSTALL_PREFIX ]; then
+    echo "Using cached installation of $PACKAGE at $INSTALL_PREFIX"	 
 else
     mkdir $BUILD_DIR && cd $BUILD_DIR
     $WGET -O $FILE $URL || $CURL -o $FILE $URL
     tar -x -z -f $FILE && rm $FILE
-    cd $PACKAGE-$INSTALL_VERSION && ./configure --prefix=/usr && make && sudo make install
+    cd $PACKAGE-$INSTALL_VERSION && ./configure --prefix=$INSTALL_PREFIX && make && make install
     cd / && rm -rf $BUILD_DIR
 fi
