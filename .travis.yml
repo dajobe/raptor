@@ -3,13 +3,9 @@
 #   http://docs.travis-ci.com/user/languages/c/
 #   http://docs.travis-ci.com/user/build-configuration/
 #   http://docs.travis-ci.com/user/multi-os/
-#   http://docs.travis-ci.com/user/migrating-from-legacy/
-#   http://docs.travis-ci.com/user/ci-environment/
 #
 
 language: c
-
-sudo: false
 
 branches:
   only:
@@ -31,24 +27,11 @@ matrix:
   allow_failures:
     - os: osx
 
-addons:
-  apt:
-    packages:
-      - gtk-doc-tools
-      - libyajl-dev
 
-cache:
-  directories:
-    - $HOME/bison
-
-env:
-  global:
-    - PATH="$HOME/bison/bin:$PATH"
-
-before_script:
+install:
   - env | sort
   - if [ "$TRAVIS_OS_NAME" = "" ]; then TRAVIS_OS_NAME=linux; fi
-  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh $HOME/bison; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get update -qq -y; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install bison gtk-doc yajl; fi
 
 script: ./autogen.sh && make && make test
