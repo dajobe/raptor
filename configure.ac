@@ -599,7 +599,7 @@ have_libxml=0
 need_libxml=0
 
 oCPPFLAGS="$CPPFLAGS"
-if test "X$XML_CONFIG" != X; then
+if test "X$libxml_source" != X; then
   CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
   LIBS="$LIBS $LIBXML_LIBS"
   AC_CHECK_FUNC(xmlCreatePushParserCtxt, have_xmlCreatePushParserCtxt=yes, have_xmlCreatePushParserCtxt=no)
