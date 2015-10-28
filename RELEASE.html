@@ -31,7 +31,18 @@ language with the name <code>mkr</code.  Patch developed by Richard
 H. McCullough based on the Turtle serializer.  Thanks.
 </p>
 
+<p>Fix for RSS 1.0 serializing default namespaces.</p>
+  
 <h3>Other changes</h3>
+
+<p>Multiple fixes for Appveyor's Windows build using CMake
+Thanks to <a href="https://github.com/0u812">0u812</a>.
+</p>
+
+<p>Multiple fixes for Cmake build system to allow building from
+source including running flex, bison and running the tests.
+Thanks to <a href="https://github.com/0u812">0u812</a>.
+</p>
 
 <p>Made Raptor build again with CMake under Windows via CI as a
 service Appveyor.  The resulting binaries and libraries were not
@@ -39,10 +50,21 @@ tested.</p>
 
 <p>Made some code changes to quiet GCC extra warnings.</p>
 
-<p>Some portability fixes were made for building under cygwin from
-Richard H. McCullough while developing the mkr serializer.
+<p>Portability fixes for OpenBSD</p>
+
+<p>Fixed a few resource leaks on error found by Coverity.</p>
+
+<p>Some portability for building under cygwin by Richard
+H. McCullough while developing the mkr serializer.
 </p>
 
+<p>Portability fixes in the <code>raptor2.spec</code> file.
+Fix by <a href="https://github.com/philjohn">philjohn</a>
+</p>
+
+<p>Enable <code>pkg-config</code> to work when cross-building such as
+with yocto.  Fix by Andreas Müller.
+</p>
 
 <h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
 

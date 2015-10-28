@@ -1,3 +1,299 @@
+2015-10-27  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #33 from schnitzeltony/master
+	configure.ac: do additional checks on libxml2 when library is found
+
+2015-10-27  Andreas Müller <schnitzeltony@googlemail.com>
+
+	* configure.ac:
+	configure.ac: do additional checks on libxml2 when library is found
+
+	In yocto cross environments we must use pkg-config. Configuring with
+
+	  --without-xml2-config
+	  --without-curl-config
+
+	causes
+
+	| checking for LIBXML... yes
+	| checking for libxml via pkg-config... yes - 2.9.2
+	| checking for LIBCURL... yes
+	| checking for libcurl via pkg-config... yes - 7.44.0
+	| checking for ICU... no
+	| checking for yajl installation... not found. Get it from http://lloyd.github.com/yajl/ and use --with-yajl=DIR if necessary to configure the installation directory.
+	| checking GRDDL parser requirements... no - libxml2 and libxslt are both not available
+
+	Applying this patch fixes configuration.
+
+	Signed-off-by: Andreas Müller <schnitzeltony@googlemail.com>
+
+2015-07-20  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml, scripts/install-bison3.sh: Revert "Make Travis-CI
+	run in a container"
+	This reverts commit e02d2c43ad2c3e2ba5a9279861c943c9559f967e.
+
+	* .travis.yml, scripts/install-bison3.sh: Make Travis-CI run in a
+	container
+
+2015-07-05  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c:
+	(rdfdiff_new_blank) resource leak on error [CID 122405]
+
+2015-07-05  Dave Beckett <dave@dajobe.org>
+
+	* utils/rdfdiff.c:
+	(rdfdiff_new_file) resource leak on error [CID 122404]
+
+2015-05-03  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l:
+	(YY_FATAL_ERROR): Remove never reachable abort() after longjmp()
+
+	* Merge pull request #32 from dajobe/openbsd-fixes Fixes for
+	OpenBSD
+
+2015-05-02  Dave Beckett <dave@dajobe.org>
+
+	* librdfa/subject.c: Define BNODE_BUFFER_LEN
+
+	* librdfa/rdfa.c: Fix librdfa end_element() generation without
+	sprintf
+
+	* src/raptor_uri.c: remove another sprintf()
+
+	* src/raptor_abbrev.c, src/raptor_librdfa.c, src/raptor_rss.c,
+	src/raptor_www.c: Several #ifdef fixes to avoid code after abort()
+
+	* src/raptor_general.c, src/raptor_internal.h: Make
+	RAPTOR_ASSERT_DIE take parameter for non-abort case To prevent gcc
+	'will never be executed' warnings.
+
+	* librdfa/rdfa.c, librdfa/subject.c, src/turtle_lexer.l: Remove
+	sprintf() and replace with snprintf() or hard-coded format
+
+	* examples/grapper.c, librdfa/curie.c, utils/rdfdiff.c: Remove
+	strcpy() and replace with count and memcpy()
+
+	* src/raptor_grddl.c, src/raptor_internal.h, src/raptor_libxml.c,
+	src/snprintf.c: OpenBSD fixes
+
+2015-04-24  Dave Beckett <dave@dajobe.org>
+
+	* .gitignore, scripts/.gitignore, src/.gitignore, utils/.gitignore:
+	Update .gitignore
+
+	* Merge pull request #29 from 0u812/cmake-update-squashed
+	CMake build system upgrade to allow building from git sources
+
+2015-04-24  Dave Beckett <dave@dajobe.org>
+
+	* tests/feeds/test01-result.atom, tests/feeds/test02-result.atom,
+	tests/feeds/test03-result.atom: Fix atom results after serializer
+	changes
+
+2015-04-23  0u812 <0u812@github.com>
+
+	* appveyor.yml: don't split echo command
+
+	* appveyor.yml:
+	Update appveyor.yml to let CMake build the lexers/parsers
+
+	Also download latest Cygwin setup due to the one installed
+	on appveyor being out of date
+
+	Squashed commit of the following:
+
+	commit 103bee37c4a215494f4929a00497ced9238c8164
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Apr 23 14:20:30 2015 -0700
+
+	add CYG_SETUP_URL
+
+	commit b4ef42b2c2449089a6295c19c2cced0bd485cade
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Apr 23 14:12:07 2015 -0700
+
+	download latest Cygwin setup
+
+	commit 02d81375698a12b52ef4c0a61af2f105c214d5c7
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Apr 22 23:24:55 2015 -0700
+
+	specify path to Cygwin-installed Perl/Bison/Flex in shared build as well
+
+	commit 20e5181b1d2b098179d199e67d47ef24dbebafd9
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Mar 4 16:01:44 2015 -0800
+
+	prevent appveyor script from generating parser tables (done in
+	CMake instead)
+
+2015-03-23  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rss.c: RSS 1.0 serializing default
+	namespaces fixes.
+
+	Separate default namespace from root element namespace
+	- Root element is rdf:RDF for rss 1.0 always
+	- Attributes are always rdf:name
+
+2015-02-01  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Handle updated glibtoolize (OSX) name in --version
+
+2015-01-29  0u812 <0u812@github.com>
+
+	* CMakeLists.txt, tests/rdfa/CMakeLists.txt,
+	tests/rdfa11/CMakeLists.txt: Make rdfa/rdfa11 tests expected
+	failures (they are not counted as failing tests, so get 100%
+	passing).
+
+	Reject Bison at CMake config stage if major version
+	is older than 3.
+
+	--
+
+	Squashed commit of the following:
+
+	commit 5394d2817384d8ca18ca4b8f8b2eefd34aa60f4c
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Jan 29 14:49:51 2015 -0800
+
+	add rdfa11 expected failures
+
+	commit 1c205f2444dfe7b4341a08e35c00cc9627f58d3b
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Jan 29 14:44:44 2015 -0800
+
+	add rdfa expected failures
+
+	commit 81fbc40f08c430267559998024fdbaef5f67b532
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Jan 29 14:41:42 2015 -0800
+
+	allow expected failures for tests
+
+	workaround: TRUE is not true in a CMake if statement
+
+	commit cae280b8ad68f98f8256b11db2f7ca7ae51aa7e1
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Jan 29 14:11:20 2015 -0800
+
+	RAPPER_RDFDIFF_TEST func
+
+	commit 14fa0f99419729b815c94e429a983174f0cc26fd
+	Author: 0u812 <0u812@github.com>
+	Date:   Thu Jan 29 13:41:27 2015 -0800
+
+	specify bison ver
+
+2015-01-22  0u812 <0u812@github.com>
+
+	* src/parsedate.y, src/turtle_parser.y: Required version of Bison
+	too specific.
+
+	Must use 3.0 avail. via win_flex_bison-2.5.1. Compiles on Windows
+	via CMake with this change.
+
+	* src/CMakeLists.txt: missed a few paths
+
+	* src/CMakeLists.txt: use abs paths in custom commands/targets
+
+2015-01-21  0u812 <0u812@github.com>
+
+	* CMakeLists.txt, src/CMakeLists.txt:  Upgrade CMake build system
+	to allow building from source.  Generate parsers and
+	tokenizers using flex/bison.  Tested compile on FC21 with GNU
+	Bison 3.0.2 and flex 2.5.37.
+
+	Squashed commit of the following:
+
+	commit 680a64599970b07d9e4c797bf9ae876536257ac1
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Jan 21 13:42:21 2015 -0800
+
+	fix turtle flex dep
+
+	commit 4de1288bbf84b18834332747e30e3ca6c92fa301
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Jan 21 13:35:28 2015 -0800
+
+	find flex
+
+	commit 446387d3778ebb760f395e354e3b6cfeb1c700f7
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Jan 21 13:30:46 2015 -0800
+
+	LIBXML2_INCLUDE_DIRS wrong var; use LIBXML2_INCLUDE_DIR
+
+	commit 76e852ef1acc2309c1a78c6e264fd7c538edd633
+	Author: 0u812 <0u812@github.com>
+	Date:   Wed Jan 21 13:26:32 2015 -0800
+
+	correct cmake rename command
+
+	commit 109c4a3159e338af0e0aa6c886110ea9e31749c6
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 12:21:35 2015 -0800
+
+	resolve paths of src and generated files
+
+	commit 5d8366ef60d72e99f5bac3c29e68c903b16265dd
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 12:17:05 2015 -0800
+
+	headers are not sources
+
+	commit 93e8ed1765ccc0da449a4515a264843954199838
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 12:11:34 2015 -0800
+
+	fix output names
+
+	commit 0a7e13ca88b4ffb6c0bf73b9eb635478cd852846
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 12:10:32 2015 -0800
+
+	add turtle flex tgt
+
+	commit 11c76cfa21b0457bb67411a1eae230c5f2f89008
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 12:02:25 2015 -0800
+
+	fix dependencies for autogenerated tgts
+
+	commit d30f99cecd27872edc5b9e2c31bef8079a717171
+	Author: 0u812 <0u812@github.com>
+	Date:   Tue Jan 20 11:53:57 2015 -0800
+
+	add custom cmd to generate turtle parser
+
+
+2015-01-15  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #28 from philjohn/patch-1
+	Fixing build errors using raptor2.spec
+
+2015-01-14  philjohn <philjohn@gmail.com>
+
+	* raptor2.spec.in:
+	Fixing build errors using raptor2.spec
+
+	The spec file uses the wrong libdir for raptor2,
+	/usr/lib(|64)/raptor instead of /usr/lib(|64)/raptor2, it also
+	excludes some files (.a and .la) that rpmbuild complains about.
+
+2015-01-07  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-docs.xml: 2015
+
+2015-01-04  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html, LICENSE.html, NEWS.html, RELEASE.html, TODO.html,
+	UPGRADING.html: 2015
+
 2015-01-01  Dave Beckett <dave@dajobe.org>
 
 	* Merge pull request #27 from dajobe/appveyor
