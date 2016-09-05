@@ -1386,9 +1386,10 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
      !strncmp((const char*)base_detail->scheme, 
               (const char*)reference_detail->scheme,
               base_detail->scheme_len) &&
-     !strncmp((const char*)base_detail->authority, 
+     (base_detail->authority_len == 0 ||
+        !strncmp((const char*)base_detail->authority,
               (const char*)reference_detail->authority,
-              base_detail->authority_len)) {
+              base_detail->authority_len))) {
     
     if(!base_detail->path) {
       if(reference_detail->path) {
