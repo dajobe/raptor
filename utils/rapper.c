@@ -76,7 +76,7 @@ static int quiet = 0;
 /* just count, no printing */
 static int count = 0;
 
-static int triple_count = 0;
+static long triple_count = 0;
 
 static raptor_serializer* serializer = NULL;
 
@@ -940,7 +940,7 @@ main(int argc, char *argv[])
       fprintf(stderr, "%s: Parsing returned 1 triple\n",
               program);
     else
-      fprintf(stderr, "%s: Parsing returned %d triples\n",
+      fprintf(stderr, "%s: Parsing returned %ld triples\n",
               program, triple_count);
   }
   
