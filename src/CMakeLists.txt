@@ -378,8 +378,8 @@ ENDIF(RAPTOR_PARSER_RDFXML)
 FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/raptor2.pc
 "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=\${prefix}
-libdir=\${exec_prefix}/lib
-includedir=\${prefix}/include/raptor2
+libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
+includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}/raptor2
 
 Name: Raptor RDF Parsing Library
 Description: RDF Parser Toolkit Library
