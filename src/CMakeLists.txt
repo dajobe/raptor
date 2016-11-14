@@ -378,8 +378,8 @@ ENDIF(RAPTOR_PARSER_RDFXML)
 FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/raptor2.pc
 "prefix=${CMAKE_INSTALL_PREFIX}
 exec_prefix=\${prefix}
-libdir=\${exec_prefix}/lib
-includedir=\${prefix}/include/raptor2
+libdir=\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}
+includedir=\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}/raptor2
 
 Name: Raptor RDF Parsing Library
 Description: RDF Parser Toolkit Library
@@ -392,22 +392,22 @@ Cflags: -I\${includedir}
 INSTALL(FILES
 	raptor.h
 	${CMAKE_CURRENT_BINARY_DIR}/raptor2.h
-	DESTINATION include/raptor2
+	DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/raptor2
 )
 
 INSTALL(FILES
 	${CMAKE_CURRENT_BINARY_DIR}/raptor2.pc
-	DESTINATION lib/pkgconfig
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig
 )
 
 INSTALL(
 	TARGETS raptor2
 	EXPORT  Raptor2Config
-	ARCHIVE DESTINATION lib
-	LIBRARY DESTINATION lib
-	RUNTIME DESTINATION bin
+	ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
 
-INSTALL(EXPORT Raptor2Config DESTINATION lib/cmake)
+INSTALL(EXPORT Raptor2Config DESTINATION  ${CMAKE_INSTALL_LIBDIR}/cmake)
 
 # end raptor/src/CMakeLists.txt

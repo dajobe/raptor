@@ -20,7 +20,7 @@ TARGET_LINK_LIBRARIES(rapper raptor2)
 ADD_EXECUTABLE(rdfdiff rdfdiff.c ${getopt_sources})
 TARGET_LINK_LIBRARIES(rdfdiff raptor2)
 
-INSTALL(FILES   rapper.1 DESTINATION share/man/man1)
-INSTALL(TARGETS rapper   DESTINATION bin)
+INSTALL(FILES   rapper.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
+INSTALL(TARGETS rapper   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 # end raptor/utils/CMakeLists.txt
