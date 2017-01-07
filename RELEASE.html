@@ -48,6 +48,11 @@ Thanks to <a href="https://github.com/0u812">0u812</a>.
 service Appveyor.  The resulting binaries and libraries were not
 tested.</p>
 
+<p>Fix GNUInstallDirs for install paths to be able to install
+libraptor2.a and raptor2.pc to a specific directory when
+cross-compiling. Thanks to
+<a href="https://github.com/ariadnext">Eric Le Lay</a>.</p>
+
 <p>Made some code changes to quiet GCC extra warnings.</p>
 
 <p>Portability fixes for OpenBSD</p>
@@ -59,13 +64,18 @@ H. McCullough while developing the mkr serializer.
 </p>
 
 <p>Portability fixes in the <code>raptor2.spec</code> file.
-Fix by <a href="https://github.com/philjohn">philjohn</a>
+Thanks to fix by <a href="https://github.com/philjohn">philjohn</a>
 </p>
 
 <p>Enable <code>pkg-config</code> to work when cross-building such as
-with yocto.  Fix by Andreas Müller.
+with yocto.  Thanks to fix by Andreas Müller.
 </p>
 
+<p>Change <code>rapper(1)</code> utility to count in longs instead of
+ints.  Because: billions and billions of triples.  Thanks to patch
+from <a href="https://github.com/JervenBolleman">Jerven Bolleman</a>.</p>p>
+
+	
 <h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
 
 

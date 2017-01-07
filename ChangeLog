@@ -1,4 +1,40 @@
+2016-11-14  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #36 from ariadnext/cmake-GNUInstallDirs
+	cmake: use GNUInstallDirs for install paths
+
+2016-10-06  Eric Le Lay <eric.lelay@ariadnext.com>
+
+	* CMakeLists.txt, src/CMakeLists.txt, utils/CMakeLists.txt: use
+	GNUInstallDirs for install paths to be able to install
+	libraptor2.a and raptor2.pc to a specific directory when
+	cross-compiling
+
+2016-09-05  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #34 from JervenBolleman/master
+	Change to count option of rapper to count in longs instead of ints
+
+2016-08-29  Stephan Bergmann <sbergman@redhat.com>
+
+	* src/raptor_uri.c: -fsanitize=nonnull-attribute
+
+2016-08-05  Jerven Bolleman <jerven.bolleman@isb-sib.ch>
+
+	* utils/rapper.c: Untested change to count option of rapper to
+	count in longs instead of ints
+
+2015-12-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_general.c: Fix RAPTOR_ASSERT_DIE() call
+
+2015-12-12  Dave Beckett <dave@dajobe.org>
+
+	* RELEASE.html: html
+
 2015-10-27  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, NEWS.html, RELEASE.html: 2.0.16 changes
 
 	* Merge pull request #33 from schnitzeltony/master
 	configure.ac: do additional checks on libxml2 when library is found
