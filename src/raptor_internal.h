@@ -141,7 +141,7 @@ void raptor_sign_free(void *ptr);
 #define RAPTOR_ASSERT(condition, msg) do { \
   if(condition) { \
     RAPTOR_ASSERT_REPORT(msg) \
-    RAPTOR_ASSERT_DIE() \
+    RAPTOR_ASSERT_DIE(return) \
   } \
 } while(0)
 
