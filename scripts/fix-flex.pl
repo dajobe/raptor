@@ -40,12 +40,12 @@ while(<>) {
 
   # Remove generated yy_fatal_error declaration and definition to avoid warnings about unused/non-defined static function
   # declaration
-  if(/^static void yy_fatal_error\s*\(.*\)\s*\;\s*$/) {
+  if(/^static void( yynoreturn)? yy_fatal_error\s*\(.*\)\s*\;\s*$/) {
     $line_offset--; # skipped 1 line
     next;
   }
   # definition
-  if(/^static void yy_fatal_error\s*\(.*\)\s*[^\;]\s*$/) {
+  if(/^static void( yynoreturn)? yy_fatal_error\s*\(.*\)\s*[^\;]\s*$/) {
     do {
       $_=<>;
       $line_offset--; # skipped 1 line
@@ -112,6 +112,12 @@ EOT
       $line_offset += 2; # added 2 lines to output
     }
   }
+
+  # Fix ${prefix}_scan_bytes to take a yy_size_t len arg, not int.
+  # declaration
+  s/${prefix}_scan_bytes\s+\( const char \*bytes, int len , yyscan_t yyscanner \);/${prefix}_scan_bytes \( const char \*bytes, yy_size_t len , yyscan_t yyscanner \);/;
+  # definition
+  s/^YY_BUFFER_STATE ${prefix}_scan_bytes\s+\(const char \* yybytes, int  _yybytes_len , yyscan_t yyscanner\)/YY_BUFFER_STATE ${prefix}_scan_bytes \(const char \* yybytes, yy_size_t _yybytes_len , yyscan_t yyscanner\)/;
 
   if($cur_function eq $prefix."_switch_to_buffer" ||
      $cur_function eq $prefix."restart" ||

@@ -50,6 +50,7 @@
 #include <turtle_parser.h>
 
 #define YY_NO_UNISTD_H 1
+#undef yylex
 #include <turtle_lexer.h>
 
 #include <turtle_common.h>
