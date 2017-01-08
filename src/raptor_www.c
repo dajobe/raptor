@@ -403,7 +403,7 @@ raptor_www_set_http_cache_control(raptor_www* www, const char* cache_control)
   size_t len;
   size_t cc_len;
 
-  RAPTOR_ASSERT((strlen(header) != header_len), "Cache-Control header length is wrong");
+  RAPTOR_ASSERT_RETURN((strlen(header) != header_len), "Cache-Control header length is wrong", 1);
 
   if(www->cache_control) {
     RAPTOR_FREE(char*, www->cache_control);
