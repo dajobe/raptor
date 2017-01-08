@@ -71,6 +71,13 @@ AM_PROG_AR
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_MSG_CHECKING(whether $CC is clang)
+CC_IS_CLANG=no
+if $CC 2>&1 | grep clang >/dev/null 2>&1; then
+  CC_IS_CLANG=yes
+else
+  :
+fi
+AC_MSG_RESULT($CC_IS_CLANG)
 
 dnl Initialize libtool
 LT_INIT
@@ -221,8 +228,6 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 #  -Wsystem-headers   : not debugging system
 #  -Wsign-conversion: : many int / unsigned int / size_t
 #  -Wunused-parameter : variables can be marked  __attribute__('unused')
-#
-# Apple gcc specific (probably): -Wshorten-64-to-32
 possible_warnings="\
 -Wall \
 -Wc++-compat \
@@ -255,12 +260,9 @@ possible_warnings="\
 -Wsign-compare \
 -Wstrict-prototypes \
 -Wswitch-enum \
--Wundef \
 -Wunreachable-code \
 -Wunsafe-loop-optimizations \
 -Wwrite-strings \
-\
--Wshorten-64-to-32
 \
 -Wno-conversion \
 -Wno-missing-field-initializers \
@@ -274,6 +276,33 @@ possible_warnings="\
 -Wc90-c99-compat \
 -Wc99-c11-compat \
 "
+
+# compiler specific warnings
+if test $CC_IS_CLANG = yes; then
+    #  Clang
+    #  -Wno-nullability-completeness : too noisy on OSX reporting
+    #     warnings in stdio.h
+    possible_warnings="$possible_warnings \
+-Wno-nullability-completeness
+"
+fi
+
+# OS specific warnings
+case "${host_os}" in
+    darwin*)
+	# Apple gcc/clang specific:
+	#  -Wshorten-64-to-32
+	possible_warnings="$possible_warnings \
+-Wshorten-64-to-32 \
+"
+        ;;
+    *)
+	#  -Wundef : too noisy on OSX 10.12+ e.g. stdio.h fails
+	possible_warnings="$possible_warnings \
+-Wundef
+"
+	;;
+esac
 
 warning_cflags=
 if test "$USE_MAINTAINER_MODE" = yes; then
