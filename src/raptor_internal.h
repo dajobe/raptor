@@ -173,7 +173,7 @@ void raptor_sign_free(void *ptr);
  *
  * #if defined __STDC_VERSION__ && (__STDC_VERSION__ >= 199901L)
  */
-#if defined __GNUC__ && 460 <= __GNUC__ * 100 + __GNUC_MINOR__
+#if defined(__clang__) || (defined __GNUC__ && 460 <= __GNUC__ * 100 + __GNUC_MINOR__)
 #define IGNORE_FORMAT_NONLITERAL_START \
   _Pragma ("GCC diagnostic push") \
   _Pragma ("GCC diagnostic ignored \"-Wformat-nonliteral\"")
