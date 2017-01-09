@@ -45,6 +45,8 @@ our $nbsp = '&#160;';
 
 our $id_prefix = undef;
 
+our $raptor_v1_version = '1.4.21';
+
 sub print_start_chapter_as_docbook_xml($$$$) {
   my($fh, $id, $title, $intro_para)=@_;
 
@@ -604,7 +606,8 @@ while(<IN>) {
     } elsif($old_return eq $new_return && $old_name eq $new_name &&
 	    $old_args eq $new_args) {
       # same
-      warn "$program: Line records no function change old: $old_return $old_name $old_args to new: $new_return $new_name $new_args\n$.: $_\n";
+      warn "$program: Line records no function change old: $old_return $old_name $old_args to new: $new_return $new_name $new_args\n$.: $_\n"
+	  if $old_ver ne $raptor_v1_version;
     } elsif($old_return eq $new_return && $old_name ne $new_name &&
 	    $old_args eq $new_args) {
       # renamed but nothing else changed
