@@ -28,6 +28,7 @@
 #include <string.h>
 
 #include "rdfa.h"
+#include "rdfa_utils.h"
 
 /**
  * Strips the iquery and ifragment part from an IRI. This leaves just the
@@ -57,7 +58,7 @@ char* rdfa_iri_get_base(const char* iri)
    {
       /* there was no iquery or ifragment in the input string, so there is
        * no need to reformat the string */
-      rval = strdup(iri);
+      rval = rdfa_strdup(iri);
    }
    else
    {

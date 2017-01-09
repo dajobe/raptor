@@ -190,7 +190,7 @@ void rdfa_complete_list_triples(rdfacontext* context)
                }
                else
                {
-                  next = strdup((char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+                  next = rdfa_strdup((char*)"http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
                }
 
                triple = rdfa_create_triple(bnode,
@@ -211,7 +211,7 @@ void rdfa_complete_list_triples(rdfacontext* context)
              *   full IRI of the local list mapping associated with this list
              * object
              *   first item of the 'bnode' array */
-            subject = strdup(key);
+            subject = rdfa_strdup(key);
             if(subject)
               tmp = strstr(subject, " ");
 

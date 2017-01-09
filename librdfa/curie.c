@@ -378,7 +378,7 @@ char* rdfa_resolve_curie(
       term_iri = (const char*)rdfa_get_mapping(context->term_mappings, uri);
       if(term_iri != NULL)
       {
-         rval = strdup(term_iri);
+         rval = rdfa_strdup(term_iri);
       }
       else if(context->default_vocabulary == NULL && strstr(uri, ":") == NULL)
       {
@@ -605,7 +605,7 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
    {
       /* search all of the XHTML @rel/@rev reserved words for a
        * case-insensitive match against the given URI */
-      char* term = strdup(resource);
+      char* term = rdfa_strdup(resource);
       char* ptr = NULL;
 
       for(ptr = term; *ptr; ptr++)
@@ -616,7 +616,7 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
       rval = (char*)rdfa_get_mapping(context->term_mappings, term);
       if(rval != NULL)
       {
-         rval = strdup(rval);
+         rval = rdfa_strdup(rval);
       }
       free(term);
    }
@@ -626,7 +626,7 @@ char* rdfa_resolve_relrev_curie(rdfacontext* context, const char* uri)
       rval = (char*)rdfa_get_mapping(context->term_mappings, resource);
       if(rval != NULL)
       {
-         rval = strdup(rval);
+         rval = rdfa_strdup(rval);
       }
    }
 

@@ -67,7 +67,7 @@ char* rdfa_replace_string(char* old_string, const char* new_string)
       free(old_string);
 
       /* copy the new string */
-      rval = strdup(new_string);
+      rval = rdfa_strdup(new_string);
    }
 
    return rval;
@@ -161,7 +161,7 @@ rdfalist* rdfa_copy_list(rdfalist* list)
             /* copy specific data type */
             if(list->items[i]->flags & RDFALIST_FLAG_TEXT)
             {
-               rval->items[i]->data = strdup((char*)list->items[i]->data);
+               rval->items[i]->data = rdfa_strdup((char*)list->items[i]->data);
             }
             else if(list->items[i]->flags & RDFALIST_FLAG_TRIPLE)
             {
@@ -344,7 +344,7 @@ void rdfa_create_list_mapping(
 
       /* build the real key to use when updating the mapping */
       str_size = strlen(subject);
-      realkey = strdup(subject);
+      realkey = rdfa_strdup(subject);
       realkey = rdfa_n_append_string(realkey, &str_size, " ", 1);
       realkey = rdfa_n_append_string(realkey, &str_size, key, strlen(key));
       rdfa_update_mapping(mapping, realkey, value,
@@ -455,7 +455,7 @@ const void* rdfa_get_list_mapping(
    size_t str_size = strlen(subject);
 
    /* generate the real list mapping key and retrieve it from the mapping */
-   realkey = strdup(subject);
+   realkey = rdfa_strdup(subject);
    realkey = rdfa_n_append_string(realkey, &str_size, " ", 1);
    realkey = rdfa_n_append_string(realkey, &str_size, key, strlen(key));
    rval = (void*)rdfa_get_mapping(mapping, realkey);
@@ -526,3 +526,18 @@ void rdfa_free_mapping(void** mapping, free_mapping_value_fp free_value)
    }
 }
 
+char*
+rdfa_strdup(const char* s)
+{
+  size_t len;
+  char *buf;
+  
+  if(!s)
+    return NULL;
+  
+  len = strlen(s) + 1;
+  buf = malloc(len);
+  if(buf)
+    memcpy(buf, s, len);
+  return buf;
+}

@@ -477,6 +477,7 @@ void rdfa_establish_new_inlist_triples(
 void rdfa_complete_list_triples(rdfacontext* context);
 rdfacontext* rdfa_create_new_element_context(rdfalist* context_stack);
 void rdfa_free_context_stack(rdfacontext* context);
+char* rdfa_strdup(const char* s);
 
 #ifdef __cplusplus
 }

@@ -424,18 +424,6 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 dnl Checks for library functions.
 AC_CHECK_FUNCS(gettimeofday getopt getopt_long vsnprintf isascii setjmp qsort_r qsort_s stricmp strcasecmp)
 
-AC_MSG_CHECKING(strdup)
-have_strdup=no
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-int main() { return strdup(); }
-])],
-  [AC_MSG_RESULT(yes)
-   have_strdup=yes
-   AC_DEFINE([HAVE_STRDUP], [1], [have the strdup function])],
-  [AC_MSG_RESULT(no)])
 AC_MSG_CHECKING(strtok_r)
 have_strtok_r=no
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
@@ -460,7 +448,6 @@ CPPFLAGS="$oCPPFLAGS"
 
 
 AM_CONDITIONAL(STRCASECMP, test $ac_cv_func_strcasecmp = no -a $ac_cv_func_stricmp = no)
-AM_CONDITIONAL(STRDUP, test $have_strdup = no)
 AM_CONDITIONAL(GETOPT, test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no)
 
 
