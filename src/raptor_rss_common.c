@@ -586,7 +586,7 @@ raptor_rss_item_equals_statement_subject(const raptor_rss_item *item,
 int
 raptor_rss_item_set_uri(raptor_rss_item *item, raptor_uri* uri)
 {
-  RAPTOR_DEBUG3("Set node %p to URI <%s>\n", item,
+  RAPTOR_DEBUG3("Set node %p to URI <%s>\n", RAPTOR_VOIDP(item),
                 raptor_uri_as_string(uri));
   
   item->uri = raptor_uri_copy(uri);

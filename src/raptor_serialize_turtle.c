@@ -1436,7 +1436,7 @@ raptor_turtle_serialize_statement(raptor_serializer* serializer,
     if(rv < 0) {
       raptor_log_error_formatted(serializer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
                                  "Unable to add properties to subject %p",
-                                 subject);
+                                 RAPTOR_VOIDP(subject));
       return rv;
     }
 

@@ -570,7 +570,8 @@ raptor_rss10_remove_mapped_item_fields(raptor_rss10_serializer_context *rss_seri
     
     if(saw_mapped && saw_non_mapped) {
       raptor_rss_field* last_field = NULL;
-      RAPTOR_DEBUG6("Item %p Field %d - %s: %d mapped %d non-mapped\n", item,
+      RAPTOR_DEBUG6("Item %p Field %d - %s: %d mapped %d non-mapped\n",
+                    RAPTOR_VOIDP(item),
                     f, raptor_rss_fields_info[f].name,
                     saw_mapped, saw_non_mapped);
     
@@ -730,7 +731,8 @@ raptor_rss10_store_statement(raptor_rss10_serializer_context *rss_serializer,
         RAPTOR_DEBUG1("Adding field\n");
         raptor_rss_item_add_field(item, f, field);
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-        RAPTOR_DEBUG2("Stored statement under typed node %p\n", item);
+        RAPTOR_DEBUG2("Stored statement under typed node %p\n",
+                      RAPTOR_VOIDP(item));
 #endif
 
         handled = 1;

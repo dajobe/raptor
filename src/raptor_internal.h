@@ -1506,6 +1506,9 @@ void raptor_www_finish(raptor_world* world);
 /* Unsafe casts: narrowing a value */
 #define RAPTOR_BAD_CAST(t, v) (t)(v)
 
+/* Cast to void* for debugging prints with %p */
+#define RAPTOR_VOIDP(p) (void*)p
+
 /* end of RAPTOR_INTERNAL */
 #endif
 
