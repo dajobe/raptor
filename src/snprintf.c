@@ -12,7 +12,9 @@
 #endif
 
 #ifdef HAVE_VASPRINTF
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE /* to get vasprintf() available */
+#endif
 #endif
 #include <stdio.h>
 #include <string.h>
