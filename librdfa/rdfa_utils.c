@@ -536,7 +536,7 @@ rdfa_strdup(const char* s)
     return NULL;
   
   len = strlen(s) + 1;
-  buf = malloc(len);
+  buf = (char*)malloc(len);
   if(buf)
     memcpy(buf, s, len);
   return buf;
