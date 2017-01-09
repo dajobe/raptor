@@ -1242,7 +1242,7 @@ time_t raptor_parse_date(const char *p, time_t *now);
 #endif
 
 /* only used internally now */
-typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...);
+typedef void (*raptor_simple_message_handler)(void *user_data, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 
 /* turtle_common.c */
