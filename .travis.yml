@@ -34,4 +34,4 @@ install:
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then ./scripts/install-bison3.sh; sudo apt-get update -qq -y; sudo apt-get install -qq -y gtk-doc-tools libyajl-dev; fi
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew update; brew install bison gtk-doc yajl; ln -sf /usr/local/Cellar/bison/*/bin/bison /usr/local/bin/bison; fi
 
-script: ./autogen.sh && make && make test
+script: ./autogen.sh --disable-gtk-doc && make && make test
