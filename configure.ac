@@ -223,15 +223,15 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 # http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 #
 # Too noisy:
-#  -Wconversion       : conversion issues in generated lexers
 #  -Wmissing-field-initializers : too noisy in raptor_rss_common.c
 #  -Wsystem-headers   : not debugging system
-#  -Wsign-conversion: : many int / unsigned int / size_t
 #  -Wunused-parameter : variables can be marked  __attribute__('unused')
 possible_warnings="\
+-std=c11 \
 -Wall \
 -Wc++-compat \
 -Wextra \
+-Wpedantic \
 -Wunused \
 \
 -Waggregate-return \
@@ -258,15 +258,14 @@ possible_warnings="\
 -Wredundant-decls \
 -Wshadow \
 -Wsign-compare \
+-Wstrict-overflow \
 -Wstrict-prototypes \
 -Wswitch-enum \
 -Wunreachable-code \
 -Wunsafe-loop-optimizations \
 -Wwrite-strings \
 \
--Wno-conversion \
 -Wno-missing-field-initializers \
--Wno-sign-conversion \
 -Wno-system-headers \
 -Wno-unused-parameter \
 -Wswitch-bool \
@@ -277,12 +276,14 @@ possible_warnings="\
 -Wc99-c11-compat \
 "
 
+extra_compiler_cflags=""
+
 # compiler specific warnings
 if test $CC_IS_CLANG = yes; then
-    #  Clang
+    # Always enable this for Clang
     #  -Wno-nullability-completeness : too noisy on OSX reporting
     #     warnings in stdio.h
-    possible_warnings="$possible_warnings \
+    extra_compiler_cflags="$extra_compiler_cflags \
 -Wno-nullability-completeness
 "
 fi
@@ -315,12 +316,18 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   AC_MSG_RESULT($warning_cflags)
 fi
 
-MAINTAINER_CPPFLAGS="$warning_cflags"
+if test "$USE_MAINTAINER_MODE" = yes; then
+  AC_DEFINE([MAINTAINER_MODE], [1], [Define to 1 if maintainer mode is enabled.])
+  CPPFLAGS="$warning_cflags $CPPFLAGS"
+fi
+# Extra compiler flags to always add
+CPPFLAGS="$extra_compiler_cflags $CPPFLAGS"
 
 
 dnl Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS(errno.h fcntl.h stdlib.h stddef.h unistd.h string.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/stat.h sys/time.h setjmp.h)
+dnl standard checks: memory.h stdlib.h string.h strings.h inttypes.h stdint.h sys/stat.h sys/types.h
+AC_CHECK_HEADERS(errno.h fcntl.h stddef.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
 AC_CHECK_FUNCS(stat)
 AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
@@ -415,10 +422,35 @@ AC_SUBST(RAPTOR_LIBTOOL_VERSION)
 
 
 dnl Checks for library functions.
-AC_CHECK_FUNCS(gettimeofday getopt getopt_long stricmp strcasecmp vsnprintf isascii setjmp strtok_r qsort_r qsort_s)
+AC_CHECK_FUNCS(gettimeofday getopt getopt_long vsnprintf isascii setjmp qsort_r qsort_s stricmp strcasecmp)
+
+AC_MSG_CHECKING(strdup)
+have_strdup=no
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+int main() { return strdup(); }
+])],
+  [AC_MSG_RESULT(yes)
+   have_strdup=yes
+   AC_DEFINE([HAVE_STRDUP], [1], [have the strdup function])],
+  [AC_MSG_RESULT(no)])
+AC_MSG_CHECKING(strtok_r)
+have_strtok_r=no
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif
+int main() { return strtok_r(); }
+])],
+  [AC_MSG_RESULT(yes)
+   have_strtok_r=yes
+   AC_DEFINE([HAVE_STRTOK_R], [1], [have the strtok_r function])],
+  [AC_MSG_RESULT(no)])
 
 dnl librdfa
-AM_CONDITIONAL([NEED_STRTOK_R], [test "$ac_cv_func_strtok_r" = "no"])
+AM_CONDITIONAL([NEED_STRTOK_R], [test "$have_strtok_r" = "no"])
 
 dnl Check for GNU extension functions
 oCPPFLAGS="$CPPFLAGS"
@@ -428,6 +460,7 @@ CPPFLAGS="$oCPPFLAGS"
 
 
 AM_CONDITIONAL(STRCASECMP, test $ac_cv_func_strcasecmp = no -a $ac_cv_func_stricmp = no)
+AM_CONDITIONAL(STRDUP, test $have_strdup = no)
 AM_CONDITIONAL(GETOPT, test $ac_cv_func_getopt = no -a $ac_cv_func_getopt_long = no)
 
 
@@ -1307,10 +1340,6 @@ if test "$debug_messages" = "yes"; then
   AC_DEFINE([RAPTOR_DEBUG], [1], [Define to 1 if debug messages are enabled.])
 fi
 
-if test "$USE_MAINTAINER_MODE" = yes; then
-  AC_DEFINE([MAINTAINER_MODE], [1], [Define to 1 if maintainer mode is enabled.])
-  CPPFLAGS="$MAINTAINER_CPPFLAGS $CPPFLAGS"
-fi
 
 
 AC_SUBST(RAPTOR_LDFLAGS)

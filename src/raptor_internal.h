@@ -768,6 +768,10 @@ int raptor_check_ordinal(const unsigned char *name);
 #endif
 #endif
 
+#ifndef HAVE_STRDUP
+#define strdup raptor_strdup
+char* raptor_strdup(const char* s);
+#endif
 
 /* raptor_nfc_icu.c */
 int raptor_nfc_icu_check (const unsigned char* string, size_t len, int *error);

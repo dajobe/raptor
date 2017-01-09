@@ -166,6 +166,9 @@ endif
 if STRCASECMP
 libraptor2_la_SOURCES += strcasecmp.c
 endif
+if STRDUP
+libraptor2_la_SOURCES += strdup.c
+endif
 if PARSEDATE
 libraptor2_la_SOURCES += parsedate.c
 BUILT_SOURCES += parsedate.c
