@@ -27,6 +27,13 @@
 #include <raptor_config.h>
 #endif
 
+#if defined(STANDALONE) && defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
+/* for lstat() used in main() test which is in POSIX */
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 200809L
+#endif
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #ifdef HAVE_STRINGS_H
