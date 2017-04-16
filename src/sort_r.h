@@ -27,7 +27,8 @@ void sort_r(void *base, size_t nel, size_t width,
      defined AMIGA)
 #  define _SORT_R_BSD
 #elif (defined _GNU_SOURCE || defined __gnu_hurd__ || defined __GNU__ || \
-       defined __linux__ || defined __MINGW32__ || defined __GLIBC__)
+       defined __linux__ || defined __MINGW32__ || defined __GLIBC__ || \
+       defined __CYGWIN__)
 #  define _SORT_R_LINUX
 #elif (defined _WIN32 || defined _WIN64 || defined __WINDOWS__)
 #  define _SORT_R_WINDOWS
