@@ -181,9 +181,10 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
   size_t nspace_declarations_count = 0;  
   unsigned int i;
 
-  /* max is 1 per element and 1 for each attribute + size of declared */
   if(nstack) {
-    int nspace_max_count = element->attribute_count+1;
+    int nspace_max_count = element->attribute_count * 2; /* attr and value */
+    if(element->name->nspace)
+      nspace_max_count++;
     if(element->declared_nspaces)
       nspace_max_count += raptor_sequence_size(element->declared_nspaces);
     if(element->xml_language)
@@ -237,7 +238,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
         }
       }
 
-      /* Add the attribute + value */
+      /* Add the attribute's value */
       nspace_declarations[nspace_declarations_count].declaration=
         raptor_qname_format_as_xml(element->attributes[i],
                                    &nspace_declarations[nspace_declarations_count].length);
