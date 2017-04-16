@@ -1812,8 +1812,8 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
 /**
  * raptor_escaped_write_bitflags:
  * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF   : Allow \b \f,
- * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU : ALlow \t \n \r \u
- * @RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8            : Allow UTF-8 for printable U *
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU : Allow \t \n \r \u \U
+ * @RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8            : Use UTF-8 instead of \u \U for U+0080 or larger (will always use \u for U+0000..U+001F and U+007F)
  * @RAPTOR_ESCAPED_WRITE_BITFLAG_SPARQL_URI_ESCAPES: Must escape #x00-#x20<>\"{}|^` in URIs
  * @RAPTOR_ESCAPED_WRITE_NTRIPLES_LITERAL: N-Triples literal
  * @RAPTOR_ESCAPED_WRITE_NTRIPLES_URI: N-Triples URI
@@ -1823,7 +1823,7 @@ int raptor_iostream_read_eof(raptor_iostream *iostr);
  * @RAPTOR_ESCAPED_WRITE_TURTLE_URI: Turtle 2013 URIs (like SPARQL)
  * @RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL: Turtle 2013 literals (like SPARQL)
  * @RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL: Turtle 2013 long literals (like SPARQL)
- * @RAPTOR_ESCAPED_WRITE_JSON_LITERAL: JSON literals: \b \f \t \r \n and \u \U
+ * @RAPTOR_ESCAPED_WRITE_JSON_LITERAL: JSON literals: UTF-8 plus \b \f \t \r \n, \uXXXX only, no \U
  *
  * Bit flags for raptor_string_escaped_write() and friends.
  */
@@ -1851,8 +1851,8 @@ typedef enum {
   RAPTOR_ESCAPED_WRITE_TURTLE_LITERAL = RAPTOR_ESCAPED_WRITE_SPARQL_LITERAL,
   RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL = RAPTOR_ESCAPED_WRITE_SPARQL_LONG_LITERAL,
 
-  /* JSON literals: \b \f \t \r \n and \u \U */
-  RAPTOR_ESCAPED_WRITE_JSON_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU | RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF
+  /* JSON literals: UTF-8 plus \b \f \t \r \n \uXXXX */
+  RAPTOR_ESCAPED_WRITE_JSON_LITERAL = RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_TNRU | RAPTOR_ESCAPED_WRITE_BITFLAG_BS_ESCAPES_BF | RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8
 } raptor_escaped_write_bitflags;
 
 
