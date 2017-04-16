@@ -319,6 +319,12 @@ raptor_nsd_compare(const void *a, const void *b)
 {
   struct nsd* nsd_a = (struct nsd*)a;
   struct nsd* nsd_b = (struct nsd*)b;
+
+  /* Sort NULLs earlier */
+  if(!nsd_a->declaration)
+    return -1;
+  else if(!nsd_b->declaration)
+    return 1;
   return strcmp((const char*)nsd_a->declaration, (const char*)nsd_b->declaration);
 }
 
