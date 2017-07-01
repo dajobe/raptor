@@ -285,13 +285,14 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
 
   if(nstack && element->xml_language) {
     size_t lang_len = strlen(RAPTOR_GOOD_CAST(char*, element->xml_language));
+#define XML_LANG_PREFIX "xml:lang=\""
 #define XML_LANG_PREFIX_LEN 10
     size_t buf_length = XML_LANG_PREFIX_LEN + lang_len + 1;
     unsigned char* buffer = RAPTOR_MALLOC(unsigned char*, buf_length + 1);
     const char quote = '\"';
     unsigned char* p;
 
-    memcpy(buffer, "xml:lang=\"", XML_LANG_PREFIX_LEN);
+    memcpy(buffer, XML_LANG_PREFIX, XML_LANG_PREFIX_LEN);
     p = buffer + XML_LANG_PREFIX_LEN;
     p += raptor_xml_escape_string(xml_writer->world,
                                   element->xml_language, lang_len,
