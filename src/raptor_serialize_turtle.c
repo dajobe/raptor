@@ -1482,6 +1482,18 @@ raptor_turtle_serialize_flush(raptor_serializer* serializer)
 
   raptor_turtle_emit(serializer);
 
+  if(context->subjects) {
+    raptor_avltree_trim(context->subjects);
+  }
+
+  if(context->blanks) {
+    raptor_avltree_trim(context->blanks);
+  }
+
+  if(context->nodes) {
+    raptor_avltree_trim(context->nodes);
+  }
+
   return 0;
 }
 
