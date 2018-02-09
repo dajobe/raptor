@@ -2153,7 +2153,7 @@ void* raptor_avltree_remove(raptor_avltree* tree, void* p_data);
 RAPTOR_API
 int raptor_avltree_delete(raptor_avltree* tree, void* p_data);
 RAPTOR_API
-int raptor_avltree_trim(raptor_avltree* tree);
+void raptor_avltree_trim(raptor_avltree* tree);
 RAPTOR_API
 void* raptor_avltree_search(raptor_avltree* tree, const void* p_data);
 RAPTOR_API
