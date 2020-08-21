@@ -621,21 +621,10 @@ else
   AC_MSG_RESULT(yes - $LIBCURL_VERSION)
 fi
 
-
-AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config []], icu_config="$withval", icu_config="")
-
-have_icu=no
-AC_MSG_CHECKING(for ICU)
-if test "X$icu_config" != "Xno" -a "X$icu_config" != "X" ; then
-  ICU_CONFIG=$icu_config
-  ICU_VERSION=`$ICU_CONFIG --version`
+PKG_CHECK_MODULES([ICU], [icu-uc], [
   have_icu=yes
-  AC_MSG_RESULT(yes - version $ICU_VERSION)
-else
-  AC_MSG_RESULT(no)
-fi
-dnl Note there is NO automated searching for icu-config
-
+  ICU_VERSION=`$PKG_CONFIG icu-uc --modversion`
+], [have_icu=no])
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
 
@@ -1183,8 +1172,8 @@ dnl ICU for NFC check
 AC_MSG_CHECKING(NFC library to use)
 nfc_library=none
 if test $need_icu = yes; then
-  CPPFLAGS="$CPPFLAGS `$ICU_CONFIG --cppflags-searchpath`"
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$ICU_CONFIG --ldflags-searchpath` -licuuc"
+  CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $ICU_LIBS"
   AC_LIBOBJ(raptor_nfc_icu)
   nfc_library="ICU $ICU_VERSION"
 fi
