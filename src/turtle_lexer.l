@@ -135,6 +135,8 @@ int turtle_lexer_get_column(yyscan_t yyscanner);
 #endif
 
 static void turtle_lexer_cleanup(yyscan_t yyscanner);
+#undef yycleanup
+#define yycleanup turtle_lexer_cleanup
 
 #ifdef HAVE_SETJMP
 static jmp_buf turtle_lexer_fatal_error_longjmp_env;
