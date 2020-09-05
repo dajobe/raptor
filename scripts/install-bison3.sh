@@ -5,7 +5,7 @@ set -x
 
 PACKAGE=bison
 MIN_VERSION=3.0.0
-INSTALL_VERSION=3.0.2
+INSTALL_VERSION=3.0.5
 
 # Bison requires that CC is a C compiler
 CC=cc

@@ -12,6 +12,7 @@
 #
 
 my $seen_yyerrlab1=0;
+my $syntax_error_has_default=0;
 my $line_offset=1; # #line directives always refer to the NEXT line
 while(<>) {
   # Remove code that causes a warning
@@ -42,8 +43,11 @@ while(<>) {
     next; 
   }
 
-  if(m%^\# undef YYCASE_$%) {
-    # Add a default value for yyformat for coverity CID 10838
+  # syntax error handler will have a default case already in Bison 3.0.5+
+  $syntax_error_has_default=1 if /default: \/\* Avoid compiler warnings. \*\//;
+
+  if(m%^\# undef YYCASE_$% and $syntax_error_has_default==0) {
+    # Add a default value for yyformat on Bison <3.0.5, for coverity CID 10838
     my $line=$_;
     print qq{      default: yyformat = YY_("syntax error");\n};
     $line_offset++; # extra line
