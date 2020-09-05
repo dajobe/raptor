@@ -145,6 +145,7 @@ static int raptor_turtle_serialize_statement(raptor_serializer* serializer,
                                              raptor_statement *statement);
 
 static int raptor_turtle_serialize_end(raptor_serializer* serializer);
+static int raptor_turtle_serialize_flush(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
 
 
@@ -1471,6 +1472,31 @@ raptor_turtle_serialize_end(raptor_serializer* serializer)
   return 0;
 }
 
+/* flush turtle */
+static int
+raptor_turtle_serialize_flush(raptor_serializer* serializer)
+{
+  raptor_turtle_context* context = (raptor_turtle_context*)serializer->context;
+
+  raptor_turtle_ensure_writen_header(serializer, context);
+
+  raptor_turtle_emit(serializer);
+
+  if(context->subjects) {
+    raptor_avltree_trim(context->subjects);
+  }
+
+  if(context->blanks) {
+    raptor_avltree_trim(context->blanks);
+  }
+
+  if(context->nodes) {
+    raptor_avltree_trim(context->nodes);
+  }
+
+  return 0;
+}
+
 
 /* finish the serializer factory */
 static void
@@ -1528,6 +1554,7 @@ raptor_turtle_serializer_register_factory(raptor_serializer_factory *factory)
   factory->serialize_start     = raptor_turtle_serialize_start;
   factory->serialize_statement = raptor_turtle_serialize_statement;
   factory->serialize_end       = raptor_turtle_serialize_end;
+  factory->serialize_flush     = raptor_turtle_serialize_flush;
   factory->finish_factory      = raptor_turtle_serialize_finish_factory;
 
   return 0;
