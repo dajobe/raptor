@@ -1719,10 +1719,27 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
         turtle_parser->deferred = NULL;
       }
     }
-  } else if(rdf_parser->emitted_default_graph) {
-    /* for non-TRIG - end default graph after last triple */
-    raptor_parser_end_graph(rdf_parser, NULL, 0);
-    rdf_parser->emitted_default_graph--;
+  } else {
+    /* this was the last chunk, finalise */
+    if(turtle_parser->deferred) {
+      raptor_sequence* def = turtle_parser->deferred;
+      int i;
+      for(i = 0; i < raptor_sequence_size(def); i++) {
+	raptor_statement *t2 = (raptor_statement*)raptor_sequence_get_at(def, i);
+
+	raptor_turtle_handle_statement(rdf_parser, t2);
+      }
+    }
+    if(rdf_parser->emitted_default_graph) {
+      /* for non-TRIG - end default graph after last triple */
+      raptor_parser_end_graph(rdf_parser, NULL, 0);
+      rdf_parser->emitted_default_graph--;
+    }
+    if(turtle_parser->deferred) {
+      /* clear resources */
+      raptor_free_sequence(turtle_parser->deferred);
+      turtle_parser->deferred = NULL;
+    }
   }
   return rc;
 }
