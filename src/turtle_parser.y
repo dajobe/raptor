@@ -92,7 +92,7 @@ const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
 #undef TURTLE_PUSH_PARSE
 
 /* Prototypes */ 
-int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
+int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg, ...) RAPTOR_PRINTF_FORMAT(3, 4);
 
 /* Make lex/yacc interface as small as possible */
 #undef yylex
@@ -1279,9 +1279,13 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 /* Support functions */
 
 int
-turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg)
+turtle_parser_error(raptor_parser* rdf_parser, void* scanner,
+                    const char *msg, ...)
 {
   raptor_turtle_parser* turtle_parser;
+  va_list args;
+
+  va_start(args, msg);
 
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
@@ -1301,8 +1305,9 @@ turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg)
   rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
-  raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
-                   &rdf_parser->locator, msg);
+  raptor_log_error_varargs(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
+                           &rdf_parser->locator, msg,
+                           args);
 
   return 0;
 }
