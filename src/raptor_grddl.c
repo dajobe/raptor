@@ -235,7 +235,7 @@ raptor_new_xml_context(raptor_world* world, raptor_uri* uri,
 
 
 static void
-grddl_free_xml_context(void *context, void* userdata) 
+grddl_free_xml_context(void* userdata) 
 {
   grddl_xml_context* xml_context = (grddl_xml_context*)userdata;
   
@@ -257,8 +257,9 @@ raptor_grddl_parse_init_common(raptor_parser* rdf_parser, const char *name)
   grddl_parser->world = rdf_parser->world;
   grddl_parser->rdf_parser = rdf_parser;
 
-  /* Sequence of URIs of XSLT sheets to transform the document */
-  grddl_parser->doc_transform_uris = raptor_new_sequence_with_context((raptor_data_context_free_handler)grddl_free_xml_context, NULL, rdf_parser->world);
+  /* Sequence of grddl_xml_context* URIs of XSLT sheets to transform
+   * the document */
+  grddl_parser->doc_transform_uris = raptor_new_sequence((raptor_data_free_handler)grddl_free_xml_context, NULL);
 
   grddl_parser->grddl_processing = 1;
   grddl_parser->xinclude_processing = 1;
@@ -289,7 +290,7 @@ raptor_grddl_parse_init(raptor_parser* rdf_parser, const char *name)
   raptor_grddl_parse_init_common(rdf_parser, name);
 
   /* Sequence of URIs from <head profile> */
-  grddl_parser->profile_uris = raptor_new_sequence_with_context((raptor_data_context_free_handler)grddl_free_xml_context, NULL, (void*)world);
+  grddl_parser->profile_uris = raptor_new_sequence((raptor_data_free_handler)grddl_free_xml_context, NULL);
 
   grddl_parser->namespace_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_namespaceTransformation_uri_string, GRDDL_NAMESPACETRANSFORMATION_URI_STRING_LEN);
   grddl_parser->profile_transformation_uri = raptor_new_uri_from_counted_string(world, grddl_profileTransformation_uri_string, GRDDL_PROFILETRANSFORMATION_URI_STRING_LEN);
@@ -502,7 +503,7 @@ raptor_grddl_add_transform_xml_context(raptor_grddl_parser_context* grddl_parser
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
       RAPTOR_DEBUG2("Already seen XSLT URI '%s'\n", raptor_uri_as_string(uri));
 #endif
-      grddl_free_xml_context(grddl_parser->world, xml_context);
+      grddl_free_xml_context(xml_context);
       return;
     }
   }
@@ -1714,7 +1715,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
           RAPTOR_DEBUG3("Ignoring <head profile> of URI %s: URI %s\n",
                         raptor_uri_as_string(rdf_parser->base_uri),
                         raptor_uri_as_string(uri));
-          grddl_free_xml_context(rdf_parser->world, xml_context);
+          grddl_free_xml_context(xml_context);
           continue;
         }
         raptor_sequence_push(grddl_parser->profile_uris, xml_context);
@@ -1778,7 +1779,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
           ret = raptor_grddl_run_recursive(rdf_parser, uri, "guess",
                                            RECURSIVE_FLAGS_IGNORE_ERRORS);
         }
-        grddl_free_xml_context(rdf_parser->world, xml_context);
+        grddl_free_xml_context(xml_context);
       }
 
       raptor_free_sequence(result);
@@ -1874,7 +1875,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
     xml_context = (grddl_xml_context*)raptor_sequence_unshift(grddl_parser->doc_transform_uris);
     ret = raptor_grddl_run_grddl_transform_uri(rdf_parser, xml_context, doc);
-    grddl_free_xml_context(rdf_parser->world, xml_context);
+    grddl_free_xml_context(xml_context);
     if(ret)
       break;
   }
