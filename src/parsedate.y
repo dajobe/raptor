@@ -164,7 +164,7 @@ static int LookupWord (YYSTYPE *lvalp, char *buff);
 %file-prefix "parsedate"
 
 /* Symbol prefix (bison -d : deprecated) */
-%name-prefix "raptor_parsedate_"
+%define api.prefix {raptor_parsedate_}
 
 /* Write parser header file with macros (bison -d) */
 %defines

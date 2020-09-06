@@ -131,12 +131,12 @@ version 1.11), autoconf 2.65 (minimum version 2.62) and libtool 2.2.10
 GIT sources.  autogen.sh enforces the requirements.
 </p>
 
-<p>Raptor also requires
-<a href="http://flex.sourceforge.net/">flex</a> version 2.5.31 or newer
-(2.5.4 will not work) and
+<p>Raptor also requires specific versions of
+<a href="http://flex.sourceforge.net/">flex</a> and
 <a href="http://www.gnu.org/software/bison/bison.html">GNU Bison</a>
-to build lexers and parsers.
-These are only required when building from GIT.
+to build lexers and parsers.  configure will warn or fail if they
+are missing or the installed versions are too old.
+These are <b>only</b> required when building from GIT.
 </p>
 
 

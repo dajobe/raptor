@@ -36,7 +36,7 @@ RAPTOR_INTERNAL_API raptor_uri* turtle_qname_to_uri(raptor_parser *rdf_parser, u
 RAPTOR_INTERNAL_API size_t raptor_turtle_expand_qname_escapes(unsigned char *name, size_t len, raptor_simple_message_handler error_handler, void *error_data);
 
 /* turtle_lexer.l */
-extern void turtle_token_free(raptor_world* world, int token, YYSTYPE *lval);
+extern void turtle_token_free(raptor_world* world, int token, TURTLE_PARSER_STYPE *lval);
 
 
 /*
@@ -52,7 +52,7 @@ struct raptor_turtle_parser_s {
   raptor_namespace_stack namespaces; /* static */
 
   /* for lexer to store result in */
-  YYSTYPE lval;
+  TURTLE_PARSER_STYPE lval;
 
   /* STATIC lexer */
   yyscan_t scanner;

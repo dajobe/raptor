@@ -134,7 +134,8 @@ fi
 AC_DEFINE_UNQUOTED(FLEX_VERSION_DECIMAL, $FLEX_VERSION_DEC, [Flex version as a decimal])
 
 
-BISON_MIN_VERSION=3.0.0
+BISON_MIN_VERSION=3.4.0
+BISON_REC_VERSION=3.7.2
 AC_CHECK_PROGS(BISON, bison3 bison)
 if test "$USE_MAINTAINER_MODE" = yes; then
   AC_MSG_CHECKING(for GNU bison)
@@ -154,8 +155,7 @@ changequote([, ])dnl
       AC_MSG_RESULT($BISON_VERSION - OK)
     else
       AC_MSG_RESULT(version $BISON_VERSION is too old)
-      AC_MSG_WARN(Please get GNU Bison from http://www.gnu.org/software/bison/)
-      AC_MSG_WARN(version $BISON_MIN_VERSION or newer)
+      AC_MSG_WARN(Please get GNU Bison version $BISON_MIN_VERSION or newer (${BISON_REC_VERSION} recommended) from http://www.gnu.org/software/bison/)
       AC_MSG_FAILURE(GNU Bison too old)
     fi
   else

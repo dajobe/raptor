@@ -81,7 +81,8 @@
 #endif
 
 #ifdef RAPTOR_DEBUG
-const char * turtle_token_print(raptor_world* world, int token, YYSTYPE *lval);
+const char * turtle_token_print(raptor_world* world, int token,
+                                TURTLE_PARSER_STYPE *lval);
 #endif
 
 
@@ -112,11 +113,13 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 
 %require "3.0"
 
-/* File prefix (bison -b) */
+/* File prefix (-b) */
 %file-prefix "turtle_parser"
 
-/* Symbol prefix (bison -d : deprecated) */
-%name-prefix "turtle_parser_"
+/* Bison 2.6+ : Symbol prefix */
+%define api.prefix {turtle_parser_}
+/* Bison 3.4+ :  Generated header file */
+%define api.header.include {<turtle_parser.h>}
 
 /* Write parser header file with macros (bison -d) */
 %defines
@@ -1432,10 +1435,10 @@ turtle_push_parse(raptor_parser *rdf_parser,
     return 1;
 
   do {
-    YYSTYPE lval;
+    TURTLE_PARSER_YYSTYPE lval;
     int token;
 
-    memset(&lval, 0, sizeof(YYSTYPE));
+    memset(&lval, 0, sizeof(TURTLE_PARSER_YYSTYPE));
     
     token = turtle_lexer_lex(&lval, turtle_parser->scanner);
 

@@ -109,6 +109,7 @@
 #include <turtle_parser.h>
 #include <turtle_common.h>
 
+#define YYSTYPE TURTLE_PARSER_STYPE
 
 /* Prototypes */ 
 static unsigned char *turtle_copy_token(unsigned char *text, size_t len);
