@@ -225,8 +225,9 @@ raptor_compare_abbrev_po(raptor_abbrev_node** nodes1,
 
 #ifdef RAPTOR_DEBUG
 static void
-raptor_print_abbrev_po(raptor_abbrev_node** nodes, FILE* handle)
+raptor_print_abbrev_po(void** object, FILE* handle)
 {
+  raptor_abbrev_node** nodes = (raptor_abbrev_node**)object;
   raptor_abbrev_node* p = nodes[0];
   raptor_abbrev_node* o = nodes[1];
   
