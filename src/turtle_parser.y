@@ -93,7 +93,8 @@ const char * turtle_token_print(raptor_world* world, int token,
 #undef TURTLE_PUSH_PARSE
 
 /* Prototypes */ 
-int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg, ...) RAPTOR_PRINTF_FORMAT(3, 4);
+int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
+static void turtle_parser_error_simple(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* Make lex/yacc interface as small as possible */
 #undef yylex
@@ -1281,14 +1282,12 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
 /* Support functions */
 
+/* Error handler with scanner context, during parsing */
 int
 turtle_parser_error(raptor_parser* rdf_parser, void* scanner,
-                    const char *msg, ...)
+                    const char *msg)
 {
   raptor_turtle_parser* turtle_parser;
-  va_list args;
-
-  va_start(args, msg);
 
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
@@ -1308,11 +1307,44 @@ turtle_parser_error(raptor_parser* rdf_parser, void* scanner,
   rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
+  raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
+                   &rdf_parser->locator, msg);
+
+  return 0;
+}
+
+
+/* Error handler within raptor functions and callbacks */
+static void
+turtle_parser_error_simple(void* user_data, const char *msg, ...)
+{
+  raptor_parser* rdf_parser = (raptor_parser*)user_data;
+  raptor_turtle_parser* turtle_parser;
+  va_list args;
+
+  va_start(args, msg);
+
+  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+
+  if(turtle_parser->consumed == turtle_parser->consumable &&
+     turtle_parser->processed < turtle_parser->consumed &&
+     !turtle_parser->is_end) {
+    /* we encountered an error on or around the last byte of the buffer
+     * sorting it in the next run aye? */
+    return;
+  }
+  
+  if(turtle_parser->error_count++)
+    return;
+
+  rdf_parser->locator.line = turtle_parser->lineno;
+#ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
+  rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
+#endif
+
   raptor_log_error_varargs(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
                            &rdf_parser->locator, msg,
                            args);
-
-  return 0;
 }
 
 
@@ -1358,7 +1390,7 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 #endif
 
   name_len = raptor_turtle_expand_qname_escapes(name, name_len,
-                                                (raptor_simple_message_handler)turtle_parser_error, rdf_parser);
+                                                (raptor_simple_message_handler)turtle_parser_error_simple, rdf_parser);
   if(!name_len)
     return NULL;
   
