@@ -199,8 +199,14 @@ void raptor_sign_free(void *ptr);
 
 #ifdef RAPTOR_XML_LIBXML
 
+/* newer ICU (via libxml/encoding.h) requires C++ context */
+#ifdef __cplusplus
+extern "C++" {
+#endif
 #include <libxml/parser.h>
-
+#ifdef __cplusplus
+}
+#endif
 
 /* libxml-only prototypes */
 
