@@ -176,14 +176,18 @@ void raptor_sign_free(void *ptr);
  * Valid for clang or GCC >= 4.9.0
  */
 #if defined(__clang__) || (defined(__GNUC__) && ((__GNUC__ << 16) + __GNUC_MINOR__ >= ((4) << 16) + (9)))
-#define IGNORE_FORMAT_NONLITERAL_START \
+#define PRAGMA_IGNORE_WARNING_FORMAT_NONLITERAL_START \
   _Pragma ("GCC diagnostic push") \
   _Pragma ("GCC diagnostic ignored \"-Wformat-nonliteral\"")
-#define IGNORE_FORMAT_NONLITERAL_END \
+#define PRAGMA_IGNORE_WARNING_LONG_LONG_START \
+  _Pragma ("GCC diagnostic push") \
+  _Pragma ("GCC diagnostic ignored \"-Wlong-long\"")
+#define PRAGMA_IGNORE_WARNING_END \
   _Pragma ("GCC diagnostic pop")
 #else
-#define IGNORE_FORMAT_NONLITERAL_START
-#define IGNORE_FORMAT_NONLITERAL_END
+#define PRAGMA_IGNORE_WARNING_FORMAT_NONLITERAL_START
+#define PRAGMA_IGNORE_WARNING_LONG_LONG_STAR
+#define PRAGMA_IGNORE_WARNING_END
 #endif
 
 

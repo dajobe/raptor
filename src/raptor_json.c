@@ -237,6 +237,7 @@ static int raptor_json_yajl_boolean(void * ctx, int b)
 #else
 #define YAJL_INTEGER_CALLBACK_ARG_TYPE long
 #endif
+PRAGMA_IGNORE_WARNING_LONG_LONG_START
 static int raptor_json_yajl_integer(void * ctx,
                                     YAJL_INTEGER_CALLBACK_ARG_TYPE integerVal)
 {
@@ -244,6 +245,7 @@ static int raptor_json_yajl_integer(void * ctx,
   raptor_parser_error(rdf_parser, "Integers are not valid in RDF/JSON");
   return 0;
 }
+PRAGMA_IGNORE_WARNING_END
 
 static int raptor_json_yajl_double(void * ctx, double d)
 {
