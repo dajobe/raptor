@@ -1419,7 +1419,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
 #endif
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  (void)turtle_lexer__scan_bytes((char *)string, (int)length, turtle_parser->scanner);
+  (void)turtle_lexer__scan_bytes((char *)string, (yy_size_t)length, turtle_parser->scanner);
 
   rc = turtle_parser_parse(rdf_parser, turtle_parser->scanner);
 
@@ -1459,7 +1459,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
 #endif
 
   turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer = turtle_lexer__scan_bytes(string, length, turtle_parser->scanner);
+  buffer = turtle_lexer__scan_bytes(string, (yy_size_t)length, turtle_parser->scanner);
 
   /* returns a parser instance or 0 on out of memory */
   ps = yypstate_new();

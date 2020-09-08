@@ -210,8 +210,10 @@ raptor_parse.c: git-version.h
 turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.pl
 	$(AM_V_GEN) \
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l; \
-	$(PERL) $(top_srcdir)/scripts/fix-flex.pl $@ > turtle_lexer.t || rm -f $@; \
-	mv -f turtle_lexer.t $@
+	for file in turtle_lexer.c turtle_lexer.h; do \
+	  $(PERL) $(top_srcdir)/scripts/fix-flex.pl $$file > turtle_lexer.t || rm -f $$file; \
+	  mv -f turtle_lexer.t $$file; \
+	done
 
 turtle_lexer.h: turtle_lexer.c ; @exit 0
 
