@@ -571,6 +571,44 @@ if test "X$xslt_config" != "Xno" ; then
   fi
 fi
 
+if test "X$XSLT_CONFIG" != "X"; then
+  XSLT_CFLAGS=`$XSLT_CONFIG --cflags`
+  XSLT_LIBS=`$XSLT_CONFIG --libs`
+
+  CPPFLAGS="$XSLT_CFLAGS $CPPFLAGS"
+  LIBS="$LIBS $XSLT_LIBS"
+
+  AC_CHECK_FUNC(xsltSaveResultToString, have_xsltSaveResultToString=yes, have_xsltSaveResultToString=no)
+  AC_MSG_CHECKING(for libxslt via xslt-config)
+  if test $have_xsltSaveResultToString = yes; then
+    have_libxslt=1
+    LIBXSLT_VERSION=`$XSLT_CONFIG --version`
+    libxslt_version_dec=`echo $LIBXSLT_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+    libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + 3)};'`
+    AC_MSG_RESULT(yes - version $LIBXSLT_VERSION)
+    if test $libxslt_version_dec -lt $libxslt_min_version_dec; then
+       AC_MSG_WARN(Using libxslt $LIBXSLT_VERSION is unsupported - $libxslt_min_version or newer required.)
+       have_libxslt=0
+    fi
+  fi
+
+  AC_CHECK_FUNC(xsltInit)
+
+  AC_CHECK_HEADERS(libxslt/xslt.h)
+  if test "$ac_cv_header_libxslt_xslt_h" = no ; then
+    AC_MSG_WARN(libxslt library found but not headers - disabling)
+    have_libxslt_lib=0
+    have_libxslt=0
+  fi
+  CPPFLAGS="$oCPPFLAGS"
+  LIBS="$oLIBS"
+else
+  PKG_CHECK_MODULES([XSLT], [libxslt > $libxslt_min_version], [
+    LIBXSLT_VERSION=`$PKG_CONFIG libxslt --modversion`
+    have_libxslt=1
+  ], [have_libxslt=0])
+fi
+
 dnl curl
 AC_ARG_WITH(curl-config, [  --with-curl-config=PATH   Location of libcurl curl-config []], curl_config="$withval", curl_config="")
 
@@ -621,21 +659,10 @@ else
   AC_MSG_RESULT(yes - $LIBCURL_VERSION)
 fi
 
-
-AC_ARG_WITH(icu-config, [  --with-icu-config=PATH   Location of ICU icu-config []], icu_config="$withval", icu_config="")
-
-have_icu=no
-AC_MSG_CHECKING(for ICU)
-if test "X$icu_config" != "Xno" -a "X$icu_config" != "X" ; then
-  ICU_CONFIG=$icu_config
-  ICU_VERSION=`$ICU_CONFIG --version`
+PKG_CHECK_MODULES([ICU], [icu-uc], [
   have_icu=yes
-  AC_MSG_RESULT(yes - version $ICU_VERSION)
-else
-  AC_MSG_RESULT(no)
-fi
-dnl Note there is NO automated searching for icu-config
-
+  ICU_VERSION=`$PKG_CONFIG icu-uc --modversion`
+], [have_icu=no])
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
 
@@ -744,41 +771,6 @@ if test "X$libxml_source" != X; then
 fi
 CPPFLAGS="$oCPPFLAGS"
 LIBS="$oLIBS"
-
-
-have_libxslt=0
-
-if test "X$XSLT_CONFIG" != X; then
-  CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
-  LIBS="$LIBS `$XSLT_CONFIG --libs`"
-  AC_CHECK_FUNC(xsltSaveResultToString, have_xsltSaveResultToString=yes, have_xsltSaveResultToString=no)
-  AC_MSG_CHECKING(for system libxslt library)
-  if test $have_xsltSaveResultToString = yes; then
-    have_libxslt=1
-    LIBXSLT_VERSION=`$XSLT_CONFIG --version`
-    libxslt_version_dec=`echo $LIBXSLT_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-    libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-    AC_MSG_RESULT(yes - version $LIBXSLT_VERSION)
-    if test $libxslt_version_dec -lt $libxslt_min_version_dec; then
-       AC_MSG_WARN(Using libxslt $LIBXSLT_VERSION is unsupported - $libxslt_min_version or newer required.)
-       have_libxslt=0
-    fi
-  else
-    AC_MSG_RESULT(no)
-  fi
-
-  AC_CHECK_FUNC(xsltInit)
-
-  AC_CHECK_HEADERS(libxslt/xslt.h)
-  if test "$ac_cv_header_libxslt_xslt_h" = no ; then
-    AC_MSG_WARN(libxslt library found but not headers - disabling)
-    have_libxslt_lib=0
-    have_libxslt=0
-  fi
-fi
-CPPFLAGS="$oCPPFLAGS"
-LIBS="$oLIBS"
-
 
 dnl Check for JSON library
 
@@ -1183,8 +1175,8 @@ dnl ICU for NFC check
 AC_MSG_CHECKING(NFC library to use)
 nfc_library=none
 if test $need_icu = yes; then
-  CPPFLAGS="$CPPFLAGS `$ICU_CONFIG --cppflags-searchpath`"
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$ICU_CONFIG --ldflags-searchpath` -licuuc"
+  CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $ICU_LIBS"
   AC_LIBOBJ(raptor_nfc_icu)
   nfc_library="ICU $ICU_VERSION"
 fi
@@ -1282,8 +1274,8 @@ AM_CONDITIONAL(RAPTOR_XML_LIBXML, test $need_libxml = 1)
 
 
 if test $need_libxslt = 1; then
-  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS `$XSLT_CONFIG --libs`"
-  CPPFLAGS="`$XSLT_CONFIG --cflags` $CPPFLAGS"
+  RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $XSLT_LIBS"
+  CPPFLAGS="$CPPFLAGS $XSLT_CFLAGS"
 fi
 
 if test $need_libyajl = 1; then
