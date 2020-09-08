@@ -14,9 +14,13 @@ package_name=${PACKAGE:-bison}
 
 ########### Should be generic for any GNU package below here  ########
 
+AWK=${AWK:-awk}
+CURL=${CURL:-curl}
+WGET=${WGET:-wget}
+
 package_ucname=$(echo "${package_name}" | tr '[:lower:]' '[:upper:]')
-package_min_version=$(awk -F= "/^${package_ucname}_MIN_VERSION/ {print \$2}" configure.ac)
-package_rec_version=$(awk -F= "/^${package_ucname}_REC_VERSION/ {print \$2}" configure.ac)
+package_min_version=$($AWK -F= "/^${package_ucname}_MIN_VERSION/ {print \$2}" configure.ac)
+package_rec_version=$($AWK -F= "/^${package_ucname}_REC_VERSION/ {print \$2}" configure.ac)
 
 
 # Package specific overrides
@@ -30,9 +34,6 @@ case "$package_name" in
     ;;
 esac
 
-AWK=${AWK:-awk}
-CURL=${CURL:-curl}
-WGET=${WGET:-wget}
 DESTDIR=${DESTDIR:-/usr}
 
 ROOT_DIR=${TMPDIR:-/tmp}

@@ -53,32 +53,30 @@ matrix:
   allow_failures:
     - env: EXPERIMENTAL=yes
 
-
-before_install:
-  - if [ "$TRAVIS_OS_NAME" = "windows" ]; then BUILD_CMAKE="yes"; fi
-  - env | sort
-
 install:
   - |
     if [ "$TRAVIS_OS_NAME" = "" ]; then TRAVIS_OS_NAME=linux; fi
     case "$TRAVIS_OS_NAME" in
       linux)
-        ./scripts/install-bison3.sh
         sudo apt-get update -qq -y
         sudo apt-get install -qq -y gtk-doc-tools libyajl-dev
+        ./scripts/install-bison3.sh
         ;;
       osx)
         brew update
         brew install bison gtk-doc yajl
         ln -sf /usr/local/Cellar/bison/*/bin/bison /usr/local/bin/bison
+        ./scripts/install-bison3.sh
         ;;
       windows)
         choco install WinFlexBison
+        BUILD_CNAME="yes"
         ;;
     esac
 
 script:
   - |
+    env | sort
     ./autogen.sh --disable-gtk-doc
     if [ "$BUILD_CMAKE" = yes ]; then
       mkdir -p work && cd work && cmake .. && make && ctest
