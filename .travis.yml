@@ -63,7 +63,6 @@ install:
         ./scripts/install-bison3.sh
         ;;
       osx)
-        brew update
         brew install bison gtk-doc yajl
         ln -sf /usr/local/Cellar/bison/*/bin/bison /usr/local/bin/bison
         ./scripts/install-bison3.sh
