@@ -603,10 +603,7 @@ if test "X$XSLT_CONFIG" != "X"; then
   CPPFLAGS="$oCPPFLAGS"
   LIBS="$oLIBS"
 else
-  PKG_CHECK_MODULES([XSLT], [libxslt > $libxslt_min_version], [
-    LIBXSLT_VERSION=`$PKG_CONFIG libxslt --modversion`
-    have_libxslt=1
-  ], [have_libxslt=0])
+  PKG_CHECK_MODULES([XSLT], [libxslt > $libxslt_min_version], [have_libxslt=1], [have_libxslt=0])
 fi
 
 dnl curl
