@@ -129,6 +129,7 @@ raptor_statement_ntriples_write
 <SECTION>
 <FILE>section-constants</FILE>
 raptor_rdf_namespace_uri_len
+raptor_rdf_schema_namespace_uri_len
 raptor_xml_literal_datatype_uri_string_len
 RAPTOR_RDF_MS_URI
 RAPTOR_RDF_SCHEMA_URI

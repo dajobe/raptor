@@ -84,6 +84,7 @@
  *
  */
 
+#ifndef STANDALONE
 const unsigned char * const raptor_xml_namespace_uri = (const unsigned char *)"http://www.w3.org/XML/1998/namespace";
 const unsigned char * const raptor_rdf_namespace_uri = (const unsigned char *)"http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 const unsigned int raptor_rdf_namespace_uri_len = 43;
@@ -91,6 +92,7 @@ const unsigned char * const raptor_rdf_schema_namespace_uri = (const unsigned ch
 const unsigned int raptor_rdf_schema_namespace_uri_len = 37;
 const unsigned char * const raptor_xmlschema_datatypes_namespace_uri = (const unsigned char *)"http://www.w3.org/2001/XMLSchema#";
 const unsigned char * const raptor_owl_namespace_uri = (const unsigned char *)"http://www.w3.org/2002/07/owl#";
+#endif
 
 
 /* hash function to hash namespace prefix strings (usually short strings)

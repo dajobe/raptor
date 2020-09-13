@@ -252,6 +252,14 @@ RAPTOR_API
 extern const unsigned char * const raptor_rdf_schema_namespace_uri;
 
 /**
+ * raptor_rdf_schenma_namespace_uri_len:
+ *
+ * Length of #raptor_rdf_schenma_namespace_uri string
+ */
+RAPTOR_API
+extern const unsigned int raptor_rdf_schema_namespace_uri_len;
+
+/**
  * raptor_xmlschema_datatypes_namespace_uri:
  *
  * XML Schema datatypes (xsd:) namespace URI string.
