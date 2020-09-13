@@ -779,7 +779,10 @@ raptor_avltree_delete_internal(raptor_avltree* tree,
     return rdata;
   }
 
-  cmp = tree->compare_handler((*node_pp)->data, p_data);
+  if(p_data)
+    cmp = tree->compare_handler((*node_pp)->data, p_data);
+  else
+    cmp = 0;
 
   if(cmp > 0) {
     RAPTOR_AVLTREE_DEBUG1("too high - scan left\n");
