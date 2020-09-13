@@ -658,8 +658,10 @@ fi
 
 PKG_CHECK_MODULES([ICU], [icu-uc], [
   have_icu=yes
-  ICU_VERSION=`$PKG_CONFIG icu-uc --modversion`
+  ICU_UC_VERSION=`$PKG_CONFIG icu-uc --modversion`
 ], [have_icu=no])
+ICU_UC_MAJOR_VERSION=`echo "$ICU_UC_VERSION" | sed -e 's/\..*$//'`
+AC_DEFINE_UNQUOTED(ICU_UC_MAJOR_VERSION, $ICU_UC_MAJOR_VERSION, [ICU UC major version])
 
 AC_ARG_WITH(www-config, [  --with-libwww-config=PATH Location of W3C libwww libwww-config []], libwww_config="$withval", libwww_config="")
 
@@ -1175,7 +1177,7 @@ if test $need_icu = yes; then
   CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $ICU_LIBS"
   AC_LIBOBJ(raptor_nfc_icu)
-  nfc_library="ICU $ICU_VERSION"
+  nfc_library="ICU UC $ICU_UC_VERSION"
 fi
 AC_MSG_RESULT($nfc_library)
 

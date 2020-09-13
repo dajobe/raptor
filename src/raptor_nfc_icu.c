@@ -40,7 +40,12 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+#if ICU_UC_MAJOR_VERSION >= 56
+#include <unicode/unorm2.h>
+#else
 #include <unicode/unorm.h>
+#endif
+
 
 /**
  * raptor_nfc_icu_check:
@@ -58,9 +63,34 @@
 int
 raptor_nfc_icu_check(const unsigned char* string, size_t len, int *error)
 {
+  /* unorm_quickCheck was deprecated in ICU UC V56 */
+
+#if ICU_UC_MAJOR_VERSION >= 56
+  /* norm2 is be a singleton - do not attempt to free it */
+  const UNormalizer2 *norm2;
+  UErrorCode error_code = U_ZERO_ERROR;
+  UNormalizationCheckResult res;
+
+  norm2 = unorm2_getNFCInstance(&error_code);
+  if(!U_SUCCESS(error_code)) {
+     if(error)
+       *error = 1;
+     return 0;
+  }
+
+  res = unorm2_quickCheck(norm2,(const UChar *)string, (int32_t)len,
+                          &error_code);
+   if(!U_SUCCESS(error_code)) {
+     if(error)
+       *error = 1;
+     return 0;
+   }
+
+   return (res == UNORM_YES);
+#else
    UNormalizationCheckResult res;
    UErrorCode error_code = U_ZERO_ERROR;
-   
+
    res = unorm_quickCheck((const UChar *)string, (int32_t)len,
                           UNORM_NFC, &error_code);
    if(!U_SUCCESS(error_code)) {
@@ -70,4 +100,5 @@ raptor_nfc_icu_check(const unsigned char* string, size_t len, int *error)
    }
    
    return (res == UNORM_YES);
+#endif
 }
