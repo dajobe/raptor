@@ -92,7 +92,6 @@ const unsigned char * const raptor_rdf_schema_namespace_uri = (const unsigned ch
 const unsigned int raptor_rdf_schema_namespace_uri_len = 37;
 const unsigned char * const raptor_xmlschema_datatypes_namespace_uri = (const unsigned char *)"http://www.w3.org/2001/XMLSchema#";
 const unsigned char * const raptor_owl_namespace_uri = (const unsigned char *)"http://www.w3.org/2002/07/owl#";
-#endif
 
 
 /* hash function to hash namespace prefix strings (usually short strings)
@@ -1077,6 +1076,8 @@ raptor_namespace_stack_to_array(raptor_namespace_stack *nstack,
 
   return ns_list;
 }
+
+#endif /* !STANDALONE */
 
 
 #ifdef STANDALONE
