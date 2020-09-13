@@ -154,7 +154,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
       if(ns) {
         qname->nspace = ns;
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-        RAPTOR_DEBUG2("Found default namespace with URI %s\n", ns->uri ? raptor_uri_as_string(ns->uri) : "None");
+        RAPTOR_DEBUG2("Found default namespace with URI %s\n", ns->uri ? raptor_uri_as_string(ns->uri) : (unsigned char*)"None");
 #endif
       } else {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -190,7 +190,7 @@ raptor_new_qname(raptor_namespace_stack *nstack,
                                  "The namespace prefix in \"%s\" was not declared.", name);
     } else {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-      RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, ns->uri ? raptor_uri_as_string(ns->uri) : "None");
+      RAPTOR_DEBUG3("Found namespace prefix %s URI %s\n", ns->prefix, ns->uri ? raptor_uri_as_string(ns->uri) : (unsigned char*)"None");
 #endif
       qname->nspace = ns;
     }
