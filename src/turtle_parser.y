@@ -171,16 +171,19 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %token SPARQL_BASE "BASE"
 
 /* literals */
-%token <string> STRING_LITERAL "string literal"
-%token <uri> URI_LITERAL "URI literal"
-%token <uri> GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
-%token <string> BLANK_LITERAL "blank node"
-%token <uri> QNAME_LITERAL "QName"
-%token <string> IDENTIFIER "identifier"
-%token <string> LANGTAG "langtag"
-%token <string> INTEGER_LITERAL "integer literal"
-%token <string> FLOATING_LITERAL "floating point literal"
-%token <string> DECIMAL_LITERAL "decimal literal"
+%token
+  <string>
+    STRING_LITERAL "string literal"
+    IDENTIFIER "identifier"
+    LANGTAG "langtag"
+    INTEGER_LITERAL "integer literal"
+    FLOATING_LITERAL "floating point literal"
+    DECIMAL_LITERAL "decimal literal"
+    BLANK_LITERAL "blank node"
+  <uri>
+    URI_LITERAL "URI literal"
+    GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
+    QNAME_LITERAL "QName"
 
 /* syntax error */
 %token ERROR_TOKEN
