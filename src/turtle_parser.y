@@ -63,9 +63,6 @@
 #endif
 
 
-/* Make verbose error messages for syntax errors */
-#define YYERROR_VERBOSE 1
-
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 #define YYERROR_MSG(msg) do { fputs("** YYERROR ", RAPTOR_DEBUG_FH); fputs(msg, RAPTOR_DEBUG_FH); fputc('\n', RAPTOR_DEBUG_FH); YYERROR; } while(0)
@@ -124,6 +121,9 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 
 /* Write parser header file with macros (bison -d) */
 %defines
+
+/* Make verbose error messages for syntax errors */
+%define parse.error verbose
 
 /* Write output file with verbose descriptions of parser states */
 %verbose
