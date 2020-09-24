@@ -193,22 +193,22 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
+} <string>
 
 %destructor {
   if($$)
     raptor_free_uri($$);
-} URI_LITERAL QNAME_LITERAL
+} <uri>
 
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blankNode collection
+} <identifier>
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} triples objectList itemList predicateObjectList predicateObjectListOpt
+} <sequence>
 
 %%
 
