@@ -19,6 +19,7 @@ TAGS
 example?
 git-version.h
 parsedate.c
+parsedate.c.bak
 parsedate.h
 parsedate.output
 raptor-config
@@ -30,5 +31,6 @@ test*
 turtle_lexer.c
 turtle_lexer.h
 turtle_parser.c
+turtle_parser.c.bak
 turtle_parser.h
 turtle_parser.output
