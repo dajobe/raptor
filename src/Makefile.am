@@ -219,19 +219,15 @@ turtle_lexer.h: turtle_lexer.c ; @exit 0
 
 turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison.pl
 	$(AM_V_GEN) \
-	$(BISON) $(srcdir)/turtle_parser.y; \
-	$(PERL) $(top_srcdir)/scripts/fix-bison.pl turtle_parser.tab.c > $@; \
-	mv -f turtle_parser.tab.h turtle_parser.h; \
-	rm -f turtle_parser.tab.c
+	$(BISON) -o $@ $(srcdir)/turtle_parser.y; \
+	$(PERL) $(top_srcdir)/scripts/fix-bison.pl $@
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
 parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison.pl
 	$(AM_V_GEN) \
-	$(BISON) $(srcdir)/parsedate.y; \
-	$(PERL) $(top_srcdir)/scripts/fix-bison.pl parsedate.tab.c > $@; \
-	mv -f parsedate.tab.h parsedate.h; \
-	rm -f parsedate.tab.c
+	$(BISON) -o $@ $(srcdir)/parsedate.y; \
+	$(PERL) $(top_srcdir)/scripts/fix-bison.pl $@
 
 parsedate.h: parsedate.c ; @exit 0
 

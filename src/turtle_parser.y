@@ -63,9 +63,6 @@
 #endif
 
 
-/* Make verbose error messages for syntax errors */
-#define YYERROR_VERBOSE 1
-
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 #define YYERROR_MSG(msg) do { fputs("** YYERROR ", RAPTOR_DEBUG_FH); fputs(msg, RAPTOR_DEBUG_FH); fputc('\n', RAPTOR_DEBUG_FH); YYERROR; } while(0)
@@ -125,6 +122,9 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 /* Write parser header file with macros (bison -d) */
 %defines
 
+/* Make verbose error messages for syntax errors */
+%define parse.error verbose
+
 /* Write output file with verbose descriptions of parser states */
 %verbose
 
@@ -171,16 +171,19 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %token SPARQL_BASE "BASE"
 
 /* literals */
-%token <string> STRING_LITERAL "string literal"
-%token <uri> URI_LITERAL "URI literal"
-%token <uri> GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
-%token <string> BLANK_LITERAL "blank node"
-%token <uri> QNAME_LITERAL "QName"
-%token <string> IDENTIFIER "identifier"
-%token <string> LANGTAG "langtag"
-%token <string> INTEGER_LITERAL "integer literal"
-%token <string> FLOATING_LITERAL "floating point literal"
-%token <string> DECIMAL_LITERAL "decimal literal"
+%token
+  <string>
+    STRING_LITERAL "string literal"
+    IDENTIFIER "identifier"
+    LANGTAG "langtag"
+    INTEGER_LITERAL "integer literal"
+    FLOATING_LITERAL "floating point literal"
+    DECIMAL_LITERAL "decimal literal"
+    BLANK_LITERAL "blank node"
+  <uri>
+    URI_LITERAL "URI literal"
+    GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
+    QNAME_LITERAL "QName"
 
 /* syntax error */
 %token ERROR_TOKEN
@@ -193,22 +196,22 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %destructor {
   if($$)
     RAPTOR_FREE(char*, $$);
-} STRING_LITERAL BLANK_LITERAL INTEGER_LITERAL FLOATING_LITERAL DECIMAL_LITERAL IDENTIFIER LANGTAG
+} <string>
 
 %destructor {
   if($$)
     raptor_free_uri($$);
-} URI_LITERAL QNAME_LITERAL
+} <uri>
 
 %destructor {
   if($$)
     raptor_free_term($$);
-} subject predicate object verb literal resource blankNode collection
+} <identifier>
 
 %destructor {
   if($$)
     raptor_free_sequence($$);
-} triples objectList itemList predicateObjectList predicateObjectListOpt
+} <sequence>
 
 %%
 
