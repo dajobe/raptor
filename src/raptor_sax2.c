@@ -770,6 +770,15 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
   if(!el_name)
     goto fail;
 
+#ifdef __clang_analyzer__
+  /* clang --analyze does not know about ownership of next call */
+  if(xml_language) {
+    free(xml_language); xml_language = NULL;
+  }
+  if(xml_base) {
+    raptor_free_uri(xml_base); xml_base = NULL;
+  }
+#endif
   xml_element = raptor_new_xml_element(el_name, xml_language, xml_base);
   if(!xml_element) {
     raptor_free_qname(el_name);
