@@ -765,9 +765,9 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   if(!buffer)
     goto path_done;
 
-  memcpy(buffer, "file://", 7);
+  memcpy(buffer, "file://", RAPTOR_LEN_FILE_CSS);
   from = filename;
-  to = (char*)(buffer+7);
+  to = (char*)(buffer + RAPTOR_LEN_FILE_CSS);
   fl = filename_len;
 #ifdef WIN32
   if(*from == '\\' && from[1] == '\\') {
