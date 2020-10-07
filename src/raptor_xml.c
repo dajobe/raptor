@@ -52,6 +52,8 @@
  * @xml_base: the in-scope XML base URI (or NULL)
  * 
  * Constructor - create a new XML element from a QName
+ *
+ * The @xml_language and @xml_base become owned by the new object.
  * 
  * Return value: a new #raptor_xml_element or NULL on failure
  **/
