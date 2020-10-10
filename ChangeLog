@@ -1,3 +1,335 @@
+2020-10-06  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_common.c:
+	(raptor_stringbuffer_append_turtle_string): Work around clang
+	--analyze warning not understanding ownership model
+
+	* src/raptor_sax2.c:
+	(raptor_sax2_start_element): Work around clang --analyze warning
+	not understanding ownership model
+
+	* src/raptor_uri.c: Use RAPTOR_LEN_FILE_CSS
+
+2020-09-29  Dave Beckett <dave@dajobe.org>
+
+	* src/.gitignore: ignore .c.bak
+
+	* Merge pull request #43 from akimd/update-bison-usage Update
+	bison usage
+
+2020-09-24  Akim Demaille <akim.demaille@gmail.com>
+
+	* src/turtle_parser.y: Stylistic change in the parser Propose a
+	shorter, more readable (IMHO) approach to typing tokens.
+
+	* src/turtle_parser.y: Use per-type Bison destructors rather than
+	per symbols
+
+	I can see two differences, and I believe this is an improvement:
+	before we were not reclaiming memory associated to
+	blankNodePropertyList and GRAPH_NAME_LEFT_CURLY.  Now we do.
+
+	* src/turtle_parser.y: Use Bison directives rather than CPP macros
+
+	"%define parse.error verbose" is supported since 3.0, and support
+	for YYERROR_VERBOSE (deprecated since Bison 2.6, 2012-07-19), was
+	removed in 3.6.
+
+2020-09-20  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_ntriples.c:
+	(raptor_ntriples_parse_term): Free N-Triples datatype_uri
+
+2020-09-18  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: Travis CI: Add clang ASAN on Linux
+
+2020-09-13  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_avltree.c:
+	(raptor_avltree_delete_internal): Handle deleting empty tree.
+	Fixes invalid pointer reference reported by Li Qiang via email.
+
+	* src/raptor_qname.c: cast for warning
+
+	* src/raptor_namespace.c: Do not declare any functions if
+	STANDALONE
+
+	* configure.ac, src/raptor_nfc_icu.c: Use newer ICU NFC check for
+	ICU V56 or newer (raptor_nfc_icu_check): Switch to use
+	unorm2_quickCheck() for ICU >= 56
+
+	* docs/raptor2-sections.txt, src/raptor2.h.in,
+	src/raptor_namespace.c: Add raptor_rdf_schema_namespace_uri_len to
+	API Update raptor_namespace_test to define strings once to avoid
+	ASAN odr-violation test failure.
+
+2020-09-12  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #42 from hughmcmaster/pkgconfig configure.ac:
+	Remove unused LIBXSLT_VERSION variable
+
+2020-09-08  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: Remove slow (un-necessary) brew update for Travis
+	OSX build
+
+2020-09-08  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #41 from hughmcmaster/pkgconfig Add
+	additional pkg-config support
+
+2020-08-21  Hugh McMaster <hugh.mcmaster@outlook.com>
+
+	* configure.ac: configure.ac: Use PKG_CHECK_MODULES to detect the
+	ICU library
+
+2020-09-08  Dave Beckett <dave@dajobe.org>
+
+	* src/CMakeLists.txt: Guess at making cmake do the same change to
+	turtle_lexer.h
+
+2020-09-07  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-flex.pl, src/Makefile.am, src/turtle_parser.y: Fix
+	turtle_lexer__scan_bytes signatures for C++ - scripts/fix-flex.pl:
+	Fix length type call for newer flex naming convention - Run flex
+	output header file through fix-flex.pl
+
+	* .travis.yml, scripts/install-bison3.sh: Travis config and
+	install-bison3.sh updates
+
+	* .travis.yml: Add experimental builds for Travis for cmake, ppc,
+	arm64
+
+	* src/raptor_grddl.c, src/raptor_internal.h, src/raptor_json.c,
+	src/raptor_libxml.c, src/snprintf.c: Supporess worning to allow
+	YAJL2 to use long long in API
+
+	* CMakeLists.txt: Add bison and flex versions to CMake
+
+	* src/raptor_abbrev.c:
+	(raptor_print_abbrev_po): Another signature fix
+
+	* src/raptor_abbrev.c:
+	(raptor_print_abbrev_po): Fix signature with casting
+
+	* src/raptor_qname.c: Protect some debug messages from null URI
+
+2020-09-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h: Include ICU (vi libxml) in C++ context if
+	running under C++
+
+	* src/raptor_internal.h: Fix GCC version check that was not
+	working around IGNORE_FORMAT_NONLITERAL_START
+
+	* src/turtle_parser.y:
+	Correct error callbacks for raptor and
+	mid-parsing
+
+	(turtle_parser_error): Parsing error handling with scanner context
+	(turtle_parser_error_simple): Added for error handling for raptor
+	functions, matching the raptor_simple_message_handler method
+
+	* INSTALL.html, configure.ac, scripts/install-bison3.sh,
+	src/parsedate.y, src/turtle_common.c, src/turtle_common.h,
+	src/turtle_lexer.l, src/turtle_parser.y: Move to bison 3.4+
+
+	* src/turtle_parser.y:
+	(turtle_parser_error): Allow and pass on varargs error
+
+	* src/raptor_grddl.c:
+	(grddl_free_xml_context): Remove unused context Just free
+	xml_context via userdata arg.  Fix callers
+
+2020-09-05  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #40 from himajin100000/zero_on_failure
+	Documentation says "0 on failure." At least size_t >= 0
+
+2020-09-05  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #38 from hroptatyr/feat/turtle-flush provide
+	raptor_turtle_serialize_flush()
+
+2020-09-05  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l, tests/trig/Makefile.am,
+	tests/trig/issue-37.out, tests/trig/issue-37.trig: Add test that
+	fails for PR#37
+
+	Pull request
+	https://github.com/dajobe/raptor/pull/37
+
+2019-04-08  himajin100000 <himajin100000@gmail.com>
+
+	* src/turtle_common.c:
+	Documentation says "0 on failure." At least
+	size_t >= 0
+
+2018-06-01  Adam Novak <anovak@soe.ucsc.edu>
+
+	* scripts/fix-bison.pl, scripts/install-bison3.sh: Update to work
+	with Bison 3.0.5
+
+2018-02-09  Sebastian Freundt <freundt@ga-group.nl>
+
+	* src/raptor2.h.in: fix, PEBKAC, actually declare
+	raptor_avltree_trim() as it is implemented
+
+2018-02-08  Sebastian Freundt <freundt@ga-group.nl>
+
+	* src/raptor2.h.in, src/raptor_avltree.c,
+	src/raptor_serialize_turtle.c: fix, actually trim the avltrees
+	after successful emission upon raptor_serialize_flush()
+
+	* src/raptor_serialize_turtle.c: provide
+	raptor_turtle_serialize_flush()
+
+	This changeset clones raptor_turtle_serialize_end() as
+	raptor_turtle_serialize_flush() without the reset for the header.
+	This, via raptor_serializer_flush(), allows for fine grained
+	emission of turtle statements.
+
+2018-02-07  Sebastian Freundt <freundt@ga-group.nl>
+
+	* src/turtle_parser.y:
+	This changeset fixes an issue with the turtle
+	chunk parser which defers statements internally to pick up the work
+	with the next chunk.
+
+	Should the chunk parser not be called anymore any statements
+	recorded as deferred would be lost.  An example to reproduce the
+	bug (TriG mode):
+	<x> { [ a <test> ] <shows> <bug> .}
+
+	With this fix applied the above correctly produces the following 2
+	quads:
+	_:genid1 <shows> <bug> <x> .  _:genid1
+	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <test> <x> .
+
+2017-07-01  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c:
+	(raptor_xml_writer_start_element_common): Add and use
+	XML_LANG_PREFIX define
+
+2017-04-16  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: Write UTF-8 for JSON literals
+
+	Add #RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8 to
+	#RAPTOR_ESCAPED_WRITE_JSON_LITERAL and document why
+
+	Fixes Issues #0000606
+	http://bugs.librdf.org/mantis/view.php?id=606
+
+	* src/raptor_xml.c, src/raptor_xml_writer.c: Make nsd compare
+	methods handle NULLs (raptor_nsd_compare,
+	raptor_xml_writer_nsd_compare): Sort NULLs separate and avoid
+	strcmp() where those are undefined.
+
+	* src/raptor_xml_writer.c: Calcualte max nspace declarations
+	correctly for XML writer
+
+	(raptor_xml_writer_start_element_common): Calculate max including
+	for each attribute a potential name and value.
+
+	Fixes Issues #0000617
+	http://bugs.librdf.org/mantis/view.php?id=617
+	and #0000618
+	http://bugs.librdf.org/mantis/view.php?id=618
+
+	* src/sort_r.h: Accept cygwin as a Linux-like Fixes Issue
+	#00000600 http://bugs.librdf.org/mantis/view.php?id=600
+
+2017-04-02  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c: Add _POSIX_C_SOURCE for lstat() in test code
+
+2017-01-08  Dave Beckett <dave@dajobe.org>
+
+	* .travis.yml: Add back OSX brew gtk-doc so autogen.sh works
+
+	* src/raptor_internal.h: Annotate raptor_simple_message_handler as
+	having format arg.
+
+	* src/snprintf.c: Define _GNU_SOURCE it not already set
+
+	* src/raptor_avltree.c, src/raptor_grddl.c, src/raptor_internal.h,
+	src/raptor_rss_common.c, src/raptor_serialize_rdfxmla.c,
+	src/raptor_serialize_rss.c, src/raptor_serialize_turtle.c: Add
+	RAPTOR_VOIDP macro for casting fprint %p object arguments.
+
+	* src/snprintf.c:
+	[c++] Test pointer against NULL rather than use as implicit bool
+
+	* .travis.yml:
+	Travis: No need to install gtk-doc for OSX now
+
+	* .travis.yml:
+	Travis: --disable-gtk-doc for speed
+
+	* scripts/process-changes.pl:
+	Ignore changes from raptor v1 to v2
+
+	* librdfa/rdfa_utils.c:
+	cast for C++
+
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html,
+	RELEASE.html, TODO.html, UPGRADING.html, docs/raptor-docs.xml:
+	2017
+
+	* configure.ac, librdfa/curie.c, librdfa/iri.c, librdfa/lists.c,
+	librdfa/rdfa_utils.c, librdfa/rdfa_utils.h, src/Makefile.am,
+	src/raptor_internal.h, src/strdup.c: Get rid of strdup configure
+	code; move to librdfa.  Easier to replace strdup() calls in
+	librdfa/ with it's own version and just alway use it.  Remove
+	strdup checks from configure.ac
+	(rdfa_strdup): Added.  Updated all callers.
+
+	* configure.ac, src/Makefile.am, src/raptor_internal.h,
+	src/raptor_rdfxml.c, src/raptor_rss.c, src/raptor_uri.c,
+	src/raptor_www_curl.c, src/strdup.c: Portability fixes for C11 and
+	newer clang
+
+	- Fix some RAPTOR_ASSERT_DIE() calls to have an arg value.
+	- Add strdup.c for when it is missing and a configure check.
+	- Write special configure.ac checks for strdup and strtok_r to
+	  work (ie fail) when there functions are not defined in headers.
+	- Update compiler warning arguments:
+	- Add -std=c11 so it'll try to use C11 if available
+	- Add -Wstrict-overflow
+	- Add -Wpedantic
+	- Remove -Wno-conversion -Wno-sign-conversion that are no longer
+	  warnings
+	- For clang (OSX) always add -Wno-nullability-completeness since even
+	  stdio.h fails this.
+	- Remove duplicate functions in AC_CHECK_FUNCS that AC_HEADER_STDC
+	  already calls.
+	- Move maintainer mode warning flags very early so they get picked
+	  up by tests.
+
+	* src/raptor_general.c, src/raptor_www.c: Fix RAPTOR_ASSERT and
+	RAPTOR_ASSERT_DIE call args
+
+	* configure.ac: Pull out OSX-specific and clang-specific warnings
+	OSX 10.2 + clang is too noisy with warnings in stdio.h
+
+	* scripts/fix-flex.pl, src/turtle_parser.y:
+	Fixes for newer flex Testing with flex 2.6.3
+
+2017-01-07  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h:
+	(OSX) clang fix for ignoring -Wformat-nonliteral
+
+	* src/raptor_internal.h: RAPTOR_ASSERT() macro: Pass return arg to
+	RAPTOR_ASSERT_DIE()
+
+	* ChangeLog, NEWS.html, RELEASE.html: 2.0.16
+
 2016-11-14  Dave Beckett <dave@dajobe.org>
 
 	* Merge pull request #36 from ariadnext/cmake-GNUInstallDirs
