@@ -18,10 +18,18 @@
 
 <p>The Turtle parser was improved to process input in chunks, rather
 than all in one step (with a large memory buffer).  This allows
-Turtle to read and parse files much larger than the system memory;
-it splits the inputs after the end of a turtle "sentence" that ends
-in a <code>.</code>.    This improvment was contributed by
-Sebastian Freundt. Thanks</p>
+Turtle to read and parse files much larger than the system memory; it
+splits the inputs after the end of a turtle "sentence" that ends in a
+<code>.</code>.  Includes memory usage minimizing with AVLTree
+pruning during serializing and addition of turtle serializer flush
+implementation.
+
+This improvment across multiple patches was contributed by Sebastian
+Freundt. Thanks</p>
+
+<p>Turtle parser improvements for Bison 3+ and removing deprecated or
+older style directives.  Pull request #43 by Akim Demaille.  Thanks
+</p>
 
 <h3>Serializer changes</h3>
 
@@ -31,9 +39,52 @@ language with the name <code>mkr</code>  Patch developed by Richard
 H. McCullough based on the Turtle serializer.  Thanks.
 </p>
 
+<p>XML writer calculate max nspace declarations correctly.
+Fixes Issues
+<a href="http://bugs.librdf.org/mantis/view.php?id=617">#0000617</a>
+and
+<a href="http://bugs.librdf.org/mantis/view.php?id=618">#0000618</a>
+</p>
+
+<p>JSON writer changed to write UTF-8 for JSON literals
+Add <code>RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8</code> to
+<code>RAPTOR_ESCAPED_WRITE_JSON_LITERAL</code>
+Fixes Issue
+<a href="http://bugs.librdf.org/mantis/view.php?id=606">#0000606</a>
+</p>
+
+
 <p>Fix for RSS 1.0 serializing default namespaces.</p>
   
 <h3>Other changes</h3>
+
+<p>Handle deleting empty avltree.  Fixes invalid pointer reference
+reported by Li Qiang via email.  Thanks.
+</p>
+
+<p>Several minor fixes and workarounds for clang ASAN warnings or
+false warnings - not able to understand raptor's refernece model.</p>
+
+<p>Support newer ICU UC version (>=56) for newer NFC check
+interface <code>unorm2_quickCheck()</code>..</p>
+
+<p>Use only pkgconfig for libxslt and ICU UC. Patches from Hugh
+McMaster.  Thanks.
+</p>
+
+<p>Updated Travis configuration to try builds across a wider range of
+compilers and with clang ASAN enabled.</p>
+
+<p>Updated fix-flex.pl script for newer flex naming conventions.</p>
+
+<p>Portability fixes found with GCC 10 and newer compilers for wrong
+error message callbacks in turtle and grddl parsers
+</p>
+
+<p>Later, updated to make bison 3.4 the minimum.</p>
+
+<p>Update turtle parser and support scripts to work with Bison 3.0.5
+Patch contributed by Adam Novak. Thanks.</p>
 
 <p>Multiple fixes for Appveyor's Windows build using CMake
 Thanks to <a href="https://github.com/0u812">0u812</a>.
@@ -74,6 +125,10 @@ with yocto.  Thanks to fix by Andreas Müller.
 <p>Change <code>rapper(1)</code> utility to count in longs instead of
 ints.  Because: billions and billions of triples.  Thanks to patch
 from <a href="https://github.com/JervenBolleman">Jerven Bolleman</a>.</p>p>
+
+<p>Accept cygwin as a Linux-like. Fixes
+Issue <a href="http://bugs.librdf.org/mantis/view.php?id=600">#00000600</a>.
+</p>
 
 	
 <h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
