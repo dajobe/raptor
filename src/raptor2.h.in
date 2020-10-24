@@ -1441,10 +1441,16 @@ int raptor_www_set_ssl_cert_options(raptor_www* www, const char* cert_filename, 
 RAPTOR_API
 int raptor_www_set_ssl_verify_options(raptor_www* www, int verify_peer, int verify_host);
 RAPTOR_API
+int raptor_www_set_user_agent2(raptor_www *www, const char *user_agent, size_t user_agent_len);
+RAPTOR_API RAPTOR_DEPRECATED
 void raptor_www_set_user_agent(raptor_www *www, const char *user_agent);
 RAPTOR_API
+int raptor_www_set_proxy2(raptor_www *www, const char *proxy, size_t proxy_len);
+RAPTOR_API RAPTOR_DEPRECATED
 void raptor_www_set_proxy(raptor_www *www, const char *proxy);
 RAPTOR_API
+int raptor_www_set_http_accept2(raptor_www *www, const char *value, size_t value_len);
+RAPTOR_API RAPTOR_DEPRECATED
 void raptor_www_set_http_accept(raptor_www *www, const char *value);
 RAPTOR_API
 void raptor_www_set_write_bytes_handler(raptor_www *www, raptor_www_write_bytes_handler handler, void *user_data);

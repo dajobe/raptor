@@ -758,7 +758,7 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
 
     accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
-      raptor_www_set_http_accept(rdf_parser->www, accept_h);
+      raptor_www_set_http_accept2(rdf_parser->www, accept_h, 0);
       RAPTOR_FREE(char*, accept_h);
     }
   }
@@ -789,7 +789,7 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
 
   ua = RAPTOR_OPTIONS_GET_STRING(rdf_parser, RAPTOR_OPTION_WWW_HTTP_USER_AGENT);
   if(ua)
-    raptor_www_set_user_agent(rdf_parser->www, ua);
+    raptor_www_set_user_agent2(rdf_parser->www, ua, 0);
 
   cert_filename = RAPTOR_OPTIONS_GET_STRING(rdf_parser,
                                             RAPTOR_OPTION_WWW_CERT_FILENAME);
