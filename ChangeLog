@@ -1,3 +1,21 @@
+2020-10-23  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor2-sections.txt, src/raptor2.h.in, src/raptor_parse.c,
+	src/raptor_www.c: Add raptor_www setters taking value string
+	length and returning error code on failure errors
+
+	(raptor_www_set_user_agent2): Added, deprecating
+	raptor_www_set_user_agent.
+
+	(raptor_www_set_proxy2): Added, deprecating
+	raptor_www_set_proxy.
+
+	(raptor_www_set_http_accept2): Added, deprecating
+	raptor_www_set_http_accept.
+
+	Fixes Issue #0000649
+	https://bugs.librdf.org/mantis/view.php?id=649
+
 2020-10-06  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_common.c:
