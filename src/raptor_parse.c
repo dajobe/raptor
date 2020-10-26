@@ -758,8 +758,10 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
 
     accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
-      raptor_www_set_http_accept2(rdf_parser->www, accept_h, 0);
+      ret = raptor_www_set_http_accept2(rdf_parser->www, accept_h, 0);
       RAPTOR_FREE(char*, accept_h);
+      if(ret)
+        return 1;
     }
   }
 
@@ -788,8 +790,10 @@ raptor_parser_parse_uri_with_connection(raptor_parser* rdf_parser,
                                                               RAPTOR_OPTION_WWW_HTTP_CACHE_CONTROL));
 
   ua = RAPTOR_OPTIONS_GET_STRING(rdf_parser, RAPTOR_OPTION_WWW_HTTP_USER_AGENT);
-  if(ua)
-    raptor_www_set_user_agent2(rdf_parser->www, ua, 0);
+  if(ua) {
+    if(raptor_www_set_user_agent2(rdf_parser->www, ua, 0))
+      return 1;
+  }
 
   cert_filename = RAPTOR_OPTIONS_GET_STRING(rdf_parser,
                                             RAPTOR_OPTION_WWW_CERT_FILENAME);
