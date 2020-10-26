@@ -150,6 +150,7 @@ raptor_avltree_remove
 raptor_avltree_search
 raptor_avltree_set_print_handler
 raptor_avltree_size
+raptor_avltree_trim
 raptor_avltree_visit
 raptor_avltree_iterator
 raptor_new_avltree_iterator
