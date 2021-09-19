@@ -227,7 +227,7 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
           
           /* check it wasn't an earlier declaration too */
           for(j = 0; j < nspace_declarations_count; j++)
-            if(nspace_declarations[j].nspace == element->attributes[j]->nspace) {
+            if(nspace_declarations[j].nspace == element->attributes[i]->nspace) {
               declare_me = 0;
               break;
             }
