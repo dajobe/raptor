@@ -1,0 +1,1 @@
+<http://www.example.org/foo> <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> "\n      <ns: xmlns:dc=\"p\" xmlns:ns=\"http://example.org/ns1\" xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\" dc:=\"\" rdf:=\"\"></ns:>\n    "^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral> .

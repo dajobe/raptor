@@ -310,6 +310,24 @@ RAPPER_TEST(rdfxml.ex-61
 	${CMAKE_CURRENT_SOURCE_DIR}/ex-61.out
 )
 
+RAPPER_TEST(rdfxml.ex-62
+	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/ex-62.rdf http://librdf.org/raptor/tests/ex-62.rdf"
+	ex-61.res
+	${CMAKE_CURRENT_SOURCE_DIR}/ex-62.out
+)
+
+RAPPER_TEST(rdfxml.ex-63
+	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/ex-63.rdf http://librdf.org/raptor/tests/ex-63.rdf"
+	ex-61.res
+	${CMAKE_CURRENT_SOURCE_DIR}/ex-63.out
+)
+
+RAPPER_TEST(rdfxml.bug-650
+	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/bug-650.rdf http://librdf.org/raptor/tests/bug-650.rdf"
+	ex-61.res
+	${CMAKE_CURRENT_SOURCE_DIR}/bug-650.out
+)
+
 RAPPER_TEST(rdfxml.22-rdf-syntax-ns
 	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/22-rdf-syntax-ns.rdf http://www.w3.org/1999/02/22-rdf-syntax-ns"
 	22-rdf-syntax-ns.res

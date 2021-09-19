@@ -33,6 +33,7 @@ ex-34.rdf ex-35.rdf ex-36.rdf ex-37.rdf ex-38.rdf ex-39.rdf ex-40.rdf \
 ex-41.rdf ex-46.rdf ex-47.rdf ex-48.rdf ex-49.rdf ex-51.rdf \
 ex-53.rdf ex-54.rdf ex-56.rdf ex-57.rdf ex-58.rdf ex-61.rdf \
 ex-62.rdf ex-63.rdf \
+bug-650.rdf \
 22-rdf-syntax-ns.rdf rdfs-namespace.rdf rdf-schema.rdf \
 owl-schema.rdf daml-oil.rdf wine.rdf
 
