@@ -1226,15 +1226,11 @@ struct raptor_uri_detail_s
 
 
 /* for time_t */
-#ifdef TIME_WITH_SYS_TIME
-# include <sys/time.h>
-# include <time.h>
-#else
-# ifdef HAVE_SYS_TIME_H
-#  include <sys/time.h>
-# else
-#  include <time.h>
-# endif
+#ifdef SYS_TIME_H
+#include <sys/time.h>
+#endif
+#ifdef TIME_H
+#include <time.h>
 #endif
 
 /* parsedate.c */

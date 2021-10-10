@@ -29,11 +29,13 @@
 
 #include <stdio.h>
 #include <sys/types.h>
-#include <time.h>
 #include <ctype.h>
 
 #ifdef HAVE_SYS_TIME_H
-# include <sys/time.h>
+#include <sys/time.h>
+#endif
+#ifdef TIME_H
+#include <time.h>
 #endif
 
 #ifdef HAVE_STDLIB_H

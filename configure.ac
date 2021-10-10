@@ -325,7 +325,7 @@ CPPFLAGS="$extra_compiler_cflags $CPPFLAGS"
 
 
 dnl Checks for header files.
-AC_CHECK_HEADERS(errno.h fcntl.h getopt.h limits.h setjmp.h stddef.h stdlib.h strings.h string.h sys/param.h sys/stat.h sys/time.h unistd.h)
+AC_CHECK_HEADERS(errno.h fcntl.h getopt.h limits.h setjmp.h stddef.h stdlib.h strings.h string.h sys/param.h sys/stat.h sys/time.h time.h unistd.h)
 AC_CHECK_FUNCS(stat)
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
