@@ -90,7 +90,7 @@ FLEX_MIN_VERSION=2.5.19
 FLEX_REC_VERSION=2.5.36
 
 # Do not want AM_PROG_LEX which adds 'missing' to LEX if it's not around
-AC_PROG_LEX
+AC_PROG_LEX(noyywrap)
 AC_MSG_CHECKING(flex)
 if test "$USE_MAINTAINER_MODE" = yes; then
   # maintainer mode - flex is required
@@ -325,11 +325,8 @@ CPPFLAGS="$extra_compiler_cflags $CPPFLAGS"
 
 
 dnl Checks for header files.
-AC_HEADER_STDC
-dnl standard checks: memory.h stdlib.h string.h strings.h inttypes.h stdint.h sys/stat.h sys/types.h
-AC_CHECK_HEADERS(errno.h fcntl.h stddef.h limits.h math.h getopt.h sys/stat.h sys/param.h sys/time.h setjmp.h)
+AC_CHECK_HEADERS(errno.h fcntl.h getopt.h limits.h setjmp.h stddef.h stdlib.h strings.h string.h sys/param.h sys/stat.h sys/time.h unistd.h)
 AC_CHECK_FUNCS(stat)
-AC_HEADER_TIME
 dnl FreeBSD fetch.h needs stdio.h and sys/param.h first
 AC_CHECK_HEADERS(fetch.h,,,
   [#include <stdio.h>

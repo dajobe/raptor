@@ -47,7 +47,7 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
-#if defined (STDC_HEADERS) || (!defined (isascii) && !defined (HAVE_ISASCII))
+#if !defined(isascii) && !defined(HAVE_ISASCII)
 # define IN_CTYPE_DOMAIN(c) 1
 #else
 # define IN_CTYPE_DOMAIN(c) isascii(c)
