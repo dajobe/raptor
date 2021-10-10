@@ -1226,10 +1226,10 @@ struct raptor_uri_detail_s
 
 
 /* for time_t */
-#ifdef SYS_TIME_H
+#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
-#ifdef TIME_H
+#ifdef HAVE_TIME_H
 #include <time.h>
 #endif
 
