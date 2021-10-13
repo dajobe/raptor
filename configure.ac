@@ -136,33 +136,25 @@ AC_DEFINE_UNQUOTED(FLEX_VERSION_DECIMAL, $FLEX_VERSION_DEC, [Flex version as a d
 
 BISON_MIN_VERSION=3.4.0
 BISON_REC_VERSION=3.7.2
-AC_CHECK_PROGS(BISON, bison3 bison)
+BISON_MIN_VERSION_DEC=`echo $BISON_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+
 if test "$USE_MAINTAINER_MODE" = yes; then
-  AC_MSG_CHECKING(for GNU bison)
   # Match these styles of versions
   # GNU Bison version 1.28
   # bison (GNU Bison) 1.875
-dnl need to change quotes to allow square brackets
-changequote(<<, >>)dnl
-  BISON_VERSION=`$BISON --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
-changequote([, ])dnl
-  if test "X$BISON_VERSION" != X; then
-    BISON_VERSION_DEC=`echo $BISON_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-
-    BISON_MIN_VERSION_DEC=`echo $BISON_MIN_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-
-    if test $BISON_VERSION_DEC -ge $BISON_MIN_VERSION_DEC; then
-      AC_MSG_RESULT($BISON_VERSION - OK)
-    else
-      AC_MSG_RESULT(version $BISON_VERSION is too old)
-      AC_MSG_WARN(Please get GNU Bison version $BISON_MIN_VERSION or newer (${BISON_REC_VERSION} recommended) from http://www.gnu.org/software/bison/)
-      AC_MSG_FAILURE(GNU Bison too old)
-    fi
-  else
-    AC_MSG_FAILURE($BISON is not GNU bison)
-  fi
+  AC_CACHE_CHECK([for GNU bison newer than $BISON_MIN_VERSION], [ac_cv_path_BISON],
+    [AC_PATH_PROGS_FEATURE_CHECK([BISON], [bison3 bison],
+      [[bison_version=`$ac_path_BISON --version 2>&1 | sed -ne 's/^.*GNU Bison[^0-9]*//p'`
+        bison_version_dec=`echo $bison_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
+       test "$bison_version_dec" -ge $BISON_MIN_VERSION_DEC \
+	&& ac_cv_path_BISON=$ac_path_BISON ac_cv_version_BISON=$bison_version ac_cv_version_dec_BISON=$bison_version_dec]],
+      [AC_MSG_ERROR([could not find new enough GNU Bison])])])
+  AC_MSG_NOTICE([Using GNU Bison $ac_cv_version_BISON ($ac_cv_version_dec_BISON) at $ac_cv_path_BISON])
+else
+  # not maintainer mode, do not need bison
+  ac_cv_path_BISON=:
 fi
-AC_SUBST(BISON)
+AC_SUBST([BISON], [$ac_cv_path_BISON])
 
 # Find a tar command for 'make dist'
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
