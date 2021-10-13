@@ -167,8 +167,8 @@ if STRCASECMP
 libraptor2_la_SOURCES += strcasecmp.c
 endif
 if PARSEDATE
-libraptor2_la_SOURCES += parsedate.c
-BUILT_SOURCES += parsedate.c
+libraptor2_la_SOURCES += parsedate.c parsedate.h
+BUILT_SOURCES += parsedate.c parsedate.h
 endif
 
 
