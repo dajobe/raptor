@@ -276,7 +276,7 @@ if test $CC_IS_CLANG = yes; then
     #  -Wno-nullability-completeness : too noisy on OSX reporting
     #     warnings in stdio.h
     extra_compiler_cflags="$extra_compiler_cflags \
--Wno-nullability-completeness
+-Wno-nullability-completeness \
 "
 fi
 
@@ -292,7 +292,7 @@ case "${host_os}" in
     *)
 	#  -Wundef : too noisy on OSX 10.12+ e.g. stdio.h fails
 	possible_warnings="$possible_warnings \
--Wundef
+-Wundef \
 "
 	;;
 esac
