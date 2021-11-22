@@ -927,18 +927,18 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     return 1;
   
   if(raptor_www_set_user_agent2(www, "grddl/0.1", 0))
-    return 1;
+    goto cleanup_www;
   
   if(flags & FETCH_ACCEPT_XSLT) {
     if(raptor_www_set_http_accept2(www, "application/xml", 0))
-      return 1;
+      goto cleanup_www;
   } else {
     accept_h = raptor_parser_get_accept_header(rdf_parser);
     if(accept_h) {
       ret = raptor_www_set_http_accept2(www, accept_h, 0);
       RAPTOR_FREE(char*, accept_h);
       if(ret)
-        return 1;
+        goto cleanup_www;
     }
   }
   if(rdf_parser->uri_filter)
@@ -964,6 +964,11 @@ raptor_grddl_fetch_uri(raptor_parser* rdf_parser,
     raptor_world_internal_set_ignore_errors(rdf_parser->world, 0);
 
   return ret;
+
+cleanup_www:
+  raptor_free_www(www);
+
+  return 1;
 }
 
 
