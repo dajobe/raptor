@@ -593,7 +593,7 @@ raptor_rdfxmla_emit_subject_properties(raptor_serializer* serializer,
 
     /* Return error if emitting something failed above */
     if(rv)
-      return rv;
+      break;
 
     raptor_free_xml_element(element);
     
