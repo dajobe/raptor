@@ -308,7 +308,7 @@ char* rdfa_resolve_uri(rdfacontext* context, const char* uri)
             sptr++;
 
          }
-         else if(sptr[0] == '.' && sptr[1] == '.' && sptr[1] == '\0')
+         else if(sptr[0] == '.' && sptr[1] == '.' && sptr[2] == '\0')
          {
             /* D. if the input buffer consists only of "..", then remove
              * that from the input buffer; otherwise,
