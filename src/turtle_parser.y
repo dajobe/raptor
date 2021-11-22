@@ -1334,11 +1334,11 @@ turtle_parser_error_simple(void* user_data, const char *msg, ...)
      !turtle_parser->is_end) {
     /* we encountered an error on or around the last byte of the buffer
      * sorting it in the next run aye? */
-    return;
+    goto tidy;
   }
   
   if(turtle_parser->error_count++)
-    return;
+    goto tidy;
 
   rdf_parser->locator.line = turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
@@ -1348,6 +1348,9 @@ turtle_parser_error_simple(void* user_data, const char *msg, ...)
   raptor_log_error_varargs(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
                            &rdf_parser->locator, msg,
                            args);
+
+tidy:
+  va_end(args);
 }
 
 
