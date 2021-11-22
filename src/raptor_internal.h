@@ -1052,7 +1052,7 @@ int raptor_www_libxml_fetch(raptor_www *www);
 
 void raptor_www_error(raptor_www *www, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
-void raptor_www_curl_init(raptor_www *www);
+int raptor_www_curl_init(raptor_www *www);
 void raptor_www_curl_free(raptor_www *www);
 int raptor_www_curl_fetch(raptor_www *www);
 int raptor_www_curl_set_ssl_cert_options(raptor_www* www, const char* cert_filename, const char* cert_type, const char* cert_passphrase);

@@ -136,7 +136,10 @@ raptor_new_www_with_connection(raptor_world* world, void *connection)
 
 #ifdef RAPTOR_WWW_LIBCURL
   www->curl_handle = (CURL*)connection;
-  raptor_www_curl_init(www);
+  if(raptor_www_curl_init(www)) {
+    raptor_free_www(www);
+    www = NULL;
+  }
 #endif
 #ifdef RAPTOR_WWW_LIBXML
   raptor_www_libxml_init(www);

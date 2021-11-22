@@ -157,9 +157,18 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
 }
 
 
-void
+/* Return non-0 on failure */
+int
 raptor_www_curl_init(raptor_www *www)
 {
+  CURLcode res;
+
+#define curl_init_setopt_or_fail(h, k, v) do { \
+    res = curl_easy_setopt(h, k, v); \
+    if(res != CURLE_OK) \
+      return 1; \
+  } while(0)
+
   if(!www->curl_handle) {
     www->curl_handle = curl_easy_init();
     www->curl_init_here = 1;
@@ -171,31 +180,34 @@ raptor_www_curl_init(raptor_www *www)
 #endif
 
   /* send all data to this function  */
-  curl_easy_setopt(www->curl_handle, CURLOPT_WRITEFUNCTION, 
-                   raptor_www_curl_write_callback);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_WRITEFUNCTION, 
+                           raptor_www_curl_write_callback);
   /* ... using this data pointer */
-  curl_easy_setopt(www->curl_handle, CURLOPT_WRITEDATA, www);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_WRITEDATA, www);
 
 
   /* send all headers to this function */
-  curl_easy_setopt(www->curl_handle, CURLOPT_HEADERFUNCTION, 
-                   raptor_www_curl_header_callback);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_HEADERFUNCTION, 
+                           raptor_www_curl_header_callback);
   /* ... using this data pointer */
-  curl_easy_setopt(www->curl_handle, CURLOPT_WRITEHEADER, www);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_WRITEHEADER, www);
 
   /* Make it follow Location: headers */
-  curl_easy_setopt(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-  curl_easy_setopt(www->curl_handle, CURLOPT_VERBOSE, (void*)1);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_VERBOSE, (void*)1);
 #endif
 
-  curl_easy_setopt(www->curl_handle, CURLOPT_ERRORBUFFER, www->error_buffer);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_ERRORBUFFER,
+                           www->error_buffer);
 
   /* Connection timeout in seconds */
-  curl_easy_setopt(www->curl_handle, CURLOPT_CONNECTTIMEOUT,
-                   www->connection_timeout);
-  curl_easy_setopt(www->curl_handle, CURLOPT_NOSIGNAL, 1);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_CONNECTTIMEOUT,
+                           www->connection_timeout);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_NOSIGNAL, 1);
+
+  return 0;
 }
 
 
@@ -213,14 +225,27 @@ raptor_www_curl_free(raptor_www *www)
 int
 raptor_www_curl_fetch(raptor_www *www) 
 {
+  CURLcode res = CURLE_OK;
   struct curl_slist *slist = NULL;
     
-  if(www->proxy)
-    curl_easy_setopt(www->curl_handle, CURLOPT_PROXY, www->proxy);
+  if(www->proxy) {
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_PROXY, www->proxy);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting proxy to %s failed", www->proxy);
+      return 1;
+    }
+  }
 
-  if(www->user_agent)
-    curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
-
+  if(www->user_agent) {
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_USERAGENT, www->user_agent);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting user agent to %s failed", www->user_agent);
+      return 1;
+    }
+  }
+  
   if(www->http_accept)
     slist = curl_slist_append(slist, (const char*)www->http_accept);
 
@@ -229,12 +254,23 @@ raptor_www_curl_fetch(raptor_www *www)
   if(www->cache_control)
     slist = curl_slist_append(slist, (const char*)www->cache_control);
 
-  if(slist)
-    curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
+  if(slist) {
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_HTTPHEADER, slist);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting request http headers failed");
+      return 1;
+    }
+  }
 
   /* specify URL to get */
-  curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
-                   raptor_uri_as_string(www->uri));
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
+                         raptor_uri_as_string(www->uri));
+  if(res != CURLE_OK) {
+    www->failed = 1;
+    raptor_www_error(www, "Setting request URL failed");
+    return 1;
+  }
 
   if(curl_easy_perform(www->curl_handle)) {
     /* failed */
@@ -267,21 +303,43 @@ raptor_www_curl_set_ssl_cert_options(raptor_www* www,
                                      const char* cert_type,
                                      const char* cert_passphrase)
 {
+  CURLcode res;
+
   /* client certificate file name */
-  if(cert_filename)
-    curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERT, cert_filename);
+  if(cert_filename) {
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERT, cert_filename);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting request SSL cert filename to %s failed",
+                       cert_filename);
+      return 1;
+    }
+  }
   
   /* curl default is "PEM" */
-  if(cert_type)
-    curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERTTYPE, cert_type);
+  if(cert_type) {
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_SSLCERTTYPE, cert_type);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting request SSL cert type to %s failed",
+                       cert_type);
+      return 1;
+    }
+  }
   
   /* passphrase */
   /* Removed in 7.16.4 */
 #if LIBCURL_VERSION_NUM < 0x071004
 #define CURLOPT_KEYPASSWD CURLOPT_SSLKEYPASSWD
 #endif
-  if(cert_passphrase)
+  if(cert_passphrase) {
     curl_easy_setopt(www->curl_handle, CURLOPT_KEYPASSWD, cert_passphrase);
+    if(res != CURLE_OK) {
+      www->failed = 1;
+      raptor_www_error(www, "Setting request SSL cert pass phrase failed");
+      return 1;
+    }
+  }
 
   return 0;
 }
@@ -291,9 +349,17 @@ int
 raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
                                        int verify_host)
 {
+  CURLcode res;
+
   if(verify_peer)
     verify_peer = 1;
-  curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, verify_peer);
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, verify_peer);
+  if(res != CURLE_OK) {
+    www->failed = 1;
+    raptor_www_error(www, "Setting request SSL verify peer flag %d failed",
+                     verify_peer);
+    return 1;
+  }
 
   /* curl 7.28.1 removed the value 1 from being legal:
    * http://daniel.haxx.se/blog/2012/10/25/libcurl-claimed-to-be-dangerous/
@@ -307,7 +373,13 @@ raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
    */
   if(verify_host)
     verify_host = 2;
-  curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
+  if(res != CURLE_OK) {
+    www->failed = 1;
+    raptor_www_error(www, "Setting request SSL verify host flag %d failed",
+                     verify_host);
+    return 1;
+  }
 
   return 0;
 }
