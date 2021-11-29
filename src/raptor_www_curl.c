@@ -333,7 +333,7 @@ raptor_www_curl_set_ssl_cert_options(raptor_www* www,
 #define CURLOPT_KEYPASSWD CURLOPT_SSLKEYPASSWD
 #endif
   if(cert_passphrase) {
-    curl_easy_setopt(www->curl_handle, CURLOPT_KEYPASSWD, cert_passphrase);
+    res = curl_easy_setopt(www->curl_handle, CURLOPT_KEYPASSWD, cert_passphrase);
     if(res != CURLE_OK) {
       www->failed = 1;
       raptor_www_error(www, "Setting request SSL cert pass phrase failed");
