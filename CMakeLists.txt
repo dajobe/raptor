@@ -270,10 +270,9 @@ SET(RAPTOR_SERIALIZER_NQUADS TRUE
 
 ################################################################
 
-CONFIGURE_FILE(
-    message(${CMAKE_SOURCE_DIR}/raptor/src/)
-	#${CMAKE_SOURCE_DIR}/raptor/src/raptor_config_cmake.h.in
-	#${CMAKE_SOURCE_DIR}/raptor/src/raptor_config.h
+CONFIGURE_FILE(    
+	src/raptor_config_cmake.h.in
+	src/raptor_config.h
 	@ONLY
 )
 
