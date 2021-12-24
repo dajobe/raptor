@@ -36,19 +36,19 @@ FIND_PACKAGE(BISON 3.4 REQUIRED)
 FIND_PACKAGE(FLEX 2.5.19 REQUIRED)
 
 if(EXISTS ${CURL_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
+  INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
 endif(EXISTS ${CURL_INCLUDE_DIRS})
 
 if(EXISTS ${EXPAT_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
+  INCLUDE_DIRECTORIES(${EXPAT_INCLUDE_DIRS})
 endif(EXISTS ${EXPAT_INCLUDE_DIRS})
 
 if(EXISTS ${LIBXML2_INCLUDE_DIR})
-    INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIR})
+  INCLUDE_DIRECTORIES(${LIBXML2_INCLUDE_DIR})
 endif(EXISTS ${LIBXML2_INCLUDE_DIR})
 
 if(EXISTS ${LIBXSLT_INCLUDE_DIRS})
-    INCLUDE_DIRECTORIES(${LIBXSLT_INCLUDE_DIRS})
+  INCLUDE_DIRECTORIES(${LIBXSLT_INCLUDE_DIRS})
 endif(EXISTS ${LIBXSLT_INCLUDE_DIRS})
 
 ################################################################
@@ -106,60 +106,60 @@ CHECK_TYPE_SIZE("unsigned long long"	SIZEOF_UNSIGNED_LONG_LONG)
 
 CHECK_C_SOURCE_COMPILES("
 int main(void){ printf(__FUNCTION__); }"
-    HAVE___FUNCTION__
+	HAVE___FUNCTION__
 )
 
 
 IF(LIBXML2_FOUND)
 
-    SET(CMAKE_REQUIRED_INCLUDES  ${LIBXML2_INCLUDE_DIR})
-    SET(CMAKE_REQUIRED_LIBRARIES ${LIBXML2_LIBRARIES})
+	SET(CMAKE_REQUIRED_INCLUDES  ${LIBXML2_INCLUDE_DIR})
+	SET(CMAKE_REQUIRED_LIBRARIES ${LIBXML2_LIBRARIES})
 
-    CHECK_FUNCTION_EXISTS(xmlCtxtUseOptions     HAVE_XMLCTXTUSEOPTIONS)
-    CHECK_FUNCTION_EXISTS(xmlSAX2InternalSubset HAVE_XMLSAX2INTERNALSUBSET)
+	CHECK_FUNCTION_EXISTS(xmlCtxtUseOptions     HAVE_XMLCTXTUSEOPTIONS)
+	CHECK_FUNCTION_EXISTS(xmlSAX2InternalSubset HAVE_XMLSAX2INTERNALSUBSET)
 
-    CHECK_STRUCT_HAS_MEMBER(
-        xmlEntity
-        name_length
-        libxml/parser.h
-        RAPTOR_LIBXML_ENTITY_NAME_LENGTH
-    )
+	CHECK_STRUCT_HAS_MEMBER(
+		xmlEntity
+		name_length
+		libxml/parser.h
+		RAPTOR_LIBXML_ENTITY_NAME_LENGTH
+	)
 
-    CHECK_STRUCT_HAS_MEMBER(
-        xmlEntity
-        etype
-        libxml/parser.h
-        RAPTOR_LIBXML_ENTITY_ETYPE
-    )
+	CHECK_STRUCT_HAS_MEMBER(
+		xmlEntity
+		etype
+		libxml/parser.h
+		RAPTOR_LIBXML_ENTITY_ETYPE
+	)
 
-    CHECK_STRUCT_HAS_MEMBER(
-        xmlSAXHandler
-        initialized
-        libxml/parser.h
-        RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
-    )
+	CHECK_STRUCT_HAS_MEMBER(
+		xmlSAXHandler
+		initialized
+		libxml/parser.h
+		RAPTOR_LIBXML_XMLSAXHANDLER_INITIALIZED
+	)
 
-    CHECK_STRUCT_HAS_MEMBER(
-        xmlSAXHandler
-        externalSubset
-        libxml/parser.h
-        RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
-    )
+	CHECK_STRUCT_HAS_MEMBER(
+		xmlSAXHandler
+		externalSubset
+		libxml/parser.h
+		RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET
+	)
 
-    CHECK_C_SOURCE_COMPILES("
+	CHECK_C_SOURCE_COMPILES("
 #include <libxml/parser.h>
 int main(void){ xmlParserOption foo; foo = XML_PARSE_NONET; return 0; }"
-        RAPTOR_LIBXML_XML_PARSE_NONET
-    )
+		RAPTOR_LIBXML_XML_PARSE_NONET
+	)
 
-    CHECK_C_SOURCE_COMPILES("
+	CHECK_C_SOURCE_COMPILES("
 #include <libxml/HTMLparser.h>
 int main(void){ htmlParserOption foo; foo = HTML_PARSE_NONET; return 0; }"
-        RAPTOR_LIBXML_HTML_PARSE_NONET
-    )
+		RAPTOR_LIBXML_HTML_PARSE_NONET
+	)
 
-    SET(CMAKE_REQUIRED_INCLUDES)
-    SET(CMAKE_REQUIRED_LIBRARIES)
+	SET(CMAKE_REQUIRED_INCLUDES)
+	SET(CMAKE_REQUIRED_LIBRARIES)
 
 ENDIF(LIBXML2_FOUND)
 
@@ -171,117 +171,117 @@ ENDIF(LIBXML2_FOUND)
 # the order we use here)
 
 SET(BUILD_SHARED_LIBS OFF CACHE BOOL
-    "Build shared libraries instead of static ones.")
+	"Build shared libraries instead of static ones.")
 
 IF(BUILD_SHARED_LIBS)
-    SET(RAPTOR_STATIC FALSE)
+	SET(RAPTOR_STATIC FALSE)
 ELSE(BUILD_SHARED_LIBS)
-    SET(RAPTOR_STATIC TRUE)
+	SET(RAPTOR_STATIC TRUE)
 ENDIF(BUILD_SHARED_LIBS)
 
 SET(RAPTOR_XML_INIT none)
 IF(LIBXML2_FOUND)
-    SET(RAPTOR_XML_INIT libxml)
+	SET(RAPTOR_XML_INIT libxml)
 ENDIF(LIBXML2_FOUND)
 
 SET(RAPTOR_XML ${RAPTOR_XML_INIT} CACHE STRING
-    "Which XML library to use (any of \"libxml\", \"none\").")
+	"Which XML library to use (any of \"libxml\", \"none\").")
 
 SET(RAPTOR_XML_DEFINE RAPTOR_XML_NONE)
 IF(RAPTOR_XML STREQUAL "libxml")
-    SET(RAPTOR_XML_DEFINE RAPTOR_XML_LIBXML)
+	SET(RAPTOR_XML_DEFINE RAPTOR_XML_LIBXML)
 ENDIF(RAPTOR_XML STREQUAL "libxml")
 
 SET(RAPTOR_WWW_INIT none)
 IF(LIBXML2_FOUND)
-    SET(RAPTOR_WWW_INIT xml)
+	SET(RAPTOR_WWW_INIT xml)
 ENDIF(LIBXML2_FOUND)
 IF(CURL_FOUND)
-    SET(RAPTOR_WWW_INIT curl)
+	SET(RAPTOR_WWW_INIT curl)
 ENDIF(CURL_FOUND)
 
 SET(RAPTOR_WWW ${RAPTOR_WWW_INIT} CACHE STRING
-    "Which WWW library to use (any of \"curl\", \"xml\", \"none\").")
+	"Which WWW library to use (any of \"curl\", \"xml\", \"none\").")
 
 SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_NONE)
 IF(RAPTOR_WWW STREQUAL "curl")
-    SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_LIBCURL)
+	SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_LIBCURL)
 ELSEIF(RAPTOR_WWW STREQUAL "xml")
-    SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_LIBXML)
+	SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_LIBXML)
 ENDIF(RAPTOR_WWW STREQUAL "curl")
 
 SET(RAPTOR_XML_1_1 FALSE CACHE BOOL
-    "Use XML version 1.1 name checking.")
+	"Use XML version 1.1 name checking.")
 
 SET(HAVE_RAPTOR_PARSE_DATE 1)
 SET(RAPTOR_PARSEDATE 1)
 
 SET(RAPTOR_PARSER_RDFXML_INIT FALSE)
 IF(LIBXML2_FOUND)
-    SET(RAPTOR_PARSER_RDFXML_INIT TRUE)
+	SET(RAPTOR_PARSER_RDFXML_INIT TRUE)
 ENDIF(LIBXML2_FOUND)
 
 SET(RAPTOR_PARSER_GRDDL_INIT FALSE)
 IF(LIBXML2_FOUND AND LIBXSLT_FOUND)
-    SET(RAPTOR_PARSER_GRDDL_INIT TRUE)
+	SET(RAPTOR_PARSER_GRDDL_INIT TRUE)
 ENDIF(LIBXML2_FOUND AND LIBXSLT_FOUND)
 
 SET(RAPTOR_PARSER_RDFXML ${RAPTOR_PARSER_RDFXML_INIT}
-    CACHE BOOL "Build RDF/XML parser.")
+	CACHE BOOL "Build RDF/XML parser.")
 SET(RAPTOR_PARSER_NTRIPLES TRUE
-    CACHE BOOL "Build N-Triples parser.")
+	CACHE BOOL "Build N-Triples parser.")
 SET(RAPTOR_PARSER_TURTLE TRUE
-    CACHE BOOL "Build Turtle parser.")
+	CACHE BOOL "Build Turtle parser.")
 SET(RAPTOR_PARSER_TRIG TRUE
-    CACHE BOOL "Build TRiG parser.")
+	CACHE BOOL "Build TRiG parser.")
 SET(RAPTOR_PARSER_RSS ${LIBXML2_FOUND}
-    CACHE BOOL "Build RSS Tag Soup parser.")
+	CACHE BOOL "Build RSS Tag Soup parser.")
 SET(RAPTOR_PARSER_GRDDL ${RAPTOR_PARSER_GRDDL_INIT}
-    CACHE BOOL "Build GRDDL parser.")
+	CACHE BOOL "Build GRDDL parser.")
 SET(RAPTOR_PARSER_GUESS TRUE
-    CACHE BOOL "Build guess parser.")
+	CACHE BOOL "Build guess parser.")
 SET(RAPTOR_PARSER_RDFA ${LIBXML2_FOUND}
-    CACHE BOOL "Build RDFA parser.")
+	CACHE BOOL "Build RDFA parser.")
 SET(RAPTOR_PARSER_JSON ${YAJL_FOUND}
-    CACHE BOOL "Build JSON parser.")
+	CACHE BOOL "Build JSON parser.")
 SET(RAPTOR_PARSER_NQUADS TRUE
-    CACHE BOOL "Build N-Quads parser.")
+	CACHE BOOL "Build N-Quads parser.")
 
 SET(RAPTOR_SERIALIZER_RDFXML TRUE
-    CACHE BOOL "Build RDF/XML serializer.")
+	CACHE BOOL "Build RDF/XML serializer.")
 SET(RAPTOR_SERIALIZER_NTRIPLES TRUE
-    CACHE BOOL "Build N-Triples serializer.")
+	CACHE BOOL "Build N-Triples serializer.")
 SET(RAPTOR_SERIALIZER_RDFXML_ABBREV TRUE
-    CACHE BOOL "Build RDF/XML-abbreviated serializer.")
+	CACHE BOOL "Build RDF/XML-abbreviated serializer.")
 SET(RAPTOR_SERIALIZER_TURTLE TRUE
-    CACHE BOOL "Build Turtle serializer.")
+	CACHE BOOL "Build Turtle serializer.")
 SET(RAPTOR_SERIALIZER_RSS_1_0 TRUE
-    CACHE BOOL "Build RSS 1.0 serializer.")
+	CACHE BOOL "Build RSS 1.0 serializer.")
 SET(RAPTOR_SERIALIZER_ATOM TRUE
-    CACHE BOOL "Build Atom 1.0 serializer.")
+	CACHE BOOL "Build Atom 1.0 serializer.")
 SET(RAPTOR_SERIALIZER_DOT TRUE
-    CACHE BOOL "Build GraphViz DOT serializer.")
+	CACHE BOOL "Build GraphViz DOT serializer.")
 SET(RAPTOR_SERIALIZER_HTML TRUE
-    CACHE BOOL "Build HTML Table serializer.")
+	CACHE BOOL "Build HTML Table serializer.")
 SET(RAPTOR_SERIALIZER_JSON TRUE
-    CACHE BOOL "Build JSON serializer.")
+	CACHE BOOL "Build JSON serializer.")
 SET(RAPTOR_SERIALIZER_NQUADS TRUE
-    CACHE BOOL "Build N-Quads serializer.")
+	CACHE BOOL "Build N-Quads serializer.")
 
 ################################################################
 
 CONFIGURE_FILE(
-    src/raptor_config_cmake.h.in
-    src/raptor_config.h
-    @ONLY
+	src/raptor_config_cmake.h.in
+	src/raptor_config.h
+	@ONLY
 )
 
 ADD_DEFINITIONS(-DHAVE_CONFIG_H)
 
 CONFIGURE_FILE(
-    src/raptor2.h.in
-    src/raptor2.h
-    @ONLY
+	src/raptor2.h.in
+	src/raptor2.h
+	@ONLY
 )
 
 ################################################################
@@ -324,12 +324,12 @@ message( "  *** libxml2 (include)           ${LIBXML2_INCLUDE_DIR}")
 #
 # Note that a partial solution is described at
 #
-#    http://www.cmake.org/pipermail/cmake/2009-May/029464.html
+#	http://www.cmake.org/pipermail/cmake/2009-May/029464.html
 #
 # but we don't have a good way of knowing where the third-party DLLs are.
 #
 IF(CMAKE_GENERATOR MATCHES "Makefiles")
-    ENABLE_TESTING()
+	ENABLE_TESTING()
 ENDIF(CMAKE_GENERATOR MATCHES "Makefiles")
 
 SUBDIRS(src)
@@ -339,32 +339,32 @@ SUBDIRS(utils)
 
 FIND_PROGRAM(JING jing)
 IF(NOT JING STREQUAL "JING-NOTFOUND")
-    SET(HAVE_JING TRUE)
+	SET(HAVE_JING TRUE)
 ENDIF(NOT JING STREQUAL "JING-NOTFOUND")
 
 SET(RAPPER  ${CMAKE_BINARY_DIR}/utils/rapper)
 SET(RDFDIFF ${CMAKE_BINARY_DIR}/utils/rdfdiff)
 
 MACRO(RAPPER_TEST NAME_PREFIX COMMAND OUTPUT REFERENCE)
-    FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME_PREFIX}.cmake "
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME_PREFIX}.cmake "
 EXECUTE_PROCESS(
-    COMMAND ${COMMAND}
-    TIMEOUT 10
-    OUTPUT_FILE ${OUTPUT}.raw
-    ERROR_QUIET
+	COMMAND ${COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${OUTPUT}.raw
+	ERROR_QUIET
 )
 
 # http://public.kitware.com/Bug/view.php?id=13007
 
 CONFIGURE_FILE(
-    ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT}.raw
-    ${OUTPUT}
-    @ONLY
-    NEWLINE_STYLE UNIX
+	${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT}.raw
+	${OUTPUT}
+	@ONLY
+	NEWLINE_STYLE UNIX
 )
 ")
-    ADD_TEST("${NAME_PREFIX}:run" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
-    ADD_TEST("${NAME_PREFIX}:cmp" ${CMAKE_COMMAND} -E compare_files ${REFERENCE} ${OUTPUT})
+	ADD_TEST("${NAME_PREFIX}:run" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
+	ADD_TEST("${NAME_PREFIX}:cmp" ${CMAKE_COMMAND} -E compare_files ${REFERENCE} ${OUTPUT})
 ENDMACRO(RAPPER_TEST NAME_PREFIX COMMAND OUTPUT REFERENCE)
 
 INCLUDE(CMakeParseArguments)
@@ -388,25 +388,25 @@ FUNCTION(RAPPER_RDFDIFF_TEST TEST_NAME RAPPER_COMMAND RAPPER_OUTPUT RDFDIFF_COMM
     SET(EXPECT_FAILURE 0)
   ENDIF()
 
-    FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${TEST_NAME}.cmake "
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${TEST_NAME}.cmake "
 SET(rdfdiff_status -1)
 
 EXECUTE_PROCESS(
-    COMMAND ${RAPPER_COMMAND}
-    TIMEOUT 10
-    OUTPUT_FILE ${RAPPER_OUTPUT}
-    ERROR_QUIET
-    RESULT_VARIABLE rapper_status
+	COMMAND ${RAPPER_COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${RAPPER_OUTPUT}
+	ERROR_QUIET
+	RESULT_VARIABLE rapper_status
 )
 
 IF(rapper_status EQUAL 0 OR rapper_status EQUAL 2)
-    EXECUTE_PROCESS(
-        COMMAND ${RDFDIFF_COMMAND}
-        TIMEOUT 10
-        OUTPUT_QUIET
-        ERROR_QUIET
-        RESULT_VARIABLE rdfdiff_status
-    )
+	EXECUTE_PROCESS(
+		COMMAND ${RDFDIFF_COMMAND}
+		TIMEOUT 10
+		OUTPUT_QUIET
+		ERROR_QUIET
+		RESULT_VARIABLE rdfdiff_status
+	)
 ENDIF(rapper_status EQUAL 0 OR rapper_status EQUAL 2)
 
 IF(${EXPECT_FAILURE})
@@ -420,7 +420,7 @@ ELSE()
 ENDIF()
 ")
 
-    ADD_TEST(${TEST_NAME} ${CMAKE_COMMAND} -P test-${TEST_NAME}.cmake)
+	ADD_TEST(${TEST_NAME} ${CMAKE_COMMAND} -P test-${TEST_NAME}.cmake)
 ENDFUNCTION(RAPPER_RDFDIFF_TEST)
 
 SUBDIRS(tests/feeds)
@@ -431,6 +431,6 @@ SUBDIRS(tests/rdfa)
 SUBDIRS(tests/rdfa11)
 SUBDIRS(tests/rdfxml)
 SUBDIRS(tests/trig)
-#SUBDIRS(tests/turtle)    # TODO
+#SUBDIRS(tests/turtle)	# TODO
 
 # end raptor/CMakeLists.txt
