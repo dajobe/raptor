@@ -137,17 +137,17 @@ IF(RAPTOR_XML STREQUAL "libxml")
 ENDIF(RAPTOR_XML STREQUAL "libxml")
 IF(RAPTOR_PARSER_RDFA)
 	SET(raptor_librdfa_sources
-		context.c
-		curie.c
-		iri.c
-		language.c
-		lists.c
-		namespace.c
-		rdfa.c
-		rdfa_utils.c
-		strtok_r.c
-		subject.c
-		triple.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/context.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/curie.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/iri.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/language.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/lists.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/namespace.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/rdfa.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/rdfa_utils.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/strtok_r.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/subject.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/triple.c
 # 		${CMAKE_SOURCE_DIR}/librdfa/rdfa.h
 # 		${CMAKE_SOURCE_DIR}/librdfa/rdfa_utils.h
 # 		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.h
