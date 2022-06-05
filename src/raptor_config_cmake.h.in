@@ -15,6 +15,7 @@
 #cmakedefine HAVE_UNISTD_H
 #cmakedefine HAVE_TIME_H
 #cmakedefine HAVE_SYS_PARAM_H
+#cmakedefine HAVE_TIME_H
 #cmakedefine HAVE_SYS_STAT_H
 #cmakedefine HAVE_SYS_STAT_H
 #cmakedefine HAVE_SYS_TIME_H

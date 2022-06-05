@@ -7,7 +7,7 @@
 #
 
 IF(RAPTOR_PARSER_RDFA)
-	INCLUDE_DIRECTORIES(BEFORE ${CMAKE_SOURCE_DIR}/librdfa)
+	INCLUDE_DIRECTORIES(BEFORE ${CMAKE_CURRENT_SOURCE_DIR}/../librdfa)
 ENDIF(RAPTOR_PARSER_RDFA)
 
 # ** Parser sources **
@@ -41,7 +41,7 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
   ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
     DEPENDS turtle_tables_tgt)
 
   # Generate the turtle lexer
@@ -52,8 +52,8 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
   ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t > ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h > ${CMAKE_CURRENT_BINARY_DIR}/t
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t > ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h > ${CMAKE_CURRENT_BINARY_DIR}/t
     COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/t ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
     DEPENDS turtle_flex_tgt)
 ENDIF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
@@ -137,17 +137,17 @@ IF(RAPTOR_XML STREQUAL "libxml")
 ENDIF(RAPTOR_XML STREQUAL "libxml")
 IF(RAPTOR_PARSER_RDFA)
 	SET(raptor_librdfa_sources
-		${CMAKE_SOURCE_DIR}/librdfa/context.c
-		${CMAKE_SOURCE_DIR}/librdfa/curie.c
-		${CMAKE_SOURCE_DIR}/librdfa/iri.c
-		${CMAKE_SOURCE_DIR}/librdfa/language.c
-		${CMAKE_SOURCE_DIR}/librdfa/lists.c
-		${CMAKE_SOURCE_DIR}/librdfa/namespace.c
-		${CMAKE_SOURCE_DIR}/librdfa/rdfa.c
-		${CMAKE_SOURCE_DIR}/librdfa/rdfa_utils.c
-		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.c
-		${CMAKE_SOURCE_DIR}/librdfa/subject.c
-		${CMAKE_SOURCE_DIR}/librdfa/triple.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/context.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/curie.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/iri.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/language.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/lists.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/namespace.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/rdfa.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/rdfa_utils.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/strtok_r.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/subject.c
+		${CMAKE_CURRENT_SOURCE_DIR}/../librdfa/triple.c
 # 		${CMAKE_SOURCE_DIR}/librdfa/rdfa.h
 # 		${CMAKE_SOURCE_DIR}/librdfa/rdfa_utils.h
 # 		${CMAKE_SOURCE_DIR}/librdfa/strtok_r.h
@@ -169,7 +169,7 @@ IF(RAPTOR_PARSEDATE)
 
   ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
     DEPENDS parsedate_tables_tgt)
 ENDIF(RAPTOR_PARSEDATE)
 
