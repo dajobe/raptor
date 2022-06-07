@@ -786,14 +786,14 @@ raptor_unicode_is_extender(long c)
  *
  * INTERNAL - Check if a Unicode UTF-8 encoded string is in Unicode Normal Form C.
  *
- * Return value: Non 0 if the string is in NFC (or an error)
+ * Return value: <0 on error, 0 if not NFC, >0 if is NFC
  **/
 int
-raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length,
-                                     int *error)
+raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length)
 {
   unsigned int i;
   int plain = 1;
+  int rc;
   
   for(i = 0; i < length; i++)
     if(input[i] > 0x7f) {
@@ -805,12 +805,11 @@ raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length,
     return 1;
 
 #ifdef RAPTOR_NFC_ICU
-  return raptor_nfc_icu_check(input, length, error);
+  rc = raptor_nfc_icu_check(input, length);
 #else
-  if(error)
-    *error = 1;
-  return 1;
+  rc = 1;
 #endif
+  return rc;
 }
 
 

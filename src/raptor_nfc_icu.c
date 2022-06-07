@@ -40,6 +40,7 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+#include <unicode/ustring.h>
 #if ICU_UC_MAJOR_VERSION >= 56
 #include <unicode/unorm2.h>
 #else
@@ -47,58 +48,65 @@
 #endif
 
 
-/**
+/*
  * raptor_nfc_icu_check:
  * @input: UTF-8 string
  * @length: length of string
- * @errorp: pointer to store offset of character in error (or NULL)
+ * @error: pointer to error flag (or NULL)
  *
- * Unicode Normal Form C (NFC) check function.
+ * INTERNAL - Unicode Normal Form C (NFC) check function via ICU
  *
- * If errorp is not NULL, it is set to the offset of the character
- * in error in the buffer, or <0 if there is no error.
+ * If errorp is not NULL, it is set to non-0 on error
  * 
- * Return value: Non 0 if the string is NFC
+ * Return value: <0 on error, 0 if is not NFC, >0 if is NFC
  **/
 int
-raptor_nfc_icu_check(const unsigned char* string, size_t len, int *error)
+raptor_nfc_icu_check(const unsigned char* string, size_t len)
 {
-  /* unorm_quickCheck was deprecated in ICU UC V56 */
-
 #if ICU_UC_MAJOR_VERSION >= 56
   /* norm2 is be a singleton - do not attempt to free it */
   const UNormalizer2 *norm2;
+#endif
   UErrorCode error_code = U_ZERO_ERROR;
   UNormalizationCheckResult res;
+  UChar *dest; /* UTF-16 */
+  int32_t dest_capacity = len << 1;
+  int32_t dest_length;
+  int rc = 0;
 
+  /* ICU functions take a UTF-16 string so convert */
+  dest = RAPTOR_MALLOC(UChar*, dest_capacity + 1);
+  if(!dest)
+    goto error;
+
+  (void)u_strFromUTF8(dest, dest_capacity, &dest_length,
+                      (const char *)string, (int32_t)len, &error_code);
+  if(!U_SUCCESS(error_code))
+    goto error;
+
+  /* unorm_quickCheck was deprecated in ICU UC V56 */
+#if ICU_UC_MAJOR_VERSION >= 56
   norm2 = unorm2_getNFCInstance(&error_code);
-  if(!U_SUCCESS(error_code)) {
-     if(error)
-       *error = 1;
-     return 0;
-  }
+  if(!U_SUCCESS(error_code))
+    goto error;
 
-  res = unorm2_quickCheck(norm2,(const UChar *)string, (int32_t)len,
-                          &error_code);
-   if(!U_SUCCESS(error_code)) {
-     if(error)
-       *error = 1;
-     return 0;
-   }
-
-   return (res == UNORM_YES);
+  res = unorm2_quickCheck(norm2, dest, dest_length, &error_code);
 #else
-   UNormalizationCheckResult res;
-   UErrorCode error_code = U_ZERO_ERROR;
-
-   res = unorm_quickCheck((const UChar *)string, (int32_t)len,
-                          UNORM_NFC, &error_code);
-   if(!U_SUCCESS(error_code)) {
-     if(error)
-       *error = 1;
-     return 0;
-   }
-   
-   return (res == UNORM_YES);
+  res = unorm_quickCheck(dest, dest_length, UNORM_NFC, &error_code);
 #endif
+  if(!U_SUCCESS(error_code))
+    goto error;
+
+  /* success */
+  rc = (res == UNORM_YES);
+  goto cleanup;
+
+error:
+  rc = -1;
+
+cleanup:
+  if(dest)
+    RAPTOR_FREE(UChar*, dest);
+
+  return rc;
 }

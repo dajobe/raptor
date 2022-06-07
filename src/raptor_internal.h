@@ -781,7 +781,7 @@ int raptor_check_ordinal(const unsigned char *name);
 #endif
 
 /* raptor_nfc_icu.c */
-int raptor_nfc_icu_check (const unsigned char* string, size_t len, int *error);
+int raptor_nfc_icu_check (const unsigned char* string, size_t len);
 
 
 /* raptor_namespace.c */
@@ -967,7 +967,7 @@ extern const raptor_unichar raptor_unicode_max_codepoint;
 
 int raptor_unicode_is_namestartchar(raptor_unichar c);
 int raptor_unicode_is_namechar(raptor_unichar c);
-int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length, int* error);
+int raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length);
 
 /* raptor_www*.c */
 #ifdef RAPTOR_WWW_LIBXML

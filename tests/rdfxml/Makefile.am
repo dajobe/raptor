@@ -451,6 +451,8 @@ check-rdfxmla: build-rdfdiff build-rapper $(check_rdfxmla_deps)
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
+	  elif test $$status1 = 2 -a $$status2 = 0; then \
+	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
 	  else \
 	    $(RECHO) "FAILED"; \
 	    echo $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \

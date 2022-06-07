@@ -1396,8 +1396,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     }
 
 
-    if(!raptor_unicode_check_utf8_nfc_string(value, strlen((const char*)value),
-                                             NULL)) {
+    if(!raptor_unicode_check_utf8_nfc_string(value, strlen((const char*)value))) {
       raptor_log_level l;
 
       raptor_rdfxml_update_document_locator(rdf_parser);
@@ -1505,7 +1504,7 @@ raptor_rdfxml_process_property_attributes(raptor_parser *rdf_parser,
     }
 
     if(object_is_literal &&
-       !raptor_unicode_check_utf8_nfc_string(value, value_len, NULL)) {
+       !raptor_unicode_check_utf8_nfc_string(value, value_len)) {
       raptor_log_level l;
 
       raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2780,8 +2779,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
 
                 if(!literal_datatype && literal &&
                    !raptor_unicode_check_utf8_nfc_string(literal,
-                                                         xml_element->content_cdata_length,
-                                                         NULL)) {
+                                                         xml_element->content_cdata_length)) {
                   raptor_log_level l;
 
                   raptor_rdfxml_update_document_locator(rdf_parser);
@@ -2836,7 +2834,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
                 length = xml_element->content_cdata_length;
               }
 
-              if(!raptor_unicode_check_utf8_nfc_string(buffer, length, NULL)) {
+              if(!raptor_unicode_check_utf8_nfc_string(buffer, length)) {
                 raptor_log_level l;
 
                 raptor_rdfxml_update_document_locator(rdf_parser);
