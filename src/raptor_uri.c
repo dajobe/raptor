@@ -765,7 +765,7 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   if(!buffer)
     goto path_done;
 
-  memcpy(buffer, "file://", RAPTOR_LEN_FILE_CSS);
+  memcpy(buffer, "file://", RAPTOR_LEN_FILE_CSS + 1); /* copy NUL */
   from = filename;
   to = (char*)(buffer + RAPTOR_LEN_FILE_CSS);
   fl = filename_len;
