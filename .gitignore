@@ -2,6 +2,8 @@
 *.log
 *~
 .DS_Store
+.covsubmit
+.covtoken
 .dirstamp
 .gdb_history
 .gdbinit
@@ -21,6 +23,7 @@ config.cache
 config.log
 config.status
 configure
+cov-int
 gtk-doc.make
 libtool
 not-used
