@@ -336,7 +336,7 @@ AC_C_INLINE
 
 AC_MSG_CHECKING(whether __FUNCTION__ is available)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([#include <stdio.h>
-int main() { printf(__FUNCTION__); }])],
+int main(void) { printf(__FUNCTION__); }])],
     [AC_DEFINE([HAVE___FUNCTION__], [1], [Is __FUNCTION__ available])
      AC_MSG_RESULT(yes)],
     [AC_MSG_RESULT(no)])
@@ -420,7 +420,7 @@ AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 #ifdef HAVE_STRING_H
 #include <string.h>
 #endif
-int main() { return strtok_r(); }
+int main(void) { return strtok_r(); }
 ])],
   [AC_MSG_RESULT(yes)
    have_strtok_r=yes
