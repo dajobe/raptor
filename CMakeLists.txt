@@ -170,7 +170,7 @@ ENDIF(LIBXML2_FOUND)
 # (Note: The CMake GUI displays these in alphabetical order, regardless of
 # the order we use here)
 
-SET(BUILD_SHARED_LIBS OFF CACHE BOOL
+SET(BUILD_SHARED_LIBS ON CACHE BOOL
 	"Build shared libraries instead of static ones.")
 
 IF(BUILD_SHARED_LIBS)
