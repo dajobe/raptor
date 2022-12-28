@@ -1,3 +1,253 @@
+2023-02-22  Dave Beckett <dave@dajobe.org>
+
+	* docs/tmpl/section-avltree.sgml,
+	docs/tmpl/section-constants.sgml, docs/tmpl/section-www.sgml:
+	Updated doc templates
+
+2023-02-22  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
+	Remove set but unused variable i
+
+2022-12-27  Dave Beckett <dave@dajobe.org>
+
+	* ChangeLog, INSTALL.html, LICENSE.html, NEWS.html, RELEASE.html,
+	configure.ac, src/raptor_general.c:
+	2023 and https
+
+2022-12-27  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #53 from trofi/shared-by-default
+	CMakeLists.txt: default to shared libraries by default (just like
+	GNU configure)
+
+2022-12-26  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #55 from thesamesam/clang16 configure.ac: fix
+	-Wimplicit-function-declaration in HAVE___FUNCTION_…
+
+2022-11-04  Sam James <sam@gentoo.org>
+
+	* configure.ac: configure.ac: fix -Wimplicit-function-declaration
+	in HAVE___FUNCTION__ test (Clang 16)
+
+	Clang 16 will make -Wimplicit-function-declaration errors by
+	default.
+
+	``` error: call to undeclared library function 'printf'
+	with type 'int (const char *, ...)'; ISO C99 and later do not
+	support implicit function declarations
+	[-Werror,-Wimplicit-function-declaration] error: call to undeclared
+	library function 'printf' with type 'int (const char *, ...)'; ISO
+	C99 and later do not support implicit function declarations
+	[-Werror,-Wimplicit-function-declaration] ```
+
+	For more information, see LWN.net [0] or LLVM's Discourse [1],
+	gentoo-dev@ [2], or the (new) c-std-porting mailing list [3].  [0]
+	https://lwn.net/Articles/913505/ [1]
+
+	https://discourse.llvm.org/t/configure-script-breakage-with-the-new-werror-implicit-function-declaration/65213[2]
+
+	https://archives.gentoo.org/gentoo-dev/message/dd9f2d3082b8b6f8dfbccb0639e6e240[3] hosted at lists.linux.dev.
+
+2022-07-08  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #52 from Artturin/cmakefix
+
+2022-07-03  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_uri.c:
+	(raptor_uri_counted_filename_to_uri_string): Copy NUL when copyin
+	file:// prefix.  Coverity false positive since the following lines
+	of code always add more characters and a NUL.  "Fixes" CID 353858
+
+2022-06-15  Artturin <Artturin@artturin.com>
+
+	* src/CMakeLists.txt:
+	fix the cmake generated pc file before
+	libdir=${exec_prefix}//nix/store/i7abvb760gzca1wqk9g617shqdj5sr7f-raptor2-aarch64-unknown-linux-gnu-2.0.15/lib
+	includedir=${prefix}//nix/store/i7abvb760gzca1wqk9g617shqdj5sr7f-raptor2-aarch64-unknown-linux-gnu-2.0.15/include/raptor2note the double // due to CMAKE_INSTALL_LIBDIR already being a
+	absolute path after
+	libdir=/nix/store/rlhzlak7chagd23898n1x9id6f5a6qpn-raptor2-aarch64-unknown-linux-gnu-2.0.15/lib
+	includedir=/nix/store/rlhzlak7chagd23898n1x9id6f5a6qpn-raptor2-aarch64-unknown-linux-gnu-2.0.15/include/raptor2
+
+2022-06-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_internal.h, src/raptor_nfc_icu.c,
+	src/raptor_rdfxml.c, src/raptor_unicode.c,
+	tests/rdfxml/Makefile.am: Fix internal ICU string NFC check to
+	convert to UTF-16 first
+
+	(raptor_nfc_icu_check, raptor_unicode_check_utf8_nfc_string):
+	Changed signature of these internal functions to not have error_p
+	which wasn't even consistently used.  Instead return -1 on failure
+	which is also "falsey" in C.
+
+	(raptor_nfc_icu_check): Do an UTF-8 (raptor) to UTF-16 conversion
+	before trying to do a NFC normalization check.  Update callers of
+	above internal functions to remove error_p argument which was
+	unused in all callers.  Update rdfxmla tests to allow tests to
+	throw warnings.
+
+2022-06-04  Dave Beckett <dave@dajobe.org>
+
+	* Merge pull request #50 from passware/enkey/cases/POS-5043
+
+2021-12-24  mathvich <mathvich@gmail.com>
+
+	* src/CMakeLists.txt: [POS-5320] librdfa directory fix
+
+	* CMakeLists.txt, src/CMakeLists.txt: [POS-5230] librdfa directory fix
+
+	* CMakeLists.txt, src/CMakeLists.txt: [POS-5230] tabs changed to spaces
+
+2021-12-15  mathvich <mathvich@gmail.com>
+
+	* utils/CMakeLists.txt: [POS-5103] utils dir fix
+
+	* CMakeLists.txt: [POS-5103] returned to origin
+
+	* CMakeLists.txt: [POS-5103] debug message
+
+2021-12-14  mathvich <mathvich@gmail.com>
+
+	* CMakeLists.txt: [POS-5103] directory change
+
+	* CMakeLists.txt: [POS-5103] directory change
+
+	* src/CMakeLists.txt: [POS-5103] scripts directory fix
+
+2021-11-29  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_www_curl.c:
+	(raptor_www_curl_set_ssl_cert_options) Set res
+
+2021-11-21  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Add va_end to turtle_parser_error_simple
+	error paths
+
+	(turtle_parser_error_simple): Ensure va_end is always called on all
+	normal and error paths.  [coverity CID 343351]
+
+	* src/raptor_internal.h, src/raptor_www.c, src/raptor_www_curl.c:
+	Summary: Check curl_easy_setopt() return values for errors In
+	several places check for curl_easy_setopt() erorr returns and
+	fail.  [coverity CID 343360]
+
+	(raptor_new_www_with_connection): On curl module init failures,
+	free up www object before error return.
+
+	(raptor_www_curl_init):
+	Return error value for failure in init, check all calls with a
+	macro.
+
+	(raptor_www_curl_fetch, raptor_www_curl_set_ssl_cert_options)
+	(raptor_www_curl_set_ssl_verify_options): Check and set error
+	messages on failure
+
+2021-11-21  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_grddl.c:
+	Fix leak on failure of WWW model methods
+
+	(raptor_grddl_fetch_uri): On WWW call failures, free up www object
+	before error return. [coverity CID 343353]
+
+	* librdfa/curie.c: Fix check for ".." string (rdfa_resolve_uri):
+	Fix check for ".." that never matched; if was always false
+	[coverity CID 343354]
+
+	* src/raptor_serialize_rdfxmla.c:
+	Handle leak of iter on failure
+
+	(raptor_rdfxmla_emit_subject_properties): Handle leak of iter on
+	rv failure by breaking loop to let normal return handle it.
+	[coverity CID 343358]
+
+2021-11-14  Dave Beckett <dave@dajobe.org>
+
+	* CMakeLists.txt, src/raptor_config_cmake.h.in: Add cmake check
+	for time.h with HAVE_TIME_H
+
+2021-11-09  mathvich <mathvich@gmail.com>
+
+	* CMakeLists.txt, src/raptor_config_cmake.h.in: Fix for CMake
+	build on Windows HAVE_TIME_H definition added
+
+2021-10-16  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Fix newline quoting for OSX sh/bash compatibility
+
+	* Makefile.am: old ChangeLog are not interesting
+
+2021-10-13  Dave Beckett <dave@dajobe.org>
+
+	* src/Makefile.am: Add parsedate.h to BUILT_SOURCES
+
+	* configure.ac:
+	Update bison check to find first new enough GNU
+	bison This probably should find all versions and pick the latest but
+	that's not so easy in this AC_PATH_PROGS_FEATURE_CHECK approach.  It
+	remains that it can be overrridden with the BISON envar, as before.
+
+2021-10-10  Dave Beckett <dave@dajobe.org>
+
+	* src/parsedate.y: Remove ancient protection around ctype calls
+	The isTHING() calls do not need an isascii() wrapper ever.
+
+	* src/parsedate.y, src/raptor_internal.h: Fix time header check
+	with HAVE_ prefix
+
+	* configure.ac, src/parsedate.y, src/raptor_internal.h: Fix
+	headers after removal of AC_HEADER_TIME
+
+2021-10-09  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/parsedate.y: Remove and fix obsolete autoconf
+	- Give AC_PROG_LEX an argument
+	- Remove AC_HEADER_TIME
+	- Remove AC_HEADER_STDC and uses
+	- Update explicit header checks adding getopt.h unistd.h
+
+2021-09-20  Dave Beckett <dave@dajobe.org>
+
+	* INSTALL.html, LICENSE.html, README.html:
+	2021
+
+2021-09-19  Dave Beckett <dave@dajobe.org>
+
+	* NEWS.html, RELEASE.html:
+	Document CVE-2017-18926 fix commit
+
+	* tests/rdfxml/Makefile.am: add bug-650.out
+
+2021-09-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_xml_writer.c:
+	XML Writer : compare namespace
+	declarations correctly Apply patch from
+	0001-CVE-2020-25713-raptor2-malformed-input-file-can-lead.patch.1
+	that fixes Issue#0000650
+	https://bugs.librdf.org/mantis/view.php?id=650 which overwrote heap
+	during XML writing in parse type literal content.  This was detected
+	with clang asan.  Thanks to Michael Stahl / mst2 for the fix.
+
+	* tests/rdfxml/CMakeLists.txt, tests/rdfxml/Makefile.am,
+	tests/rdfxml/bug-650.out, tests/rdfxml/bug-650.rdf:
+	Add Issue
+	#0000650 example to trigger clang asan failure
+
+	* README.html, utils/rapper.1:
+	Mention Atom 0.3 in docs and manual
+	page Fixes Issue#0000652 https://bugs.librdf.org/mantis/view.php?id=652
+
+2020-10-25  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor2-sections.txt: Add raptor_avltree_trim
+
+	* Remove callers of deprecated raptor_www setters
+
 2020-10-25  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_grddl.c, src/raptor_parse.c, src/raptor_www_test.c:
@@ -246,7 +496,7 @@
 	#RAPTOR_ESCAPED_WRITE_JSON_LITERAL and document why
 
 	Fixes Issues #0000606
-	http://bugs.librdf.org/mantis/view.php?id=606
+	https://bugs.librdf.org/mantis/view.php?id=606
 
 	* src/raptor_xml.c, src/raptor_xml_writer.c: Make nsd compare
 	methods handle NULLs (raptor_nsd_compare,
@@ -260,12 +510,12 @@
 	for each attribute a potential name and value.
 
 	Fixes Issues #0000617
-	http://bugs.librdf.org/mantis/view.php?id=617
+	https://bugs.librdf.org/mantis/view.php?id=617
 	and #0000618
-	http://bugs.librdf.org/mantis/view.php?id=618
+	https://bugs.librdf.org/mantis/view.php?id=618
 
 	* src/sort_r.h: Accept cygwin as a Linux-like Fixes Issue
-	#00000600 http://bugs.librdf.org/mantis/view.php?id=600
+	#00000600 https://bugs.librdf.org/mantis/view.php?id=600
 
 2017-04-02  Dave Beckett <dave@dajobe.org>
 
@@ -968,7 +1218,7 @@
 	\r in TRiG "graph-name {"
 
 	Fixes Issue #0000584
-	http://bugs.librdf.org/mantis/view.php?id=584
+	https://bugs.librdf.org/mantis/view.php?id=584
 
 	* src/turtle_lexer.l:
 	(turtle_token_print): Add GRAPH_NAME_LEFT_CURLY
@@ -1018,14 +1268,14 @@
 	raptor_world_get_serializers_count): Added
 
 	Fixes Issue #0000581
-	http://bugs.librdf.org/mantis/view.php?id=581
+	https://bugs.librdf.org/mantis/view.php?id=581
 
 2014-10-26  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_general.c: doc fix
 
 	Fixes Issue #0000579
-	http://bugs.librdf.org/mantis/view.php?id=579
+	https://bugs.librdf.org/mantis/view.php?id=579
 
 	* src/raptor_iostream.c: Code tidy; use nobj for
 	raptor_iostream_write_bytes() return value.
@@ -1042,7 +1292,7 @@
 	expected length.
 
 	Fixes Issue #0000575
-	http://bugs.librdf.org/mantis/view.php?id=575
+	https://bugs.librdf.org/mantis/view.php?id=575
 
 	* src/raptor_ntriples.c, src/raptor_term.c,
 	tests/ntriples/Makefile.am, tests/ntriples/bug-574.nt,
@@ -1051,7 +1301,7 @@
 
 	Replace on parsing.
 	Fixes Issue #0000574
-	http://bugs.librdf.org/mantis/view.php?id=574
+	https://bugs.librdf.org/mantis/view.php?id=574
 
 2014-10-20  Dave Beckett <dave@dajobe.org>
 
@@ -1204,7 +1454,7 @@
 	NUL char, count lengths.
 
 	Fixes Issue #0000576
-	http://bugs.librdf.org/mantis/view.php?id=576
+	https://bugs.librdf.org/mantis/view.php?id=576
 
 	* src/raptor_turtle_writer.c:
 	raptor_turtle_writer_quoted_counted_string handles a counted
@@ -1218,7 +1468,7 @@
 	passed in len.
 
 	Fixes Issue #0000576
-	http://bugs.librdf.org/mantis/view.php?id=576
+	https://bugs.librdf.org/mantis/view.php?id=576
 
 	* src/raptor_uri.c:
 	Do not assume NUL terminated string in
@@ -1228,7 +1478,7 @@
 	fwrite to emit counted URI string to debug file handler.
 
 	Fixes Issue #0000576
-	http://bugs.librdf.org/mantis/view.php?id=576
+	https://bugs.librdf.org/mantis/view.php?id=576
 
 	* src/raptor_internal.h, src/turtle_parser.y: Add RAPTOR_DEBUG_FH
 	define internally

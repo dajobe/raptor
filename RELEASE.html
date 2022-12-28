@@ -11,11 +11,24 @@
 
 <h2 id="rel2_0_16"><a name="rel2_0_16">Raptor2 2.0.16 changes</a></h2>
 
-<p>Not yet released.
-</p>
+<p>Release because ... it's been a while</p>
 
 <p><a href="https://nvd.nist.gov/vuln/detail/CVE-2017-18926">CVE-2017-18926</a>
 fixed in commit 590681e546cd9aa18d57dc2ea1858cb734a3863f</p>
+
+<p><a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25713">CVE-2020-25713</a>
+fixed in commit 4f5dbbffcc1c6cf0398bd03450453289a0979dea</p>
+
+<p>Issues Fixed:</p>
+<ul>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=600">0000600</a>: Can't compile on Cygwin: sort_r.h "Cannot detect operating system"</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=606">0000606</a>: "JSON" format outputs invalid Unicode escapes</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=617">0000617</a>: heap buffer overflow in raptor_qname_format_as_xml</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=618">0000618</a>: heap buffer overflow in raptor_xml_writer_start_element_common</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=650">0000650</a>: Out of bounds read leads to segfault in raptor_xml_writer_start_element_common</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=652">0000652</a>: Manpage for the rapper utility describes the wrong Atom version</li>
+</ul>
+
 
 <h3>Parser changes</h3>
 
@@ -27,12 +40,26 @@ splits the inputs after the end of a turtle "sentence" that ends in a
 pruning during serializing and addition of turtle serializer flush
 implementation.
 
-This improvment across multiple patches was contributed by Sebastian
-Freundt. Thanks</p>
+This improvment across multiple patches was contributed by
+<a href="https://github.com/hroptatyr">Sebastian Freundt</a>. Thanks
+<a href="https://github.com/dajobe/raptor/pull/37">Pull Request #37</a>
+<a href="https://github.com/dajobe/raptor/pull/38">Pull Request #38</a>
+</p>
 
 <p>Turtle parser improvements for Bison 3+ and removing deprecated or
-older style directives.  Pull request #43 by Akim Demaille.  Thanks
+older style directives.
+Thanks to fix from <a href="https://github.com/akimd">Akim Demaille</a>
+<a href="https://github.com/dajobe/raptor/pull/43">Pull Request #43</a>
 </p>
+
+<p>Turtle parser fixes for cleaning up va_arg on failure paths.
+[coverity CID 343351]
+</p>
+
+<p>grddl parser: fix leak on failure paths of WWW model methods
+[coverity CID 343353]
+</p>
+
 
 <h3>Serializer changes</h3>
 
@@ -40,43 +67,83 @@ older style directives.  Pull request #43 by Akim Demaille.  Thanks
 <a href="http://contextknowledgesystems.org/CKS.html">mKR (my Knowledge Representation)</a>
 language with the name <code>mkr</code>  Patch developed by Richard
 H. McCullough based on the Turtle serializer.  Thanks.
+<a href="https://github.com/dajobe/raptor/pull/25">Pull Request #25</a>
 </p>
 
 <p>XML writer calculate max nspace declarations correctly.
 Fixes Issues
-<a href="http://bugs.librdf.org/mantis/view.php?id=617">#0000617</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=617">#0000617</a>
 and
-<a href="http://bugs.librdf.org/mantis/view.php?id=618">#0000618</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=618">#0000618</a>
 </p>
 
 <p>JSON writer changed to write UTF-8 for JSON literals
 Add <code>RAPTOR_ESCAPED_WRITE_BITFLAG_UTF8</code> to
 <code>RAPTOR_ESCAPED_WRITE_JSON_LITERAL</code>
 Fixes Issue
-<a href="http://bugs.librdf.org/mantis/view.php?id=606">#0000606</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=606">#0000606</a>
 </p>
 
+<p>rdfxmla serializer was fixed to handle leak of iter object on some
+failure pathes. [coverity CID 343354] [coverity CID 343358]
+</p>
 
 <p>Fix for RSS 1.0 serializing default namespaces.</p>
-  
-<h3>Other changes</h3>
 
-<p>Handle deleting empty avltree.  Fixes invalid pointer reference
-reported by Li Qiang via email.  Thanks.
+<h3>Writer changes</h3>
+
+<p>XML Writer: compare namespace declarations correctly. Applied a patch from
+0001-CVE-2020-25713-raptor2-malformed-input-file-can-lead.patch.1
+that fixes
+Issue <a href="https://bugs.librdf.org/mantis/view.php?id=650">#0000650</a>
+which overwrote heap during XML writing in parse type literal
+content.  This was detected with clang asan.  Thanks to fix from Michael Stahl
+/ mst2.
 </p>
 
-<p>Several minor fixes and workarounds for clang ASAN warnings or
-false warnings - not able to understand raptor's refernece model.</p>
+<h3>Build and portability fixes</h3>
+
+<p>CMake fixes</p>
+<ul>
+<li>Fix cmake builds for time.h check change, generated pc file.
+Thanks to fix from <a href="https://github.com/Artturin">Artturin</a>.
+<a href="https://github.com/dajobe/raptor/pull/52">Pull Request #52</a>
+</li>
+
+<li>Multiple cmake build fixes.  Thanks to multiple changes from
+<a href="https://github.com/mathvich">mathvich</a>.
+<a href="https://github.com/dajobe/raptor/pull/50">Pull Request #50</a>
+</li>
+
+<li>Multiple fixes for Appveyor's Windows build using CMake
+Thanks to fix from <a href="https://github.com/0u812">0u812</a>.
+</li>
+
+<li>Multiple fixes for Cmake build system to allow building from
+source including running flex, bison and running the tests.
+Thanks to fix from <a href="https://github.com/0u812">0u812</a>.
+</li>
+
+<li>Made Raptor build again with CMake under Windows via CI as a
+service Appveyor.  The resulting binaries and libraries were not
+tested.</li>
+</ul>
+
+<p>Remove and fix obsolete autoconf: AC_PROG_LEX AC_HEADER_TIME AC_HEADER_STDC.
+</p>
+
+<p>Update bison check to find first new enough GNU bison</p>
+
+<p>Fix configure.ac <code>-Wimplicit-function-declaration</code> in
+<code>HAVE___FUNCTION__</code> test to provide Clang 16 support.  Fix
+from Sam James, thanks.
+</p>
 
 <p>Support newer ICU UC version (>=56) for newer NFC check
 interface <code>unorm2_quickCheck()</code>..</p>
 
-<p>Use only pkgconfig for libxslt and ICU UC. Patches from Hugh
-McMaster.  Thanks.
-</p>
-
-<p>Updated Travis configuration to try builds across a wider range of
-compilers and with clang ASAN enabled.</p>
+<p>Several minor fixes and workarounds for clang ASAN warnings or
+false warnings - not able to understand raptor's reference model.</p>
 
 <p>Updated fix-flex.pl script for newer flex naming conventions.</p>
 
@@ -87,31 +154,20 @@ error message callbacks in turtle and grddl parsers
 <p>Later, updated to make bison 3.4 the minimum.</p>
 
 <p>Update turtle parser and support scripts to work with Bison 3.0.5
-Patch contributed by Adam Novak. Thanks.</p>
-
-<p>Multiple fixes for Appveyor's Windows build using CMake
-Thanks to <a href="https://github.com/0u812">0u812</a>.
+Patch contributed by Adam Novak. Thanks.
+<a href="https://github.com/dajobe/raptor/pull/39">Pull Request #39</a>
 </p>
-
-<p>Multiple fixes for Cmake build system to allow building from
-source including running flex, bison and running the tests.
-Thanks to <a href="https://github.com/0u812">0u812</a>.
-</p>
-
-<p>Made Raptor build again with CMake under Windows via CI as a
-service Appveyor.  The resulting binaries and libraries were not
-tested.</p>
 
 <p>Fix GNUInstallDirs for install paths to be able to install
 libraptor2.a and raptor2.pc to a specific directory when
-cross-compiling. Thanks to
-<a href="https://github.com/ariadnext">Eric Le Lay</a>.</p>
+cross-compiling. Thanks to fix from
+<a href="https://github.com/ariadnext">Eric Le Lay</a>.
+<a href="https://github.com/dajobe/raptor/pull/36">Pull Request #36</a>
+</p>
 
 <p>Made some code changes to quiet GCC extra warnings.</p>
 
 <p>Portability fixes for OpenBSD</p>
-
-<p>Fixed a few resource leaks on error found by Coverity.</p>
 
 <p>Some portability for building under cygwin by Richard
 H. McCullough while developing the mkr serializer.
@@ -125,15 +181,51 @@ Thanks to fix by <a href="https://github.com/philjohn">philjohn</a>
 with yocto.  Thanks to fix by Andreas Müller.
 </p>
 
-<p>Change <code>rapper(1)</code> utility to count in longs instead of
-ints.  Because: billions and billions of triples.  Thanks to patch
-from <a href="https://github.com/JervenBolleman">Jerven Bolleman</a>.</p>p>
-
-<p>Accept cygwin as a Linux-like. Fixes
-Issue <a href="http://bugs.librdf.org/mantis/view.php?id=600">#00000600</a>.
+<p>Use only pkgconfig for libxslt and ICU UC. Patches from Hugh
+McMaster.  Thanks.
 </p>
 
-	
+<p>Updated Travis configuration to try builds across a wider range of
+compilers and with clang ASAN enabled.</p>
+
+
+
+<h3>Other changes</h3>
+
+<p>Handle deleting empty avltree.  Fixes invalid pointer reference
+reported by Li Qiang via email.  Thanks.
+</p>
+
+<p>Change <code>rapper(1)</code> utility to count in longs instead of
+ints.  Because: billions and billions of triples.  Thanks to patch
+from <a href="https://github.com/JervenBolleman">Jerven Bolleman</a>.
+</p>
+
+<p>Accept cygwin as a Linux-like.
+Fixes Issue <a href="https://bugs.librdf.org/mantis/view.php?id=600">#0000600</a>.
+</p>
+
+<p>Mention Atom 0.3 in docs and manual page
+Fixes Issue <a href="https://bugs.librdf.org/mantis/view.php?id=652">#0000652</a>.
+</p>
+
+<p>Check <code>curl_easy_setopt()</code> return values for errors In
+several places check for <code>curl_easy_setopt()</code> erorr
+returns and fail.  [coverity CID 343360]
+</p>
+
+<p>Fixed internal ICU string NFC check to convert to UTF-16 first
+before trying to do a NFC normalization check.  This allows returning
+an error response.
+</p>
+
+<p><code>raptor_uri_counted_filename_to_uri_string()</code> fix to
+copy NUL when copying the <code>file://</code>code prefix.  Coverity
+false positive since the following lines of code always add more
+characters and a NUL.  "Fixes" [Coverity CID 353858]
+</p>
+
+
 <h2 id="rel2_0_15"><a name="rel2_0_15">Raptor2 2.0.15 changes</a></h2>
 
 
@@ -146,13 +238,13 @@ sequences and a few other useful methods.<br />
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=574">0000574</a>: Language tags with underscore</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=575">0000575</a>: Wrong API or wrong API documentation</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=576">0000576</a>: Wrong assert for a counted string being nul terminated</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=577">0000577</a>: iri parsing does not conform to REC-n-quads-20140225</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=579">0000579</a>: raptor_world_generate_bnodeid accepts world not parser</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=581">0000581</a>: My patch for parser and serializers count</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=584">0000584</a>: raptor fails to parse trig files with dos line endings</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=574">0000574</a>: Language tags with underscore</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=575">0000575</a>: Wrong API or wrong API documentation</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=576">0000576</a>: Wrong assert for a counted string being nul terminated</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=577">0000577</a>: iri parsing does not conform to REC-n-quads-20140225</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=579">0000579</a>: raptor_world_generate_bnodeid accepts world not parser</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=581">0000581</a>: My patch for parser and serializers count</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=584">0000584</a>: raptor fails to parse trig files with dos line endings</li>
 </ul>
 
 
@@ -164,18 +256,18 @@ via gcc5 warning.</p>
 
 <p>The TRiG parser now accepts \r newlines between the graph name and
 the following '{'.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=584">Issue #0000584</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=584">Issue #0000584</a>
 </p>
 
 <p>Turtle, TRiG, N-Triples and N-Quads parsers now check escapes
 correctly for URI strings. \t \b \n \r \f are forbidden.  Check that
 raw ' ' or \u0020, \u003C or \u003E are also not accepted.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=577">Issue #0000577</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=577">Issue #0000577</a>
 </p>
 
 <p>N-Triples / N-Quads parsers nwo accept '_' as an alias for '-' in
 lang strings. '_' is not legal.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=574">Issue #0000574</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=574">Issue #0000574</a>
 </p>
 
 <p>Updated RDFa parser (librdfa) to support full URLs for
@@ -196,7 +288,7 @@ from Richard H. McCullough. Thanks!
 <p><code>raptor_iostream_decimal_write()</code> and
 <code>raptor_iostream_hexadecimal_write</code> now return non-0 if
 they do not succeed in writing successfully.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=575">Issue #0000575</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=575">Issue #0000575</a>
 </p>
 
 <h3>Term class changes</h3>
@@ -208,7 +300,7 @@ the same as a NULL blank node ID argument.</p>
 
 <p>Fixed <code>raptor_uri_counted_filename_to_uri_string()</code> to
 use the passed in len, not look for end NUL char and count lengths.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
 </p>
 
 <p><code>raptor_new_uri_from_counted_string()</code> no longer
@@ -223,7 +315,7 @@ output buffer is big enough.</p>
 <p>Fixed <code>raptor_turtle_writer_quoted_counted_string()</code> to
 use the passed in length, drop the <code>strlen()</code> call and use
 the length internally.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>.
 </p>
 
 <h3>World class changes</h3>
@@ -231,7 +323,7 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=576">Issue #0000576</a>
 <p>Added <code>raptor_world_get_parsers_count()</code>
 and <code>raptor_world_get_serializers_count()</code>
 with patch from Victor Porton. Thanks!
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=581">Issue #0000581</a>.</p>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=581">Issue #0000581</a>.</p>
 
 <h3>Other Changes</h3>
 
@@ -289,13 +381,13 @@ code that clang and coverity complain about.</p>
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=562">0000562</a>: N-Quads parsing of URIs with ' fails</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=562">0000562</a>: N-Quads parsing of URIs with ' fails</li>
 </ul>
 
 <h3>Parser changes</h3>
 
 <p>The N-Triples / N-Quads parser was updated to allow ' in URIs.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=562">Issue #0000562</a>.
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=562">Issue #0000562</a>.
 </p>
 
 <h3>Configuration changes</h3>
@@ -358,8 +450,8 @@ strings created by <code>raptor_term_to_counted_string()</code> and
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=556">0000556</a>: Problem with relative URI in rdf:about, rdf:resource etc.</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=554">0000554</a>: RDF/XML serializer does not canonicalize attribute order in XMLLiterals</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=556">0000556</a>: Problem with relative URI in rdf:about, rdf:resource etc.</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=554">0000554</a>: RDF/XML serializer does not canonicalize attribute order in XMLLiterals</li>
 </ul>
 
 <h3>Parser changes</h3>
@@ -378,7 +470,7 @@ Many internal changes were also made.
 <p>RDF/XML parser fixed the XML Canonicalization so that it writes
 the XML attributes in sorted order.
 Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=554">Issue #0000554</a>.
+<a href="https://bugs.librdf.org/mantis/view.php?id=554">Issue #0000554</a>.
 </p>
 
 <h3>URI class changes</h3>
@@ -417,10 +509,10 @@ sanitizing.</p>
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=532">0000532</a>: configure.ac: required file `src/raptor_config.h.in' not found</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=535">0000535</a>: configure accepts bogus values for --with-xml2-config</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=545">0000545</a>: Reopen issue 503</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=548">0000548</a>: xml:lang inside rdf:parseType=&quot;Literal&quot; are removed in parsed output</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=532">0000532</a>: configure.ac: required file `src/raptor_config.h.in' not found</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=535">0000535</a>: configure accepts bogus values for --with-xml2-config</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=545">0000545</a>: Reopen issue 503</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=548">0000548</a>: xml:lang inside rdf:parseType=&quot;Literal&quot; are removed in parsed output</li>
 </ul>
 
 <h3>Parser changes</h3>
@@ -480,7 +572,7 @@ trying pkg-config unless <code>--with-curl-config=no</code>
 
 <p><code>configure</code> now dies if xml2-config or xslt-config
 point at non executable files. 	Patch from Michael Stahl - thanks.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=535">Issue #0000534</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=535">Issue #0000534</a>
 </p>
 
 <p><code>configure</code> now adds curl or libxml pkg-config requires
@@ -489,7 +581,7 @@ dependency on pkg-config files if they are not needed.</p>
 
 <p>Updated autogen.sh and code to handle variations of header
 macro.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=532">Issue #0000532</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=532">Issue #0000532</a>
 </p>
 
 
@@ -498,11 +590,11 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=532">Issue #0000532</a>
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=499">0000499</a>: Turtle parser fails to correctly parse valid syntax</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=508">0000508</a>: Raptor objects to possibly valid Turtle syntax</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=520">0000520</a>: compilation failure</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=521">0000521</a>: Python RDF 1.0.14.1 segfault when one tries to parse xhtml+rdf using the RDFa parser</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=526">0000526</a>: Document how to find gtkdocize in INSTALL.html</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=499">0000499</a>: Turtle parser fails to correctly parse valid syntax</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=508">0000508</a>: Raptor objects to possibly valid Turtle syntax</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=520">0000520</a>: compilation failure</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=521">0000521</a>: Python RDF 1.0.14.1 segfault when one tries to parse xhtml+rdf using the RDFa parser</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=526">0000526</a>: Document how to find gtkdocize in INSTALL.html</li>
 </ul>
 
 
@@ -510,7 +602,7 @@ Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=532">Issue #0000532</a>
 
 <p>RDFa parser:
 Handle non-namespaced elements without crash in RDFa.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=521">Issue #0000521</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=521">Issue #0000521</a>
 </p>
 
 <p>Turtle Parser: Added full support for
@@ -566,7 +658,7 @@ automake can run.</p>
 present in older libxml2 versions.  The entities checked field was
 added 2006-10-10 in <a href="http://git.gnome.org/browse/libxml2/commit/?id=a37a6ad91a61d168ecc4b29263def3363fff4da6and">libxml2 GIT commit a37a6ad91a61d168ecc4b29263def3363fff4da6and</a>
 released in libxml2 2.6.27 on 2006-10-25.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=520">Issue #0000520</a>
 </p>
 
 
@@ -588,10 +680,10 @@ f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=381">0000381</a>: Raptor incorrectly serializes turtle lists when list nodes are URIs.</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=487">0000487</a>: Does raptor_world_guess_parser_name [librdf_parser_guess_name2] ever return NULL?</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=505">0000505</a>: Parsing certain escaped unicode strings in Turtle cases an error</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=507">0000507</a>: Turtle parse error causes fatal error</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=381">0000381</a>: Raptor incorrectly serializes turtle lists when list nodes are URIs.</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=487">0000487</a>: Does raptor_world_guess_parser_name [librdf_parser_guess_name2] ever return NULL?</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=505">0000505</a>: Parsing certain escaped unicode strings in Turtle cases an error</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=507">0000507</a>: Turtle parse error causes fatal error</li>
 </ul>
 
 <h3>Parser class changes</h3>
@@ -600,7 +692,7 @@ f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
 <code>raptor_world_guess_parser_name()</code> now returns NULL failure
 when the guess is very poor, rather just return the first bad result.
 Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=487">Issue #0000487</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=487">Issue #0000487</a>
 which was reported in <a href="http://librdf.org/">Redland librdf</a> but
 is implemented here.
 </p>
@@ -632,7 +724,7 @@ leaks / double frees.
 problems.  When a Turtle qname cannot be found, a fatal error is no
 longer generated but a regular error message giving information on
 the qname that failed (usually due to unknown prefix).
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=507">Issue #0000507</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=507">Issue #0000507</a>
 </p>
 
 
@@ -648,7 +740,7 @@ for undefined language (no <code>xml:lang</code> present).
 
 <p>Turtle: Do not emit a Turtle <code>(...)</code> collection if the
 list item is a URI.  This fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=381">Issue #0000381</a>.
+<a href="https://bugs.librdf.org/mantis/view.php?id=381">Issue #0000381</a>.
 </p>
 
 
@@ -665,7 +757,7 @@ string form of <code>raptor_term_to_turtle_string</code>.
 <code>raptor_unicode_utf8_string_get_char()</code>
 now allow reading / writing U+D800 to U+DFFF (UTF-16 surrogates).
 rather than returning failure.  BOMs remain forbidden - definitely not UTF-8.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=505">Issue #0000505</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=505">Issue #0000505</a>
 </p>
 
 
@@ -756,8 +848,8 @@ or no arguments to read from stdin.</p>
 
 <p>Issues Fixed:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=448">0000448</a>: Turtle parser does not return error status from turtle_parse_chunk()</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=469">0000469</a>: Allow rapper to bypass server SSL certs checks in libcurl</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=448">0000448</a>: Turtle parser does not return error status from turtle_parse_chunk()</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=469">0000469</a>: Allow rapper to bypass server SSL certs checks in libcurl</li>
 </ul>
 
 <p>Removed Expat support since expat has not had a release in years
@@ -806,7 +898,7 @@ enforcing of network, file and entity loading policy.</p>
 
 <p>Turtle parser now returns parser errors to
 <code>raptor_parse_chunk()</code>.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=488">Issue #0000488</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=488">Issue #0000488</a>
 </p>
 
 
@@ -850,7 +942,7 @@ file that exists:
 
 <p>Added <code>raptor_www_set_ssl_verify_options()</code> to set SSL
 verify options.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>.
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=469">Issue# 0000469</a>.
 </p>
 
 <p>The <code>raptor_www_fetch()</code> call now returns the status
@@ -898,10 +990,10 @@ generate permuations:</p>
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=465">0000465</a>: c99 snprintf usage</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=476">0000476</a>: Add Format URIs to raptor_syntax_descriptions</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=479">0000479</a>: raptor 2.0.4 : -i nquads fails to treat the context term as optional  bugs.librdf.org</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=481">0000481</a>: Invalid unicode characters cause raptor to emit infinite output while converting n-quads to n-triples</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=465">0000465</a>: c99 snprintf usage</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=476">0000476</a>: Add Format URIs to raptor_syntax_descriptions</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=479">0000479</a>: raptor 2.0.4 : -i nquads fails to treat the context term as optional  bugs.librdf.org</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=481">0000481</a>: Invalid unicode characters cause raptor to emit infinite output while converting n-quads to n-triples</li>
 </ul>
 
 
@@ -917,7 +1009,7 @@ sheet URI.</p>
 
 <p>N-Quads parser: Make context optional. (Lauri Aalto)
 Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=479">Issue #0000479</a>.
+<a href="https://bugs.librdf.org/mantis/view.php?id=479">Issue #0000479</a>.
 <br />
 When guessing formats, make N-Quads always beat N-Triples since
 since now all ntriples parse fine with the nquads parser. (Lauri Aalto)
@@ -943,7 +1035,7 @@ type in the syntax recognizing code.
 
 Do not generate infinite output when the input Unicode UTF-8 encoding
 is bad.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=481">Issue #000481</a>.
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=481">Issue #000481</a>.
 </p>
 
 <h3>Unicode class changes</h3>
@@ -968,7 +1060,7 @@ of a UTF-8 string <code>raptor_unicode_utf8_substr()</code>:
 
 <p><code>raptor_uri_string_to_relative_uri_string()</code> now
 compares URI paths not files. (Joe Presbrey)
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=472">Issue #0000472</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=472">Issue #0000472</a>
 </p>
 
 
@@ -1014,7 +1106,7 @@ convention.
 <p><code>raptor_locator_format()</code> now picks a large enough
 buffer size if <code>snprintf()</code> is likely not portable, when
 HAVE_C99_VSNPRINTF is not defined.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=465">Issue #0000465</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=465">Issue #0000465</a>
 </p>
 
 <p>Internal code style changes for how allocation is done and casting
@@ -1065,12 +1157,12 @@ potentially truncated to size of int.
 
 <p>Issues Fixed:</p>
 <ul>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=308">0000308</a>: undefined reference to round and trunc while cross compiling for mipsel</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=449">0000449</a>: ntriples serializer and parser inconsistent w.r.t. _ in name tokens</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=451">0000451</a>: Incorrect qname definition in TRiG parser</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=455">0000455</a>: Incorrect AVL tree operations. [ with fix ]</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=456">0000456</a>: raptor-2.0.3 fails to build against yajl-2.0.2 API</li>
-<li><a href="http://bugs.librdf.org/mantis/view.php?id=457">0000457</a>: raptor-2.0.3 fails to build with curl-7.21.7</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=308">0000308</a>: undefined reference to round and trunc while cross compiling for mipsel</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=449">0000449</a>: ntriples serializer and parser inconsistent w.r.t. _ in name tokens</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=451">0000451</a>: Incorrect qname definition in TRiG parser</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=455">0000455</a>: Incorrect AVL tree operations. [ with fix ]</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=456">0000456</a>: raptor-2.0.3 fails to build against yajl-2.0.2 API</li>
+<li><a href="https://bugs.librdf.org/mantis/view.php?id=457">0000457</a>: raptor-2.0.3 fails to build with curl-7.21.7</li>
 </ul>
 
 <h3>Parser class changes</h3>
@@ -1179,7 +1271,7 @@ chunk of data and continue lexing later.
 </p>
 
 <p>Fix value ownership fix graph name.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=437">Issue #0000437</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=437">Issue #0000437</a>
 </p>
 
 <h3>Other Changes</h3>
@@ -1222,7 +1314,7 @@ checking bug in <code>raptor_new_world()</code>
 <p>The internal librdfa parser that uses Raptor internals now exports
 symbols prefixed with raptor_librdfa so that Raptor can be linked
 with the standard librdfa in applications without symbol clashes.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=416">Issue #0000416</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=416">Issue #0000416</a>
 </p>
 
 <h3>Serializer class changes</h3>
@@ -1260,7 +1352,7 @@ working.</p>
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=405">0000405</a>: RDFa parser does not handle base href with single quoted value</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=405">0000405</a>: RDFa parser does not handle base href with single quoted value</li>
 </ul>
 
 
@@ -1369,7 +1461,7 @@ lengths are known and the same.
 <code>Content-Location:</code> header to get the base URI for content
 retrievals.  This allows these base URIs to be used in parsing
 content retrived from URIs.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=402">Issue #0000402</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=402">Issue #0000402</a>
 </p>
 
 
@@ -1414,12 +1506,12 @@ the new APIs.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=357">0000357</a>: raptor_term_as_string does not return N-Triples escaped string, although API says so</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: HTML Table serializer</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=369">0000369</a>: Unescaped quotes in long literals (Turtle/N3) cause parser failure if at the end of the literal</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=370">0000370</a>: Odd behaviour regarding the parsing of Trig files</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=373">0000373</a>: Remove deprecated GTK symbols</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=379">0000379</a>: raptor libxslt security policy conflicts with apps that also use libxslt and set security policy</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=357">0000357</a>: raptor_term_as_string does not return N-Triples escaped string, although API says so</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=361">0000361</a>: HTML Table serializer</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=369">0000369</a>: Unescaped quotes in long literals (Turtle/N3) cause parser failure if at the end of the literal</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=370">0000370</a>: Odd behaviour regarding the parsing of Trig files</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=373">0000373</a>: Remove deprecated GTK symbols</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=379">0000379</a>: raptor libxslt security policy conflicts with apps that also use libxslt and set security policy</li>
 </ul>
 
 
@@ -1665,7 +1757,7 @@ overridden with
 allows user code to disable raptor touching the security preferences
 entirely.
 Fixes
-<a href="http://bugs.librdf.org/mantis/view.php?id=379">Issue #0000379</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=379">Issue #0000379</a>
 </p>
 
 
@@ -1922,12 +2014,12 @@ is underway.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=318">0000318</a>: Cannot end a Turtle literal with \\ inside triple-quotes</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=319">0000319</a>: ntriples parser does not register that it accepts ntriples mime type - text/plain</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=326">0000326</a>: Turtle parser allows '.' in qnames which is not-to-spec</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=331">0000331</a>: Turtle long literals with raw newlines do not count line numbers correctly</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=332">0000332</a>: RDFXML parser finds duplicates and misbehaves (when it shouldn't)</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=337">0000337</a>: raptor/turtle outputs invalid qnames which cause syntax errors on parsing</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=318">0000318</a>: Cannot end a Turtle literal with \\ inside triple-quotes</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=319">0000319</a>: ntriples parser does not register that it accepts ntriples mime type - text/plain</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=326">0000326</a>: Turtle parser allows '.' in qnames which is not-to-spec</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=331">0000331</a>: Turtle long literals with raw newlines do not count line numbers correctly</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=332">0000332</a>: RDFXML parser finds duplicates and misbehaves (when it shouldn't)</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=337">0000337</a>: raptor/turtle outputs invalid qnames which cause syntax errors on parsing</li>
 </ul>
 
 <h3>Parser changes</h3>
@@ -1981,10 +2073,10 @@ numbering.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=306">0000306</a>: rapper doesn't handle datatype=""and xml:lang="" properly with RDFa</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=307">0000307</a>: configure fails at vnsprintf test when cross compiling</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=310">0000310</a>:  Raptor does not like single character namespaces with RDFa</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=312">0000312</a>: Ununitialized pointer in example rdfserialize.c causes crash</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=306">0000306</a>: rapper doesn't handle datatype=""and xml:lang="" properly with RDFa</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=307">0000307</a>: configure fails at vnsprintf test when cross compiling</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=310">0000310</a>:  Raptor does not like single character namespaces with RDFa</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=312">0000312</a>: Ununitialized pointer in example rdfserialize.c causes crash</li>
 </ul>
 
 <h3>Parser Changes</h3>
@@ -2002,9 +2094,9 @@ a438ce68a40e04b399ec2b2c613d0c867d9315c7 <br />
 now moved to 
 <a href="http://github.com/msporny/librdfa">http://github.com/msporny/librdfa</a>
 to fix handling single character namespaces
-(<a href="http://bugs.librdf.org/mantis/view.php?id=310">Issue #0000310</a>),
+(<a href="https://bugs.librdf.org/mantis/view.php?id=310">Issue #0000310</a>),
 empty datatype attribute and empty xml:lang attributes
-(<a href="http://bugs.librdf.org/mantis/view.php?id=306">Issue #0000306</a>)
+(<a href="https://bugs.librdf.org/mantis/view.php?id=306">Issue #0000306</a>)
 </p>
 
 <p>Added three unapproved RDFa tests 0172, 0173 and 0174 to cover the
@@ -2028,12 +2120,12 @@ O(log N) - from list to balanced tree.
 <p>If cross compiling, check for <code>vsnprintf()</code> C99 compatible at
 runtime by setting define <code>CHECK_VSNPRINTF_RUNTIME</code> during
 configuration.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=307">Issue #0000307</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=307">Issue #0000307</a>
 </p>
 
 <p>Use <code>calloc()</code> for allocating a <code>raptor_statement</code> in
 rdfserializer.c example code to properly initialise state.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=312">Issue #0000312</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=312">Issue #0000312</a>
 </p>
 
 <p>Use <code>AC_SYS_LARGEFILE</code> to get large file IO checks which
@@ -2058,22 +2150,22 @@ with 1.9.x numbering.</p>
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=259">0000259</a>: Fix NFC check for legal combiner sequence</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=262">0000262</a>: Error when <code>raptor_new_uri()</code> fails in Turtle parser</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=263">0000263</a>: Invalid turtle output syntax on empty integer/double/decimal literals </li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=266">0000266</a>: Default/atom namespace in atom serializer output</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=269">0000269</a>: strstr is called in <code>raptor_parse_chunk()</code> on a buffer string, where it should be called on a null-terminating string.</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=270">0000270</a>: RSS serializer fixes for g++</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=276">0000276</a>: Fix <code>raptor_sequence_set_at()</code> when setting beyond end</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=277">0000277</a>: broken collection abbreviation in turtle serialization</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=287">0000287</a>: Fix <code>raptor_sax2_parse_chunk()</code> calling <code>raptor_log_error_to_handlers()</code> with expat</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=288">0000288</a>: raptor_get_feature function does not return feature value</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=289">0000289</a>: Fix RDFa parser problem when there is a subject and predicate specified on an element, but no child nodes for the object literal</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=290">0000290</a>: Fix performance problems when turtle parsing with lots of namespaces</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=293">0000293</a>: Fix RDF/XML Parser problem with legacy ordinal predicates</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=296">0000296</a>: Avoid calling <code>xsltSetDefaultSecurityPrefs()</code></li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=299">0000299</a>: Avoid calling <code>xmlSetStructuredErrorFunc()</code> and <code>xmlSetGenericErrorFunc()</code></li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=303">0000303</a>: rdfa parser does not parse content as RDFa which librdfa+expat alone handles</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=259">0000259</a>: Fix NFC check for legal combiner sequence</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=262">0000262</a>: Error when <code>raptor_new_uri()</code> fails in Turtle parser</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=263">0000263</a>: Invalid turtle output syntax on empty integer/double/decimal literals </li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=266">0000266</a>: Default/atom namespace in atom serializer output</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=269">0000269</a>: strstr is called in <code>raptor_parse_chunk()</code> on a buffer string, where it should be called on a null-terminating string.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=270">0000270</a>: RSS serializer fixes for g++</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=276">0000276</a>: Fix <code>raptor_sequence_set_at()</code> when setting beyond end</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=277">0000277</a>: broken collection abbreviation in turtle serialization</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=287">0000287</a>: Fix <code>raptor_sax2_parse_chunk()</code> calling <code>raptor_log_error_to_handlers()</code> with expat</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=288">0000288</a>: raptor_get_feature function does not return feature value</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=289">0000289</a>: Fix RDFa parser problem when there is a subject and predicate specified on an element, but no child nodes for the object literal</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=290">0000290</a>: Fix performance problems when turtle parsing with lots of namespaces</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=293">0000293</a>: Fix RDF/XML Parser problem with legacy ordinal predicates</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=296">0000296</a>: Avoid calling <code>xsltSetDefaultSecurityPrefs()</code></li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=299">0000299</a>: Avoid calling <code>xmlSetStructuredErrorFunc()</code> and <code>xmlSetGenericErrorFunc()</code></li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=303">0000303</a>: rdfa parser does not parse content as RDFa which librdfa+expat alone handles</li>
 </ul>
 
 
@@ -2081,7 +2173,7 @@ with 1.9.x numbering.</p>
 
 <p><code>raptor_get_feature()</code> now returns the integer value rather than
 just 1 or 0.<br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=288">Issue #0000288</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=288">Issue #0000288</a>
 </p>
 
 <p>Guess parser: return name of guessed parser not 'guess'.
@@ -2089,7 +2181,7 @@ just 1 or 0.<br />
 
 <p>N-Triples parser:
 Produce error messages when raptor_new_uri() fails. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=262">Issue #0000262</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=262">Issue #0000262</a>
 </p>
 
 <p>RDFa parser:
@@ -2097,7 +2189,7 @@ Fix problem when there is a subject and predicate specified on an
 element, but no child nodes for the object literal using
 latest librdfa GIT source with head
 2ddcb3f9e010d0b3d9ee546e807539be5da1b14a <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=289">Issue #0000289</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=289">Issue #0000289</a>
 </p>
 
 <p>RSS tag soup parser:
@@ -2111,7 +2203,7 @@ Added itunes namespace and container.<br />
 
 <p>RDF/XML Parser:
 Adjust predicate_type when removing ordinal identifier type from predicate. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=293">Issue #0000293</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=293">Issue #0000293</a>
 </p>
 
 
@@ -2128,14 +2220,14 @@ consumed by <code>strtol()</code> (for integers) or
 <code>strtod()</code> (for decimals and doubles). Otherwise produce a
 warning and emit literal in the normal
 <code>"value"^^&lt;datatype_uri&gt;</code> format. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=263">Issue #0000263</a><br />
+<a href="https://bugs.librdf.org/mantis/view.php?id=263">Issue #0000263</a><br />
 Fix broken collection abbreviation<br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=277">Issue #0000277</a><br />
+<a href="https://bugs.librdf.org/mantis/view.php?id=277">Issue #0000277</a><br />
 </p>
 
 <p>RSS serializer:
 Fixes for g++ <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=270 ">Issue #0000270</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=270 ">Issue #0000270</a>
 <br />
 Added a new serializer feature
 <code>RAPTOR_FEATURE_PREFIX_ELEMENTS</code> (short name
@@ -2156,7 +2248,7 @@ optionally but will do a save/restore of the existing functions.
 This protection is enabled by the new API call
 <code>raptor_set_libxml_flags()</code> to set the flags from values
 in enum <code>raptor_libxml_flags</code>. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=299">Issue #0000299</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=299">Issue #0000299</a>
 </p>
 
 <p>Use context-specific libslt security configuration to avoid
@@ -2164,7 +2256,7 @@ calling generic call <code>xsltSetDefaultSecurityPrefs()</code> which
 can be a problem when libxslt is shared with other code in memory.
 Allow the user to set the policy for raptor globally with new API
 function <code>raptor_set_libxslt_security_preferences()</code>. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=296">Issue #0000296</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=296">Issue #0000296</a>
 </p>
 
 <p>Make libxml SAX2 structured errors register parser-specific
@@ -2175,7 +2267,7 @@ method above can still enable registerding the global error handlers.
 
 <p>In <code>raptor_sax2_parse_chunk()</code> fixed calls to
 <code>raptor_log_error_to_handlers()</code> when built with expat. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=287">Issue #0000287</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=287">Issue #0000287</a>
 </p>
 
 
@@ -2191,7 +2283,7 @@ violation on windows.</li>
 contract: provide "size" consecutive items in "sequence" starting from
 "start" even when setting items more than +1 offset beyond the end of
 sequence. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=276">Issue #0000276</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=276">Issue #0000276</a>
   </li>
 </ul>
 
@@ -2213,12 +2305,12 @@ for RDF/XML, Turtle, etc.
 <p>Use a DJ Bernstein hash to replace a linked list for storing a
 stack of namespaces.  This makes turtle parsing with lots of
 namespaces (100s) much faster.  Based on the initial patch in the bug. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=290">Issue #0000290</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=290">Issue #0000290</a>
 </p>
 
 <p>Use new internal <code>raptor_memstr()</code> function to compare
 a string against a buffer that may not be NUL terminated. <br />
-<a href="http://bugs.librdf.org/mantis/view.php?id=269">Issue #0000269</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=269">Issue #0000269</a>
 </p>
 
 <p><code>raptor_error_handlers</code>: API structure gains world
@@ -2496,8 +2588,8 @@ for future replacing of <code>raptor_statement</code></p>
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=186">0000186</a>: Add RDFa support to Raptor</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=255">0000255</a>: rss-tag-soup serializer does not generate namespaces so re-serializing in rdf/xml looks wierd for atom</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=186">0000186</a>: Add RDFa support to Raptor</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=255">0000255</a>: rss-tag-soup serializer does not generate namespaces so re-serializing in rdf/xml looks wierd for atom</li>
 </ul>
 
 
@@ -2665,8 +2757,8 @@ Added an initialization function for the structure,
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=252">0000252</a>: Allow controlling of cache headers in Raptor</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=245">0000245</a>: Extra classes added to an OWL object</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=252">0000252</a>: Allow controlling of cache headers in Raptor</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=245">0000245</a>: Extra classes added to an OWL object</li>
 </ul>
 
 
@@ -2748,7 +2840,7 @@ ordering between <code>raptor_statement</code> objects. (Dave B)
 <p>Added new parser features to control HTTP headers in
 web requests (Dave B, based on a patch in the bug):<br />
 Also never <code>Pragma:</code> header with libcurl ever.<br />
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue #0000252</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=252">Issue #0000252</a>
 </p>
 <ul>
 <li><code>RAPTOR_FEATURE_WWW_HTTP_CACHE_CONTROL</code> to control
@@ -2829,7 +2921,7 @@ changes the previous syntax output order but has no semantic
 difference.  (Dave B)
 </li>
 <li>Use the AVL Tree to remove duplicate triples. (Dave B)<br />
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=245">Issue #0000245</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=245">Issue #0000245</a>
 </li>
 </ul>
 
@@ -2853,7 +2945,7 @@ to match Turtle latest spec. (Dave B)</li>
 <p>Added new method <code>raptor_www_set_http_cache_control()</code>
 to set the HTTP <code>Cache-Control:</code> header in requests.
 (Dave B, based on a patch in the bug) <br />
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=252">Issue #0000252</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=252">Issue #0000252</a>
 </p>
 
 
@@ -2955,19 +3047,19 @@ for large graphs.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000188">0000188</a>: Wrong RAPTOR_API definition for mingw</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000192">0000192</a>: raptor_uri_filename_to_uri_string() - getcwd() loop error</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000194">0000194</a>: parser and serializer don't recognize the same mime types</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000195">0000195</a>: Compile error in raptor_serialize.c debug code</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000207">0000207</a>: RDF file can be parsed, but not then serialised.</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000210">0000210</a>: RAPTOR_FEATURE_WRITER_XML_DECLARATION broken in Ruby</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000214">0000214</a>: Empty rdf:about, plus base-uri, produces incorrect turtle output</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000216">0000216</a>: flickrdf segfaults at raptor_serialize_end!</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000217">0000217</a>: flickrdf segfaults at raptor_serialize_end!</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000232">0000232</a>: libraptor does not correctly free up libxml error handler, causing crashes in subsequent calls to libxml error handlers</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000237">0000237</a>: raptor_sequence robustness: item ownership on insert error</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000238">0000238</a>: GRDDL parser in SVN overwrites blank nodes when merging graphs</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000239">0000239</a>: GRDDL parser in SVN returns 60 less triples with http://www.w3.org/</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000188">0000188</a>: Wrong RAPTOR_API definition for mingw</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000192">0000192</a>: raptor_uri_filename_to_uri_string() - getcwd() loop error</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000194">0000194</a>: parser and serializer don't recognize the same mime types</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000195">0000195</a>: Compile error in raptor_serialize.c debug code</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000207">0000207</a>: RDF file can be parsed, but not then serialised.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000210">0000210</a>: RAPTOR_FEATURE_WRITER_XML_DECLARATION broken in Ruby</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000214">0000214</a>: Empty rdf:about, plus base-uri, produces incorrect turtle output</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000216">0000216</a>: flickrdf segfaults at raptor_serialize_end!</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000217">0000217</a>: flickrdf segfaults at raptor_serialize_end!</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000232">0000232</a>: libraptor does not correctly free up libxml error handler, causing crashes in subsequent calls to libxml error handlers</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000237">0000237</a>: raptor_sequence robustness: item ownership on insert error</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000238">0000238</a>: GRDDL parser in SVN overwrites blank nodes when merging graphs</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000239">0000239</a>: GRDDL parser in SVN returns 60 less triples with http://www.w3.org/</li>
 </ul>
 
 
@@ -3198,10 +3290,10 @@ rather than the RSS Tag Soup parser.</p>
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000174">#0000174</a>: Serializing to rdfxml* with a base_uri doesn't set the <code>xml:base</code> attribute, but does truncate <code>rdf:about</code> and <code>rdf:resource</code> values</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000177">#0000177</a>: Some URI references mis-resolved</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000178">#0000178</a>: No errors from accessing 404 URIs</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000180">#0000180</a>: messages garble output to stdout</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000174">#0000174</a>: Serializing to rdfxml* with a base_uri doesn't set the <code>xml:base</code> attribute, but does truncate <code>rdf:about</code> and <code>rdf:resource</code> values</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000177">#0000177</a>: Some URI references mis-resolved</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000178">#0000178</a>: No errors from accessing 404 URIs</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000180">#0000180</a>: messages garble output to stdout</li>
 </ul>
 
 
@@ -3310,12 +3402,12 @@ has other improvements and fixes.
 
 <p>Fixed Issues:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=32">#0000032</a>: GRDDL indirection feature request</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=148">#0000148</a>: A public function to generate a blank ID would be nice though.</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=155">#0000155</a>: entity processing in literal property elements (with libxml)</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=157">#0000157</a>: Crash when RDF/XML Abbrev serializer sees a <code>rdf:type</code> predicate with a literal object.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=32">#0000032</a>: GRDDL indirection feature request</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=141">#0000141</a>: Crash when GRDDL parser is used with a used-generated blank node ID prefix.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=143">#0000143</a>: Crash when GRDDL parser fails to retrieve URI.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=148">#0000148</a>: A public function to generate a blank ID would be nice though.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=155">#0000155</a>: entity processing in literal property elements (with libxml)</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=157">#0000157</a>: Crash when RDF/XML Abbrev serializer sees a <code>rdf:type</code> predicate with a literal object.</li>
 </ul>
 
 <h3>Configuration Changes</h3>
@@ -3425,9 +3517,9 @@ bytes.</p>
 <p>Prevent losing memory for a <code>raptor_xml_writer</code> when a
 serializer is reused several times.</p>
 
-<p>Fixed issues reported on the <a href="http://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
+<p>Fixed issues reported on the <a href="https://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=134">Issue #0000134</a>: Check for equal scheme and authority during construction of relative URIs from two absolute URIs.</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=134">Issue #0000134</a>: Check for equal scheme and authority during construction of relative URIs from two absolute URIs.</li>
 </ul>
 
 
@@ -3489,14 +3581,14 @@ optional URI filter function that checks if the URL given is
 allowed to be retrieved, or denied entirely.
 </p>
 
-<p>Fixed issues reported on the <a href="http://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
+<p>Fixed issues reported on the <a href="https://bugs.librdf.org/">Redland Issue Tracker</a>:</p>
 <ul>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000112">#0000112</a>: raptor_namespaces_qname_from_uri not public API?</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000110">#0000110</a>: strcasecmp problem under windows (raptor_rss.c does not compile)</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000091">#0000091</a>: guess parser should guess the syntax each time it is run, not be fixed</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000089">#0000089</a>: Add a NONET feature to prevent network fetches</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000041">#0000041</a>: Allow multiple transformation URLs in data-view:transformation property</li>
-  <li><a href="http://bugs.librdf.org/mantis/view.php?id=0000014">#0000014</a>: bNode content written twice in rdfxml-abbrev output mode</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000112">#0000112</a>: raptor_namespaces_qname_from_uri not public API?</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000110">#0000110</a>: strcasecmp problem under windows (raptor_rss.c does not compile)</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000091">#0000091</a>: guess parser should guess the syntax each time it is run, not be fixed</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000089">#0000089</a>: Add a NONET feature to prevent network fetches</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000041">#0000041</a>: Allow multiple transformation URLs in data-view:transformation property</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000014">#0000014</a>: bNode content written twice in rdfxml-abbrev output mode</li>
 </ul>
 
 
@@ -3539,7 +3631,7 @@ known XSLT sheet URIs.
 
 <p>The <em>Guess parser</em> now resets after each parse and does a
 fresh guess on the syntax based on the incoming information.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=91">Issue #0000091</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=91">Issue #0000091</a>
 </p>
 
 
@@ -3558,7 +3650,7 @@ recovery.
 <p>Updated the <em>RDF/XML Abbreviated</em> serializer to do proper
 reference counting on the blank/resource nodes used as subjects and
 objects to prevent dual-triple generation.  Fixes the reported
-<a href="http://bugs.librdf.org/mantis/view.php?id=14">Issue #0000014</a>
+<a href="https://bugs.librdf.org/mantis/view.php?id=14">Issue #0000014</a>
 </p>
 
 
@@ -3592,7 +3684,7 @@ resource.
 
 <p>No longer adds LDFLAGS to pkgconfig file <code>raptor.pc</code>
 and <code>raptor-config</code> fixing
-<a href="http://bugs.librdf.org/mantis/view.php?id=97">Issue #0000097</a>.
+<a href="https://bugs.librdf.org/mantis/view.php?id=97">Issue #0000097</a>.
 </p>
 
 
@@ -3712,7 +3804,7 @@ to set a namespace for serializing from an existing
 
 <p>Serializing to RDF/XML (or RDF/XML Abbrev) now does not
 double-free URI strings.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=65">Issue #0000065</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=65">Issue #0000065</a>
 </p>
 
 <p>RSS serializer no longer writes the XML header twice.</p>
@@ -3734,7 +3826,7 @@ splitting into qname prefering to use the current in-scope namespaces
 before having to search.</p>
 
 <p><code>raptor_namespaces_format</code> now NULL-terminates the namespace string.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=62">Issue #0000062</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=62">Issue #0000062</a>
 </p>
 
 <p>Added <code>raptor_namespace_get_counted_prefix</code> to return a
@@ -3752,7 +3844,7 @@ associated with a QName.</p>
 <p><code>raptor_stringbuffer_append_counted_string</code> and
 <code>raptor_stringbuffer_append_string</code> now Do nothing on
 appending a NULL string or a string of length 0.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=73">Issue #0000073</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=73">Issue #0000073</a>
 </p>
 
 
@@ -3786,7 +3878,7 @@ systems when looking for the end of string NUL.
 
 <p>Get the curl success status into a long, not an int which causes
 failure on 64 bit.
-Fixes <a href="http://bugs.librdf.org/mantis/view.php?id=75">Issue #0000075</a>
+Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=75">Issue #0000075</a>
 </p>
 
 <p>WWW requests for content to parse now always send an appropriate
@@ -4058,7 +4150,7 @@ documment" giving <code>rdf:about=""</code>.</p>
 <p>Fix a bug when adding a default path of / to a URI
 in functions <code>raptor_new_uri_for_xmlbase()</code>
 and <code>raptor_new_uri_for_retrieval()</code>.
-(Bug #<a href="http://bugs.librdf.org/mantis/view.php?id=45">0000045</a>)
+(Bug #<a href="https://bugs.librdf.org/mantis/view.php?id=45">0000045</a>)
 </p>
 
 
