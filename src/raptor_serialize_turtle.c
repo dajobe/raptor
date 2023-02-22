@@ -549,7 +549,6 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   raptor_abbrev_node* last_predicate = NULL;
   int rv = 0;
   raptor_avltree_iterator* iter = NULL;
-  int i;
 
   RAPTOR_DEBUG_ABBREV_NODE("Emitting subject properties", subject->node);
 
@@ -557,9 +556,9 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
   if(raptor_sequence_size(subject->list_items) > 0)
     rv = raptor_turtle_emit_subject_list_items(serializer, subject, depth+1);
 
-  for(i = 0, (iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+  for((iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
       iter && !rv;
-      i++, (rv = raptor_avltree_iterator_next(iter))) {
+      (rv = raptor_avltree_iterator_next(iter))) {
     raptor_abbrev_node** nodes;
     raptor_abbrev_node* predicate;
     raptor_abbrev_node* object;
@@ -672,7 +671,6 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
   raptor_abbrev_node* last_predicate = NULL;
   int rv = 0;
   raptor_avltree_iterator* iter = NULL;
-  int i;
   int skip_object;
 
 
@@ -683,9 +681,9 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
     rv = raptor_turtle_emit_subject_list_items(serializer, subject, depth+1);
 
 
-  for(i = 0, (iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
+  for((iter = raptor_new_avltree_iterator(subject->properties, NULL, NULL, 1));
       iter && !rv;
-      i++, (rv = raptor_avltree_iterator_next(iter))) {
+      (rv = raptor_avltree_iterator_next(iter))) {
     raptor_abbrev_node** nodes;
     raptor_abbrev_node* predicate;
     raptor_abbrev_node* object;
