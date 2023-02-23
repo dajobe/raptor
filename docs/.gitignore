@@ -16,6 +16,7 @@ raptor-formats.xml
 raptor2-undeclared.txt
 raptor2-undocumented.txt
 raptor2-unused.txt
+raptor2.actions
 raptor2.args
 raptor2.hierarchy
 raptor2.interfaces
