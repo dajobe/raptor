@@ -120,6 +120,14 @@ AVL Trees
 @Returns: 
 
 
+<!-- ##### FUNCTION raptor_avltree_trim ##### -->
+<para>
+
+</para>
+
+@tree: 
+
+
 <!-- ##### FUNCTION raptor_avltree_visit ##### -->
 <para>
 

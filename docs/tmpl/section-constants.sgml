@@ -26,6 +26,12 @@ Version numbers and often-used namespace URI strings.
 </para>
 
 
+<!-- ##### VARIABLE raptor_rdf_schema_namespace_uri_len ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### VARIABLE raptor_xml_literal_datatype_uri_string_len ##### -->
 <para>
 

@@ -79,6 +79,17 @@ chunks of byte content.
 @content_type: 
 
 
+<!-- ##### FUNCTION raptor_www_set_user_agent2 ##### -->
+<para>
+
+</para>
+
+@www: 
+@user_agent: 
+@user_agent_len: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_www_set_user_agent ##### -->
 <para>
 
@@ -88,6 +99,17 @@ chunks of byte content.
 @user_agent: 
 
 
+<!-- ##### FUNCTION raptor_www_set_proxy2 ##### -->
+<para>
+
+</para>
+
+@www: 
+@proxy: 
+@proxy_len: 
+@Returns: 
+
+
 <!-- ##### FUNCTION raptor_www_set_proxy ##### -->
 <para>
 
@@ -95,6 +117,17 @@ chunks of byte content.
 
 @www: 
 @proxy: 
+
+
+<!-- ##### FUNCTION raptor_www_set_http_accept2 ##### -->
+<para>
+
+</para>
+
+@www: 
+@value: 
+@value_len: 
+@Returns: 
 
 
 <!-- ##### FUNCTION raptor_www_set_http_accept ##### -->
