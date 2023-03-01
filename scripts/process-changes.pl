@@ -221,7 +221,7 @@ sub print_enums_list_as_docbook_xml($$$$@) {
 
   print $fh <<"EOT";
   <itemizedlist>
-    <title>Enums</title>
+    <title>Enums and Constants</title>
 EOT
 
   print $fh "  <caption>$title</caption>\n"
@@ -651,7 +651,7 @@ EOT
 The following sections describe the changes in the API between
 versions including additions, deletions, renames (retaining the same
 number of parameters, types and return value type) and more complex
-changes to functions, types and enums.
+changes to functions, types, enums and constants.
 </para>
 EOT
 
@@ -676,7 +676,7 @@ EOT
     if(@f || @t || @e) {
       print_start_section_as_docbook_xml($out_fh,
 					 $id_prefix.'-changes-new-'.$id,
-					 "New functions, types and enums");
+					 "New functions, types, enums and constants");
       print_functions_list_as_docbook_xml($out_fh,
 					  undef, 1, 1, @f);
       print_types_list_as_docbook_xml($out_fh,
@@ -692,7 +692,7 @@ EOT
     if(@f || @t || @e) {
       print_start_section_as_docbook_xml($out_fh,
 					 $id_prefix.'-changes-deleted-'.$id,
-					 "Deleted functions, types and enums");
+					 "Deleted functions, types, enums and constants");
       print_functions_list_as_docbook_xml($out_fh,
 					  undef, 0, 0, @f);
       print_types_list_as_docbook_xml($out_fh,
@@ -708,7 +708,7 @@ EOT
     if(@f || @e) {
       print_start_section_as_docbook_xml($out_fh,
 					 $id_prefix.'-changes-renamed-'.$id,
-					 "Renamed function and enums");
+					 "Renamed functions, enums and constants");
       print_renamed_functions_as_docbook_xml($out_fh,
 					     undef,
 					     "$old_version function",
@@ -716,8 +716,8 @@ EOT
 					     @f);
       print_renamed_enums_as_docbook_xml($out_fh,
 					 undef,
-					 "$old_version enum",
-					 "$new_version enum",
+					 "$old_version enum / constant",
+					 "$new_version enum / constant",
 					 @e);
       print_end_section_as_docbook_xml($out_fh);
     }
@@ -780,7 +780,7 @@ if(defined $upgrade_script_file) {
     print_deletes_as_perl_script($out_fh, 'Deleted types',
 				 @t);
 
-    print_deletes_as_perl_script($out_fh, 'Deleted enums',
+    print_deletes_as_perl_script($out_fh, 'Deleted enums and constants',
 				 @e);
 
     @f = @{$renamed_functions{$version_pair} || []};
@@ -788,7 +788,7 @@ if(defined $upgrade_script_file) {
     print_renames_as_perl_script($out_fh, 'Renamed functions', 1,
 				 @f);
 
-    print_renames_as_perl_script($out_fh, 'Renamed enums', 0,
+    print_renames_as_perl_script($out_fh, 'Renamed enums and constants', 0,
 				 @e);
 
     @f = @{$changed_functions{$version_pair} || []};

@@ -430,7 +430,6 @@
 2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_data_compare_arg_handler compare, void* user_data)	Uses raptor_sort_r() internally.
 2.0.14	-	-	-	2.0.15	int	raptor_world_get_parsers_count	(raptor_world* world)	-
 2.0.14	-	-	-	2.0.15	int	raptor_world_get_serializers_count	(raptor_world* world)	-
-2.0.15	-	-	-	2.0.16	unsigned int	raptor_rdf_schema_namespace_uri_len	-	-
 2.0.15	-	-	-	2.0.16	int	raptor_www_set_user_agent2	(raptor_www *www, const char *user_agent, size_t user_agent_len)	-
 2.0.15	-	-	-	2.0.16	int	raptor_www_set_proxy2	(raptor_www *www, const char *proxy, size_t proxy_len)	-
 2.0.15	-	-	-	2.0.16	int	raptor_www_set_http_accept2	(raptor_www *www, const char *value, size_t value_len)	-
@@ -495,7 +494,7 @@
 2.0.9	type	-	-	2.0.10	type	raptor_escaped_write_bitflags	-	-
 2.0.14	type	-	-	2.0.15	type	raptor_data_compare_arg_handler	-	Used by raptor_sort_r()
 #
-# Enums
+# Enums and constants
 #
 1.4.21	enum	RAPTOR_IDENTIFIER_TYPE_UNKNOWN	-	2.0.0	enum	RAPTOR_TERM_TYPE_UNKNOWN	-	-
 1.4.21	enum	RAPTOR_IDENTIFIER_TYPE_RESOURCE	-	2.0.0	enum	RAPTOR_TERM_TYPE_URI	-	-
@@ -591,3 +590,4 @@
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_PEER	-	-
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_HOST	-	-
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES	-	-
+2.0.15	enum	-	-	2.0.16	enum	raptor_rdf_schema_namespace_uri_len	-	-
