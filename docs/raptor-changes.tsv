@@ -430,6 +430,14 @@
 2.0.14	-	-	-	2.0.15	void	raptor_sequence_sort_r	(raptor_sequence* seq, raptor_data_compare_arg_handler compare, void* user_data)	Uses raptor_sort_r() internally.
 2.0.14	-	-	-	2.0.15	int	raptor_world_get_parsers_count	(raptor_world* world)	-
 2.0.14	-	-	-	2.0.15	int	raptor_world_get_serializers_count	(raptor_world* world)	-
+2.0.15	-	-	-	2.0.16	unsigned int	raptor_rdf_schema_namespace_uri_len	-	-
+2.0.15	-	-	-	2.0.16	int	raptor_www_set_user_agent2	(raptor_www *www, const char *user_agent, size_t user_agent_len)	-
+2.0.15	-	-	-	2.0.16	int	raptor_www_set_proxy2	(raptor_www *www, const char *proxy, size_t proxy_len)	-
+2.0.15	-	-	-	2.0.16	int	raptor_www_set_http_accept2	(raptor_www *www, const char *value, size_t value_len)	-
+2.0.15	void	raptor_www_set_user_agent	(raptor_www *www, const char *user_agent)	2.0.16	-	-	-	Deprecated for raptor_www_set_user_agent2
+2.0.15	void	raptor_www_set_proxy	(raptor_www *www, const char *proxy)	2.0.16	-	-	-	Deprecated for raptor_www_set_proxy2
+2.0.15	void	raptor_www_set_http_accept	(raptor_www *www, const char *value)	2.0.16	-	-	-	Deprecated for raptor_www_set_http_accept2
+2.0.15	-	-	-	2.0.16	void	raptor_avltree_trim	(raptor_avltree* tree)	-
 #
 # Types
 #
