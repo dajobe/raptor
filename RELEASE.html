@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
   <title>Raptor RDF Syntax Library - Release Notes</title>
 </head>
@@ -422,8 +422,8 @@ to use and require Bison 3.0.0.
 suites for the updated specifications:
 </p>
 <ul>
-<li><a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples - A line-based syntax for an RDF graph</a>, W3C Candidate Recommendation, 05 November 2013 (aka N-Triples 2013)</li>
-<li><a href="http://www.w3.org/TR/2013/CR-n-quads-20131105/">RDF 1.1 N-Quads - A line-based syntax for an RDF datasets</a>, W3C Candidate Recommendation, 05 November 2013</li>
+<li><a href="https://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples - A line-based syntax for an RDF graph</a>, W3C Candidate Recommendation, 05 November 2013 (aka N-Triples 2013)</li>
+<li><a href="https://www.w3.org/TR/2013/CR-n-quads-20131105/">RDF 1.1 N-Quads - A line-based syntax for an RDF datasets</a>, W3C Candidate Recommendation, 05 November 2013</li>
 </ul>
 <p>The main fixes were:</p>
 <ul>
@@ -457,7 +457,7 @@ strings created by <code>raptor_term_to_counted_string()</code> and
 <h3>Parser changes</h3>
 
 <p>N-Triples parser was updated to support all of
-<a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
+<a href="https://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
 N-Triples - A line-based syntax for an RDF graph</a> (aka N-Triples 2013)
 It now supports <code># comments</code> after the end of
 lines, checks for illegal unicode escapes, checks for bad URIs and
@@ -518,14 +518,14 @@ sanitizing.</p>
 <h3>Parser changes</h3>
 
 <p>Turtle parser was updated to handle
-<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+<a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
 (Turtle 2013)
 The main changes were to align with SPARQL-style blank node names,
 prefixes and local names.
 </p>
 
 <p>N-Triples parser was updated to handle 
-<a href="http://www.w3.org/TR/2013/NOTE-n-triples-20130409/">N-Triples - A line-based syntax for an RDF graph</a> W3C Working Group Note 09 April 2013 (N-Triples 2013)
+<a href="https://www.w3.org/TR/2013/NOTE-n-triples-20130409/">N-Triples - A line-based syntax for an RDF graph</a> W3C Working Group Note 09 April 2013 (N-Triples 2013)
 The main changes were to allow \b \f, UTF-8 in strings and
 URIs and the SPARQL-style blank node names.</p>
 
@@ -606,7 +606,7 @@ Fixes <a href="https://bugs.librdf.org/mantis/view.php?id=521">Issue #0000521</a
 </p>
 
 <p>Turtle Parser: Added full support for
-<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+<a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
 </p>
 
 <p>This includes accepting new keywords from SPARQL
@@ -622,7 +622,7 @@ which should be written as <code>%20</code>.
 <h3>Serializer changes</h3>
 
 <p>Turtle Serializer: Added full support for
-<a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
+<a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013
 which particular effects the encoding of URIs in the serializer.
 </p>
 
@@ -693,7 +693,7 @@ f94fa561db05b21132b14a2b72f05b77e666c252 on Wed Apr 28 21:31:54 2010
 when the guess is very poor, rather just return the first bad result.
 Fixes
 <a href="https://bugs.librdf.org/mantis/view.php?id=487">Issue #0000487</a>
-which was reported in <a href="http://librdf.org/">Redland librdf</a> but
+which was reported in <a href="https://librdf.org/">Redland librdf</a> but
 is implemented here.
 </p>
 
@@ -702,7 +702,7 @@ from the guessed parser.</p>
 
 <p>RDFa parser: Updated <a href="https://github.com/rdfa/librdfa">librdfa</a>
 to the latest GIT supporting 
-<a href="http://www.w3.org/TR/2012/REC-rdfa-core-20120607/">RDFa 1.1</a>
+<a href="https://www.w3.org/TR/2012/REC-rdfa-core-20120607/">RDFa 1.1</a>
 with 30 tests still not passing - mostly issues in the core librdfa.
 Made several resilience and crash fixes.  Updated the RDFa 1.0 test
 suite to latest tests and made fixes.  The RDFa parser now accepts
@@ -861,7 +861,7 @@ no parser that requires an XML parser, libxml2 will not be required.
 <p>Removed internal Unicode NFC checking code used for checking
 RDF/XML literals conformance which was expensive to check and a large
 of compiled-in static dataset that was rather out of date.  Replaced
-with optional compiled use of <a href="http://www.icu-project.org/">ICU</a>.
+with optional compiled use of <a href=https://icu.unicode.org">ICU</a>.
 If ICU is not explicitly configured, no literal checking is done.</p>
 
 <h3>Options changes</h3>
@@ -1000,7 +1000,7 @@ generate permuations:</p>
 <h3>Parser class changes</h3>
 
 <p>Updated all parser URIs to use the
-<a href="http://www.w3.org/ns/formats/">W3C Format URIs</a>
+<a href="https://www.w3.org/ns/formats/">W3C Format URIs</a>
 as the primary URIs.  Existing URIs become aliases. (Nicholas J Humfrey)
 </p>
 
@@ -1026,7 +1026,7 @@ type in the syntax recognizing code.
 <h3>Serializer class changes</h3>
 
 <p>Updated all serializer URIs to use the
-<a href="http://www.w3.org/ns/formats/">W3C Format URIs</a>
+<a href="https://www.w3.org/ns/formats/">W3C Format URIs</a>
 as the primary URIs.  Existing URIs become aliases. (Nicholas J Humfrey)
 </p>
 
@@ -1283,11 +1283,11 @@ unlikely error recovery conditions.  Some actual potential crash bugs
 were found:</p>
 <ol>
   <li>The workaround for
-    ancient <a href="http://xmlsoft.org/">libxml2</a> error handling
+    ancient <a href="https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home">libxml2</a> error handling
     in <code>raptor_libxml_xmlStructuredError_handler_parsing()</code>
     was broken for some time, so that probably means nobody uses old
     libxml2.</li>
-  <li><a href="http://github.com/msporny/librdfa/">librdfa</a> URI
+  <li><a href="https://github.com/msporny/librdfa/">librdfa</a> URI
     resolving in <code>rdfa_resolve_uri()</code> used unallocated
     memory in some relative URI cases.</li>
 </ol>
@@ -1479,9 +1479,9 @@ in the form of additional APIs, new serializers and parsers.
 
 <p>The details of the additions, removals and changes of functions,
 structures, typedefs and enums are listed in the
-<a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+<a href="https://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
 section on
-<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>.
+<a href="https://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>.
 The <a href="UPGRADING.html">upgrading document</a>
 explains how to upgrade existing code that uses the V1 APIs to use
 the new APIs.
@@ -1499,7 +1499,7 @@ the new APIs.
 <li>GRDDL parser now saves and restores shared libxslt state.</li>
 <li>Added serializers for HTML 'html' and N-Quads 'nquads'.</li>
 <li>Added parser 'json' for JSON-Resource centric and JSON-Triples.</li>
-<li>Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a>.</li>
+<li>Switched to GIT version control <a href="https://github.com/dajobe/raptor">hosted by GitHub</a>.</li>
 <li>Added memory-based AVL-Tree to the public API.</li>
 </ul>
 
@@ -1551,10 +1551,10 @@ librdf will default to use these..
 
 <p>The API reference manual now includes an automatically generated
 reference section on the
-<a href="http://librdf.org/raptor/api/raptor-formats.html">functions and types that were added, removed and changed between raptor 1 and raptor 2 APIs</a>.
+<a href="https://librdf.org/raptor/api/raptor-formats.html">functions and types that were added, removed and changed between raptor 1 and raptor 2 APIs</a>.
 
 It also includes an automatically generated section on the
-<a href="http://librdf.org/raptor/api/raptor-formats.html">parser and serializers with their names, mime types and Q values.</a>
+<a href="https://librdf.org/raptor/api/raptor-formats.html">parser and serializers with their names, mime types and Q values.</a>
 </p>
 
 <p>The tutorial examples were updated to the Raptor 2 APIs.
@@ -2092,7 +2092,7 @@ parsing.
 RDFA parser (via librdfa): Update to latest librdfa GIT sources with head
 a438ce68a40e04b399ec2b2c613d0c867d9315c7 <br />
 now moved to 
-<a href="http://github.com/msporny/librdfa">http://github.com/msporny/librdfa</a>
+<a href="https://github.com/msporny/librdfa">https://github.com/msporny/librdfa</a>
 to fix handling single character namespaces
 (<a href="https://bugs.librdf.org/mantis/view.php?id=310">Issue #0000310</a>),
 empty datatype attribute and empty xml:lang attributes
@@ -2596,7 +2596,7 @@ for future replacing of <code>raptor_statement</code></p>
 <h3>Parser Changes</h3>
 
 <p>A new 
-<a href="http://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</a>
+<a href="https://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</a>
 parser was added (name <code>rdfa</code>) using
 <a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a> to
 implement it.  librdfa is linked as part of Raptor and
@@ -2604,7 +2604,7 @@ written by Manu Sporny of Digital Bazaar, licensed with the
 same license as Raptor.</p>
 
 <p>The RDFa
-<a href="http://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/">test suite</a>
+<a href="https://www.w3.org/2006/07/SWD/RDFa/testsuite/xhtml1-testcases/">test suite</a>
 was added to the test and (via librdfa) Raptor passes all but 4 tests
 which fail due to different output xmlns attribute ordering (which
 does not matter to XML parsers).</p>
@@ -2819,10 +2819,10 @@ add extra top-level JSON object data.</li>
 <p>Example of using the resource-centric serializer while defining a
 callback:</p>
 <pre>
-$ rapper -q -o json -f jsonCallback=foo http://librdf.org/raptor/raptor.rdf
+$ rapper -q -o json -f jsonCallback=foo https://librdf.org/raptor/raptor.rdf
 foo(
 {
-  "http://librdf.org/raptor/#raptor" : {
+  "https://librdf.org/raptor/#raptor" : {
     "http://usefulinc.com/ns/doap#description" : [ {
 ...
 </pre>
@@ -3027,11 +3027,11 @@ only one parser and one serializer feature was possible.
 <p>The main changes to this release are:</p>
 
 <p>Provide 100% support for the
-<a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a>.
+<a href="https://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a>.
 </p>
 
 <p>The
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser and serializer were updated to support
 <code>@base</code> for specifying a base URI, following
 Turtle of 2007-09-11.
@@ -3059,7 +3059,7 @@ for large graphs.
   <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000232">0000232</a>: libraptor does not correctly free up libxml error handler, causing crashes in subsequent calls to libxml error handlers</li>
   <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000237">0000237</a>: raptor_sequence robustness: item ownership on insert error</li>
   <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000238">0000238</a>: GRDDL parser in SVN overwrites blank nodes when merging graphs</li>
-  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000239">0000239</a>: GRDDL parser in SVN returns 60 less triples with http://www.w3.org/</li>
+  <li><a href="https://bugs.librdf.org/mantis/view.php?id=0000239">0000239</a>: GRDDL parser in SVN returns 60 less triples with https://www.w3.org/</li>
 </ul>
 
 
@@ -3143,7 +3143,7 @@ Added <code>raptor_www_get_final_uri()</code> to return the final URI
 
 <p>The GRDDL parser/processor was substantially updated and now
 supports 100% of the
-<a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+<a href="https://www.w3.org/TR/2007/REC-grddl-20070911/">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
 syntax, W3C Recommendation of 2007-09-11:
 </p>
 <ul>
@@ -3271,7 +3271,7 @@ some of the names and values that caused the error.
 <h3>General Changes</h3>
 
 <p>GRDDL parser now passes the (unapproved) test suite for the
-<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>
+<a href="https://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>
 except for two tests that have been reported as having errors.
 </p>
 
@@ -3303,30 +3303,30 @@ rather than the RSS Tag Soup parser.</p>
 libxml structured error reporing api.  From
 </p>
 <pre>
-$ rapper -i grddl http://librdf.org/LICENSE.txt
-rapper: Parsing URI http://librdf.org/LICENSE.txt
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - http://librdf.org/LICENSE.txt:2: 
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - parser 
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - error : 
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error - Document is empty
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error -                   Redland RDF Application Framework - License
-rapper: Error - URI http://librdf.org/LICENSE.txt - XML error -                   ^
-rapper: Failed to parse URI http://librdf.org/LICENSE.txt grddl content
+$ rapper -i grddl https://librdf.org/LICENSE.txt
+rapper: Parsing URI https://librdf.org/LICENSE.txt
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error - https://librdf.org/LICENSE.txt:2: 
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error - parser 
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error - error : 
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error - Document is empty
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error -                   Redland RDF Application Framework - License
+rapper: Error - URI https://librdf.org/LICENSE.txt - XML error -                   ^
+rapper: Failed to parse URI https://librdf.org/LICENSE.txt grddl content
 rapper: Parsing returned 0 triples
 </pre>
 <p>To this:</p>
 <pre>
-$ rapper -i grddl http://librdf.org/LICENSE.txt
-rapper: Parsing URI http://librdf.org/LICENSE.txt
-rapper: Error - URI http://librdf.org/LICENSE.txt:1 - XML parser error: Document is empty
-rapper: Error - URI http://librdf.org/LICENSE.txt:1 - XInclude processing failed for GRDDL document
-rapper: Failed to parse URI http://librdf.org/LICENSE.txt grddl content
+$ rapper -i grddl https://librdf.org/LICENSE.txt
+rapper: Parsing URI https://librdf.org/LICENSE.txt
+rapper: Error - URI https://librdf.org/LICENSE.txt:1 - XML parser error: Document is empty
+rapper: Error - URI https://librdf.org/LICENSE.txt:1 - XInclude processing failed for GRDDL document
+rapper: Failed to parse URI https://librdf.org/LICENSE.txt grddl content
 rapper: Parsing returned 0 triples
 </pre>
 
 
 <p>GRDDL parser updated to support the
-<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>:
+<a href="https://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a>:
 </p>
 <ul>
 <li>Namespace and profile URI handling now works.</li>
@@ -3387,7 +3387,7 @@ multiple function / user_data pairs.
 <h3>General Changes</h3>
 
 <p>Added a 
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serialiser by <a href="http://codeson.net/">Dave Robillard</a> based on the existing RDF/XML-Abbrev
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> serialiser by <a href="http://codeson.net/">Dave Robillard</a> based on the existing RDF/XML-Abbrev
 serialiser.
 </p>
 
@@ -3467,7 +3467,7 @@ the mime type (q=10), then that parser is used.
 <h3>Serializer Changes</h3>
 
 <p>Added a new
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a>
 serializer and two new internal APIs based on the existing RDF/XML-Abbrev
 serialiser, written by <a href="http://codeson.net/">Dave Robillard</a>:
 </p>
@@ -3595,7 +3595,7 @@ allowed to be retrieved, or denied entirely.
 <h3>Documentation Changes</h3>
 
 <p>The
-<a href="http://librdf.org/raptor/api/">Raptor Reference Manual</a>
+<a href="https://librdf.org/raptor/api/">Raptor Reference Manual</a>
 now includes descriptions of all the parsers and serializers and the
 tutorial has a new section describing how to filter URIs and deny
 network requests.</p>
@@ -3621,7 +3621,7 @@ URI is given and it is needed.
 handle a list of URIs in the profile so it now
 can support <code>dataview:transformation</code> in XML taking a list
 of transformations as defined in
-<a href="http://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">The GRDDL profile for XHTML</a> part of the GRDDL specification.
+<a href="https://www.w3.org/2004/01/rdxh/spec#grddl-xhtml">The GRDDL profile for XHTML</a> part of the GRDDL specification.
 It now also recognises
 <a href="http://research.talis.com/2005/erdf/wiki/Main/RdfInHtml">Embedded RDF</a> and
 <a href="http://microformats.org/wiki/hcalendar">HCalendar</a>
@@ -3734,13 +3734,13 @@ for version control and the <a href="INSTALL.html">Raptor installation instructi
 <h3>Documentation Changes</h3>
 
 <p>A new 
-<a href="http://librdf.org/raptor/api/tutorial.html">Raptor Tutorial</a>
+<a href="https://librdf.org/raptor/api/tutorial.html">Raptor Tutorial</a>
 was written covering using all parsing and serializing functions along with
 example code.
 </p>
 
 <p>The
-<a href="http://librdf.org/raptor/api/reference-manual.html">Raptor Reference Manual</a> 
+<a href="https://librdf.org/raptor/api/reference-manual.html">Raptor Reference Manual</a> 
 now covers 100% of all functions, structs and defines with gtkdoc generated
 documentation.</p>
 
@@ -3927,7 +3927,7 @@ no longer be returned in any statement position (to be confirmed).
 for version control after the 1.4.8 release.  Please check the
 <a href="http://svn.librdf.org/">Redland Subversion site</a>
 for the latest status or the online
-<a href="http://librdf.org/raptor/INSTALL.html">Raptor installation notes</a>
+<a href="https://librdf.org/raptor/INSTALL.html">Raptor installation notes</a>
 for the raptor specific subversion installation information.
 </p>
 
@@ -4068,7 +4068,7 @@ escaping.</p>
 <h4>Turtle Parser Changes</h4>
 
 <p>Updated to support Turtle version 2006-01-02
-(<a href="http://www.dajobe.org/2004/01/turtle/">announcement</a>).
+(<a href="https://www.dajobe.org/2004/01/turtle/">announcement</a>).
 </p>
 
 <p>Switch qname, blank node and prefix definitions to SPARQL ones.</p>
@@ -4195,7 +4195,7 @@ serialize to RDF/XML if the predicate URI is not absolute.
 <p>Added <code>--with-xslt-config</code> configure option</p>
 
 <p>Added a new parser for
-<a href="http://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
+<a href="https://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a>
 which allows reading XHTML and XML as RDF triples by using profiles
 in the document that declare XSLT transforms from the XHTML/XML
 content into RDF/XML which is the RDF content.  It does not
@@ -4268,7 +4268,7 @@ width and height using gconf2.</p>
 <p>Added a new <em>RDF/XML with abbreviations</em> serializer
 <code>rdfxml-abbrev</code> written by Steve Shepard which handles
 several of the abbreviations specified by the
-<a href="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax Specification (Revised)</a>
+<a href="https://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML Syntax Specification (Revised)</a>
 W3C Recommendation.  It is suitable for writing small documents as
 there are known scaling issues.
 </p>
@@ -4321,7 +4321,7 @@ improve the existing RDF/XML serializer and to provide a new
 </p>
 
 <p>This API it is also used by the next release of
-<a href="http://librdf.org/rasqal/">Rasqal</a> to provide serializing
+<a href="https://librdf.org/rasqal/">Rasqal</a> to provide serializing
 of query results to XML.
 </p>
 
@@ -4370,7 +4370,7 @@ this bug but it will not cause the test suite ('make check') to
 fail.</p>
 
 <p>Added additional 
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser tests that cover Notation 3 syntax that is not part of the
 Turtle language.</p>
 
@@ -4750,7 +4750,7 @@ available to check.</p>
 <h3>Parser Changes</h3>
 
 <p>The
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser was updated to only allow language with non-datatyped literals,
 allow a '_' immediately after a ':' in qnames and to make a bare ':'
 qname work correctly.
@@ -4773,7 +4773,7 @@ in lax mode.  Parser modes are controlled by the
 <h2 id="rel1_3_0"><a name="rel1_3_0">Raptor 1.3.0 Changes</a></h2>
 
 <p>A release primarily to provide support for
-the new <a href="http://librdf.org/rasqal/">Rasqal</a>
+the new <a href="https://librdf.org/rasqal/">Rasqal</a>
 RDF query library but with some new features and fixes.</p>
 
 
@@ -4789,7 +4789,7 @@ RDF-namespaced names in element and attributes and if they are
 forbidden giving an error otherwise if unknown, giving a warning.</p>
 
 <p>The
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser was updated to correct the collections syntax, allow '-' in
 names and QNames and to add integer literals.  This parser now correctly
 uses <code>raptor_generate_id</code> when a blank identifier name is
@@ -4867,7 +4867,7 @@ for constructing strings from substrings appended or prepended.</p>
 
 <hr />
 
-<p>Copyright (C) 2003-2021 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2003-2023 <a href="https://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2003-2005 <a href="https://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

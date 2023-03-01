@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml">
 <head>
   <title>Raptor RDF Syntax Library - Building and Installing from Source</title>
 </head>
@@ -31,7 +31,7 @@ documentation provided on the web site.
 ensures that a tested and working set of files are used.</p>
 
 <p>The released sources are available from
-<a href="http://download.librdf.org/source/">http://download.librdf.org/source/</a> (master site).
+<a href="https://download.librdf.org/source/">https://download.librdf.org/source/</a> (master site).
 Do not use GitHub tagged tarballs, they are not the same thing and
 are not supported.
 </p>
@@ -79,9 +79,9 @@ and x86 OSX but is also tested on other systems occasionally.
   <li>Libcurl, libxml2 or libfetch for retrieving URIs.</li>
   <li>libxslt (requiring libxml2 also) to provide the XSLT functionality for the
     GRDDL and microformats parser.</li>
-  <li><a href="http://lloyd.github.com/yajl/">YAJL</a> to provide JSON
+  <li><a href="https://lloyd.github.com/yajl/">YAJL</a> to provide JSON
     parsers if it is available.</li>
-  <li><a href="http://www.icu-project.org/">ICU</a> to provide
+  <li><a href=https://icu.unicode.org">ICU</a> to provide
     Unicode NFC checking only if enabled with
     <code>--with-icu-config</code></li>
 </ul>
@@ -93,8 +93,8 @@ section.</p>
 
 <p>If there is no <tt>configure</tt> program, you can create it 
 using the <tt>autogen.sh</tt> script, as long as you have the
-<a href="http://www.gnu.org/software/automake/automake.html">automake</a> and
-<a href="http://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>
+<a href="https://www.gnu.org/software/automake/automake.html">automake</a> and
+<a href="https://www.gnu.org/software/autoconf/autoconf.html">autoconf</a>
 tools.  This is done by:
 </p>
 <pre>
@@ -132,8 +132,8 @@ GIT sources.  autogen.sh enforces the requirements.
 </p>
 
 <p>Raptor also requires specific versions of
-<a href="http://flex.sourceforge.net/">flex</a> and
-<a href="http://www.gnu.org/software/bison/bison.html">GNU Bison</a>
+<a href="https://github.com/westes/flex">flex</a> and
+<a href="https://www.gnu.org/software/bison/bison.html">GNU Bison</a>
 to build lexers and parsers.  configure will warn or fail if they
 are missing or the installed versions are too old.
 These are <b>only</b> required when building from GIT.
@@ -213,12 +213,12 @@ The default is to look for this on the PATH.
 
 <dt><tt>--with-curl-config=NAME</tt><br /></dt>
 <dd><p>Set the path to the <a
-href="http://curl.haxx.se/libcurl/">libcurl</a> curl-config program.
+href="https://curl.se/libcurl/">libcurl</a> curl-config program.
 The default is to look for this on the PATH.
 </p></dd>
 
 <dt><tt>--with-icu-config=NAME</tt><br /></dt>
-<dd><p>Set the path to the <a href="http://www.icu-project.org/">ICU</a>
+<dd><p>Set the path to the <a href=https://icu.unicode.org">ICU</a>
 icu-config program. This will NOT be searched for on the PATH.
 </p></dd>
 
@@ -227,7 +227,7 @@ icu-config program. This will NOT be searched for on the PATH.
 </p></dd>
 
 <dt><tt>--with-yajl=DIR|no</tt><br /></dt>
-<dd><p>Build against <a href="http://lloyd.github.com/yajl/">YAJL</a>
+<dd><p>Build against <a href="https://lloyd.github.com/yajl/">YAJL</a>
 installed into directory <em>DIR</em> or with 'no', disable looking
 for YAJL.  The default is to search a set of common installation directories
 such /opt/local, /usr/local and /usr.
@@ -307,7 +307,7 @@ a system directory such as /usr.  In that case you may have to do
 for the library.  These are installed into
 <em>PREFIX</em><code>/share/gtk-doc/html/raptor</code>
 and are also available from the
-<a href="http://librdf.org/raptor/api/">Raptor web site</a>.
+<a href="https://librdf.org/raptor/api/">Raptor web site</a>.
 </p>
 
 <p>In addition, the examples in the tutorial as well as some other
@@ -335,7 +335,7 @@ sub-directory.  These can be compiled with:
 </p>
 
 <pre>
-  rapper http://librdf.org/raptor/raptor.rdf
+  rapper https://librdf.org/raptor/raptor.rdf
 </pre>
 
 <p>Raptor can also extract RDF content inside general XML when the
@@ -348,7 +348,7 @@ RDF/XML is embedded inside some SVG, it could be extracted with:
 </pre>
 
 <p>You can also run it on other syntaxes such as 
-<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
+<a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 files with the <code>-i</code> option like this:
 </p>
 
@@ -358,7 +358,7 @@ files with the <code>-i</code> option like this:
 
 <p>The default output is a simple statement dump format, but it can
 be changed to write
-<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
+<a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 by using the <code>-o</code> option, like this:
 </p>
 
@@ -369,13 +369,13 @@ by using the <code>-o</code> option, like this:
 
 <p>See the rapper manual page for full details using 'man rapper'
 or read the HTML version in docs/rapper.html or on the
-<a href="http://librdf.org/raptor/rapper.html">Raptor website</a>.
+<a href="https://librdf.org/raptor/rapper.html">Raptor website</a>.
 </p>
 
 
 <hr />
 
-<p>Copyright 2000-2023 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright 2000-2023 <a href="https://www.dajobe.org/">Dave Beckett</a><br />Copyright 2000-2005 <a href="https://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>

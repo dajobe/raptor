@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml">
 <head>
   <title>Raptor RDF Syntax Library - News</title>
 </head>
@@ -11,7 +11,7 @@
 <h2 id="D2023-03-01-V2.0.16">2023-03-01 Raptor2 Version 2.0.16 Released</h2>
 
 <p>
-Fixes <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-18926">CVE-2017-18926</a><br />
+Fixes <a href="https://nvd.nist.gov/vuln/detail/CVE-2017-18926">CVE-2017-18926</a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2020-25713">CVE-2020-25713</a><br />
 Multiple Appveyor Windows and CMake build fixes by <a href="https://github.com/0u812">0u812</a>. (Note: the resulting binaries and libraries were not tested on Windows)<br />
 Turtle parser now reads input in chunks so can handle huge files. Patch by Sebastian Freundt<br />
 Added a serializer for the <a href="http://contextknowledgesystems.org/CKS.html">mKR</a> language.  Patch by Richard H. McCullough.<br />
@@ -77,7 +77,7 @@ for the full details of the changes.</p>
 <h2 id="D2013-11-24-V2.0.11">2013-11-24 Raptor2 Version 2.0.11 Released</h2>
 
 <p>
-Completed support for <a href="http://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples</a> (aka N-Triples 2013)<br />
+Completed support for <a href="https://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples</a> (aka N-Triples 2013)<br />
 Added a few new API calls<br />
 Made several build, portability and configuration improvements<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
@@ -92,8 +92,8 @@ for the full details of the changes.</p>
 <h2 id="D2013-08-27-V2.0.10">2013-07-27 Raptor2 Version 2.0.10 Released</h2>
 
 <p>
-Completed support for <a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013 (Turtle 2013)<br />
-Added support for <a href="http://www.w3.org/TR/2013/NOTE-n-triples-20130409/">N-Triples</a> W3C Working Group Note 09 April 2013 (N-Triples 2013)<br />
+Completed support for <a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013 (Turtle 2013)<br />
+Added support for <a href="https://www.w3.org/TR/2013/NOTE-n-triples-20130409/">N-Triples</a> W3C Working Group Note 09 April 2013 (N-Triples 2013)<br />
 Added a few new Turtle and N-Triples support functions<br />
 Update configure to better handle mixed <code>pkg-config</code> settings<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
@@ -110,7 +110,7 @@ for the full details of the changes.</p>
 <h2 id="D2013-02-26-V2.0.9">2013-02-26 Raptor2 Version 2.0.9 Released</h2>
 
 <p>
-Added full parsing and serializing support for <a href="http://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013<br />
+Added full parsing and serializing support for <a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation 19 February 2013<br />
 Added CMake build framework for building Raptor on Microsoft (Daniel Richard G.)<br />
 Made a few minor fixes and improvements<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
@@ -128,7 +128,7 @@ for the full details of the changes.</p>
 <h2 id="D2012-06-24-V2.0.8">2012-06-24 Raptor2 Version 2.0.8 Released</h2>
 
 <p>
-Added support for <a href="http://www.w3.org/TR/2012/REC-rdfa-core-20120607/">RDFa 1.1</a> via updated <a href="https://github.com/rdfa/librdfa">librdfa</a><br />
+Added support for <a href="https://www.w3.org/TR/2012/REC-rdfa-core-20120607/">RDFa 1.1</a> via updated <a href="https://github.com/rdfa/librdfa">librdfa</a><br />
 Multiple portability fixes for Windows and Solarises. (Daniel Richard G.)<br />
 Multiple minor fixes and improvements<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
@@ -146,7 +146,7 @@ for the full details of the changes.</p>
 
 <p>CVE-2012-0037 fixed<br />
 Removed Expat support<br />
-Removed internal Unicode NFC code for better and optional <a href="http://www.icu-project.org/">ICU</a><br />
+Removed internal Unicode NFC code for better and optional <a href=https://icu.unicode.org">ICU</a><br />
 Added options for denying file requests and XML entity loading<br />
 Added options for SSL certificate verifying<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
@@ -172,7 +172,7 @@ for the full details of the changes.</p>
 
 <h2 id="D2011-11-14-V2.0.5">2011-11-14 Raptor2 Version 2.0.5 Released</h2>
 
-<p>All parsers and serializers use the <a href="http://www.w3.org/ns/formats/">W3C Format URIs</a> as their primary URI<br />
+<p>All parsers and serializers use the <a href="https://www.w3.org/ns/formats/">W3C Format URIs</a> as their primary URI<br />
 N-Quads parser can now handle optional context/graph URI<br />
 Turtle serializer uses official <em>text/turtle</em> mime type<br />
 Added some additional UTF-8 and snprintf utility functions<br />
@@ -254,9 +254,9 @@ Fixed reported <a href="https://bugs.librdf.org/">issue</a>:
 <a href="https://bugs.librdf.org/mantis/view.php?id=405">0000405</a>.
 </p>
 
-<p>The <a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+<p>The <a href="https://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
 section on
-<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 2.0.0</a>
+<a href="https://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 2.0.0</a>
 provides detailed function, macro, enum and type changes.
 The <a href="UPGRADING.html">upgrading document</a>
 explains how to upgrade existing Raptor V1 code to the new APIs.
@@ -279,9 +279,9 @@ Fixed a few bugs including reported issue
 <a href="https://bugs.librdf.org/mantis/view.php?id=402">0000402</a>
 </p>
 
-<p>The <a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+<p>The <a href="https://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
 section on
-<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.1</a>
+<a href="https://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.1</a>
 provides detailed function, macro, enum and type changes.
 The <a href="UPGRADING.html">upgrading document</a>
 explains how to upgrade existing Raptor V1 code to the new APIs.
@@ -304,7 +304,7 @@ Features are now called options and have typed values.<br />
 GRDDL parser now saves and restores shared libxslt state.<br />
 Added serializers for HTML 'html' and N-Quads 'nquads'.<br />
 Added parser 'json' for JSON-Resource centric and JSON-Triples.<br />
-Switched to GIT version control <a href="http://github.com/dajobe/raptor">hosted by GitHub</a>.<br />
+Switched to GIT version control <a href="https://github.com/dajobe/raptor">hosted by GitHub</a>.<br />
 Added memory-based AVL-Tree to the public API.<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
 <a href="https://bugs.librdf.org/mantis/view.php?id=357">0000357</a>,
@@ -315,9 +315,9 @@ Fixed reported <a href="https://bugs.librdf.org/">issues</a>:
 <a href="https://bugs.librdf.org/mantis/view.php?id=379">0000379</a>
 </p>
 
-<p>The <a href="http://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
+<p>The <a href="https://librdf.org/raptor/api/">Raptor 2 API reference manual</a>
 section on
-<a href="http://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>
+<a href="https://librdf.org/raptor/api/raptor-changes.html">Changes between raptor 1.4.21 and 1.9.0</a>
 provides detailed function and type changes.
 The <a href="UPGRADING.html">upgrading document</a>
 explains how to upgrade existing Raptor V1 code to the new APIs.
@@ -393,7 +393,7 @@ for the full details of the changes.</p>
 <h2 id="D2008-06-25-V1.4.18">2008-06-25 Raptor Version 1.4.18 Released</h2>
 
 <p>
-Added an <a href="http://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</a> parser using an embedded version of <a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a> by Manu Sporny of <a href="http://www.digitalbazaar.com/">Digital Bazaar</a>.<br />
+Added an <a href="https://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</a> parser using an embedded version of <a href="http://rdfa.digitalbazaar.com/librdfa/">librdfa</a> by Manu Sporny of <a href="http://www.digitalbazaar.com/">Digital Bazaar</a>.<br />
 Added an Atom 1.0 (<a href="http://www.ietf.org/rfc/rfc4287.txt">RFC 4287</a>) serializer with several output parameters.<br />
 Improved RSS 1.0 serializer functionality and resilience.<br />
 Added new API methods for qname, serializer, sequence and XML writer classes.<br />
@@ -410,9 +410,9 @@ for the full details of the changes.</p>
 <p>Added two new JSON serializers: resource-centric 'json'
 (Talis <a href="http://n2.talis.com/wiki/RDF_JSON_Specification">RDF/JSON</a>)
 and triple-centric 'json-triples'<br />
-Added a new public XML <a href="http://librdf.org/raptor/api/raptor-section-sax2.html">SAX2 API class</a><br />
+Added a new public XML <a href="https://librdf.org/raptor/api/raptor-section-sax2.html">SAX2 API class</a><br />
 Added a new error handling structure<br />
-Made the <a href="http://librdf.org/raptor/api/raptor-section-iostream.html">I/O Stream class</a> support reading<br />
+Made the <a href="https://librdf.org/raptor/api/raptor-section-iostream.html">I/O Stream class</a> support reading<br />
 Added several new API methods.<br />
 Made several fixes, portability and resilience improvements.<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>: <a href="https://bugs.librdf.org/mantis/view.php?id=252">0000252</a> and <a href="https://bugs.librdf.org/mantis/view.php?id=245">0000245</a>.
@@ -424,8 +424,8 @@ for the full details of the changes.</p>
 
 <h2 id="D2007-10-01-V1.4.16">2007-10-01 Raptor Version 1.4.16 Released</h2>
 
-<p>100% support for the <a href="http://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a><br />
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a> parser and serializer were updated to support <code>@base</code> from Turtle 2007-09-11.<br />
+<p>100% support for the <a href="https://www.w3.org/TR/2007/REC-grddl-20070911/">GRDDL W3C Recommendation of 2007-09-11</a><br />
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a> parser and serializer were updated to support <code>@base</code> from Turtle 2007-09-11.<br />
 Turtle and RDF/XML serializers had performance improvements for large graphs.<br />
 Added a TRiG Parser based on Turtle with named graph support.<br />
 Several other API changes, fixed and improvements were made.<br />
@@ -441,7 +441,7 @@ for the full details of the changes.</p>
 <h2 id="D2007-03-26-V1.4.15">2007-03-26 Raptor Version 1.4.15 Released</h2>
 
 <p>GRDDL parser substantially updated to support the
-<a href="http://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a><br />
+<a href="https://www.w3.org/TR/2007/WD-grddl-20070302/">GRDDL W3C Working Draft 2 March 2007</a><br />
 Errors for XML parsing and URI 404s are reported much better<br />
 Fixed reported <a href="https://bugs.librdf.org/">issues</a>: <a href="https://bugs.librdf.org/mantis/view.php?id=0000174">0000174</a>, <a href="https://bugs.librdf.org/mantis/view.php?id=0000177">0000177</a>, <a href="https://bugs.librdf.org/mantis/view.php?id=0000178">0000178</a>, <a href="https://bugs.librdf.org/mantis/view.php?id=0000180">0000180</a><br />
 Many other minor fixes and improvements.
@@ -454,7 +454,7 @@ for the full details of the changes.</p>
 
 <h2 id="D2007-01-31-V1.4.14">2007-01-31 Raptor Version 1.4.14 Released</h2>
 
-<p>New <a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<p>New <a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 serializer by <a href="http://codeson.net/">Dave Robillard</a> based on the existing RDF/XML-Abbrev serializer.<br />
 New GraphViz <a href="http://www.graphviz.org/doc/info/lang.html">DOT format</a>
 serializer by Evan Nemerson.<br />
@@ -521,10 +521,10 @@ for the full details of the changes.</p>
 <h2 id="D2006-04-22-V1.4.9">2006-04-22 Raptor Version 1.4.9 Released</h2>
 
 <p>
-<a href="http://librdf.org/raptor/api/tutorial.html">Raptor Tutorial</a> added covering parsing and serializing with examples<br />
-<a href="http://librdf.org/raptor/api/reference-manual.html">Raptor Reference Manual</a> now covers 100% of the public API<br />
+<a href="https://librdf.org/raptor/api/tutorial.html">Raptor Tutorial</a> added covering parsing and serializing with examples<br />
+<a href="https://librdf.org/raptor/api/reference-manual.html">Raptor Reference Manual</a> now covers 100% of the public API<br />
 <code>rapper</code> can now pretty-print RDF using namespaces as hints<br />
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a> parser gains boolean literals<br />
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a> parser gains boolean literals<br />
 Requests for content now send appropriate <code>Accept:</code> headers<br />
 No longer require libxml for rss-tag-soup parser<br />
 Various Win32 fixes and VC build files updates (John Barstow)<br />
@@ -548,7 +548,7 @@ Created an enhanced API reference manual with <code>gtk-doc</code><br />
 Serializers to build can now be selected at configure time<br />
 Parsers can now return the namespace prefix/URIs seen in parsing<br />
 Turtle parser update to version 2006-01-02
-(<a href="http://www.dajobe.org/2004/01/turtle/">announcement</a>)<br />
+(<a href="https://www.dajobe.org/2004/01/turtle/">announcement</a>)<br />
 Fix for URI resolution bugs (win32 fix by John Barstow)<br />
 Several parser bug fixes for RDF/XML, RSS and GRDDL<br />
 RDF/XML serializers and XML writer can write XML 1.0 or XML 1.1<br />
@@ -563,7 +563,7 @@ Many other changes, fixes and improvements.
 for version control after the 1.4.8 release.
 See the <a href="http://svn.librdf.org/">Redland Subversion site</a>
 or the online
-<a href="http://librdf.org/raptor/INSTALL.html">Raptor installation notes</a>
+<a href="https://librdf.org/raptor/INSTALL.html">Raptor installation notes</a>
 for the latest information.
 </p>
 
@@ -584,7 +584,7 @@ for the full details of the changes.</p>
 
 <h2 id="D2005-05-19-V1.4.6">2005-05-19 Raptor Version 1.4.6 Released</h2>
 
-<p>Added a <a href="http://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a> parser for reading XHTML and XML as RDF triples<br />
+<p>Added a <a href="https://www.w3.org/2004/01/rdxh/spec">Gleaning Resource Descriptions from Dialects of Languages (GRDDL)</a> parser for reading XHTML and XML as RDF triples<br />
 Updated RSS enclosures support in RSS tag soup parser and RSS 1.0 serializer (Suzan Foster)<br />
 Fixed several crashes with RSS tag soup parser, RDF/XML-abbrev serializer.<br />
 The turtle parser now accepts """long literals"""
@@ -695,7 +695,7 @@ statement to have one less 'const', to match the code.<br />
 raptor.h now includes stdarg.h<br />
 Portability fixes for win32<br />
 Updates to
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a>
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a>
 parser to only allow language with non-datatyped literals;
 allow a '_' immediately after a ':' in qnames and make
 bare ':' work.<br />
@@ -713,7 +713,7 @@ for the full details of the changes.</p>
 
 <h2 id="D2004-05-11-V1.3.0">2004-05-11 Raptor Version 1.3.0 Released</h2>
 <p>
-Updated <a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a> parser to fix the collections syntax, add integer literals and allow - in names.<br />
+Updated <a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a> parser to fix the collections syntax, add integer literals and allow - in names.<br />
 Added support for guessing a parser from content or identifiers<br />
 Completed parser feature support<br />
 Added sending HTTP Accept: headers for WWW retrieval when possible<br />
@@ -727,7 +727,7 @@ for the full details of the changes.</p>
 
 <h2 id="D2004-01-24-V1.2.0">2004-01-24 Raptor Version 1.2.0 Released</h2>
 <p>Added a
-<a href="http://www.dajobe.org/2004/01/turtle/">Turtle</a> parser (was N-Triples Plus) now with collections.<br />
+<a href="https://www.dajobe.org/2004/01/turtle/">Turtle</a> parser (was N-Triples Plus) now with collections.<br />
 Added raptor_syntaxes_enumerate to get syntax name, label,
 mime_type or uri_string of all known parsers.<br />
 Added WWW access via BSD libfetch if available.<br />
@@ -736,8 +736,8 @@ Updated the GNOME GUI grapper program to report errors and warnings<br />
 
 <h2 id="D2003-12-31-V1.1.0">2003-12-31 Raptor Version 1.1.0 Released</h2>
 <p>Added an
-<a href="http://www.dajobe.org/2003/11/ntriplesplus/">N-Triples Plus</a> parser<br />
-Updated for <a href="http://www.w3.org/TR/2003/WD-rdf-syntax-grammar-20031010/">RDF/XML Revised Working Draft</a> (10 October 2003) allowing <code>rdf:RDF</code> to be optional by default.  No further changes were needed for <a href="http://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/">RDF/XML Revised Proposed Recommendation</a> (15 December 2003)<br />
+<a href="https://www.dajobe.org/2003/11/ntriplesplus/">N-Triples Plus</a> parser<br />
+Updated for <a href="https://www.w3.org/TR/2003/WD-rdf-syntax-grammar-20031010/">RDF/XML Revised Working Draft</a> (10 October 2003) allowing <code>rdf:RDF</code> to be optional by default.  No further changes were needed for <a href="https://www.w3.org/TR/2003/PR-rdf-syntax-grammar-20031215/">RDF/XML Revised Proposed Recommendation</a> (15 December 2003)<br />
 Made URI class constructors, methods and factory methods as
 well as some other utility functions using or returning URIs or
 literals take <code>unsigned char*</code> rather than <code>char*</code>.<br />
@@ -775,7 +775,7 @@ Fixed some other minor memory leaks with <tt>rdf:datatype</tt> and <tt>rdf:ID</t
 </p>
 
 <h2 id="D2003-07-29-V0.9.11">2003-07-29 Raptor Version 0.9.11 Released</h2>
-<p>Completely handles the <a href="http://www.w3.org/TR/rdf-syntax-grammar">revised RDF/XML syntax</a>
+<p>Completely handles the <a href="https://www.w3.org/TR/rdf-syntax-grammar">revised RDF/XML syntax</a>
 (including post W3C Last Call changes)<br />
 Added Unicode Normal Form C (NFC) checking for literals (requires
 GNOME glib 2.0 at present)<br />
@@ -812,7 +812,7 @@ Other minor bug fixes.<br />
 <p>Performance improvements - uses less memory, 
 less repeated small malloc/free sequences, faster for larger files.<br />
 Added WWW retrieval - can parse from an URI as well as files, given
-either <a href="http://curl.haxx.se/libcurl/">libcurl</a> or <a href="http://xmlsoft.org/">libxml2</a> is available.<br />
+either <a href="https://curl.se/libcurl/">libcurl</a> or <a href="https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home">libxml2</a> is available.<br />
 Minor bug fixes.<br />
 Various Win32 configure, building patches<br />
 Sources updated to use autoconf 1.6+, automake 2.52+<br />
@@ -829,7 +829,7 @@ Linux utility.
 </p>
 
 <h2 id="D2002-12-20-V0.9.7">2002-12-20 Raptor Version 0.9.7 Released</h2>
-<p>Passes about 90% of <a href="http://www.w3.org/2000/10/rdf-tests/rdfcore/">RDF Core WG Test Cases</a><br />
+<p>Passes about 90% of <a href="https://www.w3.org/2000/10/rdf-tests/rdfcore/">RDF Core WG Test Cases</a><br />
 All memory leaks fixed<br />
 Portability fixes - compilers, scripts, auto* tools, libxml2 version<br />
 <tt>rdf:ID</tt> syntax and duplicates checked<br />
@@ -841,9 +841,9 @@ Added more conformance tests, errors and warnings.
 <p><b>Calling API changed</b> to provide a common interface to
 the RDF parsers.  The libraptor.3 manual page describes the changes.<br />
 Added support for RDF datatyped literals in 
-<a href="http://www.w3.org/TR/rdf-syntax-grammar">RDF/XML</a> with
+<a href="https://www.w3.org/TR/rdf-syntax-grammar">RDF/XML</a> with
 <tt>rdf:datatype</tt> attribute on property elements and
-<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
+<a href="https://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
 with the <tt>"string"^^&lt;datatypeURIref&gt;</tt>.<br />
 Added support for <tt>rdf:parseType="Collection"</tt> for RDF Collections<br />
 URI class allows swappable implementation by applications.<br />
@@ -856,7 +856,7 @@ Reorganised source into separate modules - URI, xml parser,
 ntriples parser, XML namespaces, XML qnames, locator.<br />
 More resilience with XML errors and XML parser errors - none of 
 libxml2's XML test suite examples crash raptor.<br />
-<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
+<a href="https://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a>
 parser recovers gracefully from errors in content<br />
 Packing for debian included<br />
 Added manual pages libraptor.3 and rapper.1<br />
@@ -874,9 +874,9 @@ Support <tt>xml:lang</tt> passing to application
 
 <h2 id="D2002-03-27-V0.9.4">2002-03-27 Raptor Version 0.9.4 Released</h2>
 <p>XML Base support (xml:base) added<br />
-xml:lang support added with <a href="http://www.w3.org/2001/08/rdf-test/#langString">N-Triples lang-string</a> support<br />
-All <a href="http://www.w3.org/2001/08/rdf-test/#ntrip_strings">N-Triples string escapes</a> implemented<br />
-<a href="http://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a> support with <a href="http://www.w3.org/2001/08/rdf-test/#xmlString">XML literals</a> - xml("&lt;foo/&gt;") and plain "foo"<br />
+xml:lang support added with <a href="https://www.w3.org/2001/08/rdf-test/#langString">N-Triples lang-string</a> support<br />
+All <a href="https://www.w3.org/2001/08/rdf-test/#ntrip_strings">N-Triples string escapes</a> implemented<br />
+<a href="https://www.w3.org/2001/08/rdf-test/#ntriples">N-Triples</a> support with <a href="https://www.w3.org/2001/08/rdf-test/#xmlString">XML literals</a> - xml("&lt;foo/&gt;") and plain "foo"<br />
 removed all special code for containers; treated as regular typedNodes<br />
 <tt>rdf:parseType="Literal"</tt> now working<br />
 Builds as shared and static libraries<br />
@@ -884,14 +884,14 @@ Conformance test suite added
 </p>
 
 <h2 id="D2001-08-21-V0.9.3">2001-08-21 Raptor Version 0.9.3 Released</h2>
-<p><a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
+<p><a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
 parser added<br />
 <tt>rdf:parseType="Literal"</tt> works much better (Aaron Michal and me)<br />
 DAML collections support added (Aaron Michal)<br />
 Win32 patch added - I can't confirm my merge didn't break this (Aaron Michal)<br />
-<a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> updated to support CR, LF and CR LF endings<br />
+<a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> updated to support CR, LF and CR LF endings<br />
 Make parser generated ids appear distinguised from regular URIs<br />
-Added <a href="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> output<br />
+Added <a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a> output<br />
 Made rdf:type, rdf:value as property attributes work<br />
 Made empty typed nodes work<br />
 GNOME xml / libxml error location (line, column) values corrected.
@@ -912,7 +912,7 @@ Added better XML parser auto-detection for various expats and libxml
 
 <hr />
 
-<p>Copyright (C) 2001-2023 <a href="http://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2001-2005 <a href="http://www.bristol.ac.uk/">University of Bristol</a></p>
+<p>Copyright (C) 2001-2023 <a href="https://www.dajobe.org/">Dave Beckett</a><br />Copyright (C) 2001-2005 <a href="https://www.bristol.ac.uk/">University of Bristol</a></p>
 
 </body>
 </html>
