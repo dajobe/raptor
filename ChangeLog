@@ -1,10 +1,22 @@
+2023-03-01  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-changes.tsv, scripts/process-changes.pl: Support
+	constants in changes TSV
+	* docs/raptor-changes.tsv: 2.0.16 API changes
+
+2023-02-28  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: https and 2023
+	* INSTALL.html, LICENSE.html, NEWS.html, README.html, RELEASE.html,
+	TODO.html, UPGRADING.html:
+	https and 2023
+	* docs/.gitignore: Ignore raptor2.actions
+
 2023-02-22  Dave Beckett <dave@dajobe.org>
 
 	* docs/tmpl/section-avltree.sgml,
 	docs/tmpl/section-constants.sgml, docs/tmpl/section-www.sgml:
 	Updated doc templates
-
-2023-02-22  Dave Beckett <dave@dajobe.org>
 
 	* src/raptor_serialize_rdfxmla.c, src/raptor_serialize_turtle.c:
 	Remove set but unused variable i
@@ -12,8 +24,7 @@
 2022-12-27  Dave Beckett <dave@dajobe.org>
 
 	* ChangeLog, INSTALL.html, LICENSE.html, NEWS.html, RELEASE.html,
-	configure.ac, src/raptor_general.c:
-	2023 and https
+	configure.ac, src/raptor_general.c: 2023 and https
 
 2022-12-27  Dave Beckett <dave@dajobe.org>
 
