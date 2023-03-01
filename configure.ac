@@ -3,10 +3,10 @@ dnl
 dnl configure.ac - autoconf file for Raptor
 dnl (Process this file with autoconf to produce a configure script.)
 dnl
-dnl Copyright (C) 2000-2011 David Beckett http://www.dajobe.org/
-dnl Copyright (C) 2000-2005 University of Bristol, UK http://www.bristol.ac.uk/
+dnl Copyright (C) 2000-2023 David Beckett https://www.dajobe.org/
+dnl Copyright (C) 2000-2005 University of Bristol, UK https://www.bristol.ac.uk/
 dnl 
-dnl This package is Free Software and part of Redland http://librdf.org/
+dnl This package is Free Software and part of Redland https://librdf.org/
 dnl 
 dnl It is licensed under the following three licenses as alternatives:
 dnl   1. GNU Lesser General Public License (LGPL) V2.1 or any newer version
@@ -96,7 +96,7 @@ if test "$USE_MAINTAINER_MODE" = yes; then
   # maintainer mode - flex is required
   if test "X$LEX" = "X:" ; then
     AC_MSG_RESULT(not present)
-    AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
+    AC_MSG_WARN(Please get flex from https://github.com/westes/flex)
     AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
     AC_MSG_FAILURE(flex not present)
   fi
@@ -113,13 +113,13 @@ if test "$USE_MAINTAINER_MODE" = yes; then
       AC_MSG_RESULT($FLEX_VERSION - OK)
     else
       AC_MSG_RESULT(version $FLEX_VERSION - too old)
-      AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
+      AC_MSG_WARN(Please get flex from https://github.com/westes/flex)
       AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
       AC_MSG_FAILURE(flex is too old)
     fi
   else
     AC_MSG_RESULT(present - but is not flex)
-    AC_MSG_WARN(Please get flex from http://flex.sourceforge.net/)
+    AC_MSG_WARN(Please get flex from https://github.com/westes/flex)
     AC_MSG_WARN(version $FLEX_MIN_VERSION ($FLEX_REC_VERSION recommended))
     AC_MSG_FAILURE($LEX is not not flex)
   fi
@@ -212,7 +212,7 @@ AC_DEFUN([REDLAND_CC_TRY_FLAG], [
 ])
 
 # GCC warning options
-# http://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
+# https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html
 #
 # Too noisy:
 #  -Wmissing-field-initializers : too noisy in raptor_rss_common.c
@@ -783,7 +783,7 @@ if test "x$yajl_prefix" != "xno" ; then
   fi
 
   if test "X$yajl_prefix" = "Xnone" ; then
-    AC_MSG_RESULT(not found. Get it from http://lloyd.github.com/yajl/ and use --with-yajl=DIR if necessary to configure the installation directory.)
+    AC_MSG_RESULT(not found. Get it from https://lloyd.github.com/yajl/ and use --with-yajl=DIR if necessary to configure the installation directory.)
   else
     AC_MSG_RESULT($yajl_prefix)
 
@@ -1243,7 +1243,7 @@ if test $need_libxml = 1; then
   if test $have_libxml = 1; then
     AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
   else
-    AC_MSG_ERROR(libxml2 is not available - please get it from http://xmlsoft.org/)
+    AC_MSG_ERROR(libxml2 is not available - please get it from https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home)
   fi
   if test $need_libxml_www = 1; then
     AC_LIBOBJ(raptor_www_libxml)
