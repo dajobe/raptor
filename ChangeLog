@@ -1,3 +1,7 @@
+2023-03-01  Dave Beckett  <dave@dajobe.org>
+
+	* Snapshotted raptor2_2_0_16 for 2.0.16 release (GIT b2d89d96cb43a93f751e17619491955abb41dbd1)
+
 2023-03-01  Dave Beckett <dave@dajobe.org>
 
 	* docs/raptor-changes.tsv, scripts/process-changes.pl: Support
