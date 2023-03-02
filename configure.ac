@@ -24,7 +24,7 @@ dnl
 
 
 AC_PREREQ([2.62])
-AC_INIT([Raptor RDF Parser and Serializer library], [2.0.16], [https://bugs.librdf.org/], [raptor2])
+AC_INIT([Raptor RDF Parser and Serializer library], [2.0.17], [https://bugs.librdf.org/], [raptor2])
 AC_CONFIG_SRCDIR([src/raptor_general.c])
 AC_CONFIG_HEADERS([src/raptor_config.h])
 AC_CONFIG_AUX_DIR(build)
