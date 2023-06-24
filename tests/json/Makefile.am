@@ -57,37 +57,38 @@ check_json_deps = $(TEST_FILES)
 endif
 
 check-json: build-rapper $(check_json_deps)
-	@result=0; \
+	@set +e; result=0; \
 	$(RECHO) "Testing legal JSON"; \
 	printf 'IF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
+	base="$@" ; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$test; \
+	  expected="$(srcdir)/$$name.nt"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i json -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i json -o ntriples $(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
-	  elif cmp $(srcdir)/$$name.nt $$name.res >/dev/null 2>&1; then \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    cat $$name.err; \
-	    diff $(srcdir)/$$name.nt $$name.res; result=1; \
+	    cat $$base.err; diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
 		json.$$name \
 		"\$${RAPPER} -q -i json -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.nt" >>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
-	exit $$result
+	rm -f $$base.res $$base.err; \
+	set -e; exit $$result
 
 if MAINTAINER_MODE
 check_bad_json_deps = $(JSON_BAD_TEST_FILES)
@@ -97,25 +98,25 @@ check-bad-json: build-rapper $(check_bad_json_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad JSON fails"; \
 	printf 'IF(RAPTOR_PARSER_JSON)\n\n' >>CMakeTests.txt; \
+	base="$@" ; \
 	for test in $(JSON_BAD_TEST_FILES); do \
 	  name=`basename $$test .json` ; \
 	  baseuri=$(BASE_URI)$$name.json; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i json -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i json -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
-	    cat $$name.res; grep Warning $$name.err; result=1; \
+	    cat $$base.res; grep Warning $$base.err; result=1; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf '\tADD_TEST(%s %s) # WILL_FAIL\n' \
 		json.$$name \
 		"\$${RAPPER} -q -i json -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
@@ -126,5 +127,6 @@ check-bad-json: build-rapper $(check_bad_json_deps)
 	 printf '\t\tPROPERTIES\n\t\tWILL_FAIL TRUE\n\t)\n\n'; \
 	 printf 'ENDIF(RAPTOR_PARSER_JSON)\n\n') >>CMakeTests.txt; \
 	rm -f CMakeTmp.txt; \
+	rm -f $$base.res $$base.err; \
 	set -e; exit $$result
 

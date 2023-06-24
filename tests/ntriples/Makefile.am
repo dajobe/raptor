@@ -74,27 +74,29 @@ endif
 check-nt: build-rapper $(check_nt_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing N-Triples"; \
+	base="$@" ; \
 	for test in $(NT_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $(BASE_URI)$$test > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -ne 0 ; then \
 	    $(RECHO) "FAILED"; \
-	    cat $$name.err; \
-	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    cat $$base.err; \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		ntriples.$$name \
 		"\$${RAPPER} -q -i ntriples -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $(BASE_URI)$$test" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -104,25 +106,25 @@ endif
 check-bad-nt: build-rapper $(check_bad_nt_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad N-Triples fails"; \
+	base="$@" ; \
 	for test in $(NT_BAD_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
 	  baseuri=$(BASE_URI)$$name.nt; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i ntriples -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
-	    cat $$name.res; grep Warning $$name.err; result=1; \
+	    cat $$base.res; grep Warning $$base.err; result=1; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
 		ntriples.$$name \
 		"\$${RAPPER} -q -i ntriples -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
@@ -132,6 +134,7 @@ check-bad-nt: build-rapper $(check_bad_nt_deps)
 	 cat CMakeTmp.txt; \
 	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
 	rm -f CMakeTmp.txt; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -141,23 +144,25 @@ endif
 check-nq: build-rapper $(check_nq_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing N-Quads"; \
+	base="$@" ; \
 	for test in $(NQ_TEST_FILES); do \
 	  name=`basename $$test .nq` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $(BASE_URI)$$test > $$base.res 2>/dev/null; \
+	  if cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		ntriples.$$name \
 		"\$${RAPPER} -q -i nquads -o nquads file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $(BASE_URI)$$test" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res ; \
 	set -e; exit $$result
 
 print-nt-test-files:

@@ -162,39 +162,40 @@ endif
 check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	@set +e; result=0; failures=; failure_count=0; \
 	$(RECHO) "Testing RDFa 1.1"; \
+	base="$@"; \
 	printf 'IF(RAPTOR_PARSER_RDFA)\n\n' >>CMakeTests.txt; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .xml` ; \
+	  expected="$(srcdir)/$$name.out" ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
 	  baseuri=$(BASE_URI)$$test; \
-	  $(RAPPER) -f noNet -q -i rdfa11 -I $$baseuri -o ntriples $(srcdir)/$$test > $$name-res.nt 2> $$name.err; \
+	  $(RAPPER) -f noNet -q -i rdfa11 -I $$baseuri -o ntriples $(srcdir)/$$test > $$base-res.nt 2> $$base.err; \
 	  status1=$$?; \
 	  if test $$status1 = 2; then \
 	    status1=0; \
 	  fi; \
-	  if cmp $(srcdir)/$$name.out $$name-res.nt >/dev/null 2>&1; then \
+	  if cmp $$expected $$base-res.nt >/dev/null 2>&1; then \
 	    status2=0; \
 	  else \
-	    $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt > $$name.res 2> $$name.err; \
+	    $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$base-res.nt > $$base.res 2> $$base.err; \
 	    status2=$$?; \
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    $(RECHO) "Triple counts: expected: `wc -l < $(srcdir)/$$name.out` got: `wc -l < $$name-res.nt` "; \
-	    $(RECHO) $(RAPPER) -f noNet -q -i rdfa11 -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$name-res.nt; \
-	    $(RECHO) $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$name-res.nt '>' $$name.res; \
-	    cat $$name.err $$name.res; \
+	    $(RECHO) "Triple counts: expected: `wc -l < $(srcdir)/$$name.out` got: `wc -l < $$base-res.nt` "; \
+	    $(RECHO) $(RAPPER) -f noNet -q -i rdfa11 -I $$baseuri -o ntriples $(srcdir)/$$test '>' $$base-res.nt; \
+	    $(RECHO) $(RDFDIFF) -f ntriples -u $$baseuri -t ntriples $(srcdir)/$$name.out $$base-res.nt '>' $$base.res; \
+	    cat $$base.err $$base.res; \
 	    failures="$$failures $$test"; \
 	    failure_count=`expr $$failure_count + 1`; \
 	  fi; \
-	  rm -f $$name-res.nt $$name.res $$name.err; \
 	  printf '\tRAPPER_RDFDIFF_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t"%s"\n\t)\n\n' \
 		rdfa11.$$name \
 		"\$${RAPPER} -f noNet -q -i rdfa11 -I $$baseuri -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
-		$$name-res.nt \
-		"\$${RDFDIFF} -f ntriples -u $$baseuri -t ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out $$name-res.nt" \
+		$$base-res.nt \
+		"\$${RDFDIFF} -f ntriples -u $$baseuri -t ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out $$base-res.nt" \
 		>>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_RDFA)\n\n' >>CMakeTests.txt; \
@@ -208,4 +209,5 @@ check-rdfa: build-rdfdiff build-rapper $(check_rdfa_deps)
 	    result=1; \
 	  fi; \
 	fi; \
+	rm -f $$base-res.nt $$base.res $$base.err; \
 	set -e; exit $$result

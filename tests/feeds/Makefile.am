@@ -83,11 +83,12 @@ check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing RDF/XML to Turtle"; \
 	printf 'IF(RAPTOR_PARSER_RDFXML)\n\n' >>CMakeTests.txt; \
+	base="$@"; \
 	for test in $(TEST_IN_RDF_ATOMS); do \
 	  parser=rdfxml; \
 	  name=`basename $$test .rdf` ; \
 	  turtle="$$name.ttl"; \
-	  expected="$$name-result.ttl"; \
+	  expected="$(srcdir)/$$name-result.ttl"; \
 	  opts="-f writeBaseURI=0"; \
 	  if test $$name = test01; then \
 	    baseuri="http://example.org/whatsnew"; \
@@ -98,21 +99,20 @@ check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 	  fi; \
 	  opts="-q -i $$parser -o turtle $$opts -O $$baseuri"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> errors-crtt.log; \
+	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> $$base.errs; \
 	  status=$$?; \
 	  if test $$status != 0; then \
 	    $(RECHO) "FAILED with code $$status"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    cat errors-crtt.log ; \
+	    cat $base.errs ; \
 	    result=1 ; \
-	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
+	  elif cmp $$expected $$turtle >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
+	    diff -u $$expected $$turtle; result=1; \
 	  fi; \
-	  rm -f errors-crtt.log ; \
 	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
 		feeds.$$test \
 		"\$${RAPPER} $$opts file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
@@ -120,6 +120,7 @@ check-rdfxml-to-turtle: $(check_rdfxml_to_turtle_deps)
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_RDFXML)\n\n' >>CMakeTests.txt; \
+	rm -f $$base.errs ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -131,11 +132,12 @@ check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing Atom to Turtle"; \
 	printf 'IF(RAPTOR_PARSER_RSS)\n\n' >>CMakeTests.txt; \
+	base="$@"; \
 	for test in $(TEST_IN_ATOMS); do \
 	  parser=rss-tag-soup; \
 	  name=`basename $$test .atom` ; \
 	  turtle="$$name.ttl"; \
-	  expected="$$name-result.ttl"; \
+	  expected="$(srcdir)/$$name-result.ttl"; \
 	  opts="-f writeBaseURI=0"; \
 	  baseuri="http://www.example.org/blog/"; \
 	  if test $$name = test04; then \
@@ -143,21 +145,20 @@ check-atom-to-turtle: $(check_atom_to_turtle_deps)
 	  fi; \
 	  opts="-q -i $$parser -o turtle $$opts -O $$baseuri"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> errors-catt.log; \
+	  $(RAPPER) $$opts file:$(srcdir)/$$test > $$turtle 2> $$base.errs; \
 	  status=$$?; \
 	  if test $$status != 0; then \
 	    $(RECHO) "FAILED with code $$status"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    cat errors-catt.log ; \
+	    cat $$base.errs ; \
 	    result=1 ; \
-	  elif cmp $(srcdir)/$$expected $$turtle >/dev/null 2>&1; then \
+	  elif cmp $$expected $$turtle >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    diff -u $(srcdir)/$$expected $$turtle; result=1; \
+	    diff -u $$expected $$turtle; result=1; \
 	  fi; \
-	  rm -f errors-catt.log ; \
 	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
 		feeds.$$test \
 		"\$${RAPPER} $$opts file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
@@ -165,6 +166,7 @@ check-atom-to-turtle: $(check_atom_to_turtle_deps)
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_RSS)\n\n' >>CMakeTests.txt; \
+	rm -f $$base.errs ; \
 	set -e; exit $$result
 
 # Parser from Turtle and Serialize to Atom
@@ -172,10 +174,11 @@ check-serialize-atom: check-atom-to-turtle
 	@set +e; result=0; \
 	$(RECHO) "Testing Turtle to Atom XML"; \
 	printf 'IF(RAPTOR_SERIALIZER_ATOM)\n\n' >>CMakeTests.txt; \
+	base="$@"; \
 	for test in $(OUT_RDF_TTLS); do \
 	  name=`basename $$test .ttl` ; \
 	  atom="$$name.atom"; \
-	  expected="$$name-result.atom"; \
+	  expected="$(srcdir)/$$name-result.atom"; \
 	  opts="-f writeBaseURI=0 -f rssTriples=atom-triples"; \
 	  if test $$name = test01; then \
 	    baseuri="http://example.org/whatsnew"; \
@@ -187,21 +190,20 @@ check-serialize-atom: check-atom-to-turtle
 	  fi; \
 	  opts="-q -i turtle -o atom $$opts -I $$baseuri -O $$baseuri"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) $$opts file:$$test > $$atom 2> errors-csa.log; \
+	  $(RAPPER) $$opts file:$$test > $$atom 2> $$base.errs; \
 	  status=$$?; \
 	  if test $$status != 0; then \
 	    $(RECHO) "FAILED with code $$status"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$$test"; \
-	    cat errors-csa.log ; \
+	    cat $$base.errs ; \
 	    result=1 ; \
-	  elif cmp $(srcdir)/$$expected $$atom >/dev/null 2>&1; then \
+	  elif cmp $$expected $$atom >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
 	    $(RECHO) "$(RAPPER) $$opts file:$(srcdir)/$$test"; \
-	    diff -u $(srcdir)/$$expected $$atom; result=1; \
+	    diff -u $$expected $$atom; result=1; \
 	  fi; \
-	  rm -f errors-csa.log ; \
 	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
 		feeds.$$test \
 		"\$${RAPPER} $$opts file:$$test" \
@@ -209,6 +211,7 @@ check-serialize-atom: check-atom-to-turtle
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$expected" >>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_SERIALIZER_ATOM)\n\n' >>CMakeTests.txt; \
+	rm -f $$base.errs ; \
 	set -e; exit $$result
 
 
@@ -220,6 +223,7 @@ SUFFIXES = .rng .rnc
 
 check-validate-atom: $(srcdir)/atom.rng check-serialize-atom $(TEST_IN_ATOMS)
 	@set +e; result=0; \
+	base="$@"; \
 	if test "X$(JING)" = X; then \
 	  $(RECHO) "WARNING: Skipping feed validation RelaxNG tests - jing is missing"; \
 	else \
@@ -227,22 +231,22 @@ check-validate-atom: $(srcdir)/atom.rng check-serialize-atom $(TEST_IN_ATOMS)
 	  for atom in $(OUT_ATOMS) $(TEST_IN_ATOMS); do \
 	    test -f $$atom || atom=$(srcdir)/$$atom; \
 	    $(RECHO) $(RECHO_N) "Validating $$atom $(RECHO_C)"; \
-	    $(JING) $(srcdir)/atom.rng $$atom > errors-cva.log 2>&1; \
+	    $(JING) $(srcdir)/atom.rng $$atom > $$base.errs 2>&1; \
 	    status=$$?; \
 	    if test $$status != 0; then \
 	      $(RECHO) "FAILED with code $$status"; result=1; \
 	      $(RECHO) $(JING) $(srcdir)/atom.rng $$atom; \
-	      sed -e "s,^.*$$atom,$$atom," errors-cva.log ; \
+	      sed -e "s,^.*$$atom,$$atom," $$base.errs ; \
 	      result=1 ; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
-	    rm -f errors-cva.log; \
 	    printf '\tADD_TEST(%s %s)\n' \
 		  feeds.jing-$$atom \
 		  "\$${JING} \$${CMAKE_CURRENT_SOURCE_DIR}/atom.rng $$atom" >>CMakeTests.txt; \
 	  done; \
 	fi; \
+	rm -f $$base.errs; \
 	set -e; exit $$result
 
 endif

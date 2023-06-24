@@ -499,27 +499,28 @@ endif
 
 check-good-turtle: build-rapper $(check_good_turtle_deps)
 	@set +e; result=0; errors=0; failures=''; \
+	base="$@"; \
 	$(RECHO) "Testing good Turtle syntax passes"; \
 	for test in $(TEST_GOOD_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) "FAILED returned status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  elif test $$status = 2 ; then \
-	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	    $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	  else \
 	    $(RECHO) "ok"; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	done; \
 	$(RECHO) "Result: $$errors errors: $$failures"; \
+	rm -f $$base.res $$base.err; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -529,37 +530,38 @@ endif
 check-bad-turtle: build-rapper $(check_bad_turtle_deps)
 	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing bad Turtle fails"; \
+	base="$@"; \
 	for test in $(TEST_BAD_FILES) $(TEST_BAD_EVAL_FILES) ; do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning";  result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.res; grep Warning $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.res; grep Warning $$base.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
-	    cat $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
+	    cat $$base.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	done; \
 	$(RECHO) "Result: $$errors errors: $$failures"; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 
@@ -570,34 +572,35 @@ endif
 check-eval-turtle: build-rapper $(check_eval_turtle_deps)
 	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing eval Turtle"; \
+	base="$@"; \
 	for test in $(TEST_EVAL_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$name.nt > $$name.nnt; \
-	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$name.nt > $$base.nnt; \
+	  $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) "FAILED returned status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
-	  elif $(RDFCOMPARE) $$name.nnt $$name.res >/dev/null 2>&1; then \
+	  elif $(RDFCOMPARE) $$base.nnt $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
-	    diff $$name.nnt $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o ntriples $(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
+	    diff $$base.nnt $$base.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
-	  rm -f $$name.res $$name.err $$name.nnt; \
 	done; \
 	$(RECHO) "Result: $$errors errors: $$failures"; \
+	rm -f $$base.res $$base.err $$base.nnt; \
 	set -e; exit $$result

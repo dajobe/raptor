@@ -55,30 +55,32 @@ check-grddl: build-rapper $(check_grddl_deps)
 	@result=0; \
 	$(RECHO) "Testing GRDDL"; \
 	printf 'IF(RAPTOR_PARSER_GRDDL)\n\n' >>CMakeTests.txt; \
+	base="$@" ; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .html` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(RAPPER) -f noNet -q -i grddl -o ntriples $(srcdir)/$$test > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
-	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $(srcdir)/$$name.out $$base.res; result=1; \
 	  fi; \
 	  if test $$status != 1 ; then \
-	    rm -f $$name.res $$name.err; \
+	    rm -f $$base.res $$base.err; \
 	  fi; \
 	  printf '\tRAPPER_TEST(%s\n\t\t"%s"\n\t\t%s\n\t\t%s\n\t)\n\n' \
 		grddl.$$name \
 		"\$${RAPPER} -f noNet -q -i grddl -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
 	printf 'ENDIF(RAPTOR_PARSER_GRDDL)\n\n' >>CMakeTests.txt; \

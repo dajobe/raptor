@@ -143,8 +143,10 @@ endif
 check-rdf: build-rapper $(check_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing legal rdf/xml"; \
+	base="$@" ; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  if test $$name = 22-rdf-syntax-ns; then \
 	    baseuri=$(RDF_NS_URI); \
 	  elif test $$name = rdfs-namespace -o $$name = rdf-schema; then \
@@ -159,27 +161,27 @@ check-rdf: build-rapper $(check_rdf_deps)
 	    baseuri=$(BASE_URI)$$name.rdf; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
-	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res $$base.err; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -189,24 +191,26 @@ endif
 check-assume-rdf: build-rapper $(check_assume_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml known by context"; \
+	base="$@" ; \
 	for test in $(RDF_ASSUME_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
+	  expected="$(srcdir)/$$name.out"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2>/dev/null; \
+	  if cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -216,24 +220,26 @@ endif
 check-scan-rdf: build-rapper $(check_scan_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml inside other XML"; \
+	base="$@" ; \
 	for test in $(RDF_SCAN_TEST_FILES); do \
 	  name=`echo $$test | sed -e 's/\..*//'` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2>/dev/null; \
-	  if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  $(RAPPER) -q -f scanForRDF -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2>/dev/null; \
+	  if cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -f scanForRDF -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -243,31 +249,33 @@ endif
 check-mayfail-xml-rdf: build-rapper $(check_mayfail_xml_rdf_deps)
 	@set +e; \
 	$(RECHO) "Testing rdf/xml (may fail due to XML parser bugs)"; \
+	base="$@" ; \
 	for test in $(RDF_MAYFAIL_XML_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples $(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; \
-	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; \
+	    diff $$expected $$base.res; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -o ntriples \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res $$base.err; \
 	set -e; exit 0
 
 if MAINTAINER_MODE
@@ -277,25 +285,25 @@ endif
 check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that bad rdf/xml fails"; \
+	base="$@" ; \
 	for test in $(RDF_BAD_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
-	    cat $$name.res; grep Warning $$name.err; result=1; \
+	    cat $$base.res; grep Warning $$base.err; result=1; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
@@ -305,6 +313,7 @@ check-bad-rdf: build-rapper $(check_bad_rdf_deps)
 	 cat CMakeTmp.txt; \
 	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
 	rm -f CMakeTmp.txt; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -314,25 +323,25 @@ endif
 check-bad-nfc-rdf: build-rapper $(check_bad_nfc_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing that rdf/xml with bad Unicode NFC fails"; \
+	base="$@" ; \
 	for test in $(RDF_BAD_NFC_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -m strict -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning"; \
-	    cat $$name.res; grep Warning $$name.err; result=1; \
+	    cat $$base.res; grep Warning $$base.err; result=1; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed (NFC test)"; \
-	    cat $$name.res; result=0; \
+	    cat $$base.res; result=0; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf 'ADD_TEST(%s %s) # WILL_FAIL\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -m strict -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" >>CMakeTests.txt; \
@@ -342,6 +351,7 @@ check-bad-nfc-rdf: build-rapper $(check_bad_nfc_rdf_deps)
 	 cat CMakeTmp.txt; \
 	 printf '\tPROPERTIES\n\tWILL_FAIL TRUE\n)\n\n') >>CMakeTests.txt; \
 	rm -f CMakeTmp.txt; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -351,33 +361,35 @@ endif
 check-warn-rdf: build-rapper $(check_warn_rdf_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdf/xml with warnings"; \
+	base="$@" ; \
 	for test in $(RDF_WARN_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
+	  expected="$(srcdir)/$$name.out"; \
 	  baseuri=$(BASE_URI)$$name.rdf; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -o ntriples file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "FAILED - parsing failed when should have warned"; \
-	    cat $$name.res; grep Error $$name.err; result=1; \
+	    cat $$base.res; grep Error $$base.err; result=1; \
 	  elif test $$status -eq 2 ; then \
-	    if cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	    if cmp $$expected $$base.res >/dev/null 2>&1; then \
 	      $(RECHO) "ok"; \
 	    else \
 	      $(RECHO) "FAILED"; \
-	      diff $(srcdir)/$$name.out $$name.res; result=1; \
+	      diff $$expected $$base.res; result=1; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; \
-	    cat $$name.res; result=1; \
+	    cat $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -o ntriples file:\$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
+		$$base.res \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -387,19 +399,20 @@ endif
 check-rdfdiff: build-rdfdiff $(check_rdfdiff_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfdiff with legal rdf/xml"; \
+	base="$@" ; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RDFDIFF) $(srcdir)/$$test $(srcdir)/$$test > $$name.res 2> $$name.err; \
+	  $(RDFDIFF) $(srcdir)/$$test $(srcdir)/$$test > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    cat $$name.err; result=1; \
+	    cat $$base.err; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	done; \
+	rm -f $$base.res $$base.err; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -409,24 +422,26 @@ endif
 check-rdfxml: build-rapper $(check_rdfxml_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfxml serialization with legal rdf/xml"; \
+	base="$@" ; \
 	for test in $(RDF_SERIALIZE_TEST_FILES); do \
 	  name=`basename $$test .nt` ; \
+	  expected="$(srcdir)/$$name.rdf"; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$name-rdfxml.rdf 2> $$name.err; \
-	  if cmp $(srcdir)/$$name.rdf $$name-rdfxml.rdf >/dev/null 2>&1; then \
+	  $(RAPPER) -q -i ntriples -o rdfxml $(srcdir)/$$test $$baseuri > $$base-rdfxml.rdf 2> $$base.err; \
+	  if cmp $$expected $$base-rdfxml.rdf >/dev/null 2>&1; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.rdf $$name-rdfxml.rdf; result=1; \
+	    diff $$expected $$base-rdfxml.rdf; result=1; \
 	  fi; \
-	  rm -f $$name-rdfxml.rdf $$name.res $$name.err; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		rdfxml.$$name \
 		"\$${RAPPER} -q -i ntriples -o rdfxml \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name-rdfxml.rdf \
+		$$base-rdfxml.rdf \
 		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.rdf" >>CMakeTests.txt; \
 	done; \
+	rm -f $$base-rdfxml.rdf $$base.res $$base.err; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -436,32 +451,33 @@ endif
 check-rdfxmla: build-rdfdiff build-rapper $(check_rdfxmla_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing rdfxml-abbrev serialization with legal rdf/xml"; \
+	base="$@" ; \
 	for test in $(RDF_TEST_FILES); do \
 	  name=`basename $$test .rdf` ; \
 	  baseuri=-; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$name-rdfxmla.rdf 2> $$name.err; \
+	  $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri > $$base-rdfxmla.rdf 2> $$base.err; \
 	  status1=$$?; \
 	  if test $$test = ex-38.rdf; then \
-	    diff $(srcdir)/ex-38-rdfxmla.out $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	    diff $(srcdir)/ex-38-rdfxmla.out $$base-rdfxmla.rdf > $$base.res 2> $$base.err; \
 	    status2=$$?; \
 	  else \
-	    $(RDFDIFF) $(srcdir)/$$test $$name-rdfxmla.rdf > $$name.res 2> $$name.err; \
+	    $(RDFDIFF) $(srcdir)/$$test $$base-rdfxmla.rdf > $$base.res 2> $$base.err; \
 	    status2=$$?; \
 	  fi; \
 	  if test $$status1 = 0 -a $$status2 = 0; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status1 = 2 -a $$status2 = 0; then \
-	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	    $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    echo $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$name-rdfxmla.rdf; \
-	  status1=$$?; \
-	    echo $(RDFDIFF) $(srcdir)/$$test $$name-rdfxmla.rdf '>' $$name.res; \
-	    echo "rapper + rdfdiff output:"; cat $$name.err; result=1; \
+	    echo $(RAPPER) -q -o rdfxml-abbrev $(srcdir)/$$test $$baseuri '>' $$base-rdfxmla.rdf; \
+	    status1=$$?; \
+	    echo $(RDFDIFF) $(srcdir)/$$test $$base-rdfxmla.rdf '>' $$base.res; \
+	    echo "rapper + rdfdiff output:"; cat $$base.err; result=1; \
 	  fi; \
-	  rm -f $$name-rdfxmla.rdf $$name.res $$name.err; \
 	done; \
+	rm -f $$base-rdfxmla.rdf $$base.res $$base.err; \
 	set -e; exit $$result
 
 print-rdf-test-files:

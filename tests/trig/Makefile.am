@@ -50,31 +50,33 @@ check_trig_deps = $(TEST_FILES)
 endif
 
 check-trig: build-rapper $(check_trig_deps)
-	@result=0; \
+	@set +e; result=0; \
 	$(RECHO) "Testing legal TRiG"; \
+	base="$@" ; \
 	for test in $(TEST_FILES); do \
 	  name=`basename $$test .trig` ; \
 	  baseuri=$(BASE_URI)$$test; \
+	  expected="$(srcdir)/$$name.out"; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i trig -o nquads $(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i trig -o nquads $(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
-	  elif cmp $(srcdir)/$$name.out $$name.res >/dev/null 2>&1; then \
+	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
-	      $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	    else \
 	      $(RECHO) "ok"; \
 	    fi; \
 	  else \
 	    $(RECHO) "FAILED"; \
-	    diff $(srcdir)/$$name.out $$name.res; result=1; \
+	    diff $$expected $$base.res; result=1; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	  printf 'RAPPER_TEST(%s\n\t"%s"\n\t%s\n\t%s\n)\n\n' \
 		trig.$$name \
 		"\$${RAPPER} -q -i trig -o nquads \$${CMAKE_CURRENT_SOURCE_DIR}/$$test $$baseuri" \
-		$$name.res \
-		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$name.out" >>CMakeTests.txt; \
+		$$base.res \
+		"\$${CMAKE_CURRENT_SOURCE_DIR}/$$base.out" >>CMakeTests.txt; \
 	done; \
-	exit $$result
+	rm -f $$base.res $$base.err; \
+	set -e; exit $$result

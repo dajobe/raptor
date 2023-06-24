@@ -148,26 +148,27 @@ endif
 check-good-nquads: build-rapper $(check_good_nquads_deps)
 	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing good N-Quads syntax passes"; \
+	base="$@" ; \
 	for test in $(TEST_GOOD_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) "FAILED returned status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i nquads -o nquads $(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i nquads -o nquads $(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  elif test $$status = 2 ; then \
-	    $(RECHO) "ok with warnings"; grep Warning $$name.err; \
+	    $(RECHO) "ok with warnings"; grep Warning $$base.err; \
 	  else \
 	    $(RECHO) "ok"; \
 	  fi; \
-	  rm -f $$name.res $$name.err; \
 	done; \
 	$(RECHO) "Result: $$errors errors:$$failures"; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result
 
 if MAINTAINER_MODE
@@ -177,35 +178,36 @@ endif
 check-bad-nquads: build-rapper $(check_bad_nquads_deps)
 	@set +e; result=0; errors=0; failures=''; \
 	$(RECHO) "Testing bad N-Quads fails"; \
+	base="$@" ; \
 	for test in $(TEST_BAD_FILES) ; do \
 	  name=`basename $$test .ttl` ; \
 	  baseuri=$(BASE_URI)$$test; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri > $$name.res 2> $$name.err; \
+	  $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri > $$base.res 2> $$base.err; \
 	  status=$$?; \
 	  if test $$status -eq 1 ; then \
 	    $(RECHO) "ok"; \
 	  elif test $$status -eq 2 ; then \
 	    $(RECHO) "FAILED - parsing succeeded with a warning";  result=1; \
-	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.res; grep Warning $$name.err; \
+	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.res; grep Warning $$base.err; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  elif test $$status -eq 0 ; then \
 	    $(RECHO) "FAILED - parsing succeeded but should have failed"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  else \
 	    $(RECHO) "FAILED - parsing failed with unknown status $$status"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$name.res; \
-	    cat $$name.err; \
-	    cat $$name.res; \
+	    $(RECHO) $(RAPPER) -q -i nquads -o nquads file:$(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err; \
+	    cat $$base.res; \
 	    errors=`expr $$errors + 1`; \
 	    failures="$$failures $$test"; \
 	  fi; \
-	  rm -f $$name.res $$name.err ; \
 	done; \
 	$(RECHO) "Result: $$errors errors:$$failures"; \
+	rm -f $$base.res $$base.err ; \
 	set -e; exit $$result

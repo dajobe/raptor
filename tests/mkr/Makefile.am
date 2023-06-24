@@ -74,6 +74,7 @@ endif
 check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
 	@set +e; result=0; \
 	$(RECHO) "Testing mkr exact serialization output"; \
+	base="$@"; \
 	for test in $(TEST_SERIALIZE_FILES); do \
 	  name=`basename $$test .ttl` ; \
 	  if test $$name = rdf-schema; then \
@@ -84,19 +85,19 @@ check-mkr-serialize-syntax: build-rapper $(check_mkr_serialize_syntax_deps)
             baseuri=$(BASE_URI)$$test; \
 	  fi; \
 	  $(RECHO) $(RECHO_N) "Checking $$test $(RECHO_C)"; \
-	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$name.out 2> $$name.err; \
-	  cmp -s $$name.out $(srcdir)/$$name.mkr; \
+	  $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri > $$base.out 2> $$base.err; \
+	  cmp -s $$base.out $(srcdir)/$$name.mkr; \
 	  status=$$?; \
 	  if test $$status = 0; then \
 	    $(RECHO) "ok"; \
 	  else \
 	    $(RECHO) "FAILED"; result=1; \
-	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$name.out; \
-	    cat $$name.err; \
-	    diff -a -u $$name.out $(srcdir)/$$name.mkr; \
+	    $(RECHO) $(RAPPER) -q -i turtle -o mkr $(srcdir)/$$test $$baseuri '>' $$base.out; \
+	    cat $$base.err; \
+	    diff -a -u $$base.out $(srcdir)/$$name.mkr; \
 	  fi; \
-	  rm -f $$name.out $$name.err; \
 	done; \
+	rm -f $$base.out $$base.err; \
 	set -e; exit $$result
 
 
