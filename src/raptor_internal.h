@@ -182,11 +182,15 @@ void raptor_sign_free(void *ptr);
 #define PRAGMA_IGNORE_WARNING_LONG_LONG_START \
   _Pragma ("GCC diagnostic push") \
   _Pragma ("GCC diagnostic ignored \"-Wlong-long\"")
+#define PRAGMA_IGNORE_WARNING_REDUNDANT_DECLS_START \
+  _Pragma ("GCC diagnostic push") \
+  _Pragma ("GCC diagnostic ignored \"-Wredundant-decls\"")
 #define PRAGMA_IGNORE_WARNING_END \
   _Pragma ("GCC diagnostic pop")
 #else
 #define PRAGMA_IGNORE_WARNING_FORMAT_NONLITERAL_START
 #define PRAGMA_IGNORE_WARNING_LONG_LONG_STAR
+#define PRAGMA_IGNORE_WARNING_REDUNDANT_DECLS_START
 #define PRAGMA_IGNORE_WARNING_END
 #endif
 

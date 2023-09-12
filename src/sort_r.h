@@ -66,9 +66,11 @@ void sort_r(void *base, size_t nel, size_t width,
   /* Declare structs and functions */
   #if defined _SORT_R_BSD
 
+PRAGMA_IGNORE_WARNING_REDUNDANT_DECLS_START
     /* BSD requires argument swap */
     extern void qsort_r(void *base, size_t nel, size_t width, void *thunk,
                         int (*compar)(void *_thunk, const void *_a, const void *_b));
+PRAGMA_IGNORE_WARNING_END
 
     struct sort_r_data
     {
