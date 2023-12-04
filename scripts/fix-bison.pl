@@ -98,6 +98,8 @@ sub fix($)
     my $line=$. +$line_offset;
     s/^(\#line) \d+ (.*\.c)/$1 $line $2/;
 
+    # Remove all mention of unused var yynerrs
+    s%^(\s*)(.*yynerrs.*)%$1/* $2 */%;
     print OUT;
   }
 }
