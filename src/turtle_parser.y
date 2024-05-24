@@ -231,7 +231,6 @@ graph: GRAPH_NAME_LEFT_CURLY
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
       turtle_parser->graph_name = raptor_new_term_from_uri(rdf_parser->world, $1);
-      raptor_free_uri($1);
       raptor_parser_start_graph(rdf_parser,
                                 turtle_parser->graph_name->value.uri, 1);
     }
