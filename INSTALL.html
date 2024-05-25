@@ -136,7 +136,9 @@ GIT sources.  autogen.sh enforces the requirements.
 <a href="https://www.gnu.org/software/bison/bison.html">GNU Bison</a>
 to build lexers and parsers.  configure will warn or fail if they
 are missing or the installed versions are too old.
-These are <b>only</b> required when building from GIT.
+These are <b>only</b> required when building from GIT in which case
+you MUST add <code>--enable-maintainer-mode</code> to configure which
+is automatically added if <code>autogen.sh</code> is run.
 </p>
 
 
