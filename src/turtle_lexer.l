@@ -282,7 +282,7 @@ EXPONENT [eE][+-]?[0-9]+
 <LONG_DLITERAL>\"|(\\.|[^\"\\]|\n)*	{
 		  char *p;
 
-		  if(*yytext == EOF) {
+		  if(*yytext == YY_END_OF_BUFFER_CHAR) {
                     BEGIN(INITIAL);
                     turtle_syntax_error(rdf_parser, "End of file in middle of literal");
                     raptor_free_stringbuffer(turtle_parser->sb);
@@ -350,7 +350,7 @@ EXPONENT [eE][+-]?[0-9]+
 <LONG_SLITERAL>\'|(\\.|[^\'\\]|\n)*	{
 		  char *p;
 
-		  if(*yytext == EOF) {
+		  if(*yytext == YY_END_OF_BUFFER_CHAR) {
                     BEGIN(INITIAL);
                     turtle_syntax_error(rdf_parser, "End of file in middle of \'\'\'literal\'\'\'");
                     raptor_free_stringbuffer(turtle_parser->sb);
@@ -437,7 +437,7 @@ EXPONENT [eE][+-]?[0-9]+
                   return IDENTIFIER; }
 
 <PREF>(.|\n)	{ BEGIN(INITIAL);
-		  if(*yytext == EOF)
+		  if(*yytext == YY_END_OF_BUFFER_CHAR)
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
@@ -531,7 +531,7 @@ EXPONENT [eE][+-]?[0-9]+
 \#[^\r\n]*	{ /* # comment on the last line with no terminating newline */
                 }
 
-.         	{ if(*yytext == EOF)
+.         	{ if(*yytext == YY_END_OF_BUFFER_CHAR)
                     return EOF;
 
                   turtle_syntax_error(rdf_parser, "syntax error at '%c'", *yytext);
