@@ -150,8 +150,8 @@ EOT
     s%^(\s*if \(\s*)YY_CURRENT_BUFFER(\s*\)\s*\{.*)$%${1}YY_CURRENT_BUFFER_LVALUE${2}%;
   }
 
-  # Make buffer size unsigned
-  s/int yy_buf_size/yy_size_t yy_buf_size/;
+  # Make buffer size and number of characters unsigned
+  s/int (yy_buf_size|yy_n_chars)/yy_size_t $1/;
 
   print;
 }
