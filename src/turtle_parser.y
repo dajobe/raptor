@@ -1298,6 +1298,9 @@ turtle_parser_error(raptor_parser* rdf_parser, void* scanner,
      !turtle_parser->is_end) {
     /* we encountered an error on or around the last byte of the buffer
      * sorting it in the next run aye? */
+#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
+    printf("Ignoring error '%s' when near end of buffer\n", msg);
+#endif
     return 0;
   }
   
