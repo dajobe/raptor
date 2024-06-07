@@ -62,6 +62,8 @@ check-trig: build-rapper $(check_trig_deps)
 	  status=$$?; \
 	  if test $$status != 0 -a $$status != 2 ; then \
 	    $(RECHO) FAILED returned status $$status; result=1; \
+	    $(RECHO) $(RAPPER) -q -i trig -o nquads $(srcdir)/$$test $$baseuri '>' $$base.res; \
+	    cat $$base.err $$base.res; \
 	  elif cmp $$expected $$base.res >/dev/null 2>&1; then \
 	    if test $$status = 2 ; then \
 	      $(RECHO) "ok with warnings"; grep Warning $$base.err; \
