@@ -53,22 +53,22 @@ GITMODULES='.gitmodules'
 # Set an envariable of the same name in uppercase, to override scan
 #
 programs="automake aclocal autoconf autoheader libtoolize"
-confs=`find . -name configure.ac -print | grep -v /releases/`
+confs=$(find . -name configure.ac -print | grep -v /releases/)
 
 gtkdoc_args=
-if grep "^GTK_DOC_CHECK" $confs >/dev/null; then
+if grep "^GTK_DOC_CHECK" "$confs" >/dev/null; then
   programs="$programs gtkdocize"
   gtkdoc_args="--enable-gtk-doc"
 fi
-if grep "^AC_CHECK_PROGS.SWIG" $confs >/dev/null; then
+if grep "^AC_CHECK_PROGS.SWIG" "$confs" >/dev/null; then
   programs="$programs swig"
 fi
 ltdl_args=
-if grep "^AC_LIBLTDL_" $confs >/dev/null; then
+if grep "^AC_LIBLTDL_" "$confs" >/dev/null; then
   ltdl_args="--ltdl"
 fi
 silent_args=
-if grep "^AM_SILENT_RULES" $confs >/dev/null; then
+if grep "^AM_SILENT_RULES" "$confs" >/dev/null; then
   silent_args="--enable-silent-rules"
 fi
 
@@ -76,14 +76,14 @@ fi
 # automake 1.13 requires autoconf 2.65
 # automake 1.12 requires autoconf 2.62
 # automake 1.11 requires autoconf 2.62 (needed for AM_SILENT_RULES)
-automake_min_vers=011102
-aclocal_min_vers=$automake_min_vers
-autoconf_min_vers=026200
-autoheader_min_vers=$autoconf_min_vers
+automake_min_vers="011102"
+aclocal_min_vers="$automake_min_vers"
+autoconf_min_vers="026200"
+autoheader_min_vers="$autoconf_min_vers"
 # libtool 2.2 required for LT_INIT language fix
-libtoolize_min_vers=020200
-gtkdocize_min_vers=010300
-swig_min_vers=010324
+libtoolize_min_vers="020200"
+gtkdocize_min_vers="010300"
+swig_min_vers="010324"
 
 # Default program arguments
 automake_args="--gnu --add-missing --force --copy -Wall"
@@ -104,10 +104,10 @@ LANG=C
 LC_NUMERIC=C
 
 
-program=`basename $0`
+program=$(basename "$0")
 
-if test "X$DRYRUN" != X; then
-  DRYRUN=echo
+if test -n "$DRYRUN"; then
+  DRYRUN="echo"
 fi
 
 cat > autogen-get-version.pl <<EOF
@@ -145,96 +145,95 @@ print "\$vn\n";
 exit 0;
 EOF
 
-autogen_get_version="`pwd`/autogen-get-version.pl"
+autogen_get_version="$PWD/autogen-get-version.pl"
 
-trap "rm -f $autogen_get_version" 0 1 9 15
+trap 'rm -f $autogen_get_version' 0 1
 
 
 update_prog_version() {
   dir=$1
   prog=$2
 
-  # If there exists an envariable PROG in uppercase, use that and do not scan
-  ucprog=`echo $prog | tr 'a-z' 'A-Z' `
-  eval env=\$${ucprog}
-  if test X$env != X; then
-    prog_name=$env
-    prog_vers=`perl $autogen_get_version $prog_name $prog`
+  prog_name=
+  prog_vers=
+  prog_dir=
 
-    if test X$prog_vers = X; then
+  # If there exists an envariable PROG in uppercase, use that and do not scan
+  ucprog=$(echo "$prog" | tr '[:lower:]' '[:upper:]')
+  env=
+  eval "env=\$${ucprog}"
+  if test -n "$env" ; then
+    prog_name="$env"
+    prog_vers=$(perl "$autogen_get_version" "$prog_name" "$prog")
+
+    if test -z "$prog_vers"; then
       prog_vers=0
     fi
-    eval ${prog}_name=${prog_name}
-    eval ${prog}_vers=${prog_vers}
-    eval ${prog}_dir=environment
+    prog_dir="environment variable $ucprog"
+    # Set global variables
+    eval "${prog}_name='${prog_name}'"
+    eval "${prog}_vers='${prog_vers}'"
+    eval "${prog}_dir='${prog_dir}'"
     return
   fi
 
-  eval prog_name=\$${prog}_name
-  eval prog_vers=\$${prog}_vers
-  eval prog_dir=\$${prog}_dir
-  if test X$prog_vers = X; then
+  if test -x "$prog_vers"; then
     prog_vers=0
   fi
 
-  save_PATH="$PATH"
-
-  cd "$dir"
-  PATH=".:$PATH"
-
-  nameglob="$prog*"
+  nameglob="${prog}*"
   if [ -x /usr/bin/uname ]; then
-    if [ `/usr/bin/uname` = 'Darwin' -a $prog = 'libtoolize' ] ; then
-      nameglob="g$nameglob"
+    if [ "$(/usr/bin/uname)" = 'Darwin' ] && [ "$prog" = 'libtoolize' ] ; then
+      nameglob="g${nameglob}"
     fi
   fi
-  names=`ls $nameglob 2>/dev/null`
-  if [ "X$names" != "X" ]; then
-    for name in $names; do
-      vers=`perl $autogen_get_version $dir/$name $prog`
-      if [ "X$vers" = "X" ]; then
-        continue
-      fi
+  tmp=$(mktemp)
+  # "portable" way to find only executable files/symlinks
+  # OSX find does not have -executable or -perm /
+  find "$dir" -name "$nameglob" -ls -prune 2>/dev/null | \
+      awk '{if($3 ~/x/) { print $11}}' > "$tmp"
+  while read -r name; do
+    vers=$(perl "$autogen_get_version" "$name" "$prog")
+    if expr "$vers" '>' "$prog_vers" >/dev/null; then
+      prog_name="$name"
+      prog_vers="$vers"
+      prog_dir="$dir"
+    fi
+  done < "$tmp"
+  rm -f "$tmp"
 
-      if expr $vers '>' $prog_vers >/dev/null; then
-        prog_name=$name
-        prog_vers=$vers
-        prog_dir="$dir"
-      fi
-    done
+  if test -n "$prog_name"; then
+      eval "${prog}_name='${prog_name}'"
+      eval "${prog}_vers='${prog_vers}'"
+      eval "${prog}_dir='${prog_dir}'"
   fi
-
-  eval ${prog}_name=${prog_name}
-  eval ${prog}_vers=${prog_vers}
-  eval ${prog}_dir=${prog_dir}
-
-  PATH="$save_PATH"
 }
 
 
 check_prog_version() {
   prog=$1
 
-  eval min=\$${prog}_min_vers
+  min=
+  eval "min=\$${prog}_min_vers"
 
-  eval prog_name=\$${prog}_name
-  eval prog_vers=\$${prog}_vers
-  eval prog_dir=\$${prog}_dir
+  eval "prog_name=\$${prog}_name"
+  eval "prog_vers=\$${prog}_vers"
+  eval "prog_dir=\$${prog}_dir"
 
   echo "$program: $prog program '$prog_name' V $prog_vers (min $min) in $prog_dir" 1>&2
 
   rc=1
-  if test $prog_vers != 0; then
-    if expr $prog_vers '<' $min >/dev/null; then
-       echo "$program: ERROR: \`$prog' version $prog_vers in $prog_dir is too old."
+  if test "$prog_vers" != 0; then
+    if expr "$prog_vers" '<' "$min" >/dev/null; then
+       echo "$program: ERROR: '$prog' version $prog_vers in $prog_dir is too old."
        echo "    (version $min or newer is required)"
        rc=0
     else
       # Things are ok, so set the ${prog} name
-      eval ${prog}=${prog_name}
+      eval "${prog}=${prog_name}"
     fi 
   else
-    echo "$program: ERROR: You must have \`$prog' installed to compile this package."
+    echo "$program: ERROR: You must have '$prog' installed to compile this package."
     echo "     (version $min or newer is required)"
     rc=0
   fi
@@ -244,75 +243,73 @@ check_prog_version() {
 
 
 # Find newest version of programs in the current PATH
-save_args=${1+"$*"}
-save_ifs="$IFS"
-IFS=":"
-set - $PATH
-IFS="$save_ifs"
 
 echo "$program: Looking for programs: $programs"
 
-here=`pwd`
-while [ $# -ne 0 ] ; do
-  dir=$1
-  shift
-  if [ ! -d "$dir" ]; then
-    continue
-  fi
+tmp=$(mktemp)
+echo "$PATH" | tr ':' '\012' > "$tmp"
+while read -r dir; do
+    if [ ! -d "$dir" ]; then
+	continue
+    fi
 
-  for prog in $programs; do
-    update_prog_version "$dir" $prog
-  done
-done
-cd $here
+    for prog in $programs; do
+	update_prog_version "$dir" "$prog"
+    done
+done < "$tmp"
+rm -f "$tmp"
 
-set - $save_args
 # END Find programs
 
 
 # Check the versions meet the requirements
 for prog in $programs; do
-  if check_prog_version $prog; then
+  if check_prog_version "$prog"; then
     exit 1
   fi
 done
 
 echo "$program: Dependencies satisfied"
 
-if test -d $SRCDIR/libltdl; then
-  touch $SRCDIR/libltdl/NO-AUTO-GEN
+if test -d "$SRCDIR/libltdl"; then
+  touch "$SRCDIR/libltdl/NO-AUTO-GEN"
 fi
 
 config_dir=
-if test -d $CONFIG_DIR; then
-  config_dir=`cd $CONFIG_DIR; pwd`
+if test -d "$CONFIG_DIR"; then
+  config_dir=$(cd "$CONFIG_DIR" && pwd)
 fi
 
 
 # Initialise and/or update GIT submodules
-if test -f $GITMODULES ; then
+if test -f "$GITMODULES" ; then
   echo " "
-  modules=`sed -n -e 's/^.*path = \(.*\)/\1/p' $GITMODULES`
+  modules=$(sed -n -e 's/^.*path = \(.*\)/\1/p' "$GITMODULES")
   for module in $modules; do
-    if test `ls -1 $module | wc -l` -eq 0; then
-       echo "$program: Initializing git submodule in $module"
-       $DRYRUN git submodule init $module
-    fi
+      count=$(find . -name "$module" -print | wc -l)
+      if test "$count" -eq 0; then
+	  echo "$program: Initializing git submodule in $module"
+	  $DRYRUN git submodule init "$module"
+      fi
   done
   echo "$program: Updating git submodules: $modules"
   $DRYRUN git submodule update
 fi
 
-for coin in `find $SRCDIR -name configure.ac -print | grep -v /releases/`
-do 
+here="$PWD"
+
+tmp=$(mktemp)
+find "$SRCDIR" -name configure.ac -print | \
+    grep -v /releases/ > "$tmp"
+while read -r coin; do
   status=0
-  dir=`dirname $coin`
+  dir=$(dirname "$coin")
   if test -f "$dir/NO-AUTO-GEN"; then
     echo "$program: Skipping $dir -- flagged as no auto-generation"
   else
     echo " "
-    echo $program: Processing directory $dir
-    ( cd "$dir"
+    echo "$program: Processing directory $dir"
+    cd "$dir" || exit 1
 
       # Ensure that these are created by the versions on this system
       # (indirectly via automake)
@@ -322,35 +319,35 @@ do
       # automake junk
       $DRYRUN rm -rf autom4te*.cache
 
-      config_macro_dir=`sed -ne 's/^AC_CONFIG_MACRO_DIR(\([^)]*\).*/\1/p' configure.ac`
-      if test "X$config_macro_dir" = X; then
+      config_macro_dir=$(sed -ne 's/^AC_CONFIG_MACRO_DIR(\([^)]*\).*/\1/p' configure.ac)
+      if test -z "$config_macro_dir"; then
 	config_macro_dir=.
       else
         aclocal_args="$aclocal_args -I $config_macro_dir "
       fi
 
-      config_aux_dir=`sed -ne 's/^AC_CONFIG_AUX_DIR(\([^)]*\).*/\1/p' configure.ac`
-      if test "X$config_aux_dir" = X; then
+      config_aux_dir=$(sed -ne 's/^AC_CONFIG_AUX_DIR(\([^)]*\).*/\1/p' configure.ac)
+      if test -z "$config_aux_dir"; then
 	config_aux_dir=.
       fi
 
-      if test "X$config_dir" != X; then
+      if test -n "$config_dir"; then
         echo "$program: Updating config.guess and config.sub"
 	for file in config.guess config.sub; do
-	  cfile=$config_dir/$file
-          xfile=$config_aux_dir/$file
-	  if test -f $cfile; then
-	    $DRYRUN rm -f $xfile
-	    $DRYRUN cp -p $cfile $xfile
+	  cfile="$config_dir/$file"
+          xfile="$config_aux_dir/$file"
+	  if test -f "$cfile"; then
+	    $DRYRUN rm -f "$xfile"
+	    $DRYRUN cp -p "$cfile" "$xfile"
 	  fi
 	done
       fi
 
       echo "$program: Running $libtoolize $libtoolize_args"
       $DRYRUN rm -f ltmain.sh libtool
-      eval $DRYRUN $libtoolize $libtoolize_args
+      eval "$DRYRUN $libtoolize $libtoolize_args"
       status=$?
-      if test $status != 0; then
+      if test "$status" != 0; then
 	  break
       fi
 
@@ -358,77 +355,78 @@ do
         # gtkdocize junk
         $DRYRUN rm -rf gtk-doc.make
         echo "$program: Running $gtkdocize $gtkdocize_args"
-        $DRYRUN $gtkdocize $gtkdocize_args
+        eval "$DRYRUN $gtkdocize $gtkdocize_args"
         status=$?
-	if test $status != 0; then
+	if test "$status" != 0; then
 	    break
 	fi
       fi
 
       for docs in NEWS README; do
-	if test ! -f $docs; then
+	if test ! -f "$docs"; then
 	  echo "$program: Creating empty $docs file to allow configure to work"
-	  $DRYRUN touch -t 200001010000 $docs
+	  $DRYRUN touch -t 200001010000 "$docs"
 	fi
       done
 
       echo "$program: Running $aclocal $aclocal_args"
-      $DRYRUN $aclocal $aclocal_args
+      eval "$DRYRUN $aclocal $aclocal_args"
       if grep "^A[CM]_CONFIG_HEADER" configure.ac >/dev/null; then
 	echo "$program: Running $autoheader"
-	$DRYRUN $autoheader
+	$DRYRUN "$autoheader"
         status=$?
-	if test $status != 0; then
+	if test "$status" != 0; then
 	    break
 	fi
       fi
       echo "$program: Running $automake $automake_args"
-      $DRYRUN $automake $automake_args
+      eval "$DRYRUN $automake $automake_args"
       status=$?
-      if test $status != 0; then
+      if test "$status" != 0; then
 	  break
       fi
 
       echo "$program: Running $autoconf $autoconf_args"
-      $DRYRUN $autoconf $autoconf_args
+      eval "$DRYRUN $autoconf $autoconf_args"
       status=$?
-      if test $status != 0; then
+      if test "$status" != 0; then
 	  break
       fi
-    )
+    cd "$here" || exit 1
   fi
 
-  if test $status != 0; then
+  if test "$status" != 0; then
     echo "$program: FAILED to configure $dir"
-    exit $status
+    exit "$status"
   fi
 
-done
+done < "$tmp"
+rm -f "$tmp"
 
 
 
 rm -f config.cache
 
-AUTOMAKE=$automake
-AUTOCONF=$autoconf
-ACLOCAL=$aclocal
+AUTOMAKE="$automake"
+AUTOCONF="$autoconf"
+ACLOCAL="$aclocal"
 export AUTOMAKE AUTOCONF ACLOCAL
 
-if test "X$NOCONFIGURE" = X; then
+if test -z "$NOCONFIGURE"; then
   echo " "
   if test -z "$*"; then
-    echo "$program: WARNING: Running \`configure' with no arguments."
+    echo "$program: WARNING: Running 'configure' with no arguments."
     echo "If you wish to pass any to it, please specify them on the"
-    echo "\`$program' command line."
+    echo "'$program' command line."
   fi
 
-  echo "$program: Running ./configure $configure_args $@"
-  if test "X$DRYRUN" = X; then
-    $DRYRUN ./configure $configure_args "$@" \
-    && echo "$program: Now type \`make' to compile this package" || exit 1
+  echo "$program: Running ./configure $configure_args $*"
+  if test -z "$DRYRUN"; then
+    eval "$DRYRUN ./configure $configure_args $*" \
+    && echo "$program: Now type 'make' to compile this package" || exit 1
   else
-    $DRYRUN ./configure $configure_args "$@"
+    $DRYRUN ./configure "$configure_args" "$*"
   fi
 fi
 
-exit $status
+exit "$status"
