@@ -31,6 +31,7 @@
 %{
 #ifdef HAVE_CONFIG_H
 #include <raptor_config.h>
+#undef HAVE_CONFIG_H
 #endif
 
 #include <stdio.h>
@@ -47,6 +48,14 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+/* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
+#if 0
+#undef RAPTOR_DEBUG
+#define RAPTOR_DEBUG 3
+#undef YYDEBUG
+#define YYDEBUG 1
+#endif
+
 #include <turtle_parser.h>
 
 #define YY_NO_UNISTD_H 1
@@ -54,13 +63,6 @@
 #include <turtle_lexer.h>
 
 #include <turtle_common.h>
-
-
-/* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
-#if 0
-#undef RAPTOR_DEBUG
-#define RAPTOR_DEBUG 3
-#endif
 
 
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
