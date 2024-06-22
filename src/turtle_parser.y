@@ -1425,7 +1425,7 @@ turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
-  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
+  turtle_lexer_set_debug(1, turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
@@ -1465,7 +1465,7 @@ turtle_push_parse(raptor_parser *rdf_parser,
   turtle_parser->scanner_set = 1;
 
 #if defined(YYDEBUG) && YYDEBUG > 0
-  turtle_lexer_set_debug(1 ,&turtle_parser->scanner);
+  turtle_lexer_set_debug(1, turtle_parser->scanner);
   turtle_parser_debug = 1;
 #endif
 
