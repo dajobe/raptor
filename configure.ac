@@ -159,6 +159,7 @@ AC_SUBST([BISON], [$ac_cv_path_BISON])
 # Find a tar command for 'make dist'
 AC_CHECK_PROGS(TAR, gnutar gtar tar)
 AC_CHECK_PROGS(PERL, perl)
+AC_CHECK_PROGS(PYTHON3, python3 python)
 # Used in tests/feeds
 AC_CHECK_PROGS(JING, jing)
 
