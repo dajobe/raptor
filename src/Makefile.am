@@ -207,11 +207,13 @@ nodist_libraptor2_la_SOURCES += git-version.h
 raptor_parse.c: git-version.h
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.pl
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.py
 	$(AM_V_GEN) \
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l; \
 	for file in turtle_lexer.c turtle_lexer.h; do \
-	  $(PERL) $(top_srcdir)/scripts/fix-flex.pl $$file > turtle_lexer.t || rm -f $$file; \
+	  $(PERL) $(top_srcdir)/scripts/fix-flex.pl $$file > perl-turtle_lexer.t  || exit 1; \
+	  $(PYTHON3) $(top_srcdir)/scripts/fix-flex.py $$file > turtle_lexer.t || exit 1; \
+	  diff -u perl-turtle_lexer.t turtle_lexer.t || exit 1; \
 	  mv -f turtle_lexer.t $$file; \
 	done
 
