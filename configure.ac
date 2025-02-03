@@ -237,7 +237,7 @@ possible_warnings="\
 -Werror-implicit-function-declaration \
 -Wfloat-equal \
 -Wformat=2 \
--Wframe-larger-than=4096 \
+-Wframe-larger-than=6000 \
 -Winit-self \
 -Winline \
 -Wmissing-declarations \
