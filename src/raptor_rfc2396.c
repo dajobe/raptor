@@ -291,7 +291,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
   
 #if defined(RAPTOR_DEBUG)
   if(path_len != strlen((const char*)path_buffer))
-    RAPTOR_FATAL4("Path '%s' length %ld does not match calculated %ld.", (const char*)path_buffer, (long)strlen((const char*)path_buffer), (long)path_len);
+    RAPTOR_FATAL4("Path '%s' length %zu does not match calculated %zu.", (const char*)path_buffer, strlen((const char*)path_buffer), path_len);
 #endif
     
   /* Remove all "<component>/../" path components */
@@ -329,7 +329,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
 
 #if defined(RAPTOR_DEBUG)
     if(path_len != strlen((const char*)path_buffer))
-      RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+      RAPTOR_FATAL3("Path length %zu does not match calculated %zu.", strlen((const char*)path_buffer), path_len);
 #endif
     
     /* If the current one is '..' */
@@ -395,7 +395,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
 
 #if defined(RAPTOR_DEBUG)
   if(path_len != strlen((const char*)path_buffer))
-    RAPTOR_FATAL3("Path length %ld does not match calculated %ld.", (long)strlen((const char*)path_buffer), (long)path_len);
+    RAPTOR_FATAL3("Path length %zu does not match calculated %zu.", strlen((const char*)path_buffer), path_len);
 #endif
 
   /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
