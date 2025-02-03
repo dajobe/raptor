@@ -84,7 +84,7 @@ raptor_www_curl_write_callback(void *ptr, size_t size, size_t nmemb, void *userd
   raptor_www_curl_update_status(www);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-  RAPTOR_DEBUG2("Got %d bytes\n", bytes);
+  RAPTOR_DEBUG2("Got %zu bytes\n", bytes);
 #endif
 
   if(www->write_bytes)
@@ -120,7 +120,7 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     www->free_type = 1;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-    RAPTOR_DEBUG3("Got content type header '%s' (%d bytes)\n", type_buffer, len);
+    RAPTOR_DEBUG3("Got content type header '%s' (%zu bytes)\n", type_buffer, len);
 #endif
     if(www->content_type)
       www->content_type(www, www->content_type_userdata, www->type);
