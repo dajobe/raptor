@@ -1,0 +1,7 @@
+*.o
+.deps
+.libs
+TAGS
+raptor_issue*_test
+raptor_issue*_test.exe
+raptor_issue*_test.trs

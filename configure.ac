@@ -1364,6 +1364,7 @@ tests/turtle/Makefile
 tests/mkr/Makefile
 tests/turtle-2013/Makefile
 tests/trig/Makefile
+tests/bugs/Makefile
 utils/Makefile
 librdfa/Makefile
 raptor2.pc])
