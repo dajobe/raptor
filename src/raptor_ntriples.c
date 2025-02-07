@@ -212,7 +212,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
             locator->column--;
             locator->byte--;
           }
-          if(term_class == RAPTOR_TERM_CLASS_BNODEID && dest[-1] == '.') {
+          if(term_class == RAPTOR_TERM_CLASS_BNODEID && position > 0 && dest[-1] == '.') {
             /* If bnode id ended on '.' move back one */
             dest--;
 
