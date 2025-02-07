@@ -351,6 +351,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
           *dest++ = *s++;
         *dest = '\0';
         path_len -= len;
+        if(path_len <= 0) {
+          *path_buffer = '\0';
+          return 0;
+        }
 
         if(p && p < prev) {
           /* We know the previous prev path component and we didn't do
@@ -390,6 +394,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
     /* Remove <component>/.. at the end of the path */
     *prev = '\0';
     path_len -= (s-prev);
+    if(path_len <= 0) {
+      *path_buffer = '\0';
+      return 0;
+    }
   }
 
 
