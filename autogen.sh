@@ -130,10 +130,11 @@ for my \$varg (qw(--version -version)) {
   while(<PIPE>) {
     chomp;
     next if @vnums; # drain pipe if we got a vnums
-    # Add optional leading g
-    next unless /^g?\$mname/i;
-    my(\$v)=/(\S+)\$/i; \$v =~ s/-.*\$//;
-    @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
+    # Allow optional leading g and expect "PROGRAM-NAME (DESCRIPTION) VERSION-STRING"
+    if(/^g?\$mname \(.*?\)\s+(\S+)/i) {
+      my \$v = \$1; \$v =~ s/-.*\$//;
+      @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
+    }
   }
   close(PIPE);
   last if @vnums;
