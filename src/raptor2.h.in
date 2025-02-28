@@ -114,10 +114,8 @@ extern "C" {
  */
 #if defined(__GNUC__) && (__GNUC__ > 3 || (__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
 #define RAPTOR_DEPRECATED __attribute__((deprecated))
-#define RAPTOR_NORETURN __attribute__((__noreturn__))
 #else
 #define RAPTOR_DEPRECATED
-#define RAPTOR_NORETURN
 #endif
 
 /**
