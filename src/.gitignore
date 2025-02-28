@@ -22,6 +22,8 @@ parsedate.c
 parsedate.c.bak
 parsedate.h
 parsedate.output
+perl-parsedate.c
+perl-parsedate.c.bak
 perl-turtle_lexer.c
 perl-turtle_lexer.h
 perl-turtle_lexer.t
