@@ -1510,11 +1510,11 @@ turtle_push_parse(raptor_parser *rdf_parser,
 #endif
 
 
-/**
+/*
  * raptor_turtle_parse_init - Initialise the Raptor Turtle parser
  *
  * Return value: non 0 on failure
- **/
+ */
 
 static int
 raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
@@ -1534,9 +1534,8 @@ raptor_turtle_parse_init(raptor_parser* rdf_parser, const char *name) {
 
 /*
  * raptor_turtle_parse_terminate - Free the Raptor Turtle parser
- * @rdf_parser: parser object
  * 
- **/
+ */
 static void
 raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
