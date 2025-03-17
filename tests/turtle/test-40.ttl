@@ -1,0 +1,12 @@
+@prefix ns1: <http://example.com/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+[] ns1:prop _:Ne7d .
+
+[] ns1:prop _:Ne7d .
+
+_:N849 rdf:first ns1:b ;
+    rdf:rest () .
+
+_:Ne7d rdf:first ns1:a ;
+    rdf:rest _:N849 .

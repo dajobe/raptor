@@ -883,6 +883,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
     if(pred1->term->type == RAPTOR_TERM_TYPE_URI &&
        pred2->term->type == RAPTOR_TERM_TYPE_URI &&
+       depth > 0 &&
        (
         (raptor_uri_equals(pred1->term->value.uri, context->rdf_first_uri) &&
          raptor_uri_equals(pred2->term->value.uri, context->rdf_rest_uri))
