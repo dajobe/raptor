@@ -28,7 +28,7 @@ main(int argc, const char** argv)
   int failures = 0;
 #define EXPECTED_RESULT "http:?D/../../1999/02/22-rdf-syntax-ns#"
 #define EXPECTED_RESULT_LEN 39UL
-  int result;
+  size_t result;
   size_t result_len;
 
   buffer[0] = '\0';
@@ -42,7 +42,7 @@ main(int argc, const char** argv)
 
   if(strcmp((const char*)buffer, EXPECTED_RESULT) ||
      result_len != EXPECTED_RESULT_LEN) {
-    fprintf(stderr, "%s: raptor_uri_resolve_uri_reference() failed with result %d\n", program, result);
+    fprintf(stderr, "%s: raptor_uri_resolve_uri_reference() failed with result %lu\n", program, result);
     fprintf(stderr, "%s: Base URI: '%s' (%lu)\n",
             program, base_uri, strlen((const char*)base_uri));
     fprintf(stderr, "%s: Ref  URI: '%s' (%lu)\n", reference_uri,
