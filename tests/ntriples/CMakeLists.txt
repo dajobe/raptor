@@ -50,4 +50,10 @@ RAPPER_TEST(ntriples.bug-481
 	${CMAKE_CURRENT_SOURCE_DIR}/bug-481.out
 )
 
+RAPPER_TEST(ntriples.issue-77
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/issue77.nt http://librdf.org/raptor/tests/issue77.nt"
+	check-nt.res
+	${CMAKE_CURRENT_SOURCE_DIR}/issue77.out
+)
+
 # end raptor/tests/ntriples/CMakeLists.txt

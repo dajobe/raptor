@@ -249,6 +249,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 
     switch(c) {
       case '"':
+      case '\'':
       case '\\':
         *dest++ = c;
         break;
@@ -280,7 +281,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
       case '|':
       case '^':
       case '`':
-        /* Turtle 2013 allows these in URIs (as well as \" and \\) */
+        /* Turtle 2013 allows these in URIs (as well as \" and \' and \\) */
         *dest++ = c;
         break;
 
