@@ -86,7 +86,7 @@ def fix(file):
                 continue
 
             # Suppress warnings about empty declarations
-            line = re.sub(r"^(static int .*_init_globals.*);$", r"\1/", line)
+            line = re.sub(r"^(static int .*_init_globals.*);$", r"\1", line)
 
             # Remove always false condition
             if "if (/*CONSTCOND*/ 0)" in line:

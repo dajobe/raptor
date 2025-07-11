@@ -21,6 +21,8 @@
 
 EXTRA_DIST= \
 fix-bison.pl \
+fix-bison.py \
+fix-flex.py \
 fix-flex.pl \
 fix-groff-xhtml.pl \
 fix-gtkdoc-header.pl \
