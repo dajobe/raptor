@@ -1774,7 +1774,8 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
       }
     }
   } else {
-    /* this was the last chunk, finalise */
+    /* this was the last chunk, empty the buffer and finalise */
+    turtle_parser->consumed = 0;
     if(turtle_parser->deferred) {
       raptor_sequence* def = turtle_parser->deferred;
       int i;
