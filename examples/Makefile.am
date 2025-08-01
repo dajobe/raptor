@@ -50,7 +50,7 @@ grapper_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 if HAVE_GSETTINGS
 # Install GSettings schema
 gsettings_SCHEMAS = org.gnome.grapper.gschema.xml
-EXTRA_DIST = $(gsettings_SCHEMAS) grapper.md grapper-ui.xml
+EXTRA_DIST = $(gsettings_SCHEMAS) grapper.md
 
 # Manual GSettings schema installation (since @GSETTINGS_RULES@ requires glib-2.0.m4)
 install-data-hook:

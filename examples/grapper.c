@@ -71,8 +71,9 @@ static const char *application_description = "GUI RDF parser utility based on th
 /* Top level window */
 static GtkWidget *grapper_window;
 
-/* GSettings (replaces GConf) */
+/* GSettings (replaces GConf) - optional */
 static GSettings *settings = NULL;
+static gboolean gsettings_available = FALSE;
 
 #define SETTINGS_SCHEMA_ID "org.gnome.grapper"
 #define SETTINGS_WINDOW_WIDTH "window-width"
@@ -440,7 +441,7 @@ grapper_model_parse(grapper_state *state)
   }
   
 
-  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
+  for(i = 0; i < RAPTOR_OPTION_LAST; i++) {
     if(state->options_set[i])
       raptor_parser_set_option(rdf_parser, (raptor_option)i, NULL, state->options[i]);
   }
@@ -479,8 +480,8 @@ do_open_action(grapper_state* state)
   GtkWidget *files = gtk_file_chooser_dialog_new("Open",
                                                  GTK_WINDOW(state->window),
                                                  GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                 "_Cancel", GTK_RESPONSE_CANCEL,
-                                                 "_Open", GTK_RESPONSE_ACCEPT,
+                                                 "Cancel", GTK_RESPONSE_CANCEL,
+                                                 "Open", GTK_RESPONSE_ACCEPT,
                                                  NULL);
 
   if(state->filename)
@@ -571,14 +572,14 @@ destroy_callback(GtkWidget *widget, gpointer data)
 
 
 static void
-on_open_menu_callback(GtkAction *action, gpointer user_data)
+on_open_menu_callback(GtkWidget *widget, gpointer user_data)
 {
   do_open_action((grapper_state*)user_data);
 }
 
 
 static void
-on_quit_menu_callback(GtkAction *action, gpointer user_data)
+on_quit_menu_callback(GtkWidget *widget, gpointer user_data)
 {
   do_quit_action((grapper_state*)user_data);
 }
@@ -602,26 +603,13 @@ do_about_action(grapper_state* state) {
 
 
 static void
-on_about_menu_callback(GtkAction* action, gpointer user_data)
+on_about_menu_callback(GtkWidget* widget, gpointer user_data)
 {
   do_about_action((grapper_state*)user_data);
 }
 
 
-static GtkActionEntry menu_actions[] = {
-  /* name, stock id, label */
-  { "FileMenuAction", NULL, "_File" },
-  { "PreferencesMenuAction", NULL, "_Preferences" },
-  { "HelpMenuAction", NULL, "_Help" },
-
-  /* name, stock id, label, accelerator, tooltip, callback */
-  { "OpenAction", NULL, "_Open", (gchar*)"<control>O",  "Open a file", G_CALLBACK ( on_open_menu_callback ) },
-  { "QuitAction", NULL, "_Quit", (gchar*)"<control>Q",  "Quit", G_CALLBACK ( on_quit_menu_callback ) },
-
-  { "AboutAction", NULL, "About", NULL, "About", G_CALLBACK ( on_about_menu_callback ) } 
-};
-
-static gint menu_actions_nentries = G_N_ELEMENTS (menu_actions);
+/* Menu actions are now handled directly with signal connections */
 
 
 static void
@@ -630,7 +618,6 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
   GtkAccelGroup *accel_group;
   GtkWidget *menu_bar;
-  GtkMenu *prefs_menu;
   GtkWidget *v_paned;
   GtkWidget *v_box;
   GtkWidget *box;
@@ -653,9 +640,8 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
   GtkWidget *errors_frame, *errors_scrolled_window;
   GtkWidget *errors_treeview;
   GtkListStore *errors_store;
-  GtkActionGroup *action_group;
-  GtkUIManager *menu_manager;
-  GError *error;
+  /* Built-in menu variables */
+  GtkWidget *prefs_menu;
 
 
   state->window=window;
@@ -683,29 +669,61 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
   /* Menu bar */
-  action_group = gtk_action_group_new("Actions");
-  gtk_action_group_add_actions (action_group,
-                                menu_actions, menu_actions_nentries,
-                                state);
-  menu_manager = gtk_ui_manager_new ();
-  gtk_ui_manager_insert_action_group (menu_manager, action_group, 0);
-  error = NULL;
-  gtk_ui_manager_add_ui_from_file(menu_manager, "grapper-ui.xml", &error);
-  if (error) {
-    g_message ("Building menus failed: %s", error->message);
-    g_error_free (error);
-  }
-
-  /* get the menu bar widget */
-  menu_bar = gtk_ui_manager_get_widget(menu_manager, "/MainMenu");
+  /* Create built-in menu structure (no external XML file needed) */
+  /* Create built-in menu structure */
+  menu_bar = gtk_menu_bar_new();
   
-
+  /* File menu */
+  GtkWidget *file_menu = gtk_menu_new();
+  GtkWidget *file_menu_item = gtk_menu_item_new_with_label("File");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(file_menu_item), file_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), file_menu_item);
+  gtk_widget_show(file_menu_item);
+  
+  /* Open menu item */
+  GtkWidget *open_menu_item = gtk_menu_item_new_with_label("Open...");
+  g_signal_connect(G_OBJECT(open_menu_item), "activate", G_CALLBACK(on_open_menu_callback), state);
+  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), open_menu_item);
+  gtk_widget_show(open_menu_item);
+  
+  /* Separator */
+  GtkWidget *separator1 = gtk_separator_menu_item_new();
+  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), separator1);
+  gtk_widget_show(separator1);
+  
+  /* Quit menu item */
+  GtkWidget *quit_menu_item = gtk_menu_item_new_with_label("Quit");
+  g_signal_connect(G_OBJECT(quit_menu_item), "activate", G_CALLBACK(on_quit_menu_callback), state);
+  gtk_menu_shell_append(GTK_MENU_SHELL(file_menu), quit_menu_item);
+  gtk_widget_show(quit_menu_item);
+  
+  /* Preferences menu */
+  prefs_menu = gtk_menu_new();
+  GtkWidget *prefs_menu_item = gtk_menu_item_new_with_label("Preferences");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(prefs_menu_item), prefs_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), prefs_menu_item);
+  gtk_widget_show(prefs_menu_item);
+  
+  /* Help menu */
+  GtkWidget *help_menu = gtk_menu_new();
+  GtkWidget *help_menu_item = gtk_menu_item_new_with_label("Help");
+  gtk_menu_item_set_submenu(GTK_MENU_ITEM(help_menu_item), help_menu);
+  gtk_menu_shell_append(GTK_MENU_SHELL(menu_bar), help_menu_item);
+  gtk_widget_show(help_menu_item);
+  
+  /* About menu item */
+  GtkWidget *about_menu_item = gtk_menu_item_new_with_label("About");
+  g_signal_connect(G_OBJECT(about_menu_item), "activate", G_CALLBACK(on_about_menu_callback), state);
+  gtk_menu_shell_append(GTK_MENU_SHELL(help_menu), about_menu_item);
+  gtk_widget_show(about_menu_item);
+  
+  /* Add menu bar to main window */
   gtk_box_pack_start (GTK_BOX (v_box), menu_bar, FALSE, FALSE, 0);
+  gtk_widget_show(menu_bar);
 
 
   /* enable keyboard shortcuts */
-  gtk_window_add_accel_group (GTK_WINDOW(window),
-                              gtk_ui_manager_get_accel_group (menu_manager));
+  gtk_window_add_accel_group (GTK_WINDOW(window), accel_group);
 
   /* horizontal box for url entry, OK, Open buttons in vertical box (v_box) */
   box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
@@ -928,33 +946,32 @@ init_grapper_window(GtkWidget *window, grapper_state *state)
 
 
 
-  prefs_menu = GTK_MENU(gtk_ui_manager_get_widget (menu_manager,
-                                                   "/MainMenu/PreferencesMenu"));
+  /* Add parser options to the built-in preferences menu */
+  if (prefs_menu) {
+    for(i = 0; i < RAPTOR_OPTION_LAST; i++) {
+      grapper_widget_data* sbdata;
+      raptor_option_description* od;
 
-  /* options in the preferences menu */
-  for(i = 0; i <= RAPTOR_OPTION_LAST; i++) {
-    grapper_widget_data* sbdata;
-    raptor_option_description* od;
+      od = raptor_world_get_option_description(state->world,
+                                               RAPTOR_DOMAIN_PARSER,
+                                               (raptor_option)i);
+      if(!od)
+        break;
 
-    od = raptor_world_get_option_description(state->world,
-                                             RAPTOR_DOMAIN_PARSER,
-                                             (raptor_option)i);
-    if(!od)
-      break;
+      sbdata = (grapper_widget_data*)malloc(sizeof(grapper_widget_data));
+      sbdata->state = state;
+      sbdata->option = i;
 
-    sbdata = (grapper_widget_data*)malloc(sizeof(grapper_widget_data));
-    sbdata->state = state;
-    sbdata->option = i;
+      /* add to the preferences menu */
+      option_items[i] = gtk_check_menu_item_new_with_label (od->label);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(option_items[i]),
+                                      state->options[i]);
+      gtk_menu_shell_append (GTK_MENU_SHELL(prefs_menu), option_items[i]);
 
-    /* add to the preferences menu */
-    option_items[i] = gtk_check_menu_item_new_with_label (od->label);
-    gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(option_items[i]),
-                                    state->options[i]);
-    gtk_menu_shell_append (GTK_MENU_SHELL(prefs_menu), option_items[i]);
-
-    g_signal_connect (G_OBJECT(option_items[i]), "toggled",
-                      G_CALLBACK(option_menu_toggled), (gpointer)sbdata);
-    gtk_widget_show (option_items[i]);
+      g_signal_connect (G_OBJECT(option_items[i]), "toggled",
+                        G_CALLBACK(option_menu_toggled), (gpointer)sbdata);
+      gtk_widget_show (option_items[i]);
+    }
   }
 
 
@@ -1061,14 +1078,16 @@ settings_changed_callback(GSettings *settings, const gchar *key, gpointer user_d
   grapper_state* state = (grapper_state*)user_data;
   int width, height;
 
+  if (!gsettings_available) return;
+
   if (g_strcmp0(key, SETTINGS_WINDOW_WIDTH) == 0) {
     width = g_settings_get_int(settings, SETTINGS_WINDOW_WIDTH);
-    if (width >= MIN_WINDOW_WIDTH) {
+    if (width >= MIN_WINDOW_WIDTH && width > 0) {
       gtk_window_resize(GTK_WINDOW(grapper_window), width, -1);
     }
   } else if (g_strcmp0(key, SETTINGS_WINDOW_HEIGHT) == 0) {
     height = g_settings_get_int(settings, SETTINGS_WINDOW_HEIGHT);
-    if (height >= MIN_WINDOW_HEIGHT) {
+    if (height >= MIN_WINDOW_HEIGHT && height > 0) {
       gtk_window_resize(GTK_WINDOW(grapper_window), -1, height);
     }
   }
@@ -1079,6 +1098,8 @@ static gint
 configure_callback(GtkWidget *widget, GdkEvent *event, gpointer data)
 {
   gint width, height;
+
+  if (!gsettings_available) return FALSE;
 
   gtk_window_get_size(GTK_WINDOW(grapper_window), &width, &height);
 
@@ -1105,11 +1126,24 @@ main(int argc, char *argv[])
 
   state.world = raptor_new_world();
   
-  /* Initialize GSettings */
-  settings = g_settings_new(SETTINGS_SCHEMA_ID);
-  if (!settings) {
-    /* Fallback to a simple schema if the main one doesn't exist */
-    settings = g_settings_new("org.gtk.Settings.FileChooser");
+  /* Initialize GSettings (optional) */
+  gsettings_available = FALSE;
+  settings = NULL;
+  
+  /* Check if the schema exists before trying to create GSettings */
+  GSettingsSchemaSource *schema_source = g_settings_schema_source_get_default();
+  GSettingsSchema *schema = g_settings_schema_source_lookup(schema_source, SETTINGS_SCHEMA_ID, FALSE);
+  
+  if (schema) {
+    settings = g_settings_new_full(schema, NULL, NULL);
+    g_settings_schema_unref(schema);
+    if (settings) {
+      gsettings_available = TRUE;
+    }
+  }
+  
+  if (!gsettings_available) {
+    g_message("GSettings schema '%s' not found - window size persistence disabled", SETTINGS_SCHEMA_ID);
   }
 
   /* create the main window */
@@ -1119,15 +1153,21 @@ main(int argc, char *argv[])
 
   init_grapper_window(grapper_window, &state);
 
-  /* Load saved window size */
-  width = g_settings_get_int(settings, SETTINGS_WINDOW_WIDTH);
-  height = g_settings_get_int(settings, SETTINGS_WINDOW_HEIGHT);
+  /* Load saved window size if GSettings is available */
+  if (gsettings_available) {
+    width = g_settings_get_int(settings, SETTINGS_WINDOW_WIDTH);
+    height = g_settings_get_int(settings, SETTINGS_WINDOW_HEIGHT);
 
-  /* let's not make it too small */
-  if(width < MIN_WINDOW_WIDTH)
+    /* let's not make it too small */
+    if(width < MIN_WINDOW_WIDTH)
+      width = MIN_WINDOW_WIDTH;
+    if(height < MIN_WINDOW_HEIGHT)
+      height = MIN_WINDOW_HEIGHT;
+  } else {
+    /* Use default sizes when GSettings is not available */
     width = MIN_WINDOW_WIDTH;
-  if(height < MIN_WINDOW_HEIGHT)
     height = MIN_WINDOW_HEIGHT;
+  }
   
   gtk_window_set_default_size (GTK_WINDOW(grapper_window), width, height);
 
@@ -1135,8 +1175,10 @@ main(int argc, char *argv[])
   g_signal_connect (G_OBJECT (grapper_window), "configure_event",
                     G_CALLBACK (configure_callback), &state);
 
-  /* Connect settings change callback */
-  g_signal_connect(settings, "changed", G_CALLBACK(settings_changed_callback), &state);
+  /* Connect settings change callback if GSettings is available */
+  if (gsettings_available) {
+    g_signal_connect(settings, "changed", G_CALLBACK(settings_changed_callback), &state);
+  }
 
   /* finally make it all visible */
   gtk_widget_show (grapper_window);
@@ -1158,7 +1200,7 @@ main(int argc, char *argv[])
 
   raptor_free_world(state.world);
 
-  if (settings) {
+  if (settings && gsettings_available) {
     g_object_unref(settings);
   }
   

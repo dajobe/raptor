@@ -141,6 +141,6 @@ glib-compile-schemas examples/
 The grapper example requires:
 
 - GTK 3.0+
-- GIO 2.26.0+ (for GSettings support)
+- GIO 2.26.0+ (for GSettings support - optional)
 
-If GSettings is not available, the grapper example will not be built, but other examples will continue to work.
+**GSettings is optional**: If GSettings is not available, grapper will still build and run, but window size persistence will be disabled. The application will use default window sizes instead.
