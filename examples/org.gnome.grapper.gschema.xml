@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.grapper" path="/org/gnome/grapper/">
+    <key name="window-width" type="i">
+      <default>600</default>
+      <summary>Window width</summary>
+      <description>The width of the main window</description>
+    </key>
+    <key name="window-height" type="i">
+      <default>400</default>
+      <summary>Window height</summary>
+      <description>The height of the main window</description>
+    </key>
+  </schema>
+</schemalist> 

@@ -22,8 +22,12 @@
 # 
 
 EXTRA_PROGRAMS = \
-raptor_abort grapper \
+raptor_abort \
 rdfcat rdfprint rdfserialize rdfguess rdfcount
+
+if HAVE_GSETTINGS
+EXTRA_PROGRAMS += grapper
+endif
 
 examples: $(EXTRA_PROGRAMS)
 
@@ -39,9 +43,25 @@ raptor_abort_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
 
 grapper_SOURCES = grapper.c
 grapper_LDADD=$(top_builddir)/src/libraptor2.la
-grapper_CFLAGS=`pkg-config --cflags gtk+-2.0 gconf-2.0`
-grapper_LDFLAGS=`pkg-config --libs gtk+-2.0 gconf-2.0`
+grapper_CFLAGS=`pkg-config --cflags gtk+-3.0 gio-2.0`
+grapper_LDFLAGS=`pkg-config --libs gtk+-3.0 gio-2.0`
 grapper_DEPENDENCIES = $(top_builddir)/src/libraptor2.la
+
+if HAVE_GSETTINGS
+# Install GSettings schema
+gsettings_SCHEMAS = org.gnome.grapper.gschema.xml
+EXTRA_DIST = $(gsettings_SCHEMAS) grapper.md grapper-ui.xml
+
+# Manual GSettings schema installation (since @GSETTINGS_RULES@ requires glib-2.0.m4)
+install-data-hook:
+	$(MKDIR_P) $(DESTDIR)$(datadir)/glib-2.0/schemas
+	$(INSTALL_DATA) $(gsettings_SCHEMAS) $(DESTDIR)$(datadir)/glib-2.0/schemas/
+	glib-compile-schemas $(DESTDIR)$(datadir)/glib-2.0/schemas/
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(datadir)/glib-2.0/schemas/$(gsettings_SCHEMAS)
+	glib-compile-schemas $(DESTDIR)$(datadir)/glib-2.0/schemas/
+endif
 
 rdfcat_SOURCES = rdfcat.c
 rdfcat_LDADD=$(top_builddir)/src/libraptor2.la

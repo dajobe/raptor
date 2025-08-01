@@ -1372,6 +1372,15 @@ raptor2.pc])
 dnl Check for gtk-doc and docbook
 GTK_DOC_CHECK([1.3])
 
+dnl Check for GSettings support (for grapper example)
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.26.0], [
+  AC_DEFINE([HAVE_GSETTINGS], [1], [Define if GSettings is available])
+  AM_CONDITIONAL([HAVE_GSETTINGS], [true])
+], [
+  AC_MSG_WARN([GSettings not found - grapper example will not be built])
+  AM_CONDITIONAL([HAVE_GSETTINGS], [false])
+])
+
 AC_OUTPUT
 
 AC_MSG_RESULT([
