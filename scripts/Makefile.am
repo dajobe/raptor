@@ -20,13 +20,11 @@
 # 
 
 EXTRA_DIST= \
-fix-bison.pl \
 fix-bison.py \
 fix-flex.py \
-fix-flex.pl \
-fix-groff-xhtml.pl \
-fix-gtkdoc-header.pl \
-process-changes.pl \
+fix-groff-xhtml.py \
+fix-gtkdoc-header.py \
+process-changes.py \
 rdfcompare
 
 CLEANFILES =

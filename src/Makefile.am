@@ -211,9 +211,7 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/f
 	$(AM_V_GEN) \
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l; \
 	for file in turtle_lexer.c turtle_lexer.h; do \
-	  $(PERL) $(top_srcdir)/scripts/fix-flex.pl $$file > perl-turtle_lexer.t  || exit 1; \
 	  $(PYTHON3) $(top_srcdir)/scripts/fix-flex.py $$file > turtle_lexer.t || exit 1; \
-	  diff -u perl-turtle_lexer.t turtle_lexer.t || exit 1; \
 	  mv -f turtle_lexer.t $$file; \
 	done
 
@@ -222,20 +220,14 @@ turtle_lexer.h: turtle_lexer.c ; @exit 0
 turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison.py
 	$(AM_V_GEN) \
 	$(BISON) -o $@ $(srcdir)/turtle_parser.y; \
-	cp $@ perl-$@; \
-	$(PERL) $(top_srcdir)/scripts/fix-bison.pl perl-$@; \
-	$(PYTHON3) $(top_srcdir)/scripts/fix-bison.py $@; \
-	diff -q perl-$@ $@
+	$(PYTHON3) $(top_srcdir)/scripts/fix-bison.py $@
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
 parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison.py
 	$(AM_V_GEN) \
 	$(BISON) -o $@ $(srcdir)/parsedate.y; \
-	cp $@ perl-$@; \
-	$(PERL) $(top_srcdir)/scripts/fix-bison.pl perl-$@; \
-	$(PYTHON) $(top_srcdir)/scripts/fix-bison.py $@; \
-	diff -q perl-$@ $@
+	$(PYTHON) $(top_srcdir)/scripts/fix-bison.py $@
 
 parsedate.h: parsedate.c ; @exit 0
 

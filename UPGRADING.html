@@ -57,14 +57,14 @@ typedefs and enum values.
 </p>
 
 <p>There is no fully automatic way to handle updating the code
-however there is a perl script provided in the docs directory that
+however there is a Python script provided in the docs directory that
 renames what it can, and otherwise inserts a WARNING comment near
 code that needs manual updating.  This cannot be automated in some
 places such as when the fields of the raptor_statement object were
 replaced with raptor_term pointers.  The script is used like
-<code>perl docs/upgrade-script.pl</code> <em>source files</em> for example</p>
+<code>python3 docs/upgrade-script.py</code> <em>source files</em> for example</p>
 <pre>
-  $ perl docs/upgrade-script.pl prog.c
+  $ python3 docs/upgrade-script.py prog.c
 </pre>
 
 <p>and then edit the file prog.c and search for <code>WARNING:</code>

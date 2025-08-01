@@ -115,18 +115,17 @@ libraptor2.html \
 raptor1-eol.html \
 $(man_MANS) \
 version.xml.in \
-upgrade-script.pl \
 raptor-changes.tsv
 
 DISTCLEANFILES+= \
 raptor-fake.h
 
-raptor-fake.h: $(top_builddir)/src/raptor2.h $(top_srcdir)/scripts/fix-gtkdoc-header.pl
-	$(PERL) $(top_srcdir)/scripts/fix-gtkdoc-header.pl < $< > $@
+raptor-fake.h: $(top_builddir)/src/raptor2.h $(top_srcdir)/scripts/fix-gtkdoc-header.py
+	$(PYTHON3) $(top_srcdir)/scripts/fix-gtkdoc-header.py < $< > $@
 
 if MAINTAINER_MODE
-libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml.pl
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PERL) $(top_srcdir)/scripts/fix-groff-xhtml.pl $@
+libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml.py
+	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PYTHON3) $(top_srcdir)/scripts/fix-groff-xhtml.py $@
 
 rdfcat.c: $(top_srcdir)/examples/rdfcat.c
 	$(install_sh_DATA) $? $@
@@ -141,8 +140,8 @@ raptor-tutorial-parsing.xml: rdfcat.c
 
 raptor-tutorial-serializing.xml: rdfprint.c rdfserialize.c
 
-raptor-changes.xml: $(srcdir)/raptor-changes.tsv $(top_srcdir)/scripts/process-changes.pl
-	$(PERL) $(top_srcdir)/scripts/process-changes.pl --docbook-xml $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
+raptor-changes.xml: $(srcdir)/raptor-changes.tsv $(top_srcdir)/scripts/process-changes.py
+	$(PYTHON3) $(top_srcdir)/scripts/process-changes.py --package raptor --docbook-xml $@ --no-warn-version 1.4.21 $(PACKAGE) $(srcdir)/raptor-changes.tsv
 
 raptor-formats.xml: $(top_builddir)/scripts/build-formats$(EXEEXT)
 	$(top_builddir)/scripts/build-formats$(EXEEXT) > $@
@@ -150,8 +149,8 @@ raptor-formats.xml: $(top_builddir)/scripts/build-formats$(EXEEXT)
 $(top_builddir)/scripts/build-formats$(EXEEXT):
 	cd $(top_builddir)/scripts && $(MAKE) build-formats$(EXEEXT)
 
-upgrade-script.pl: $(top_srcdir)/scripts/process-changes.pl $(srcdir)/raptor-changes.tsv
-	$(PERL) $(top_srcdir)/scripts/process-changes.pl --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
+#upgrade-script.py: $(top_srcdir)/scripts/upgrade-script.py $(srcdir)/raptor-changes.tsv
+#	$(PYTHON3) $(top_srcdir)/scripts/upgrade-script.py --upgrade-script $@ $(PACKAGE) $(srcdir)/raptor-changes.tsv
 
 endif
 
