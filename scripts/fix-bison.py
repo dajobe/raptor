@@ -28,6 +28,8 @@ def fix(file):
     with open(backup, "r") as infile, open(file, "w") as outfile:
         seen_yyerrlab1 = False
         syntax_error_has_default = False
+        in_yydestruct_function = False
+        in_yydestruct_switch = False
         line_offset = 1
 
         # Read entire source lines
@@ -110,6 +112,36 @@ def fix(file):
 
             # Remove all mention of unused var yynerrs
             line = re.sub(r"^(\s*)(.*yynerrs.*)", r"\1/* \2 */", line)
+
+            # Track when we enter yydestruct function
+            if "yydestruct (const char *yymsg," in line:
+                in_yydestruct_function = True
+
+            # Track when we exit yydestruct function (closing brace after YY_IGNORE_MAYBE_UNINITIALIZED_END)
+            if (
+                in_yydestruct_function
+                and line.strip() == "}"
+                and not in_yydestruct_switch
+            ):
+                in_yydestruct_function = False
+
+            # Add pragma to disable -Wswitch-enum warning around switch in yydestruct function
+            if in_yydestruct_function and "switch (yykind)" in line:
+                in_yydestruct_switch = True
+                outfile.write("#pragma GCC diagnostic push\n")
+                outfile.write('#pragma GCC diagnostic ignored "-Wswitch-enum"\n')
+                line_offset += 2  # added 2 lines
+                outfile.write(line)
+                continue
+
+            # Close pragma after switch statement in yydestruct
+            if in_yydestruct_switch and "YY_IGNORE_MAYBE_UNINITIALIZED_END" in line:
+                in_yydestruct_switch = False
+                outfile.write(line)
+                outfile.write("#pragma GCC diagnostic pop\n")
+                line_offset += 1  # added 1 line
+                continue
+
             outfile.write(line)
 
 
