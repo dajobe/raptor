@@ -264,7 +264,6 @@ possible_warnings="\
 -Wlogical-not-parentheses \
 -Wsizeof-array-argument  \
 -Wbool-compare \
--Wc90-c99-compat \
 -Wc99-c11-compat \
 "
 
