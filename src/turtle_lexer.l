@@ -68,7 +68,7 @@
 /* Re-entrant scanner */
 %option reentrant
 
-%option extra-type="raptor_parser*"
+%option extra-type="fsp_context*"
 
 /* Makes yyget_lval() yyset_lval() and yylval appear */
 %option bison-bridge
@@ -105,6 +105,11 @@
 
 #include "raptor2.h"
 #include "raptor_internal.h"
+
+#ifdef FSP_CONFIG
+#include <fsp_config.h>
+#endif
+#include <fsp.h>
 
 #include <turtle_parser.h>
 #include <turtle_common.h>
@@ -154,8 +159,9 @@ static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 } while(0)
 #endif
  
-/* Remove the re-fill function since it should never be called */
-#define YY_INPUT(buf,result,max_size) { return YY_NULL; }
+/* Enable streaming via libfsp */
+#define YY_INPUT(buf,result,max_size) \
+  result = fsp_read_input(yyextra, buf, max_size)
 
 static void turtle_lexer_error(yyscan_t yyscanner, raptor_log_level level, yyconst char *message, ...) RAPTOR_PRINTF_FORMAT(3, 4);
 
@@ -173,8 +179,7 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 /* Do not need input() to to read from stdin */
 #define YY_NO_INPUT 1
 
-#define YY_USER_ACTION				\
-  turtle_parser->consumed += yyleng;
+/* YY_USER_ACTION removed - no longer tracking consumed bytes with libfsp */
 
 %}
 
@@ -210,7 +215,8 @@ EXPONENT [eE][+-]?[0-9]+
   /* rules */
 
 %{
-  raptor_parser *rdf_parser = yyextra;
+  fsp_context *fsp_ctx = yyextra;
+  raptor_parser *rdf_parser = (raptor_parser*)fsp_get_user_data(fsp_ctx);
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
 #ifdef HAVE_SETJMP
@@ -309,11 +315,7 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    if(!turtle_parser->is_end) {
-                      /* next run will fix things, hopefully */
-                      return EOF;
-                    }
-                    /* otherwise abort */
+                    /* With streaming: if more data available, will get it; otherwise EOF */
                     turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
@@ -377,11 +379,7 @@ EXPONENT [eE][+-]?[0-9]+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    if(!turtle_parser->is_end) {
-                      /* next run will fix things, hopefully */
-                      return EOF;
-                    }
-                    /* otherwise abort */
+                    /* With streaming: if more data available, will get it; otherwise EOF */
                     turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
                     yyterminate();
 }

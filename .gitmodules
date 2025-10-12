@@ -1,0 +1,3 @@
+[submodule "libfsp"]
+	path = libfsp
+	url = https://github.com/dajobe/libfsp.git

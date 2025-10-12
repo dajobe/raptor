@@ -39,16 +39,22 @@ RAPTOR_INTERNAL_API size_t raptor_turtle_expand_qname_escapes(unsigned char *nam
 extern void turtle_token_free(raptor_world* world, int token, TURTLE_PARSER_STYPE *lval);
 
 
+/* Forward declaration */
+typedef struct fsp_context_s fsp_context;
+
+/* Forward declaration for Bison push parser state */
+typedef struct turtle_parser_pstate turtle_parser_pstate;
+
 /*
  * Turtle parser object
  */
 struct raptor_turtle_parser_s {
-  /* buffer */
-  char *buffer;
+  /* libfsp streaming context - replaces old buffer management */
+  fsp_context *fsp_ctx;
 
-  /* buffer length */
-  size_t buffer_length;
-  
+  /* Bison push parser state - persists across chunks */
+  turtle_parser_pstate *pstate;
+
   raptor_namespace_stack namespaces; /* static */
 
   /* for lexer to store result in */
@@ -61,15 +67,6 @@ struct raptor_turtle_parser_s {
 
   int lineno;
   int lineno_last_good;
-
-  /* for the chunk parser, how much of the input has been consumed */
-  size_t consumed;
-  /* likewise, how much of the input has been successfully processed */
-  size_t processed;
-  /* indicates what can be processed at most */
-  size_t consumable;
-  /* real end-of-buffer indicator, as we kill the last line */
-  size_t end_of_buffer;
 
   /* a sequence holding deferred statements */
   raptor_sequence *deferred;
@@ -85,9 +82,6 @@ struct raptor_turtle_parser_s {
 
   /* Allow TRIG extensions */
   int trig;
-
-  /* Last run of many */
-  int is_end;
 };
 
 

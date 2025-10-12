@@ -77,7 +77,9 @@ raptor_json_writer.c raptor_memstr.c raptor_concepts.c \
 raptor_syntax_description.c \
 raptor_sax2.c raptor_escaped.c \
 raptor_ntriples.c \
-sort_r.c sort_r.h ssort.h
+sort_r.c sort_r.h ssort.h \
+fsp_config.h \
+$(top_srcdir)/libfsp/fsp.c $(top_srcdir)/libfsp/fsp.h
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c
 endif
@@ -179,6 +181,7 @@ endif
 
 
 libraptor2_la_LIBADD = 
+libraptor2_la_DEPENDENCIES =
 
 if LIBRDFA
 AM_CPPFLAGS += -DLIBRDFA_IN_RAPTOR -I$(top_srcdir)/librdfa
@@ -188,6 +191,9 @@ endif
 libraptor2_la_LDFLAGS = -version-info @RAPTOR_LIBTOOL_VERSION@ \
 @RAPTOR_LDFLAGS@ $(MEM_LIBS)
 libraptor2_la_LIBADD += @LTLIBOBJS@
+
+# Include libfsp headers and enable FSP_CONFIG for function renaming
+AM_CPPFLAGS += -DFSP_CONFIG -I$(top_srcdir)/libfsp
 
 
 EXTRA_DIST=\
@@ -213,27 +219,27 @@ nodist_libraptor2_la_SOURCES += git-version.h
 raptor_parse.c: git-version.h
 
 # Actually it needs turtle_parser.h but nevermind
-turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/scripts/fix-flex.py
+turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/libfsp/scripts/postprocess-flex.py
 	$(AM_V_GEN) \
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l; \
 	for file in turtle_lexer.c turtle_lexer.h; do \
-	  $(PYTHON3) $(top_srcdir)/scripts/fix-flex.py $$file > turtle_lexer.t || exit 1; \
+	  $(PYTHON3) $(top_srcdir)/libfsp/scripts/postprocess-flex.py -c raptor_config.h -g HAVE_CONFIG_H $$file > turtle_lexer.t || exit 1; \
 	  mv -f turtle_lexer.t $$file; \
 	done
 
 turtle_lexer.h: turtle_lexer.c ; @exit 0
 
-turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/scripts/fix-bison.py
+turtle_parser.c: $(srcdir)/turtle_parser.y $(top_srcdir)/libfsp/scripts/postprocess-bison.py
 	$(AM_V_GEN) \
 	$(BISON) -o $@ $(srcdir)/turtle_parser.y; \
-	$(PYTHON3) $(top_srcdir)/scripts/fix-bison.py $@
+	$(PYTHON3) $(top_srcdir)/libfsp/scripts/postprocess-bison.py $@
 
 turtle_parser.h: turtle_parser.c ; @exit 0
 
-parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/scripts/fix-bison.py
+parsedate.c: $(srcdir)/parsedate.y $(top_srcdir)/libfsp/scripts/postprocess-bison.py
 	$(AM_V_GEN) \
 	$(BISON) -o $@ $(srcdir)/parsedate.y; \
-	$(PYTHON) $(top_srcdir)/scripts/fix-bison.py $@
+	$(PYTHON3) $(top_srcdir)/libfsp/scripts/postprocess-bison.py $@
 
 parsedate.h: parsedate.c ; @exit 0
 

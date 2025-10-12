@@ -38,7 +38,12 @@ UPGRADING.html \
 raptor2.rdf.in \
 autogen.sh \
 raptor2.spec.in \
-raptor2.pc.in
+raptor2.pc.in \
+libfsp/fsp.c \
+libfsp/fsp.h \
+libfsp/fsp_internal.h \
+libfsp/scripts/postprocess-flex.py \
+libfsp/scripts/postprocess-bison.py
 
 if RELEASE_VERSION
 EXTRA_DIST += raptor2.spec

@@ -48,6 +48,12 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+#ifdef FSP_CONFIG
+#include <fsp_config.h>
+#endif
+#include <fsp.h>
+#include <fsp_internal.h>
+
 /* Set RAPTOR_DEBUG to 3 for super verbose parsing - watching the shift/reduces */
 #if 0
 #undef RAPTOR_DEBUG
@@ -64,6 +70,8 @@
 
 #include <turtle_common.h>
 
+/* Helper macro to get raptor_parser from fsp_context */
+#define PARSER_FROM_FSP_CONTEXT(fsp_ctx) ((raptor_parser*)fsp_get_user_data(fsp_ctx))
 
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -88,11 +96,8 @@ const char * turtle_token_print(raptor_world* world, int token,
 /* the lexer does not seem to track this */
 #undef RAPTOR_TURTLE_USE_ERROR_COLUMNS
 
-/* set api.push-pull to "push" if this is defined */
-#undef TURTLE_PUSH_PARSE
-
-/* Prototypes */ 
-int turtle_parser_error(raptor_parser* rdf_parser, void* scanner, const char *msg);
+/* Prototypes */
+int turtle_parser_error(fsp_context* fsp_ctx, void* scanner, const char *msg);
 static void turtle_parser_error_simple(void* user_data, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 /* Make lex/yacc interface as small as possible */
@@ -137,11 +142,11 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 %define api.pure full
 
 /* Push or pull parser? */
-%define api.push-pull pull
+%define api.push-pull push
 
 /* Pure parser argument: lexer - yylex() and parser - yyparse() */
 %lex-param { yyscan_t yyscanner }
-%parse-param { raptor_parser* rdf_parser } { void* yyscanner }
+%parse-param { fsp_context* fsp_ctx } { void* yyscanner }
 
 /* Interface between lexer and parser */
 %union {
@@ -226,15 +231,15 @@ graph: GRAPH_NAME_LEFT_CURLY
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_turtle_parser* turtle_parser;
 
-    turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+    turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
     if(!turtle_parser->trig)
-      turtle_parser_error(rdf_parser, yyscanner, "{ ... } is not allowed in Turtle");
+      turtle_parser_error(fsp_ctx, yyscanner, "{ ... } is not allowed in Turtle");
     else {
       if(turtle_parser->graph_name)
         raptor_free_term(turtle_parser->graph_name);
-      turtle_parser->graph_name = raptor_new_term_from_uri(rdf_parser->world, $1);
+      turtle_parser->graph_name = raptor_new_term_from_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1);
       raptor_free_uri($1);
-      raptor_parser_start_graph(rdf_parser,
+      raptor_parser_start_graph(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                                 turtle_parser->graph_name->value.uri, 1);
     }
   }
@@ -242,14 +247,14 @@ graph: GRAPH_NAME_LEFT_CURLY
 {
   raptor_turtle_parser* turtle_parser;
 
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
 
   if(turtle_parser->trig) {
-    raptor_parser_end_graph(rdf_parser,
+    raptor_parser_end_graph(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                             turtle_parser->graph_name->value.uri, 1);
     raptor_free_term(turtle_parser->graph_name);
     turtle_parser->graph_name = NULL;
-    rdf_parser->emitted_default_graph = 0;
+    PARSER_FROM_FSP_CONTEXT(fsp_ctx)->emitted_default_graph = 0;
   }
 }
 |
@@ -258,22 +263,22 @@ LEFT_CURLY
     /* action in mid-rule so this is run BEFORE the triples in graphBody */
     raptor_turtle_parser* turtle_parser;
 
-    turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+    turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
     if(!turtle_parser->trig)
-      turtle_parser_error(rdf_parser, yyscanner, "{ ... } is not allowed in Turtle");
+      turtle_parser_error(fsp_ctx, yyscanner, "{ ... } is not allowed in Turtle");
     else {
-      raptor_parser_start_graph(rdf_parser, NULL, 1);
-      rdf_parser->emitted_default_graph++;
+      raptor_parser_start_graph(PARSER_FROM_FSP_CONTEXT(fsp_ctx), NULL, 1);
+      PARSER_FROM_FSP_CONTEXT(fsp_ctx)->emitted_default_graph++;
     }
   }
   graphBody RIGHT_CURLY
 {
   raptor_turtle_parser* turtle_parser;
 
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
   if(turtle_parser->trig) {
-    raptor_parser_end_graph(rdf_parser, NULL, 1);
-    rdf_parser->emitted_default_graph = 0;
+    raptor_parser_end_graph(PARSER_FROM_FSP_CONTEXT(fsp_ctx), NULL, 1);
+    PARSER_FROM_FSP_CONTEXT(fsp_ctx)->emitted_default_graph = 0;
   }
 }
 ;
@@ -294,7 +299,7 @@ dotTriplesList: triples
   if($1) {
     for(i = 0; i < raptor_sequence_size($1); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($1, i);
-      raptor_turtle_generate_statement(rdf_parser, t2);
+      raptor_turtle_generate_statement(PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     }
     raptor_free_sequence($1);
   }
@@ -306,7 +311,7 @@ dotTriplesList: triples
   if($3) {
     for(i = 0; i < raptor_sequence_size($3); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($3, i);
-      raptor_turtle_generate_statement(rdf_parser, t2);
+      raptor_turtle_generate_statement(PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     }
     raptor_free_sequence($3);
   }
@@ -317,10 +322,9 @@ statementList: statementList statement
 {
   raptor_turtle_parser* turtle_parser;
 
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
 
-  /* sync up consumed/processed so we know what to unwind */
-  turtle_parser->processed = turtle_parser->consumed;
+  /* No buffer tracking with libfsp - just update lineno */
   turtle_parser->lineno_last_good = turtle_parser->lineno;
 }
 | statementList error
@@ -335,21 +339,21 @@ statement: directive
   int i;
 
   /* yield deferred statements, if any */
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
   if(turtle_parser->deferred) {
     raptor_sequence* def = turtle_parser->deferred;
 
     for(i = 0; i < raptor_sequence_size(def); i++) {
       raptor_statement *t2 = (raptor_statement*)raptor_sequence_get_at(def, i);
 
-      raptor_turtle_handle_statement(rdf_parser, t2);
+      raptor_turtle_handle_statement(PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     }
   }
 
   if($1) {
     for(i = 0; i < raptor_sequence_size($1); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($1, i);
-      raptor_turtle_generate_statement(rdf_parser, t2);
+      raptor_turtle_generate_statement(PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     }
     raptor_free_sequence($1);
   }
@@ -464,7 +468,7 @@ objectList: objectList COMMA object
   if(!$3)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(rdf_parser->world, NULL, NULL, $3, NULL);
+    triple = raptor_new_statement_from_nodes(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, NULL, NULL, $3, NULL);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -498,7 +502,7 @@ objectList: objectList COMMA object
   if(!$1)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(rdf_parser->world, NULL, NULL, $1, NULL);
+    triple = raptor_new_statement_from_nodes(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, NULL, NULL, $1, NULL);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
@@ -548,7 +552,7 @@ itemList: itemList object
   if(!$2)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(rdf_parser->world, NULL, NULL, $2, NULL);
+    triple = raptor_new_statement_from_nodes(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, NULL, NULL, $2, NULL);
     if(!triple) {
       raptor_free_sequence($1);
       YYERROR;
@@ -582,7 +586,7 @@ itemList: itemList object
   if(!$1)
     $$ = NULL;
   else {
-    triple = raptor_new_statement_from_nodes(rdf_parser->world, NULL, NULL, $1, NULL);
+    triple = raptor_new_statement_from_nodes(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, NULL, NULL, $1, NULL);
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
@@ -625,7 +629,7 @@ verb: predicate
   printf("verb predicate = rdf:type (a)\n");
 #endif
 
-  $$ = raptor_term_copy(RAPTOR_RDF_type_term(rdf_parser->world));
+  $$ = raptor_term_copy(RAPTOR_RDF_type_term(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world));
   if(!$$)
     YYERROR;
 }
@@ -742,7 +746,7 @@ directive : prefix | base
 prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 {
   unsigned char *prefix = $2;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(rdf_parser->context);
+  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context);
   raptor_namespace *ns;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -763,7 +767,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   ns = raptor_new_namespace_from_uri(&turtle_parser->namespaces, prefix, $3, 0);
   if(ns) {
     raptor_namespaces_start_namespace(&turtle_parser->namespaces, ns);
-    raptor_parser_start_namespace(rdf_parser, ns);
+    raptor_parser_start_namespace(PARSER_FROM_FSP_CONTEXT(fsp_ctx), ns);
   }
 
   if($2)
@@ -776,7 +780,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
 | SPARQL_PREFIX IDENTIFIER URI_LITERAL
 {
   unsigned char *prefix = $2;
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(rdf_parser->context);
+  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context);
   raptor_namespace *ns;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
@@ -797,7 +801,7 @@ prefix: PREFIX IDENTIFIER URI_LITERAL DOT
   ns = raptor_new_namespace_from_uri(&turtle_parser->namespaces, prefix, $3, 0);
   if(ns) {
     raptor_namespaces_start_namespace(&turtle_parser->namespaces, ns);
-    raptor_parser_start_namespace(rdf_parser, ns);
+    raptor_parser_start_namespace(PARSER_FROM_FSP_CONTEXT(fsp_ctx), ns);
   }
 
   if($2)
@@ -814,17 +818,17 @@ base: BASE URI_LITERAL DOT
 {
   raptor_uri *uri=$2;
 
-  if(rdf_parser->base_uri)
-    raptor_free_uri(rdf_parser->base_uri);
-  rdf_parser->base_uri = uri;
+  if(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri)
+    raptor_free_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri);
+  PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri = uri;
 }
 | SPARQL_BASE URI_LITERAL
 {
   raptor_uri *uri=$2;
 
-  if(rdf_parser->base_uri)
-    raptor_free_uri(rdf_parser->base_uri);
-  rdf_parser->base_uri = uri;
+  if(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri)
+    raptor_free_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri);
+  PARSER_FROM_FSP_CONTEXT(fsp_ctx)->base_uri = uri;
 }
 ;
 
@@ -885,7 +889,7 @@ literal: STRING_LITERAL LANGTAG
   printf("literal + language string=\"%s\"\n", $1);
 #endif
 
-  $$ = raptor_new_term_from_literal(rdf_parser->world, $1, NULL, $2);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, NULL, $2);
   RAPTOR_FREE(char*, $1);
   RAPTOR_FREE(char*, $2);
   if(!$$)
@@ -899,13 +903,13 @@ literal: STRING_LITERAL LANGTAG
 
   if($4) {
     if($2) {
-      raptor_parser_error(rdf_parser,
+      raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                           "Language not allowed with datatyped literal");
       RAPTOR_FREE(char*, $2);
       $2 = NULL;
     }
   
-    $$ = raptor_new_term_from_literal(rdf_parser->world, $1, $4, NULL);
+    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
     raptor_free_uri($4);
     if(!$$)
@@ -922,13 +926,13 @@ literal: STRING_LITERAL LANGTAG
 
   if($4) {
     if($2) {
-      raptor_parser_error(rdf_parser,
+      raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                           "Language not allowed with datatyped literal");
       RAPTOR_FREE(char*, $2);
       $2 = NULL;
     }
   
-    $$ = raptor_new_term_from_literal(rdf_parser->world, $1, $4, NULL);
+    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $4, NULL);
     RAPTOR_FREE(char*, $1);
     raptor_free_uri($4);
     if(!$$)
@@ -944,7 +948,7 @@ literal: STRING_LITERAL LANGTAG
 #endif
 
   if($3) {
-    $$ = raptor_new_term_from_literal(rdf_parser->world, $1, $3, NULL);
+    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $3, NULL);
     RAPTOR_FREE(char*, $1);
     raptor_free_uri($3);
     if(!$$)
@@ -960,7 +964,7 @@ literal: STRING_LITERAL LANGTAG
 #endif
 
   if($3) {
-    $$ = raptor_new_term_from_literal(rdf_parser->world, $1, $3, NULL);
+    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $3, NULL);
     RAPTOR_FREE(char*, $1);
     raptor_free_uri($3);
     if(!$$)
@@ -974,7 +978,7 @@ literal: STRING_LITERAL LANGTAG
   printf("literal string=\"%s\"\n", $1);
 #endif
 
-  $$ = raptor_new_term_from_literal(rdf_parser->world, $1, NULL, NULL);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, NULL, NULL);
   RAPTOR_FREE(char*, $1);
   if(!$$)
     YYERROR;
@@ -985,8 +989,8 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource integer=%s\n", $1);
 #endif
-  uri = raptor_uri_copy(rdf_parser->world->xsd_integer_uri);
-  $$ = raptor_new_term_from_literal(rdf_parser->world, $1, uri, NULL);
+  uri = raptor_uri_copy(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world->xsd_integer_uri);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, uri, NULL);
   RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
@@ -998,8 +1002,8 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource double=%s\n", $1);
 #endif
-  uri = raptor_uri_copy(rdf_parser->world->xsd_double_uri);
-  $$ = raptor_new_term_from_literal(rdf_parser->world, $1, uri, NULL);
+  uri = raptor_uri_copy(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world->xsd_double_uri);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, uri, NULL);
   RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
@@ -1011,12 +1015,12 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("resource decimal=%s\n", $1);
 #endif
-  uri = raptor_uri_copy(rdf_parser->world->xsd_decimal_uri);
+  uri = raptor_uri_copy(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world->xsd_decimal_uri);
   if(!uri) {
     RAPTOR_FREE(char*, $1);
     YYERROR;
   }
-  $$ = raptor_new_term_from_literal(rdf_parser->world, $1, uri, NULL);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, uri, NULL);
   RAPTOR_FREE(char*, $1);
   raptor_free_uri(uri);
   if(!$$)
@@ -1028,8 +1032,8 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean true\n", stderr);
 #endif
-  uri = raptor_uri_copy(rdf_parser->world->xsd_boolean_uri);
-  $$ = raptor_new_term_from_literal(rdf_parser->world,
+  uri = raptor_uri_copy(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world->xsd_boolean_uri);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world,
                                     (const unsigned char*)"true", uri, NULL);
   raptor_free_uri(uri);
   if(!$$)
@@ -1041,8 +1045,8 @@ literal: STRING_LITERAL LANGTAG
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   fputs("resource boolean false\n", stderr);
 #endif
-  uri = raptor_uri_copy(rdf_parser->world->xsd_boolean_uri);
-  $$ = raptor_new_term_from_literal(rdf_parser->world,
+  uri = raptor_uri_copy(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world->xsd_boolean_uri);
+  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world,
                                     (const unsigned char*)"false", uri, NULL);
   raptor_free_uri(uri);
   if(!$$)
@@ -1058,7 +1062,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$ = raptor_new_term_from_uri(rdf_parser->world, $1);
+    $$ = raptor_new_term_from_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1);
     raptor_free_uri($1);
     if(!$$)
       YYERROR;
@@ -1072,7 +1076,7 @@ resource: URI_LITERAL
 #endif
 
   if($1) {
-    $$ = raptor_new_term_from_uri(rdf_parser->world, $1);
+    $$ = raptor_new_term_from_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1);
     raptor_free_uri($1);
     if(!$$)
       YYERROR;
@@ -1099,11 +1103,11 @@ blankNode: BLANK_LITERAL
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("subject blank=\"%s\"\n", $1);
 #endif
-  id = raptor_world_internal_generate_id(rdf_parser->world, $1);
+  id = raptor_world_internal_generate_id(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1);
   if(!id)
     YYERROR;
 
-  $$ = raptor_new_term_from_blank(rdf_parser->world, id);
+  $$ = raptor_new_term_from_blank(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, id);
   RAPTOR_FREE(char*, id);
 
   if(!$$)
@@ -1116,14 +1120,14 @@ blankNodePropertyList: LEFT_SQUARE predicateObjectListOpt RIGHT_SQUARE
   int i;
   const unsigned char *id;
 
-  id = raptor_world_generate_bnodeid(rdf_parser->world);
+  id = raptor_world_generate_bnodeid(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world);
   if(!id) {
     if($2)
       raptor_free_sequence($2);
     YYERROR;
   }
 
-  $$ = raptor_new_term_from_blank(rdf_parser->world, id);
+  $$ = raptor_new_term_from_blank(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, id);
   RAPTOR_FREE(char*, id);
   if(!$$) {
     if($2)
@@ -1148,7 +1152,7 @@ blankNodePropertyList: LEFT_SQUARE predicateObjectListOpt RIGHT_SQUARE
     for(i = 0; i < raptor_sequence_size($2); i++) {
       raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
       t2->subject = raptor_term_copy($$);
-      raptor_turtle_defer_statement(rdf_parser, t2);
+      raptor_turtle_defer_statement(PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     }
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -1168,7 +1172,7 @@ blankNodePropertyList: LEFT_SQUARE predicateObjectListOpt RIGHT_SQUARE
 collection: LEFT_ROUND itemList RIGHT_ROUND
 {
   int i;
-  raptor_world* world = rdf_parser->world;
+  raptor_world* world = PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world;
   raptor_term* first_identifier = NULL;
   raptor_term* rest_identifier = NULL;
   raptor_term* object = NULL;
@@ -1204,11 +1208,11 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     raptor_statement* t2 = (raptor_statement*)raptor_sequence_get_at($2, i);
     const unsigned char *blank_id;
 
-    blank_id = raptor_world_generate_bnodeid(rdf_parser->world);
+    blank_id = raptor_world_generate_bnodeid(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world);
     if(!blank_id)
       YYERR_MSG_GOTO(err_collection, "Cannot create bnodeid");
 
-    blank = raptor_new_term_from_blank(rdf_parser->world,
+    blank = raptor_new_term_from_blank(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world,
                                        blank_id);
     RAPTOR_FREE(char*, blank_id);
     if(!blank)
@@ -1217,14 +1221,14 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
     t2->subject = blank;
     t2->predicate = first_identifier;
     /* t2->object already set to the value we want */
-    raptor_turtle_defer_statement((raptor_parser*)rdf_parser, t2);
+    raptor_turtle_defer_statement((raptor_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
     
     temp = t2->object;
     
     t2->subject = blank;
     t2->predicate = rest_identifier;
     t2->object = object;
-    raptor_turtle_defer_statement((raptor_parser*)rdf_parser, t2);
+    raptor_turtle_defer_statement((raptor_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx), t2);
 
     t2->subject = NULL;
     t2->predicate = NULL;
@@ -1269,7 +1273,7 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 }
 |  LEFT_ROUND RIGHT_ROUND 
 {
-  raptor_world* world = rdf_parser->world;
+  raptor_world* world = PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
   printf("collection\n empty\n");
@@ -1289,34 +1293,23 @@ collection: LEFT_ROUND itemList RIGHT_ROUND
 
 /* Error handler with scanner context, during parsing */
 int
-turtle_parser_error(raptor_parser* rdf_parser, void* scanner,
+turtle_parser_error(fsp_context* fsp_ctx, void* scanner,
                     const char *msg)
 {
   raptor_turtle_parser* turtle_parser;
 
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser = (raptor_turtle_parser*)PARSER_FROM_FSP_CONTEXT(fsp_ctx)->context;
 
-  if(turtle_parser->consumed == turtle_parser->consumable &&
-     turtle_parser->processed < turtle_parser->consumed &&
-     !turtle_parser->is_end) {
-    /* we encountered an error on or around the last byte of the buffer
-     * sorting it in the next run aye? */
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    printf("Ignoring error '%s' when near end of buffer\n", msg);
-#endif
-    return 0;
-  }
-  
   if(turtle_parser->error_count++)
     return 0;
 
-  rdf_parser->locator.line = turtle_parser->lineno;
+  PARSER_FROM_FSP_CONTEXT(fsp_ctx)->locator.line = turtle_parser->lineno;
 #ifdef RAPTOR_TURTLE_USE_ERROR_COLUMNS
-  rdf_parser->locator.column = turtle_lexer_get_column(yyscanner);
+  PARSER_FROM_FSP_CONTEXT(fsp_ctx)->locator.column = turtle_lexer_get_column(yyscanner);
 #endif
 
-  raptor_log_error(rdf_parser->world, RAPTOR_LOG_LEVEL_ERROR,
-                   &rdf_parser->locator, msg);
+  raptor_log_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, RAPTOR_LOG_LEVEL_ERROR,
+                   &PARSER_FROM_FSP_CONTEXT(fsp_ctx)->locator, msg);
 
   return 0;
 }
@@ -1334,14 +1327,6 @@ turtle_parser_error_simple(void* user_data, const char *msg, ...)
 
   turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
-  if(turtle_parser->consumed == turtle_parser->consumable &&
-     turtle_parser->processed < turtle_parser->consumed &&
-     !turtle_parser->is_end) {
-    /* we encountered an error on or around the last byte of the buffer
-     * sorting it in the next run aye? */
-    goto tidy;
-  }
-  
   if(turtle_parser->error_count++)
     goto tidy;
 
@@ -1377,8 +1362,8 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 #endif
 
   va_start(arguments, message);
-  
-  raptor_parser_log_error_varargs(((raptor_parser*)rdf_parser),
+
+  raptor_parser_log_error_varargs(rdf_parser,
                                   RAPTOR_LOG_LEVEL_ERROR, message, arguments);
 
   va_end(arguments);
@@ -1388,7 +1373,7 @@ turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...)
 
 
 raptor_uri*
-turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len) 
+turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_len)
 {
   raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
@@ -1409,105 +1394,88 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 }
 
 
-
-#ifndef TURTLE_PUSH_PARSE
+/**
+ * turtle_push_parse - Parse using Bison push parser with libfsp streaming
+ * @fsp_ctx: FSP context
+ * @scanner: Lexer scanner
+ *
+ * Process tokens from lexer and push them to Bison push parser.
+ * Uses libfsp for buffer management and streaming.
+ * The parser state (pstate) persists across chunks.
+ *
+ * Return value: 0 on success, non-0 on failure
+ */
 static int
-turtle_parse(raptor_parser *rdf_parser, const char *string, size_t length)
+turtle_push_parse(fsp_context *fsp_ctx, yyscan_t scanner)
 {
-  raptor_turtle_parser* turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-  int rc;
-  
-  if(!string || !*string)
-    return 0;
-  
-  if(turtle_lexer_lex_init(&turtle_parser->scanner))
-    return 1;
-  turtle_parser->scanner_set = 1;
+  raptor_parser *rdf_parser = (raptor_parser*)fsp_get_user_data(fsp_ctx);
+  raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  turtle_parser_pstate *pstate = turtle_parser->pstate;
+  int rc = 0;
+  int is_end = !fsp_ctx->more_chunks_expected;
 
-#if defined(YYDEBUG) && YYDEBUG > 0
-  turtle_lexer_set_debug(1, turtle_parser->scanner);
-#if TURTLE_PARSER_DEBUG
-  turtle_parser_debug = 1;
-#endif
-#endif
+  /* Minimum bytes needed in FSP buffer before calling lexer.
+   * Determined by libfsp fsp-helper.py analysis of turtle_lexer.l:
+   * - Longest fixed-length token: [Pp][Rr][Ee][Ff][Ii][Xx] = 6 bytes
+   * - Value of 16 provides ~2.7x safety margin for:
+   *   - Lexer state management and lookahead
+   *   - Multi-byte UTF-8 sequences  
+   *   - Performance (reduces "need more data" frequency)
+   */
+  #define MIN_BUFFER_FOR_LEX 16
 
-  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  (void)turtle_lexer__scan_bytes((char *)string, (yy_size_t)length, turtle_parser->scanner);
+  /* Create push parser state on first call */
+  if(!pstate) {
+    pstate = turtle_parser_pstate_new();
+    if(!pstate)
+      return 1;
 
-  rc = turtle_parser_parse(rdf_parser, turtle_parser->scanner);
+    turtle_parser->pstate = pstate;
+  }
 
-  turtle_lexer_lex_destroy(turtle_parser->scanner);
-  turtle_parser->scanner_set = 0;
-
-  return rc;
-}
-#endif
-
-
-#ifdef TURTLE_PUSH_PARSE
-static int
-turtle_push_parse(raptor_parser *rdf_parser, 
-                  const char *string, size_t length)
-{
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  raptor_world* world = rdf_parser->world;
-#endif
-  raptor_turtle_parser* turtle_parser;
-  void *buffer;
-  int status;
-  yypstate *ps;
-
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-
-  if(!string || !*string)
-    return 0;
-  
-  if(turtle_lexer_lex_init(&turtle_parser->scanner))
-    return 1;
-  turtle_parser->scanner_set = 1;
-
-#if defined(YYDEBUG) && YYDEBUG > 0
-  turtle_lexer_set_debug(1, turtle_parser->scanner);
-#if TURTLE_PARSER_DEBUG
-  turtle_parser_debug = 1;
-#endif
-#endif
-
-  turtle_lexer_set_extra(rdf_parser, turtle_parser->scanner);
-  buffer = turtle_lexer__scan_bytes(string, (yy_size_t)length, turtle_parser->scanner);
-
-  /* returns a parser instance or 0 on out of memory */
-  ps = yypstate_new();
-  if(!ps)
-    return 1;
-
-  do {
-    TURTLE_PARSER_YYSTYPE lval;
+  /* Process tokens while we have enough buffer or at EOF */
+  while(fsp_buffer_available(fsp_ctx) >= MIN_BUFFER_FOR_LEX || is_end) {
+    TURTLE_PARSER_STYPE lval;
     int token;
 
-    memset(&lval, 0, sizeof(TURTLE_PARSER_YYSTYPE));
-    
-    token = turtle_lexer_lex(&lval, turtle_parser->scanner);
+    /* Get next token from lexer */
+    token = turtle_lexer_lex(&lval, scanner);
 
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    printf("token %s\n", turtle_token_print(world, token, &lval));
-#endif
+    if(!token) {
+      /* No more tokens from lexer */
+      if(!is_end && fsp_buffer_available(fsp_ctx) < MIN_BUFFER_FOR_LEX) {
+        /* Need more data - return success for now */
+        return 0;
+      }
+      /* At EOF - push EOF token (0) to parser to finalize parsing */
+      if(is_end) {
+        rc = turtle_parser_push_parse(pstate, 0, NULL, fsp_ctx, scanner);
+        if(rc) {
+          turtle_parser->error_count++;
+        }
+        return rc;
+      }
+      /* No more tokens but not EOF yet */
+      return 0;
+    }
 
-    status = yypush_parse(ps, token, &lval, rdf_parser, turtle_parser->scanner);
+    /* Push token to Bison push parser */
+    rc = turtle_parser_push_parse(pstate, token, &lval, fsp_ctx, scanner);
 
-    /* turtle_token_free(world, token, &lval); */
+    if(rc != YYPUSH_MORE) {
+      /* Parse complete or error occurred */
+      if(rc) {
+        turtle_parser->error_count++;
+        return rc; /* Error */
+      }
+      /* Parse completed successfully (YYACCEPT = 0) */
+      return 0;
+    }
+  }
 
-    if(!token || token == EOF || token == ERROR_TOKEN)
-      break;
-  } while (status == YYPUSH_MORE);
-  yypstate_delete(ps);
-
-  turtle_lexer_lex_destroy(turtle_parser->scanner);
-  turtle_parser->scanner_set = 0;
-
+  /* Processed all available tokens - more chunks needed */
   return 0;
 }
-#endif
 
 
 /*
@@ -1547,8 +1515,15 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
     turtle_parser->scanner_set = 0;
   }
 
-  if(turtle_parser->buffer)
-    RAPTOR_FREE(cdata, turtle_parser->buffer);
+  if(turtle_parser->pstate) {
+    turtle_parser_pstate_delete(turtle_parser->pstate);
+    turtle_parser->pstate = NULL;
+  }
+
+  if(turtle_parser->fsp_ctx) {
+    fsp_destroy(turtle_parser->fsp_ctx);
+    turtle_parser->fsp_ctx = NULL;
+  }
 
   if(turtle_parser->graph_name) {
     raptor_free_term(turtle_parser->graph_name);
@@ -1674,19 +1649,28 @@ raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *t)
 
 
 
+/**
+ * raptor_turtle_parse_chunk - Parse a chunk of Turtle/TriG using libfsp streaming
+ * @rdf_parser: Raptor parser
+ * @s: Input buffer
+ * @len: Length of input
+ * @is_end: Non-zero if this is the final chunk
+ *
+ * Uses libfsp for buffer management and streaming token processing.
+ *
+ * Return value: 0 on success, non-0 on failure
+ */
 static int
-raptor_turtle_parse_chunk(raptor_parser* rdf_parser, 
+raptor_turtle_parse_chunk(raptor_parser *rdf_parser, 
                           const unsigned char *s, size_t len,
                           int is_end)
 {
-  raptor_turtle_parser *turtle_parser;
-  char *ptr;
-  int rc;
+  raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
+  fsp_context *fsp_ctx = turtle_parser->fsp_ctx;
+  int rc = 0;
 
-  turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
-  
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-  RAPTOR_DEBUG2("adding %d bytes to line buffer\n", (int)len);
+  RAPTOR_DEBUG2("adding %d bytes to FSP buffer\n", (int)len);
 #endif
 
   if(!len && !is_end) {
@@ -1694,115 +1678,61 @@ raptor_turtle_parse_chunk(raptor_parser* rdf_parser,
     return 0;
   }
 
-  /* the actual buffer will contained unprocessed characters from
-   * the last run plus the chunk passed here */
-  turtle_parser->end_of_buffer = turtle_parser->consumed + len;
-  if(turtle_parser->end_of_buffer > turtle_parser->buffer_length) {
-    /* resize */
-    size_t new_buffer_length = turtle_parser->end_of_buffer;
-
-    turtle_parser->buffer = RAPTOR_REALLOC(char*, turtle_parser->buffer,
-                                           new_buffer_length + 1);
-
-    /* adjust stored length */
-    turtle_parser->buffer_length = new_buffer_length;
-  }
-  if(!turtle_parser->buffer && turtle_parser->buffer_length) {
-    /* we tried to alloc a buffer but we failed */
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+  /* Safety check: fsp_ctx should be initialized by parse_start */
+  if(!fsp_ctx) {
+    raptor_parser_error(rdf_parser, "Parser not initialized - call parse_start first");
     return 1;
   }
-  if(is_end && !turtle_parser->end_of_buffer) {
-    /* Nothing to do */
-    return 0;
+
+  /* Append chunk to FSP buffer */
+  if(len > 0) {
+    if(fsp_buffer_append(fsp_ctx, (const char*)s, len) < 0) {
+      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+      return 1;
+    }
   }
 
-  /* move pointer to end of cdata buffer */
-  ptr = turtle_parser->buffer + turtle_parser->consumed;
+  /* Signal EOF to FSP if this is the final chunk */
+  if(is_end)
+    fsp_ctx->more_chunks_expected = 0;
 
-  /* now write new stuff at end of cdata buffer */
-  memcpy(ptr, s, len);
-  ptr += len;
-  *ptr = '\0';
+  rc = turtle_push_parse(fsp_ctx, turtle_parser->scanner);
 
-  /* reset processed counter */
-  turtle_parser->processed = 0U;
-  /* unconsume */
-  turtle_parser->consumed = 0U;
-  /* reset line numbers */
-  turtle_parser->lineno = turtle_parser->lineno_last_good;
-
-  /* let everyone know if this is the last chunk */
-  turtle_parser->is_end = is_end;
-  if(!is_end) {
-    /* it's safer not to pass the very last line to the lexer
-     * just in case we end up with EOB-in-the-middle-of-X situations */
-    size_t i = turtle_parser->end_of_buffer;
-    while(i > 0U && turtle_parser->buffer[--i] != '\n');
-    /* either i == 0U or i points to the last \n before the end-of-buffer */
-    turtle_parser->consumable = i;
-  } else {
-    /* otherwise the consumable number of bytes coincides with the EOB */
-    turtle_parser->consumable = turtle_parser->end_of_buffer;
-  }
-
-#if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
-    RAPTOR_DEBUG3("buffer buffer now '%s' (%ld bytes)\n", 
-                  turtle_parser->buffer, turtle_parser->buffer_length);
-#endif
-
-#ifdef TURTLE_PUSH_PARSE
-  rc = turtle_push_parse(rdf_parser, 
-                         turtle_parser->buffer, turtle_parser->consumable);
-#else
-  rc = turtle_parse(rdf_parser, turtle_parser->buffer, turtle_parser->consumable);
-#endif  
-
-  if(turtle_parser->error_count) {
-    rc = 1;
-  } else if(!is_end) {
-    /* move stuff to the beginning of the buffer */
-    turtle_parser->consumed = turtle_parser->end_of_buffer - turtle_parser->processed;
-    if(turtle_parser->consumed && turtle_parser->processed) {
-      memmove(turtle_parser->buffer,
-              turtle_parser->buffer + turtle_parser->processed,
-              turtle_parser->consumed);
-      /* cancel all deferred eval's */
-      if(turtle_parser->deferred) {
-        raptor_free_sequence(turtle_parser->deferred);
-        turtle_parser->deferred = NULL;
-      }
+  /* Handle deferred statements at EOF */
+  if(is_end && turtle_parser->deferred) {
+    raptor_sequence* def = turtle_parser->deferred;
+    int i;
+    for(i = 0; i < raptor_sequence_size(def); i++) {
+      raptor_statement *t2 = (raptor_statement*)raptor_sequence_get_at(def, i);
+      raptor_turtle_handle_statement(rdf_parser, t2);
     }
-  } else {
-    /* this was the last chunk, finalise */
-    if(turtle_parser->deferred) {
-      raptor_sequence* def = turtle_parser->deferred;
-      int i;
-      for(i = 0; i < raptor_sequence_size(def); i++) {
-	raptor_statement *t2 = (raptor_statement*)raptor_sequence_get_at(def, i);
 
-	raptor_turtle_handle_statement(rdf_parser, t2);
-      }
-    }
     if(rdf_parser->emitted_default_graph) {
       /* for non-TRIG - end default graph after last triple */
       raptor_parser_end_graph(rdf_parser, NULL, 0);
       rdf_parser->emitted_default_graph--;
     }
-    if(turtle_parser->deferred) {
-      /* clear resources */
-      raptor_free_sequence(turtle_parser->deferred);
-      turtle_parser->deferred = NULL;
-    }
+
+    raptor_free_sequence(turtle_parser->deferred);
+    turtle_parser->deferred = NULL;
   }
-  return rc;
+
+  return (turtle_parser->error_count > 0) ? 1 : rc;
 }
 
 
+/**
+ * raptor_turtle_parse_start - Initialize Turtle/TriG parser for streaming
+ * @rdf_parser: Raptor parser
+ *
+ * Initializes FSP context and lexer for streaming parse.
+ *
+ * Return value: 0 on success, non-0 on failure
+ */
 static int
 raptor_turtle_parse_start(raptor_parser *rdf_parser) 
 {
-  raptor_locator *locator=&rdf_parser->locator;
+  raptor_locator *locator = &rdf_parser->locator;
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
   /* base URI required for Turtle */
@@ -1810,16 +1740,29 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
     return 1;
 
   locator->line = 1;
-  locator->column= -1; /* No column info */
-  locator->byte= -1; /* No bytes info */
+  locator->column = -1; /* No column info */
+  locator->byte = -1; /* No bytes info */
 
-  if(turtle_parser->buffer_length) {
-    RAPTOR_FREE(cdata, turtle_parser->buffer);
-    turtle_parser->buffer = NULL;
-    turtle_parser->buffer_length = 0;
-  }
-  
   turtle_parser->lineno = 1;
+
+  /* Initialize FSP context */
+  turtle_parser->fsp_ctx = fsp_create();
+  if(!turtle_parser->fsp_ctx)
+    return 1;
+
+  /* Set parser as user data so grammar actions can access it */
+  fsp_set_user_data(turtle_parser->fsp_ctx, rdf_parser);
+
+  /* Initialize lexer */
+  if(turtle_lexer_lex_init(&turtle_parser->scanner)) {
+    fsp_destroy(turtle_parser->fsp_ctx);
+    turtle_parser->fsp_ctx = NULL;
+    return 1;
+  }
+  turtle_parser->scanner_set = 1;
+
+  /* Set FSP context as lexer extra data for YY_INPUT */
+  turtle_lexer_set_extra(turtle_parser->fsp_ctx, turtle_parser->scanner);
 
   return 0;
 }
@@ -1866,7 +1809,7 @@ raptor_turtle_parse_recognise_syntax(raptor_parser_factory* factory,
 
 
 static raptor_uri*
-raptor_turtle_get_graph(raptor_parser* rdf_parser)
+raptor_turtle_get_graph(raptor_parser *rdf_parser)
 {
   raptor_turtle_parser *turtle_parser;
 
@@ -2127,14 +2070,12 @@ main(int argc, char *argv[])
   raptor_parser_set_statement_handler(&rdf_parser, stdout,
                                       turtle_parser_print_statement);
   raptor_turtle_parse_init(&rdf_parser, parser_name);
+  raptor_turtle_parse_start(&rdf_parser);
   
   turtle_parser.error_count = 0;
 
-#ifdef TURTLE_PUSH_PARSE
-  turtle_push_parse(&rdf_parser, string, strlen(string));
-#else
-  turtle_parse(&rdf_parser, string, strlen(string));
-#endif
+  /* Parse with streaming API */
+  raptor_turtle_parse_chunk(&rdf_parser, (unsigned char*)string, strlen(string), 1);
 
   raptor_turtle_parse_terminate(&rdf_parser);
   

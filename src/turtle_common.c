@@ -41,6 +41,11 @@
 #include "raptor2.h"
 #include "raptor_internal.h"
 
+#ifdef FSP_CONFIG
+#include <fsp_config.h>
+#endif
+#include <fsp.h>
+
 #include <turtle_parser.h>
 #define YY_NO_UNISTD_H 1
 #define YYSTYPE TURTLE_PARSER_STYPE

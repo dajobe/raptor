@@ -20,8 +20,6 @@
 # 
 
 EXTRA_DIST= \
-fix-bison.py \
-fix-flex.py \
 fix-groff-xhtml.py \
 fix-gtkdoc-header.py \
 process-changes.py \
