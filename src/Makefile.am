@@ -81,6 +81,12 @@ sort_r.c sort_r.h ssort.h
 if RAPTOR_XML_LIBXML
 libraptor2_la_SOURCES += raptor_libxml.c
 endif
+if RAPTOR_WWW_LIBCURL
+libraptor2_la_SOURCES += raptor_www_curl.c
+endif
+if RAPTOR_NFC_ICU
+libraptor2_la_SOURCES += raptor_nfc_icu.c
+endif
 if RAPTOR_PARSER_RDFXML
 libraptor2_la_SOURCES += raptor_rdfxml.c
 endif

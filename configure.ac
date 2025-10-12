@@ -1154,9 +1154,8 @@ if test $need_libcurl = 1; then
     fi
     PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES libcurl >= $libcurl_min_version"
   fi
-
-  AC_LIBOBJ(raptor_www_curl)
 fi
+AM_CONDITIONAL(RAPTOR_WWW_LIBCURL, test $need_libcurl = 1)
 
 
 dnl ICU for NFC check
@@ -1165,10 +1164,10 @@ nfc_library=none
 if test $need_icu = yes; then
   CPPFLAGS="$CPPFLAGS $ICU_CFLAGS"
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $ICU_LIBS"
-  AC_LIBOBJ(raptor_nfc_icu)
   nfc_library="ICU UC $ICU_UC_VERSION"
 fi
 AC_MSG_RESULT($nfc_library)
+AM_CONDITIONAL(RAPTOR_NFC_ICU, test $need_icu = yes)
 
 
 have_lininn=no
