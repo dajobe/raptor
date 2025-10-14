@@ -31,7 +31,8 @@ FIND_PACKAGE(CURL)
 FIND_PACKAGE(LibXml2)
 FIND_PACKAGE(LibXslt)
 #FIND_PACKAGE(YAJL)
-FIND_PACKAGE(Perl REQUIRED)
+#FIND_PACKAGE(Perl REQUIRED)
+FIND_PACKAGE(Python3 REQUIRED)
 FIND_PACKAGE(BISON 3.4 REQUIRED)
 FIND_PACKAGE(FLEX 2.5.19 REQUIRED)
 
@@ -310,7 +311,7 @@ Raptor Configuration Summary
     "
 )
 
-message( "  *** Perl                        ${PERL_EXECUTABLE}")
+message( "  *** Python                      ${Python3_EXECUTABLE}")
 message( "  *** Bison                       ${BISON_EXECUTABLE}")
 message( "  *** Flex                        ${FLEX_EXECUTABLE}")
 message( "  *** libxml2 (lib)               ${LIBXML2_LIBRARIES}")
