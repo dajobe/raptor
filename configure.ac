@@ -733,7 +733,7 @@ if test "X$libxml_source" != X; then
 		AC_DEFINE([RAPTOR_LIBXML_XMLSAXHANDLER_EXTERNALSUBSET], [1], [does libxml xmlSAXHandler have externalSubset field])],
 		[AC_MSG_RESULT(no)])
 
-    AC_CHECK_FUNCS(xmlSAX2InternalSubset xmlCtxtUseOptions)
+    AC_CHECK_FUNCS(xmlSAX2InternalSubset xmlCtxtUseOptions xmlCtxtSetOptions xmlCtxtGetOptions)
 
     AC_MSG_CHECKING(if libxml has parser option XML_PARSE_NONET)
     AC_LINK_IFELSE([AC_LANG_PROGRAM([[
@@ -743,6 +743,15 @@ if test "X$libxml_source" != X; then
 ]], [[xmlParserOption foo; foo = XML_PARSE_NONET]])],
                 [AC_MSG_RESULT(yes)
 		AC_DEFINE([RAPTOR_LIBXML_XML_PARSE_NONET], [1], [does libxml have XML_PARSE_NONET])],
+		[AC_MSG_RESULT(no)])
+    AC_MSG_CHECKING(if libxml has parser option XML_COMPLETE_ATTRS)
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#ifdef HAVE_LIBXML_PARSER_H
+#include <libxml/parser.h>
+#endif
+]], [[xmlParserOption foo; foo = XML_COMPLETE_ATTRS]])],
+                [AC_MSG_RESULT(yes)
+		AC_DEFINE([RAPTOR_LIBXML_XML_COMPLETE_ATTRS], [1], [does libxml have XML_COMPLETE_ATTRS])],
 		[AC_MSG_RESULT(no)])
     AC_CHECK_HEADERS(libxml/HTMLparser.h)
     AC_MSG_CHECKING(if libxml has parser option HTML_PARSE_NONET)

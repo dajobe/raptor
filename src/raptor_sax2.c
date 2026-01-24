@@ -512,16 +512,26 @@ raptor_sax2_parse_chunk(raptor_sax2* sax2, const unsigned char *buffer,
     if(RAPTOR_OPTIONS_GET_NUMERIC(sax2, RAPTOR_OPTION_NO_NET))
       libxml_options |= XML_PARSE_NONET;
 #endif
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+    /* ENABLE replacing entities despite name */
+    libxml_options |= XML_PARSE_NOENT;
+#endif
+
+#ifdef HAVE_XMLCTXTSETOPTIONS
+    xmlCtxtSetOptions(xc, libxml_options);
+#else
 #ifdef HAVE_XMLCTXTUSEOPTIONS
     xmlCtxtUseOptions(xc, libxml_options);
 #endif
-    
+#endif
+
     xc->userData = sax2; /* user data */
     xc->vctxt.userData = sax2; /* user data */
     xc->vctxt.error = (xmlValidityErrorFunc)raptor_libxml_validation_error;
     xc->vctxt.warning = (xmlValidityWarningFunc)raptor_libxml_validation_warning;
+#if !defined(HAVE_XMLCTXTSETOPTIONS) && !defined(HAVE_XMLCTXTUSEOPTIONS)
     xc->replaceEntities = 1;
-    
+#endif
     sax2->xc = xc;
 
     if(is_end)

@@ -240,7 +240,19 @@ raptor_libxml_getEntity(void* user_data, const xmlChar *name)
     if(!val) {
       xmlAddChildList((xmlNodePtr)ret, children);
     } else {
+      /* Disable DTD validation */
+      int options = 0;
+#ifdef HAVE_XMLCTXTGETOPTIONS
+      options = xmlCtxtGetOptions(xc);
+#else
+      options = xc->options;
+#endif
+      options = options & ~XML_PARSE_DTDVALID;
+#ifdef HAVE_XMLCTXTSETOPTIONS
+      xmlCtxtSetOptions(xc, options);
+#else
       xc->validate = 0;
+#endif
       return NULL;
     }
     

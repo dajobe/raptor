@@ -884,12 +884,32 @@ raptor_grddl_uri_xml_parse_bytes(raptor_www* www,
       if(RAPTOR_OPTIONS_GET_NUMERIC(xpbc->rdf_parser, RAPTOR_OPTION_NO_NET))
         libxml_options |= XML_PARSE_NONET;
 #endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+      /* Load external subset and process default attributes. */
+      libxml_options |= XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS;
+#endif
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+      /* Replace xc->replaceEntities with option XML_PARSE_NOENT */
+      libxml_options |= XML_PARSE_NOENT;
+#endif
+#ifdef HAVE_XMLCTXTSETOPTIONS
+      xmlCtxtSetOptions(xc, libxml_options);
+#else
 #ifdef HAVE_XMLCTXTUSEOPTIONS
       xmlCtxtUseOptions(xc, libxml_options);
 #endif
+#endif
 
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+      /* Replaced xc->replaceEntities with option XML_PARSE_NOENT */
+#else
       xc->replaceEntities = 1;
+#endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+      /* Replaced xc->loadsubset with options XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS */
+#else
       xc->loadsubset = 1;
+#endif
     }
     xpbc->xc = xc;
   } else
@@ -1461,16 +1481,35 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
       if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET))
         libxml_options |= XML_PARSE_NONET;
 #endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+      /* Load external subset and process default attributes. */
+      libxml_options |= XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS;
+#endif
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+      /* Replace grddl_parser->xml_ctxt->replaceEntities with option XML_PARSE_NOENT */
+      libxml_options |= XML_PARSE_NOENT;
+#endif
+#ifdef HAVE_XMLCTXTSETOPTIONS
+      xmlCtxtSetOptions(grddl_parser->xml_ctxt, libxml_options);
+#else
 #ifdef HAVE_XMLCTXTUSEOPTIONS
       xmlCtxtUseOptions(grddl_parser->xml_ctxt, libxml_options);
 #endif
-
+#endif
 
       grddl_parser->xml_ctxt->vctxt.warning = raptor_grddl_libxml_discard_error;
       grddl_parser->xml_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
-    
+
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+      /* Replaced grddl_parser->xml_ctxt->replaceEntities with option XML_PARSE_NOENT */
+#else
       grddl_parser->xml_ctxt->replaceEntities = 1;
+#endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+      /* Replaced grddl_parser->xml_ctxt->loadsubset with options XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS */
+#else
       grddl_parser->xml_ctxt->loadsubset = 1;
+#endif
     } else { /* loop is 1 */
   
       /* try to create an HTML parser context */
@@ -1496,8 +1535,16 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         }
   
         /* HTML parser */
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+        /* Replaced grddl_parser->html_ctxt->replaceEntities with option XML_PARSE_NOENT via htmlCtxtUseOptions below */
+#else
         grddl_parser->html_ctxt->replaceEntities = 1;
+#endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+        /* Replaced grddl_parser->html_ctxt->loadsubset with options XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS via htmlCtxtUseOptions below */
+#else
         grddl_parser->html_ctxt->loadsubset = 1;
+#endif
     
         grddl_parser->html_ctxt->vctxt.error = raptor_grddl_libxml_discard_error;
     
@@ -1510,6 +1557,14 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 #ifdef RAPTOR_LIBXML_HTML_PARSE_NONET
         if(RAPTOR_OPTIONS_GET_NUMERIC(rdf_parser, RAPTOR_OPTION_NO_NET))
           options |= HTML_PARSE_NONET;
+#endif
+#ifdef RAPTOR_LIBXML_XML_COMPLETE_ATTRS
+        /* Load external subset and process default attributes. */
+        options |= XML_PARSE_DTDLOAD | XML_COMPLETE_ATTRS;
+#endif
+#if defined(HAVE_XMLCTXTSETOPTIONS) || defined(HAVE_XMLCTXTUSEOPTIONS)
+        /* Replace grddl_parser->html_ctxt->replaceEntities with option XML_PARSE_NOENT */
+        options |= XML_PARSE_NOENT;
 #endif
 
         htmlCtxtUseOptions(grddl_parser->html_ctxt, options);
