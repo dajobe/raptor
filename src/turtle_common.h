@@ -39,12 +39,6 @@ RAPTOR_INTERNAL_API size_t raptor_turtle_expand_qname_escapes(unsigned char *nam
 extern void turtle_token_free(raptor_world* world, int token, TURTLE_PARSER_STYPE *lval);
 
 
-/* Forward declaration */
-typedef struct fsp_context_s fsp_context;
-
-/* Forward declaration for Bison push parser state */
-typedef struct turtle_parser_pstate turtle_parser_pstate;
-
 /*
  * Turtle parser object
  */
