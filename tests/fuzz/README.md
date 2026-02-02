@@ -4,11 +4,14 @@ This directory contains libFuzzer-style harnesses for Raptor parsers.
 
 ## Harnesses
 
-| Target          | Parser    | Seed corpus                |
-|-----------------|-----------|----------------------------|
-| `fuzz_turtle`   | Turtle    | `tests/turtle/*.ttl`       |
-| `fuzz_ntriples` | N-Triples | `tests/ntriples*/*.nt`     |
-| `fuzz_rdfxml`   | RDF/XML   | `tests/rdfxml/*.rdf`, `tests/feeds/*.rdf`, `tests/grddl/*.rdf` |
+| Target          | Parser    |
+|-----------------|-----------|
+| `fuzz_turtle`   | Turtle    |
+| `fuzz_ntriples` | N-Triples |
+| `fuzz_rdfxml`   | RDF/XML   |
+
+Seed corpora and corpus directories per target are configured in
+`Makefile.am` (see the `fuzz-<name>` make targets).
 
 All targets are compiled from a single generic harness
 (`fuzz_parser.c`) with `-DFUZZ_PARSER_NAME=\"<name>\"`.  To add a
@@ -92,6 +95,31 @@ install_name_tool -id @rpath/libraptor2.0.dylib src/.libs/libraptor2.0.dylib
 install_name_tool -change /usr/local/lib/libraptor2.0.dylib \
   @rpath/libraptor2.0.dylib tests/fuzz/.libs/fuzz_turtle
 ```
+
+## Corpus directories
+
+libFuzzer writes discovered inputs to `tests/fuzz/corpus/<parser>/`.
+These directories are gitignored and grow across runs.  Keeping them
+between sessions gives better coverage on subsequent runs since the
+fuzzer starts from previously discovered inputs rather than just the
+seed files.
+
+To reclaim disk space:
+
+```sh
+rm -rf tests/fuzz/corpus/*/
+```
+
+## Adding a new parser
+
+1. Find the raptor parser name string (e.g. `"rdfxml"`) from the
+   parser registration in `src/`.
+2. Add build targets in `Makefile.am` and `CMakeLists.txt` using
+   the existing entries as a template.
+3. Add a `fuzz-<name>` make target pointing at the seed corpus
+   directories.
+4. Add the binary name to `.gitignore`.
+5. Update the harnesses table above.
 
 ## Useful libFuzzer flags
 
