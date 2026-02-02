@@ -4,12 +4,17 @@ This directory contains libFuzzer-style harnesses for Raptor parsers.
 
 ## Harnesses
 
-| Target        | Parser | Seed corpus          |
-|---------------|--------|----------------------|
-| `fuzz_turtle` | Turtle | `tests/turtle/*.ttl` |
+| Target          | Parser    | Seed corpus                |
+|-----------------|-----------|----------------------------|
+| `fuzz_turtle`   | Turtle    | `tests/turtle/*.ttl`       |
+| `fuzz_ntriples` | N-Triples | `tests/ntriples*/*.nt`     |
 
-Future harnesses can be added for other parsers (N-Triples, RDF/XML,
-RDFa, JSON, RSS Tag Soup) following the same pattern.
+All targets are compiled from a single generic harness
+(`fuzz_parser.c`) with `-DFUZZ_PARSER_NAME=\"<name>\"`.  To add a
+new parser, add a build target with the appropriate define and a
+seed corpus — no new source file is needed.
+
+Future targets: RDF/XML, RDFa, JSON, RSS Tag Soup.
 
 ## Requirements
 

@@ -1,6 +1,16 @@
+/* fuzz_parser.c - generic libFuzzer harness for Raptor parsers
+ *
+ * Compile with -DFUZZ_PARSER_NAME=\"turtle\" (or ntriples, rdfxml, etc.)
+ * to produce a parser-specific fuzz target.
+ */
+
 #include <raptor2.h>
 #include <stdint.h>
 #include <stddef.h>
+
+#ifndef FUZZ_PARSER_NAME
+#error "Define FUZZ_PARSER_NAME to the raptor parser name (e.g. \"turtle\")"
+#endif
 
 static raptor_world *world = NULL;
 static raptor_uri *base_uri = NULL;
@@ -47,7 +57,7 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
   raptor_parser *parser = NULL;
 
-  parser = raptor_new_parser(world, "turtle");
+  parser = raptor_new_parser(world, FUZZ_PARSER_NAME);
   if(!parser)
     return 0;
 

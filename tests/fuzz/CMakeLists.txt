@@ -9,12 +9,23 @@ IF(NOT RAPTOR_FUZZER_FLAGS)
   RETURN()
 ENDIF()
 
-ADD_EXECUTABLE(fuzz_turtle fuzz_turtle.c)
-TARGET_INCLUDE_DIRECTORIES(fuzz_turtle PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
-TARGET_LINK_LIBRARIES(fuzz_turtle raptor2)
-TARGET_COMPILE_DEFINITIONS(fuzz_turtle PRIVATE RAPTOR_USE_LIBFUZZER=1)
-SET_TARGET_PROPERTIES(fuzz_turtle PROPERTIES
-  COMPILE_FLAGS "${RAPTOR_FUZZER_FLAGS}"
-  LINK_FLAGS "${RAPTOR_FUZZER_FLAGS}"
-  BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
-)
+# add_fuzz_target(name parser_name)
+# Creates a fuzz target binary from the generic fuzz_parser.c harness
+# compiled with FUZZ_PARSER_NAME set to the given parser name.
+FUNCTION(ADD_FUZZ_TARGET name parser_name)
+  ADD_EXECUTABLE(${name} fuzz_parser.c)
+  TARGET_INCLUDE_DIRECTORIES(${name} PRIVATE ${CMAKE_SOURCE_DIR}/src ${CMAKE_BINARY_DIR}/src)
+  TARGET_LINK_LIBRARIES(${name} raptor2)
+  TARGET_COMPILE_DEFINITIONS(${name} PRIVATE
+    RAPTOR_USE_LIBFUZZER=1
+    FUZZ_PARSER_NAME="${parser_name}"
+  )
+  SET_TARGET_PROPERTIES(${name} PROPERTIES
+    COMPILE_FLAGS "${RAPTOR_FUZZER_FLAGS}"
+    LINK_FLAGS "${RAPTOR_FUZZER_FLAGS}"
+    BUILD_RPATH "${CMAKE_BINARY_DIR}/src"
+  )
+ENDFUNCTION()
+
+ADD_FUZZ_TARGET(fuzz_turtle turtle)
+ADD_FUZZ_TARGET(fuzz_ntriples ntriples)

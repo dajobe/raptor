@@ -7,4 +7,5 @@
 artifacts/
 corpus/
 fuzz-*.log
+fuzz_ntriples
 fuzz_turtle
