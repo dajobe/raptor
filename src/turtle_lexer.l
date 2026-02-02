@@ -622,12 +622,16 @@ static void turtle_lexer_error(yyscan_t yyscanner,
                                yyconst char *message, ...)
 {
   raptor_parser *rdf_parser = NULL;
+  fsp_context *fsp_ctx = NULL;
   va_list arguments;
 
   va_start(arguments, message);
 
   if(yyscanner)
-    rdf_parser = (raptor_parser*)turtle_lexer_get_extra(yyscanner);
+    fsp_ctx = (fsp_context*)turtle_lexer_get_extra(yyscanner);
+
+  if(fsp_ctx)
+    rdf_parser = (raptor_parser*)fsp_get_user_data(fsp_ctx);
 
   /* This handles NULL rdf_parser properly */
   raptor_parser_log_error_varargs(rdf_parser, level, message, arguments);
