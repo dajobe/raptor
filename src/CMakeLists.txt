@@ -25,6 +25,13 @@ ENDIF(RAPTOR_PARSER_NTRIPLES OR RAPTOR_PARSER_NQUADS)
 
 # Turtle parser enabled
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
+  ADD_DEFINITIONS(-DFSP_CONFIG)
+  INCLUDE_DIRECTORIES(BEFORE
+    ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+  )
+
   SET(raptor_parser_turtle_trig_sources
 #     turtle_common.h
     ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
@@ -32,6 +39,8 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
     ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
 #     turtle_parser.h
   )
+
+  SET(raptor_fsp_sources ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/fsp.c)
 
   # Generate the turtle parser
   ADD_CUSTOM_TARGET(turtle_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c)
@@ -41,21 +50,39 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
   ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
     DEPENDS turtle_tables_tgt)
 
   # Generate the turtle lexer
-  ADD_CUSTOM_TARGET(turtle_flex_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
-    COMMAND ${FLEX_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l)
+  ADD_CUSTOM_TARGET(turtle_flex_tgt DEPENDS
+    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+  )
+  ADD_CUSTOM_COMMAND(
+    OUTPUT
+      ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+      ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+    COMMAND ${FLEX_EXECUTABLE}
+      -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+      ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+  )
 
   ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t > ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-flex.pl ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h > ${CMAKE_CURRENT_BINARY_DIR}/t
-    COMMAND ${CMAKE_COMMAND} -E rename ${CMAKE_CURRENT_BINARY_DIR}/t ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-    DEPENDS turtle_flex_tgt)
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+            -c raptor_config.h -g HAVE_CONFIG_H
+            -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+            -c raptor_config.h -g HAVE_CONFIG_H
+            -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
+            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+    COMMAND ${CMAKE_COMMAND} -E rename
+            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
+            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+    DEPENDS turtle_flex_tgt
+    VERBATIM)
 ENDIF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
 # RSS feed parser enabled
@@ -169,7 +196,7 @@ IF(RAPTOR_PARSEDATE)
 
   ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
-    COMMAND ${PERL_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/fix-bison.pl ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
     DEPENDS parsedate_tables_tgt)
 ENDIF(RAPTOR_PARSEDATE)
 
@@ -211,6 +238,7 @@ ADD_LIBRARY(raptor2 ${LIB_TYPE}
 	snprintf.c
 	sort_r.c
 	turtle_common.c
+	${raptor_fsp_sources}
 	${raptor_parser_rdfxml_sources}
 	${raptor_parser_ntriples_nquads_sources}
 	${raptor_parser_turtle_trig_sources}

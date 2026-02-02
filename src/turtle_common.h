@@ -29,6 +29,12 @@
 extern "C" {
 #endif
 
+/* Ensure yyscan_t is available regardless of include order */
+#ifndef YY_TYPEDEF_YY_SCANNER_T
+#define YY_TYPEDEF_YY_SCANNER_T
+typedef void* yyscan_t;
+#endif
+
 
 /* turtle_parser.y */
 RAPTOR_INTERNAL_API int turtle_syntax_error(raptor_parser *rdf_parser, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
