@@ -1315,6 +1315,39 @@ if test "$debug_messages" = "yes"; then
   AC_DEFINE([RAPTOR_DEBUG], [1], [Define to 1 if debug messages are enabled.])
 fi
 
+AC_ARG_ENABLE(fuzzing, [  --enable-fuzzing        Build fuzzing targets (default no).  ], enable_fuzzing=$enableval, enable_fuzzing=no)
+AC_ARG_VAR([FUZZ_CFLAGS], [CFLAGS for fuzz targets (e.g. -fsanitize=fuzzer,address,undefined)])
+AC_ARG_VAR([FUZZ_LDFLAGS], [LDFLAGS for fuzz targets (e.g. -fsanitize=fuzzer,address,undefined)])
+
+have_fuzzer_link=no
+if test "x$enable_fuzzing" = "xyes"; then
+  if test "x$FUZZ_CFLAGS$FUZZ_LDFLAGS" = "x"; then
+    AC_MSG_WARN([--enable-fuzzing set but FUZZ_CFLAGS/FUZZ_LDFLAGS are empty; fuzz targets will be skipped])
+  else
+    save_CFLAGS="$CFLAGS"
+    save_LDFLAGS="$LDFLAGS"
+    CFLAGS="$CFLAGS $FUZZ_CFLAGS"
+    LDFLAGS="$LDFLAGS $FUZZ_LDFLAGS"
+    AC_MSG_CHECKING([whether fuzzer flags link])
+    AC_LINK_IFELSE(
+      [AC_LANG_PROGRAM([[#include <stdint.h>
+#include <stddef.h>
+int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) { (void)data; (void)size; return 0; }
+]], [[return 0;]])],
+      [have_fuzzer_link=yes],
+      [have_fuzzer_link=no]
+    )
+    AC_MSG_RESULT([$have_fuzzer_link])
+    CFLAGS="$save_CFLAGS"
+    LDFLAGS="$save_LDFLAGS"
+    if test "x$have_fuzzer_link" != "xyes"; then
+      AC_MSG_WARN([FUZZ_CFLAGS/FUZZ_LDFLAGS do not link; fuzz targets will be skipped])
+    fi
+  fi
+fi
+
+AM_CONDITIONAL([ENABLE_FUZZING], [test "x$enable_fuzzing" = "xyes" -a "x$have_fuzzer_link" = "xyes"])
+
 
 
 AC_SUBST(RAPTOR_LDFLAGS)
@@ -1357,6 +1390,7 @@ scripts/Makefile
 src/raptor2.h
 src/Makefile
 tests/Makefile
+tests/fuzz/Makefile
 tests/feeds/Makefile
 tests/grddl/Makefile
 tests/ntriples/Makefile

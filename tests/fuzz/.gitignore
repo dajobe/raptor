@@ -1,0 +1,9 @@
+*.la
+*.lo
+*.log
+*.o
+.deps
+.libs
+artifacts
+fuzz-*.log
+fuzz_turtle

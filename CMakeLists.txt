@@ -23,6 +23,9 @@ INCLUDE( GNUInstallDirs )
 
 SET(CMAKE_INCLUDE_CURRENT_DIR 1)
 
+OPTION(RAPTOR_ENABLE_FUZZING "Build fuzzing targets" OFF)
+SET(RAPTOR_FUZZER_FLAGS "" CACHE STRING "Fuzzer compile/link flags")
+
 ################################################################
 
 # Third-party libraries/dependencies
@@ -431,6 +434,9 @@ SUBDIRS(tests/rdfa)
 SUBDIRS(tests/rdfa11)
 SUBDIRS(tests/rdfxml)
 SUBDIRS(tests/trig)
+IF(RAPTOR_ENABLE_FUZZING)
+  SUBDIRS(tests/fuzz)
+ENDIF()
 #SUBDIRS(tests/turtle)	# TODO
 
 # end raptor/CMakeLists.txt

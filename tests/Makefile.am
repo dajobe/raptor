@@ -39,6 +39,10 @@ BASE_URI=http://librdf.org/raptor/tests/
 
 SUBDIRS = rdfxml ntriples ntriples-2013 nquads-2013 turtle mkr turtle-2013 trig grddl rdfa rdfa11 json feeds bugs
 
+if ENABLE_FUZZING
+SUBDIRS += fuzz
+endif
+
 
 $(top_builddir)/src/libraptor2.la:
 	cd $(top_builddir)/src && $(MAKE) $(AM_MAKEFLAGS) libraptor2.la
