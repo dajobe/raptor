@@ -29,3 +29,4 @@ ENDFUNCTION()
 
 ADD_FUZZ_TARGET(fuzz_turtle turtle)
 ADD_FUZZ_TARGET(fuzz_ntriples ntriples)
+ADD_FUZZ_TARGET(fuzz_rdfxml rdfxml)
