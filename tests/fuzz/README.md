@@ -37,7 +37,7 @@ Run
 ---
 
 ```sh
-mkdir -p tests/fuzz/artifacts
+mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle
 ./tests/fuzz/fuzz_turtle \
   -max_total_time=300 \
   -timeout=10 \
@@ -46,7 +46,23 @@ mkdir -p tests/fuzz/artifacts
   -use_value_profile=1 \
   -print_final_stats=1 \
   -artifact_prefix=tests/fuzz/artifacts/ \
+  tests/fuzz/corpus/turtle \
   tests/turtle
+```
+
+Run tips
+--------
+
+- LibFuzzer writes new corpus entries to the first corpus directory listed.
+  Keep `tests/fuzz/corpus/turtle` first so new inputs do not pollute `tests/turtle`.
+- Reproduce a single crash: `./tests/fuzz/fuzz_turtle tests/fuzz/artifacts/crash-*`
+- Stop on first ASan report: `ASAN_OPTIONS=halt_on_error=1:print_stacktrace=1`
+- macOS multi-worker note: if you see `dyld: Library not loaded: /usr/local/lib/libraptor2.0.dylib`,
+  refresh the install name to use the build tree rpath:
+
+```sh
+install_name_tool -id @rpath/libraptor2.0.dylib src/.libs/libraptor2.0.dylib
+install_name_tool -change /usr/local/lib/libraptor2.0.dylib @rpath/libraptor2.0.dylib tests/fuzz/.libs/fuzz_turtle
 ```
 
 Useful flags

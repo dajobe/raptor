@@ -2,8 +2,9 @@
 *.lo
 *.log
 *.o
-.deps
-.libs
-artifacts
+.deps/
+.libs/
+artifacts/
+corpus/
 fuzz-*.log
 fuzz_turtle
