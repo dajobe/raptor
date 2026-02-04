@@ -7,7 +7,7 @@ if ENABLE_FUZZING
 
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src -DRAPTOR_USE_LIBFUZZER=1
 AM_CFLAGS = $(MEM) $(FUZZ_CFLAGS)
-AM_LDFLAGS = $(FUZZ_LDFLAGS) -Wl,-rpath,$(abs_top_builddir)/src/.libs
+AM_LDFLAGS = -static $(FUZZ_LDFLAGS)
 
 FUZZ_LDADD = $(top_builddir)/src/libraptor2.la $(MEM_LIBS)
 

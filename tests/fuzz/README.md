@@ -147,19 +147,10 @@ mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle
   `./tests/fuzz/fuzz_turtle tests/fuzz/artifacts/crash-*`
 - Stop on first ASan report:
   `ASAN_OPTIONS=halt_on_error=1:print_stacktrace=1`
-- macOS note: if you see
-  `dyld: Library not loaded: /usr/local/lib/libraptor2.0.dylib`,
-  refresh the install name to use the build tree rpath for all fuzzers:
-
-```sh
-install_name_tool -id @rpath/libraptor2.0.dylib src/.libs/libraptor2.0.dylib
-install_name_tool -change /usr/local/lib/libraptor2.0.dylib \
-  @rpath/libraptor2.0.dylib tests/fuzz/.libs/fuzz_turtle
-install_name_tool -change /usr/local/lib/libraptor2.0.dylib \
-  @rpath/libraptor2.0.dylib tests/fuzz/.libs/fuzz_ntriples
-install_name_tool -change /usr/local/lib/libraptor2.0.dylib \
-  @rpath/libraptor2.0.dylib tests/fuzz/.libs/fuzz_rdfxml
-```
+- Fuzz targets are statically linked against libraptor2 (via libtool
+  `-static`) to avoid macOS `dyld: Library not loaded` errors that
+  occur when libtool sets the dylib install name to an absolute
+  install path.
 
 ## Corpus directories
 
