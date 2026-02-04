@@ -193,7 +193,7 @@ raptor_www_curl_init(raptor_www *www)
   curl_init_setopt_or_fail(www->curl_handle, CURLOPT_WRITEHEADER, www);
 
   /* Make it follow Location: headers */
-  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   curl_init_setopt_or_fail(www->curl_handle, CURLOPT_VERBOSE, (void*)1);
@@ -204,8 +204,8 @@ raptor_www_curl_init(raptor_www *www)
 
   /* Connection timeout in seconds */
   curl_init_setopt_or_fail(www->curl_handle, CURLOPT_CONNECTTIMEOUT,
-                           www->connection_timeout);
-  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_NOSIGNAL, 1);
+                           (long)www->connection_timeout);
+  curl_init_setopt_or_fail(www->curl_handle, CURLOPT_NOSIGNAL, 1L);
 
   return 0;
 }
@@ -353,7 +353,7 @@ raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
 
   if(verify_peer)
     verify_peer = 1;
-  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, verify_peer);
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYPEER, (long)verify_peer);
   if(res != CURLE_OK) {
     www->failed = 1;
     raptor_www_error(www, "Setting request SSL verify peer flag %d failed",
@@ -373,7 +373,7 @@ raptor_www_curl_set_ssl_verify_options(raptor_www* www, int verify_peer,
    */
   if(verify_host)
     verify_host = 2;
-  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, verify_host);
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_SSL_VERIFYHOST, (long)verify_host);
   if(res != CURLE_OK) {
     www->failed = 1;
     raptor_www_error(www, "Setting request SSL verify host flag %d failed",
