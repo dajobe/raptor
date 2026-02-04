@@ -22,14 +22,57 @@ Future targets: RDFa, JSON, RSS Tag Soup.
 
 ## Requirements
 
-- Clang with libFuzzer and sanitizers (ASan/UBSan).
-- macOS: use Homebrew LLVM clang (Apple CLT/Xcode clang does not
-  ship libFuzzer).
-- Linux: use a full LLVM toolchain (not a stripped distro clang).
+- Clang with libFuzzer (compiler-rt) and sanitizers (ASan/UBSan).
+
+### Linux
+
+Install clang and the compiler-rt fuzzer runtime.  Most
+distributions ship these in their LLVM packages:
+
+- **Debian/Ubuntu**: `apt install clang libfuzzer-<VERSION>-dev`
+  (e.g. `libfuzzer-17-dev`)
+- **Fedora**: `dnf install clang compiler-rt`
+- **Gentoo**: `emerge sys-devel/clang` (ensure the `compiler-rt`
+  package is also installed)
+
+Verify that libFuzzer links:
+
+```sh
+echo '#include <stdint.h>
+#include <stddef.h>
+int LLVMFuzzerTestOneInput(const uint8_t *d, size_t s) { return 0; }
+' > /tmp/ftest.c && clang -fsanitize=fuzzer -o /tmp/ftest /tmp/ftest.c \
+  && echo OK || echo FAILED
+```
+
+### macOS
+
+Apple Xcode/CLT clang does not ship libFuzzer.  Install LLVM via
+Homebrew and use its clang:
+
+```sh
+brew install llvm
+export CC=/opt/homebrew/opt/llvm/bin/clang
+```
 
 ## Build (Autotools)
 
 Fuzz targets build only when the fuzzer flags **link successfully**.
+
+### Linux
+
+```sh
+./configure --enable-fuzzing \
+  CC=clang \
+  FUZZ_CFLAGS="-fsanitize=fuzzer,address,undefined \
+    -fno-omit-frame-pointer -O1 -g" \
+  FUZZ_LDFLAGS="-fsanitize=fuzzer,address,undefined"
+make -C tests/fuzz
+```
+
+### macOS (Homebrew LLVM)
+
+macOS needs the Homebrew LLVM clang and explicit C++ runtime linking:
 
 ```sh
 ./configure --enable-fuzzing \
@@ -45,8 +88,22 @@ make -C tests/fuzz
 
 ## Build (CMake)
 
+### Linux
+
 ```sh
 cmake -S . -B build-fuzz \
+  -DCMAKE_C_COMPILER=clang \
+  -DRAPTOR_ENABLE_FUZZING=ON \
+  -DRAPTOR_FUZZER_FLAGS="-fsanitize=fuzzer,address,undefined \
+    -fno-omit-frame-pointer -O1 -g"
+cmake --build build-fuzz
+```
+
+### macOS (Homebrew LLVM)
+
+```sh
+cmake -S . -B build-fuzz \
+  -DCMAKE_C_COMPILER=/opt/homebrew/opt/llvm/bin/clang \
   -DRAPTOR_ENABLE_FUZZING=ON \
   -DRAPTOR_FUZZER_FLAGS="-fsanitize=fuzzer,address,undefined \
     -fno-omit-frame-pointer -O1 -g"
