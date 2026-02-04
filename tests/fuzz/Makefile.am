@@ -38,6 +38,7 @@ fuzz-turtle: fuzz_turtle
 	  -rss_limit_mb=4096 \
 	  -use_value_profile=1 \
 	  -print_final_stats=1 \
+	  -dict=$(abs_top_srcdir)/tests/fuzz/dict/turtle.dict \
 	  -artifact_prefix=$(abs_top_builddir)/tests/fuzz/artifacts/ \
 	  $(abs_top_builddir)/tests/fuzz/corpus/turtle \
 	  $(abs_top_srcdir)/tests/turtle
@@ -53,6 +54,7 @@ fuzz-ntriples: fuzz_ntriples
 	  -rss_limit_mb=4096 \
 	  -use_value_profile=1 \
 	  -print_final_stats=1 \
+	  -dict=$(abs_top_srcdir)/tests/fuzz/dict/ntriples.dict \
 	  -artifact_prefix=$(abs_top_builddir)/tests/fuzz/artifacts/ \
 	  $(abs_top_builddir)/tests/fuzz/corpus/ntriples \
 	  $(abs_top_srcdir)/tests/ntriples \
@@ -69,6 +71,7 @@ fuzz-rdfxml: fuzz_rdfxml
 	  -rss_limit_mb=4096 \
 	  -use_value_profile=1 \
 	  -print_final_stats=1 \
+	  -dict=$(abs_top_srcdir)/tests/fuzz/dict/rdfxml.dict \
 	  -artifact_prefix=$(abs_top_builddir)/tests/fuzz/artifacts/ \
 	  $(abs_top_builddir)/tests/fuzz/corpus/rdfxml \
 	  $(abs_top_srcdir)/tests/rdfxml \

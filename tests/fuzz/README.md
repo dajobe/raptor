@@ -118,6 +118,9 @@ Use the make target (Autotools):
 make -C tests/fuzz fuzz-turtle
 ```
 
+The `fuzz-ntriples` and `fuzz-rdfxml` targets also use dictionaries by
+default (see `tests/fuzz/dict/*.dict`).
+
 Or run directly:
 
 ```sh
@@ -129,6 +132,7 @@ mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle
   -rss_limit_mb=4096 \
   -use_value_profile=1 \
   -print_final_stats=1 \
+  -dict=tests/fuzz/dict/turtle.dict \
   -artifact_prefix=tests/fuzz/artifacts/ \
   tests/fuzz/corpus/turtle \
   tests/turtle
@@ -165,6 +169,15 @@ To reclaim disk space:
 
 ```sh
 rm -rf tests/fuzz/corpus/*/
+```
+
+## Dictionary generation
+
+Regenerate dictionary files from the corpora and built-in token lists:
+
+```sh
+python3 scripts/generate_fuzz_dicts.py
+black scripts/generate_fuzz_dicts.py
 ```
 
 ## Adding a new parser
