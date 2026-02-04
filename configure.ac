@@ -1329,11 +1329,14 @@ if test "x$enable_fuzzing" = "xyes"; then
     CFLAGS="$CFLAGS $FUZZ_CFLAGS"
     LDFLAGS="$LDFLAGS $FUZZ_LDFLAGS"
     AC_MSG_CHECKING([whether fuzzer flags link])
+    dnl Use AC_LANG_SOURCE (not AC_LANG_PROGRAM) to avoid generating
+    dnl main(); -fsanitize=fuzzer provides its own main() that calls
+    dnl LLVMFuzzerTestOneInput.
     AC_LINK_IFELSE(
-      [AC_LANG_PROGRAM([[#include <stdint.h>
+      [AC_LANG_SOURCE([[#include <stdint.h>
 #include <stddef.h>
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) { (void)data; (void)size; return 0; }
-]], [[return 0;]])],
+]])],
       [have_fuzzer_link=yes],
       [have_fuzzer_link=no]
     )
