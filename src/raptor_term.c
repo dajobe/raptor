@@ -168,7 +168,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
                                      size_t literal_len,
                                      raptor_uri* datatype,
                                      const unsigned char* language,
-                                     unsigned char language_len)
+                                     size_t language_len)
 {
   raptor_term *t;
   unsigned char* new_literal = NULL;
@@ -209,10 +209,16 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     }
 
     l = new_language;
-    while((c = *language++)) {
-      if(c == '_')
-        c = '-';
-      *l++ = c;
+    {
+      size_t i;
+      for(i = 0; i < language_len; i++) {
+        c = *language++;
+        if(!c)
+          break;
+        if(c == '_')
+          c = '-';
+        *l++ = c;
+      }
     }
     *l = '\0';
   } else
@@ -283,7 +289,7 @@ raptor_new_term_from_literal(raptor_world* world,
 
   return raptor_new_term_from_counted_literal(world, literal, literal_len,
                                               datatype, language,
-                                              RAPTOR_BAD_CAST(unsigned char, language_len));
+                                              language_len);
 }
 
 
