@@ -591,3 +591,4 @@
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_WWW_SSL_VERIFY_HOST	-	-
 2.0.6	enum	-	-	2.0.7	enum	RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES	-	-
 2.0.15	enum	-	-	2.0.16	enum	raptor_rdf_schema_namespace_uri_len	-	-
+2.0.16	enum	RAPTOR_NORETURN	-	2.0.17	enum	-	-	Unused public macro removed.
