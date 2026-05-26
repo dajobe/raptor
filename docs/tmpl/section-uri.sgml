@@ -272,11 +272,13 @@ current access to internals of URIs such as URI scheme, path, authority.
 
 <!-- ##### FUNCTION raptor_uri_uri_string_is_file_uri ##### -->
 <para>
-
+Check if a URI string is a file: URI (case-insensitive <literal>file:</literal>
+prefix).  If <parameter>uri_string</parameter> is NULL or empty, returns 0.
+Older releases incorrectly returned non-zero for those inputs.
 </para>
 
-@uri_string: 
-@Returns: 
+@uri_string: URI string to check
+@Returns: non-zero if a file: URI, else 0
 
 
 <!-- ##### FUNCTION raptor_uri_uri_string_to_filename ##### -->
