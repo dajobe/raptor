@@ -724,6 +724,17 @@ unsigned char* raptor_world_internal_generate_id(raptor_world *world, unsigned c
 void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
+/* RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b): non-zero if (size_t)a + (size_t)b
+ * would overflow.  WARNING: a and b are each evaluated twice; pass only
+ * simple lvalues or constants, never an expression with side effects.
+ * Both a and b must be size_t (or implicitly convertible without sign
+ * issues); negative values are NOT detected. */
+#ifdef SIZE_MAX
+#define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) ((a) > SIZE_MAX - (b))
+#else
+/* No SIZE_MAX: ~(size_t)0 is max size_t; overflow if b > max - a */
+#define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) ((b) > ~(size_t)0 - (a))
+#endif
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
 /* raptor_ntriples.c */
