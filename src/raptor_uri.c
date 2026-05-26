@@ -84,8 +84,140 @@ struct raptor_uri_s {
   int usage;
 };
 
-
 #ifndef STANDALONE
+
+#define RAPTOR_URI_GETCWD_MAX 65536
+
+static int
+raptor_uri_hex_digit(unsigned char c)
+{
+  if(c >= '0' && c <= '9')
+    return c - '0';
+  if(c >= 'a' && c <= 'f')
+    return c - 'a' + 10;
+  if(c >= 'A' && c <= 'F')
+    return c - 'A' + 10;
+  return -1;
+}
+
+static int
+raptor_uri_ascii_scheme_start(unsigned char c)
+{
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+
+static int
+raptor_uri_ascii_scheme_char(unsigned char c)
+{
+  return raptor_uri_ascii_scheme_start(c) || (c >= '0' && c <= '9') ||
+         c == '+' || c == '-' || c == '.';
+}
+
+/* Return decoded byte (0-255), -1 malformed %, -2 if not % (caller advances).
+ *
+ * Decoded NUL (%00) is returned literally as 0.  The "reject decoded NUL"
+ * policy lives in the file-path callers (raptor_uri_file_path_decoded_length
+ * and raptor_uri_copy_file_path_decoded) which treat c <= 0 as failure.
+ * If a non-file-path caller is added in the future, replicate the c == 0
+ * check there or move it into a wrapper; do not relax it inside the
+ * file-path callers. */
+static int
+raptor_uri_percent_decode_byte(const unsigned char *s)
+{
+  int h1;
+  int h2;
+
+  if(*s != '%')
+    return -2;
+
+  if(!s[1] || !s[2])
+    return -1;
+
+  h1 = raptor_uri_hex_digit(s[1]);
+  h2 = raptor_uri_hex_digit(s[2]);
+  if(h1 < 0 || h2 < 0)
+    return -1;
+
+  return (h1 << 4) | h2;
+}
+
+static int
+raptor_uri_filename_char_needs_escape(unsigned char c)
+{
+  if(c <= 0x20 || c >= 0x7f)
+    return 1;
+
+  switch(c) {
+    case '%':
+    case '#':
+    case '?':
+    case '<':
+    case '>':
+    case '"':
+    case '{':
+    case '}':
+    case '|':
+    case '\\':
+    case '^':
+    case '`':
+    case '[':
+    case ']':
+      return 1;
+    default:
+      return 0;
+  }
+}
+
+/* Return decoded path length, or 0 for malformed or NUL file path escapes. */
+static size_t
+raptor_uri_file_path_decoded_length(const unsigned char *path)
+{
+  size_t len = 0;
+  const unsigned char *from = path;
+
+  while(*from) {
+    if(*from == '%') {
+      /* Reject malformed % and decoded NUL (%00) in file paths */
+      if(raptor_uri_percent_decode_byte(from) <= 0)
+        return 0;
+      from += 3;
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+        return 0;
+      len++;
+    } else {
+      from++;
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+        return 0;
+      len++;
+    }
+  }
+
+  return len;
+}
+
+/* Copy decoded file path to @to; return bytes written or (size_t)-1 on error. */
+static size_t
+raptor_uri_copy_file_path_decoded(const unsigned char *path, char *to)
+{
+  char *p = to;
+  const unsigned char *from = path;
+
+  while(*from) {
+    if(*from == '%') {
+      int c = raptor_uri_percent_decode_byte(from);
+      /* Reject malformed % and decoded NUL (%00) in file paths */
+      if(c <= 0)
+        return (size_t)-1;
+      *p++ = (char)c;
+      from += 3;
+    } else {
+      *p++ = (char)*from++;
+    }
+  }
+  *p = '\0';
+
+  return (size_t)(p - to);
+}
 
 /**
  * raptor_new_uri_from_counted_string:
@@ -96,7 +228,8 @@ struct raptor_uri_s {
  * Constructor - create a raptor URI from a UTF-8 encoded Unicode string.
  * 
  * Note: The @uri_string need not be NULL terminated - a NULL will be
- * added to the copied string used.
+ * added to the copied string used.  The counted string must not contain
+ * embedded NUL bytes and @length must be non-zero and no larger than UINT_MAX.
  *
  * Return value: a new #raptor_uri object or NULL on failure.
  **/
@@ -110,7 +243,10 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
-  if(!uri_string || !*uri_string)
+  if(!uri_string || !*uri_string || length == 0 || length > UINT_MAX)
+    return NULL;
+
+  if(memchr(uri_string, '\0', length))
     return NULL;
 
   raptor_world_open(world);
@@ -154,7 +290,16 @@ raptor_new_uri_from_counted_string(raptor_world* world,
   new_uri->world = world;
   new_uri->length = (unsigned int)length;
 
-  new_string = RAPTOR_MALLOC(unsigned char*, length + 1);
+  if(1) {
+    size_t alloc_len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, 1)) {
+      RAPTOR_FREE(raptor_uri, new_uri);
+      new_uri = NULL;
+      goto unlock;
+    }
+    alloc_len = length + 1;
+    new_string = RAPTOR_MALLOC(unsigned char*, alloc_len);
+  }
   if(!new_string) {
     RAPTOR_FREE(raptor_uri, new_uri);
     new_uri=NULL;
@@ -210,7 +355,7 @@ raptor_new_uri(raptor_world* world, const unsigned char *uri_string)
  * raptor_new_uri_from_uri_local_name:
  * @world: raptor_world object
  * @uri: existing #raptor_uri
- * @local_name: local name
+ * @local_name: non-NULL local name
  * 
  * Constructor - create a raptor URI from an existing URI and a local name.
  *
@@ -224,22 +369,29 @@ raptor_uri*
 raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
                                    const unsigned char *local_name)
 {
-  size_t len;
+  size_t alloc_len;
+  size_t content_len;
   unsigned char *new_string;
   raptor_uri* new_uri;
   size_t local_name_length;
 
   RAPTOR_CHECK_CONSTRUCTOR_WORLD(world);
 
-  if(!uri)
+  if(!uri || !local_name)
     return NULL;
   
   raptor_world_open(world);
 
   local_name_length = strlen((const char*)local_name);
   
-  len = uri->length + local_name_length;
-  new_string = RAPTOR_MALLOC(unsigned char*, len + 1);
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)uri->length, local_name_length))
+    return NULL;
+  content_len = (size_t)uri->length + local_name_length;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(content_len, 1))
+    return NULL;
+  alloc_len = content_len + 1;
+
+  new_string = RAPTOR_MALLOC(unsigned char*, alloc_len);
   if(!new_string)
     return NULL;
 
@@ -247,7 +399,7 @@ raptor_new_uri_from_uri_local_name(raptor_world* world, raptor_uri *uri,
   memcpy((char*)(new_string + uri->length), (const char*)local_name,
          local_name_length + 1);
 
-  new_uri = raptor_new_uri_from_counted_string(world, new_string, len);
+  new_uri = raptor_new_uri_from_counted_string(world, new_string, content_len);
   RAPTOR_FREE(char*, new_string);
 
   return new_uri;
@@ -290,9 +442,15 @@ raptor_new_uri_relative_to_base_counted(raptor_world* world,
   if(!*uri_string)
     return raptor_uri_copy(base_uri);
   
-  /* +1 for adding any missing URI path '/' */
-  buffer_length = base_uri->length + uri_len + 1;
-  buffer = RAPTOR_MALLOC(unsigned char*, buffer_length + 1);
+  /* +1 for merge path slash; +1 for NUL terminator in buffer capacity */
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)base_uri->length, uri_len))
+    return NULL;
+  buffer_length = (size_t)base_uri->length + uri_len;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(buffer_length, 2))
+    return NULL;
+  buffer_length += 2;
+
+  buffer = RAPTOR_MALLOC(unsigned char*, buffer_length);
   if(!buffer)
     return NULL;
   
@@ -361,6 +519,8 @@ raptor_new_uri_from_id(raptor_world *world, raptor_uri *base_uri,
 
   len = strlen((char*)id);
   /* "#id\0" */
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 2))
+    return NULL;
   local_name = RAPTOR_MALLOC(unsigned char*, len + 1 + 1);
   if(!local_name)
     return NULL;
@@ -404,7 +564,11 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
   raptor_world_open(world);
 
   name_len = strlen((const char*)name);
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(base_uri_string_len, name_len))
+    return NULL;
   new_uri_string_len = base_uri_string_len + name_len;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(new_uri_string_len, 1))
+    return NULL;
   new_uri_string = RAPTOR_MALLOC(unsigned char*, new_uri_string_len + 1);
   if(!new_uri_string)
     return NULL;
@@ -425,11 +589,25 @@ raptor_new_uri_for_rdf_concept(raptor_world* world, const unsigned char *name)
  * @world: raptor_world object
  * @base_uri: existing base URI
  * @uri_or_file_string: URI string or filename
- * 
+ *
  * Constructor - create a raptor URI from a string that is a relative or absolute URI or a filename
  *
  * If the @uri_or_file_string is a filename PATH that exists, the
  * result will be a URI file://PATH
+ *
+ * Absolute URIs are used directly and do not require @base_uri.  Relative
+ * URI strings that are not existing filenames require @base_uri for
+ * resolution.
+ *
+ * SECURITY: this function is intended for trusted CLI-style entry points
+ * (e.g. `rapper file_or_url`) where filename-vs-URI disambiguation by
+ * filesystem existence is desired.  For untrusted input the caller's
+ * behaviour depends on filesystem state: a non-URI string that happens to
+ * name an existing file is treated as a filename and converted to a
+ * file:// URI.  Callers that process untrusted input MUST gate the result
+ * with RAPTOR_OPTION_NO_FILE and/or a URI filter (see
+ * raptor_parser_set_uri_filter, raptor_sax2_set_uri_filter); the URI
+ * layer itself does not sandbox file access.
  *
  * Return value: a new #raptor_uri object or NULL on failure
  **/
@@ -439,15 +617,27 @@ raptor_new_uri_from_uri_or_file_string(raptor_world* world,
                                        const unsigned char* uri_or_file_string)
 {
   raptor_uri* new_uri = NULL;
-  const unsigned char* new_uri_string;
-  const char* path;
+  const unsigned char* new_uri_string = NULL;
+  const char* path = NULL;
 
-  if(raptor_uri_filename_exists(uri_or_file_string) > 0) {
+  if(!uri_or_file_string)
+    return NULL;
+
+  if(raptor_uri_uri_string_is_absolute(uri_or_file_string) > 0) {
+    new_uri = raptor_new_uri(world, uri_or_file_string);
+    if(!new_uri)
+      return NULL;
+    new_uri_string = raptor_uri_as_string(new_uri);
+    path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string,
+                                                              NULL, NULL, NULL);
+  } else if(raptor_uri_filename_exists(uri_or_file_string) > 0) {
     /* uri_or_file_string is a file name, not a file: URI */
     path = RAPTOR_GOOD_CAST(const char*, uri_or_file_string);
   } else {
     new_uri = raptor_new_uri_relative_to_base(world, base_uri,
                                             uri_or_file_string);
+    if(!new_uri)
+      return NULL;
     new_uri_string = raptor_uri_as_string(new_uri);
     path = raptor_uri_uri_string_to_counted_filename_fragment(new_uri_string, 
                                                               NULL, NULL, NULL);
@@ -647,8 +837,8 @@ raptor_uri_as_counted_string(raptor_uri *uri, size_t* len_p)
  * Converts a counted filename to a file: URI.
  * 
  * Handles the OS-specific escaping on turning filenames into URIs
- * and returns a new buffer that the caller must free().  Turns a
- * space in the filename into \%20 and '%' into \%25.
+ * and returns a new buffer that the caller must free().  Unsafe URI
+ * characters in the filename are encoded as \%XX escapes.
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
@@ -664,8 +854,10 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
 #endif
   /* "file://" */
 #define RAPTOR_LEN_FILE_CSS 7 
+  static const char hex_digits[] = "0123456789ABCDEF";
   size_t len = RAPTOR_LEN_FILE_CSS;
   size_t fl;
+  unsigned char c;
 
   if(!filename)
     return NULL;
@@ -677,7 +869,8 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
 /*
  * On WIN32, filenames turn into
  *   "file://" + translated filename
- * where the translation is \\ turns into / and ' ' into %20, '%' into %25
+ * where the translation is \\ turns into / and unsafe URI characters
+ * are encoded as \%XX escapes
  * and if the filename does not start with '\', it is relative
  * in which case, a . is appended to the authority
  *
@@ -693,15 +886,23 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
  * that turn into file:///server/share/blah
  * using the above algorithm.
  */
-  if(filename[1] == ':' && filename[2] != '\\')
+  if(filename_len > 1 && filename[1] == ':' &&
+     (filename_len < 3 || filename[2] != '\\')) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 3))
+      goto path_done;
     len += 3; /* relative filename - add / and ./ */
-  else if(*filename == '\\')
+  } else if(*filename == '\\') {
+    if(len < 2)
+      goto path_done;
     len -= 2; /* two // from not needed in filename */
-  else
+  } else {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+      goto path_done;
     len++; /* / at start of path */
+  }
 
 #else
-/* others - unix: turn spaces into %20, '%' into %25 */
+/* others - unix: turn unsafe URI characters into %XX escapes */
 
   if(*filename != '/') {
     size_t path_max;
@@ -714,30 +915,54 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
     path_max = 1024; /* an initial guess at the length */
 #endif
     path = (char*)malloc(path_max);
-    while(1) {
-      /* malloc() failed or getcwd() succeeded */
-      errno = 0;
-      if(!path || getcwd(path, path_max))
+    while(path) {
+      char *new_path;
+
+      if(getcwd(path, path_max))
         break;
 
-      /* failed */
-      if(errno != ERANGE)
+      /* getcwd failed */
+      if(errno != ERANGE) {
+        free(path);
+        path = NULL;
         break;
+      }
+
+      if(path_max >= RAPTOR_URI_GETCWD_MAX) {
+        free(path);
+        path = NULL;
+        break;
+      }
 
       /* try again with a bigger buffer */
       path_max *= 2;
-      path = (char*)realloc(path, path_max);
+      if(path_max > RAPTOR_URI_GETCWD_MAX)
+        path_max = RAPTOR_URI_GETCWD_MAX;
+      new_path = (char*)realloc(path, path_max);
+      if(!new_path) {
+        free(path);
+        path = NULL;
+        break;
+      }
+      path = new_path;
     }
     if(!path)
       goto path_done;
     path_len = strlen(path);
 
     /* path + '/' + filename */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(path_len, 1))
+      goto path_done;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(path_len + 1, filename_len))
+      goto path_done;
     new_filename_len = path_len + 1 + filename_len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(new_filename_len, 1))
+      goto path_done;
     if(path_max < new_filename_len + 1) {
-      path = (char*)realloc(path, new_filename_len + 1);
-      if(!path)
+      char *new_path = (char*)realloc(path, new_filename_len + 1);
+      if(!new_path)
         goto path_done;
+      path = new_path;
     }
 
     path[path_len] = '/';
@@ -750,17 +975,31 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
 
   /* add URI-escaped filename length */
   for(from = filename, fl = filename_len; fl ; from++, fl--) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+      goto path_done;
     len++;
+    c = (unsigned char)*from;
 #ifdef WIN32
-    if(*from == ':') {
-      if(from[1] != '\\')
+    if(c == ':') {
+      if(fl < 2 || from[1] != '\\') {
+        if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 2))
+          goto path_done;
         len += 2;
+      }
+      continue;
     }
+    if(c == '\\')
+      c = '/';
 #endif
-    if(*from == ' ' || *from == '%')
+    if(raptor_uri_filename_char_needs_escape(c)) {
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 2))
+        goto path_done;
       len += 2; /* strlen(%xx)-1 */
+    }
   }
 
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+    goto path_done;
   buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!buffer)
     goto path_done;
@@ -770,28 +1009,29 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   to = (char*)(buffer + RAPTOR_LEN_FILE_CSS);
   fl = filename_len;
 #ifdef WIN32
-  if(*from == '\\' && from[1] == '\\') {
+  if(fl > 1 && *from == '\\' && from[1] == '\\') {
     from += 2; fl -= 2;
   } else
     *to++ ='/';
 #endif
   for(; fl; fl--) {
-    char c = *from++;
+    c = (unsigned char)*from++;
 #ifdef WIN32
     if(c == '\\')
-      *to++ ='/';
+      c = '/';
     else if(c == ':') {
       *to++ = c;
-      if(*from != '\\') {
+      if(fl < 2 || *from != '\\') {
         *to++ ='.';
         *to++ ='/';
       }
-    } else
+      continue;
+    }
 #endif
-    if(c == ' ' || c == '%') {
+    if(raptor_uri_filename_char_needs_escape(c)) {
       *to++ = '%';
-      *to++ = '2';
-      *to++ = (c == ' ') ? '0' : '5';
+      *to++ = hex_digits[c >> 4];
+      *to++ = hex_digits[c & 0x0f];
     } else
       *to++ = c;
   }
@@ -819,8 +1059,8 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
  * Converts a filename to a file: URI.
  *
  * Handles the OS-specific escaping on turning filenames into URIs
- * and returns a new buffer that the caller must free().  Turns a
- * space in the filename into \%20 and '%' into \%25.
+ * and returns a new buffer that the caller must free().  Unsafe URI
+ * characters in the filename are encoded as \%XX escapes.
  *
  * Return value: A newly allocated string with the URI or NULL on failure
  **/
@@ -843,6 +1083,10 @@ raptor_uri_filename_to_uri_string(const char *filename)
  * 
  * Handles the OS-specific file: URIs to filename mappings.  Returns
  * a new buffer containing the filename that the caller must free.
+ * Malformed percent escapes and percent-decoded NUL bytes are rejected.
+ * On POSIX systems, non-local authorities such as file://host/path are
+ * rejected; empty and localhost authorities are accepted as local.
+ * POSIX paths are normalized after percent decoding.
  *
  * If @len_p is present the length of the filename is returned
  *
@@ -860,10 +1104,13 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
 {
   char *filename;
   size_t len = 0;
+  size_t path_len = 0;
+  size_t prefix_len = 0;
   raptor_uri_detail *ud = NULL;
+  const unsigned char *path_for_decode;
+#ifdef WIN32
   unsigned char *from;
   char *to;
-#ifdef WIN32
   unsigned char *p;
 #endif
 
@@ -887,6 +1134,16 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
       ud->authority = NULL;
   }
 
+#ifndef WIN32
+  /* POSIX file: URIs are local paths only (file:///path).  Reject any
+   * remaining authority (e.g. file://remote.example/path) — unlike
+   * Windows UNC file: URIs, there is no valid local filename. */
+  if(ud->authority) {
+    raptor_free_uri_detail(ud);
+    return NULL;
+  }
+#endif
+
   /* Cannot do much if there is no path */
   if(!ud->path || (ud->path && !*ud->path)) {
     raptor_free_uri_detail(ud);
@@ -895,15 +1152,19 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
 
   /* See raptor_uri_filename_to_uri_string for details of the mapping */
 #ifdef WIN32
-  if(ud->authority)
-    len += ud->authority_len+3;
+  /* Windows: authority is a UNC server name (file://server/share/...). */
+  if(ud->authority) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ud->authority_len, 3)) {
+      raptor_free_uri_detail(ud);
+      return NULL;
+    }
+    prefix_len = ud->authority_len + 3;
+  }
 
   p = ud->path;
   /* remove leading slash from path if there is one */
-  if(*p && p[0] == '/') {
+  if(*p && p[0] == '/')
     p++;
-    len--;
-  }
   /* handle case where path starts with drive letter */
   if(*p && (p[1] == '|' || p[1] == ':')) {
     /* Either 
@@ -916,75 +1177,83 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
       p[2] = *p;
       p[3] = ':';
       p += 2;
-      len -= 2; /* remove 2 for ./ */
     } else
       p[1] = ':';
   }
 #endif
 
+#ifdef WIN32
+  /* Use path after Windows drive/leading-slash adjustments above. */
+  path_for_decode = p;
+#else
+  path_for_decode = ud->path;
+#endif
 
-  /* add URI-escaped filename length */
-  for(from = ud->path; *from ; from++) {
-    len++;
-    if(*from == '%')
-      from += 2;
-  }
-
-
-  /* Something is wrong */
-  if(!len) {
+  path_len = raptor_uri_file_path_decoded_length(path_for_decode);
+  if(!path_len) {
     raptor_free_uri_detail(ud);
     return NULL;
   }
-    
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(prefix_len, path_len)) {
+    raptor_free_uri_detail(ud);
+    return NULL;
+  }
+  len = prefix_len + path_len;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1)) {
+    raptor_free_uri_detail(ud);
+    return NULL;
+  }
+
   filename = RAPTOR_MALLOC(char*, len + 1);
   if(!filename) {
     raptor_free_uri_detail(ud);
     return NULL;
   }
 
+#ifdef WIN32
+  /* Map file: URI to a Windows path (UNC prefix, backslashes, % decode). */
   to = filename;
 
-#ifdef WIN32
   if(ud->authority) {
     *to++ = '\\';
     *to++ = '\\';
-    from = ud->authority;
-    while( (*to++ = *from++) )
-      ;
-    to--;
+    memcpy(to, ud->authority, ud->authority_len);
+    to += ud->authority_len;
     *to++ = '\\';
   }
   
   /* copy path after all /s */
   from = p;
-#else
-  from = ud->path;
-#endif
-
   while(*from) {
     char c = *from++;
-#ifdef WIN32
     if(c == '/')
       *to++ = '\\';
-    else
-#endif
-    if(c == '%') {
-      if(*from && from[1]) {
-        char hexbuf[3];
-        char *endptr = NULL;
-        hexbuf[0] = (char)*from;
-        hexbuf[1] = (char)from[1];
-        hexbuf[2]='\0';
-        c = (char)strtol((const char*)hexbuf, &endptr, 16);
-        if(endptr == &hexbuf[2])
-          *to++ = c;
+    else if(c == '%') {
+      const unsigned char *pct = from - 1;
+      int decoded = raptor_uri_percent_decode_byte(pct);
+      if(decoded <= 0) {
+        RAPTOR_FREE(char*, filename);
+        raptor_free_uri_detail(ud);
+        return NULL;
       }
-      from += 2;
+      from = pct + 3;
+      *to++ = (char)decoded;
     } else
       *to++ = c;
   }
   *to = '\0';
+  len = (size_t)(to - filename);
+#else
+  /* POSIX: decode path and normalize (collapse .. etc.) to a local filename. */
+  len = raptor_uri_copy_file_path_decoded(ud->path, filename);
+  if(len == (size_t)-1) {
+    RAPTOR_FREE(char*, filename);
+    raptor_free_uri_detail(ud);
+    return NULL;
+  }
+  len = raptor_uri_normalize_path((unsigned char*)filename, len);
+#endif
 
   if(len_p)
     *len_p = len;
@@ -994,9 +1263,18 @@ raptor_uri_uri_string_to_counted_filename_fragment(const unsigned char *uri_stri
 
     if(ud->fragment) {
       fragment_len = ud->fragment_len;
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(fragment_len, 1)) {
+        RAPTOR_FREE(char*, filename);
+        raptor_free_uri_detail(ud);
+        return NULL;
+      }
       *fragment_p = RAPTOR_MALLOC(unsigned char*, fragment_len + 1);
-      if(*fragment_p)
-        memcpy(*fragment_p, ud->fragment, fragment_len + 1);
+      if(!*fragment_p) {
+        RAPTOR_FREE(char*, filename);
+        raptor_free_uri_detail(ud);
+        return NULL;
+      }
+      memcpy(*fragment_p, ud->fragment, fragment_len + 1);
     } else
       *fragment_p = NULL;
     if(fragment_len_p)
@@ -1061,15 +1339,18 @@ raptor_uri_uri_string_to_filename(const unsigned char *uri_string)
  * raptor_uri_uri_string_is_file_uri:
  * @uri_string: The URI string to check
  *
- * Check if a URI string is a file: URI.
- * 
- * Return value: Non zero if URI string is a file: URI
+ * Check if a URI string is a file: URI (case-insensitive "file:" prefix).
+ *
+ * If @uri_string is NULL or empty, returns 0.  Older releases incorrectly
+ * returned non-zero for those inputs.
+ *
+ * Return value: non-zero if @uri_string is a file: URI, else 0
  **/
 int
 raptor_uri_uri_string_is_file_uri(const unsigned char* uri_string)
 {
   if(!uri_string || !*uri_string)
-    return 1;
+    return 0;
 
   return raptor_strncasecmp((const char*)uri_string, "file:", 5) == 0;
 }
@@ -1226,9 +1507,14 @@ raptor_uri_path_common_base_length(const unsigned char *first_path,
    * the path to the last successful match. 
    */
   while((cur_ptr = (const unsigned char*)memchr(cur_ptr, '/', first_path_len))) {
+    size_t seg_len;
+
     cur_ptr++;
+    seg_len = (size_t)(cur_ptr - prev_ptr);
+    if((size_t)common_len + seg_len > second_path_len)
+      break;
     if(strncmp((const char*)first_path + common_len,
-               (const char*)second_path + common_len, cur_ptr - prev_ptr))
+               (const char*)second_path + common_len, seg_len))
       break;
 
     first_path_len -= cur_ptr - prev_ptr;
@@ -1262,7 +1548,8 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
                                    size_t *result_length_p)
 {
   size_t common_len, cur_len, final_len, to_dir_len;
-  int up_dirs = 0;
+  size_t up_dirs = 0;
+  size_t up_len;
   const unsigned char *cur_ptr, *prev_ptr;
   unsigned char *final_path, *final_path_cur;
 
@@ -1296,7 +1583,17 @@ raptor_uri_path_make_relative_path(const unsigned char *from_path, size_t from_p
   to_dir_len = prev_ptr - (to_path + common_len);
   
   /* Create the final relative path */
-  final_len = up_dirs*3 + to_dir_len + suffix_len; /* 3 for each "../" */
+  if(up_dirs > ((size_t)-1) / 3)
+    return NULL;
+  up_len = up_dirs * 3; /* 3 for each "../" */
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(up_len, to_dir_len))
+    return NULL;
+  final_len = up_len + to_dir_len;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(final_len, suffix_len))
+    return NULL;
+  final_len += suffix_len;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(final_len, 1))
+    return NULL;
   final_path = RAPTOR_MALLOC(unsigned char*, final_len + 1);
   if(!final_path)
     return NULL;
@@ -1445,15 +1742,28 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
 
   addqueryfragment:
     /* Calculate the length of the suffix (file name + query + fragment) */
-    suffix_len = reference_file_len + reference_detail->query_len + 
-                 reference_detail->fragment_len;
+    suffix_len = reference_file_len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(suffix_len, reference_detail->query_len))
+      goto err;
+    suffix_len += reference_detail->query_len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(suffix_len, reference_detail->fragment_len))
+      goto err;
+    suffix_len += reference_detail->fragment_len;
     
-    if(reference_detail->query)
+    if(reference_detail->query) {
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(suffix_len, 1))
+        goto err;
       suffix_len++; /* add one char for the '?' */
-    if(reference_detail->fragment)
+    }
+    if(reference_detail->fragment) {
+      if(RAPTOR_SIZE_T_ADD_OVERFLOWS(suffix_len, 1))
+        goto err;
       suffix_len++; /* add one char for the '#' */
+    }
     
     /* Assemble the suffix */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(suffix_len, 1))
+      goto err;
     suffix = RAPTOR_MALLOC(unsigned char*, suffix_len + 1);
     if(!suffix)
       goto err;
@@ -1499,6 +1809,8 @@ raptor_uri_to_relative_counted_uri_string(raptor_uri *base_uri,
   /* If result is NULL at this point, it means that we were unable to find a
      relative URI, so we'll return a full absolute URI instead. */
   if(!result) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(reference_len, 1))
+      goto err;
     result = RAPTOR_MALLOC(unsigned char*, reference_len + 1);
     if(result) {
       if(reference_len)
@@ -1595,6 +1907,8 @@ raptor_uri_to_counted_string(raptor_uri *uri, size_t *len_p)
   if(!string)
     return NULL;
   
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+    return NULL;
   new_string = RAPTOR_MALLOC(unsigned char*, len + 1); /* +1 for NULL termination */
   if(!new_string)
     return NULL;
@@ -1709,7 +2023,9 @@ int
 raptor_uri_file_exists(raptor_uri* uri)
 {
   const unsigned char* uri_string;
-  
+  char *filename;
+  int exists;
+
   if(!uri)
     return -1;
 
@@ -1717,7 +2033,14 @@ raptor_uri_file_exists(raptor_uri* uri)
   if(!raptor_uri_uri_string_is_file_uri(uri_string))
     return -1;
 
-  return raptor_uri_filename_exists(uri_string + 6);
+  filename = raptor_uri_uri_string_to_filename(uri_string);
+  if(!filename)
+    return -1;
+
+  exists = raptor_uri_filename_exists((const unsigned char*)filename);
+  RAPTOR_FREE(char*, filename);
+
+  return exists;
 }
 
 
@@ -1769,9 +2092,10 @@ raptor_uri_escaped_write(raptor_uri* uri,
 
 /**
  * raptor_uri_uri_string_is_absolute:
- * @uri_string: uri to check write
+ * @uri_string: URI string to check
  * 
- * Check if a uri string is an absolute URI
+ * Check if a URI string is an absolute URI using the ASCII URI scheme
+ * grammar.
  * 
  * Return value: >0 if absolute, 0 if not, < 0 on failure
  **/
@@ -1779,16 +2103,18 @@ int
 raptor_uri_uri_string_is_absolute(const unsigned char* uri_string)
 {
   const unsigned char* s = uri_string;
+
+  if(!uri_string)
+    return -1;
   
   /* 
    * scheme = alpha *( alpha | digit | "+" | "-" | "." )
    *    RFC 2396 section 3.1 Scheme Component
    */
-  if(*s && isalpha((int)*s)) {
+  if(*s && raptor_uri_ascii_scheme_start(*s)) {
     s++;
 
-    while(*s && (isalnum((int)*s) ||
-                 (*s == '+') || (*s == '-') || (*s == '.')))
+    while(*s && raptor_uri_ascii_scheme_char(*s))
       s++;
   
     if(*s == ':')
@@ -1860,6 +2186,12 @@ assert_uri_to_filename (const char *uri, const char *reference_filename)
 
   filename = raptor_uri_uri_string_to_filename((const unsigned char*)uri);
 
+  if(!filename && reference_filename) {
+    fprintf(stderr,
+            "%s: raptor_uri_uri_string_to_filename(%s) FAILED giving NULL expected '%s'\n",
+            program, uri, reference_filename);
+    return 1;
+  }
   if(filename && !reference_filename) {
     fprintf(stderr, 
             "%s: raptor_uri_uri_string_to_filename(%s) FAILED giving filename %s != NULL\n", 
@@ -1927,7 +2259,7 @@ main(int argc, char *argv[])
   const char *base_uri = "http://example.org/bpath/cpath/d;p?querystr#frag";
   const char *base_uri_xmlbase = "http://example.org/bpath/cpath/d;p";
   const char *base_uri_retrievable = "http://example.org/bpath/cpath/d;p?querystr";
-#ifndef WIN32
+#if !defined(WIN32) && !defined(WIN32_URI_TEST)
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   const char* dirs[6] = { "/etc", "/bin", "/tmp", "/lib", "/var", NULL };
   #define URI_BUFFER_LEN 16
@@ -1938,6 +2270,10 @@ main(int argc, char *argv[])
 #endif
   unsigned char *str;
   raptor_uri *uri1, *uri2, *uri3;
+  const unsigned char embedded_nul_uri[] = {
+    'h', 't', 't', 'p', ':', 'a', '\0', 'b'
+  };
+  size_t uri_length;
 
   int failures = 0;
 
@@ -1951,8 +2287,50 @@ main(int argc, char *argv[])
     program++;
   else
     program = argv[0];
-  
-#ifdef WIN32
+
+  uri1 = raptor_new_uri_from_counted_string(world, embedded_nul_uri,
+                                            sizeof(embedded_nul_uri));
+  if(uri1) {
+    fprintf(stderr,
+            "%s: raptor_new_uri_from_counted_string accepted embedded NUL\n",
+            program);
+    raptor_free_uri(uri1);
+    failures++;
+  }
+
+  /* Security: counted-string constructor must reject length == 0 */
+  uri1 = raptor_new_uri_from_counted_string(world,
+                                            (const unsigned char*)"x", 0);
+  if(uri1) {
+    fprintf(stderr,
+            "%s: raptor_new_uri_from_counted_string accepted length == 0\n",
+            program);
+    raptor_free_uri(uri1);
+    failures++;
+  }
+
+  /* Security: counted-string constructor must reject length > UINT_MAX.
+   * Only meaningful when size_t is wider than unsigned int. */
+  if(sizeof(size_t) > sizeof(unsigned int)) {
+    size_t huge = (size_t)UINT_MAX + 1;
+    uri1 = raptor_new_uri_from_counted_string(world,
+                                              (const unsigned char*)"x", huge);
+    if(uri1) {
+      fprintf(stderr,
+              "%s: raptor_new_uri_from_counted_string accepted length > UINT_MAX\n",
+              program);
+      raptor_free_uri(uri1);
+      failures++;
+    }
+  }
+
+
+  /* Platform file: URI tests.  raptor_uri_win32_test is built with
+   * -DWIN32_URI_TEST; Windows file URI vectors run only when WIN32 is
+   * defined (native Windows build).  On other hosts that target skips. */
+#if defined(WIN32) || defined(WIN32_URI_TEST)
+#if defined(WIN32)
+  /* Windows file: URI mapping (drive letters, UNC authority, backslashes). */
   failures += assert_filename_to_uri ("c:\\windows\\system", "file:///c:/windows/system");
   failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
   failures += assert_filename_to_uri ("a:foo", "file:///a:./foo");
@@ -1975,16 +2353,43 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename ("file://localhost/",  NULL);
   failures += assert_uri_to_filename ("file://c:\\foo\\bar\\x.rdf",  NULL);
 
-#else
+  /* Authority is a UNC server name; POSIX rejects non-local authority. */
+  failures += assert_uri_to_filename("file://remote.example/etc/hosts",
+                                     "\\\\remote.example\\etc\\hosts");
+
+#else /* WIN32_URI_TEST on a non-Windows build */
+  fprintf(stderr,
+          "%s: Skipping Windows file URI tests (library not built with WIN32)\n",
+          program);
+  /* Silence -Wunused-function on this build configuration: the helper is
+   * only invoked from the WIN32 branch above. */
+  (void)assert_filename_to_uri;
+#endif
+
+#else /* POSIX - raptor_uri_test on non-Windows */
+  /* POSIX file: URIs are local paths only (file:///path). */
 
   failures += assert_filename_to_uri ("/path/to/file", "file:///path/to/file");
   failures += assert_filename_to_uri ("/path/to/file with spaces", "file:///path/to/file%20with%20spaces");
+  failures += assert_filename_to_uri ("/path/to/a#b?c", "file:///path/to/a%23b%3Fc");
+  failures += assert_filename_to_uri ("/path/to/a\\b", "file:///path/to/a%5Cb");
   failures += assert_uri_to_filename ("file:///path/to/file", "/path/to/file");
   failures += assert_uri_to_filename ("file:///path/to/file%20with%20spaces", "/path/to/file with spaces");
 
   /* Tests for Issue#0000268 http://bugs.librdf.org/mantis/view.php?id = 268 */
   failures += assert_uri_to_filename ("file:///path/to/http%253A%252F%252Fwww.example.org%252Fa%252Fb%252Fc", "/path/to/http%3A%2F%2Fwww.example.org%2Fa%2Fb%2Fc");
   failures += assert_filename_to_uri ("/path/to/http%3A%2F%2Fwww.example.org%2Fa%2Fb%2Fc", "file:///path/to/http%253A%252F%252Fwww.example.org%252Fa%252Fb%252Fc");
+
+  /* Security: normalize path traversal on file: URI decode */
+  failures += assert_uri_to_filename("file:///tmp/foo/../../../etc/hosts",
+                                     "/etc/hosts");
+  failures += assert_uri_to_filename("file:///tmp/foo/%2e%2e/%2e%2e/etc/hosts",
+                                     "/etc/hosts");
+  failures += assert_uri_to_filename("file:///var/tmp/a/../../../etc/hosts",
+                                     "/etc/hosts");
+
+  /* Security: reject non-local file: authority on POSIX */
+  failures += assert_uri_to_filename("file://remote.example/etc/hosts", NULL);
 
 #if defined(HAVE_UNISTD_H) && defined(HAVE_SYS_STAT_H)
   /* Need to test this with a real dir (preferably not /)
@@ -2015,6 +2420,20 @@ main(int argc, char *argv[])
 #endif
  
 #endif
+
+  /* Security: malformed percent escape (both platforms) */
+  failures += assert_uri_to_filename("file:///tmp/foo%", NULL);
+  failures += assert_uri_to_filename("file:///tmp/%0", NULL);
+  failures += assert_uri_to_filename("file:///tmp/%00", NULL);
+  failures += assert_uri_to_filename("file:///tmp/%zz", NULL);
+
+  /* Security: is_file_uri must not claim NULL/empty are file URIs */
+  if(raptor_uri_uri_string_is_file_uri(NULL) ||
+     raptor_uri_uri_string_is_file_uri((const unsigned char*)"")) {
+    fprintf(stderr, "%s: raptor_uri_uri_string_is_file_uri NULL/empty should be 0\n",
+            program);
+    failures++;
+  }
 
   uri1 = raptor_new_uri(world, (const unsigned char*)base_uri);
 
@@ -2047,6 +2466,33 @@ main(int argc, char *argv[])
   
   raptor_free_uri(uri3);
   raptor_free_uri(uri2);
+  raptor_free_uri(uri1);
+
+  uri1 = raptor_new_uri(world, (const unsigned char*)"http://example.org/ns#");
+  uri2 = raptor_new_uri_from_uri_local_name(world, uri1,
+                                            (const unsigned char*)"term");
+  if(!uri2) {
+    fprintf(stderr, "%s: raptor_new_uri_from_uri_local_name returned NULL\n",
+            program);
+    failures++;
+  } else {
+    str = raptor_uri_as_counted_string(uri2, &uri_length);
+    if(uri_length != 26 || strcmp((const char*)str, "http://example.org/ns#term")) {
+      fprintf(stderr,
+              "%s: raptor_new_uri_from_uri_local_name length/string mismatch\n",
+              program);
+      failures++;
+    }
+    raptor_free_uri(uri2);
+  }
+  uri2 = raptor_new_uri_from_uri_local_name(world, uri1, NULL);
+  if(uri2) {
+    fprintf(stderr,
+            "%s: raptor_new_uri_from_uri_local_name accepted NULL local_name\n",
+            program);
+    raptor_free_uri(uri2);
+    failures++;
+  }
   raptor_free_uri(uri1);
   
   failures += assert_uri_to_relative(world, NULL, "http://example.com/foo/bar", "http://example.com/foo/bar");
