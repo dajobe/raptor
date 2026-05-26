@@ -1,3 +1,240 @@
+2026-05-25  Dave Beckett <dave@dajobe.org>
+
+	* docs/raptor-changes.tsv: Updated Raptor API changes TSV
+
+	* docs/tmpl/section-uri.sgml: Updated
+	raptor_uri_uri_string_is_file_uri API documentation
+
+	* src/raptor_uri.c: Hardened against overflow, injection, and
+	file: URI attacks
+
+	* src/raptor_rfc2396.c: Hardened against integer overflow and
+	NULL dereferences
+
+	* src/raptor_internal.h: Added RAPTOR_SIZE_T_ADD_OVERFLOWS
+	overflow-check macro
+
+2026-02-04  Dave Beckett <dave@dajobe.org>
+
+	* tests/fuzz/Makefile.am, tests/fuzz/README.md: Switched fuzz
+	targets to static linking against libraptor2
+
+	* tests/fuzz/README.md: Document macOS install_name_tool step
+	for fuzzers
+
+	* tests/fuzz/dict/rdfxml.dict: Update RDFXML fuzz dictionary
+
+	* src/raptor_www_curl.c: Fixed curl_easy_setopt warnings for
+	long argument types
+
+	* scripts/generate_fuzz_dicts.py, tests/fuzz/Makefile.am,
+	tests/fuzz/README.md, tests/fuzz/dict/ntriples.dict,
+	tests/fuzz/dict/rdfxml.dict, tests/fuzz/dict/turtle.dict: Added
+	libFuzzer dictionaries for turtle, ntriples and rdfxml fuzz
+	targets
+
+	* tests/fuzz/README.md: Added Linux instructions to fuzz README
+	and expanded platform details
+
+	* configure.ac: Fixed fuzzer link test failing with duplicate
+	main() definition
+
+2026-02-02  Dave Beckett <dave@dajobe.org>
+
+	* tests/fuzz/README.md: Updated fuzz README with corpus
+	management and new-parser guide
+
+	* tests/fuzz/.gitignore, tests/fuzz/CMakeLists.txt,
+	tests/fuzz/Makefile.am, tests/fuzz/README.md: Added RDF/XML
+	parser fuzzing target
+
+	* tests/fuzz/.gitignore, tests/fuzz/CMakeLists.txt,
+	tests/fuzz/Makefile.am, tests/fuzz/README.md,
+	tests/fuzz/fuzz_parser.c: Added N-Triples fuzz target and
+	refactored to generic harness
+
+	* CMakeLists.txt, libfsp, src/CMakeLists.txt,
+	src/turtle_common.h: Integrated libfsp into CMake build and
+	switched to Python scripts
+
+	* .gitignore: Added build-*/ to .gitignore for CMake out-of-tree
+	builds
+
+	* libfsp: Updated libfsp submodule
+
+	* tests/fuzz/README.md: Rewrote fuzz testing README for clarity
+	and future parsers
+
+	* tests/fuzz/.gitignore, tests/fuzz/Makefile.am,
+	tests/fuzz/README.md: fuzz: keep libFuzzer outputs under
+	tests/fuzz
+
+	* src/turtle_lexer.l: turtle: fix lexer error path to use FSP
+	context
+
+	* CMakeLists.txt, configure.ac, tests/Makefile.am,
+	tests/fuzz/.gitignore, tests/fuzz/CMakeLists.txt,
+	tests/fuzz/Makefile.am, tests/fuzz/README.md,
+	tests/fuzz/fuzz_turtle.c: Added libFuzzer-based fuzz testing
+	for the Turtle parser
+
+2026-01-23  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, src/raptor_grddl.c, src/raptor_libxml.c,
+	src/raptor_sax2.c: Replaced deprecated libxml2 context field
+	access with options API
+
+	* src/turtle_common.h: Remove un-necessary forward references
+
+	* configure.ac: Add automake option subdir-objects
+
+2025-10-12  Dave Beckett <dave@dajobe.org>
+
+	* libfsp: libfsp update
+
+	* .gitmodules, Makefile.am, libfsp, scripts/Makefile.am,
+	scripts/fix-bison.py, scripts/fix-flex.py, src/Makefile.am,
+	src/fsp_config.h, src/turtle_common.c, src/turtle_common.h,
+	src/turtle_lexer.l, src/turtle_parser.y: Add libfsp submodule
+	and integrate streaming support into Turtle parser
+
+	* configure.ac, src/Makefile.am: Use AM_CONDITIONAL instead of
+	AC_LIBOBJ
+
+	* autogen.sh: Updated autogen.sh to handle git config subdirs
+
+2025-10-10  Dave Beckett <dave@dajobe.org>
+
+	* src/sort_r.h: Updated sort_r.h to support newer qsort_r()
+
+2025-09-05  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac: Remove -Wc90-c99-compat
+
+2025-08-01  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-bison.py: Hide -Wswitch-enum in yydestruct
+
+	* UPGRADING.html, configure.ac, docs/Makefile.am,
+	docs/raptor1-eol.html, docs/upgrade-script.py,
+	scripts/Makefile.am, scripts/fix-bison.pl, scripts/fix-flex.pl,
+	scripts/fix-groff-xhtml.pl, scripts/fix-groff-xhtml.py,
+	scripts/fix-gtkdoc-header.pl, scripts/fix-gtkdoc-header.py,
+	scripts/process-changes.pl, scripts/process-changes.py,
+	src/Makefile.am, utils/Makefile.am: Convert all remaining perl
+	scripts to python3
+
+	* examples/Makefile.am: Fix gsettings schema to not install by
+	default
+
+2025-07-31  Dave Beckett <dave@dajobe.org>
+
+	* examples/Makefile.am, examples/grapper.c, examples/grapper.md:
+	Modernize grapper GTK example for GTK 3.0 compatibility
+
+	* .gitignore, configure.ac, examples/Makefile.am,
+	examples/grapper.c, examples/grapper.md,
+	examples/org.gnome.grapper.gschema.xml: ignore more
+
+2025-07-10  Dave Beckett <dave@dajobe.org>
+
+	* scripts/Makefile.am, scripts/fix-bison.py: Fixes for
+	fix-bison.py fix-flex.py
+
+2025-06-22  Dave Beckett <dave@dajobe.org>
+
+	* README.html: english
+
+2025-05-18  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_ntriples.c, tests/ntriples/CMakeLists.txt,
+	tests/ntriples/Makefile.am, tests/ntriples/issue77.nt,
+	tests/ntriples/issue77.out: Allow \' in RDF 1.1 N-Triples URIs
+	(Github issue #77)
+
+2025-03-17  Dave Beckett <dave@dajobe.org>
+
+	* tests/bugs/issue70a.c: result of function is type size_t
+
+	* src/raptor_serialize_turtle.c, tests/turtle/Makefile.am,
+	tests/turtle/test-40.out, tests/turtle/test-40.ttl: Correct
+	turtle serialization for collections of depth 0 (Merge pull
+	request #74 from WhiteGobo/issue73turtlelistserialize)
+
+2025-02-28  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor2.h.in: RAPTOR_NORETURN is unused - remove
+
+	* src/.gitignore: Ignore more
+
+	* src/turtle_parser.y: Fix comments - these are not autodoc
+
+2025-02-08  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Make autogen.sh work for vendorized versions like
+	libtoolize Debian
+
+2025-02-07  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_ntriples.c: Fix Github issue 70 B) Heap read buffer
+	overflow in ntriples bnode
+
+2025-02-06  Dave Beckett <dave@dajobe.org>
+
+	* src/raptor_rfc2396.c: Fix Github issue 70 A) Integer Underflow
+	in raptor_uri_normalize_path()
+
+	* .gitignore, configure.ac, tests/Makefile.am,
+	tests/bugs/.gitignore, tests/bugs/Makefile.am,
+	tests/bugs/issue70a.c, tests/bugs/issue70b.c: Tests for Github
+	issue 70
+
+2025-02-02  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Protect turtle_parser_debug uses with #if
+
+	* configure.ac: Switch -Wframe-larger-than to 6000 bytes
+
+	* src/raptor_rfc2396.c: Use %zu format for strlen() size_t
+	values
+
+	* src/raptor_www_curl.c: Use %zu format for size_t args
+
+2024-08-03  Dave Beckett <dave@dajobe.org>
+
+	* scripts/fix-bison.py, scripts/fix-flex.py, src/.gitignore,
+	src/Makefile.am: Switch to python3 version of fix-flex
+
+2024-07-14  Dave Beckett <dave@dajobe.org>
+
+	* configure.ac, scripts/fix-bison.py, src/.gitignore,
+	src/Makefile.am: Switch to python3 version of fix-bison
+
+2024-06-21  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_parser.y: Fix turtle_lexer_set_debug call to take
+	pointer to anon guts
+
+	* src/turtle_parser.y: (graph): Free graph name URI reference
+
+	* src/turtle_parser.y: Update debug macro conditions
+
+2024-06-13  Dave Beckett <dave@dajobe.org>
+
+	* autogen.sh: Update autogen.sh from rasqal
+
+2024-06-07  Dave Beckett <dave@dajobe.org>
+
+	* tests/trig/Makefile.am: Print command and result on failure
+
+2024-05-31  Dave Beckett <dave@dajobe.org>
+
+	* src/turtle_lexer.l: Remove check for end of buffer that will
+	never work
+
+	* src/turtle_parser.y: debug message when an end of buffer
+	error is ignored
+
 2024-05-29  Dave Beckett <dave@dajobe.org>
 
 	* src/turtle_lexer.l: Change compare to EOF to compare to
