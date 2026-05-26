@@ -34,6 +34,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 /* Raptor includes */
 #include "raptor2.h"
@@ -42,11 +45,25 @@
 
 #ifndef STANDALONE
 
+static int
+raptor_uri_ascii_scheme_start(unsigned char c)
+{
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
+
+static int
+raptor_uri_ascii_scheme_char(unsigned char c)
+{
+  return raptor_uri_ascii_scheme_start(c) || (c >= '0' && c <= '9') ||
+         c == '+' || c == '-' || c == '.';
+}
+
 /**
  * raptor_new_uri_detail:
  * @uri_string: The URI string to split
  *
- * Create a URI detailed structure from a URI string.
+ * Create a URI detailed structure from a URI string.  URI schemes are
+ * recognized using the ASCII URI scheme grammar.
  * 
  **/
 raptor_uri_detail*
@@ -65,7 +82,22 @@ raptor_new_uri_detail(const unsigned char *uri_string)
   /* The extra +5 is for the 5 \0s that may be added for each component 
    * even if the entire URI is empty 
    */
-  ud = RAPTOR_CALLOC(raptor_uri_detail*, 1, sizeof(*ud) + uri_len + 5 + 1);
+  if(1) {
+    size_t alloc_size;
+    size_t buf_extra = uri_len;
+
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(buf_extra, 5))
+      return NULL;
+    buf_extra += 5;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(buf_extra, 1))
+      return NULL;
+    buf_extra++;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(sizeof(*ud), buf_extra))
+      return NULL;
+    alloc_size = sizeof(*ud) + buf_extra;
+
+    ud = RAPTOR_CALLOC(raptor_uri_detail*, 1, alloc_size);
+  }
   if(!ud)
     return NULL;
   ud->uri_len = uri_len;
@@ -84,11 +116,10 @@ raptor_new_uri_detail(const unsigned char *uri_string)
    * scheme = alpha *( alpha | digit | "+" | "-" | "." )
    *    RFC 2396 section 3.1 Scheme Component
    */
-  if(*s && isalpha((int)*s)) {
+  if(*s && raptor_uri_ascii_scheme_start(*s)) {
     s++;
 
-    while(*s && (isalnum((int)*s) ||
-                 (*s == '+') || (*s == '-') || (*s == '.')))
+    while(*s && raptor_uri_ascii_scheme_char(*s))
       s++;
   
     if(*s == ':') {
@@ -183,22 +214,53 @@ unsigned char*
 raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
 {
   size_t len = 0;
+  size_t add_len;
   unsigned char *buffer, *p;
   
-  if(ud->scheme)
-    len+= ud->scheme_len+1; /* : */
-  if(ud->authority)
-    len+= 2 + ud->authority_len; /* // */
-  if(ud->path)
-    len+= ud->path_len;
-  if(ud->fragment)
-    len+= 1 + ud->fragment_len; /* # */
-  if(ud->query)
-    len+= 1 + ud->query_len; /* ? */
+  if(ud->scheme) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ud->scheme_len, 1))
+      return NULL;
+    add_len = ud->scheme_len + 1; /* : */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, add_len))
+      return NULL;
+    len += add_len;
+  }
+  if(ud->authority) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ud->authority_len, 2))
+      return NULL;
+    add_len = ud->authority_len + 2; /* // */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, add_len))
+      return NULL;
+    len += add_len;
+  }
+  if(ud->path) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, ud->path_len))
+      return NULL;
+    len += ud->path_len;
+  }
+  if(ud->query) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ud->query_len, 1))
+      return NULL;
+    add_len = ud->query_len + 1; /* ? */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, add_len))
+      return NULL;
+    len += add_len;
+  }
+  if(ud->fragment) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ud->fragment_len, 1))
+      return NULL;
+    add_len = ud->fragment_len + 1; /* # */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, add_len))
+      return NULL;
+    len += add_len;
+  }
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+    return NULL;
 
   if(len_p)
-    *len_p=len;
-  
+    *len_p = len;
+
   buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
   if(!buffer)
     return NULL;
@@ -223,15 +285,15 @@ raptor_uri_detail_to_string(raptor_uri_detail *ud, size_t* len_p)
     while(*src)
       *p++ = *src++;
   }
-  if(ud->fragment) {
-    unsigned char *src = ud->fragment;
-    *p++ = '#';
-    while(*src)
-      *p++ = *src++;
-  }
   if(ud->query) {
     unsigned char *src = ud->query;
     *p++ = '?';
+    while(*src)
+      *p++ = *src++;
+  }
+  if(ud->fragment) {
+    unsigned char *src = ud->fragment;
+    *p++ = '#';
     while(*src)
       *p++ = *src++;
   }
@@ -390,7 +452,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
   } 
 
   
-  if(prev && s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
+  if(prev && cur && s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
     /* Remove <component>/.. at the end of the path */
     *prev = '\0';
     path_len -= (s-prev);
@@ -431,14 +493,15 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
 
 /**
  * raptor_uri_resolve_uri_reference:
- * @base_uri: Base URI string
+ * @base_uri: Base URI string, required for non-absolute references
  * @reference_uri: Reference URI string
  * @buffer: Destination URI output buffer
- * @length: Length of destination output buffer
+ * @length: Capacity of destination output buffer, including NUL terminator
  *
  * Resolve a URI against a base URI to create a new absolute URI.
  * 
- * Return value: length of resolved string or 0 on failure (such as @buffer too small)
+ * Return value: length of resolved string or 0 on failure (such as @buffer too small,
+ * NULL, zero-length, or missing base URI for a non-absolute reference)
  **/
 size_t
 raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
@@ -452,6 +515,7 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   unsigned char *p;
   size_t result_len = 0;
   size_t l;
+  size_t add_len;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
   RAPTOR_DEBUG4("base uri='%s', reference_uri='%s, buffer size %d\n",
@@ -459,6 +523,9 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
                 (reference_uri ? (const char*)reference_uri : "NULL"),
                 (int)length);
 #endif
+
+  if(!buffer || !length)
+    return 0;
 
   *buffer = '\0';
   memset(&result, 0, sizeof(result));
@@ -471,6 +538,11 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   /* is reference URI "" or "#frag"? */
   if(!ref->scheme && !ref->authority && !ref->path && !ref->query) {
     unsigned char c;
+
+    if(!base_uri) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
 
     /* Copy base URI to result up to '\0' or '#' */
     for(p = buffer, l = length;
@@ -485,16 +557,18 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     *p = '\0';
     
     if(ref->fragment) {
-      unsigned char *src = ref->fragment;
       /* Append any fragment */
-      *p++ = '#';
-      while(*src && l) {
-        *p++ = *src++;
-        l--;
-      }
-      if(!l) {
+      if(l < 2 || ref->fragment_len > (l - 2)) {
         result_len = 0;
         goto resolve_tidy;
+      }
+
+      *p++ = '#';
+      l--;
+      if(ref->fragment_len) {
+        memcpy(p, ref->fragment, ref->fragment_len);
+        p += ref->fragment_len;
+        l -= ref->fragment_len;
       }
       *p = '\0';
     }
@@ -513,6 +587,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
     
     /* Allocate path so it can be normalized below */
     result.path_len = ref->path_len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.path_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     path_buffer = RAPTOR_MALLOC(unsigned char*, result.path_len + 1);
     if(!path_buffer) {
       result_len = 0;
@@ -557,6 +635,10 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
      * is a non-hierarchical URI then just copy the reference path
      * to the result and normalize.
      */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ref->path_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     path_buffer = RAPTOR_MALLOC(unsigned char*, ref->path_len + 1);
     if(!path_buffer) {
       result_len = 0;
@@ -576,20 +658,37 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   /* Build the result path in path_buffer */
   result.path_len = 0;
 
-  if(base->path)
+  if(base->path) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.path_len, base->path_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     result.path_len += base->path_len;
-  else {
+  } else {
     /* Add a missing path - makes the base URI 1 character longer */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(base->uri_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     base->path = (unsigned char*)"/"; /* static, but copied and not free()d  */
     base->path_len = 1;
     base->uri_len++;
     result.path_len++;
   }
 
-  if(ref->path)
+  if(ref->path) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.path_len, ref->path_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     result.path_len += ref->path_len;
+  }
 
   /* the resulting path can be no longer than result.path_len */
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.path_len, 1)) {
+    result_len = 0;
+    goto resolve_tidy;
+  }
   path_buffer = RAPTOR_MALLOC(unsigned char*, result.path_len + 1);
   if(!path_buffer) {
     result_len = 0;
@@ -637,19 +736,64 @@ raptor_uri_resolve_uri_reference(const unsigned char *base_uri,
   }
   
   l = 0;
-  if(result.scheme)
-    l = result.scheme_len + 1;
-  if(result.authority)
-    l += 2 + result.authority_len;
-  if(result.path)
+  if(result.scheme) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.scheme_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    add_len = result.scheme_len + 1;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(l, add_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    l += add_len;
+  }
+  if(result.authority) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.authority_len, 2)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    add_len = result.authority_len + 2;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(l, add_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    l += add_len;
+  }
+  if(result.path) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(l, result.path_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
     l += result.path_len;
-  if(result.query)
-    l += 1 + result.query_len;
-  if(result.fragment)
-    l += 1 + result.fragment_len;
+  }
+  if(result.query) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.query_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    add_len = result.query_len + 1;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(l, add_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    l += add_len;
+  }
+  if(result.fragment) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(result.fragment_len, 1)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    add_len = result.fragment_len + 1;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(l, add_len)) {
+      result_len = 0;
+      goto resolve_tidy;
+    }
+    l += add_len;
+  }
 
-  if(l > length) {
-    /* Output buffer is too small */
+  if(l >= length) {
+    /* Output buffer is too small (need one byte for NUL terminator) */
     result_len = 0;
     goto resolve_tidy;
   }
@@ -759,6 +903,180 @@ check_parses(const char *uri_string) {
           program, uri_string);
 #endif
   raptor_free_uri_detail(ud);
+  return 0;
+}
+
+
+static int
+check_resolve_buffer_too_small(void)
+{
+  const unsigned char *base_uri = (const unsigned char*)"http://example.org/";
+  const unsigned char *reference_uri = (const unsigned char*)"path";
+  unsigned char buffer[64];
+  size_t result;
+  size_t full_len;
+
+  full_len = raptor_uri_resolve_uri_reference(base_uri, reference_uri,
+                                              buffer, sizeof(buffer));
+  if(!full_len)
+    return 1;
+
+  /* Buffer sized exactly for payload with no room for NUL must fail */
+  result = raptor_uri_resolve_uri_reference(base_uri, reference_uri,
+                                            buffer, full_len);
+  if(result != 0) {
+    fprintf(stderr,
+            "%s: resolve with buffer length %lu (exact payload) should fail\n",
+            program, (unsigned long)full_len);
+    return 1;
+  }
+
+  /* Buffer with room for NUL must succeed */
+  result = raptor_uri_resolve_uri_reference(base_uri, reference_uri,
+                                            buffer, full_len + 1);
+  if(result != full_len || buffer[result] != '\0') {
+    fprintf(stderr,
+            "%s: resolve with buffer length %lu+1 FAILED\n",
+            program, (unsigned long)full_len);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+check_resolve_zero_length_buffer(void)
+{
+  unsigned char buffer[8];
+  size_t result;
+
+  result = raptor_uri_resolve_uri_reference((const unsigned char*)"http://a/",
+                                            (const unsigned char*)"b",
+                                            buffer, 0);
+  if(result != 0) {
+    fprintf(stderr,
+            "%s: resolve with zero-length buffer should return 0\n", program);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+check_resolve_null_buffer(void)
+{
+  size_t result;
+
+  result = raptor_uri_resolve_uri_reference((const unsigned char*)"http://a/",
+                                            (const unsigned char*)"b",
+                                            NULL, 64);
+  if(result != 0) {
+    fprintf(stderr,
+            "%s: resolve with NULL buffer should return 0\n", program);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+check_resolve_null_base_fragment(void)
+{
+  unsigned char buffer[64];
+  size_t result;
+
+  result = raptor_uri_resolve_uri_reference(NULL,
+                                            (const unsigned char*)"#frag",
+                                            buffer, sizeof(buffer));
+  if(result != 0) {
+    fprintf(stderr,
+            "%s: resolve #frag with NULL base should return 0\n", program);
+    return 1;
+  }
+
+  result = raptor_uri_resolve_uri_reference(NULL,
+                                            (const unsigned char*)"",
+                                            buffer, sizeof(buffer));
+  if(result != 0) {
+    fprintf(stderr,
+            "%s: resolve empty reference with NULL base should return 0\n",
+            program);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+check_detail_to_string_overflow(void)
+{
+  raptor_uri_detail ud;
+  size_t len_p = 99;
+  unsigned char path[] = "path";
+  unsigned char *rebuilt;
+
+  memset(&ud, 0, sizeof(ud));
+  ud.path = path;
+  ud.path_len = (size_t)-1;
+
+  rebuilt = raptor_uri_detail_to_string(&ud, &len_p);
+  if(rebuilt) {
+    fprintf(stderr,
+            "%s: raptor_uri_detail_to_string should fail on overflow\n",
+            program);
+    RAPTOR_FREE(char*, rebuilt);
+    return 1;
+  }
+
+  if(len_p != 99) {
+    fprintf(stderr,
+            "%s: raptor_uri_detail_to_string must not set len_p on failure\n",
+            program);
+    return 1;
+  }
+
+  return 0;
+}
+
+
+static int
+check_detail_to_string_query_before_fragment(void)
+{
+  const unsigned char *uri =
+    (const unsigned char*)"http://example.org/path?foo=1#bar";
+  const char *expected = "http://example.org/path?foo=1#bar";
+  raptor_uri_detail *ud;
+  unsigned char *rebuilt;
+
+  ud = raptor_new_uri_detail(uri);
+  if(!ud || !ud->query || !ud->fragment) {
+    fprintf(stderr,
+            "%s: parse URI with query and fragment FAILED\n", program);
+    if(ud)
+      raptor_free_uri_detail(ud);
+    return 1;
+  }
+
+  rebuilt = raptor_uri_detail_to_string(ud, NULL);
+  raptor_free_uri_detail(ud);
+  if(!rebuilt) {
+    fprintf(stderr, "%s: raptor_uri_detail_to_string FAILED\n", program);
+    return 1;
+  }
+
+  if(strcmp((const char*)rebuilt, expected)) {
+    fprintf(stderr,
+            "%s: raptor_uri_detail_to_string got '%s' expected '%s'\n",
+            program, (const char*)rebuilt, expected);
+    RAPTOR_FREE(char*, rebuilt);
+    return 1;
+  }
+
+  RAPTOR_FREE(char*, rebuilt);
   return 0;
 }
 
@@ -882,6 +1200,13 @@ main(int argc, char *argv[])
   failures += check_resolve("http://example.com/folder1/folder2/",
                             "http://example.com/folder1/folder2/../folder1/../entity1",
                             "http://example.com/folder1/entity1");
+
+  failures += check_resolve_buffer_too_small();
+  failures += check_resolve_zero_length_buffer();
+  failures += check_resolve_null_buffer();
+  failures += check_resolve_null_base_fragment();
+  failures += check_detail_to_string_overflow();
+  failures += check_detail_to_string_query_before_fragment();
 
   return failures;
 }
