@@ -333,6 +333,72 @@ AC_C_CONST
 AC_C_BIGENDIAN
 AC_C_INLINE
 
+AC_CHECK_SIZEOF([unsigned char])
+AC_CHECK_SIZEOF([signed char])
+AC_CHECK_SIZEOF([short])
+AC_CHECK_SIZEOF([int])
+AC_CHECK_SIZEOF([long])
+AC_CHECK_SIZEOF([long long])
+AC_CHECK_SIZEOF([time_t], [], [[
+#include <sys/types.h>
+#include <time.h>
+]])
+
+AC_CACHE_CHECK([whether time_t is signed], [raptor_cv_type_time_t_signed],
+  [AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include <sys/types.h>
+#include <time.h>
+]], [[
+int verify_time_t_is_signed[((time_t)-1 < (time_t)0) ? 1 : -1];
+(void)verify_time_t_is_signed;
+return 0;
+]])],
+    [raptor_cv_type_time_t_signed=yes],
+    [raptor_cv_type_time_t_signed=no])])
+if test "$raptor_cv_type_time_t_signed" = yes; then
+  AC_DEFINE([RAPTOR_TIME_T_IS_SIGNED], [1], [Define to 1 if time_t is signed, or 0 otherwise.])
+else
+  AC_DEFINE([RAPTOR_TIME_T_IS_SIGNED], [0], [Define to 1 if time_t is signed, or 0 otherwise.])
+fi
+
+if test "$raptor_cv_type_time_t_signed" = yes; then
+  if test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_signed_char"; then
+    raptor_time_t_min='((time_t)SCHAR_MIN)'
+    raptor_time_t_max='((time_t)SCHAR_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_short"; then
+    raptor_time_t_min='((time_t)SHRT_MIN)'
+    raptor_time_t_max='((time_t)SHRT_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_int"; then
+    raptor_time_t_min='((time_t)INT_MIN)'
+    raptor_time_t_max='((time_t)INT_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_long"; then
+    raptor_time_t_min='((time_t)LONG_MIN)'
+    raptor_time_t_max='((time_t)LONG_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_long_long"; then
+    raptor_time_t_min='((time_t)LLONG_MIN)'
+    raptor_time_t_max='((time_t)LLONG_MAX)'
+  else
+    AC_MSG_ERROR([cannot determine time_t limits])
+  fi
+else
+  raptor_time_t_min='((time_t)0)'
+  if test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_unsigned_char"; then
+    raptor_time_t_max='((time_t)UCHAR_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_short"; then
+    raptor_time_t_max='((time_t)USHRT_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_int"; then
+    raptor_time_t_max='((time_t)UINT_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_long"; then
+    raptor_time_t_max='((time_t)ULONG_MAX)'
+  elif test "$ac_cv_sizeof_time_t" -le "$ac_cv_sizeof_long_long"; then
+    raptor_time_t_max='((time_t)ULLONG_MAX)'
+  else
+    AC_MSG_ERROR([cannot determine time_t limits])
+  fi
+fi
+AC_DEFINE_UNQUOTED([RAPTOR_TIME_T_MIN], [$raptor_time_t_min], [Minimum value of time_t.])
+AC_DEFINE_UNQUOTED([RAPTOR_TIME_T_MAX], [$raptor_time_t_max], [Maximum value of time_t.])
+
 AC_MSG_CHECKING(whether __FUNCTION__ is available)
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([#include <stdio.h>
 int main(void) { printf(__FUNCTION__); }])],

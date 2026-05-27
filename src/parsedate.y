@@ -30,12 +30,23 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <ctype.h>
+#include <limits.h>
 
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #ifdef HAVE_TIME_H
 #include <time.h>
+#endif
+
+#ifndef RAPTOR_TIME_T_IS_SIGNED
+#error RAPTOR_TIME_T_IS_SIGNED is not defined
+#endif
+#ifndef RAPTOR_TIME_T_MIN
+#error RAPTOR_TIME_T_MIN is not defined
+#endif
+#ifndef RAPTOR_TIME_T_MAX
+#error RAPTOR_TIME_T_MAX is not defined
 #endif
 
 #ifdef HAVE_STDLIB_H
@@ -137,6 +148,7 @@ static int yylex (YYSTYPE *lvalp, void *parm);
 static int ToHour (int Hours, MERIDIAN Meridian);
 static int ToYear (int Year);
 static int LookupWord (YYSTYPE *lvalp, char *buff);
+static int AddTimeT (time_t *Result, time_t Start, long Delta);
 
 %}
 
@@ -830,6 +842,50 @@ ToYear(int Year)
 }
 
 static int
+AddTimeT(time_t *Result, time_t Start, long Delta)
+{
+  time_t time_delta;
+
+  if(Delta > 0)
+    {
+      if(sizeof(time_t) < sizeof(long) && Delta > (long)RAPTOR_TIME_T_MAX)
+        return -1;
+      time_delta = (time_t)Delta;
+      if(Start > RAPTOR_TIME_T_MAX - time_delta)
+        return -1;
+    }
+  else if(Delta < 0)
+    {
+#if RAPTOR_TIME_T_IS_SIGNED
+      if(sizeof(time_t) < sizeof(long) && Delta < (long)RAPTOR_TIME_T_MIN)
+        return -1;
+      time_delta = (time_t)Delta;
+      if(Start < RAPTOR_TIME_T_MIN - time_delta)
+        return -1;
+#else
+      unsigned long magnitude = (unsigned long)(-(Delta + 1)) + 1UL;
+
+      if(sizeof(time_t) < sizeof(unsigned long) &&
+         magnitude > (unsigned long)RAPTOR_TIME_T_MAX)
+        return -1;
+      time_delta = (time_t)magnitude;
+      if(Start < time_delta)
+        return -1;
+      *Result = Start - time_delta;
+      return 0;
+#endif
+    }
+  else
+    {
+      *Result = Start;
+      return 0;
+    }
+
+  *Result = Start + (time_t)Delta;
+  return 0;
+}
+
+static int
 LookupWord (YYSTYPE *lvalp, char *buff)
 {
   char *p;
@@ -1152,9 +1208,8 @@ time_t raptor_parse_date(const char *p, time_t *now)
 	return -1;
       delta = date.yyTimezone * 60L + difftm (&tm, gmt);
 
-      if((Start + delta < Start) != (delta < 0))
+      if(AddTimeT(&Start, Start, delta))
 	return -1;		/* time_t overflow */
-      Start += delta;
     }
 
   return Start;
