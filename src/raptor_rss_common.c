@@ -628,25 +628,26 @@ raptor_new_rss_block(raptor_world* world, raptor_rss_type type,
 void
 raptor_free_rss_block(raptor_rss_block *block)
 {
-  int i;
+  while(block) {
+    raptor_rss_block *next = block->next;
+    int i;
 
-  for(i = 0; i < RSS_BLOCK_MAX_URLS; i++) {
-    if(block->urls[i])
-      raptor_free_uri(block->urls[i]);
+    for(i = 0; i < RSS_BLOCK_MAX_URLS; i++) {
+      if(block->urls[i])
+        raptor_free_uri(block->urls[i]);
+    }
+
+    for(i = 0; i < RSS_BLOCK_MAX_STRINGS; i++) {
+      if(block->strings[i])
+        RAPTOR_FREE(char*, block->strings[i]);
+    }
+
+    if(block->identifier)
+      raptor_free_term(block->identifier);
+
+    RAPTOR_FREE(raptor_rss_block, block);
+    block = next;
   }
-
-  for(i = 0; i < RSS_BLOCK_MAX_STRINGS; i++) {
-    if(block->strings[i])
-      RAPTOR_FREE(char*, block->strings[i]);
-  }
-
-  if(block->next)
-    raptor_free_rss_block(block->next);
-
-  if(block->identifier)
-    raptor_free_term(block->identifier);
-
-  RAPTOR_FREE(raptor_rss_block, block);
 }
 
 
@@ -663,13 +664,16 @@ raptor_rss_new_field(raptor_world* world)
 void
 raptor_rss_field_free(raptor_rss_field* field)
 {
-  if(field->value)
-    RAPTOR_FREE(char*, field->value);
-  if(field->uri)
-    raptor_free_uri(field->uri);
-  if(field->next)
-    raptor_rss_field_free(field->next);
-  RAPTOR_FREE(raptor_rss_field, field);
+  while(field) {
+    raptor_rss_field *next = field->next;
+
+    if(field->value)
+      RAPTOR_FREE(char*, field->value);
+    if(field->uri)
+      raptor_free_uri(field->uri);
+    RAPTOR_FREE(raptor_rss_field, field);
+    field = next;
+  }
 }
 
 
