@@ -1,0 +1,38 @@
+FROM docker.io/library/debian:11-slim as builder
+
+COPY . /raptor
+
+WORKDIR /raptor
+
+RUN apt-get update && \
+    apt-get install -y automake \
+                       autoconf \
+                       libtool \
+                       gtk-doc-tools \
+                       flex \
+                       bison \
+                       libxml2-dev \
+                       build-essential
+
+RUN cd src && \
+    flex -oturtle_lexer.c turtle_lexer.l && \
+    bison -y parsedate.y && \
+    bison -y turtle_parser.y && \
+    cp parsedate.tab.c parsedate.c && \
+    cp parsedate.tab.h parsedate.h && \
+    cp turtle_parser.tab.c turtle_parser.c && \
+    cp turtle_parser.tab.h turtle_parser.h && \
+    cd ..
+RUN NOCONFIGURE=1 ./autogen.sh
+RUN ./configure --prefix=/usr
+RUN make
+RUN make install
+
+FROM docker.io/library/debian:11-slim
+
+RUN apt-get update && \
+    apt-get install -y libxml2 && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=builder /usr/lib/libraptor2* /usr/lib/
+COPY --from=builder /usr/bin/rapper /usr/bin/
