@@ -239,6 +239,7 @@ graph: GRAPH_NAME_LEFT_CURLY
         raptor_free_term(turtle_parser->graph_name);
       turtle_parser->graph_name = raptor_new_term_from_uri(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1);
       raptor_free_uri($1);
+      $1 = NULL;
       raptor_parser_start_graph(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                                 turtle_parser->graph_name->value.uri, 1);
     }
