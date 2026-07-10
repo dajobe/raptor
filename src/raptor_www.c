@@ -819,15 +819,26 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
 {
   raptor_stringbuffer *sb = NULL;
   void *str = NULL;
+  raptor_data_malloc_handler effective_malloc_handler;
   raptor_www_write_bytes_handler saved_write_bytes;
   void *saved_write_bytes_userdata;
-  
+
+  if(length_p)
+    *length_p = 0;
+
+  if(!string_p)
+    return 1;
+
+  *string_p = NULL;
+
   sb = raptor_new_stringbuffer();
   if(!sb)
     return 1;
 
-  if(length_p)
-    *length_p=0;
+  if(malloc_handler)
+    effective_malloc_handler = malloc_handler;
+  else
+    effective_malloc_handler = raptor_alloc_memory;
 
   saved_write_bytes = www->write_bytes;
   saved_write_bytes_userdata = www->write_bytes_userdata;
@@ -837,14 +848,15 @@ raptor_www_fetch_to_string(raptor_www *www, raptor_uri *uri,
     str = NULL;
   else {
     size_t len = raptor_stringbuffer_length(sb);
-    if(len) {
-      str = (void*)malloc_handler(len+1);
-      if(str) {
+    str = (void*)effective_malloc_handler(len+1);
+    if(str) {
+      if(len)
         raptor_stringbuffer_copy_to_string(sb, (unsigned char*)str, len+1);
-        *string_p=str;
-        if(length_p)
-          *length_p=len;
-      }
+      else
+        *(char*)str = '\0';
+      *string_p = str;
+      if(length_p)
+        *length_p = len;
     }
   }
 
