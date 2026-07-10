@@ -25,7 +25,7 @@
  * Made from a subset of the terms in
  *   http://www.w3.org/DesignIssues/Notation3.html
  *
- * TRIG is defined in http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/
+ * TRIG is defined in https://www.w3.org/TR/trig/
  */
 
 %{
@@ -1910,7 +1910,7 @@ raptor_turtle_parser_register_factory(raptor_parser_factory *factory)
 static const char* const trig_names[2] = { "trig", NULL };
   
 static const char* const trig_uri_strings[2] = {
-  "http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/",
+  "https://www.w3.org/TR/trig/",
   NULL
 };
   

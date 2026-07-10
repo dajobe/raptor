@@ -1473,6 +1473,7 @@ tests/turtle/Makefile
 tests/mkr/Makefile
 tests/turtle-2013/Makefile
 tests/trig/Makefile
+tests/trig-2013/Makefile
 tests/bugs/Makefile
 utils/Makefile
 librdfa/Makefile

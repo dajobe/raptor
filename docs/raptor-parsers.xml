@@ -230,7 +230,7 @@ RDF/XML parser (name <literal>rdfxml</literal>).
 <title>TRiG parser (name <literal>trig</literal>)</title>
 
 <para>A parser for the
-<ulink url="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/">TriG - Turtle with Named Graphs</ulink>
+<ulink url="https://www.w3.org/TR/trig/">RDF 1.1 TriG</ulink>
 syntax.
 </para>
 
