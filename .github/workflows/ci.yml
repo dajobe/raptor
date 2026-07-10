@@ -134,6 +134,43 @@ jobs:
       - name: Test sequentially
         run: ctest --test-dir build --output-on-failure
 
+  gtk-doc:
+    name: Documentation (gtk-doc)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            flex \
+            gtk-doc-tools \
+            libcurl4-gnutls-dev \
+            libtool \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            python-is-python3
+
+      - name: Configure with gtk-doc
+        run: ./autogen.sh --enable-gtk-doc
+
+      - name: Build
+        run: make
+
+      - name: Build documentation
+        run: make -C docs
+
   asan:
     name: ASan and UBSan (Ubuntu, Clang)
     runs-on: ubuntu-latest
