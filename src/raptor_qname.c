@@ -31,6 +31,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdarg.h>
+#include <limits.h>
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
 #endif
@@ -116,6 +117,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     size_t value_length = strlen((char*)value);
     unsigned char* new_value;
 
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(value_length, 1)) {
+      RAPTOR_FREE(raptor_qname, qname);
+      return NULL;
+    }
+
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
@@ -137,7 +143,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
     local_name_length = (unsigned int)(p - name);
 
     /* No : in the name */
-    new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)local_name_length, 1)) {
+      raptor_free_qname(qname);
+      return NULL;
+    }
+    new_name = RAPTOR_MALLOC(unsigned char*, (size_t)local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -171,7 +181,11 @@ raptor_new_qname(raptor_namespace_stack *nstack,
 
     /* p now is at start of local_name */
     local_name_length = (unsigned int)strlen((char*)p);
-    new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)local_name_length, 1)) {
+      raptor_free_qname(qname);
+      return NULL;
+    }
+    new_name = RAPTOR_MALLOC(unsigned char*, (size_t)local_name_length + 1);
     if(!new_name) {
       raptor_free_qname(qname);
       return NULL;
@@ -256,7 +270,11 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
     unsigned int value_length = (unsigned int)strlen((char*)value);
     unsigned char* new_value;
 
-    new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)value_length, 1)) {
+      RAPTOR_FREE(raptor_qname, qname);
+      return NULL;
+    }
+    new_value = RAPTOR_MALLOC(unsigned char*, (size_t)value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, qname);
       return NULL;
@@ -267,7 +285,11 @@ raptor_new_qname_from_namespace_local_name(raptor_world* world,
     qname->value_length = value_length;
   }
 
-  new_name = RAPTOR_MALLOC(unsigned char*, local_name_length + 1);
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)local_name_length, 1)) {
+    raptor_free_qname(qname);
+    return NULL;
+  }
+  new_name = RAPTOR_MALLOC(unsigned char*, (size_t)local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(qname);
     return NULL;
@@ -315,6 +337,11 @@ raptor_qname_copy(raptor_qname *qname)
     size_t value_length = qname->value_length;
     unsigned char* new_value;
 
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(value_length, 1)) {
+      RAPTOR_FREE(raptor_qname, new_qname);
+      return NULL;
+    }
+
     new_value = RAPTOR_MALLOC(unsigned char*, value_length + 1);
     if(!new_value) {
       RAPTOR_FREE(raptor_qname, new_qname);
@@ -326,7 +353,12 @@ raptor_qname_copy(raptor_qname *qname)
     new_qname->value_length = value_length;
   }
 
-  new_name = RAPTOR_MALLOC(unsigned char*, qname->local_name_length + 1);
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)qname->local_name_length, 1)) {
+    raptor_free_qname(new_qname);
+    return NULL;
+  }
+  new_name = RAPTOR_MALLOC(unsigned char*,
+                           (size_t)qname->local_name_length + 1);
   if(!new_name) {
     raptor_free_qname(new_qname);
     return NULL;
@@ -542,11 +574,22 @@ unsigned char*
 raptor_qname_to_counted_name(raptor_qname *qname, size_t* length_p)
 {
   size_t len = qname->local_name_length;
+  size_t prefix_len;
   unsigned char* s;
   unsigned char *p;
 
-  if(qname->nspace && qname->nspace->prefix_length > 0)
-    len+= 1 + qname->nspace->prefix_length;
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    prefix_len = qname->nspace->prefix_length;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(prefix_len, 1))
+      return NULL;
+    prefix_len++;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, prefix_len))
+      return NULL;
+    len += prefix_len;
+  }
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 1))
+    return NULL;
 
   if(length_p)
     *length_p=len;
@@ -649,18 +692,48 @@ unsigned char*
 raptor_qname_format_as_xml(const raptor_qname *qname, size_t *length_p)
 {
   size_t length;
+  size_t add_length;
   unsigned char *buffer;
   const char quote='"';
   unsigned char *p;
+  int escaped_length;
 
-  length = qname->local_name_length + 3 /* ="" */;
-  if(qname->value_length)
-    length += raptor_xml_escape_string(qname->world,
-                                       qname->value, qname->value_length,
-                                       NULL, 0, quote);
+  length = (size_t)qname->local_name_length;
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, 3))
+    return NULL;
+  length += 3; /* ="" */
+  if(qname->value_length) {
+    /* Six bytes is the longest XML escape emitted for one input byte;
+     * the worst-case escaped length must also stay within the int
+     * range that raptor_xml_escape_string() returns, or its count can
+     * wrap to a nonnegative value and under-size the allocation. */
+    if(RAPTOR_SIZE_T_MUL_OVERFLOWS(qname->value_length, 6) ||
+       qname->value_length > (size_t)(INT_MAX / 6))
+      return NULL;
+    escaped_length = raptor_xml_escape_string(qname->world,
+                                              qname->value,
+                                              qname->value_length,
+                                              NULL, 0, quote);
+    if(escaped_length < 0)
+      return NULL;
+    add_length = (size_t)escaped_length;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, add_length))
+      return NULL;
+    length += add_length;
+  }
 
-  if(qname->nspace && qname->nspace->prefix_length > 0)
-    length += qname->nspace->prefix_length + 1; /* for : */
+  if(qname->nspace && qname->nspace->prefix_length > 0) {
+    add_length = qname->nspace->prefix_length;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(add_length, 1))
+      return NULL;
+    add_length++; /* for : */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, add_length))
+      return NULL;
+    length += add_length;
+  }
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, 1))
+    return NULL;
 
   if(length_p)
     *length_p = length;
@@ -691,5 +764,4 @@ raptor_qname_format_as_xml(const raptor_qname *qname, size_t *length_p)
 
   return buffer;
 }
-
 

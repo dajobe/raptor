@@ -382,13 +382,20 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
   raptor_ntriples_parser_context *ntriples_parser = (raptor_ntriples_parser_context*)rdf_parser->context;
   int max_terms = ntriples_parser->is_nquads ? 4 : 3;
   unsigned char* end_ptr;
+  size_t new_line_length;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("adding %d bytes to buffer\n", (unsigned int)len);
 #endif
 
   if(len) {
-    buffer = RAPTOR_MALLOC(unsigned char*, ntriples_parser->line_length + len + 1);
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(ntriples_parser->line_length, len))
+      return 1;
+    new_line_length = ntriples_parser->line_length + len;
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(new_line_length, 1))
+      return 1;
+
+    buffer = RAPTOR_MALLOC(unsigned char*, new_line_length + 1);
     if(!buffer) {
       raptor_parser_fatal_error(rdf_parser, "Out of memory");
       return 1;
@@ -405,7 +412,7 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     ptr = buffer + ntriples_parser->line_length;
 
     /* adjust stored length */
-    ntriples_parser->line_length += len;
+    ntriples_parser->line_length = new_line_length;
 
     /* now write new stuff at end of cdata buffer */
     memcpy(ptr, s, len);

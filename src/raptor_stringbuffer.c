@@ -154,6 +154,12 @@ raptor_stringbuffer_append_string_common(raptor_stringbuffer* stringbuffer,
 
   if(!string || !length)
     return 0;
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(stringbuffer->length, length)) {
+    if(!do_copy)
+      RAPTOR_FREE(char*, string);
+    return 1;
+  }
   
   node = RAPTOR_MALLOC(raptor_stringbuffer_node*, sizeof(*node));
   if(!node) {
@@ -313,6 +319,9 @@ raptor_stringbuffer_append_stringbuffer(raptor_stringbuffer* stringbuffer,
   if(!node)
     return 0;
 
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(stringbuffer->length, append->length))
+    return 1;
+
   /* move all append nodes to stringbuffer */
   if(stringbuffer->tail) {
     stringbuffer->tail->next = node;
@@ -365,6 +374,22 @@ raptor_stringbuffer_prepend_string_common(raptor_stringbuffer* stringbuffer,
                                           int do_copy)
 {
   raptor_stringbuffer_node *node;
+
+  if(!string)
+    return length ? 1 : 0;
+
+  if(!length) {
+    /* A zero-length owned buffer is still taken over, as attaching it
+     * to a node would have done. */
+    if(!do_copy)
+      RAPTOR_FREE(char*, string);
+    return 0;
+  }
+
+  /* On failure ownership stays with the caller, matching the node
+   * allocation failure below. */
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(stringbuffer->length, length))
+    return 1;
 
   node = RAPTOR_MALLOC(raptor_stringbuffer_node*, sizeof(*node));
   if(!node)
@@ -485,6 +510,9 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
     return NULL;
   if(stringbuffer->string)
     return stringbuffer->string;
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(stringbuffer->length, 1))
+    return NULL;
 
   stringbuffer->string = RAPTOR_MALLOC(unsigned char*, stringbuffer->length + 1);
   if(!stringbuffer->string)
@@ -644,6 +672,26 @@ raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb,
 /* one more prototype */
 int main(int argc, char *argv[]);
 
+typedef int (*counted_stringbuffer_operation)(raptor_stringbuffer*,
+                                              const unsigned char*, size_t,
+                                              int);
+
+typedef struct {
+  const char* name;
+  counted_stringbuffer_operation operation;
+} counted_stringbuffer_failure_case;
+
+static const counted_stringbuffer_failure_case
+counted_stringbuffer_failure_cases[] = {
+  { "append", raptor_stringbuffer_append_counted_string },
+  { "prepend", raptor_stringbuffer_prepend_counted_string }
+};
+
+static const size_t counted_stringbuffer_failure_lengths[] = {
+  ~(size_t)0,
+  ~(size_t)0 - 1
+};
+
 
 int
 main(int argc, char *argv[]) 
@@ -667,10 +715,87 @@ main(int argc, char *argv[])
   const char *test_append_results_total="thebrownjumpsthedogquickfoxoverlazy";
 #define COPY_STRING_BUFFER_SIZE 100
   unsigned char *copy_string;
+  size_t j;
   
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
+
+  for(i = 0;
+      i < (int)(sizeof(counted_stringbuffer_failure_cases) /
+                sizeof(counted_stringbuffer_failure_cases[0]));
+      i++) {
+    for(j = 0;
+        j < sizeof(counted_stringbuffer_failure_lengths) /
+            sizeof(counted_stringbuffer_failure_lengths[0]);
+        j++) {
+      int test_rc;
+
+      sb = raptor_new_stringbuffer();
+      if(!sb) {
+        fprintf(stderr, "%s: Failed to create boundary-test string buffer\n",
+                program);
+        exit(1);
+      }
+      test_rc = raptor_stringbuffer_append_counted_string(
+        sb, (const unsigned char*)"xx", 2, 1);
+      if(test_rc) {
+        fprintf(stderr, "%s: Failed to seed boundary-test string buffer\n",
+                program);
+        exit(1);
+      }
+      test_rc = counted_stringbuffer_failure_cases[i].operation(
+        sb, (const unsigned char*)"x",
+        counted_stringbuffer_failure_lengths[j], 1);
+      if(!test_rc || raptor_stringbuffer_length(sb) != 2) {
+        fprintf(stderr,
+                "%s: %s with boundary length %lu did not fail cleanly\n",
+                program, counted_stringbuffer_failure_cases[i].name,
+                (unsigned long)counted_stringbuffer_failure_lengths[j]);
+        exit(1);
+      }
+      raptor_free_stringbuffer(sb);
+    }
+  }
+
+  sb = raptor_new_stringbuffer();
+  if(!sb) {
+    fprintf(stderr, "%s: Failed to create NULL boundary-test buffer\n",
+            program);
+    exit(1);
+  }
+  if(!raptor_stringbuffer_prepend_counted_string(sb, NULL, 1, 1)) {
+    fprintf(stderr,
+            "%s: prepend NULL with nonzero length did not return an error\n",
+            program);
+    exit(1);
+  }
+  raptor_free_stringbuffer(sb);
+
+  sb = raptor_new_stringbuffer();
+  if(!sb) {
+    fprintf(stderr, "%s: Failed to create as-string boundary-test buffer\n",
+            program);
+    exit(1);
+  }
+  copy_string = (unsigned char*)malloc(1);
+  if(!copy_string) {
+    fprintf(stderr, "%s: Failed to allocate as-string boundary-test byte\n",
+            program);
+    exit(1);
+  }
+  if(raptor_stringbuffer_append_counted_string(sb, copy_string,
+                                               ~(size_t)0, 0)) {
+    fprintf(stderr, "%s: Failed to set up as-string boundary test\n",
+            program);
+    exit(1);
+  }
+  if(raptor_stringbuffer_as_string(sb)) {
+    fprintf(stderr, "%s: as-string SIZE_MAX boundary did not fail cleanly\n",
+            program);
+    exit(1);
+  }
+  raptor_free_stringbuffer(sb);
 
   /* test appending */
 

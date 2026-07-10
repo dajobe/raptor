@@ -293,6 +293,9 @@ raptor_www_set_user_agent2(raptor_www* www, const char *user_agent,
   if(user_agent_len == 0)
     user_agent_len = strlen(user_agent);
 
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(user_agent_len, 1))
+    return 1;
+
   ua_copy = RAPTOR_MALLOC(char*, user_agent_len + 1);
   if(!ua_copy)
     return 1;
@@ -347,6 +350,9 @@ raptor_www_set_proxy2(raptor_www* www, const char *proxy,
   if(proxy_len == 0)
     proxy_len = strlen(proxy);
 
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(proxy_len, 1))
+    return 1;
+
   proxy_copy = RAPTOR_MALLOC(char*, proxy_len + 1);
   if(!proxy_copy)
     return 1;
@@ -395,11 +401,17 @@ raptor_www_set_http_accept2(raptor_www* www, const char *value,
 {
   char *value_copy;
   size_t len = 8; /* strlen("Accept:")+1 */
-  
+  size_t value_part_len;
+
   if(value) {
     if (value_len == 0)
       value_len = strlen(value);
-    len += 1 + value_len; /* " "+value */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(value_len, 1))
+      return 1;
+    value_part_len = value_len + 1; /* " "+value */
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, value_part_len))
+      return 1;
+    len += value_part_len;
   }
   
   value_copy = RAPTOR_MALLOC(char*, len);

@@ -183,14 +183,16 @@ raptor_new_term_from_counted_literal(raptor_world* world,
 
   if(language && datatype)
     return NULL;
-  
+
+  if(!literal || !*literal)
+    literal_len = 0;
+
+  if(RAPTOR_SIZE_T_ADD_OVERFLOWS(literal_len, 1))
+    return NULL;
 
   new_literal = RAPTOR_MALLOC(unsigned char*, literal_len + 1);
   if(!new_literal)
     return NULL;
-
-  if(!literal || !*literal)
-    literal_len = 0;
 
   if(literal_len) {
     memcpy(new_literal, literal, literal_len);
@@ -201,7 +203,12 @@ raptor_new_term_from_counted_literal(raptor_world* world,
   if(language) {
     unsigned char c;
     unsigned char* l;
-    
+
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)language_len, 1)) {
+      RAPTOR_FREE(char*, new_literal);
+      return NULL;
+    }
+
     new_language = RAPTOR_MALLOC(unsigned char*, language_len + 1);
     if(!new_language) {
       RAPTOR_FREE(char*, new_literal);
@@ -318,6 +325,9 @@ raptor_new_term_from_counted_blank(raptor_world* world,
   raptor_world_open(world);
 
   if (blank) {
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(length, 1))
+      return NULL;
+
     new_id = RAPTOR_MALLOC(unsigned char*, length + 1);
     if(!new_id)
       return NULL;
@@ -780,6 +790,32 @@ static unsigned int bnodeid1_len = 6; /* strlen(bnode_id1) */
 static raptor_term_type bnodeid1_type = RAPTOR_TERM_TYPE_BLANK;
 static const unsigned char* language1 = (const unsigned char*)"en";
 
+typedef enum {
+  COUNTED_TERM_LITERAL,
+  COUNTED_TERM_BLANK,
+  COUNTED_TERM_URI
+} counted_term_constructor;
+
+typedef struct {
+  const char* name;
+  counted_term_constructor constructor;
+  const unsigned char* string;
+  size_t length;
+} counted_term_failure_case;
+
+/* Only true size_t-overflow lengths belong here: a length that merely
+ * makes length + 1 representable (e.g. SIZE_MAX - 1) passes the guard
+ * and reaches malloc(SIZE_MAX), which sanitizer allocators abort on
+ * instead of returning NULL. */
+static const counted_term_failure_case counted_term_failure_cases[] = {
+  { "literal SIZE_MAX", COUNTED_TERM_LITERAL,
+    (const unsigned char*)"Dave Beckett", ~(size_t)0 },
+  { "blank SIZE_MAX", COUNTED_TERM_BLANK,
+    (const unsigned char*)"abc123", ~(size_t)0 },
+  { "URI SIZE_MAX", COUNTED_TERM_URI,
+    (const unsigned char*)"http://www.example.org/", ~(size_t)0 }
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -794,11 +830,46 @@ main(int argc, char *argv[])
   raptor_uri* uri1;
   unsigned char* uri_str;
   size_t uri_len;
+  size_t i;
   
   
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
+
+  for(i = 0;
+      i < sizeof(counted_term_failure_cases) /
+          sizeof(counted_term_failure_cases[0]);
+      i++) {
+    const counted_term_failure_case* test = &counted_term_failure_cases[i];
+    raptor_term* result = NULL;
+
+    switch(test->constructor) {
+      case COUNTED_TERM_LITERAL:
+        result = raptor_new_term_from_counted_literal(world, test->string,
+                                                      test->length, NULL,
+                                                      NULL, 0);
+        break;
+
+      case COUNTED_TERM_BLANK:
+        result = raptor_new_term_from_counted_blank(world, test->string,
+                                                    test->length);
+        break;
+
+      case COUNTED_TERM_URI:
+        result = raptor_new_term_from_counted_uri_string(world, test->string,
+                                                         test->length);
+        break;
+    }
+
+    if(result) {
+      fprintf(stderr, "%s: %s returned object rather than failing\n",
+              program, test->name);
+      raptor_free_term(result);
+      rc = 1;
+      goto tidy;
+    }
+  }
 
 
   /* check a term for NULL URI fails */
