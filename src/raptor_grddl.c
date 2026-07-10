@@ -1446,7 +1446,7 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   buffer = RAPTOR_MALLOC(unsigned char*, buffer_len + 1);
   if(buffer)
     raptor_stringbuffer_copy_to_string(grddl_parser->sb, 
-                                       buffer, buffer_len);
+                                       buffer, buffer_len + 1);
   
 
   uri_string = raptor_uri_as_string(rdf_parser->base_uri);

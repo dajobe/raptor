@@ -286,6 +286,8 @@ raptor_www_set_user_agent2(raptor_www* www, const char *user_agent,
   char *ua_copy = NULL;
   
   if(!user_agent || !*user_agent) {
+    if(www->user_agent)
+      RAPTOR_FREE(char*, www->user_agent);
     www->user_agent = NULL;
     return 0;
   }
@@ -301,7 +303,9 @@ raptor_www_set_user_agent2(raptor_www* www, const char *user_agent,
     return 1;
 
   memcpy(ua_copy, user_agent, user_agent_len + 1); /* copy NUL */
-  
+
+  if(www->user_agent)
+    RAPTOR_FREE(char*, www->user_agent);
   www->user_agent = ua_copy;
 
   return 0;
@@ -358,7 +362,9 @@ raptor_www_set_proxy2(raptor_www* www, const char *proxy,
     return 1;
 
   memcpy(proxy_copy, proxy, proxy_len + 1); /* copy NUL */
-  
+
+  if(www->proxy)
+    RAPTOR_FREE(char*, www->proxy);
   www->proxy = proxy_copy;
 
   return 0;
@@ -400,6 +406,7 @@ raptor_www_set_http_accept2(raptor_www* www, const char *value,
                             size_t value_len)
 {
   char *value_copy;
+  char *p;
   size_t len = 8; /* strlen("Accept:")+1 */
   size_t value_part_len;
 
@@ -417,20 +424,24 @@ raptor_www_set_http_accept2(raptor_www* www, const char *value,
   value_copy = RAPTOR_MALLOC(char*, len);
   if(!value_copy)
     return 1;
-  www->http_accept = value_copy;
+  p = value_copy;
 
   /* copy header name */
-  memcpy(value_copy, "Accept:", 7); /* Do not copy NUL */
-  value_copy += 7;
+  memcpy(p, "Accept:", 7); /* Do not copy NUL */
+  p += 7;
 
   /* copy header value */
   if(value) {
-    *value_copy++ = ' ';
-    memcpy(value_copy, value, value_len + 1); /* Copy NUL */
+    *p++ = ' ';
+    memcpy(p, value, value_len + 1); /* Copy NUL */
   } else {
     /* Ensure value is NUL terminated */
-    *value_copy = '\0';
+    *p = '\0';
   }
+
+  if(www->http_accept)
+    RAPTOR_FREE(char*, www->http_accept);
+  www->http_accept = value_copy;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   RAPTOR_DEBUG2("Using Accept header: '%s'\n", www->http_accept);

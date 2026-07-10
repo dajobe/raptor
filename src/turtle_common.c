@@ -145,7 +145,7 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
 
         for(ii = 0; ii < ulen; ii++) {
           char cc = s[ii];
-          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+          if(!isxdigit(RAPTOR_GOOD_CAST(unsigned char, cc))) {
             error_handler(error_data,
                           "Turtle %s error - illegal hex digit %c in Unicode escape '%c%s...'",
                           label, cc, c, s);
@@ -204,6 +204,11 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
 
   /* calculate output string size */
   len = d-string;
+
+  if(!len) {
+    RAPTOR_FREE(char*, string);
+    return 0;
+  }
   
 #ifdef __clang_analyzer__
   /* clang --analyze does not know about ownership of next call */
@@ -286,7 +291,7 @@ raptor_turtle_expand_qname_escapes(unsigned char *name,
         
         for(ii = 0; ii < ulen; ii++) {
           char cc = s[ii];
-          if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+          if(!isxdigit(RAPTOR_GOOD_CAST(unsigned char, cc))) {
             error_handler(error_data,
                           "Turtle name error - illegal hex digit %c in Unicode escape '%c%s...'",
                           cc, c, s);

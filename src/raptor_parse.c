@@ -1641,7 +1641,7 @@ raptor_parser_get_content(raptor_parser* rdf_parser, size_t* length_p)
   if(!buffer)
     return NULL;
 
-  raptor_stringbuffer_copy_to_string(rdf_parser->sb, buffer, len);
+  raptor_stringbuffer_copy_to_string(rdf_parser->sb, buffer, len + 1);
 
   if(length_p)
     *length_p=len;

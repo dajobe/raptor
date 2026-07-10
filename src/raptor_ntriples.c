@@ -298,7 +298,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 
           for(ii = 0; ii < ulen; ii++) {
             char cc = p[ii];
-            if(!isxdigit(RAPTOR_GOOD_CAST(char, cc))) {
+            if(!isxdigit(RAPTOR_GOOD_CAST(unsigned char, cc))) {
               raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "N-Triples string error - illegal hex digit %c in Unicode escape '%c%s...'",
                             cc, c, p);
               n = 1;
@@ -350,7 +350,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
         break;
 
       default:
-        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal string escape \\%c in \"%s\"", c, (char*)start);
+        raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Illegal string escape \\%c in \"%s\"", c, (char*)*start);
         return 0;
     }
 

@@ -534,14 +534,16 @@ raptor_stringbuffer_as_string(raptor_stringbuffer* stringbuffer)
  * raptor_stringbuffer_copy_to_string:
  * @stringbuffer: raptor stringbuffer
  * @string: output string
- * @length: size of output string
+ * @length: full size of output string buffer, including the NUL terminator
  *
  * Copy the stringbuffer into a string.
  * 
- * Copies the underlying string to a pre-allocated buffer.  The
- * output string is always '\0' terminated.
+ * Copies the underlying string to a pre-allocated buffer.  @length
+ * includes space for the terminating '\0', and the output string is
+ * always '\0' terminated on success.
  *
- * Return value: non-0 on failure such as stringbuffer is empty, buffer is too small
+ * Return value: non-0 on failure such as a NULL or too-small buffer; an
+ * empty stringbuffer copies as the empty string
  **/
 int
 raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
@@ -553,18 +555,15 @@ raptor_stringbuffer_copy_to_string(raptor_stringbuffer* stringbuffer,
   if(!string || length < 1)
     return 1;
 
-  if(!stringbuffer->length)
-    return 0;
+  if(stringbuffer->length >= length) {
+    *string = '\0';
+    return 1;
+  }
 
   p = string;
   for(node = stringbuffer->head; node; node = node->next) {
-    if(node->length > length) {
-      p[-1]='\0';
-      return 1;
-    }
     memcpy(p, node->string, node->length);
     p+= node->length;
-    length-= node->length;
   }
   *p='\0';
   return 0;
@@ -827,6 +826,31 @@ main(int argc, char *argv[])
             (int)len, (int)items_len);
     exit(1);
   }
+
+  copy_string = (unsigned char*)malloc(len);
+  if(!copy_string) {
+    fprintf(stderr, "%s: Failed to allocate exact-size copy buffer\n",
+            program);
+    exit(1);
+  }
+  if(!raptor_stringbuffer_copy_to_string(sb, copy_string, len)) {
+    fprintf(stderr, "%s: exact-size copy buffer did not fail\n", program);
+    exit(1);
+  }
+  free(copy_string);
+
+  copy_string = (unsigned char*)malloc(len + 1);
+  if(!copy_string) {
+    fprintf(stderr, "%s: Failed to allocate terminated copy buffer\n",
+            program);
+    exit(1);
+  }
+  if(raptor_stringbuffer_copy_to_string(sb, copy_string, len + 1) ||
+     strcmp((const char*)copy_string, items_string)) {
+    fprintf(stderr, "%s: size-plus-one copy buffer failed\n", program);
+    exit(1);
+  }
+  free(copy_string);
 
   str = raptor_stringbuffer_as_string(sb);
   if(strcmp((const char*)str, items_string)) {

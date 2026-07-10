@@ -278,7 +278,7 @@ EXPONENT [eE][+-]?[0-9]+
                   yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
                   if(!yylval->string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len);
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len + 1);
                   yylval->string[len]='\0';
 
                   raptor_free_stringbuffer(turtle_parser->sb);
@@ -334,7 +334,7 @@ EXPONENT [eE][+-]?[0-9]+
                   yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
                   if(!yylval->string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len);
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len + 1);
                   yylval->string[len]='\0';
 
                   raptor_free_stringbuffer(turtle_parser->sb);

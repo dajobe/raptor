@@ -222,6 +222,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
   if(language) {
     unsigned char c;
     unsigned char* l;
+    size_t i;
 
     if(RAPTOR_SIZE_T_ADD_OVERFLOWS((size_t)language_len, 1)) {
       RAPTOR_FREE(char*, new_literal);
@@ -235,7 +236,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
     }
 
     l = new_language;
-    while((c = *language++)) {
+    for(i = 0; i < language_len && (c = language[i]); i++) {
       if(c >= 'A' && c <= 'Z')
         c = RAPTOR_GOOD_CAST(unsigned char, c + ('a' - 'A'));
       if(c == '_')
@@ -243,6 +244,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
       *l++ = c;
     }
     *l = '\0';
+    language_len = RAPTOR_GOOD_CAST(unsigned char, l - new_language);
   } else
     language_len = 0;
 
@@ -308,6 +310,9 @@ raptor_new_term_from_literal(raptor_world* world,
 
   if(language)
     language_len = strlen(RAPTOR_GOOD_CAST(const char*, language));
+
+  if(language_len > 255)
+    return NULL;
 
   return raptor_new_term_from_counted_literal(world, literal, literal_len,
                                               datatype, language,
@@ -851,6 +856,7 @@ main(int argc, char *argv[])
   raptor_term* uppercase_language_term = NULL;
   raptor_term* lowercase_language_term = NULL;
   raptor_term* en_gb_term = NULL;
+  raptor_term* counted_language_term = NULL;
   raptor_term* xsd_string_term = NULL;
   raptor_term* plain_string_term = NULL;
   raptor_uri* uri1;
@@ -858,6 +864,8 @@ main(int argc, char *argv[])
   unsigned char* uri_str;
   size_t uri_len;
   size_t i;
+  const unsigned char counted_language[2] = { 'E', 'N' };
+  unsigned char long_language[257];
   
   
   world = raptor_new_world();
@@ -956,6 +964,29 @@ main(int argc, char *argv[])
   }
   raptor_free_term(term2);
   term2 = NULL;
+
+  counted_language_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, NULL, counted_language, 2);
+  if(!counted_language_term ||
+     counted_language_term->value.literal.language_len != 2 ||
+     memcmp(counted_language_term->value.literal.language, "en", 3)) {
+    fprintf(stderr,
+            "%s: counted non-NUL-terminated language tag was not copied exactly\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  memset(long_language, 'a', sizeof(long_language) - 1);
+  long_language[sizeof(long_language) - 1] = '\0';
+  term2 = raptor_new_term_from_literal(
+      world, (const unsigned char*)"x", NULL, long_language);
+  if(term2) {
+    fprintf(stderr, "%s: language tag longer than 255 bytes was accepted\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
 
 
   /* check an empty literal from an empty language literal pointer succeeds */
@@ -1214,6 +1245,8 @@ main(int argc, char *argv[])
     raptor_free_term(lowercase_language_term);
   if(en_gb_term)
     raptor_free_term(en_gb_term);
+  if(counted_language_term)
+    raptor_free_term(counted_language_term);
   if(xsd_string_term)
     raptor_free_term(xsd_string_term);
   if(plain_string_term)
