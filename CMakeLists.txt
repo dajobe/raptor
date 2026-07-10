@@ -450,6 +450,78 @@ CONFIGURE_FILE(
 	SET_TESTS_PROPERTIES("${NAME_PREFIX}:cmp" PROPERTIES DEPENDS "${NAME_PREFIX}:run")
 ENDMACRO(RAPPER_TEST NAME_PREFIX COMMAND OUTPUT REFERENCE)
 
+MACRO(RAPPER_PARSE_TEST NAME_PREFIX COMMAND)
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME_PREFIX}.cmake "
+EXECUTE_PROCESS(
+	COMMAND ${COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${NAME_PREFIX}.res
+	ERROR_FILE ${NAME_PREFIX}.err
+	RESULT_VARIABLE rapper_status
+)
+
+IF(NOT \"\${rapper_status}\" STREQUAL \"0\" AND NOT \"\${rapper_status}\" STREQUAL \"2\")
+	MESSAGE(FATAL_ERROR \"rapper failed with status \${rapper_status}.\")
+ENDIF()
+")
+	ADD_TEST("${NAME_PREFIX}" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
+ENDMACRO(RAPPER_PARSE_TEST NAME_PREFIX COMMAND)
+
+MACRO(RAPPER_EXPECT_FAIL_TEST NAME_PREFIX COMMAND)
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME_PREFIX}.cmake "
+EXECUTE_PROCESS(
+	COMMAND ${COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${NAME_PREFIX}.res
+	ERROR_FILE ${NAME_PREFIX}.err
+	RESULT_VARIABLE rapper_status
+)
+
+IF(NOT \"\${rapper_status}\" STREQUAL \"1\")
+	MESSAGE(FATAL_ERROR \"rapper returned status \${rapper_status}; expected exactly 1.\")
+ENDIF()
+")
+	ADD_TEST("${NAME_PREFIX}" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
+ENDMACRO(RAPPER_EXPECT_FAIL_TEST NAME_PREFIX COMMAND)
+
+MACRO(RAPPER_COMPARE_TEST NAME_PREFIX EXPECTED_COMMAND COMMAND)
+	FILE(WRITE ${CMAKE_CURRENT_BINARY_DIR}/test-${NAME_PREFIX}.cmake "
+EXECUTE_PROCESS(
+	COMMAND ${EXPECTED_COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${NAME_PREFIX}.expected.nt
+	ERROR_FILE ${NAME_PREFIX}.expected.err
+	RESULT_VARIABLE expected_status
+)
+
+IF(NOT \"\${expected_status}\" STREQUAL \"0\" AND NOT \"\${expected_status}\" STREQUAL \"2\")
+	MESSAGE(FATAL_ERROR \"rapper failed to normalize the reference with status \${expected_status}.\")
+ENDIF()
+
+EXECUTE_PROCESS(
+	COMMAND ${COMMAND}
+	TIMEOUT 10
+	OUTPUT_FILE ${NAME_PREFIX}.res
+	ERROR_FILE ${NAME_PREFIX}.err
+	RESULT_VARIABLE rapper_status
+)
+
+IF(NOT \"\${rapper_status}\" STREQUAL \"0\" AND NOT \"\${rapper_status}\" STREQUAL \"2\")
+	MESSAGE(FATAL_ERROR \"rapper failed with status \${rapper_status}.\")
+ENDIF()
+
+EXECUTE_PROCESS(
+	COMMAND ${CMAKE_COMMAND} -E compare_files ${NAME_PREFIX}.expected.nt ${NAME_PREFIX}.res
+	RESULT_VARIABLE compare_status
+)
+
+IF(NOT \"\${compare_status}\" STREQUAL \"0\")
+	MESSAGE(FATAL_ERROR \"normalized output does not match the reference.\")
+ENDIF()
+")
+	ADD_TEST("${NAME_PREFIX}" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
+ENDMACRO(RAPPER_COMPARE_TEST NAME_PREFIX EXPECTED_COMMAND COMMAND)
+
 INCLUDE(CMakeParseArguments)
 
 FUNCTION(RAPPER_RDFDIFF_TEST TEST_NAME RAPPER_COMMAND RAPPER_OUTPUT RDFDIFF_COMMAND)
@@ -510,13 +582,18 @@ SUBDIRS(tests/feeds)
 SUBDIRS(tests/grddl)
 SUBDIRS(tests/json)
 SUBDIRS(tests/ntriples)
+SUBDIRS(tests/ntriples-2013)
+SUBDIRS(tests/nquads-2013)
 SUBDIRS(tests/rdfa)
 SUBDIRS(tests/rdfa11)
 SUBDIRS(tests/rdfxml)
+SUBDIRS(tests/turtle)
+SUBDIRS(tests/turtle-2013)
 SUBDIRS(tests/trig)
+SUBDIRS(tests/mkr)
+SUBDIRS(tests/bugs)
 IF(RAPTOR_ENABLE_FUZZING)
   SUBDIRS(tests/fuzz)
 ENDIF()
-#SUBDIRS(tests/turtle)	# TODO
 
 # end raptor/CMakeLists.txt
