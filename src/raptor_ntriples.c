@@ -51,7 +51,7 @@ typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
   RAPTOR_TERM_CLASS_BNODEID,  /* ends on first non [A-Za-z][A-Za-z0-9]* */
   RAPTOR_TERM_CLASS_STRING,   /* ends on non-escaped " */
-  RAPTOR_TERM_CLASS_LANGUAGE  /* ends on first non [a-z0-9]+ ('-' [a-z0-9]+ )? */
+  RAPTOR_TERM_CLASS_LANGUAGE  /* ends on first non [a-zA-Z]+ ([-_][a-zA-Z0-9]+)* */
 } raptor_ntriples_term_class;
 
 
@@ -64,7 +64,9 @@ raptor_ntriples_term_valid(unsigned char c, int position,
   switch(term_class) {
     case RAPTOR_TERM_CLASS_URI:
       /* ends on > */
-      result = (c != '>');
+      result = (c > 0x20 && c != '<' && c != '>' && c != '"' &&
+                c != '{' && c != '}' && c != '|' && c != '^' &&
+                c != '`' && c != '\\');
       break;
 
     case RAPTOR_TERM_CLASS_BNODEID:
@@ -85,7 +87,7 @@ raptor_ntriples_term_valid(unsigned char c, int position,
       break;
 
     case RAPTOR_TERM_CLASS_LANGUAGE:
-      /* ends on first non [a-zA-Z]+ ('-' [a-zA-Z0-9]+ )?
+      /* ends on first non [a-zA-Z]+ ([-_][a-zA-Z0-9]+)*
        * Accept _ as synonym / typo for -.
        */
       result = IS_ASCII_ALPHA(c);
@@ -144,6 +146,8 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
   unsigned long unichar = 0;
   unsigned int position = 0;
   int end_char_seen = 0;
+  int language_has_subtag = 0;
+  int language_subtag_start = 0;
 
   /* find end of string, fixing backslashed characters on the way */
   while(*lenp > 0) {
@@ -158,10 +162,9 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
       locator->byte++;
     }
 
-    if(term_class == RAPTOR_TERM_CLASS_URI && c == ' ') {
+    if(c > 0x7f && term_class == RAPTOR_TERM_CLASS_LANGUAGE) {
       raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
-                                 "URI error - illegal character %d (0x%02X) found.",
-                                 c, RAPTOR_GOOD_CAST(unsigned int, c));
+                                 "Invalid non-ASCII character in language tag.");
       return 1;
     }
 
@@ -197,11 +200,14 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
         break;
       }
 
-      if(!raptor_ntriples_term_valid(c, position, term_class)) {
+      if(!raptor_ntriples_term_valid(c, position, term_class) ||
+         (term_class == RAPTOR_TERM_CLASS_LANGUAGE &&
+          ((language_subtag_start && (c == '-' || c == '_')) ||
+           (!language_has_subtag && IS_ASCII_DIGIT(c))))) {
         if(end_char) {
           /* end char was expected, so finding an invalid thing is an error */
           raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Missing terminating '%c' (found '%c')", end_char, c);
-          return 0;
+          return 1;
         } else {
           /* it's the end - so rewind 1 to save next char */
           p--;
@@ -227,6 +233,11 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 
       /* otherwise store and move on */
       *dest++ = c;
+      if(term_class == RAPTOR_TERM_CLASS_LANGUAGE) {
+        if(c == '-' || c == '_')
+          language_has_subtag = 1;
+        language_subtag_start = (c == '-' || c == '_');
+      }
       position++;
       continue;
     }
@@ -243,6 +254,22 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
     if(locator) {
       locator->column++;
       locator->byte++;
+    }
+
+    if(term_class == RAPTOR_TERM_CLASS_URI && c != 'u' && c != 'U') {
+      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
+                                 "URI error - illegal escape '\\%c'.", c);
+      return 1;
+    }
+
+    /* Language tags are plain [a-zA-Z0-9] with -/_ separators and no
+     * escapes; an escape here could smuggle characters past the
+     * language tag grammar */
+    if(term_class == RAPTOR_TERM_CLASS_LANGUAGE) {
+      raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
+                                 "Language tag error - illegal escape '\\%c'.",
+                                 c);
+      return 1;
     }
 
     switch(c) {
@@ -356,6 +383,12 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
 
     position++;
   } /* end while */
+
+  if(term_class == RAPTOR_TERM_CLASS_LANGUAGE && language_subtag_start) {
+    raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator,
+                               "Invalid language tag ending in a separator.");
+    return 1;
+  }
 
 
   if(end_char && !end_char_seen) {

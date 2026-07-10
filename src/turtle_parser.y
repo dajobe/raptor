@@ -901,22 +901,14 @@ literal: STRING_LITERAL LANGTAG
   printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($4) {
-    if($2) {
-      raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
-                          "Language not allowed with datatyped literal");
-      RAPTOR_FREE(char*, $2);
-      $2 = NULL;
-    }
-  
-    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $4, NULL);
-    RAPTOR_FREE(char*, $1);
+  raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                      "Language not allowed with datatyped literal");
+  RAPTOR_FREE(char*, $1);
+  RAPTOR_FREE(char*, $2);
+  if($4)
     raptor_free_uri($4);
-    if(!$$)
-      YYERROR;
-  } else
-    $$ = NULL;
-    
+  $$ = NULL;
+  YYERROR;
 }
 | STRING_LITERAL LANGTAG HAT QNAME_LITERAL
 {
@@ -924,22 +916,14 @@ literal: STRING_LITERAL LANGTAG
   printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $2, raptor_uri_as_string($4));
 #endif
 
-  if($4) {
-    if($2) {
-      raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
-                          "Language not allowed with datatyped literal");
-      RAPTOR_FREE(char*, $2);
-      $2 = NULL;
-    }
-  
-    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $4, NULL);
-    RAPTOR_FREE(char*, $1);
+  raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                      "Language not allowed with datatyped literal");
+  RAPTOR_FREE(char*, $1);
+  RAPTOR_FREE(char*, $2);
+  if($4)
     raptor_free_uri($4);
-    if(!$$)
-      YYERROR;
-  } else
-    $$ = NULL;
-
+  $$ = NULL;
+  YYERROR;
 }
 | STRING_LITERAL HAT URI_LITERAL
 {

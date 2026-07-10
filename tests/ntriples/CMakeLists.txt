@@ -32,6 +32,16 @@ SET_TESTS_PROPERTIES(
 	WILL_FAIL TRUE
 )
 
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-08
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-08.nt http://librdf.org/raptor/tests/bad-08.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-09
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-09.nt http://librdf.org/raptor/tests/bad-09.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-10
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-10.nt http://librdf.org/raptor/tests/bad-10.nt"
+)
+
 RAPPER_TEST(ntriples.testnq-1
 	"${RAPPER} -q -i nquads -o nquads file:${CMAKE_CURRENT_SOURCE_DIR}/testnq-1.nq http://librdf.org/raptor/tests/testnq-1.nq"
 	testnq-1.res

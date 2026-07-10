@@ -190,7 +190,7 @@ BS_ESCAPES [-_~\.!$&\'()*+,;=/?#@%]
 HEX [0-9A-Fa-f]
 PLX "%"{HEX}{HEX})|("\\"{BS_ESCAPES}
 
-LANGTAG "@"[A-Za-z][-A-Z_a-z0-9]*
+LANGTAG "@"[A-Za-z]+([-_][A-Za-z0-9]+)*
 
 /* flex: only 1 level of definition expansion so have to expand PLX */
 BN_LABEL  ({PN_CHARS_BASE}|"_"|[0-9])(({PN_CHARS}|".")*({PN_CHARS}))*

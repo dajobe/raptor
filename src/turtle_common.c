@@ -196,6 +196,8 @@ raptor_stringbuffer_append_turtle_string(raptor_stringbuffer* stringbuffer,
         error_handler(error_data,
                       "Turtle %s error - illegal escape \\%c (#x%02X) in \"%s\"", 
                       label, c, c, text);
+        RAPTOR_FREE(char*, string);
+        return 1;
       }
     } else
       *d++=c;
