@@ -50,7 +50,7 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
   ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
     DEPENDS turtle_tables_tgt)
 
   # Generate the turtle lexer
@@ -70,11 +70,11 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
   ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
             -c raptor_config.h -g HAVE_CONFIG_H
             -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
             -c raptor_config.h -g HAVE_CONFIG_H
             -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
@@ -200,7 +200,7 @@ IF(RAPTOR_PARSEDATE)
 
   ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
-    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
     DEPENDS parsedate_tables_tgt)
 ENDIF(RAPTOR_PARSEDATE)
 
@@ -286,6 +286,21 @@ SET_TARGET_PROPERTIES(
 	PROPERTIES
 	COMPILE_DEFINITIONS "LIBRDFA_IN_RAPTOR;RAPTOR_INTERNAL;${LIBXML2_DEFINITIONS};${LIBXSLT_DEFINITIONS}"
 )
+IF(BUILD_SHARED_LIBS)
+	# VERSION/SOVERSION match autotools libtool -version-info 0:0:0
+	# (libraptor2.so.0.0.0, soname libraptor2.so.0).  On macOS libtool
+	# maps 0:0:0 to compatibility/current version 1.0.0, so set the
+	# Mach-O versions explicitly or a CMake-built dylib would be
+	# rejected by clients linked against an autotools-built one.
+	SET_TARGET_PROPERTIES(
+		raptor2
+		PROPERTIES
+		VERSION 0.0.0
+		SOVERSION 0
+		MACHO_COMPATIBILITY_VERSION 1.0.0
+		MACHO_CURRENT_VERSION 1.0.0
+	)
+ENDIF(BUILD_SHARED_LIBS)
 
 ADD_EXECUTABLE(turtle_lexer_test turtle_lexer.c)
 TARGET_LINK_LIBRARIES(turtle_lexer_test raptor2)
