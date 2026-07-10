@@ -1,0 +1,3 @@
+<http://example.org/s1> <http://example.org/p> _:a-b .
+<http://example.org/s2> <http://example.org/p> _:azb .
+<http://example.org/s3> <http://example.org/p> _:a-b .

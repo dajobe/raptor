@@ -138,11 +138,20 @@ raptor_bnodeid_ntriples_write(const unsigned char *bnodeid,
 
   for(i = 0; i < len; i++) {
     unsigned char c = *bnodeid++;
-    if(!isalpha(c) && !isdigit(c)) {
-      /* Replace characters not in legal N-Triples bnode set */
-      c = 'z';
+    if(((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+        (c >= '0' && c <= '9')) && c != 'z') {
+      raptor_iostream_write_byte(c, iostr);
+    } else {
+      /* Escape bytes reversibly and injectively using z as introducer. */
+      raptor_iostream_write_byte('z', iostr);
+      if(c == 'z') {
+        raptor_iostream_write_byte('z', iostr);
+      } else {
+        const unsigned char hex[] = "0123456789ABCDEF";
+        raptor_iostream_write_byte(hex[c >> 4], iostr);
+        raptor_iostream_write_byte(hex[c & 0x0f], iostr);
+      }
     }
-    raptor_iostream_write_byte(c, iostr);
   }
 
   return 0;
