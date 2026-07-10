@@ -245,7 +245,36 @@ raptor_www_curl_fetch(raptor_www *www)
       return 1;
     }
   }
-  
+
+  /* Restrict which protocols a redirect may use, so a redirect cannot reach
+   * file: or other non-web schemes.  Best-effort hardening: a failure here does
+   * not abort the fetch (the FOLLOWLOCATION control below is what prevents an
+   * unvetted redirect when a URI filter is installed).
+   */
+#ifdef LIBCURL_VERSION_NUM
+#if LIBCURL_VERSION_NUM >= 0x075500
+  (void)curl_easy_setopt(www->curl_handle, CURLOPT_REDIR_PROTOCOLS_STR,
+                         "http,https,ftp,ftps");
+#elif LIBCURL_VERSION_NUM >= 0x071304
+  (void)curl_easy_setopt(www->curl_handle, CURLOPT_REDIR_PROTOCOLS,
+                         (long)(CURLPROTO_HTTP | CURLPROTO_HTTPS |
+                                CURLPROTO_FTP | CURLPROTO_FTPS));
+#endif
+#endif
+
+  /* A URI filter is applied only to the initial URL, so it cannot vet the
+   * target of an HTTP redirect.  When a filter is installed, do not follow
+   * redirects automatically (fail closed) to avoid an allowlist/SSRF bypass;
+   * otherwise keep the default of following them.
+   */
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_FOLLOWLOCATION,
+                         www->uri_filter ? 0L : 1L);
+  if(res != CURLE_OK) {
+    www->failed = 1;
+    raptor_www_error(www, "Setting redirect handling failed");
+    return 1;
+  }
+
   if(www->http_accept)
     slist = curl_slist_append(slist, (const char*)www->http_accept);
 
@@ -264,7 +293,7 @@ raptor_www_curl_fetch(raptor_www *www)
   }
 
   /* specify URL to get */
-  res = curl_easy_setopt(www->curl_handle, CURLOPT_URL, 
+  res = curl_easy_setopt(www->curl_handle, CURLOPT_URL,
                          raptor_uri_as_string(www->uri));
   if(res != CURLE_OK) {
     www->failed = 1;
