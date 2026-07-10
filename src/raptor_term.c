@@ -157,6 +157,10 @@ raptor_new_term_from_uri_string(raptor_world* world,
  * given, NULL is returned.  If @language is the empty string, it is
  * the equivalent to NULL.
  *
+ * Language tags are normalized to ASCII lowercase with underscores
+ * replaced by hyphens.  In RDF 1.1, a literal with datatype xsd:string
+ * is equivalent to a simple literal, so that datatype is stored as NULL.
+ *
  * Note: The @literal need not be NULL terminated - a NULL will be
  * added to the copied string used.
  *
@@ -183,6 +187,21 @@ raptor_new_term_from_counted_literal(raptor_world* world,
 
   if(language && datatype)
     return NULL;
+
+  if(datatype) {
+    const unsigned char* datatype_string;
+    size_t datatype_len;
+    size_t xsd_namespace_len;
+
+    datatype_string = raptor_uri_as_counted_string(datatype, &datatype_len);
+    xsd_namespace_len = strlen(
+        (const char*)raptor_xmlschema_datatypes_namespace_uri);
+    if(datatype_len == xsd_namespace_len + 6 &&
+       !memcmp(datatype_string, raptor_xmlschema_datatypes_namespace_uri,
+               xsd_namespace_len) &&
+       !memcmp(datatype_string + xsd_namespace_len, "string", 6))
+      datatype = NULL;
+  }
 
   if(!literal || !*literal)
     literal_len = 0;
@@ -217,6 +236,8 @@ raptor_new_term_from_counted_literal(raptor_world* world,
 
     l = new_language;
     while((c = *language++)) {
+      if(c >= 'A' && c <= 'Z')
+        c = RAPTOR_GOOD_CAST(unsigned char, c + ('a' - 'A'));
       if(c == '_')
         c = '-';
       *l++ = c;
@@ -663,8 +684,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
       
       if(t1->value.literal.language && t2->value.literal.language) {
         /* both have a language */
-        d = !strcmp((const char*)t1->value.literal.language, 
-                    (const char*)t2->value.literal.language);
+        d = !raptor_strcasecmp((const char*)t1->value.literal.language,
+                              (const char*)t2->value.literal.language);
         if(!d)
           break;
       } else if(t1->value.literal.language || t2->value.literal.language) {
@@ -743,8 +764,8 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
       
       if(t1->value.literal.language && t2->value.literal.language) {
         /* both have a language */
-        d = strcmp((const char*)t1->value.literal.language, 
-                   (const char*)t2->value.literal.language);
+        d = raptor_strcasecmp((const char*)t1->value.literal.language,
+                             (const char*)t2->value.literal.language);
       } else if(t1->value.literal.language || t2->value.literal.language)
         /* only one has a language; the language-less one is earlier */
         d = (!t1->value.literal.language ? -1 : 1);
@@ -827,7 +848,13 @@ main(int argc, char *argv[])
   raptor_term* term3 = NULL; /* blank node 1 */
   raptor_term* term4 = NULL; /* URI string 2 */
   raptor_term* term5 = NULL; /* URI string 1 again */
+  raptor_term* uppercase_language_term = NULL;
+  raptor_term* lowercase_language_term = NULL;
+  raptor_term* en_gb_term = NULL;
+  raptor_term* xsd_string_term = NULL;
+  raptor_term* plain_string_term = NULL;
   raptor_uri* uri1;
+  raptor_uri* xsd_string_uri = NULL;
   unsigned char* uri_str;
   size_t uri_len;
   size_t i;
@@ -928,6 +955,7 @@ main(int argc, char *argv[])
     goto tidy;
   }
   raptor_free_term(term2);
+  term2 = NULL;
 
 
   /* check an empty literal from an empty language literal pointer succeeds */
@@ -939,6 +967,85 @@ main(int argc, char *argv[])
     goto tidy;
   }
   raptor_free_term(term2);
+  term2 = NULL;
+
+  /* Language tags normalize to lowercase and compare case-insensitively. */
+  uppercase_language_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, NULL,
+      (const unsigned char*)"EN", 2);
+  lowercase_language_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, NULL,
+      (const unsigned char*)"en", 2);
+  if(!uppercase_language_term || !lowercase_language_term) {
+    fprintf(stderr, "%s: failed to create language-tagged test literals\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+  if(!raptor_term_equals(uppercase_language_term, lowercase_language_term) ||
+     raptor_term_compare(uppercase_language_term, lowercase_language_term) ||
+     raptor_term_compare(lowercase_language_term, uppercase_language_term)) {
+    fprintf(stderr, "%s: language tags EN and en did not compare equal\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  /* Simulate a term supplied by a caller without constructor normalization. */
+  uppercase_language_term->value.literal.language[0] = 'E';
+  uppercase_language_term->value.literal.language[1] = 'N';
+  if(!raptor_term_equals(uppercase_language_term, lowercase_language_term) ||
+     raptor_term_compare(uppercase_language_term, lowercase_language_term) ||
+     raptor_term_compare(lowercase_language_term, uppercase_language_term)) {
+    fprintf(stderr,
+            "%s: non-normalized language tags EN and en did not compare equal\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  en_gb_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, NULL,
+      (const unsigned char*)"EN-GB", 5);
+  if(!en_gb_term ||
+     strcmp((const char*)en_gb_term->value.literal.language, "en-gb")) {
+    fprintf(stderr, "%s: language tag EN-GB was not normalized to en-gb\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+
+  xsd_string_uri = raptor_new_uri(
+      world,
+      (const unsigned char*)"http://www.w3.org/2001/XMLSchema#string");
+  if(!xsd_string_uri) {
+    fprintf(stderr, "%s: failed to create xsd:string URI\n", program);
+    rc = 1;
+    goto tidy;
+  }
+  xsd_string_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, xsd_string_uri, NULL, 0);
+  plain_string_term = raptor_new_term_from_counted_literal(
+      world, (const unsigned char*)"x", 1, NULL, NULL, 0);
+  if(!xsd_string_term || !plain_string_term) {
+    fprintf(stderr, "%s: failed to create xsd:string test literals\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
+  if(xsd_string_term->value.literal.datatype) {
+    fprintf(stderr, "%s: xsd:string literal retained its datatype\n", program);
+    rc = 1;
+    goto tidy;
+  }
+  if(!raptor_term_equals(xsd_string_term, plain_string_term) ||
+     raptor_term_compare(xsd_string_term, plain_string_term) ||
+     raptor_term_compare(plain_string_term, xsd_string_term)) {
+    fprintf(stderr, "%s: xsd:string and plain literals did not compare equal\n",
+            program);
+    rc = 1;
+    goto tidy;
+  }
 
   /* check a literal with language and datatype fails */
   uri1 = raptor_new_uri(world, uri_string1);
@@ -1101,6 +1208,18 @@ main(int argc, char *argv[])
     raptor_free_term(term4);
   if(term5)
     raptor_free_term(term5);
+  if(uppercase_language_term)
+    raptor_free_term(uppercase_language_term);
+  if(lowercase_language_term)
+    raptor_free_term(lowercase_language_term);
+  if(en_gb_term)
+    raptor_free_term(en_gb_term);
+  if(xsd_string_term)
+    raptor_free_term(xsd_string_term);
+  if(plain_string_term)
+    raptor_free_term(plain_string_term);
+  if(xsd_string_uri)
+    raptor_free_uri(xsd_string_uri);
   
   raptor_free_world(world);
 

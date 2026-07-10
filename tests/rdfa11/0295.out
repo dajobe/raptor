@@ -18,7 +18,7 @@ _:b <http://xmlns.com/foaf/0.1/name> "Ralph Swick" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#me> <http://xmlns.com/foaf/0.1/name> "Ben Adida" .
 <http://internet-apps.blogspot.com/> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
 <http://internet-apps.blogspot.com/> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
-<http://example.org/foo> <http://purl.org/dc/terms/creator> "Mark Birbeck"^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://example.org/foo> <http://purl.org/dc/terms/creator> "Mark Birbeck" .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml> <http://creativecommons.org/ns#license> <http://creativecommons.org/licenses/by-nc-nd/2.5/> .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#wtw> <http://purl.org/dc/terms/identifier> <urn:ISBN:0752820907> .
 <http://rdfa.info/test-suite/test-cases/xhtml1/rdfa1.0/0295.xml#wtw> <http://purl.org/dc/terms/identifier> <urn:ISBN:0752820907> .

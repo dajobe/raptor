@@ -44,10 +44,8 @@
 
 /* These are for 7-bit ASCII and not locale-specific */
 #define IS_ASCII_ALPHA(c) (((c) > 0x40 && (c) < 0x5B) || ((c) > 0x60 && (c) < 0x7B))
-#define IS_ASCII_UPPER(c) ((c) > 0x40 && (c) < 0x5B)
 #define IS_ASCII_DIGIT(c) ((c) > 0x2F && (c) < 0x3A)
 #define IS_ASCII_PRINT(c) ((c) > 0x1F && (c) < 0x7F)
-#define TO_ASCII_LOWER(c) ((c)+0x20)
 
 typedef enum {
   RAPTOR_TERM_CLASS_URI,      /* ends on > */
@@ -564,7 +562,6 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         raptor_uri* datatype_uri = NULL;
 
         if(*len_p && *p == '@') {
-          unsigned char *q;
           size_t lang_len;
 
           object_literal_language = p;
@@ -592,17 +589,6 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
           if(!lang_len) {
             raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Invalid language tag at @%s", p);
             goto fail;
-          }
-
-          /* Normalize language to lowercase
-           * http://www.w3.org/TR/rdf-concepts/#dfn-language-identifier
-           * Also convert _ to - as synonym / typo.
-           */
-          for(q = object_literal_language; *q; q++) {
-            if(IS_ASCII_UPPER(*q))
-              *q = RAPTOR_GOOD_CAST(unsigned char, TO_ASCII_LOWER(*q));
-            if(*q == '_')
-              *q = '-';
           }
 
         }

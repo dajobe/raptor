@@ -1,1 +1,1 @@
-<http://example.org/res> <http://example.org/bar#prop> ""^^<http://www.w3.org/2001/XMLSchema#string> .
+<http://example.org/res> <http://example.org/bar#prop> "" .
