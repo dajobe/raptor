@@ -62,6 +62,12 @@ IF(RAPTOR_SERIALIZER_ATOM)
 		${CMAKE_CURRENT_SOURCE_DIR}/test03-result.atom
 	)
 
+	IF(RAPTOR_PARSER_RDFXML)
+		SET_TESTS_PROPERTIES(feeds.test01.ttl:run PROPERTIES DEPENDS feeds.test01.rdf:run)
+		SET_TESTS_PROPERTIES(feeds.test02.ttl:run PROPERTIES DEPENDS feeds.test02.rdf:run)
+		SET_TESTS_PROPERTIES(feeds.test03.ttl:run PROPERTIES DEPENDS feeds.test03.rdf:run)
+	ENDIF(RAPTOR_PARSER_RDFXML)
+
 ENDIF(RAPTOR_SERIALIZER_ATOM)
 
 IF(HAVE_JING)
@@ -70,6 +76,12 @@ IF(HAVE_JING)
 	ADD_TEST(feeds.jing-test03.atom ${JING} ${CMAKE_CURRENT_SOURCE_DIR}/atom.rng test03.atom)
 	ADD_TEST(feeds.jing-test04.atom ${JING} ${CMAKE_CURRENT_SOURCE_DIR}/atom.rng ${CMAKE_CURRENT_SOURCE_DIR}/test04.atom)
 	ADD_TEST(feeds.jing-test05.atom ${JING} ${CMAKE_CURRENT_SOURCE_DIR}/atom.rng ${CMAKE_CURRENT_SOURCE_DIR}/test05.atom)
+
+	IF(RAPTOR_SERIALIZER_ATOM)
+		SET_TESTS_PROPERTIES(feeds.jing-test01.atom PROPERTIES DEPENDS feeds.test01.ttl:run)
+		SET_TESTS_PROPERTIES(feeds.jing-test02.atom PROPERTIES DEPENDS feeds.test02.ttl:run)
+		SET_TESTS_PROPERTIES(feeds.jing-test03.atom PROPERTIES DEPENDS feeds.test03.ttl:run)
+	ENDIF(RAPTOR_SERIALIZER_ATOM)
 ENDIF(HAVE_JING)
 
 # end raptor/tests/feeds/CMakeLists.txt

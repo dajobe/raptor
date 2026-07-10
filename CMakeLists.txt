@@ -426,7 +426,12 @@ EXECUTE_PROCESS(
 	TIMEOUT 10
 	OUTPUT_FILE ${OUTPUT}.raw
 	ERROR_QUIET
+	RESULT_VARIABLE rapper_status
 )
+
+IF(NOT \"\${rapper_status}\" STREQUAL \"0\" AND NOT \"\${rapper_status}\" STREQUAL \"2\")
+	MESSAGE(FATAL_ERROR \"rapper failed with status \${rapper_status}.\")
+ENDIF()
 
 # http://public.kitware.com/Bug/view.php?id=13007
 
@@ -439,6 +444,10 @@ CONFIGURE_FILE(
 ")
 	ADD_TEST("${NAME_PREFIX}:run" ${CMAKE_COMMAND} -P test-${NAME_PREFIX}.cmake)
 	ADD_TEST("${NAME_PREFIX}:cmp" ${CMAKE_COMMAND} -E compare_files ${REFERENCE} ${OUTPUT})
+	# The comparison must run after the generator, otherwise a parallel ctest
+	# (ctest --parallel N) can compare an output file before (or while) it is
+	# produced, causing nondeterministic failures.
+	SET_TESTS_PROPERTIES("${NAME_PREFIX}:cmp" PROPERTIES DEPENDS "${NAME_PREFIX}:run")
 ENDMACRO(RAPPER_TEST NAME_PREFIX COMMAND OUTPUT REFERENCE)
 
 INCLUDE(CMakeParseArguments)
