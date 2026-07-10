@@ -423,6 +423,80 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
 }
 
 
+static int
+raptor_turtle_writer_lexical_is_xsd_decimal(const unsigned char* s)
+{
+  const unsigned char* p = s;
+
+  if(!p)
+    return 0;
+
+  if(*p == '+' || *p == '-')
+    p++;
+
+  while(*p >= '0' && *p <= '9')
+    p++;
+
+  if(*p != '.')
+    return 0;
+  p++;
+
+  if(*p < '0' || *p > '9')
+    return 0;
+
+  while(*p >= '0' && *p <= '9')
+    p++;
+
+  return !*p;
+}
+
+
+static int
+raptor_turtle_writer_lexical_is_xsd_double(const unsigned char* s)
+{
+  const unsigned char* p = s;
+  int digits = 0;
+
+  if(!p)
+    return 0;
+
+  if(*p == '+' || *p == '-')
+    p++;
+
+  while(*p >= '0' && *p <= '9') {
+    p++;
+    digits = 1;
+  }
+
+  if(*p == '.') {
+    p++;
+
+    if(!digits && (*p < '0' || *p > '9'))
+      return 0;
+
+    while(*p >= '0' && *p <= '9')
+      p++;
+  } else if(!digits) {
+    return 0;
+  }
+
+  if(*p != 'e' && *p != 'E')
+    return 0;
+  p++;
+
+  if(*p == '+' || *p == '-')
+    p++;
+
+  if(*p < '0' || *p > '9')
+    return 0;
+
+  while(*p >= '0' && *p <= '9')
+    p++;
+
+  return !*p;
+}
+
+
 /*
  * raptor_turtle_writer_literal:
  * @turtle_writer: Turtle writer object
@@ -465,18 +539,20 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
                          "Illegal value for xsd:integer literal.");
       }
 
-    /* double, decimal */
-    } else if(raptor_uri_equals(datatype, turtle_writer->world->xsd_double_uri) ||
-      raptor_uri_equals(datatype, turtle_writer->world->xsd_decimal_uri)) {
-      /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
-      double gcc_is_doubly_stupid = strtod((const char*)s, &endptr);
-      if(endptr != (char*)s && !*endptr) {
+    /* decimal */
+    } else if(raptor_uri_equals(datatype,
+                                turtle_writer->world->xsd_decimal_uri)) {
+      if(raptor_turtle_writer_lexical_is_xsd_decimal(s)) {
         raptor_iostream_string_write(s, turtle_writer->iostr);
-        /* More gcc madness to 'use' the variable I didn't want */
-        written = 1 +  0 * (int)gcc_is_doubly_stupid;
-      } else {
-        raptor_log_error(turtle_writer->world, RAPTOR_LOG_LEVEL_ERROR, NULL,
-                         "Illegal value for xsd:double or xsd:decimal literal.");
+        written = 1;
+      }
+
+    /* double */
+    } else if(raptor_uri_equals(datatype,
+                                turtle_writer->world->xsd_double_uri)) {
+      if(raptor_turtle_writer_lexical_is_xsd_double(s)) {
+        raptor_iostream_string_write(s, turtle_writer->iostr);
+        written = 1;
       }
 
     /* boolean */
