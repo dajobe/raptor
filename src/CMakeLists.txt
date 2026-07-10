@@ -144,8 +144,12 @@ IF(RAPTOR_SERIALIZER_HTML)
 ENDIF(RAPTOR_SERIALIZER_HTML)
 IF(RAPTOR_SERIALIZER_JSON)
 	SET(raptor_serializer_json_sources raptor_serialize_json.c)
-	SET(raptor_yajl_libs ${YAJL_LIBRARIES})
 ENDIF(RAPTOR_SERIALIZER_JSON)
+# yajl is used by the JSON parser (raptor_json.c), not the JSON serializer,
+# so link it only when the parser is enabled (and thus yajl was found).
+IF(RAPTOR_PARSER_JSON)
+	SET(raptor_yajl_libs ${YAJL_LIBRARIES})
+ENDIF(RAPTOR_PARSER_JSON)
 
 IF(RAPTOR_WWW STREQUAL "curl")
 	SET(raptor_www_sources raptor_www_curl.c)
