@@ -639,7 +639,7 @@ if test "X$XSLT_CONFIG" != "X"; then
     have_libxslt=1
     LIBXSLT_VERSION=`$XSLT_CONFIG --version`
     libxslt_version_dec=`echo $LIBXSLT_VERSION | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
-    libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + 3)};'`
+    libxslt_min_version_dec=`echo $libxslt_min_version | $AWK -F. '{printf("%d\n", 10000*$1 + 100*$2 + $3)};'`
     AC_MSG_RESULT(yes - version $LIBXSLT_VERSION)
     if test $libxslt_version_dec -lt $libxslt_min_version_dec; then
        AC_MSG_WARN(Using libxslt $LIBXSLT_VERSION is unsupported - $libxslt_min_version or newer required.)
@@ -1223,7 +1223,7 @@ if test $need_libcurl = 1; then
   CPPFLAGS="$CPPFLAGS $LIBCURL_CFLAGS"
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $LIBCURL_LIBS"
 
-  if test libcurl_source = "pkg-config"; then
+  if test "$libcurl_source" = "pkg-config"; then
     if test "X$PKG_CONFIG_REQUIRES" != X; then
       PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
     fi
@@ -1324,7 +1324,7 @@ if test $need_libxml = 1; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $LIBXML_LIBS"
   CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"
 
-  if test libxml_source = "pkg-config"; then
+  if test "$libxml_source" = "pkg-config"; then
     if test "X$PKG_CONFIG_REQUIRES" != X; then
       PKG_CONFIG_REQUIRES="$PKG_CONFIG_REQUIRES,"
     fi
