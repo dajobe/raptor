@@ -37,6 +37,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 /* Raptor includes */
 #include "raptor2.h"
@@ -543,6 +546,7 @@ int
 raptor_check_ordinal(const unsigned char *name)
 {
   int ordinal= -1;
+  int d;
   unsigned char c;
 
   while((c=*name++)) {
@@ -550,8 +554,11 @@ raptor_check_ordinal(const unsigned char *name)
       return -1;
     if(ordinal <0)
       ordinal = 0;
+    d = c - '0';
+    if(ordinal > (INT_MAX - d) / 10)
+      return -1;
     ordinal *= 10;
-    ordinal += (c - '0');
+    ordinal += d;
   }
   return ordinal;
 }

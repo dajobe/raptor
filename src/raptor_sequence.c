@@ -37,6 +37,9 @@
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif
 
 
 #include "raptor2.h"
@@ -283,10 +286,21 @@ raptor_sequence_set_at(raptor_sequence* seq, int idx, void *data)
     }
     return 1;
   }
+
+  if(idx > INT_MAX - seq->start - 1) {
+    if(data) {
+      if(seq->free_handler)
+        seq->free_handler(data);
+      else if(seq->context_free_handler)
+        seq->context_free_handler(seq->handler_context, data);
+    }
+    return 1;
+  }
   
   need_capacity = seq->start + idx + 1;
   if(need_capacity > seq->capacity) {
-    if(seq->capacity * 2 > need_capacity)
+    if(seq->capacity <= INT_MAX / 2 &&
+       seq->capacity * 2 > need_capacity)
       need_capacity = seq->capacity * 2;
 
     if(raptor_sequence_ensure(seq, need_capacity, 0)) {
@@ -341,6 +355,16 @@ raptor_sequence_push(raptor_sequence* seq, void *data)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(seq->start + seq->size == seq->capacity) {
+    if(seq->capacity > INT_MAX / 2) {
+      if(data) {
+        if(seq->free_handler)
+          seq->free_handler(data);
+        else if(seq->context_free_handler)
+          seq->context_free_handler(seq->handler_context, data);
+      }
+      return 1;
+    }
+
     if(raptor_sequence_ensure(seq, seq->capacity * 2, 0)) {
       if(data) {
         if(seq->free_handler)
@@ -377,6 +401,16 @@ raptor_sequence_shift(raptor_sequence* seq, void *data)
   RAPTOR_ASSERT_OBJECT_POINTER_RETURN_VALUE(seq, raptor_sequence, 1);
 
   if(!seq->start) {
+    if(seq->capacity > INT_MAX / 2) {
+      if(data) {
+        if(seq->free_handler)
+          seq->free_handler(data);
+        else if(seq->context_free_handler)
+          seq->context_free_handler(seq->handler_context, data);
+      }
+      return 1;
+    }
+
     if(raptor_sequence_ensure(seq, seq->capacity * 2, 1)) {
       if(data) {
         if(seq->free_handler)
