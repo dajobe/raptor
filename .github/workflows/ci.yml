@@ -1,0 +1,271 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  autotools:
+    name: Autotools (${{ matrix.os }}, ${{ matrix.compiler }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        compiler:
+          - gcc
+          - clang
+        exclude:
+          - os: macos-latest
+            compiler: gcc
+
+    env:
+      CC: ${{ matrix.compiler }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Ubuntu dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            flex \
+            gtk-doc-tools \
+            libcurl4-gnutls-dev \
+            libtool \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            python-is-python3
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install \
+            autoconf \
+            automake \
+            bison \
+            gtk-doc \
+            libtool \
+            pkg-config \
+            yajl
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+
+      - name: Configure
+        run: ./autogen.sh --disable-gtk-doc
+
+      - name: Build
+        run: make
+
+      - name: Test
+        run: make check
+
+  cmake:
+    name: CMake (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install Ubuntu dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            bison \
+            build-essential \
+            flex \
+            libcurl4-gnutls-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            python-is-python3
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install \
+            bison \
+            pkg-config \
+            yajl
+          echo "$(brew --prefix bison)/bin" >> "$GITHUB_PATH"
+
+      - name: Configure
+        run: |
+          cmake -S . -B build \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test in parallel
+        run: ctest --test-dir build --output-on-failure --parallel 4
+
+      - name: Test sequentially
+        run: ctest --test-dir build --output-on-failure
+
+  asan:
+    name: ASan and UBSan (Ubuntu, Clang)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    env:
+      CC: clang
+      CFLAGS: -fsanitize=address,undefined -fno-sanitize-recover=all -O1 -fno-omit-frame-pointer -g
+      LDFLAGS: -fsanitize=address,undefined -fno-sanitize-recover=all -O1 -fno-omit-frame-pointer -g
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            clang \
+            flex \
+            gtk-doc-tools \
+            libcurl4-gnutls-dev \
+            libtool \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            python-is-python3
+
+      # autogen.sh forces --enable-maintainer-mode, and maintainer mode
+      # without --enable-release strips -O* from user CFLAGS; pass
+      # --enable-release so the sanitizer build keeps -O1.
+      - name: Configure
+        run: ./autogen.sh --disable-gtk-doc --enable-release
+
+      - name: Build
+        run: make
+
+      - name: Test
+        run: make check
+
+  fuzz-smoke:
+    name: Fuzz smoke tests (Ubuntu, Clang)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    env:
+      ASAN_OPTIONS: halt_on_error=1:abort_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            clang \
+            flex \
+            gtk-doc-tools \
+            libcurl4-gnutls-dev \
+            libtool \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            python-is-python3
+          sudo apt-get install -y --no-install-recommends \
+            "libfuzzer-$(clang -dumpversion | cut -d. -f1)-dev"
+
+      # The library itself is compiled with -fsanitize=fuzzer-no-link so
+      # libFuzzer gets coverage feedback from (and the sanitizers check)
+      # the parser internals, not just the harness. --enable-release keeps
+      # -O1 (maintainer mode otherwise strips -O* from user CFLAGS).
+      - name: Configure fuzzing
+        run: |
+          CC=clang \
+          CFLAGS="-fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -O1 -g" \
+          LDFLAGS="-fsanitize=address,undefined" \
+          FUZZ_CFLAGS="-fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -O1 -g" \
+          FUZZ_LDFLAGS="-fsanitize=fuzzer,address,undefined" \
+            ./autogen.sh --disable-gtk-doc --enable-release --enable-fuzzing
+
+      - name: Build fuzz harnesses
+        run: |
+          make --jobs 2
+          make -C tests/fuzz fuzz_turtle fuzz_ntriples fuzz_rdfxml
+
+      - name: Run Turtle fuzz smoke test
+        run: |
+          mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle
+          tests/fuzz/fuzz_turtle \
+            -max_total_time=60 \
+            -timeout=10 \
+            -dict=tests/fuzz/dict/turtle.dict \
+            -artifact_prefix=tests/fuzz/artifacts/ \
+            tests/fuzz/corpus/turtle \
+            tests/turtle
+
+      - name: Run N-Triples fuzz smoke test
+        run: |
+          mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/ntriples
+          tests/fuzz/fuzz_ntriples \
+            -max_total_time=60 \
+            -timeout=10 \
+            -dict=tests/fuzz/dict/ntriples.dict \
+            -artifact_prefix=tests/fuzz/artifacts/ \
+            tests/fuzz/corpus/ntriples \
+            tests/ntriples \
+            tests/ntriples-2013
+
+      - name: Run RDF/XML fuzz smoke test
+        run: |
+          mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/rdfxml
+          tests/fuzz/fuzz_rdfxml \
+            -max_total_time=60 \
+            -timeout=10 \
+            -dict=tests/fuzz/dict/rdfxml.dict \
+            -artifact_prefix=tests/fuzz/artifacts/ \
+            tests/fuzz/corpus/rdfxml \
+            tests/rdfxml \
+            tests/feeds \
+            tests/grddl
