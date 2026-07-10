@@ -99,8 +99,11 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
                                 void *userdata) 
 {
   raptor_www* www = (raptor_www*)userdata;
-  size_t bytes = size * nmemb;
-  int c;
+  size_t bytes;
+
+  if(size && nmemb > ((size_t)-1) / size)
+    return 0;
+  bytes = size * nmemb;
 
   /* If WWW has been aborted, return nothing so that
    * libcurl will abort the transfer
@@ -109,48 +112,79 @@ raptor_www_curl_header_callback(void* ptr,  size_t  size, size_t nmemb,
     return 0;
   
 #define CONTENT_TYPE_LEN 14
-  if(!raptor_strncasecmp((char*)ptr, "Content-Type: ", CONTENT_TYPE_LEN)) {
-    size_t len = bytes - CONTENT_TYPE_LEN - 2; /* for \r\n */
-    char *type_buffer = RAPTOR_MALLOC(char*, len + 1);
-    memcpy(type_buffer, (char*)ptr + 14, len);
-    type_buffer[len]='\0';
-    if(www->type)
-      RAPTOR_FREE(char*, www->type);
-    www->type = type_buffer;
-    www->free_type = 1;
+  if(bytes >= CONTENT_TYPE_LEN &&
+     !raptor_strncasecmp((char*)ptr, "Content-Type: ", CONTENT_TYPE_LEN)) {
+    if(bytes > CONTENT_TYPE_LEN) {
+      const unsigned char* start = (unsigned char*)ptr + CONTENT_TYPE_LEN;
+      size_t raw_len = bytes - CONTENT_TYPE_LEN;
+      char *type_buffer;
+
+      while(raw_len > 0 &&
+            (start[raw_len - 1] == '\r' || start[raw_len - 1] == '\n'))
+        raw_len--;
+
+      type_buffer = RAPTOR_MALLOC(char*, raw_len + 1);
+      if(type_buffer) {
+        memcpy(type_buffer, start, raw_len);
+        type_buffer[raw_len] = '\0';
+        if(www->type)
+          RAPTOR_FREE(char*, www->type);
+        www->type = type_buffer;
+        www->free_type = 1;
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-    RAPTOR_DEBUG3("Got content type header '%s' (%zu bytes)\n", type_buffer, len);
+        RAPTOR_DEBUG3("Got content type header '%s' (%zu bytes)\n",
+                      type_buffer, raw_len);
 #endif
-    if(www->content_type)
-      www->content_type(www, www->content_type_userdata, www->type);
+        if(www->content_type)
+          www->content_type(www, www->content_type_userdata, www->type);
+      }
+    }
   }
   
 
 #define CONTENT_LOCATION_LEN 18
-  if(!raptor_strncasecmp((char*)ptr, "Content-Location: ", 
+  if(bytes >= CONTENT_LOCATION_LEN &&
+     !raptor_strncasecmp((char*)ptr, "Content-Location: ",
                          CONTENT_LOCATION_LEN)) {
-    size_t uri_len = bytes - CONTENT_LOCATION_LEN - 2; /* for \r\n */
-    unsigned char* uri_str = (unsigned char*)ptr + CONTENT_LOCATION_LEN;
+    if(bytes > CONTENT_LOCATION_LEN) {
+      const unsigned char* start = (unsigned char*)ptr + CONTENT_LOCATION_LEN;
+      size_t raw_len = bytes - CONTENT_LOCATION_LEN;
 
-    if(www->final_uri)
-      raptor_free_uri(www->final_uri);
+      while(raw_len > 0 &&
+            (start[raw_len - 1] == '\r' || start[raw_len - 1] == '\n'))
+        raw_len--;
 
-    /* Ensure it is NUL terminated */
-    c = uri_str[uri_len];
-    uri_str[uri_len] = '\0';
-    www->final_uri = raptor_new_uri_relative_to_base_counted(www->world,
-                                                             www->uri,
-                                                             uri_str, uri_len);
-    uri_str[uri_len] = RAPTOR_GOOD_CAST(unsigned char, c);
+      if(raw_len > 0) {
+        /* raptor_new_uri_relative_to_base_counted() resolves the reference
+         * with strlen() internally, so the value must be NUL terminated and
+         * cannot be passed as a pointer into libcurl's (non-terminated)
+         * buffer.  Copy it out to an owned, NUL-terminated buffer.
+         */
+        unsigned char* uri_copy = RAPTOR_MALLOC(unsigned char*, raw_len + 1);
+        if(uri_copy) {
+          memcpy(uri_copy, start, raw_len);
+          uri_copy[raw_len] = '\0';
+
+          if(www->final_uri)
+            raptor_free_uri(www->final_uri);
+
+          www->final_uri = raptor_new_uri_relative_to_base_counted(www->world,
+                                                                   www->uri,
+                                                                   uri_copy,
+                                                                   raw_len);
+          RAPTOR_FREE(char*, uri_copy);
 
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 2
-    if(www->final_uri)
-      RAPTOR_DEBUG2("Got content location header '%s'\n", 
-                    raptor_uri_as_string(www->final_uri));
+          if(www->final_uri)
+            RAPTOR_DEBUG2("Got content location header '%s'\n",
+                          raptor_uri_as_string(www->final_uri));
 #endif
-    if(www->final_uri_handler)
-      www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
+          if(www->final_uri_handler)
+            www->final_uri_handler(www, www->final_uri_userdata, www->final_uri);
+        }
+      }
+    }
   }
   
   return bytes;
