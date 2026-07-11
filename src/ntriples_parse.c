@@ -303,7 +303,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     }
 
     /* Still may be optional so check again */
-    if(*p == '.') {
+    if(len > 0 && *p == '.') {
       p++;
       len--;
       rdf_parser->locator.column++;
