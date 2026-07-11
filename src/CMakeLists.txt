@@ -210,7 +210,7 @@ ELSE(BUILD_SHARED_LIBS)
 	SET(LIB_TYPE STATIC)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_LIBRARY(raptor2 ${LIB_TYPE}
+SET(raptor2_sources
 	raptor_avltree.c
 	raptor_concepts.c
 	raptor_escaped.c
@@ -267,22 +267,33 @@ ADD_LIBRARY(raptor2 ${LIB_TYPE}
 	${raptor_strcasecmp_sources}
 	${raptor_parsedate_sources}
 )
+
+# Compile the implementation once.  The installed library consumes the
+# objects directly, while standalone tests use the non-installed archive so
+# internal symbols remain linkable without becoming shared-library exports.
+ADD_LIBRARY(raptor2_objects OBJECT ${raptor2_sources})
+SET_TARGET_PROPERTIES(raptor2_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+ADD_LIBRARY(raptor2 ${LIB_TYPE} $<TARGET_OBJECTS:raptor2_objects>)
+ADD_LIBRARY(raptor2_impl STATIC $<TARGET_OBJECTS:raptor2_objects>)
+
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
-  add_dependencies(raptor2 turtle_parser_tgt turtle_lexer_tgt)
+  add_dependencies(raptor2_objects turtle_parser_tgt turtle_lexer_tgt)
 ENDIF()
 IF(RAPTOR_PARSEDATE)
-  add_dependencies(raptor2 parsedate_tgt)
+  add_dependencies(raptor2_objects parsedate_tgt)
 ENDIF()
 
-TARGET_LINK_LIBRARIES(raptor2
+SET(raptor2_libraries
 	${raptor_libxslt_libs}
 	${raptor_libxml_libs}
 	${raptor_yajl_libs}
 	${raptor_www_libs}
 )
+TARGET_LINK_LIBRARIES(raptor2 ${raptor2_libraries})
+TARGET_LINK_LIBRARIES(raptor2_impl ${raptor2_libraries})
 
 SET_TARGET_PROPERTIES(
-	raptor2
+	raptor2_objects
 	PROPERTIES
 	COMPILE_DEFINITIONS "LIBRDFA_IN_RAPTOR;RAPTOR_INTERNAL;${LIBXML2_DEFINITIONS};${LIBXSLT_DEFINITIONS}"
 )
@@ -303,12 +314,12 @@ IF(BUILD_SHARED_LIBS)
 ENDIF(BUILD_SHARED_LIBS)
 
 ADD_EXECUTABLE(turtle_lexer_test turtle_lexer.c)
-TARGET_LINK_LIBRARIES(turtle_lexer_test raptor2)
+TARGET_LINK_LIBRARIES(turtle_lexer_test raptor2_impl)
 
 IF(NOT WIN32 OR NOT BUILD_SHARED_LIBS)
 	# This currently cannot be built on Windows with DLL linkage
 	ADD_EXECUTABLE(turtle_parser_test turtle_parser.c)
-	TARGET_LINK_LIBRARIES(turtle_parser_test raptor2)
+	TARGET_LINK_LIBRARIES(turtle_parser_test raptor2_impl)
 	SET_TARGET_PROPERTIES(
 		turtle_parser_test
 		PROPERTIES
@@ -317,67 +328,67 @@ IF(NOT WIN32 OR NOT BUILD_SHARED_LIBS)
 ENDIF(NOT WIN32 OR NOT BUILD_SHARED_LIBS)
 
 ADD_EXECUTABLE(raptor_parse_test raptor_parse.c)
-TARGET_LINK_LIBRARIES(raptor_parse_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_parse_test raptor2_impl)
 ADD_TEST(raptor_parse_test raptor_parse_test)
 
 ADD_EXECUTABLE(raptor_rfc2396_test raptor_rfc2396.c)
-TARGET_LINK_LIBRARIES(raptor_rfc2396_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_rfc2396_test raptor2_impl)
 ADD_TEST(raptor_rfc2396_test raptor_rfc2396_test)
 
 ADD_EXECUTABLE(raptor_uri_test raptor_uri.c)
-TARGET_LINK_LIBRARIES(raptor_uri_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_uri_test raptor2_impl)
 ADD_TEST(raptor_uri_test raptor_uri_test)
 
 ADD_EXECUTABLE(raptor_namespace_test raptor_namespace.c)
-TARGET_LINK_LIBRARIES(raptor_namespace_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_namespace_test raptor2_impl)
 ADD_TEST(raptor_namespace_test raptor_namespace_test)
 
 ADD_EXECUTABLE(strcasecmp_test strcasecmp.c)
-TARGET_LINK_LIBRARIES(strcasecmp_test raptor2)
+TARGET_LINK_LIBRARIES(strcasecmp_test raptor2_impl)
 ADD_TEST(strcasecmp_test strcasecmp_test)
 
 ADD_EXECUTABLE(raptor_www_test raptor_www_test.c)
-TARGET_LINK_LIBRARIES(raptor_www_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_www_test raptor2_impl)
 ADD_TEST(raptor_www_test raptor_www_test)
 
 ADD_EXECUTABLE(raptor_sequence_test raptor_sequence.c)
-TARGET_LINK_LIBRARIES(raptor_sequence_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_sequence_test raptor2_impl)
 ADD_TEST(raptor_sequence_test raptor_sequence_test)
 
 ADD_EXECUTABLE(raptor_stringbuffer_test raptor_stringbuffer.c)
-TARGET_LINK_LIBRARIES(raptor_stringbuffer_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_stringbuffer_test raptor2_impl)
 ADD_TEST(raptor_stringbuffer_test raptor_stringbuffer_test)
 
 ADD_EXECUTABLE(raptor_iostream_test raptor_iostream.c)
-TARGET_LINK_LIBRARIES(raptor_iostream_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_iostream_test raptor2_impl)
 ADD_TEST(raptor_iostream_test raptor_iostream_test)
 
 ADD_EXECUTABLE(raptor_xml_writer_test raptor_xml_writer.c)
-TARGET_LINK_LIBRARIES(raptor_xml_writer_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_xml_writer_test raptor2_impl)
 ADD_TEST(raptor_xml_writer_test raptor_xml_writer_test)
 
 ADD_EXECUTABLE(raptor_turtle_writer_test raptor_turtle_writer.c)
-TARGET_LINK_LIBRARIES(raptor_turtle_writer_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_turtle_writer_test raptor2_impl)
 ADD_TEST(raptor_turtle_writer_test raptor_turtle_writer_test)
 
 ADD_EXECUTABLE(raptor_avltree_test raptor_avltree.c)
-TARGET_LINK_LIBRARIES(raptor_avltree_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_avltree_test raptor2_impl)
 ADD_TEST(raptor_avltree_test raptor_avltree_test)
 
 ADD_EXECUTABLE(raptor_term_test raptor_term.c)
-TARGET_LINK_LIBRARIES(raptor_term_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_term_test raptor2_impl)
 ADD_TEST(raptor_term_test raptor_term_test)
 
 ADD_EXECUTABLE(raptor_permute_test raptor_permute_test.c)
-TARGET_LINK_LIBRARIES(raptor_permute_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_permute_test raptor2_impl)
 ADD_TEST(raptor_permute_test raptor_permute_test)
 
 ADD_EXECUTABLE(raptor_snprintf_test snprintf.c)
-TARGET_LINK_LIBRARIES(raptor_snprintf_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_snprintf_test raptor2_impl)
 ADD_TEST(raptor_snprintf_test raptor_snprintf_test)
 
 ADD_EXECUTABLE(raptor_sort_r_test sort_r.c)
-TARGET_LINK_LIBRARIES(raptor_sort_r_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_sort_r_test raptor2_impl)
 ADD_TEST(raptor_sort_r_test raptor_sort_r_test)
 
 SET_TARGET_PROPERTIES(
@@ -405,11 +416,11 @@ SET_TARGET_PROPERTIES(
 
 IF(RAPTOR_PARSER_RDFXML)
 	ADD_EXECUTABLE(raptor_set_test raptor_set.c)
-	TARGET_LINK_LIBRARIES(raptor_set_test raptor2)
+	TARGET_LINK_LIBRARIES(raptor_set_test raptor2_impl)
 	ADD_TEST(raptor_set_test raptor_set_test)
 
 	ADD_EXECUTABLE(raptor_xml_test raptor_xml.c)
-	TARGET_LINK_LIBRARIES(raptor_xml_test raptor2)
+	TARGET_LINK_LIBRARIES(raptor_xml_test raptor2_impl)
 	ADD_TEST(raptor_xml_test raptor_xml_test)
 
 	SET_TARGET_PROPERTIES(

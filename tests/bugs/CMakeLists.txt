@@ -9,7 +9,7 @@ TARGET_INCLUDE_DIRECTORIES(raptor_issue70a_test PRIVATE
 	${CMAKE_BINARY_DIR}/src
 )
 TARGET_COMPILE_DEFINITIONS(raptor_issue70a_test PRIVATE RAPTOR_INTERNAL=1)
-TARGET_LINK_LIBRARIES(raptor_issue70a_test raptor2)
+TARGET_LINK_LIBRARIES(raptor_issue70a_test raptor2_impl)
 ADD_TEST(bugs.issue70a raptor_issue70a_test)
 
 IF(RAPTOR_PARSER_NTRIPLES)
@@ -19,7 +19,7 @@ IF(RAPTOR_PARSER_NTRIPLES)
 		${CMAKE_BINARY_DIR}/src
 	)
 	TARGET_COMPILE_DEFINITIONS(raptor_issue70b_test PRIVATE RAPTOR_INTERNAL=1)
-	TARGET_LINK_LIBRARIES(raptor_issue70b_test raptor2)
+	TARGET_LINK_LIBRARIES(raptor_issue70b_test raptor2_impl)
 	ADD_TEST(bugs.issue70b raptor_issue70b_test)
 ENDIF(RAPTOR_PARSER_NTRIPLES)
 

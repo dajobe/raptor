@@ -44,7 +44,14 @@ extern "C" {
 
 /* Some internal functions are needed by the test programs */
 #ifndef RAPTOR_INTERNAL_API
-#define RAPTOR_INTERNAL_API RAPTOR_API
+#  if defined(_WIN32) || defined(__CYGWIN__)
+     /* Windows: not marking dllexport keeps these out of the export table */
+#    define RAPTOR_INTERNAL_API
+#  elif defined(__GNUC__) && (__GNUC__ >= 4)
+#    define RAPTOR_INTERNAL_API __attribute__((visibility("hidden")))
+#  else
+#    define RAPTOR_INTERNAL_API
+#  endif
 #endif
 
 /* Can be over-ridden or undefined in a config.h file or -Ddefine */
@@ -1378,7 +1385,7 @@ RAPTOR_INTERNAL_API void raptor_free_turtle_writer(raptor_turtle_writer* turtle_
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer, const unsigned char *s, unsigned int len);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer, raptor_namespace* ns);
-void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer, raptor_uri* base_uri);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
@@ -1387,15 +1394,15 @@ RAPTOR_INTERNAL_API int raptor_turtle_writer_literal(raptor_turtle_writer* turtl
 RAPTOR_INTERNAL_API void raptor_turtle_writer_csv_string(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_qname(raptor_turtle_writer* turtle_writer, raptor_qname* qname);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer, const unsigned char *s, size_t length);
-void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_comment(raptor_turtle_writer* turtle_writer, const unsigned char *s);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer, raptor_option option, int value);
-int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
-int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
-const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
-void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const unsigned char *bnodeid, size_t len);
-int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
-int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
-int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_set_option_string(raptor_turtle_writer *turtle_writer, raptor_option option, const unsigned char *value);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer, raptor_option option);
+RAPTOR_INTERNAL_API const unsigned char *raptor_turtle_writer_get_option_string(raptor_turtle_writer *turtle_writer, raptor_option option);
+RAPTOR_INTERNAL_API void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const unsigned char *bnodeid, size_t len);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
+RAPTOR_INTERNAL_API int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
 
 
 /**
