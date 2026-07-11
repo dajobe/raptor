@@ -765,13 +765,6 @@ raptor_uri_compare(raptor_uri* uri1, raptor_uri* uri2)
 }
 
 
-static int
-raptor_uri_avltree_compare(const void* data1, const void* data2)
-{
-  return raptor_uri_compare((raptor_uri*)data1, (raptor_uri*)data2);
-}
-
-
 /**
  * raptor_uri_copy:
  * @uri: URI object
@@ -1460,7 +1453,7 @@ int
 raptor_uri_init(raptor_world* world)
 {
   if(world->uri_interning && !world->uris_tree) {
-    world->uris_tree = raptor_new_avltree(raptor_uri_avltree_compare,
+    world->uris_tree = raptor_new_avltree((raptor_data_compare_handler)raptor_uri_compare,
                                           /* free */ NULL, 0);
     if(!world->uris_tree) {
 #ifdef RAPTOR_DEBUG

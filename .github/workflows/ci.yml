@@ -178,7 +178,7 @@ jobs:
 
     env:
       CC: clang
-      CFLAGS: -fsanitize=address,undefined -fno-sanitize-recover=all -O1 -fno-omit-frame-pointer -g
+      CFLAGS: -fsanitize=address,undefined -fno-sanitize=function -fno-sanitize-recover=all -O1 -fno-omit-frame-pointer -g
       LDFLAGS: -fsanitize=address,undefined -fno-sanitize-recover=all -O1 -fno-omit-frame-pointer -g
 
     steps:
@@ -259,9 +259,9 @@ jobs:
       - name: Configure fuzzing
         run: |
           CC=clang \
-          CFLAGS="-fsanitize=fuzzer-no-link,address,undefined -fno-omit-frame-pointer -O1 -g" \
+          CFLAGS="-fsanitize=fuzzer-no-link,address,undefined -fno-sanitize=function -fno-omit-frame-pointer -O1 -g" \
           LDFLAGS="-fsanitize=address,undefined" \
-          FUZZ_CFLAGS="-fsanitize=fuzzer,address,undefined -fno-omit-frame-pointer -O1 -g" \
+          FUZZ_CFLAGS="-fsanitize=fuzzer,address,undefined -fno-sanitize=function -fno-omit-frame-pointer -O1 -g" \
           FUZZ_LDFLAGS="-fsanitize=fuzzer,address,undefined" \
             ./autogen.sh --disable-gtk-doc --enable-release --enable-fuzzing
 

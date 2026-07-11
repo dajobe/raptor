@@ -240,13 +240,6 @@ raptor_free_statement(raptor_statement *statement)
 }
 
 
-void
-raptor_free_statement_as_data(void* data)
-{
-  raptor_free_statement((raptor_statement*)data);
-}
-
-
 /**
  * raptor_statement_print:
  * @statement: #raptor_statement object to print
@@ -319,13 +312,6 @@ raptor_statement_print(const raptor_statement * statement, FILE *stream)
   fputc(']', stream);
   
   return rc;
-}
-
-
-int
-raptor_statement_print_as_data(void* data, FILE* stream)
-{
-  return raptor_statement_print((const raptor_statement*)data, stream);
 }
 
 
@@ -407,14 +393,6 @@ raptor_statement_compare(const raptor_statement *s1,
   d = raptor_term_compare(s1->graph, s2->graph);
 
   return d;
-}
-
-
-int
-raptor_statement_compare_as_data(const void* data1, const void* data2)
-{
-  return raptor_statement_compare((const raptor_statement*)data1,
-                                  (const raptor_statement*)data2);
 }
 
 
