@@ -4,6 +4,7 @@ build-*/
 .covtoken
 .dirstamp
 .DS_Store
+*.dSYM/
 .gdb_history
 .gdbinit
 .pytest_cache/

@@ -45,6 +45,9 @@ turtle_lexer_test turtle_parser_test \
 *.plist \
 git-version.h
 
+clean-local:
+	rm -rf *.dSYM
+
 MAINTAINERCLEANFILES=turtle_lexer.c turtle_lexer.h \
 turtle_parser.c turtle_parser.h turtle_parser.output
 
