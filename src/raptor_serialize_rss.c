@@ -196,7 +196,8 @@ raptor_rss10_serialize_init(raptor_serializer* serializer, const char *name)
   raptor_rss_common_init(serializer->world);
   raptor_rss_model_init(serializer->world, &rss_serializer->model);
 
-  rss_serializer->triples = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, (raptor_data_print_handler)raptor_statement_print);
+  rss_serializer->triples = raptor_new_sequence(raptor_free_statement_as_data,
+                                                raptor_statement_print_as_data);
 
   rss_serializer->items = raptor_new_sequence((raptor_data_free_handler)raptor_free_rss_item, (raptor_data_print_handler)NULL);
 

@@ -60,6 +60,13 @@ raptor_free_serializer_factory(raptor_serializer_factory* factory)
 }
 
 
+static void
+raptor_free_serializer_factory_as_data(void* data)
+{
+  raptor_free_serializer_factory((raptor_serializer_factory*)data);
+}
+
+
 /* class methods */
 
 int
@@ -67,7 +74,8 @@ raptor_serializers_init(raptor_world* world)
 {
   int rc = 0;
 
-  world->serializers = raptor_new_sequence((raptor_data_free_handler)raptor_free_serializer_factory, NULL);
+  world->serializers = raptor_new_sequence(raptor_free_serializer_factory_as_data,
+                                           NULL);
   if(!world->serializers)
     return 1;
 

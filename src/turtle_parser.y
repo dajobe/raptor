@@ -507,10 +507,10 @@ objectList: objectList COMMA object
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
-    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement,
-                             (raptor_data_print_handler)raptor_statement_print);
+    $$ = raptor_new_sequence(raptor_free_statement_as_data,
+                             raptor_statement_print_as_data);
 #else
-    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence(raptor_free_statement_as_data, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);
@@ -591,10 +591,10 @@ itemList: itemList object
     if(!triple)
       YYERROR;
 #ifdef RAPTOR_DEBUG
-    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement,
-                             (raptor_data_print_handler)raptor_statement_print);
+    $$ = raptor_new_sequence(raptor_free_statement_as_data,
+                             raptor_statement_print_as_data);
 #else
-    $$ = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, NULL);
+    $$ = raptor_new_sequence(raptor_free_statement_as_data, NULL);
 #endif
     if(!$$) {
       raptor_free_statement(triple);
@@ -1620,7 +1620,8 @@ raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *t)
   /* prep deferred list */
   turtle_parser = (raptor_turtle_parser*)parser->context;
   if(!turtle_parser->deferred) {
-    turtle_parser->deferred = raptor_new_sequence((raptor_data_free_handler)raptor_free_statement, NULL);
+    turtle_parser->deferred = raptor_new_sequence(raptor_free_statement_as_data,
+                                                  NULL);
     if(!turtle_parser->deferred) {
       goto free_seq;
     }
