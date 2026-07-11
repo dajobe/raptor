@@ -576,7 +576,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
   /* Create new element structure */
   element = RAPTOR_CALLOC(raptor_rdfxml_element*, 1, sizeof(*element));
   if(!element) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
     rdf_parser->failed = 1;
     return;
   }
@@ -602,7 +601,6 @@ raptor_rdfxml_start_element_handler(void *user_data,
     new_named_attrs = RAPTOR_CALLOC(raptor_qname**, ns_attributes_count, 
                                     sizeof(raptor_qname*));
     if(!new_named_attrs) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
       rdf_parser->failed = 1;
       return;
     }
@@ -1177,6 +1175,9 @@ raptor_rdfxml_parse_chunk(raptor_parser* rdf_parser,
       rdf_parser->emitted_default_graph--;
     }
   }
+
+  if(rdf_parser->failed)
+    rc = 1;
 
   return rc;
 }
@@ -2387,7 +2388,7 @@ raptor_rdfxml_start_element_grammar(raptor_parser *rdf_parser,
   return;
 
   oom:
-  raptor_parser_fatal_error(rdf_parser, "Out of memory, skipping");
+  rdf_parser->failed = 1;
   element->state = RAPTOR_STATE_SKIPPING;
 }
 
@@ -2936,7 +2937,7 @@ raptor_rdfxml_end_element_grammar(raptor_parser *rdf_parser,
   return;
 
   oom:
-  raptor_parser_fatal_error(rdf_parser, "Out of memory, skipping");
+  rdf_parser->failed = 1;
   element->state = RAPTOR_STATE_SKIPPING;
 }
 

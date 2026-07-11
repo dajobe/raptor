@@ -1671,10 +1671,8 @@ raptor_turtle_parse_chunk(raptor_parser *rdf_parser,
 
   /* Append chunk to FSP buffer */
   if(len > 0) {
-    if(fsp_buffer_append(fsp_ctx, (const char*)s, len) < 0) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    if(fsp_buffer_append(fsp_ctx, (const char*)s, len) < 0)
       return 1;
-    }
   }
 
   /* Signal EOF to FSP if this is the final chunk */

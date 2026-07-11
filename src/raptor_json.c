@@ -129,13 +129,11 @@ raptor_json_reset_term(raptor_json_parser_context *context)
 }
 
 static unsigned char*
-raptor_json_cstring_from_counted_string(raptor_parser *rdf_parser, const unsigned char* str, RAPTOR_YAJL_LEN_TYPE len)
+raptor_json_cstring_from_counted_string(const unsigned char* str, RAPTOR_YAJL_LEN_TYPE len)
 {
   unsigned char *cstr = RAPTOR_MALLOC(unsigned char*, len + 1);
-  if(!cstr) {
-    raptor_parser_fatal_error(rdf_parser, "Out of memory");
+  if(!cstr)
     return NULL;
-  }
 
   memcpy(cstr, str, len);
   cstr[len] = '\0';
@@ -155,8 +153,9 @@ raptor_json_new_term_from_counted_string(raptor_parser *rdf_parser, const unsign
   } else {
     raptor_uri *uri = raptor_new_uri_from_counted_string(rdf_parser->world, str, len);
     if(!uri) {
-      unsigned char* cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, RAPTOR_BAD_CAST(int, len));
-      raptor_parser_error(rdf_parser, "Could not create uri from '%s'", cstr);
+      unsigned char* cstr = raptor_json_cstring_from_counted_string(str, RAPTOR_BAD_CAST(int, len));
+      raptor_parser_error(rdf_parser, "Could not create uri from '%s'",
+                          cstr ? (const char*)cstr : "?");
       RAPTOR_FREE(char*, cstr);
       return NULL;
     }
@@ -265,10 +264,14 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
       context->state == RAPTOR_JSON_STATE_RESOURCES_OBJECT) {
     switch(context->attrib) {
       case RAPTOR_JSON_ATTRIB_VALUE:
-        context->term_value = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+        context->term_value = raptor_json_cstring_from_counted_string(str, len);
+        if(!context->term_value)
+          return 0;
       break;
       case RAPTOR_JSON_ATTRIB_LANG:
-        context->term_lang = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+        context->term_lang = raptor_json_cstring_from_counted_string(str, len);
+        if(!context->term_lang)
+          return 0;
       break;
       case RAPTOR_JSON_ATTRIB_TYPE:
         if(!strncmp((const char*)str, "uri", len)) {
@@ -278,14 +281,17 @@ static int raptor_json_yajl_string(void * ctx, const unsigned char * str,
         } else if(!strncmp((const char*)str, "bnode", len)) {
           context->term_type = RAPTOR_TERM_TYPE_BLANK;
         } else {
-          unsigned char * cstr = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+          unsigned char * cstr = raptor_json_cstring_from_counted_string(str, len);
           context->term_type = RAPTOR_TERM_TYPE_UNKNOWN;
-          raptor_parser_error(rdf_parser, "Unknown term type: %s", cstr);
+          raptor_parser_error(rdf_parser, "Unknown term type: %s",
+                              cstr ? (const char*)cstr : "?");
           RAPTOR_FREE(char*, cstr);
         }
       break;
       case RAPTOR_JSON_ATTRIB_DATATYPE:
-        context->term_datatype = raptor_json_cstring_from_counted_string(rdf_parser, str, len);
+        context->term_datatype = raptor_json_cstring_from_counted_string(str, len);
+        if(!context->term_datatype)
+          return 0;
       break;
       case RAPTOR_JSON_ATTRIB_UNKNOWN:
       default:
