@@ -1822,6 +1822,14 @@ raptor_parser_parse_iostream(raptor_parser* rdf_parser, raptor_iostream *iostr,
 int main(int argc, char *argv[]);
 
 
+static void
+raptor_parse_test_silent_log_handler(void *user_data,
+                                     raptor_log_message *message)
+{
+  /* silence the expected errors and warnings; the parser counts them */
+}
+
+
 int
 main(int argc, char *argv[])
 {
@@ -1873,8 +1881,77 @@ main(int argc, char *argv[])
   }
   RAPTOR_FREE(char*, s);
 
+  /* check the per-parse error and warning counters increment and are
+   * reset by raptor_parser_parse_start() */
+  raptor_world_set_log_handler(world, NULL,
+                               raptor_parse_test_silent_log_handler);
+
+  if(raptor_world_is_parser_name(world, "ntriples")) {
+    raptor_parser* parser;
+    raptor_uri* base_uri;
+    const char* bad_doc =
+      "<http://example.org/s> <http://example.org/p> .\n";
+    const char* good_doc =
+      "<http://example.org/s> <http://example.org/p> <http://example.org/o> .\n";
+
+    parser = raptor_new_parser(world, "ntriples");
+    if(!parser) {
+      fprintf(stderr, "%s: raptor_new_parser(ntriples) failed\n", program);
+      return 1;
+    }
+
+    base_uri = raptor_new_uri(world,
+                              (const unsigned char*)"http://example.org/base");
+
+    if(raptor_parser_get_error_count(parser) != 0 ||
+       raptor_parser_get_warning_count(parser) != 0) {
+      fprintf(stderr,
+              "%s: new parser counted %d errors, %d warnings; expected 0, 0\n",
+              program, raptor_parser_get_error_count(parser),
+              raptor_parser_get_warning_count(parser));
+      return 1;
+    }
+
+    raptor_parser_parse_start(parser, base_uri);
+    raptor_parser_parse_chunk(parser, (const unsigned char*)bad_doc,
+                              strlen(bad_doc), 1);
+    if(raptor_parser_get_error_count(parser) != 1 ||
+       raptor_parser_get_warning_count(parser) != 0) {
+      fprintf(stderr,
+              "%s: bad N-Triples counted %d errors, %d warnings; expected 1, 0\n",
+              program, raptor_parser_get_error_count(parser),
+              raptor_parser_get_warning_count(parser));
+      return 1;
+    }
+
+    raptor_parser_warning(parser, "test warning for the warning counter");
+    if(raptor_parser_get_error_count(parser) != 1 ||
+       raptor_parser_get_warning_count(parser) != 1) {
+      fprintf(stderr,
+              "%s: after a warning counted %d errors, %d warnings; expected 1, 1\n",
+              program, raptor_parser_get_error_count(parser),
+              raptor_parser_get_warning_count(parser));
+      return 1;
+    }
+
+    raptor_parser_parse_start(parser, base_uri);
+    raptor_parser_parse_chunk(parser, (const unsigned char*)good_doc,
+                              strlen(good_doc), 1);
+    if(raptor_parser_get_error_count(parser) != 0 ||
+       raptor_parser_get_warning_count(parser) != 0) {
+      fprintf(stderr,
+              "%s: counters not reset; counted %d errors, %d warnings\n",
+              program, raptor_parser_get_error_count(parser),
+              raptor_parser_get_warning_count(parser));
+      return 1;
+    }
+
+    raptor_free_uri(base_uri);
+    raptor_free_parser(parser);
+  }
+
   raptor_free_world(world);
-  
+
   return 0;
 }
 
