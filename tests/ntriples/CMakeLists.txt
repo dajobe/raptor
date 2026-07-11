@@ -43,6 +43,9 @@ RAPPER_EXPECT_FAIL_TEST(ntriples.bad-09
 RAPPER_EXPECT_FAIL_TEST(ntriples.bad-10
 	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-10.nt http://librdf.org/raptor/tests/bad-10.nt"
 )
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-11
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-11.nt http://librdf.org/raptor/tests/bad-11.nt"
+)
 
 RAPPER_TEST(ntriples.testnq-1
 	"${RAPPER} -q -i nquads -o nquads file:${CMAKE_CURRENT_SOURCE_DIR}/testnq-1.nq http://librdf.org/raptor/tests/testnq-1.nq"
