@@ -842,6 +842,21 @@ static const counted_term_failure_case counted_term_failure_cases[] = {
     (const unsigned char*)"http://www.example.org/", ~(size_t)0 }
 };
 
+typedef struct {
+  const char* input;
+  const char* datatype_uri;
+} numeric_literal_case;
+
+/* Every case contains the digit '9', which the numeric literal scanner
+ * in raptor_parse_turtle_term_internal() once excluded from its digit
+ * ranges (c < '9' instead of c <= '9'). */
+static const numeric_literal_case numeric_literal_cases[] = {
+  { "9", "http://www.w3.org/2001/XMLSchema#integer" },
+  { "19", "http://www.w3.org/2001/XMLSchema#integer" },
+  { "1.9", "http://www.w3.org/2001/XMLSchema#decimal" },
+  { "9e9", "http://www.w3.org/2001/XMLSchema#double" }
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -904,6 +919,49 @@ main(int argc, char *argv[])
       rc = 1;
       goto tidy;
     }
+  }
+
+
+  /* check numeric literals containing the digit 9 parse with the
+   * expected xsd datatype */
+  for(i = 0;
+      i < sizeof(numeric_literal_cases) / sizeof(numeric_literal_cases[0]);
+      i++) {
+    const numeric_literal_case* test = &numeric_literal_cases[i];
+    raptor_term* result;
+    raptor_uri* expected_datatype;
+    unsigned char input_buffer[8]; /* decoded in place; inputs are short */
+    size_t input_len = strlen(test->input);
+
+    memcpy(input_buffer, test->input, input_len + 1);
+    result = raptor_new_term_from_counted_string(world, input_buffer,
+                                                 input_len);
+    if(!result) {
+      fprintf(stderr,
+              "%s: raptor_new_term_from_counted_string(\"%s\") failed\n",
+              program, test->input);
+      rc = 1;
+      goto tidy;
+    }
+
+    expected_datatype = raptor_new_uri(world,
+                          (const unsigned char*)test->datatype_uri);
+
+    if(result->type != RAPTOR_TERM_TYPE_LITERAL ||
+       strcmp((const char*)result->value.literal.string, test->input) ||
+       !raptor_uri_equals(result->value.literal.datatype,
+                          expected_datatype)) {
+      fprintf(stderr,
+              "%s: numeric literal \"%s\" returned the wrong term\n",
+              program, test->input);
+      raptor_free_uri(expected_datatype);
+      raptor_free_term(result);
+      rc = 1;
+      goto tidy;
+    }
+
+    raptor_free_uri(expected_datatype);
+    raptor_free_term(result);
   }
 
 
