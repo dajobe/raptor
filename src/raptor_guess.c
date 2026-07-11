@@ -103,6 +103,9 @@ raptor_guess_parse_content_type_handler(raptor_parser* rdf_parser,
       len = strlen(content_type);
     
     guess_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
+    if(!guess_parser->content_type) {
+      return;
+    }
     memcpy(guess_parser->content_type, content_type, len);
     guess_parser->content_type[len]='\0';
 

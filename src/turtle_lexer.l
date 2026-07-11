@@ -1046,6 +1046,13 @@ main(int argc, char *argv[])
   }
 
   turtle_string = RAPTOR_CALLOC(char*, FILE_READ_BUF_SIZE, 1);
+  if(!turtle_string) {
+    fprintf(stderr, "%s: Failed to allocate input buffer\n", argv[0]);
+    fclose(fh);
+    raptor_free_world(world);
+    return 1;
+  }
+
   fread(turtle_string, FILE_READ_BUF_SIZE, 1, fh);
   fclose(fh);
 
@@ -1064,6 +1071,15 @@ main(int argc, char *argv[])
 
   len =  strlen(RAPTOR_GOOD_CAST(const char*, turtle_string));
   buf =  RAPTOR_MALLOC(char*, len + 3);
+  if(!buf) {
+    fprintf(stderr, "%s: Failed to allocate scanner buffer\n", argv[0]);
+    yylex_destroy(scanner);
+    raptor_namespaces_clear(&turtle_parser.namespaces);
+    RAPTOR_FREE(char*, turtle_string);
+    raptor_free_world(world);
+    return 1;
+  }
+
   memcpy(buf, turtle_string, len);
   buf[len] =  ' ';
   buf[len + 1] =  buf[len + 2] = '\0'; /* YY_END_OF_BUFFER_CHAR; */

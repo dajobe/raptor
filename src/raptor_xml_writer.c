@@ -292,6 +292,9 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
     const char quote = '\"';
     unsigned char* p;
 
+    if(!buffer)
+      goto error;
+
     memcpy(buffer, XML_LANG_PREFIX, XML_LANG_PREFIX_LEN);
     p = buffer + XML_LANG_PREFIX_LEN;
     p += raptor_xml_escape_string(xml_writer->world,
@@ -982,6 +985,11 @@ main(int argc, char *argv[])
                                    base_uri_copy);
 
   attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(raptor_qname*));
+  if(!attrs) {
+    fprintf(stderr, "%s: Failed to allocate attribute array\n", program);
+    exit(1);
+  }
+
   attrs[0] = raptor_new_qname(nstack, 
                               (const unsigned char*)"a",
                               (const unsigned char*)"b" /* attribute value */);

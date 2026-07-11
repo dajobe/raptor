@@ -60,9 +60,24 @@ new_intseq(int size)
   int i;
   
   iseq = RAPTOR_CALLOC(intseq*, 1, sizeof(*iseq));
+  if(!iseq)
+    return NULL;
+
+  /* calloc(0, ...) may validly return NULL; only treat NULL as an
+   * allocation failure for a non-empty sequence */
   iseq->contents = RAPTOR_CALLOC(int*, size, sizeof(int));
+  if(!iseq->contents && size > 0) {
+    RAPTOR_FREE(intseq*, iseq);
+    return NULL;
+  }
+
   /* will be a sequence of int* pointing into iseq->contents */
   iseq->seq = raptor_new_sequence(NULL, print_handler);
+  if(!iseq->seq) {
+    RAPTOR_FREE(int*, iseq->contents);
+    RAPTOR_FREE(intseq*, iseq);
+    return NULL;
+  }
 
   for(i = 0; i < (int)size; i++) {
     iseq->contents[i] = i + 1;
@@ -258,6 +273,12 @@ int main (int argc, char *argv[])
     int count;
 
     iseq = new_intseq(size);
+    if(!iseq) {
+      fprintf(stderr, "%s: Failed to allocate permutation test %d\n",
+              program, size);
+      failures++;
+      break;
+    }
 
 #if PERMUTE_DEBUG > 0
     fprintf(stderr, "%s: Permutation test %d.  Initial state: ", program, size);
@@ -325,6 +346,12 @@ int main (int argc, char *argv[])
     int st;
 
     iseq = new_intseq(size);
+    if(!iseq) {
+      fprintf(stderr, "%s: Failed to allocate reverse test %d\n",
+              program, size);
+      failures++;
+      break;
+    }
 
     for(st = 0; st < size + 1; st++) {
       intseq_reverse(iseq, 0, st) ;

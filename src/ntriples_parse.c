@@ -396,10 +396,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
       return 1;
 
     buffer = RAPTOR_MALLOC(unsigned char*, new_line_length + 1);
-    if(!buffer) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    if(!buffer)
       return 1;
-    }
 
     if(ntriples_parser->line_length) {
       memcpy(buffer, ntriples_parser->line, ntriples_parser->line_length);
@@ -533,10 +531,8 @@ raptor_ntriples_parse_chunk(raptor_parser* rdf_parser,
     RAPTOR_DEBUG3("collapsing buffer from %ld to %ld bytes\n", ntriples_parser->line_length, len);
 #endif
     buffer = RAPTOR_MALLOC(unsigned char*, len + 1);
-    if(!buffer) {
-      raptor_parser_fatal_error(rdf_parser, "Out of memory");
+    if(!buffer)
       return 1;
-    }
 
     memcpy(buffer, 
            ntriples_parser->line + ntriples_parser->line_length - len,

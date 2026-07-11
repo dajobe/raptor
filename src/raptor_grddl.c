@@ -223,6 +223,9 @@ raptor_new_xml_context(raptor_world* world, raptor_uri* uri,
   grddl_xml_context* xml_context;
 
   xml_context = RAPTOR_MALLOC(grddl_xml_context*, sizeof(*xml_context));
+  if(!xml_context)
+    return NULL;
+
   if(uri)
     uri = raptor_uri_copy(uri);
   if(base_uri)
@@ -579,6 +582,10 @@ raptor_grddl_filter_triples(void *user_data, raptor_statement *statement)
       
       new_xml_context = raptor_new_xml_context(rdf_parser->world, uri,
                                                rdf_parser->base_uri);
+      if(!new_xml_context) {
+        return;
+      }
+
       raptor_grddl_add_transform_xml_context(grddl_parser, new_xml_context);
     } else {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
@@ -729,6 +736,11 @@ raptor_grddl_run_grddl_transform_doc(raptor_parser* rdf_parser,
    *   http://www.w3.org/2001/sw/grddl-wg/td/RDFa2RDFXML.xsl
    */
   quoted_base_uri = RAPTOR_MALLOC(char*, base_uri_len + 3);
+  if(!quoted_base_uri) {
+    ret = 1;
+    goto cleanup_xslt;
+  }
+
   quoted_base_uri[0] = '\'';
   memcpy(quoted_base_uri + 1, (const char*)base_uri_string, base_uri_len);
   quoted_base_uri[base_uri_len + 1] = '\'';
@@ -1190,6 +1202,14 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       size_t list_len = strlen((const char*)uri_string);
       
       buffer = RAPTOR_MALLOC(char*, list_len + 1);
+      if(!buffer) {
+        if(base_uri)
+          raptor_free_uri(base_uri);
+        raptor_free_sequence(seq);
+        seq = NULL;
+        goto cleanup_xpath_match;
+      }
+
       memcpy(buffer, uri_string, list_len + 1);
       
       for(start = end = buffer; end; start = end+1) {
@@ -1215,6 +1235,17 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
         }
 
         xml_context = raptor_new_xml_context(rdf_parser->world, uri, base_uri);
+        if(!xml_context) {
+          if(uri)
+            raptor_free_uri(uri);
+          RAPTOR_FREE(char*, buffer);
+          if(base_uri)
+            raptor_free_uri(base_uri);
+          raptor_free_sequence(seq);
+          seq = NULL;
+          goto cleanup_xpath_match;
+        }
+
         raptor_sequence_push(seq, xml_context);
         raptor_free_uri(uri);
       }
@@ -1232,6 +1263,16 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
       uri = raptor_new_uri_relative_to_base(rdf_parser->world, base_uri,
                                             uri_string);
       xml_context = raptor_new_xml_context(rdf_parser->world, uri, base_uri);
+      if(!xml_context) {
+        if(uri)
+          raptor_free_uri(uri);
+        if(base_uri)
+          raptor_free_uri(base_uri);
+        raptor_free_sequence(seq);
+        seq = NULL;
+        goto cleanup_xpath_match;
+      }
+
       raptor_sequence_push(seq, xml_context);
       raptor_free_uri(uri);
     }
@@ -1266,6 +1307,10 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
   if(grddl_parser->content_type)
     RAPTOR_FREE(char*, grddl_parser->content_type);
   grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
+  if(!grddl_parser->content_type) {
+    return;
+  }
+
   memcpy(grddl_parser->content_type, content_type, len);
 
   if(!strncmp(content_type, "application/rdf+xml", 19)) {
@@ -1445,9 +1490,12 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
   buffer_len = raptor_stringbuffer_length(grddl_parser->sb);
   buffer = RAPTOR_MALLOC(unsigned char*, buffer_len + 1);
-  if(buffer)
-    raptor_stringbuffer_copy_to_string(grddl_parser->sb, 
-                                       buffer, buffer_len + 1);
+  if(!buffer) {
+    return 1;
+  }
+
+  raptor_stringbuffer_copy_to_string(grddl_parser->sb,
+                                     buffer, buffer_len + 1);
   
 
   uri_string = raptor_uri_as_string(rdf_parser->base_uri);
@@ -1711,6 +1759,11 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
         xml_context = raptor_new_xml_context(rdf_parser->world,
                                            grddl_parser->root_ns_uri,
                                            rdf_parser->base_uri);
+        if(!xml_context) {
+          ret = 1;
+          goto tidy;
+        }
+
         raptor_sequence_push(grddl_parser->profile_uris, xml_context);
 
         RAPTOR_DEBUG3("Parser %p: Processing GRDDL namespace URI '%s'\n",
@@ -1731,6 +1784,11 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
   if(!grddl_parser->root_ns_uri) {
     grddl_xml_context* xml_context;
     xml_context = raptor_new_xml_context(rdf_parser->world, NULL, NULL);
+    if(!xml_context) {
+      ret = 1;
+      goto tidy;
+    }
+
     raptor_sequence_push(grddl_parser->profile_uris, xml_context);
   }
 
@@ -1880,6 +1938,13 @@ raptor_grddl_parse_chunk(raptor_parser* rdf_parser,
 
         xml_context = raptor_new_xml_context(rdf_parser->world, uri,
                                              rdf_parser->base_uri);
+        if(!xml_context) {
+          raptor_free_uri(uri);
+          raptor_free_sequence(result);
+          ret = 1;
+          goto tidy;
+        }
+
         raptor_sequence_push(result, xml_context);
 
         raptor_free_uri(uri);
@@ -2030,6 +2095,10 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
       RAPTOR_FREE(char*, grddl_parser->content_type);
     
     grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
+    if(!grddl_parser->content_type) {
+      return;
+    }
+
     memcpy(grddl_parser->content_type, content_type, len);
   }
 }
@@ -2184,4 +2253,3 @@ raptor_libxslt_reset_global_state(raptor_parser* rdf_parser)
   xsltSetGenericErrorFunc(grddl_parser->saved_xsltGenericErrorContext,
                           grddl_parser->saved_xsltGenericError);
 }
-

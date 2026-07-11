@@ -703,6 +703,10 @@ raptor_rdfxmla_emit_subject(raptor_serializer *serializer,
     if(context->is_xmp) {
       /* XML rdf:about value is always "" */
       attr_value = RAPTOR_CALLOC(unsigned char*, 1, sizeof(unsigned char));
+      if(!attr_value) {
+        RAPTOR_FREE(qnamearray, attrs);
+        goto oom;
+      }
     } else if(RAPTOR_OPTIONS_GET_NUMERIC(serializer,
                                          RAPTOR_OPTION_RELATIVE_URIS))
       attr_value = raptor_uri_to_relative_uri_string(serializer->base_uri,
@@ -1550,4 +1554,3 @@ raptor_init_serializer_rdfxmla(raptor_world* world)
 
   return rc;
 }
-

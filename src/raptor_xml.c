@@ -364,6 +364,8 @@ raptor_xml_element_write(raptor_xml_element *element,
     
     nspace_declarations = RAPTOR_CALLOC(struct nsd*, nspace_max_count,
                                         sizeof(struct nsd));
+    if(!nspace_declarations)
+      return 1;
   }
 
   if(element->name->nspace) {
@@ -1058,6 +1060,12 @@ main(int argc, char *argv[])
     }
       
     xml_string = RAPTOR_MALLOC(unsigned char*, xml_string_len + 1);
+    if(!xml_string) {
+      fprintf(stderr, "%s: Failed to allocate escaped string buffer\n",
+              program);
+      failures++;
+      continue;
+    }
     
     xml_string_len = raptor_xml_escape_string(world,
                                               utf8_string, utf8_string_len,
