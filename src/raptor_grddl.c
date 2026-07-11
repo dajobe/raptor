@@ -1216,6 +1216,7 @@ raptor_grddl_run_xpath_match(raptor_parser* rdf_parser,
 
         xml_context = raptor_new_xml_context(rdf_parser->world, uri, base_uri);
         raptor_sequence_push(seq, xml_context);
+        raptor_free_uri(uri);
       }
       RAPTOR_FREE(char*, buffer);
     } else if(flags & MATCH_IS_HARDCODED) {
