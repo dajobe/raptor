@@ -825,7 +825,7 @@ raptor_sax2_start_element(void* user_data, const unsigned char *name,
         int j;
 
         for(j = 0; j < i; j++)
-          RAPTOR_FREE(raptor_qname, named_attrs[j]);
+          raptor_free_qname(named_attrs[j]);
         RAPTOR_FREE(raptor_qname_array, named_attrs);
         goto fail;
       }
