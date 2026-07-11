@@ -10,28 +10,30 @@ RAPPER_TEST(ntriples.test
 	${CMAKE_CURRENT_SOURCE_DIR}/test.out
 )
 
-ADD_TEST(ntriples.bad-00 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-00.nt http://librdf.org/raptor/tests/bad-00.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-01 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-01.nt http://librdf.org/raptor/tests/bad-01.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-02 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-02.nt http://librdf.org/raptor/tests/bad-02.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-03 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-03.nt http://librdf.org/raptor/tests/bad-03.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-04 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-04.nt http://librdf.org/raptor/tests/bad-04.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-05 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-05.nt http://librdf.org/raptor/tests/bad-05.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-06 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-06.nt http://librdf.org/raptor/tests/bad-06.nt) # WILL_FAIL
-ADD_TEST(ntriples.bad-07 ${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-07.nt http://librdf.org/raptor/tests/bad-07.nt) # WILL_FAIL
-
-SET_TESTS_PROPERTIES(
-	ntriples.bad-00
-	ntriples.bad-01
-	ntriples.bad-02
-	ntriples.bad-03
-	ntriples.bad-04
-	ntriples.bad-05
-	ntriples.bad-06
-	ntriples.bad-07
-	PROPERTIES
-	WILL_FAIL TRUE
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-00
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-00.nt http://librdf.org/raptor/tests/bad-00.nt"
 )
-
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-01
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-01.nt http://librdf.org/raptor/tests/bad-01.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-02
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-02.nt http://librdf.org/raptor/tests/bad-02.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-03
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-03.nt http://librdf.org/raptor/tests/bad-03.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-04
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-04.nt http://librdf.org/raptor/tests/bad-04.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-05
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-05.nt http://librdf.org/raptor/tests/bad-05.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-06
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-06.nt http://librdf.org/raptor/tests/bad-06.nt"
+)
+RAPPER_EXPECT_FAIL_TEST(ntriples.bad-07
+	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-07.nt http://librdf.org/raptor/tests/bad-07.nt"
+)
 RAPPER_EXPECT_FAIL_TEST(ntriples.bad-08
 	"${RAPPER} -q -i ntriples -o ntriples file:${CMAKE_CURRENT_SOURCE_DIR}/bad-08.nt http://librdf.org/raptor/tests/bad-08.nt"
 )
