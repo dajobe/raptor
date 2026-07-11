@@ -568,6 +568,7 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
                                                dest,
                                                datatype_uri,
                                                NULL /* language */);
+        raptor_free_uri(datatype_uri);
       } else
         goto fail;
       break;

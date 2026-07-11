@@ -1617,6 +1617,9 @@ raptor_parser_get_accept_header_all(raptor_world* world)
       i++) {
     const raptor_type_q* type_q;
     int j;
+
+    if(!factory->desc.mime_types)
+      continue;
     
     for(j = 0;
         (type_q = &factory->desc.mime_types[j]) && type_q->mime_type;
@@ -1639,6 +1642,9 @@ raptor_parser_get_accept_header_all(raptor_world* world)
       i++) {
     const raptor_type_q* type_q;
     int j;
+
+    if(!factory->desc.mime_types)
+      continue;
     
     for(j = 0; 
         (type_q = &factory->desc.mime_types[j]) && type_q->mime_type;

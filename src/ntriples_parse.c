@@ -299,7 +299,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
     /* Look for terminating '.' after 3rd (ntriples) or 3rd/4th (nquads) term */
     if(i == (ntriples_parser->is_nquads ? 4 : 3) && *p != '.') {
       raptor_parser_error(rdf_parser, "Missing terminating \".\"");
-      return 0;
+      goto cleanup;
     }
 
     /* Still may be optional so check again */
@@ -320,7 +320,7 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
       /* Only a comment is allowed here */
       if(*p && *p != '#') {
         raptor_parser_error(rdf_parser, "Junk after terminating \".\"");
-        return 0;
+        goto cleanup;
       }
 
       p += len; len = 0;
@@ -362,10 +362,16 @@ raptor_ntriples_parse_line(raptor_parser* rdf_parser,
 
   raptor_ntriples_generate_statement(rdf_parser, 
                                      terms[0], terms[1], terms[2], terms[3]);
+  memset(terms, 0, sizeof(terms));
 
   rdf_parser->locator.byte += RAPTOR_BAD_CAST(int, len);
 
  cleanup:
+
+  for(i = 0; i < MAX_NTRIPLES_TERMS + 1; i++) {
+    if(terms[i])
+      raptor_free_term(terms[i]);
+  }
 
   return rc;
 }
