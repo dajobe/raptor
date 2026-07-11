@@ -1218,6 +1218,10 @@ RAPTOR_API
 raptor_world* raptor_parser_get_world(raptor_parser* rdf_parser);
 RAPTOR_API
 raptor_uri* raptor_parser_get_graph(raptor_parser* rdf_parser);
+RAPTOR_API
+int raptor_parser_get_error_count(raptor_parser* rdf_parser);
+RAPTOR_API
+int raptor_parser_get_warning_count(raptor_parser* rdf_parser);
 
 
 /* Locator Class */

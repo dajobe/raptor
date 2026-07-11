@@ -185,6 +185,8 @@ raptor_parser_parse_uri
 raptor_parser_parse_uri_with_connection
 raptor_parser_get_graph
 raptor_parser_get_name
+raptor_parser_get_error_count
+raptor_parser_get_warning_count
 raptor_parser_set_option
 raptor_parser_get_option
 raptor_parser_get_accept_header

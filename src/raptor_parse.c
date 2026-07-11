@@ -444,6 +444,10 @@ raptor_parser_parse_start(raptor_parser *rdf_parser, raptor_uri *uri)
     raptor_free_uri(rdf_parser->base_uri);
   rdf_parser->base_uri = uri;
 
+  rdf_parser->failed = 0;
+  rdf_parser->error_count = 0;
+  rdf_parser->warning_count = 0;
+
   rdf_parser->locator.uri    = uri;
   rdf_parser->locator.line   = -1;
   rdf_parser->locator.column = -1;
@@ -569,7 +573,15 @@ raptor_parser_parse_file_stream(raptor_parser* rdf_parser,
  * Parse RDF content at a file URI.
  *
  * If @uri is NULL (source is stdin), then the @base_uri is required.
- * 
+ *
+ * The return value reflects only fatal-stop conditions: a parser can
+ * report recoverable (error-level) problems and still return 0, since
+ * only a fatal error halts parsing.  To detect such errors, either
+ * install a log handler with raptor_world_set_log_handler() and count
+ * messages at level #RAPTOR_LOG_LEVEL_ERROR or higher, or call
+ * raptor_parser_get_error_count() after this returns.  Note that "fatal"
+ * here means the parser stops; it does not call abort()/exit().
+ *
  * Return value: non 0 on failure
  **/
 int
@@ -845,16 +857,10 @@ raptor_parser_fatal_error(raptor_parser* parser, const char *message, ...)
   va_list arguments;
 
   va_start(arguments, message);
-  if(parser) {
+  if(parser)
     parser->failed = 1;
-    raptor_log_error_varargs(parser->world,
-                             RAPTOR_LOG_LEVEL_FATAL,
-                             &parser->locator,
-                             message, arguments);
-  } else
-    raptor_log_error_varargs(NULL,
-                             RAPTOR_LOG_LEVEL_FATAL, NULL,
-                             message, arguments); 
+  raptor_parser_log_error_varargs(parser, RAPTOR_LOG_LEVEL_FATAL,
+                                  message, arguments);
   va_end(arguments);
 }
 
@@ -890,12 +896,18 @@ raptor_parser_log_error_varargs(raptor_parser* parser,
                                 raptor_log_level level,
                                 const char *message, va_list arguments)
 {
-  if(parser)
+  if(parser) {
+    if(level == RAPTOR_LOG_LEVEL_WARN)
+      parser->warning_count++;
+    else if(level == RAPTOR_LOG_LEVEL_ERROR ||
+            level == RAPTOR_LOG_LEVEL_FATAL)
+      parser->error_count++;
+
     raptor_log_error_varargs(parser->world,
                              level,
                              &parser->locator,
                              message, arguments);
-  else
+  } else
     raptor_log_error_varargs(NULL,
                              level,
                              NULL,
@@ -945,17 +957,9 @@ raptor_parser_warning(raptor_parser* parser, const char *message, ...)
 
   va_start(arguments, message);
 
-  if(parser)
-    raptor_log_error_varargs(parser->world,
-                             RAPTOR_LOG_LEVEL_WARN,
-                             &parser->locator,
-                             message, arguments);
-  else
-    raptor_log_error_varargs(NULL,
-                             RAPTOR_LOG_LEVEL_WARN,
-                             NULL,
-                             message, arguments);
-  
+  raptor_parser_log_error_varargs(parser, RAPTOR_LOG_LEVEL_WARN,
+                                  message, arguments);
+
   va_end(arguments);
 }
 
@@ -1230,6 +1234,49 @@ raptor_parser_get_locator(raptor_parser *rdf_parser)
 }
 
 
+/**
+ * raptor_parser_get_error_count:
+ * @rdf_parser: raptor parser
+ *
+ * Get the count of error-level (and fatal-error-level) messages
+ * reported for the most recent parse.
+ *
+ * A parse method can return success (0) while still having reported
+ * recoverable errors, since only a fatal error stops parsing.  Use
+ * this after a parse to detect such errors without installing a log
+ * handler.  The count is reset by raptor_parser_parse_start() (called
+ * internally by the parse methods) and covers messages routed through
+ * the parser, not messages logged directly on the #raptor_world.
+ *
+ * Return value: number of errors reported for the current parse
+ **/
+int
+raptor_parser_get_error_count(raptor_parser *rdf_parser)
+{
+  return rdf_parser->error_count;
+}
+
+
+/**
+ * raptor_parser_get_warning_count:
+ * @rdf_parser: raptor parser
+ *
+ * Get the count of warning-level messages reported for the most
+ * recent parse.
+ *
+ * The count is reset by raptor_parser_parse_start() (called internally
+ * by the parse methods) and covers messages routed through the parser,
+ * not messages logged directly on the #raptor_world.
+ *
+ * Return value: number of warnings reported for the current parse
+ **/
+int
+raptor_parser_get_warning_count(raptor_parser *rdf_parser)
+{
+  return rdf_parser->warning_count;
+}
+
+
 #ifdef RAPTOR_DEBUG
 void
 raptor_stats_print(raptor_parser *rdf_parser, FILE *stream)
@@ -1427,6 +1474,8 @@ raptor_parser_copy_flags_state(raptor_parser *to_parser,
                                raptor_parser *from_parser)
 {
   to_parser->failed = from_parser->failed;
+  to_parser->error_count = from_parser->error_count;
+  to_parser->warning_count = from_parser->warning_count;
   to_parser->emit_graph_marks = from_parser->emit_graph_marks;
   to_parser->emitted_default_graph = from_parser->emitted_default_graph;
 }

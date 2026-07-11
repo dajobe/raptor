@@ -514,6 +514,11 @@ struct raptor_parser_s {
   /* non-0 if parser had fatal error and cannot continue */
   unsigned int failed : 1;
 
+  /* count of error-level and warning-level messages reported for the
+   * current parse; reset at raptor_parser_parse_start() */
+  int error_count;
+  int warning_count;
+
   /* non-0 to enable emitting graph marks (default set).  Intended
    * for use by GRDDL the parser on it's child parsers to prevent
    * multiple start/end marks on the default graph.

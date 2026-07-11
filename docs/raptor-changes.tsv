@@ -437,6 +437,8 @@
 2.0.15	void	raptor_www_set_proxy	(raptor_www *www, const char *proxy)	2.0.16	-	-	-	Deprecated for raptor_www_set_proxy2
 2.0.15	void	raptor_www_set_http_accept	(raptor_www *www, const char *value)	2.0.16	-	-	-	Deprecated for raptor_www_set_http_accept2
 2.0.15	-	-	-	2.0.16	void	raptor_avltree_trim	(raptor_avltree* tree)	-
+2.0.16	-	-	-	2.0.17	int	raptor_parser_get_error_count	(raptor_parser* rdf_parser)	-
+2.0.16	-	-	-	2.0.17	int	raptor_parser_get_warning_count	(raptor_parser* rdf_parser)	-
 #
 # Types
 #
