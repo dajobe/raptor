@@ -1265,7 +1265,7 @@ raptor_grddl_check_recursive_content_type_handler(raptor_www* www,
   if(grddl_parser->content_type)
     RAPTOR_FREE(char*, grddl_parser->content_type);
   grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
-  memcpy(grddl_parser->content_type, content_type, len + 1);
+  memcpy(grddl_parser->content_type, content_type, len);
 
   if(!strncmp(content_type, "application/rdf+xml", 19)) {
     grddl_parser->process_this_as_rdfxml = 1;
@@ -2029,7 +2029,7 @@ raptor_grddl_parse_content_type_handler(raptor_parser* rdf_parser,
       RAPTOR_FREE(char*, grddl_parser->content_type);
     
     grddl_parser->content_type = RAPTOR_MALLOC(char*, len + 1);
-    memcpy(grddl_parser->content_type, content_type, len + 1);
+    memcpy(grddl_parser->content_type, content_type, len);
   }
 }
 
