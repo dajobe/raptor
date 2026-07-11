@@ -141,6 +141,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
                                     raptor_ntriples_term_class term_class)
 {
   const unsigned char *p = *start;
+  unsigned char *dest_start = dest;
   unsigned char c = '\0';
   size_t ulen = 0;
   unsigned long unichar = 0;
@@ -216,7 +217,7 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
             locator->column--;
             locator->byte--;
           }
-          if(term_class == RAPTOR_TERM_CLASS_BNODEID && position > 0 && dest[-1] == '.') {
+          if(term_class == RAPTOR_TERM_CLASS_BNODEID && dest > dest_start && dest[-1] == '.') {
             /* If bnode id ended on '.' move back one */
             dest--;
 
