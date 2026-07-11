@@ -431,8 +431,12 @@ raptor_namespaces_find_namespace(raptor_namespace_stack *nstack,
       if(!ns->prefix)
         break;
     } else {
-      if((unsigned int)prefix_length == ns->prefix_length && 
-         !strncmp((char*)prefix, (char*)ns->prefix, prefix_length))
+      /* prefix_length 0 here means a non-NULL empty prefix; the matching
+       * entry (if any) has prefix_length 0 too, so skip the strncmp rather
+       * than pass the default namespace's NULL prefix to it */
+      if((unsigned int)prefix_length == ns->prefix_length &&
+         (!prefix_length ||
+          !strncmp((char*)prefix, (char*)ns->prefix, prefix_length)))
         break;
     }
   }
