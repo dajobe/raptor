@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!-- Regression: an empty namespace prefix (leading colon) together with a
+     declared default namespace must not pass a NULL prefix to strncmp in
+     raptor_namespaces_find_namespace (UBSan nonnull-arg). Found by fuzzing. -->
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns="http://example.org/ns#">
+  <rdf:Description rdf:about="http://example.org/x" :p="v"/>
+</rdf:RDF>

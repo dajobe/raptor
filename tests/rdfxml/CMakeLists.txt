@@ -322,6 +322,12 @@ RAPPER_TEST(rdfxml.ex-63
 	${CMAKE_CURRENT_SOURCE_DIR}/ex-63.out
 )
 
+RAPPER_TEST(rdfxml.ex-64
+	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/ex-64.rdf http://librdf.org/raptor/tests/ex-64.rdf"
+	ex-64.res
+	${CMAKE_CURRENT_SOURCE_DIR}/ex-64.out
+)
+
 RAPPER_TEST(rdfxml.bug-650
 	"${RAPPER} -q -o ntriples ${CMAKE_CURRENT_SOURCE_DIR}/bug-650.rdf http://librdf.org/raptor/tests/bug-650.rdf"
 	bug-650.res
