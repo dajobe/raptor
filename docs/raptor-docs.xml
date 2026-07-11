@@ -108,6 +108,7 @@ UTF-8, URIs, retrieving from URIs and reading and writing XML.
     </partintro>
 
     <xi:include href="raptor-tutorial-intro.xml"/>
+    <xi:include href="raptor-tutorial-api-conventions.xml"/>
     <xi:include href="raptor-tutorial-querying-functionality.xml"/>
     <xi:include href="raptor-tutorial-parsing.xml"/>
     <xi:include href="raptor-tutorial-serializing.xml"/>

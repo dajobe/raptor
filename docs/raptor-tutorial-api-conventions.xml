@@ -1,0 +1,133 @@
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.3//EN"
+               "http://www.oasis-open.org/docbook/xml/4.3/docbookx.dtd">
+<chapter id="tutorial-api-conventions">
+<title>API Conventions</title>
+
+<para>The Raptor API follows a small set of conventions for memory
+ownership, return values, callback registration and threading.  This
+chapter summarises them and is particularly useful reading before
+writing language bindings.
+</para>
+
+
+<section id="tutorial-api-conventions-ownership">
+<title>Memory ownership (borrow versus own)</title>
+
+<itemizedlist>
+<listitem><para>A <literal>raptor_X_as_string()</literal> /
+<literal>raptor_X_as_counted_string()</literal> accessor such as
+<link linkend="raptor-uri-as-string"><function>raptor_uri_as_string()</function></link>
+returns a pointer into the object that the object still owns.  Do
+<emphasis>not</emphasis> free it, and do not use it after the object
+is freed.
+</para></listitem>
+
+<listitem><para>A <literal>raptor_X_to_string()</literal> /
+<literal>raptor_X_to_counted_string()</literal> accessor such as
+<link linkend="raptor-uri-to-string"><function>raptor_uri_to_string()</function></link>
+returns a newly allocated copy that the caller owns and must free
+with
+<link linkend="raptor-free-memory"><function>raptor_free_memory()</function></link>.
+</para></listitem>
+
+<listitem><para>Reference-counted objects
+(<link linkend="raptor-uri"><type>raptor_uri</type></link>,
+<link linkend="raptor-term"><type>raptor_term</type></link>)
+are shared by an internal usage count:
+<link linkend="raptor-uri-copy"><function>raptor_uri_copy()</function></link> /
+<link linkend="raptor-term-copy"><function>raptor_term_copy()</function></link>
+add a reference and
+<link linkend="raptor-free-uri"><function>raptor_free_uri()</function></link> /
+<link linkend="raptor-free-term"><function>raptor_free_term()</function></link>
+drop one; the object is destroyed when the last reference is freed.
+Free every object exactly as many times as you obtained a reference
+to it.
+</para></listitem>
+</itemizedlist>
+
+</section>
+
+
+<section id="tutorial-api-conventions-returns">
+<title>Return value conventions</title>
+
+<itemizedlist>
+<listitem><para>Most methods return <literal>int</literal> 0 on
+success and non-0 on failure.
+</para></listitem>
+
+<listitem><para>Predicate helpers such as
+<link linkend="raptor-term-equals"><function>raptor_term_equals()</function></link>
+return non-0 for true and 0 for false (not an error code).
+</para></listitem>
+
+<listitem><para><literal>raptor_X_compare()</literal> helpers return
+&lt;0, 0 or &gt;0 like <function>strcmp()</function>.
+</para></listitem>
+
+<listitem><para>Constructors and <literal>_as_</literal> /
+<literal>_to_</literal> accessors return a pointer, or NULL on
+failure.
+</para></listitem>
+</itemizedlist>
+
+</section>
+
+
+<section id="tutorial-api-conventions-callbacks">
+<title>Callback registration argument order</title>
+
+<para>The order of the <parameter>user_data</parameter> and function
+pointer arguments to the callback registration functions is
+<emphasis>not</emphasis> uniform:
+</para>
+
+<itemizedlist>
+<listitem><para>The parser and world handler setters take
+<parameter>user_data</parameter> <emphasis>before</emphasis> the
+function pointer, such as
+<link linkend="raptor-world-set-log-handler"><function>raptor_world_set_log_handler()</function></link><literal>(world, user_data, handler)</literal>
+and
+<link linkend="raptor-parser-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link><literal>(parser, user_data, handler)</literal>.
+</para></listitem>
+
+<listitem><para>The www setters and both uri_filter setters take
+<parameter>user_data</parameter> <emphasis>after</emphasis> the
+function pointer, such as
+<link linkend="raptor-www-set-content-type-handler"><function>raptor_www_set_content_type_handler()</function></link><literal>(www, handler, user_data)</literal>
+and
+<link linkend="raptor-parser-set-uri-filter"><function>raptor_parser_set_uri_filter()</function></link><literal>(parser, filter, user_data)</literal>.
+</para></listitem>
+</itemizedlist>
+
+<para>Both arguments are pointers, so a swap can compile cleanly;
+check the specific prototype.
+</para>
+
+</section>
+
+
+<section id="tutorial-api-conventions-threading">
+<title>Threading</title>
+
+<para>Raptor has no internal locking.  Use one
+<link linkend="raptor-world"><type>raptor_world</type></link> per
+thread and do not share a raptor_world, or any object created from
+it, across threads: ordinary operations mutate shared world state
+(the message buffer, the interned-URI tree, the blank node counter)
+with plain, non-atomic updates.  Even a nominally immutable interned
+<link linkend="raptor-uri"><type>raptor_uri</type></link> races its
+usage count if shared, so objects are not safe to pass between
+threads without external synchronisation.
+</para>
+
+</section>
+
+</chapter>
+
+<!--
+Local variables:
+mode: sgml
+sgml-parent-document: ("raptor-docs.xml" "book" "part")
+End:
+-->

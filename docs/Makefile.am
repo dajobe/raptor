@@ -89,6 +89,7 @@ content_files = \
 	raptor-parsers.xml \
 	raptor-serializers.xml \
 	raptor-tutorial-intro.xml \
+	raptor-tutorial-api-conventions.xml \
 	raptor-tutorial-querying-functionality.xml \
 	raptor-tutorial-parsing.xml \
 	raptor-tutorial-serializing.xml \
