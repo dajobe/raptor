@@ -791,7 +791,7 @@ raptor_unicode_is_extender(long c)
 int
 raptor_unicode_check_utf8_nfc_string(const unsigned char *input, size_t length)
 {
-  unsigned int i;
+  size_t i;
   int plain = 1;
   int rc;
   

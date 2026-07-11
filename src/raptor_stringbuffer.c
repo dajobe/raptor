@@ -623,7 +623,7 @@ raptor_stringbuffer_append_uri_escaped_counted_string(raptor_stringbuffer* sb,
                                                       size_t length,
                                                       int space_is_plus)
 {
-  unsigned int i;
+  size_t i;
   unsigned char buf[2];
   buf[1] = '\0';
 
