@@ -36,14 +36,13 @@ install:
   - ps:  New-Item -ItemType Directory -Force -Path $env:CYG_ROOT | Out-Null
   - ps:  echo "Installing Cygwin from $env:CYG_SETUP_URL to $env:CYG_ROOT/setup-x86_64.exe"
   - ps:  Invoke-WebRequest $env:CYG_SETUP_URL -OutFile $env:CYG_ROOT/setup-x86_64.exe
-  - cmd: 'echo Installing Python 3.9, Bison and Flex from Cygwin'
-  - cmd: '%CYG_ROOT%\setup-x86_64.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P python39,bison,flex'
+  - cmd: 'echo Installing Bison and Flex from Cygwin'
+  - cmd: '%CYG_ROOT%\setup-x86_64.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P bison,flex'
   - cmd: 'echo Check Cygwin setup'
   - cmd: '%CYG_ROOT%/bin/bash -lc "cygcheck -dc cygwin"'
   - cmd: 'echo Done setting up Cygwin'
   - cmd: '%CYG_ROOT%/bin/flex -V'
   - cmd: '%CYG_ROOT%/bin/bison --version'
-  - cmd: '%CYG_ROOT%/bin/python3.9.exe --version'
 
 before_build:
   - cmd: 'md c:\projects\dest'
@@ -53,12 +52,12 @@ before_build:
 # custom build script
 build_script:
   - cmd: 'cd c:\projects\raptor\bldstatic'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%static'
   - cmd: 'dir /s'
   - cmd: 'cd c:\projects\raptor\bld'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%'
   - cmd: 'dir /s'
