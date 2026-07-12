@@ -672,6 +672,9 @@ raptor_parser_parse_uri_content_type_handler(raptor_www* www, void* userdata,
                                              const char* content_type)
 {
   raptor_parser* rdf_parser = (raptor_parser*)userdata;
+
+  (void)www;
+
   if(rdf_parser->factory->content_type_handler)
     rdf_parser->factory->content_type_handler(rdf_parser, content_type);
 }
