@@ -744,8 +744,9 @@ RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
 #ifdef SIZE_MAX
 #define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) ((a) > SIZE_MAX - (b))
 #else
-/* No SIZE_MAX: ~(size_t)0 is max size_t; overflow if b > max - a */
-#define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) ((b) > ~(size_t)0 - (a))
+/* No SIZE_MAX: (size_t)-1 is max size_t; overflow if b > max - a */
+#define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) \
+  ((size_t)(b) > (size_t)-1 - (size_t)(a))
 #endif
 /* RAPTOR_SIZE_T_MUL_OVERFLOWS(a, b): non-zero if (size_t)a * (size_t)b
  * would overflow.  WARNING: a and b may each be evaluated twice; pass only
@@ -755,8 +756,9 @@ RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
 #ifdef SIZE_MAX
 #define RAPTOR_SIZE_T_MUL_OVERFLOWS(a, b) ((a) && (b) > SIZE_MAX / (a))
 #else
-/* No SIZE_MAX: ~(size_t)0 is max size_t; overflow if b > max / a */
-#define RAPTOR_SIZE_T_MUL_OVERFLOWS(a, b) ((a) && (b) > ~(size_t)0 / (a))
+/* No SIZE_MAX: (size_t)-1 is max size_t; overflow if b > max / a */
+#define RAPTOR_SIZE_T_MUL_OVERFLOWS(a, b) \
+  ((size_t)(a) && (size_t)(b) > (size_t)-1 / (size_t)(a))
 #endif
 int raptor_term_print_as_ntriples(const raptor_term *term, FILE* stream);
 
