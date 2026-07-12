@@ -23,7 +23,11 @@ clone_folder: c:\projects\raptor
 platform: x64
 configuration: Release
 
+cache:
+  - C:\Tools\vcpkg\installed\
+
 environment:
+  APPVEYOR_SAVE_CACHE_ON_ERROR: true
   CYG_ROOT: C:/projects/cygwin64
   CYG_SETUP_URL: https://cygwin.com/setup-x86_64.exe
   CYG_MIRROR: https://cygwin.mirror.constant.com
