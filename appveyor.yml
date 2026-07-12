@@ -26,10 +26,10 @@ platform: x64
 configuration: Release
 
 environment:
-  CYG_ROOT: C:/cygwin
+  CYG_ROOT: C:/cygwin64
   CYG_SETUP_URL: https://cygwin.com/setup-x86_64.exe
   CYG_MIRROR: https://cygwin.mirror.constant.com
-  CYG_CACHE: C:/cygwin/var/cache/setup
+  CYG_CACHE: C:/cygwin64/var/cache/setup
   DEST: "c:/projects/dest"
   CMAKE_GENERATOR_STRING: '"Visual Studio 12 Win64"'
 
