@@ -631,8 +631,15 @@ raptor_rdfxml_start_element_handler(void *user_data,
           for(j = 0; j <= RDF_NS_LAST; j++)
             if(!strcmp((const char*)attr_name,
                        raptor_rdf_ns_terms_info[j].name)) {
+              /* A duplicate RDF attribute (e.g. two prefixes bound to the
+               * RDF namespace) maps to the same slot; free any previously
+               * stored value before overwriting it, otherwise it leaks.
+               */
+              if(element->rdf_attr[j])
+                RAPTOR_FREE(char*, element->rdf_attr[j]);
+              else
+                element->rdf_attr_count++;
               element->rdf_attr[j] = attr->value;
-              element->rdf_attr_count++;
               /* Delete it if it was stored elsewhere */
 #ifdef RAPTOR_DEBUG_VERBOSE
               RAPTOR_DEBUG3("Found RDF namespace attribute '%s' URI %s\n",
@@ -658,8 +665,15 @@ raptor_rdfxml_start_element_handler(void *user_data,
           for(j = 0; j <= RDF_NS_LAST; j++)
             if(!strcmp((const char*)attr_name,
                        raptor_rdf_ns_terms_info[j].name)) {
+              /* As above, a duplicate (possibly mixing a namespaced and a
+               * non-namespaced form) maps to the same slot; free any
+               * previously stored value before overwriting it.
+               */
+              if(element->rdf_attr[j])
+                RAPTOR_FREE(char*, element->rdf_attr[j]);
+              else
+                element->rdf_attr_count++;
               element->rdf_attr[j] = attr->value;
-              element->rdf_attr_count++;
               if(!raptor_rdf_ns_terms_info[j].allowed_unprefixed_on_attribute)
                 raptor_parser_warning(rdf_parser,
                                       "Using rdf attribute '%s' without the RDF namespace has been deprecated.",
