@@ -29,11 +29,7 @@
 extern "C" {
 #endif
 
-#ifdef WIN32
-#include <win32_raptor_config.h>
-#else
 #include <raptor_config.h>
-#endif
 
 /* Rename libfsp functions to avoid conflicts when embedded in Raptor */
 #define fsp_create raptor_fsp_create
