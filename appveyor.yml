@@ -9,10 +9,8 @@ branches:
   only:
     - appveyor
 
-# Operating system (build VM template)
-#os: Windows Server 2012 R2
-# Get image with cygwin
-os: Unstable
+# Build VM image
+image: Visual Studio 2022
 
 # scripts that are called at very beginning, before repo cloning
 init:
@@ -31,7 +29,7 @@ environment:
   CYG_MIRROR: https://cygwin.mirror.constant.com
   CYG_CACHE: C:/projects/cygwin64/var/cache/setup
   DEST: "c:/projects/dest"
-  CMAKE_GENERATOR_STRING: '"Visual Studio 12 Win64"'
+  CMAKE_GENERATOR_STRING: '"Visual Studio 17 2022"'
 
 install:
   - cmd: 'git submodule update --init --recursive'
@@ -55,12 +53,12 @@ before_build:
 # custom build script
 build_script:
   - cmd: 'cd c:\projects\raptor\bldstatic'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%static'
   - cmd: 'dir /s'
   - cmd: 'cd c:\projects\raptor\bld'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DPython3_EXECUTABLE=%CYG_ROOT%/bin/python3.9.exe -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%'
   - cmd: 'dir /s'
