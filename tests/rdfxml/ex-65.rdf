@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Regression: two prefixes bound to the RDF namespace produce duplicate
+     RDF attributes (rdf:about and r:about) that map to the same rdf_attr
+     slot. The second value must free the first rather than overwrite and
+     leak it (LeakSanitizer). Found by fuzzing. -->
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:ex="http://example.org/">
+  <rdf:Description rdf:about="http://example.org/s"
+                  r:about="http://example.org/s2">
+    <ex:p>v</ex:p>
+  </rdf:Description>
+</rdf:RDF>
