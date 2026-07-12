@@ -28,11 +28,13 @@ environment:
   CYG_SETUP_URL: https://cygwin.com/setup-x86_64.exe
   CYG_MIRROR: https://cygwin.mirror.constant.com
   CYG_CACHE: C:/projects/cygwin64/var/cache/setup
+  VCPKG_ROOT: C:/Tools/vcpkg
   DEST: "c:/projects/dest"
   CMAKE_GENERATOR_STRING: '"Visual Studio 17 2022"'
 
 install:
   - cmd: 'git submodule update --init --recursive'
+  - cmd: '%VCPKG_ROOT%/vcpkg.exe install libxml2:x64-windows'
   - ps:  New-Item -ItemType Directory -Force -Path $env:CYG_ROOT | Out-Null
   - ps:  echo "Installing Cygwin from $env:CYG_SETUP_URL to $env:CYG_ROOT/setup-x86_64.exe"
   - ps:  Invoke-WebRequest $env:CYG_SETUP_URL -OutFile $env:CYG_ROOT/setup-x86_64.exe
@@ -52,12 +54,12 @@ before_build:
 # custom build script
 build_script:
   - cmd: 'cd c:\projects\raptor\bldstatic'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DCMAKE_INSTALL_PREFIX=%DEST%static ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%static'
   - cmd: 'dir /s'
   - cmd: 'cd c:\projects\raptor\bld'
-  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
+  - cmd: 'cmake -G %CMAKE_GENERATOR_STRING% -A x64 -DCMAKE_TOOLCHAIN_FILE=%VCPKG_ROOT%/scripts/buildsystems/vcpkg.cmake -DBISON_EXECUTABLE=%CYG_ROOT%/bin/bison -DFLEX_EXECUTABLE=%CYG_ROOT%/bin/flex -DBUILD_SHARED_LIBS:BOOL=ON -DCMAKE_INSTALL_PREFIX=%DEST% ..'
   - cmd: 'cmake --build . --config Release --target INSTALL'
   - cmd: 'cd %DEST%'
   - cmd: 'dir /s'
