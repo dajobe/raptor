@@ -38,7 +38,7 @@ install:
   - ps:  echo "Installing Cygwin from $env:CYG_SETUP_URL to $env:CYG_ROOT/setup-x86_64.exe"
   - ps:  Invoke-WebRequest $env:CYG_SETUP_URL -OutFile $env:CYG_ROOT/setup-x86_64.exe
   - cmd: 'echo Installing Python 3, Bison and Flex from Cygwin'
-  - cmd: '%CYG_ROOT%\setup-x86_64.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P python3 -P bison -P flex'
+  - cmd: '%CYG_ROOT%\setup-x86_64.exe -qnNdO -R "%CYG_ROOT%" -s "%CYG_MIRROR%" -l "%CYG_CACHE%" -P python3,bison,flex'
   - cmd: 'echo Check Cygwin setup'
   - cmd: '%CYG_ROOT%/bin/bash -lc "cygcheck -dc cygwin"'
   - cmd: 'echo Done setting up Cygwin'
