@@ -56,7 +56,13 @@ int
 raptor_www_libxml_fetch(raptor_www *www) 
 {
   char* headers = NULL;
-  
+  const unsigned char *uri_string;
+
+  uri_string = raptor_uri_as_string(www->uri);
+  if(strncmp((const char*)uri_string, "http://", 7) &&
+     strncmp((const char*)uri_string, "https://", 8))
+    return 1;
+
   if(www->proxy)
     xmlNanoHTTPScanProxy(www->proxy);
 
