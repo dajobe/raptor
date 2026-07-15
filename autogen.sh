@@ -69,13 +69,6 @@ for conf in $confs; do
     break
   fi
 done
-ltdl_args=
-for conf in $confs; do
-  if grep "^AC_LIBLTDL_" "$conf" >/dev/null 2>&1; then
-    ltdl_args="--ltdl"
-    break
-  fi
-done
 silent_args=
 for conf in $confs; do
   if grep "^AM_SILENT_RULES" "$conf" >/dev/null 2>&1; then
@@ -101,7 +94,7 @@ swig_min_vers="010324"
 automake_args="--gnu --add-missing --force --copy -Wall"
 aclocal_args="-Wall"
 autoconf_args="-Wall"
-libtoolize_args="--force --copy --automake $ltdl_args"
+libtoolize_args="--force --copy --automake"
 gtkdocize_args="--copy"
 # --enable-gtk-doc does no harm if it's not available
 configure_args="--enable-maintainer-mode $gtkdoc_args $silent_args"
@@ -122,45 +115,66 @@ if test -n "$DRYRUN"; then
   DRYRUN="echo"
 fi
 
-cat > autogen-get-version.pl <<EOF
-use File::Basename;
-my \$prog=basename \$0;
-die "\$prog: USAGE PATH PROGRAM-NAME\n  e.g. \$prog /usr/bin/foo-123 foo\n"
-  unless @ARGV==2;
+# Print the version of a program as a six digit number: three
+# fields of two digits each e.g. automake 1.18.1 prints 011801
+# Prints nothing if PATH is not a file; prints 000000 if no version
+# could be parsed from the program output.
+#
+# USAGE: get_prog_version PATH PROGRAM-NAME
+#   e.g. get_prog_version /usr/bin/foo-123 foo
+get_prog_version() {
+  gpv_path=$1
+  gpv_name=$2
 
-my(\$path,\$name)=@ARGV;
-exit 0 if !-f \$path;
-die "\$prog: \$path not found\n" if !-r \$path;
+  if test ! -f "$gpv_path"; then
+    return 0
+  fi
 
-# Remove leading g and make it optional for glibtoolize etc.
-my \$mname=\$name; \$mname =~ s/^g//;
-
-my(@vnums);
-for my \$varg (qw(--version -version)) {
-  my \$cmd="\$path \$varg";
-  open(PIPE, "\$cmd 2>&1 |") || next;
-  while(<PIPE>) {
-    chomp;
-    next if @vnums; # drain pipe if we got a vnums
-    # Allow optional leading g and expect "PROGRAM-NAME (DESCRIPTION) VERSION-STRING"
-    if(/^g?\$mname \(.*?\)\s+(\S+)/i) {
-      my \$v = \$1; \$v =~ s/-.*\$//;
-      @vnums=grep { defined \$_ && !/^\s*\$/} map { s/\D//g; \$_; } split(/\./, \$v);
-    }
-  }
-  close(PIPE);
-  last if @vnums;
+  gpv_vn=
+  for gpv_arg in --version -version; do
+    gpv_vn=$("$gpv_path" "$gpv_arg" 2>&1 | awk -v name="$gpv_name" '
+      vn != "" { next } # drain input if we got a version
+      {
+        line = tolower($0)
+        # Remove leading g and make it optional for glibtoolize etc.
+        mname = name
+        sub(/^g/, "", mname)
+        # Expect "PROGRAM-NAME (DESCRIPTION) VERSION-STRING" otherwise
+        # PROGRAM-NAME followed by a dotted version e.g. "SWIG Version 4.4.1"
+        if (match(line, "^g?" mname " \\([^)]*\\) *")) {
+          line = substr(line, RSTART + RLENGTH)
+        } else if (match(line, "^g?" mname " ") &&
+                   match(line, /[0-9]+\.[0-9][0-9.]*/)) {
+          line = substr(line, RSTART)
+        } else {
+          next
+        }
+        # Version is the first word without any -SUFFIX
+        sub(/[ \t].*/, "", line)
+        sub(/-.*/, "", line)
+        count = split(line, parts, ".")
+        vn = ""
+        fields = 0
+        for (i = 1; i <= count && fields < 3; i++) {
+          gsub(/[^0-9]/, "", parts[i])
+          if (parts[i] == "")
+            continue
+          vn = vn sprintf("%02d", parts[i])
+          fields++
+        }
+        while (fields < 3) {
+          vn = vn "00"
+          fields++
+        }
+      }
+      END { print (vn != "" ? vn : "000000") }
+    ')
+    if test "$gpv_vn" != "000000"; then
+      break
+    fi
+  done
+  echo "$gpv_vn"
 }
-
-@vnums=(@vnums, 0, 0, 0)[0..2];
-\$vn=join('', map { sprintf('%02d', \$_) } @vnums);
-print "\$vn\n";
-exit 0;
-EOF
-
-autogen_get_version="$PWD/autogen-get-version.pl"
-
-trap 'rm -f $autogen_get_version' 0 1
 
 
 update_prog_version() {
@@ -177,7 +191,7 @@ update_prog_version() {
   eval "env=\$${ucprog}"
   if test -n "$env" ; then
     prog_name="$env"
-    prog_vers=$(perl "$autogen_get_version" "$prog_name" "$prog")
+    prog_vers=$(get_prog_version "$prog_name" "$prog")
 
     if test -z "$prog_vers"; then
       prog_vers=0
@@ -190,7 +204,7 @@ update_prog_version() {
     return
   fi
 
-  if test -x "$prog_vers"; then
+  if test -z "$prog_vers"; then
     prog_vers=0
   fi
 
@@ -206,7 +220,7 @@ update_prog_version() {
   find "$dir" -name "$nameglob" -ls -prune 2>/dev/null | \
       awk '{if($3 ~/x/) { print $11}}' > "$tmp"
   while read -r name; do
-    vers=$(perl "$autogen_get_version" "$name" "$prog")
+    vers=$(get_prog_version "$name" "$prog")
     if expr "$vers" '>' "$prog_vers" >/dev/null; then
       prog_name="$name"
       prog_vers="$vers"
@@ -283,10 +297,6 @@ for prog in $programs; do
 done
 
 echo "$program: Dependencies satisfied"
-
-if test -d "$SRCDIR/libltdl"; then
-  touch "$SRCDIR/libltdl/NO-AUTO-GEN"
-fi
 
 config_dir=
 if test -d "$CONFIG_DIR"; then
@@ -422,13 +432,12 @@ for dir in $dirs_to_process; do
     break
   fi
   cd "$here" || exit 1
-
-  if test "$status" != 0; then
-    echo "$program: FAILED to configure $dir"
-    exit "$status"
-  fi
-
 done
+
+if test "$status" != 0; then
+  echo "$program: FAILED to configure $dir"
+  exit "$status"
+fi
 
 
 
