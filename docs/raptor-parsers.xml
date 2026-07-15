@@ -144,9 +144,11 @@ and the triples-centric format based on the SPARQL results in JSON format.
 <section id="parser-ntriples">
 <title>N-Triples parser (name <literal>ntriples</literal>)</title>
 
-<para>A parser for the
+<para>A parser for
+<ulink url="https://www.w3.org/TR/n-triples/">RDF 1.1 N-Triples</ulink>
+(W3C Recommendation, 25 February 2014), based on the earlier
 <ulink url="http://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</ulink>
-syntax as used by the 
+syntax as used by the
 <ulink url="http://www.w3.org/2001/sw/RDFCore/">W3C RDF Core working group</ulink>
 for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 </para>
@@ -158,8 +160,10 @@ for the <ulink url="http://www.w3.org/TR/rdf-testcases/">RDF Test Cases</ulink>.
 <title>RDFa parser - (name <literal>rdfa</literal>)</title>
 <para>
 A parser for the
-<ulink url="http://www.w3.org/TR/2008/CR-rdfa-syntax-20080620/">RDFa</ulink>
-syntax, W3C Candidate Recommendation 20 June 2008 which allows reading XHTML
+<ulink url="https://www.w3.org/TR/rdfa-syntax/">RDFa 1.0</ulink>
+(W3C Recommendation 14 October 2008) and
+<ulink url="https://www.w3.org/TR/rdfa-core/">RDFa 1.1</ulink>
+(W3C Recommendation 7 June 2012) syntaxes which allow reading XHTML
 and XML as RDF triples by interpreting attributes on elements to
 describe which ones have RDF semantics.   This is implemented via
 <ulink url="http://rdfa.digitalbazaar.com/librdfa/">librdfa</ulink>
@@ -168,8 +172,9 @@ and licensed with the same license as Raptor.
 </para>
 
 <para>
-This parser is beta quality and passes all but 4 of the RDFa tests as
-of Raptor 1.4.18.
+As of Raptor 2.0.8 the parser passes all of the RDFa 1.0 test suite
+except for 4 tests and all of the RDFa 1.1 test suite except for 30
+tests.
 </para>
 
 </section>
@@ -193,7 +198,7 @@ as revised by the
 
 <listitem><para>Handles <literal>rdf:resource</literal> / <literal>resource</literal> attributes</para></listitem>
 
-<listitem><para>Uses <ulink url="http://expat.sourceforge.net/">expat</ulink> and/or (GNOME) <ulink url="http://xmlsoft.org/">libxml</ulink> XML parsers as available or required</para></listitem>
+<listitem><para>Uses the (GNOME) <ulink url="http://xmlsoft.org/">libxml2</ulink> XML parser (expat support was removed in Raptor 2.0.7)</para></listitem>
 
 </itemizedlist>
 
@@ -234,8 +239,11 @@ RDF/XML parser (name <literal>rdfxml</literal>).
 syntax.
 </para>
 
-<para>The parser is alpha quality and may not support the entire TRiG
-specification.</para>
+<para>The parser does not support the entire RDF 1.1 TriG
+specification: the <literal>GRAPH</literal> keyword forms, blank node
+graph names, SPARQL-style <literal>PREFIX</literal> and
+<literal>BASE</literal> directives before a default graph block, and
+reduced-whitespace syntax are not supported.</para>
 
 </section>
 
@@ -243,7 +251,9 @@ specification.</para>
 <section id="parser-turtle">
 <title>Turtle Terse RDF Triple Language parser (name <literal>turtle</literal>)</title>
 
-<para>A parser for the
+<para>A parser for
+<ulink url="https://www.w3.org/TR/turtle/">RDF 1.1 Turtle - Terse RDF Triple Language</ulink>
+(W3C Recommendation, 25 February 2014), based on the original
 <ulink url="http://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</ulink>
 syntax, designed as a useful subset of
 <ulink url="http://www.w3.org/DesignIssues/Notation3">Notation 3</ulink>.

@@ -80,7 +80,7 @@ or at
 <h3>N-Quads Parser</h3>
 
 <p>A parser for the
-<a href="https://www.w3.org/TR/2013/CR-n-quads-20131105/">RDF 1.1 N-Quads - A line-based syntax for an RDF datasets</a>, W3C Candidate Recommendation, 05 November 2013.
+<a href="https://www.w3.org/TR/2014/REC-n-quads-20140225/">RDF 1.1 N-Quads - A line-based syntax for RDF datasets</a>, W3C Recommendation, 25 February 2014.
 This is an extension to N-Triples, providing an optional 4th context
 graph term at the end of the line when a triple is associated with a
 named graph.
@@ -90,7 +90,7 @@ named graph.
 <h3>N-Triples Parser</h3>
 
 <p>A parser for the
-<a href="https://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1 N-Triples - A line-based syntax for an RDF graph</a>, W3C Candidate Recommendation, 05 November 2013 (aka N-Triples 2013)
+<a href="https://www.w3.org/TR/2014/REC-n-triples-20140225/">RDF 1.1 N-Triples - A line-based syntax for an RDF graph</a>, W3C Recommendation, 25 February 2014 (aka N-Triples 2013)
 based on the older
 <a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>.
 </p>
@@ -99,7 +99,7 @@ based on the older
 <h3>Turtle Parser</h3>
 
 <p>A parser for the
-<a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation, 19 February 2013
+<a href="https://www.w3.org/TR/2014/REC-turtle-20140225/">RDF 1.1 Turtle - Terse RDF Triple Language</a> W3C Recommendation, 25 February 2014
 based on earlier work
 <a href="https://www.dajobe.org/2004/01/turtle/">Turtle Terse RDF Triple Language</a> (2004)
 </p>
@@ -111,9 +111,11 @@ based on earlier work
 <a href="https://www.w3.org/TR/2014/REC-trig-20140225/">RDF 1.1 TriG RDF Dataset Language</a>.
 </p>
 
-<p>The parser does not support the entire 1.1 TRiG specification; the
-'{' ... '}' around a graph and the <code>GRAPH</code> keyword may not
-be omitted.
+<p>The parser does not support the entire RDF 1.1 TriG specification:
+the <code>GRAPH</code> keyword forms, blank node graph names,
+SPARQL-style <code>PREFIX</code> and <code>BASE</code> directives
+before a default graph block, and reduced-whitespace syntax are not
+supported.
 </p>
 
 
@@ -194,7 +196,7 @@ of some pre-processing.  This is suitable for small documents.
 <h3>N-Quads Serializer</h3>
 
 <p>A serializer for the
-<a href="https://www.w3.org/TR/2013/CR-n-quads-20131105/">RDF 1.1 N-Quads -A line-based syntax for an RDF datasets</a>, W3C Candidate Recommendation, 05 November 2013.
+<a href="https://www.w3.org/TR/2014/REC-n-quads-20140225/">RDF 1.1 N-Quads - A line-based syntax for RDF datasets</a>, W3C Recommendation, 25 February 2014.
 This is an extension to N-Triples, providing an optional 4th context
 graph term at the end of the line when a triple is associated with a
 named graph.
@@ -204,7 +206,7 @@ named graph.
 <h3>N-Triples Serializer</h3>
 
 <p>A serializer for the
-<a href="https://www.w3.org/TR/2013/CR-n-triples-20131105/">RDF 1.1
+<a href="https://www.w3.org/TR/2014/REC-n-triples-20140225/">RDF 1.1
 N-Triples - A line-based syntax for an RDF graph</a> (aka N-Triples 2013)
 based on the earlier
 <a href="https://www.w3.org/TR/rdf-testcases/#ntriples">N-Triples</a>
@@ -255,7 +257,7 @@ format.
 <h3>Turtle Serializer</h3>
 
 <p>A serializer for the
-<a href="https://www.w3.org/TR/2013/CR-turtle-20130219/">Turtle Terse RDF Triple Language</a> W3C Candidate Recommendation, 19 February 2013
+<a href="https://www.w3.org/TR/2014/REC-turtle-20140225/">RDF 1.1 Turtle - Terse RDF Triple Language</a> W3C Recommendation, 25 February 2014
 </p>
 
 <h3>XMP Serializer</h3>

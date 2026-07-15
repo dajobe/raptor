@@ -251,7 +251,7 @@ to write to it after the serializing is finished (after
 <title>Get or construct RDF Statements (Triples)</title>
 <para>
 An <link linkend="raptor-statement"><type>raptor_statement</type></link>
-containing the triple terms and optional graph term
+containing the subject, predicate and object terms and optional graph term
 can be made either by receiving them from a
 <link linkend="raptor-parser"><type>raptor_parser</type></link>
 via parsing or can be constructed by hand.</para>
@@ -259,7 +259,7 @@ via parsing or can be constructed by hand.</para>
 <para>When constructing by hand,
 the <link linkend="raptor-statement"><type>raptor_statement</type></link>
 structure should be allocated by the application and the fields
-filled in.  Each statement has three triple terms (subject,
+filled in.  Each statement has three terms (subject,
 predicate, object) and an optional graph term.  The subject can be a
 URI or blank node, the predicate can only be a URI and the object can
 be a URI, blank node or RDF literal. RDF literals can have either

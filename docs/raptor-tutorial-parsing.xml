@@ -135,8 +135,8 @@ argument.
 <para>The main reason to parse a syntax is to get RDF triples
 returned and these are return by a user-defined handler function
 which is called with parameters of a user data pointer and a
-raptor statement, which includes the triple terms plus the
-optional named graph term.  The handler is set with
+raptor statement, which includes the subject, predicate and object
+terms plus the optional named graph term.  The handler is set with
 <link linkend="raptor-parser-set-statement-handler"><function>raptor_parser_set_statement_handler()</function></link>
 as follows:
 <programlisting>
