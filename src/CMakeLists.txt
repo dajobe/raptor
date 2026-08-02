@@ -32,57 +32,63 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
     ${CMAKE_CURRENT_SOURCE_DIR}
   )
 
-  SET(raptor_parser_turtle_trig_sources
-#     turtle_common.h
-    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-#     turtle_lexer.h
-    ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-#     turtle_parser.h
-  )
-
   SET(raptor_fsp_sources ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/fsp.c)
 
-  # Generate the turtle parser
-  ADD_CUSTOM_TARGET(turtle_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c
-    COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y)
+  IF(RAPTOR_REGENERATE_PARSERS OR NOT RAPTOR_HAVE_PREBUILT_PARSERS)
+    SET(raptor_turtle_lexer_source ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c)
+    SET(raptor_turtle_parser_source ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c)
 
-  ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
-    DEPENDS turtle_tables_tgt)
+    # Generate the turtle parser
+    ADD_CUSTOM_TARGET(turtle_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.tab.c
+      COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.y)
 
-  # Generate the turtle lexer
-  ADD_CUSTOM_TARGET(turtle_flex_tgt DEPENDS
-    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
-    ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-  )
-  ADD_CUSTOM_COMMAND(
-    OUTPUT
+    ADD_CUSTOM_TARGET(turtle_parser_tgt DEPENDS turtle_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.h)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c
+      DEPENDS turtle_tables_tgt)
+
+    # Generate the turtle lexer
+    ADD_CUSTOM_TARGET(turtle_flex_tgt DEPENDS
       ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
       ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-    COMMAND ${FLEX_EXECUTABLE}
-      -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
-      ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
-  )
+    )
+    ADD_CUSTOM_COMMAND(
+      OUTPUT
+        ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+        ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+      COMMAND ${FLEX_EXECUTABLE}
+        -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+        ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+    )
 
-  ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
-            -c raptor_config.h -g HAVE_CONFIG_H
-            -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
-            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
-            -c raptor_config.h -g HAVE_CONFIG_H
-            -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
-            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-    COMMAND ${CMAKE_COMMAND} -E rename
-            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
-            ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-    DEPENDS turtle_flex_tgt
-    VERBATIM)
+    ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+              -c raptor_config.h -g HAVE_CONFIG_H
+              -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
+              ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
+              -c raptor_config.h -g HAVE_CONFIG_H
+              -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
+              ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+      COMMAND ${CMAKE_COMMAND} -E rename
+              ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
+              ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
+      DEPENDS turtle_flex_tgt
+      VERBATIM)
+  ELSE()
+    # Use the pre-generated parser sources shipped in release tarballs
+    SET(raptor_turtle_lexer_source ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.c)
+    SET(raptor_turtle_parser_source ${CMAKE_CURRENT_SOURCE_DIR}/turtle_parser.c)
+  ENDIF()
+
+  SET(raptor_parser_turtle_trig_sources
+    ${raptor_turtle_lexer_source}
+    ${raptor_turtle_parser_source}
+  )
 ENDIF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
 # RSS feed parser enabled
@@ -190,18 +196,23 @@ IF(NOT HAVE_STRCASECMP AND NOT HAVE_STRICMP)
 ENDIF(NOT HAVE_STRCASECMP AND NOT HAVE_STRICMP)
 
 IF(RAPTOR_PARSEDATE)
-  SET(raptor_parsedate_sources ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c)
+  IF(RAPTOR_REGENERATE_PARSERS OR NOT RAPTOR_HAVE_PREBUILT_PARSERS)
+    SET(raptor_parsedate_sources ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c)
 
-  # Generate the date/time parser
-  ADD_CUSTOM_TARGET(parsedate_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c
-    COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y
-    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y)
+    # Generate the date/time parser
+    ADD_CUSTOM_TARGET(parsedate_tables_tgt DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.tab.c
+      COMMAND ${BISON_EXECUTABLE} -o ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y
+      DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.y)
 
-  ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
-  ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
-    COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
-    DEPENDS parsedate_tables_tgt)
+    ADD_CUSTOM_TARGET(parsedate_tgt DEPENDS parsedate_tables_tgt ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c ${CMAKE_CURRENT_BINARY_DIR}/parsedate.h)
+    ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+      COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-bison.py ${CMAKE_CURRENT_BINARY_DIR}/parsedate.c
+      DEPENDS parsedate_tables_tgt)
+  ELSE()
+    # Use the pre-generated parser source shipped in release tarballs
+    SET(raptor_parsedate_sources ${CMAKE_CURRENT_SOURCE_DIR}/parsedate.c)
+  ENDIF()
 ENDIF(RAPTOR_PARSEDATE)
 
 IF(BUILD_SHARED_LIBS)
@@ -277,10 +288,14 @@ ADD_LIBRARY(raptor2 ${LIB_TYPE} $<TARGET_OBJECTS:raptor2_objects>)
 ADD_LIBRARY(raptor2_impl STATIC $<TARGET_OBJECTS:raptor2_objects>)
 
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
-  add_dependencies(raptor2_objects turtle_parser_tgt turtle_lexer_tgt)
+  IF(RAPTOR_REGENERATE_PARSERS OR NOT RAPTOR_HAVE_PREBUILT_PARSERS)
+    add_dependencies(raptor2_objects turtle_parser_tgt turtle_lexer_tgt)
+  ENDIF()
 ENDIF()
 IF(RAPTOR_PARSEDATE)
-  add_dependencies(raptor2_objects parsedate_tgt)
+  IF(RAPTOR_REGENERATE_PARSERS OR NOT RAPTOR_HAVE_PREBUILT_PARSERS)
+    add_dependencies(raptor2_objects parsedate_tgt)
+  ENDIF()
 ENDIF()
 
 SET(raptor2_libraries
@@ -313,12 +328,12 @@ IF(BUILD_SHARED_LIBS)
 	)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_EXECUTABLE(turtle_lexer_test turtle_lexer.c)
+ADD_EXECUTABLE(turtle_lexer_test ${raptor_turtle_lexer_source})
 TARGET_LINK_LIBRARIES(turtle_lexer_test raptor2_impl)
 
 IF(NOT WIN32 OR NOT BUILD_SHARED_LIBS)
 	# This currently cannot be built on Windows with DLL linkage
-	ADD_EXECUTABLE(turtle_parser_test turtle_parser.c)
+	ADD_EXECUTABLE(turtle_parser_test ${raptor_turtle_parser_source})
 	TARGET_LINK_LIBRARIES(turtle_parser_test raptor2_impl)
 	SET_TARGET_PROPERTIES(
 		turtle_parser_test
