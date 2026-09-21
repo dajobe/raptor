@@ -31,6 +31,9 @@ LIST(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 OPTION(RAPTOR_ENABLE_FUZZING "Build fuzzing targets" OFF)
 SET(RAPTOR_FUZZER_FLAGS "" CACHE STRING "Fuzzer compile/link flags")
 
+OPTION(RAPTOR_REGENERATE_PARSERS
+  "Regenerate the parsers with bison/flex/python3 (needed when building from git)"
+  OFF)
 ################################################################
 
 # Third-party libraries/dependencies
@@ -39,9 +42,33 @@ FIND_PACKAGE(CURL)
 FIND_PACKAGE(LibXml2)
 FIND_PACKAGE(LibXslt)
 FIND_PACKAGE(YAJL)
-FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter)
-FIND_PACKAGE(BISON 3.4 REQUIRED)
-FIND_PACKAGE(FLEX 2.5.19 REQUIRED)
+
+# Release tarballs ship the bison/flex generated parser sources
+# (src/turtle_parser.c, src/turtle_lexer.c, src/parsedate.c and headers),
+# so python3/flex/bison are only needed when the parsers are regenerated.
+SET(RAPTOR_HAVE_PREBUILT_PARSERS FALSE)
+IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_parser.c
+   AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_lexer.c
+   AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_lexer.h
+   AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_parser.h
+   AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/parsedate.c
+   AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/parsedate.h)
+  SET(RAPTOR_HAVE_PREBUILT_PARSERS TRUE)
+ENDIF()
+
+IF(RAPTOR_REGENERATE_PARSERS OR NOT RAPTOR_HAVE_PREBUILT_PARSERS)
+  SET(RAPTOR_BUILD_PARSERS TRUE)
+ELSE()
+  SET(RAPTOR_BUILD_PARSERS FALSE)
+ENDIF()
+IF(RAPTOR_BUILD_PARSERS)
+  FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter)
+  FIND_PACKAGE(BISON 3.4 REQUIRED)
+  FIND_PACKAGE(FLEX 2.5.19 REQUIRED)
+  MESSAGE(STATUS "Raptor: regenerating the Turtle/TriG/parsedate parsers (bison/flex/python3 required)")
+ELSE()
+  MESSAGE(STATUS "Raptor: using the pre-generated parser sources in src/ (-DRAPTOR_REGENERATE_PARSERS=ON forces regeneration)")
+ENDIF()
 
 if(EXISTS ${CURL_INCLUDE_DIRS})
   INCLUDE_DIRECTORIES(${CURL_INCLUDE_DIRS})
