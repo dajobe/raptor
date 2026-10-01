@@ -455,7 +455,8 @@ EXPONENT [eE][+-]?[0-9]+
                   }
                   uri_string = raptor_stringbuffer_as_string(sb);
 
-                  if(!*uri_string)
+                  /* an empty stringbuffer from <> returns NULL */
+                  if(!uri_string || !*uri_string)
                     yylval->uri = raptor_uri_copy(rdf_parser->base_uri);
                   else
                     yylval->uri = raptor_new_uri_relative_to_base(rdf_parser->world, rdf_parser->base_uri, uri_string);
