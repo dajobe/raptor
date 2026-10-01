@@ -34,4 +34,10 @@ RAPPER_TEST(trig.bug451
 	${CMAKE_CURRENT_SOURCE_DIR}/bug451.out
 )
 
+RAPPER_TEST(trig.empty-graph-iri
+	"${RAPPER} -q -i trig -o nquads ${CMAKE_CURRENT_SOURCE_DIR}/empty-graph-iri.trig http://example.librdf.org/empty-graph-iri.trig"
+	empty-graph-iri.res
+	${CMAKE_CURRENT_SOURCE_DIR}/empty-graph-iri.out
+)
+
 # end raptor/tests/trig/CMakeLists.txt
