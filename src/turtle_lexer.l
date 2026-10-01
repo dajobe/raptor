@@ -1021,6 +1021,7 @@ main(int argc, char *argv[])
   raptor_parser rdf_parser;
   raptor_turtle_parser turtle_parser;
   yyscan_t scanner;
+  fsp_context *fsp_ctx;
   int token = EOF;
   YYSTYPE lval;
   const unsigned char *uri_string;
@@ -1085,7 +1086,21 @@ main(int argc, char *argv[])
   buf[len + 1] =  buf[len + 2] = '\0'; /* YY_END_OF_BUFFER_CHAR; */
   (void)turtle_lexer__scan_buffer(buf, len + 3, scanner);
 
-  turtle_lexer_set_extra(&rdf_parser, scanner);
+  /* The lexer finds the parser via the FSP context user data */
+  fsp_ctx = fsp_create();
+  if(!fsp_ctx) {
+    fprintf(stderr, "%s: Failed to create FSP context\n", argv[0]);
+    RAPTOR_FREE(char*, buf);
+    yylex_destroy(scanner);
+    raptor_namespaces_clear(&turtle_parser.namespaces);
+    RAPTOR_FREE(char*, turtle_string);
+    raptor_free_world(world);
+    return 1;
+  }
+  fsp_set_user_data(fsp_ctx, &rdf_parser);
+  turtle_parser.fsp_ctx = fsp_ctx;
+
+  turtle_lexer_set_extra(fsp_ctx, scanner);
 
   /* Initialise enough of the parser and locator to get error messages */
   rdf_parser.context = &turtle_parser;
@@ -1116,6 +1131,8 @@ main(int argc, char *argv[])
     RAPTOR_FREE(char*, buf);
   
   yylex_destroy(scanner);
+
+  fsp_destroy(fsp_ctx);
 
   raptor_namespaces_clear(&turtle_parser.namespaces);
   

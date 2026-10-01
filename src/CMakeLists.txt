@@ -81,7 +81,7 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
     COMMAND ${CMAKE_COMMAND} -E rename
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
-    DEPENDS turtle_flex_tgt
+    DEPENDS turtle_flex_tgt ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
     VERBATIM)
 ENDIF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
 
@@ -313,12 +313,12 @@ IF(BUILD_SHARED_LIBS)
 	)
 ENDIF(BUILD_SHARED_LIBS)
 
-ADD_EXECUTABLE(turtle_lexer_test turtle_lexer.c)
+ADD_EXECUTABLE(turtle_lexer_test ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c)
 TARGET_LINK_LIBRARIES(turtle_lexer_test raptor2_impl)
 
 IF(NOT WIN32 OR NOT BUILD_SHARED_LIBS)
 	# This currently cannot be built on Windows with DLL linkage
-	ADD_EXECUTABLE(turtle_parser_test turtle_parser.c)
+	ADD_EXECUTABLE(turtle_parser_test ${CMAKE_CURRENT_BINARY_DIR}/turtle_parser.c)
 	TARGET_LINK_LIBRARIES(turtle_parser_test raptor2_impl)
 	SET_TARGET_PROPERTIES(
 		turtle_parser_test
