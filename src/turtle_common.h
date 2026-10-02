@@ -68,6 +68,10 @@ struct raptor_turtle_parser_s {
   int lineno;
   int lineno_last_good;
 
+  /* Line number at the end of the last complete token, restored when
+   * a token split across chunks is rescanned */
+  int lexer_commit_lineno;
+
   /* a sequence holding deferred statements */
   raptor_sequence *deferred;
 

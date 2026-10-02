@@ -231,7 +231,7 @@ turtle_lexer.c: $(srcdir)/turtle_lexer.l turtle_parser.c $(top_srcdir)/libfsp/sc
 	$(AM_V_GEN) \
 	$(LEX) -o$@ $(srcdir)/turtle_lexer.l; \
 	for file in turtle_lexer.c turtle_lexer.h; do \
-	  $(PYTHON3) $(top_srcdir)/libfsp/scripts/postprocess-flex.py -c raptor_config.h -g HAVE_CONFIG_H $$file > turtle_lexer.t || exit 1; \
+	  $(PYTHON3) $(top_srcdir)/libfsp/scripts/postprocess-flex.py --fsp-rewind -c raptor_config.h -g HAVE_CONFIG_H $$file > turtle_lexer.t || exit 1; \
 	  mv -f turtle_lexer.t $$file; \
 	done
 

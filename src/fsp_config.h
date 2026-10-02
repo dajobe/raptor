@@ -36,7 +36,10 @@ extern "C" {
 #define fsp_destroy raptor_fsp_destroy
 #define fsp_buffer_append raptor_fsp_buffer_append
 #define fsp_buffer_available raptor_fsp_buffer_available
+#define fsp_buffer_commit raptor_fsp_buffer_commit
 #define fsp_buffer_compact raptor_fsp_buffer_compact
+#define fsp_buffer_rewind raptor_fsp_buffer_rewind
+#define fsp_input_would_block raptor_fsp_input_would_block
 #define fsp_buffer_grow raptor_fsp_buffer_grow
 #define fsp_parse_chunk raptor_fsp_parse_chunk
 #define fsp_read_input raptor_fsp_read_input

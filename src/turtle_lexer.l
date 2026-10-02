@@ -179,7 +179,10 @@ static char turtle_lexer_oom_text[]="turtle_lexer: Out of memory";
 /* Do not need input() to to read from stdin */
 #define YY_NO_INPUT 1
 
-/* YY_USER_ACTION removed - no longer tracking consumed bytes with libfsp */
+/* libfsp rewind support: a token cut short by the end of the available
+ * input is not acted on; the lexer returns FSP_LEXER_NEED_MORE and the
+ * token is rescanned after more input arrives.  See turtle_push_parse() */
+#define YY_USER_ACTION FSP_LEXER_USER_ACTION(yyextra)
 
 %}
 
@@ -312,10 +315,14 @@ EXPONENT [eE][+-]?[0-9]+
 }
 
 <LONG_DLITERAL><<EOF>>     {
+                    /* Input ran out but more is expected: rescan the
+                     * literal after more data arrives */
+                    if(fsp_input_would_block(fsp_ctx))
+                      return FSP_LEXER_NEED_MORE;
+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    /* With streaming: if more data available, will get it; otherwise EOF */
                     turtle_syntax_error(rdf_parser, "End of file in middle of \"\"\"literal\"\"\"");
                     yyterminate();
 }
@@ -376,10 +383,14 @@ EXPONENT [eE][+-]?[0-9]+
 }
 
 <LONG_SLITERAL><<EOF>>     {
+                    /* Input ran out but more is expected: rescan the
+                     * literal after more data arrives */
+                    if(fsp_input_would_block(fsp_ctx))
+                      return FSP_LEXER_NEED_MORE;
+
                     BEGIN(INITIAL);
                     raptor_free_stringbuffer(turtle_parser->sb);
                     turtle_parser->sb = NULL;
-                    /* With streaming: if more data available, will get it; otherwise EOF */
                     turtle_syntax_error(rdf_parser, "End of file in middle of '''literal'''");
                     yyterminate();
 }

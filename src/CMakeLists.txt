@@ -65,17 +65,20 @@ IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
     COMMAND ${FLEX_EXECUTABLE}
       -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
       ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+    # Regenerate when the postprocess script changes, since the header
+    # is postprocessed in place
     DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/turtle_lexer.l
+            ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
   )
 
   ADD_CUSTOM_TARGET(turtle_lexer_tgt DEPENDS turtle_flex_tgt)
   ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
-            -c raptor_config.h -g HAVE_CONFIG_H
+            --fsp-rewind -c raptor_config.h -g HAVE_CONFIG_H
             -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.c
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.t
     COMMAND ${Python3_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../libfsp/scripts/postprocess-flex.py
-            -c raptor_config.h -g HAVE_CONFIG_H
+            --fsp-rewind -c raptor_config.h -g HAVE_CONFIG_H
             -o ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h.tmp
             ${CMAKE_CURRENT_BINARY_DIR}/turtle_lexer.h
     COMMAND ${CMAKE_COMMAND} -E rename
