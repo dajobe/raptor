@@ -1520,16 +1520,43 @@ static void
 raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
+  if(turtle_parser->pstate) {
+    turtle_parser_pstate *pstate = turtle_parser->pstate;
+
+    /* Bison's pstate_delete frees the stack storage, but does not run
+     * destructors for symbols left by an unfinished push parse.  Pop
+     * them as Bison's normal return cleanup does.  Do not push EOF here:
+     * that could run grammar actions and call application handlers.
+     * A completed parse already has an empty stack. */
+    /* Bison before 3.6 used integer symbol numbers without this macro. */
+#ifndef YY_ACCESSING_SYMBOL
+#define YY_ACCESSING_SYMBOL(state) yystos[state]
+#endif
+    while(pstate->yyssp != pstate->yyss) {
+      yydestruct("Cleanup: popping", YY_ACCESSING_SYMBOL(+*pstate->yyssp),
+                 pstate->yyvsp, turtle_parser->fsp_ctx, turtle_parser->scanner);
+      pstate->yyssp--;
+      pstate->yyvsp--;
+    }
+    turtle_parser_pstate_delete(pstate);
+    turtle_parser->pstate = NULL;
+  }
+
+  if(turtle_parser->deferred) {
+    raptor_free_sequence(turtle_parser->deferred);
+    turtle_parser->deferred = NULL;
+  }
+
+  if(turtle_parser->sb) {
+    raptor_free_stringbuffer(turtle_parser->sb);
+    turtle_parser->sb = NULL;
+  }
+
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
   if(turtle_parser->scanner_set) {
     turtle_lexer_lex_destroy(turtle_parser->scanner);
     turtle_parser->scanner_set = 0;
-  }
-
-  if(turtle_parser->pstate) {
-    turtle_parser_pstate_delete(turtle_parser->pstate);
-    turtle_parser->pstate = NULL;
   }
 
   if(turtle_parser->fsp_ctx) {

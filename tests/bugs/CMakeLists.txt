@@ -32,6 +32,14 @@ IF(RAPTOR_PARSER_TURTLE AND RAPTOR_PARSER_TRIG)
 	TARGET_COMPILE_DEFINITIONS(raptor_issue88_test PRIVATE RAPTOR_INTERNAL=1)
 	TARGET_LINK_LIBRARIES(raptor_issue88_test raptor2_impl)
 	ADD_TEST(bugs.issue88 raptor_issue88_test)
+
+	ADD_EXECUTABLE(raptor_issue89_test issue89.c)
+	TARGET_INCLUDE_DIRECTORIES(raptor_issue89_test PRIVATE
+		${CMAKE_SOURCE_DIR}/src
+		${CMAKE_BINARY_DIR}/src
+	)
+	TARGET_LINK_LIBRARIES(raptor_issue89_test raptor2)
+	ADD_TEST(bugs.issue89 raptor_issue89_test)
 ENDIF(RAPTOR_PARSER_TURTLE AND RAPTOR_PARSER_TRIG)
 
 # end raptor/tests/bugs/CMakeLists.txt
