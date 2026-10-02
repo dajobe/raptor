@@ -895,29 +895,27 @@ raptor_xml_escape_string_write(const unsigned char *string,
 }
 
 
-/**
- * raptor_xml_name_check:
+/*
+ * raptor_xml_name_check_common:
  * @string: UTF-8 name string
  * @length: length of string
  * @xml_version: XML version
+ * @check_start: non 0 to require the first character be a NameStartChar
  *
- * Check a string is a legal XML name (and legal UTF8).
- * 
- * xml_version is either 10 (for XML 1.0) or 11 for (XML 1.1). Any
- * other version fails.
+ * INTERNAL - check a string is legal UTF-8 made of XML name characters
  *
- * Return value: Non 0 if the string is a legal XML name
- **/
-int
-raptor_xml_name_check(const unsigned char *string, size_t length,
-                      int xml_version)
+ * Return value: Non 0 if the string passes the checks
+ */
+static int
+raptor_xml_name_check_common(const unsigned char *string, size_t length,
+                             int xml_version, int check_start)
 {
   int pos;
 
   if(xml_version != 10 && xml_version != 11)
     return 0;
 
-  for(pos = 0; length > 0; pos++) {
+  for(pos = check_start ? 0 : 1; length > 0; pos++) {
     raptor_unichar unichar = 0;
 
     int unichar_len;
@@ -952,6 +950,48 @@ raptor_xml_name_check(const unsigned char *string, size_t length,
     length -= unichar_len;
   }
   return 1;
+}
+
+
+/**
+ * raptor_xml_name_check:
+ * @string: UTF-8 name string
+ * @length: length of string
+ * @xml_version: XML version
+ *
+ * Check a string is a legal XML name (and legal UTF8).
+ *
+ * xml_version is either 10 (for XML 1.0) or 11 for (XML 1.1). Any
+ * other version fails.
+ *
+ * Return value: Non 0 if the string is a legal XML name
+ **/
+int
+raptor_xml_name_check(const unsigned char *string, size_t length,
+                      int xml_version)
+{
+  return raptor_xml_name_check_common(string, length, xml_version, 1);
+}
+
+
+/*
+ * raptor_xml_name_chars_check:
+ * @string: UTF-8 string
+ * @length: length of string
+ * @xml_version: XML version
+ *
+ * INTERNAL - check a string is legal UTF-8 made only of XML NameChar
+ *
+ * Unlike raptor_xml_name_check() the first character may be any
+ * NameChar such as a digit.
+ *
+ * Return value: Non 0 if every character is an XML NameChar
+ */
+int
+raptor_xml_name_chars_check(const unsigned char *string, size_t length,
+                            int xml_version)
+{
+  return raptor_xml_name_check_common(string, length, xml_version, 0);
 }
 
 

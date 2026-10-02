@@ -492,6 +492,22 @@ struct raptor_namespace_s {
 
 raptor_namespace** raptor_namespace_stack_to_array(raptor_namespace_stack *nstack, size_t *size_p);
 
+/*
+ * raptor_namespace_name_check_handler:
+ * @ns: namespace
+ * @name: local name (not NUL terminated)
+ * @name_len: length of @name
+ * @xml_version: XML version
+ *
+ * Check a namespace and local name can be used together as a qname
+ *
+ * Return value: non 0 if legal
+ */
+typedef int (*raptor_namespace_name_check_handler)(raptor_namespace* ns, const unsigned char *name, size_t name_len, int xml_version);
+RAPTOR_INTERNAL_API int raptor_namespace_xml_name_check(raptor_namespace* ns, const unsigned char *name, size_t name_len, int xml_version);
+RAPTOR_INTERNAL_API raptor_qname* raptor_new_qname_from_namespace_uri_check(raptor_namespace_stack *nstack, raptor_uri *uri, int xml_version, raptor_namespace_name_check_handler check);
+RAPTOR_INTERNAL_API int raptor_xml_name_chars_check(const unsigned char *string, size_t length, int xml_version);
+
 #ifdef RAPTOR_XML_LIBXML
 #define RAPTOR_LIBXML_MAGIC 0x8AF108
 #endif
@@ -1404,7 +1420,7 @@ RAPTOR_INTERNAL_API const unsigned char *raptor_turtle_writer_get_option_string(
 RAPTOR_INTERNAL_API void raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer, const unsigned char *bnodeid, size_t len);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer, raptor_term* term);
-RAPTOR_INTERNAL_API int raptor_turtle_is_legal_turtle_qname(raptor_qname* qname);
+RAPTOR_INTERNAL_API raptor_qname* raptor_turtle_new_qname_from_uri(raptor_namespace_stack *nstack, raptor_uri *uri);
 
 
 /**

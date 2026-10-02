@@ -1,0 +1,8 @@
+# Local names starting with a digit are written as prefixed names
+# GitHub issue 81
+@prefix imh: <http://example.org/IMH_> .
+
+imh:0001430 imh:0001447 imh:0001474 .
+<http://example.org/s> imh:1 "v"^^imh:0-1 .
+<http://example.org/s> imh:2 <http://example.org/IMH_0.1> .
+<http://example.org/s> <http://example.org/IMH_a.b> <http://example.org/IMH_-a> .

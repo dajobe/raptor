@@ -1,0 +1,11 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix imh: <http://example.org/IMH_> .
+
+imh:0001430
+    imh:0001447 imh:0001474 .
+
+<http://example.org/s>
+    imh:1 "v"^^imh:0-1 ;
+    imh:2 <http://example.org/IMH_0.1> ;
+    <http://example.org/IMH_a.b> <http://example.org/IMH_-a> .
+

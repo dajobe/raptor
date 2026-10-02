@@ -149,36 +149,6 @@ static int raptor_turtle_serialize_flush(raptor_serializer* serializer);
 static void raptor_turtle_serialize_finish_factory(raptor_serializer_factory* factory);
 
 
-int
-raptor_turtle_is_legal_turtle_qname(raptor_qname* qname)
-{
-  const char* prefix_name;
-  const char* local_name;
-
-  if(!qname)
-    return 0;
-
-  prefix_name = qname->nspace ? (const char*)qname->nspace->prefix : NULL;
-  if(prefix_name) {
-    /* prefixName: must have leading [A-Z][a-z][0-9] (nameStartChar - '_')  */
-    /* prefixName: no . anywhere */
-    if(!(isalpha((int)*prefix_name) || isdigit((int)*prefix_name)) ||
-       strchr(prefix_name, '.'))
-      return 0;
-  }
-
-  local_name = (const char*)qname->local_name;
-  if(local_name) {
-    /* nameStartChar: must have leading [A-Z][a-z][0-9]_  */
-    /* nameChar: no . anywhere */
-    if(!(isalpha((int)*local_name) || isdigit((int)*local_name) || *local_name == '_') ||
-       strchr(local_name, '.'))
-      return 0;
-  }
-
-  return 1;
-}
-
 /*
  * raptor_turtle_emit_resource:
  * @serializer: #raptor_serializer object
@@ -213,14 +183,8 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
     return 0;
   }
 
-  qname = raptor_new_qname_from_namespace_uri(context->nstack,
-                                              node->term->value.uri, 10);
-
-  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
-    raptor_free_qname(qname);
-    qname = NULL;
-  }
+  qname = raptor_turtle_new_qname_from_uri(context->nstack,
+                                           node->term->value.uri);
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
     if(emit_mkr)
@@ -585,9 +549,8 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         raptor_turtle_writer_newline(turtle_writer);
       }
 
-      qname = raptor_new_qname_from_namespace_uri(context->nstack,
-                                                  predicate->term->value.uri,
-                                                  10);
+      qname = raptor_turtle_new_qname_from_uri(context->nstack,
+                                               predicate->term->value.uri);
 
       if(raptor_abbrev_node_equals(predicate, context->rdf_type)) {
         if(emit_mkr)
@@ -726,9 +689,8 @@ raptor_mkr_emit_subject_resultset(raptor_serializer* serializer,
         }
       }
 
-      qname = raptor_new_qname_from_namespace_uri(context->nstack,
-                                                  predicate->term->value.uri,
-                                                  10);
+      qname = raptor_turtle_new_qname_from_uri(context->nstack,
+                                               predicate->term->value.uri);
       if(raptor_abbrev_node_equals(predicate, context->rdf_type)) {
         skip_object = 1;  /* all values have been written */
       } else if(qname) {
