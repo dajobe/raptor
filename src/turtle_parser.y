@@ -73,6 +73,12 @@
 /* Helper macro to get raptor_parser from fsp_context */
 #define PARSER_FROM_FSP_CONTEXT(fsp_ctx) ((raptor_parser*)fsp_get_user_data(fsp_ctx))
 
+/* Retained, uncommitted input in bytes before retries wait for doubling.
+ * This is a tuning cutoff, not a token length limit: below it, each chunk
+ * triggers a retry; at or above it, retries trade callback latency for bounded
+ * rescanning. The final chunk always triggers a retry regardless of size. */
+#define RAPTOR_TURTLE_LEXER_RETRY_MIN_BYTES 256
+
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 #define YYERROR_MSG(msg) do { fputs("** YYERROR ", RAPTOR_DEBUG_FH); fputs(msg, RAPTOR_DEBUG_FH); fputc('\n', RAPTOR_DEBUG_FH); YYERROR; } while(0)
@@ -1406,13 +1412,14 @@ turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
   turtle_parser->lineno = turtle_parser->lexer_commit_lineno;
   turtle_lexer_fsp_rewind(scanner);
 
-  /* Retrying a long token after every byte rescans successively larger
-   * prefixes and costs quadratic time. Keep small tokens eager, but wait
-   * for the retained input to double before retrying a large token. The
-   * final chunk always bypasses this threshold in parse_chunk(). */
+  /* Retrying after every byte rescans successively larger prefixes and
+   * costs quadratic time. Once the retained, uncommitted input reaches
+   * the cutoff, wait for it to double before retrying. This may delay
+   * callbacks even if subsequent input completes the token. The final
+   * chunk always bypasses this threshold in parse_chunk(). */
   retained = fsp_buffer_available(turtle_parser->fsp_ctx);
   turtle_parser->lexer_retry_size = 0;
-  if(retained >= 256)
+  if(retained >= RAPTOR_TURTLE_LEXER_RETRY_MIN_BYTES)
     turtle_parser->lexer_retry_size =
       RAPTOR_SIZE_T_MUL_OVERFLOWS(retained, 2) ? (size_t)-1 : retained * 2;
 }
