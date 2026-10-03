@@ -73,12 +73,6 @@
 /* Helper macro to get raptor_parser from fsp_context */
 #define PARSER_FROM_FSP_CONTEXT(fsp_ctx) ((raptor_parser*)fsp_get_user_data(fsp_ctx))
 
-/* Retained, uncommitted input in bytes before retries wait for doubling.
- * This is a tuning cutoff, not a token length limit: below it, each chunk
- * triggers a retry; at or above it, retries trade callback latency for bounded
- * rescanning. The final chunk always triggers a retry regardless of size. */
-#define RAPTOR_TURTLE_LEXER_RETRY_MIN_BYTES 256
-
 /* Fail with an debug error message if RAPTOR_DEBUG > 1 */
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
 #define YYERROR_MSG(msg) do { fputs("** YYERROR ", RAPTOR_DEBUG_FH); fputs(msg, RAPTOR_DEBUG_FH); fputc('\n', RAPTOR_DEBUG_FH); YYERROR; } while(0)
@@ -1392,7 +1386,6 @@ turtle_push_parse_commit(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 {
   turtle_lexer_fsp_commit(scanner);
   turtle_parser->lexer_commit_lineno = turtle_parser->lineno;
-  turtle_parser->lexer_retry_size = 0;
 }
 
 
@@ -1401,8 +1394,6 @@ turtle_push_parse_commit(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 static void
 turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 {
-  size_t retained;
-
   /* partial long literal */
   if(turtle_parser->sb) {
     raptor_free_stringbuffer(turtle_parser->sb);
@@ -1411,17 +1402,6 @@ turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 
   turtle_parser->lineno = turtle_parser->lexer_commit_lineno;
   turtle_lexer_fsp_rewind(scanner);
-
-  /* Retrying after every byte rescans successively larger prefixes and
-   * costs quadratic time. Once the retained, uncommitted input reaches
-   * the cutoff, wait for it to double before retrying. This may delay
-   * callbacks even if subsequent input completes the token. The final
-   * chunk always bypasses this threshold in parse_chunk(). */
-  retained = fsp_buffer_available(turtle_parser->fsp_ctx);
-  turtle_parser->lexer_retry_size = 0;
-  if(retained >= RAPTOR_TURTLE_LEXER_RETRY_MIN_BYTES)
-    turtle_parser->lexer_retry_size =
-      RAPTOR_SIZE_T_MUL_OVERFLOWS(retained, 2) ? (size_t)-1 : retained * 2;
 }
 
 
@@ -1716,9 +1696,10 @@ raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *t)
  * @is_end: Non-zero if this is the final chunk
  *
  * Uses libfsp for buffer management and streaming token processing.
- * Large unfinished tokens wait for retained input to double before
- * rescanning, so statement callbacks following them may be delayed until
- * more input arrives. A final chunk always processes the pending input.
+ * After an unfinished token reaches libfsp's retry cutoff, rescanning
+ * waits for retained, uncommitted input to double. Statement callbacks
+ * may therefore be delayed until more input arrives. A final chunk
+ * always processes the pending input.
  *
  * Return value: 0 on success, non-0 on failure
  */
@@ -1746,18 +1727,12 @@ raptor_turtle_parse_chunk(raptor_parser *rdf_parser,
     return 1;
   }
 
-  /* Append chunk to FSP buffer */
-  if(len > 0) {
-    if(fsp_buffer_append(fsp_ctx, (const char*)s, len) < 0)
-      return 1;
-  }
+  /* Append the chunk and signal EOF through libfsp. */
+  if(fsp_parse_chunk(fsp_ctx, (const char*)s, len, is_end) ==
+     FSP_STATUS_NO_MEMORY)
+    return 1;
 
-  /* Signal EOF to FSP if this is the final chunk */
-  if(is_end)
-    fsp_ctx->more_chunks_expected = 0;
-
-  if(!is_end &&
-     fsp_buffer_available(fsp_ctx) < turtle_parser->lexer_retry_size)
+  if(!fsp_input_ready(fsp_ctx))
     return 0;
 
   rc = turtle_push_parse(fsp_ctx, turtle_parser->scanner);
