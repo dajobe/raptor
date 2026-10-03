@@ -272,14 +272,15 @@ jobs:
 
       - name: Run Turtle fuzz smoke test
         run: |
-          mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle
+          mkdir -p tests/fuzz/artifacts tests/fuzz/corpus/turtle tests/fuzz/seeds/turtle
+          cp tests/turtle/*.ttl tests/fuzz/seeds/turtle/
           tests/fuzz/fuzz_turtle \
             -max_total_time=60 \
             -timeout=10 \
             -dict=tests/fuzz/dict/turtle.dict \
             -artifact_prefix=tests/fuzz/artifacts/ \
             tests/fuzz/corpus/turtle \
-            tests/turtle
+            tests/fuzz/seeds/turtle
 
       - name: Run N-Triples fuzz smoke test
         run: |
@@ -305,3 +306,11 @@ jobs:
             tests/rdfxml \
             tests/feeds \
             tests/grddl
+
+      - name: Upload fuzz failure inputs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: fuzz-failure-inputs
+          path: tests/fuzz/artifacts/
+          if-no-files-found: ignore

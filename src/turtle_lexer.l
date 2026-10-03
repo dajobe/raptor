@@ -92,6 +92,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
+#include <limits.h>
 #include <stdarg.h>
 #ifdef HAVE_ERRNO_H
 #include <errno.h>
@@ -159,6 +160,12 @@ static jmp_buf turtle_lexer_fatal_error_longjmp_env;
 } while(0)
 #endif
  
+/* Flex rebuilds its token state on every buffer refill. Let it fill all
+ * available space in its buffer, which grows with a long token, instead
+ * of repeatedly rescanning the token after fixed-size reads. YY_INPUT
+ * below reads only bytes already buffered by libfsp, so this cannot block. */
+#define YY_READ_BUF_SIZE INT_MAX
+
 /* Enable streaming via libfsp */
 #define YY_INPUT(buf,result,max_size) \
   result = fsp_read_input(yyextra, buf, max_size)

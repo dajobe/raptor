@@ -72,8 +72,9 @@ LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
       size_t chunk = (size_t)((unsigned int)data[offset] % 32U) + 1U;
       if(chunk > remaining)
         chunk = remaining;
-      (void)raptor_parser_parse_chunk(parser, data + offset, chunk,
-                                      (offset + chunk == size));
+      if(raptor_parser_parse_chunk(parser, data + offset, chunk,
+                                  (offset + chunk == size)))
+        break;
       offset += chunk;
     }
     if(size == 0)

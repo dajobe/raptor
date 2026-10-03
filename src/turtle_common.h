@@ -72,6 +72,10 @@ struct raptor_turtle_parser_s {
    * a token split across chunks is rescanned */
   int lexer_commit_lineno;
 
+  /* Minimum retained input before retrying a large unfinished token.
+   * Doubling the input between retries bounds repeated rescanning. */
+  size_t lexer_retry_size;
+
   /* a sequence holding deferred statements */
   raptor_sequence *deferred;
 

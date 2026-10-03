@@ -1386,6 +1386,7 @@ turtle_push_parse_commit(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 {
   turtle_lexer_fsp_commit(scanner);
   turtle_parser->lexer_commit_lineno = turtle_parser->lineno;
+  turtle_parser->lexer_retry_size = 0;
 }
 
 
@@ -1394,6 +1395,8 @@ turtle_push_parse_commit(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 static void
 turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 {
+  size_t retained;
+
   /* partial long literal */
   if(turtle_parser->sb) {
     raptor_free_stringbuffer(turtle_parser->sb);
@@ -1402,6 +1405,16 @@ turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
 
   turtle_parser->lineno = turtle_parser->lexer_commit_lineno;
   turtle_lexer_fsp_rewind(scanner);
+
+  /* Retrying a long token after every byte rescans successively larger
+   * prefixes and costs quadratic time. Keep small tokens eager, but wait
+   * for the retained input to double before retrying a large token. The
+   * final chunk always bypasses this threshold in parse_chunk(). */
+  retained = fsp_buffer_available(turtle_parser->fsp_ctx);
+  turtle_parser->lexer_retry_size = 0;
+  if(retained >= 256)
+    turtle_parser->lexer_retry_size =
+      RAPTOR_SIZE_T_MUL_OVERFLOWS(retained, 2) ? (size_t)-1 : retained * 2;
 }
 
 
@@ -1696,6 +1709,9 @@ raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *t)
  * @is_end: Non-zero if this is the final chunk
  *
  * Uses libfsp for buffer management and streaming token processing.
+ * Large unfinished tokens wait for retained input to double before
+ * rescanning, so statement callbacks following them may be delayed until
+ * more input arrives. A final chunk always processes the pending input.
  *
  * Return value: 0 on success, non-0 on failure
  */
@@ -1732,6 +1748,10 @@ raptor_turtle_parse_chunk(raptor_parser *rdf_parser,
   /* Signal EOF to FSP if this is the final chunk */
   if(is_end)
     fsp_ctx->more_chunks_expected = 0;
+
+  if(!is_end &&
+     fsp_buffer_available(fsp_ctx) < turtle_parser->lexer_retry_size)
+    return 0;
 
   rc = turtle_push_parse(fsp_ctx, turtle_parser->scanner);
 

@@ -40,6 +40,15 @@ IF(RAPTOR_PARSER_TURTLE AND RAPTOR_PARSER_TRIG)
 	)
 	TARGET_LINK_LIBRARIES(raptor_issue89_test raptor2)
 	ADD_TEST(bugs.issue89 raptor_issue89_test)
+
+	ADD_EXECUTABLE(raptor_turtle_streaming_test turtle_streaming.c)
+	TARGET_INCLUDE_DIRECTORIES(raptor_turtle_streaming_test PRIVATE
+		${CMAKE_SOURCE_DIR}/src
+		${CMAKE_BINARY_DIR}/src
+	)
+	TARGET_LINK_LIBRARIES(raptor_turtle_streaming_test raptor2)
+	ADD_TEST(bugs.turtle_streaming raptor_turtle_streaming_test)
+	SET_TESTS_PROPERTIES(bugs.turtle_streaming PROPERTIES TIMEOUT 30)
 ENDIF(RAPTOR_PARSER_TURTLE AND RAPTOR_PARSER_TRIG)
 
 # end raptor/tests/bugs/CMakeLists.txt
