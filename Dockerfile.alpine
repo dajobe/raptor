@@ -1,0 +1,36 @@
+FROM docker.io/library/alpine as builder
+
+COPY . /raptor
+
+WORKDIR /raptor
+
+RUN apk add --update automake \
+                     autoconf \
+                     libtool \
+                     gtk-doc \
+                     build-base \
+                     flex \
+                     bison \
+                     libxml2-dev \
+    && rm -rf /var/cache/apk/*
+RUN cd src && \
+    flex -oturtle_lexer.c turtle_lexer.l && \
+    bison -y parsedate.y && \
+    bison -y turtle_parser.y && \
+    cp parsedate.tab.c parsedate.c && \
+    cp parsedate.tab.h parsedate.h && \
+    cp turtle_parser.tab.c turtle_parser.c && \
+    cp turtle_parser.tab.h turtle_parser.h && \
+    cd ..
+RUN NOCONFIGURE=1 ./autogen.sh
+RUN ./configure
+RUN make
+RUN make install
+
+FROM docker.io/library/alpine
+
+RUN apk add --update libxml2 \
+    && rm -rf /var/cache/apk/*
+
+COPY --from=builder /usr/local/lib/libraptor2* /usr/local/lib/
+COPY --from=builder /usr/local/bin/rapper /usr/local/bin/
