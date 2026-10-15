@@ -92,7 +92,7 @@ using a prefix and URI argument pair like this:
   const unsigned char* prefix = "ex";
   raptor_uri* uri = raptor_new_uri(world, "http://example.org");
 
-  raptor_serializer_set_namespace(rdf_serializer, prefix, uri);
+  raptor_serializer_set_namespace(rdf_serializer, uri, prefix);
 </programlisting>
 </para>
 
