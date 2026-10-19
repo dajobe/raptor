@@ -21,6 +21,7 @@
 
 EXTRA_DIST= \
 fix-groff-xhtml.py \
+fix-readme-html.py \
 fix-gtkdoc-header.py \
 process-changes.py \
 rdfcompare
