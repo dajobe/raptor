@@ -122,23 +122,18 @@ DISTCLEANFILES+= \
 raptor-fake.h
 
 CLEANFILES+= \
-libraptor2.html.groff libraptor2.html.tidy libraptor2.html.tmp
+libraptor2.html.xhtml libraptor2.html.tmp
 
 raptor-fake.h: $(top_builddir)/src/raptor2.h $(top_srcdir)/scripts/fix-gtkdoc-header.py
 	$(PYTHON3) $(top_srcdir)/scripts/fix-gtkdoc-header.py < $< > $@
 
 if MAINTAINER_MODE
 GROFF=groff
-TIDY=tidy
 
-# tidy exits with status 1 for warnings only
 libraptor2.html: $(srcdir)/libraptor2.3 $(top_srcdir)/scripts/fix-groff-xhtml.py
-	$(GROFF) -man -Thtml -P-l $< > $@.groff
-	$(TIDY) -asxml -wrap 1000 $@.groff > $@.tidy 2>/dev/null; \
-	  status=$$?; test $$status -le 1 || \
-	  { echo "$@: $(TIDY) failed with status $$status" >&2; exit 1; }
-	$(PYTHON3) $(top_srcdir)/scripts/fix-groff-xhtml.py $@.tmp < $@.tidy
-	rm -f $@.groff $@.tidy
+	$(GROFF) -man -Txhtml -P-l $< > $@.xhtml
+	$(PYTHON3) $(top_srcdir)/scripts/fix-groff-xhtml.py $@.tmp < $@.xhtml
+	rm -f $@.xhtml
 	mv $@.tmp $@
 
 rdfcat.c: $(top_srcdir)/examples/rdfcat.c
