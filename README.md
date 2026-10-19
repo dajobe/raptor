@@ -55,10 +55,10 @@ syntax](https://www.w3.org/TR/rdf-syntax-grammar/).
   updates](https://www.w3.org/TR/rdf-syntax-grammar/) for [XML
   Base](https://www.w3.org/TR/xmlbase/), `xml:lang`, RDF datatyping and
   Collections.
-- Handles all RDF vocabularies such as [FOAF](http://www.foaf-project.org/),
-  [RSS 1.0](http://www.purl.org/rss/1.0/), [Dublin
-  Core](http://dublincore.org/), [OWL](https://www.w3.org/TR/owl-features/),
-  [DOAP](http://usefulinc.com/doap)
+- Handles all RDF vocabularies such as [FOAF](http://xmlns.com/foaf/spec/), [RSS
+  1.0](http://www.purl.org/rss/1.0/), [Dublin Core](http://dublincore.org/),
+  [OWL](https://www.w3.org/TR/owl-features/),
+  [DOAP](https://github.com/ewilderj/doap/wiki)
 - Handles `rdf:resource` / `resource` attributes
 - Uses [libxml](https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home) XML parser
 

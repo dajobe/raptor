@@ -194,7 +194,7 @@ as revised by the
 <itemizedlist>
 <listitem><para>Fully handles the <ulink url="http://www.w3.org/TR/rdf-syntax-grammar/">RDF/XML syntax updates</ulink> for <ulink url="http://www.w3.org/TR/xmlbase/">XML Base</ulink>, <literal>xml:lang</literal>, RDF datatyping and Collections.</para></listitem>
 
-<listitem><para>Handles all RDF vocabularies such as <ulink url="http://www.foaf-project.org/">FOAF</ulink>, <ulink url="http://www.purl.org/rss/1.0/">RSS 1.0</ulink>, <ulink url="http://dublincore.org/">Dublin Core</ulink>, <ulink url="http://www.w3.org/TR/owl-features/">OWL</ulink>, <ulink url="http://usefulinc.com/doap">DOAP</ulink></para></listitem>
+<listitem><para>Handles all RDF vocabularies such as <ulink url="http://xmlns.com/foaf/spec/">FOAF</ulink>, <ulink url="http://www.purl.org/rss/1.0/">RSS 1.0</ulink>, <ulink url="http://dublincore.org/">Dublin Core</ulink>, <ulink url="http://www.w3.org/TR/owl-features/">OWL</ulink>, <ulink url="https://github.com/ewilderj/doap/wiki">DOAP</ulink></para></listitem>
 
 <listitem><para>Handles <literal>rdf:resource</literal> / <literal>resource</literal> attributes</para></listitem>
 
