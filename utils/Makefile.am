@@ -27,7 +27,7 @@ noinst_PROGRAMS = rdfdiff
 
 man_MANS = rapper.1
 
-CLEANFILES = *.plist
+CLEANFILES = *.plist rapper.html.groff rapper.html.tidy rapper.html.tmp
 
 # Memory debugging
 MEM=@MEM@
@@ -65,8 +65,18 @@ rdfdiff_LDADD= $(top_builddir)/src/libraptor2.la
 
 
 if MAINTAINER_MODE
+GROFF=groff
+TIDY=tidy
+
+# tidy exits with status 1 for warnings only
 rapper.html: $(srcdir)/rapper.1 $(top_srcdir)/scripts/fix-groff-xhtml.py
-	-groff -man -Thtml -P-l $< | tidy -asxml -wrap 1000 2>/dev/null | $(PYTHON3) $(top_srcdir)/scripts/fix-groff-xhtml.py $@
+	$(GROFF) -man -Thtml -P-l $< > $@.groff
+	$(TIDY) -asxml -wrap 1000 $@.groff > $@.tidy 2>/dev/null; \
+	  status=$$?; test $$status -le 1 || \
+	  { echo "$@: $(TIDY) failed with status $$status" >&2; exit 1; }
+	$(PYTHON3) $(top_srcdir)/scripts/fix-groff-xhtml.py $@.tmp < $@.tidy
+	rm -f $@.groff $@.tidy
+	mv $@.tmp $@
 endif
 
 $(top_builddir)/src/libraptor2.la:
