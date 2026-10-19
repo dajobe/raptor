@@ -93,8 +93,8 @@ def main():
 
                 # Linkify author
                 line = re.sub(
-                    r"(Dave Beckett|Institute for Learning and Research Technology \\.ILRT\\.|University of Bristol) (?:- |)(http://[^<]+)",
-                    r'<a href="\\2">\\1</a>',
+                    r"(Dave Beckett|Institute for Learning and Research Technology \(ILRT\)|University of Bristol) (?:- |)(https?://[^<\s]+)",
+                    r'<a href="\2">\1</a>',
                     line,
                 )
 
