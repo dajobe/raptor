@@ -240,12 +240,12 @@ raptor_free_turtle_writer(raptor_turtle_writer* turtle_writer)
 
 
 static int
-raptor_turtle_writer_contains_newline(const unsigned char *s, size_t len)
+raptor_turtle_writer_contains_newline_or_carriage_return(const unsigned char *s, size_t len)
 {
   size_t i = 0;
 
   for( ; i < len; i++)
-    if(s[i] == '\n')
+    if(s[i] == '\n' || s[i] == '\r')
       return 1;
 
   return 0;
@@ -407,7 +407,7 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
     return 1;
   
   /* Turtle """longstring""" (2) or "string" (1) */
-  if(raptor_turtle_writer_contains_newline(s, len)) {
+  if(raptor_turtle_writer_contains_newline_or_carriage_return(s, len)) {
     /* long string */
     flags = RAPTOR_ESCAPED_WRITE_TURTLE_LONG_LITERAL;
     q = quotes;
@@ -582,7 +582,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
     raptor_qname* qname;
 
     raptor_iostream_string_write("^^", turtle_writer->iostr);
-    qname = raptor_new_qname_from_namespace_uri(nstack, datatype, 10);
+    qname = raptor_turtle_new_qname_from_uri(nstack, datatype);
     if(qname) {
       raptor_turtle_writer_qname(turtle_writer, qname);
       raptor_free_qname(qname);
@@ -889,6 +889,69 @@ raptor_turtle_writer_bnodeid(raptor_turtle_writer* turtle_writer,
 }
 
 
+/*
+ * raptor_turtle_name_check:
+ * @ns: namespace
+ * @name: local name
+ * @name_len: length of @name
+ * @xml_version: XML version for the underlying name character checks
+ *
+ * INTERNAL - #raptor_namespace_name_check_handler for Turtle prefixed names
+ *
+ * Turtle names are checked with the XML name character rules with
+ * these differences:
+ *   a prefix must start with [A-Za-z0-9] and not contain '.'
+ *   a local name must start with [A-Za-z0-9_] and not contain '.'
+ *   a local name may start with a digit (Turtle 1.1 PN_LOCAL)
+ *
+ * Return value: non 0 if @ns and @name can be written as a prefixed name
+ */
+static int
+raptor_turtle_name_check(raptor_namespace* ns,
+                         const unsigned char *name, size_t name_len,
+                         int xml_version)
+{
+  const unsigned char* prefix = ns->prefix;
+
+  if(prefix) {
+    if(!(isalpha(*prefix) || isdigit(*prefix)) ||
+       strchr((const char*)prefix, '.'))
+      return 0;
+  }
+
+  if(!name_len)
+    return 1;
+
+  if(!(isalpha(*name) || isdigit(*name) || *name == '_') ||
+     memchr(name, '.', name_len))
+    return 0;
+
+  /* XML names cannot start with a digit; the rest must be NameChars */
+  if(isdigit(*name))
+    return raptor_xml_name_chars_check(name + 1, name_len - 1, xml_version);
+
+  return raptor_xml_name_check(name, name_len, xml_version);
+}
+
+
+/*
+ * raptor_turtle_new_qname_from_uri:
+ * @nstack: namespace stack
+ * @uri: URI
+ *
+ * INTERNAL - Make a qname for a URI that is legal to write in Turtle
+ *
+ * Return value: new #raptor_qname or NULL if there is no legal qname
+ */
+raptor_qname*
+raptor_turtle_new_qname_from_uri(raptor_namespace_stack *nstack,
+                                 raptor_uri *uri)
+{
+  return raptor_new_qname_from_namespace_uri_check(nstack, uri, 10,
+                                                   raptor_turtle_name_check);
+}
+
+
 /**
  * raptor_turtle_writer_uri:
  * @turtle_writer: Turtle writer object
@@ -908,13 +971,7 @@ raptor_turtle_writer_uri(raptor_turtle_writer* turtle_writer,
   if(!uri)
     return 1;
 
-  qname = raptor_new_qname_from_namespace_uri(turtle_writer->nstack, uri, 10);
-
-  /* XML Names allow leading '_' and '.' anywhere but Turtle does not */
-  if(qname && !raptor_turtle_is_legal_turtle_qname(qname)) {
-    raptor_free_qname(qname);
-    qname = NULL;
-  }
+  qname = raptor_turtle_new_qname_from_uri(turtle_writer->nstack, uri);
 
   if(qname) {
     raptor_turtle_writer_qname(turtle_writer, qname);

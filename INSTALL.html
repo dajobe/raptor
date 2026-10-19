@@ -81,9 +81,9 @@ and x86 OSX but is also tested on other systems occasionally.
     GRDDL and microformats parser.</li>
   <li><a href="https://lloyd.github.com/yajl/">YAJL</a> to provide JSON
     parsers if it is available.</li>
-  <li><a href=https://icu.unicode.org">ICU</a> to provide
-    Unicode NFC checking only if enabled with
-    <code>--with-icu-config</code></li>
+  <li><a href="https://icu.unicode.org">ICU</a> to provide
+    Unicode NFC checking for the RDF/XML parser if the
+    <code>icu-uc</code> pkg-config module is found.</li>
 </ul>
 
 <h3><a id="sec-create-configure" name="sec-create-configure"></a>2.1. Create <code>configure</code> program</h3>
@@ -148,13 +148,6 @@ is automatically added if <code>autogen.sh</code> is run.
 </p>
 
 <dl>
-<dt><tt>--disable-nfc-check</tt><br /></dt>
-<dd><p>Disable Unicode Normal Form C (NFC) checking code.
-The code primarily consists of large tables plus some checking code
-which can be removed from the library with this option.  All NFC
-checks will succeed when this is disabled.
-</p></dd>
-
 <dt><code>--enable-debug</code><br /></dt>
 <dd><p>Enable debug messages (default not enabled).
 Maintainer mode automatically enables this.
@@ -219,9 +212,13 @@ href="https://curl.se/libcurl/">libcurl</a> curl-config program.
 The default is to look for this on the PATH.
 </p></dd>
 
-<dt><tt>--with-icu-config=NAME</tt><br /></dt>
-<dd><p>Set the path to the <a href=https://icu.unicode.org">ICU</a>
-icu-config program. This will NOT be searched for on the PATH.
+<dt><tt>ICU_CFLAGS</tt> and <tt>ICU_LIBS</tt><br /></dt>
+<dd><p><a href="https://icu.unicode.org">ICU</a> is found with
+pkg-config using the <code>icu-uc</code> module.  To use a particular
+ICU installation, either add its pkgconfig directory to
+<code>PKG_CONFIG_PATH</code> or set the <code>ICU_CFLAGS</code> and
+<code>ICU_LIBS</code> environment variables when running configure.
+The older <code>--with-icu-config</code> option is no longer supported.
 </p></dd>
 
 <dt><tt>--with-libwww-config=NAME</tt><br /></dt>

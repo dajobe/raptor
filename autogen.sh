@@ -1,4 +1,5 @@
 #!/bin/sh
+# shellcheck disable=SC2034,SC2154
 #
 # autogen.sh - Generates initial makefiles from a pristine source tree
 #
@@ -343,7 +344,7 @@ for dir in $dirs_to_process; do
     echo "$program: Skipping $dir -- flagged as no auto-generation"
     continue
   fi
-  
+
   echo " "
   echo "$program: Processing directory $dir"
   cd "$dir" || exit 1

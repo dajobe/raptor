@@ -1379,6 +1379,32 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
 }
 
 
+/* Record the end of a complete token: commit the lexer input and save
+ * the line number for turtle_push_parse_rewind() */
+static void
+turtle_push_parse_commit(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
+{
+  turtle_lexer_fsp_commit(scanner);
+  turtle_parser->lexer_commit_lineno = turtle_parser->lineno;
+}
+
+
+/* Discard a token cut short by the end of the available input, so that
+ * it is rescanned from its start after more input is appended */
+static void
+turtle_push_parse_rewind(raptor_turtle_parser *turtle_parser, yyscan_t scanner)
+{
+  /* partial long literal */
+  if(turtle_parser->sb) {
+    raptor_free_stringbuffer(turtle_parser->sb);
+    turtle_parser->sb = NULL;
+  }
+
+  turtle_parser->lineno = turtle_parser->lexer_commit_lineno;
+  turtle_lexer_fsp_rewind(scanner);
+}
+
+
 /**
  * turtle_push_parse - Parse using Bison push parser with libfsp streaming
  * @fsp_ctx: FSP context
@@ -1387,6 +1413,11 @@ turtle_qname_to_uri(raptor_parser *rdf_parser, unsigned char *name, size_t name_
  * Process tokens from lexer and push them to Bison push parser.
  * Uses libfsp for buffer management and streaming.
  * The parser state (pstate) persists across chunks.
+ *
+ * A token split across chunks is rescanned with libfsp rewind support:
+ * when the lexer reaches the end of the available input inside a token,
+ * the partial token is discarded and lexing restarts from the end of the
+ * last complete token after the next chunk is appended.
  *
  * Return value: 0 on success, non-0 on failure
  */
@@ -1399,16 +1430,6 @@ turtle_push_parse(fsp_context *fsp_ctx, yyscan_t scanner)
   int rc = 0;
   int is_end = !fsp_ctx->more_chunks_expected;
 
-  /* Minimum bytes needed in FSP buffer before calling lexer.
-   * Determined by libfsp fsp-helper.py analysis of turtle_lexer.l:
-   * - Longest fixed-length token: [Pp][Rr][Ee][Ff][Ii][Xx] = 6 bytes
-   * - Value of 16 provides ~2.7x safety margin for:
-   *   - Lexer state management and lookahead
-   *   - Multi-byte UTF-8 sequences  
-   *   - Performance (reduces "need more data" frequency)
-   */
-  #define MIN_BUFFER_FOR_LEX 16
-
   /* Create push parser state on first call */
   if(!pstate) {
     pstate = turtle_parser_pstate_new();
@@ -1418,20 +1439,23 @@ turtle_push_parse(fsp_context *fsp_ctx, yyscan_t scanner)
     turtle_parser->pstate = pstate;
   }
 
-  /* Process tokens while we have enough buffer or at EOF */
-  while(fsp_buffer_available(fsp_ctx) >= MIN_BUFFER_FOR_LEX || is_end) {
+  /* Process tokens until the lexer needs more input or at EOF */
+  while(1) {
     TURTLE_PARSER_STYPE lval;
     int token;
 
     /* Get next token from lexer */
     token = turtle_lexer_lex(&lval, scanner);
 
+    if(token == FSP_LEXER_NEED_MORE ||
+       (!token && !is_end && fsp_input_would_block(fsp_ctx))) {
+      /* The input ran out, possibly inside a token.  Rescan from the
+       * end of the last complete token when more data arrives. */
+      turtle_push_parse_rewind(turtle_parser, scanner);
+      return 0;
+    }
+
     if(!token) {
-      /* No more tokens from lexer */
-      if(!is_end && fsp_buffer_available(fsp_ctx) < MIN_BUFFER_FOR_LEX) {
-        /* Need more data - return success for now */
-        return 0;
-      }
       /* At EOF - push EOF token (0) to parser to finalize parsing */
       if(is_end) {
         rc = turtle_parser_push_parse(pstate, 0, NULL, fsp_ctx, scanner);
@@ -1440,9 +1464,12 @@ turtle_push_parse(fsp_context *fsp_ctx, yyscan_t scanner)
         }
         return rc;
       }
-      /* No more tokens but not EOF yet */
+      /* Lexer stopped after an error, which consumed the bad input */
+      turtle_push_parse_commit(turtle_parser, scanner);
       return 0;
     }
+
+    turtle_push_parse_commit(turtle_parser, scanner);
 
     /* Push token to Bison push parser */
     rc = turtle_parser_push_parse(pstate, token, &lval, fsp_ctx, scanner);
@@ -1493,16 +1520,43 @@ static void
 raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
   raptor_turtle_parser *turtle_parser = (raptor_turtle_parser*)rdf_parser->context;
 
+  if(turtle_parser->pstate) {
+    turtle_parser_pstate *pstate = turtle_parser->pstate;
+
+    /* Bison's pstate_delete frees the stack storage, but does not run
+     * destructors for symbols left by an unfinished push parse.  Pop
+     * them as Bison's normal return cleanup does.  Do not push EOF here:
+     * that could run grammar actions and call application handlers.
+     * A completed parse already has an empty stack. */
+    /* Bison before 3.6 used integer symbol numbers without this macro. */
+#ifndef YY_ACCESSING_SYMBOL
+#define YY_ACCESSING_SYMBOL(state) yystos[state]
+#endif
+    while(pstate->yyssp != pstate->yyss) {
+      yydestruct("Cleanup: popping", YY_ACCESSING_SYMBOL(+*pstate->yyssp),
+                 pstate->yyvsp, turtle_parser->fsp_ctx, turtle_parser->scanner);
+      pstate->yyssp--;
+      pstate->yyvsp--;
+    }
+    turtle_parser_pstate_delete(pstate);
+    turtle_parser->pstate = NULL;
+  }
+
+  if(turtle_parser->deferred) {
+    raptor_free_sequence(turtle_parser->deferred);
+    turtle_parser->deferred = NULL;
+  }
+
+  if(turtle_parser->sb) {
+    raptor_free_stringbuffer(turtle_parser->sb);
+    turtle_parser->sb = NULL;
+  }
+
   raptor_namespaces_clear(&turtle_parser->namespaces);
 
   if(turtle_parser->scanner_set) {
     turtle_lexer_lex_destroy(turtle_parser->scanner);
     turtle_parser->scanner_set = 0;
-  }
-
-  if(turtle_parser->pstate) {
-    turtle_parser_pstate_delete(turtle_parser->pstate);
-    turtle_parser->pstate = NULL;
   }
 
   if(turtle_parser->fsp_ctx) {
@@ -1642,6 +1696,10 @@ raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *t)
  * @is_end: Non-zero if this is the final chunk
  *
  * Uses libfsp for buffer management and streaming token processing.
+ * After an unfinished token reaches libfsp's retry cutoff, rescanning
+ * waits for retained, uncommitted input to double. Statement callbacks
+ * may therefore be delayed until more input arrives. A final chunk
+ * always processes the pending input.
  *
  * Return value: 0 on success, non-0 on failure
  */
@@ -1669,15 +1727,13 @@ raptor_turtle_parse_chunk(raptor_parser *rdf_parser,
     return 1;
   }
 
-  /* Append chunk to FSP buffer */
-  if(len > 0) {
-    if(fsp_buffer_append(fsp_ctx, (const char*)s, len) < 0)
-      return 1;
-  }
+  /* Append the chunk and signal EOF through libfsp. */
+  if(fsp_parse_chunk(fsp_ctx, (const char*)s, len, is_end) ==
+     FSP_STATUS_NO_MEMORY)
+    return 1;
 
-  /* Signal EOF to FSP if this is the final chunk */
-  if(is_end)
-    fsp_ctx->more_chunks_expected = 0;
+  if(!fsp_input_ready(fsp_ctx))
+    return 0;
 
   rc = turtle_push_parse(fsp_ctx, turtle_parser->scanner);
 
@@ -1746,6 +1802,10 @@ raptor_turtle_parse_start(raptor_parser *rdf_parser)
 
   /* Set FSP context as lexer extra data for YY_INPUT */
   turtle_lexer_set_extra(turtle_parser->fsp_ctx, turtle_parser->scanner);
+
+  /* Enable libfsp rewind support so a token split across chunks can be
+   * rescanned */
+  turtle_push_parse_commit(turtle_parser, turtle_parser->scanner);
 
   return 0;
 }

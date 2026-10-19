@@ -973,8 +973,55 @@ raptor_xml_namespace_string_parse(const unsigned char *string,
  * Return value: #raptor_qname for the URI or NULL on failure
  **/
 raptor_qname*
-raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack, 
+raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,
                                     raptor_uri *uri, int xml_version)
+{
+  return raptor_new_qname_from_namespace_uri_check(nstack, uri, xml_version,
+                                                   raptor_namespace_xml_name_check);
+}
+
+
+/*
+ * raptor_namespace_xml_name_check:
+ * @ns: namespace
+ * @name: local name
+ * @name_len: length of @name
+ * @xml_version: XML Version
+ *
+ * INTERNAL - #raptor_namespace_name_check_handler for XML qnames
+ *
+ * Return value: non 0 if @name is a legal XML name
+ */
+int
+raptor_namespace_xml_name_check(raptor_namespace* ns,
+                                const unsigned char *name, size_t name_len,
+                                int xml_version)
+{
+  (void)ns;
+
+  return raptor_xml_name_check(name, name_len, xml_version);
+}
+
+
+/*
+ * raptor_new_qname_from_namespace_uri_check:
+ * @nstack: namespace stack
+ * @uri: URI to use to make qname
+ * @xml_version: XML Version
+ * @check: handler to check the namespace and local name are legal
+ *
+ * INTERNAL - Make a qname from the namespaces on a namespace stack
+ *
+ * As raptor_new_qname_from_namespace_uri() but the legality of the
+ * namespace and the rest of the URI is decided by @check, so that
+ * syntaxes other than XML can apply their own name rules.
+ *
+ * Return value: #raptor_qname for the URI or NULL on failure
+ */
+raptor_qname*
+raptor_new_qname_from_namespace_uri_check(raptor_namespace_stack *nstack,
+                                          raptor_uri *uri, int xml_version,
+                                          raptor_namespace_name_check_handler check)
 {
   unsigned char *uri_string;
   size_t uri_len;
@@ -1004,10 +1051,10 @@ raptor_new_qname_from_namespace_uri(raptor_namespace_stack *nstack,
       
       /* uri_string is a prefix of ns_uri_string */
       name = uri_string + ns_uri_len;
-      if(!raptor_xml_name_check(name, uri_len-ns_uri_len, xml_version))
+      if(!check(ns, name, uri_len - ns_uri_len, xml_version))
         name = NULL;
-      
-      /* If name is set, we've found a prefix with a legal XML name value */
+
+      /* If name is set, we've found a prefix with a legal name value */
       if(name)
         break;
     }

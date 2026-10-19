@@ -141,12 +141,12 @@ terms plus the optional named graph term.  The handler is set with
 as follows:
 <programlisting>
   void
-  statement_handler(void* user_data, const raptor_statement* statement)
+  statement_handler(void* user_data, raptor_statement* statement)
   {
     /* do something with the statement */
   }
 
-  raptor_parser_set_statement_handler(rdf_parser, user_data, statements_handler);
+  raptor_parser_set_statement_handler(rdf_parser, user_data, statement_handler);
 </programlisting>
 </para>
 
@@ -205,7 +205,7 @@ to adjust the default algorithm for generated identifiers.
 <programlisting>
   raptor_generate_bnodeid_handler bnodeid_handler;
 
-  raptor_world_set_generate_bnodeid_handler(rdf_parser, user_data, bnodeid_handler);
+  raptor_world_set_generate_bnodeid_handler(world, user_data, bnodeid_handler);
 </programlisting>
 </para>
 

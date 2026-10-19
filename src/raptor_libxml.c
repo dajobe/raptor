@@ -52,8 +52,14 @@ static void raptor_libxml_error_common(void* user_data, const char *msg, va_list
 static void raptor_libxml_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 static void raptor_libxml_fatal_error(void *context, const char *msg, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
-static void raptor_libxml_xmlStructuredError_handler_global(void *user_data, xmlErrorPtr err);
-static void raptor_libxml_xmlStructuredError_handler_parsing(void *user_data, xmlErrorPtr err);
+#if LIBXML_VERSION >= 21200
+#define raptor_xmlErrorPtr const xmlError *
+#else
+#define raptor_xmlErrorPtr xmlErrorPtr
+#endif
+
+static void raptor_libxml_xmlStructuredError_handler_global(void *user_data, raptor_xmlErrorPtr err);
+static void raptor_libxml_xmlStructuredError_handler_parsing(void *user_data, raptor_xmlErrorPtr err);
 
 
 
@@ -756,7 +762,7 @@ static const char* const raptor_libxml_domain_labels[XML_LAST_DL+2]= {
 static void 
 raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
                                                 raptor_locator *locator,
-                                                xmlErrorPtr err)
+                                                raptor_xmlErrorPtr err)
 {
   raptor_stringbuffer* sb;
   char *nmsg;
@@ -768,11 +774,6 @@ raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
   /* Do not warn about things with no location */
   if(err->level == XML_ERR_WARNING && !err->file)
     return;
-
-  /* XML fatal errors never cause an abort */
-  if(err->level == XML_ERR_FATAL)
-    err->level = XML_ERR_ERROR;
-  
 
   sb = raptor_new_stringbuffer();
   if(err->domain != XML_FROM_HTML)
@@ -834,9 +835,7 @@ raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
   }
 
   nmsg = (char*)raptor_stringbuffer_as_string(sb);
-  if(err->level == XML_ERR_FATAL)
-    level = RAPTOR_LOG_LEVEL_FATAL;
-  else if(err->level == XML_ERR_ERROR)
+  if(err->level == XML_ERR_FATAL || err->level == XML_ERR_ERROR)
     level = RAPTOR_LOG_LEVEL_ERROR;
   else
     level = RAPTOR_LOG_LEVEL_WARN;
@@ -850,7 +849,7 @@ raptor_libxml_xmlStructuredError_handler_common(raptor_world *world,
 /* user_data is a raptor_world* */
 static void 
 raptor_libxml_xmlStructuredError_handler_global(void *user_data,
-                                                xmlErrorPtr err)
+                                                raptor_xmlErrorPtr err)
 {
   raptor_world *world = NULL;
   
@@ -869,7 +868,7 @@ raptor_libxml_xmlStructuredError_handler_global(void *user_data,
  * raptor_sax2* */
 static void 
 raptor_libxml_xmlStructuredError_handler_parsing(void *user_data,
-                                                 xmlErrorPtr err)
+                                                 raptor_xmlErrorPtr err)
 {
   raptor_sax2* sax2 = NULL;
 

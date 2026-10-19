@@ -22,13 +22,6 @@ parsedate.c
 parsedate.c.bak
 parsedate.h
 parsedate.output
-perl-parsedate.c
-perl-parsedate.c.bak
-perl-turtle_lexer.c
-perl-turtle_lexer.h
-perl-turtle_lexer.t
-perl-turtle_parser.c
-perl-turtle_parser.c.bak
 raptor-config
 raptor2.h
 raptor_config.h
