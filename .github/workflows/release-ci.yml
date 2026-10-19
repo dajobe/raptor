@@ -1,0 +1,205 @@
+name: Release CI
+
+# Run by hand only, from the Actions tab or with
+# gh workflow run release-ci.yml --ref BRANCH
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  minimal:
+    name: Autotools (Ubuntu, libxml2 only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      # libxml2 is the only required library; no curl, libxslt or YAJL
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            flex \
+            gtk-doc-tools \
+            libtool \
+            libxml2-dev \
+            python-is-python3
+
+      - name: Configure
+        run: ./autogen.sh --disable-gtk-doc --with-www=xml --with-yajl=no
+
+      - name: Check configuration
+        run: |
+          grep -E 'RAPTOR_(WWW|XML)_|RAPTOR_PARSER_(GRDDL|JSON)' src/raptor_config.h
+          grep -q '^#define RAPTOR_WWW_LIBXML 1' src/raptor_config.h
+
+      - name: Build
+        run: make
+
+      - name: Test
+        run: make check
+
+  distcheck:
+    name: Distribution check (Ubuntu)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      # groff, tidy and lynx generate the HTML and text files in the
+      # tarball
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            autoconf \
+            automake \
+            bison \
+            build-essential \
+            flex \
+            groff \
+            gtk-doc-tools \
+            libcurl4-gnutls-dev \
+            libtool \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev \
+            lynx \
+            python-is-python3 \
+            tidy
+
+      - name: Configure
+        run: ./autogen.sh
+
+      - name: Build
+        run: make
+
+      - name: Distribution check
+        run: make distcheck
+
+      - name: Upload source tarball
+        uses: actions/upload-artifact@v7
+        with:
+          name: source-tarball
+          path: raptor2-*.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  tarball-cmake:
+    name: CMake from tarball (${{ matrix.os }})
+    needs: distcheck
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+          - windows-latest
+
+    steps:
+      - name: Download source tarball
+        uses: actions/download-artifact@v8
+        with:
+          name: source-tarball
+
+      - name: Extract source tarball
+        shell: bash
+        run: |
+          mkdir tarball
+          tar -xzf raptor2-*.tar.gz -C tarball --strip-components=1
+
+      # No bison, flex or Python: the tarball parsers must be used
+      - name: Install Ubuntu dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            build-essential \
+            libcurl4-gnutls-dev \
+            libxml2-dev \
+            libxslt1-dev \
+            libyajl-dev
+
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: |
+          brew install \
+            pkg-config \
+            yajl
+
+      # The libxml2 HTTP client used by RAPTOR_WWW=xml is not in the
+      # vcpkg build, so the Windows build has no WWW support.
+      - name: Install Windows dependencies
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          & "$env:VCPKG_INSTALLATION_ROOT\vcpkg.exe" install "libxml2[core]:x64-windows"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "$env:VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" |
+            Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Set up MSVC environment
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $vs = & $vswhere -latest -products * `
+            -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+            -property installationPath
+          cmd /c "`"$vs\VC\Auxiliary\Build\vcvars64.bat`" >nul && set" |
+            ForEach-Object {
+              if ($_ -match '^([^=]+)=(.*)$') {
+                "$($Matches[1])=$($Matches[2])" |
+                  Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+              }
+            }
+
+      - name: Configure
+        if: runner.os != 'Windows'
+        run: |
+          cmake -S tarball -B build \
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo
+
+      # Static so the test programs find the library without a PATH
+      # change.
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmake -S tarball -B build -G Ninja `
+            -DCMAKE_BUILD_TYPE=RelWithDebInfo `
+            -DBUILD_SHARED_LIBS=OFF `
+            -DRAPTOR_WWW=none `
+            "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
+            -DVCPKG_TARGET_TRIPLET=x64-windows
+
+      - name: Check the pre-generated parsers are used
+        shell: bash
+        run: |
+          if test -e build/src/turtle_parser.c; then
+            echo "CMake regenerated the parsers from the tarball" >&2
+            exit 1
+          fi
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure --parallel 4
