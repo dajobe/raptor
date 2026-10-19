@@ -588,7 +588,7 @@ IF(NOT \"\${rapper_status}\" STREQUAL \"0\" AND NOT \"\${rapper_status}\" STREQU
 ENDIF()
 
 EXECUTE_PROCESS(
-	COMMAND ${CMAKE_COMMAND} -E compare_files ${NAME_PREFIX}.expected.nt ${NAME_PREFIX}.res
+	COMMAND [==[${CMAKE_COMMAND}]==] -E compare_files ${NAME_PREFIX}.expected.nt ${NAME_PREFIX}.res
 	RESULT_VARIABLE compare_status
 )
 

@@ -39,6 +39,7 @@
 #endif
 #ifdef WIN32
 #include <io.h>
+#include <fcntl.h>
 #endif
 
 /* many places for getopt */
@@ -343,6 +344,16 @@ main(int argc, char *argv[])
   else if((p = strrchr(program, '\\')))
     program = p + 1;
   argv[0] = program;
+
+#ifdef WIN32
+  /* Preserve RDF bytes, including Ctrl-Z input and literal line endings. */
+  if(_setmode(_fileno(stdin), _O_BINARY) == -1 ||
+     _setmode(_fileno(stdout), _O_BINARY) == -1) {
+    fprintf(stderr, "%s: Failed to set standard streams to binary mode.\n",
+            program);
+    return 1;
+  }
+#endif
 
   world = raptor_new_world();
   if(!world)

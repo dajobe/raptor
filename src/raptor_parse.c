@@ -609,7 +609,7 @@ raptor_parser_parse_file(raptor_parser* rdf_parser, raptor_uri *uri,
     }
 #endif
 
-    fh = fopen(filename, "r");
+    fh = fopen(filename, "rb");
     if(!fh) {
       raptor_parser_error(rdf_parser, "file '%s' open failed - %s",
                           filename, strerror(errno));

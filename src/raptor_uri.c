@@ -887,7 +887,7 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
  * using the above algorithm.
  */
   if(filename_len > 1 && filename[1] == ':' &&
-     (filename_len < 3 || filename[2] != '\\')) {
+     (filename_len < 3 || (filename[2] != '\\' && filename[2] != '/'))) {
     if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 3))
       goto path_done;
     len += 3; /* relative filename - add / and ./ */
@@ -981,7 +981,7 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
     c = (unsigned char)*from;
 #ifdef WIN32
     if(c == ':') {
-      if(fl < 2 || from[1] != '\\') {
+      if(fl < 2 || (from[1] != '\\' && from[1] != '/')) {
         if(RAPTOR_SIZE_T_ADD_OVERFLOWS(len, 2))
           goto path_done;
         len += 2;
@@ -1021,7 +1021,7 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
       c = '/';
     else if(c == ':') {
       *to++ = c;
-      if(fl < 2 || *from != '\\') {
+      if(fl < 2 || (*from != '\\' && *from != '/')) {
         *to++ ='.';
         *to++ ='/';
       }
@@ -1038,7 +1038,15 @@ raptor_uri_counted_filename_to_uri_string(const char *filename,
   *to = '\0';
 
   path_done:
-#ifndef WIN32
+#ifdef WIN32
+  /* Normalize absolute drive paths without removing the drive root.
+   * Keep the legacy a:./foo encoding for drive-relative filenames. */
+  if(buffer && filename_len > 2 && filename[1] == ':' &&
+     (filename[2] == '\\' || filename[2] == '/')) {
+    unsigned char *uri_path = buffer + RAPTOR_LEN_FILE_CSS + 3;
+    raptor_uri_normalize_path(uri_path, strlen((const char*)uri_path));
+  }
+#else
   /* Normalize the resulting URI path after the "file://"  */
   if(buffer)
     raptor_uri_normalize_path(buffer + RAPTOR_LEN_FILE_CSS,
@@ -2334,6 +2342,15 @@ main(int argc, char *argv[])
   failures += assert_filename_to_uri ("c:\\windows\\system", "file:///c:/windows/system");
   failures += assert_filename_to_uri ("\\\\server\\share\\file.doc", "file://server/share/file.doc");
   failures += assert_filename_to_uri ("a:foo", "file:///a:./foo");
+  failures += assert_filename_to_uri ("D:/a/raptor/tests/turtle/../rdfxml/ex-14.rdf",
+                                     "file:///D:/a/raptor/tests/rdfxml/ex-14.rdf");
+  failures += assert_filename_to_uri ("D:\\a\\raptor\\tests\\turtle\\..\\rdfxml\\ex-14.rdf",
+                                     "file:///D:/a/raptor/tests/rdfxml/ex-14.rdf");
+  failures += assert_filename_to_uri ("C:/a/./b/../../file.rdf",
+                                     "file:///C:/file.rdf");
+  failures += assert_filename_to_uri ("C:/../../file.rdf", "file:///C:/file.rdf");
+  failures += assert_filename_to_uri ("C:/My Documents/%age.txt",
+                                     "file:///C:/My%20Documents/%25age.txt");
 
   failures += assert_filename_to_uri ("C:\\Documents and Settings\\myapp\\foo.bat", "file:///C:/Documents%20and%20Settings/myapp/foo.bat");
   failures += assert_filename_to_uri ("C:\\My Documents\\%age.txt", "file:///C:/My%20Documents/%25age.txt");
