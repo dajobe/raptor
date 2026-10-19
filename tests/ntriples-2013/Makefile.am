@@ -109,7 +109,7 @@ ALL_TEST_FILES= \
 	$(TEST_GOOD_FILES) \
 	$(TEST_BAD_FILES)
 
-EXTRA_DIST = README \
+EXTRA_DIST = CMakeLists.txt README \
 	$(ALL_TEST_FILES)
 
 RAPPER  = $(top_builddir)/utils/rapper

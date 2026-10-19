@@ -3,6 +3,9 @@
 # Makefile.am - automake file for Raptor fuzz targets
 #
 
+EXTRA_DIST = CMakeLists.txt README.md \
+	dict/ntriples.dict dict/rdfxml.dict dict/turtle.dict
+
 if ENABLE_FUZZING
 
 AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_builddir)/src -DRAPTOR_USE_LIBFUZZER=1

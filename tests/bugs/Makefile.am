@@ -16,6 +16,8 @@ EXTRA_PROGRAMS=$(TESTS)
 
 CLEANFILES=$(TESTS)
 
+EXTRA_DIST=CMakeLists.txt
+
 raptor_issue70a_test_SOURCES=issue70a.c
 raptor_issue70a_test_LDADD=$(RAPTOR_IMPL_LIBS)
 raptor_issue70b_test_SOURCES=issue70b.c

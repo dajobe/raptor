@@ -29,6 +29,7 @@ pkgconfig_DATA = raptor2.pc
 
 EXTRA_DIST=\
 CMakeLists.txt \
+cmake/FindYAJL.cmake \
 README                LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 README-cmake.md \

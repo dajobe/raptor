@@ -49,7 +49,7 @@ ALL_TEST_FILES= README.txt \
 	$(TEST_SERIALIZE_FILES) \
 	$(TEST_SERIALIZE_OUT_FILES) 
 
-EXTRA_DIST = $(ALL_TEST_FILES)
+EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
 RAPPER  = $(top_builddir)/utils/rapper
 RDFDIFF = $(top_builddir)/utils/rdfdiff

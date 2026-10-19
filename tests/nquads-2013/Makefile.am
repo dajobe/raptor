@@ -128,7 +128,7 @@ ALL_TEST_FILES= README \
 	$(TEST_GOOD_FILES) \
 	$(TEST_BAD_FILES)
 
-EXTRA_DIST = $(ALL_TEST_FILES)
+EXTRA_DIST = CMakeLists.txt $(ALL_TEST_FILES)
 
 RAPPER  = $(top_builddir)/utils/rapper
 RDFDIFF = $(top_builddir)/utils/rdfdiff
