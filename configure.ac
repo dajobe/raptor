@@ -1231,6 +1231,8 @@ if test $need_libcurl = 1; then
   fi
 fi
 AM_CONDITIONAL(RAPTOR_WWW_LIBCURL, test $need_libcurl = 1)
+AM_CONDITIONAL(RAPTOR_WWW_LIBXML, test $need_libxml_www = 1)
+AM_CONDITIONAL(RAPTOR_WWW_LIBFETCH, test $need_libfetch = 1)
 
 
 dnl ICU for NFC check
@@ -1307,7 +1309,6 @@ fi
 
 if test $need_libfetch = 1; then
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS -lfetch"
-  AC_LIBOBJ(raptor_www_libfetch)
 fi
 
 
@@ -1317,9 +1318,6 @@ if test $need_libxml = 1; then
     AC_DEFINE(RAPTOR_XML_LIBXML, 1, [Use libxml XML parser])
   else
     AC_MSG_ERROR(libxml2 is not available - please get it from https://gitlab.gnome.org/GNOME/libxml2/-/wikis/home)
-  fi
-  if test $need_libxml_www = 1; then
-    AC_LIBOBJ(raptor_www_libxml)
   fi
   RAPTOR_LDFLAGS="$RAPTOR_LDFLAGS $LIBXML_LIBS"
   CPPFLAGS="$LIBXML_CFLAGS $CPPFLAGS"

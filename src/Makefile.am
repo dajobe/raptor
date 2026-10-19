@@ -90,6 +90,12 @@ endif
 if RAPTOR_WWW_LIBCURL
 libraptor2_impl_la_SOURCES += raptor_www_curl.c
 endif
+if RAPTOR_WWW_LIBXML
+libraptor2_impl_la_SOURCES += raptor_www_libxml.c
+endif
+if RAPTOR_WWW_LIBFETCH
+libraptor2_impl_la_SOURCES += raptor_www_libfetch.c
+endif
 if RAPTOR_NFC_ICU
 libraptor2_impl_la_SOURCES += raptor_nfc_icu.c
 endif
@@ -184,7 +190,7 @@ BUILT_SOURCES += parsedate.c parsedate.h
 endif
 
 
-RAPTOR_PRIVATE_LIBADD = @LTLIBOBJS@
+RAPTOR_PRIVATE_LIBADD =
 
 libraptor2_la_SOURCES =
 libraptor2_la_LIBADD = libraptor2_impl.la $(RAPTOR_PRIVATE_LIBADD)
