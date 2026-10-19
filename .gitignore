@@ -39,7 +39,7 @@ raptor2-[0-9.]*/
 raptor2.pc
 raptor2.rdf
 raptor2.spec
-README
+/README
 setup.sh
 TAGS
 TODO
