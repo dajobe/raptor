@@ -289,6 +289,12 @@ SET_TARGET_PROPERTIES(raptor2_objects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 ADD_LIBRARY(raptor2 ${LIB_TYPE} $<TARGET_OBJECTS:raptor2_objects>)
 ADD_LIBRARY(raptor2_impl STATIC $<TARGET_OBJECTS:raptor2_objects>)
 
+# Static-library consumers must not import the public API from a Windows DLL.
+IF(NOT BUILD_SHARED_LIBS)
+  TARGET_COMPILE_DEFINITIONS(raptor2 INTERFACE RAPTOR_STATIC)
+ENDIF()
+TARGET_COMPILE_DEFINITIONS(raptor2_impl INTERFACE RAPTOR_STATIC)
+
 IF(RAPTOR_PARSER_TURTLE OR RAPTOR_PARSER_TRIG)
   IF(RAPTOR_BUILD_PARSERS)
     add_dependencies(raptor2_objects turtle_parser_tgt turtle_lexer_tgt)

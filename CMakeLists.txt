@@ -438,19 +438,8 @@ message( "  *** libxml2 (include)           ${LIBXML2_INCLUDE_DIR}")
 
 ################################################################
 
-# On Windows, the test/utility programs usually have DLL dependencies that
-# make them cumbersome to invoke within IDE environments, so we enable the
-# test suite only when makefiles are being used.
-#
-# Note that a partial solution is described at
-#
-#	http://www.cmake.org/pipermail/cmake/2009-May/029464.html
-#
-# but we don't have a good way of knowing where the third-party DLLs are.
-#
-IF(CMAKE_GENERATOR MATCHES "Makefiles")
-	ENABLE_TESTING()
-ENDIF(CMAKE_GENERATOR MATCHES "Makefiles")
+# Register tests for every generator, including the Windows Ninja build.
+ENABLE_TESTING()
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(utils)
