@@ -2388,6 +2388,11 @@ main(int argc, char *argv[])
   failures += assert_uri_to_filename("file:///var/tmp/a/../../../etc/hosts",
                                      "/etc/hosts");
 
+  /* Relative file: URI paths keep all leading .. segments */
+  failures += assert_uri_to_filename("file:../../../../tests/file.rdf",
+                                     "../../../../tests/file.rdf");
+  failures += assert_uri_to_filename("file:a/../b/../file.rdf", "file.rdf");
+
   /* Security: reject non-local file: authority on POSIX */
   failures += assert_uri_to_filename("file://remote.example/etc/hosts", NULL);
 

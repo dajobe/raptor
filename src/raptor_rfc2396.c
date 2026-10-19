@@ -431,13 +431,23 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
           cur = NULL;
           p = NULL;
         } else {
-          /* Otherwise must start from the beginning again */
-          prev = NULL;
+          /* Otherwise must start from the beginning again.  The loop
+           * increment skips the first character so record a leading
+           * path component here. */
+          prev = (*path_buffer != '/') ? path_buffer : NULL;
           cur = NULL;
           p = NULL;
           s = path_buffer;
         }
         
+      } else {
+        /* Both are '..' so neither can be removed, such as at the
+         * start of a relative path "../../foo".  Shift the path
+         * components stack so that cur is not left pointing at a
+         * stale component. */
+        p = prev;
+        prev = cur;
+        cur = NULL;
       }
       
     } else {
@@ -452,8 +462,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
   } 
 
   
-  if(prev && cur && s == (cur+2) && cur[0] == '.' && cur[1] == '.') {
-    /* Remove <component>/.. at the end of the path */
+  if(prev && cur && s == (cur+2) && cur[0] == '.' && cur[1] == '.' &&
+     (cur != (prev+3) || prev[0] != '.' || prev[1] != '.')) {
+    /* Remove <component>/.. at the end of the path unless the
+     * component is also '..' */
     *prev = '\0';
     path_len -= (s-prev);
     if(path_len <= 0) {
@@ -469,7 +481,7 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
 #endif
 
   /* RFC3986 Appendix C.2 / 5.4.2 Abnormal Examples
-   * Remove leading /../ and /./ 
+   * Remove leading /../ and /./ and a remaining /.. path
    */
   for(p = path_buffer; p; ) {
     if(!strncmp((const char *)p, "/../", 4)) {
@@ -478,6 +490,10 @@ raptor_uri_normalize_path(unsigned char* path_buffer, size_t path_len)
     } else if(!strncmp((const char *)p, "/./", 3)) {
       path_len -= 2;
       memmove(p, p+2, path_len+1);
+    } else if(!strcmp((const char *)p, "/..")) {
+      p[1] = '\0';
+      path_len = 1;
+      break;
     } else
       break;
   }
@@ -908,6 +924,26 @@ check_parses(const char *uri_string) {
 
 
 static int
+check_normalize(const char *path, const char *result_path)
+{
+  unsigned char buffer[1024];
+  size_t len;
+
+  strcpy((char*)buffer, path);
+  len = raptor_uri_normalize_path(buffer, strlen(path));
+
+  if(strcmp((const char*)buffer, result_path) ||
+     len != strlen(result_path)) {
+    fprintf(stderr,
+            "%s: raptor_uri_normalize_path(%s) FAILED giving '%s' (%lu) != '%s'\n",
+            program, path, buffer, (unsigned long)len, result_path);
+    return 1;
+  }
+  return 0;
+}
+
+
+static int
 check_resolve_buffer_too_small(void)
 {
   const unsigned char *base_uri = (const unsigned char*)"http://example.org/";
@@ -1200,6 +1236,24 @@ main(int argc, char *argv[])
   failures += check_resolve("http://example.com/folder1/folder2/",
                             "http://example.com/folder1/folder2/../folder1/../entity1",
                             "http://example.com/folder1/entity1");
+
+  /* RFC3986 5.2.4: .. segments above the root are removed */
+  failures += check_resolve("http://example.org/dir/file", "../..",
+                            "http://example.org/");
+
+  /* Relative paths such as file: URI paths keep leading .. segments */
+  failures += check_normalize("../../x", "../../x");
+  failures += check_normalize("../../../../x", "../../../../x");
+  failures += check_normalize("../../../../../x", "../../../../../x");
+  failures += check_normalize("../a/../b", "../b");
+  failures += check_normalize("a/../../x", "../x");
+  failures += check_normalize("a/b/../../../../x", "../../x");
+  failures += check_normalize("../../a/b/../../../c", "../../../c");
+  failures += check_normalize("a/../b/../c", "c");
+  failures += check_normalize("../..", "../..");
+  failures += check_normalize("a/../..", "..");
+  failures += check_normalize("/a/../..", "/");
+  failures += check_normalize("/..", "/");
 
   failures += check_resolve_buffer_too_small();
   failures += check_resolve_zero_length_buffer();
