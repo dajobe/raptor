@@ -30,7 +30,7 @@ pkgconfig_DATA = raptor2.pc
 EXTRA_DIST=\
 CMakeLists.txt \
 cmake/FindYAJL.cmake \
-README                LICENSE.txt \
+README                README.md LICENSE.txt \
 README.html NEWS.html LICENSE.html INSTALL.html \
 README-cmake.md \
 RELEASE.html \
@@ -54,7 +54,7 @@ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 if MAINTAINER_MODE
 
-# Create text files from HTML sources
+# Create text and Markdown files from HTML sources
 PANDOC=pandoc
 HTML_TO_TEXT=$(PANDOC) --from=html --to=plain --wrap=auto --columns=80
 
@@ -65,6 +65,13 @@ SUFFIXES = .html .txt
 
 $(srcdir)/README: $(srcdir)/README.html
 	$(HTML_TO_TEXT) $< > $@
+
+# README.md is committed for GitHub; do not reformat it by hand
+$(srcdir)/README.md: $(srcdir)/README.html $(top_srcdir)/scripts/fix-readme-html.py
+	$(PYTHON3) $(top_srcdir)/scripts/fix-readme-html.py $< > $@.html
+	$(PANDOC) --from=html --to=gfm --wrap=auto --columns=80 $@.html --output=$@.tmp
+	rm -f $@.html
+	mv $@.tmp $@
 
 $(srcdir)/NEWS: $(srcdir)/NEWS.html
 	$(HTML_TO_TEXT) $< > $@
