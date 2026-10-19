@@ -32,7 +32,7 @@ OPTION(RAPTOR_ENABLE_FUZZING "Build fuzzing targets" OFF)
 SET(RAPTOR_FUZZER_FLAGS "" CACHE STRING "Fuzzer compile/link flags")
 
 OPTION(RAPTOR_REGENERATE_PARSERS
-  "Regenerate the parsers with bison/flex/python3 (needed when building from git)"
+  "Force regeneration of parser sources with Python 3, Bison, and Flex"
   OFF)
 ################################################################
 
