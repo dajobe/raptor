@@ -73,7 +73,7 @@ issue89_parse(const char *syntax, const unsigned char *content, size_t len,
   }
   if(!rc && finish == 1)
     rc = raptor_parser_parse_chunk(parser, NULL, 0, 1);
-  failed = expect_error >= 0 && (!!(rc || result.errors) != expect_error);
+  failed = expect_error >= 0 && ((rc || result.errors) != expect_error);
 
   /* Destruction must not parse more input or call application handlers. */
   errors = result.errors;

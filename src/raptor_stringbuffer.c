@@ -691,6 +691,19 @@ static const size_t counted_stringbuffer_failure_lengths[] = {
   ~(size_t)0 - 1
 };
 
+static const struct {
+  size_t a;
+  size_t b;
+  int overflow;
+} size_t_add_overflow_cases[] = {
+  { 0, 0, 0 },
+  { 0, (size_t)-1, 0 },
+  { 1, (size_t)-1 - 1, 0 },
+  { 1, (size_t)-1, 1 },
+  { 2, (size_t)-1, 1 },
+  { (size_t)-1, (size_t)-1, 1 }
+};
+
 
 int
 main(int argc, char *argv[]) 
@@ -719,6 +732,22 @@ main(int argc, char *argv[])
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1
   fprintf(stderr, "%s: Creating string buffer\n", program);
 #endif
+
+  for(j = 0;
+      j < sizeof(size_t_add_overflow_cases) /
+          sizeof(size_t_add_overflow_cases[0]);
+      j++) {
+    size_t a = size_t_add_overflow_cases[j].a;
+    size_t b = size_t_add_overflow_cases[j].b;
+    int expected = size_t_add_overflow_cases[j].overflow;
+
+    if(RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) != expected ||
+       RAPTOR_SIZE_T_ADD_OVERFLOWS(b, a) != expected) {
+      fprintf(stderr, "%s: size_t addition overflow case %lu failed\n",
+              program, (unsigned long)j);
+      exit(1);
+    }
+  }
 
   for(i = 0;
       i < (int)(sizeof(counted_stringbuffer_failure_cases) /

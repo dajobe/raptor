@@ -753,17 +753,14 @@ void raptor_stats_print(raptor_parser *rdf_parser, FILE *stream);
 #endif
 RAPTOR_INTERNAL_API const char* raptor_basename(const char *name);
 /* RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b): non-zero if (size_t)a + (size_t)b
- * would overflow.  WARNING: a and b are each evaluated twice; pass only
+ * would overflow.  WARNING: a is evaluated twice; pass only
  * simple lvalues or constants, never an expression with side effects.
  * Both a and b must be size_t (or implicitly convertible without sign
  * issues); negative values are NOT detected. */
-#ifdef SIZE_MAX
-#define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) ((a) > SIZE_MAX - (b))
-#else
-/* No SIZE_MAX: (size_t)-1 is max size_t; overflow if b > max - a */
+/* Unsigned addition wraps on overflow; cast the sum in case size_t is
+ * narrower than int and its operands undergo integer promotion. */
 #define RAPTOR_SIZE_T_ADD_OVERFLOWS(a, b) \
-  ((size_t)(b) > (size_t)-1 - (size_t)(a))
-#endif
+  ((size_t)((size_t)(a) + (size_t)(b)) < (size_t)(a))
 /* RAPTOR_SIZE_T_MUL_OVERFLOWS(a, b): non-zero if (size_t)a * (size_t)b
  * would overflow.  WARNING: a and b may each be evaluated twice; pass only
  * simple lvalues or constants, never an expression with side effects.
