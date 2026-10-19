@@ -54,9 +54,9 @@ DISTCHECK_CONFIGURE_FLAGS=--enable-gtk-doc
 
 if MAINTAINER_MODE
 
-# Create some text files from HTML sources
-LYNX=lynx
-HTML_TO_TEXT=TERM=vt100 $(LYNX) -dump -nolist
+# Create text files from HTML sources
+PANDOC=pandoc
+HTML_TO_TEXT=$(PANDOC) --from=html --to=plain --wrap=auto --columns=80
 
 SUFFIXES = .html .txt
 
