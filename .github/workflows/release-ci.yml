@@ -70,8 +70,8 @@ jobs:
         with:
           submodules: recursive
 
-      # groff and tidy generate HTML files; pandoc generates text files
-      # in the tarball.
+      # groff generates XHTML files; pandoc generates text and Markdown
+      # files in the tarball.
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -89,8 +89,7 @@ jobs:
             libxslt1-dev \
             libyajl-dev \
             pandoc \
-            python-is-python3 \
-            tidy
+            python-is-python3
 
       - name: Configure
         run: ./autogen.sh
