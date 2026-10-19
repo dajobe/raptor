@@ -726,6 +726,7 @@ fi
 
 
 have_libxml=0
+have_libxml_http=0
 need_libxml=0
 
 oCPPFLAGS="$CPPFLAGS"
@@ -828,6 +829,20 @@ if test "X$libxml_source" != X; then
 ]], [[htmlParserOption foo; foo = HTML_PARSE_NONET]])],
                 [AC_MSG_RESULT(yes)
 		AC_DEFINE([RAPTOR_LIBXML_HTML_PARSE_NONET], [1], [does libxml have HTML_PARSE_NONET])],
+		[AC_MSG_RESULT(no)])
+
+    dnl libxml 2.15 removed the HTTP client and earlier versions can
+    dnl be built without it; nanohttp.h may still exist in both cases
+    AC_MSG_CHECKING(if libxml has the HTTP client)
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+#include <libxml/xmlversion.h>
+#include <libxml/nanohttp.h>
+#ifndef LIBXML_HTTP_ENABLED
+#error libxml HTTP support is not enabled
+#endif
+]], [[void *(*method)(const char *, const char *, const char *, char **, const char *, int) = xmlNanoHTTPMethod; return method == 0;]])],
+                [AC_MSG_RESULT(yes)
+		have_libxml_http=1],
 		[AC_MSG_RESULT(no)])
   fi
 
@@ -1155,7 +1170,7 @@ for www_name in $www curl xml libfetch none; do
       ;;
 
     xml)
-      if test $have_libxml = 1; then
+      if test $have_libxml = 1 -a $have_libxml_http = 1; then
         need_libxml=1
         need_libxml_www=1
 	AC_DEFINE([RAPTOR_WWW_LIBXML], 1, [Have libxml available as a WWW library])
@@ -1189,7 +1204,7 @@ www_libraries_available=
 if test $have_libcurl = 1; then
   www_libraries_available="$www_libraries_available libcurl $LIBCURL_VERSION"
 fi
-if test $have_libxml = 1; then
+if test $have_libxml = 1 -a $have_libxml_http = 1; then
   www_libraries_available="$www_libraries_available libxml $LIBXML_VERSION"
 fi
 if test $have_libfetch = 1; then

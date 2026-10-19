@@ -191,9 +191,11 @@ memory was allocated in the same library.
 </p></dd>
 
 <dt><tt>--with-www=NAME</tt><br /></dt>
-<dd><p>Pick a WWW library to use - either <tt>curl</tt>, 
-<tt>xml</tt> (for libxml), <tt>libwww</tt> for W3C libwww or
+<dd><p>Pick a WWW library to use - either <tt>curl</tt>,
+<tt>xml</tt> (for libxml), <tt>libfetch</tt> for BSD libfetch or
 <tt>none</tt> to disable it.
+<tt>xml</tt> needs a libxml built with its HTTP client, which
+libxml 2.15 and later do not have.
 </p></dd>
 
 <dt><tt>--with-xml2-config=NAME</tt><br /></dt>

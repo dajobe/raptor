@@ -35,13 +35,23 @@ jobs:
             libxml2-dev \
             python-is-python3
 
+      # Prefer the libxml WWW library; it falls back to none when this
+      # libxml2 has no HTTP client
       - name: Configure
-        run: ./autogen.sh --disable-gtk-doc --with-www=xml --with-yajl=no
+        shell: bash
+        run: |
+          ./autogen.sh --disable-gtk-doc --with-www=xml --with-yajl=no |
+            tee configure.log
 
       - name: Check configuration
+        shell: bash
         run: |
           grep -E 'RAPTOR_(WWW|XML)_|RAPTOR_PARSER_(GRDDL|JSON)' src/raptor_config.h
-          grep -q '^#define RAPTOR_WWW_LIBXML 1' src/raptor_config.h
+          if grep -q 'checking if libxml has the HTTP client... yes' configure.log; then
+            grep -q '^#define RAPTOR_WWW_LIBXML 1' src/raptor_config.h
+          else
+            grep -q '^#define RAPTOR_WWW_NONE 1' src/raptor_config.h
+          fi
 
       - name: Build
         run: make
@@ -144,8 +154,8 @@ jobs:
             pkg-config \
             yajl
 
-      # The libxml2 HTTP client used by RAPTOR_WWW=xml is not in the
-      # vcpkg build, so the Windows build has no WWW support.
+      # The vcpkg libxml2 has no HTTP client, so CMake should choose
+      # RAPTOR_WWW=none by itself.
       - name: Install Windows dependencies
         if: runner.os == 'Windows'
         shell: pwsh
@@ -186,13 +196,13 @@ jobs:
           cmake -S tarball -B build -G Ninja `
             -DCMAKE_BUILD_TYPE=RelWithDebInfo `
             -DBUILD_SHARED_LIBS=OFF `
-            -DRAPTOR_WWW=none `
             "-DCMAKE_TOOLCHAIN_FILE=$env:VCPKG_INSTALLATION_ROOT/scripts/buildsystems/vcpkg.cmake" `
             -DVCPKG_TARGET_TRIPLET=x64-windows
 
       - name: Check the pre-generated parsers are used
         shell: bash
         run: |
+          grep -E '^(RAPTOR_WWW|RAPTOR_LIBXML_HTTP):' build/CMakeCache.txt || true
           if test -e build/src/turtle_parser.c; then
             echo "CMake regenerated the parsers from the tarball" >&2
             exit 1

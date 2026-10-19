@@ -260,6 +260,18 @@ int main(void){ htmlParserOption foo; foo = HTML_PARSE_NONET; return 0; }"
 		RAPTOR_LIBXML_HTML_PARSE_NONET
 	)
 
+	# libxml 2.15 removed the HTTP client and earlier versions can be
+	# built without it; nanohttp.h may still exist in both cases
+	CHECK_C_SOURCE_COMPILES("
+#include <libxml/xmlversion.h>
+#include <libxml/nanohttp.h>
+#ifndef LIBXML_HTTP_ENABLED
+#error libxml HTTP support is not enabled
+#endif
+int main(void){ void *(*method)(const char *, const char *, const char *, char **, const char *, int) = xmlNanoHTTPMethod; return method == 0; }"
+		RAPTOR_LIBXML_HTTP
+	)
+
 	SET(CMAKE_REQUIRED_INCLUDES)
 	SET(CMAKE_REQUIRED_LIBRARIES)
 
@@ -295,15 +307,19 @@ IF(RAPTOR_XML STREQUAL "libxml")
 ENDIF(RAPTOR_XML STREQUAL "libxml")
 
 SET(RAPTOR_WWW_INIT none)
-IF(LIBXML2_FOUND)
+IF(LIBXML2_FOUND AND RAPTOR_LIBXML_HTTP)
 	SET(RAPTOR_WWW_INIT xml)
-ENDIF(LIBXML2_FOUND)
+ENDIF(LIBXML2_FOUND AND RAPTOR_LIBXML_HTTP)
 IF(CURL_FOUND)
 	SET(RAPTOR_WWW_INIT curl)
 ENDIF(CURL_FOUND)
 
 SET(RAPTOR_WWW ${RAPTOR_WWW_INIT} CACHE STRING
 	"Which WWW library to use (any of \"curl\", \"xml\", \"none\").")
+
+IF(RAPTOR_WWW STREQUAL "xml" AND NOT (LIBXML2_FOUND AND RAPTOR_LIBXML_HTTP))
+	MESSAGE(FATAL_ERROR "RAPTOR_WWW=xml needs libxml2 with its HTTP client, which libxml2 2.15 and later do not have; use RAPTOR_WWW=curl or none")
+ENDIF()
 
 SET(RAPTOR_WWW_DEFINE RAPTOR_WWW_NONE)
 IF(RAPTOR_WWW STREQUAL "curl")
