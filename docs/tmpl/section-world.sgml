@@ -61,6 +61,7 @@ library-wide configuration flags and options.
 @RAPTOR_WORLD_FLAG_LIBXML_STRUCTURED_ERROR_SAVE: 
 @RAPTOR_WORLD_FLAG_URI_INTERNING: 
 @RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH: 
+@RAPTOR_WORLD_FLAG_LIBXML_SKIP_CLEANUP: 
 
 <!-- ##### FUNCTION raptor_world_set_flag ##### -->
 <para>
