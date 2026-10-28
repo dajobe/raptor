@@ -479,6 +479,10 @@ raptor_world_set_flag(raptor_world *world, raptor_world_flag flag, int value)
     case RAPTOR_WORLD_FLAG_WWW_SKIP_INIT_FINISH:
       world->www_skip_www_init_finish = value;
       break;
+
+    case RAPTOR_WORLD_FLAG_LIBXML_SKIP_CLEANUP:
+      world->libxml_skip_cleanup = value;
+      break;
   }
 
   return rc;

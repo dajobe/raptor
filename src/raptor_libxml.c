@@ -674,7 +674,8 @@ raptor_libxml_finish(raptor_world* world)
     xmlSetGenericErrorFunc(world->libxml_saved_generic_error_context,
                            world->libxml_saved_generic_error_handler);
 
-  xmlCleanupParser();
+  if(!world->libxml_skip_cleanup)
+    xmlCleanupParser();
 }
 
 

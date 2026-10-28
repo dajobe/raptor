@@ -1517,6 +1517,9 @@ struct raptor_world_s {
    */
   int libxml_flags;
 
+  /* non-0 to not call xmlCleanupParser() in raptor_libxml_finish() */
+  int libxml_skip_cleanup;
+
 #ifdef RAPTOR_XML_LIBXML
   void *libxml_saved_structured_error_context;
   xmlStructuredErrorFunc libxml_saved_structured_error_handler;
