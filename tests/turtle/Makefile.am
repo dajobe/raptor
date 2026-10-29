@@ -31,7 +31,7 @@ test-14.ttl test-15.ttl test-16.ttl test-17.ttl test-18.ttl \
 test-19.ttl test-20.ttl test-21.ttl test-22.ttl test-23.ttl \
 test-24.ttl test-25.ttl test-26.ttl test-27.ttl \
 test-29.ttl test-30.ttl test-33.ttl test-36.ttl test-37.ttl \
-test-38.ttl test-40.ttl test-41.ttl issue92.ttl \
+test-38.ttl test-40.ttl test-41.ttl issue51.ttl issue92.ttl \
 bad-15.ttl bad-17.ttl bad-18.ttl bad-21.ttl bad-22.ttl \
 rdf-schema.ttl \
 rdfs-namespace.ttl \
@@ -50,18 +50,19 @@ test-14.out test-15.out test-16.out test-17.out test-18.out \
 test-19.out test-20.out test-21.out test-22.out test-23.out \
 test-24.out test-25.out test-26.out test-27.out test-28.out \
 test-29.out test-30.out test-33.out test-36.out test-37.out \
-test-38.out test-40.out test-41.out issue92.out \
+test-38.out test-40.out test-41.out issue51.out issue92.out \
 bad-15.out bad-17.out bad-18.out bad-21.out bad-22.out \
 rdf-schema.out \
 rdfs-namespace.out \
 rdfq-results.out
 
 TEST_SERIALIZE_FILES= \
-test-28.ttl test-31.ttl test-32.ttl test-34.ttl test-39.ttl test-42.ttl issue92.ttl
+test-28.ttl test-31.ttl test-32.ttl test-34.ttl test-39.ttl test-42.ttl issue51.ttl issue92.ttl
 
 TEST_SERIALIZE_OUT_FILES= \
 test-28-out.ttl test-31-out.ttl test-32-out.ttl test-34-out.ttl test-39-out.ttl \
-test-42-out.ttl issue92-out.ttl
+test-42-out.ttl issue51-out.ttl issue92-out.ttl \
+issue51-line80.ttl issue51-line32.ttl issue51-line0.ttl
 
 TURTLE_HACK_OUT_FILES= \
 ex-38-turtle.out
@@ -101,7 +102,7 @@ build-rdfdiff:
 
 check-local: check-rdf check-bad-rdf check-turtle-serialize \
 check-turtle-serialize-syntax check-turtle-parse-ntriples \
-check-turtle-serialize-rdf
+check-turtle-serialize-rdf check-turtle-line-length
 
 if MAINTAINER_MODE
 check_rdf_deps = $(TEST_FILES)
@@ -240,6 +241,17 @@ check-turtle-serialize-syntax: build-rapper $(check_turtle_serialize_syntax_deps
 	done; \
 	rm -f $$base-turtle.ttl $$base.err; \
 	set -e; exit $$result
+
+check-turtle-line-length: build-rapper
+	@set -e; \
+	for width in 80 32 0; do \
+	  $(RECHO) "Checking Turtle lineLength=$$width"; \
+	  $(RAPPER) -q -i turtle -o turtle -f lineLength=$$width \
+	    $(srcdir)/issue51.ttl $(BASE_URI)issue51.ttl \
+	    > check-turtle-line-length.res 2> check-turtle-line-length.err; \
+	  diff -u $(srcdir)/issue51-line$$width.ttl check-turtle-line-length.res; \
+	done; \
+	rm -f check-turtle-line-length.res check-turtle-line-length.err
 
 check-turtle-parse-ntriples: build-rapper
 	@set +e; result=0; \

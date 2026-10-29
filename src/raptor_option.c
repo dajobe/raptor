@@ -296,6 +296,12 @@ static const struct
     RAPTOR_OPTION_VALUE_TYPE_BOOL,
     "loadExternalEntities",
     "Parsers and SAX2 should load external entities."
+  },
+  { RAPTOR_OPTION_WRITER_LINE_LENGTH,
+    (raptor_option_area)(RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_TURTLE_WRITER),
+    RAPTOR_OPTION_VALUE_TYPE_INT,
+    "lineLength",
+    "Turtle writer soft maximum line length in bytes (default 1024, 0 disables wrapping)."
   }
 };
 
@@ -593,6 +599,9 @@ raptor_object_options_init(raptor_object_options* options,
   /* Indent 2 spaces */
   options->options[RAPTOR_OPTION_WRITER_INDENT_WIDTH].integer = 2;
 
+  options->options[RAPTOR_OPTION_WRITER_LINE_LENGTH].integer =
+    RAPTOR_WRITER_DEFAULT_LINE_LENGTH;
+
   /* lax (no strict) parsing */
   options->options[RAPTOR_OPTION_STRICT].integer = 0;
 
@@ -693,6 +702,9 @@ raptor_object_options_set_option(raptor_object_options *options,
     /* numeric options */
     if(string)
       integer = atoi((const char*)string);
+
+    if(option == RAPTOR_OPTION_WRITER_LINE_LENGTH && integer < 0)
+      return 1;
 
     options->options[(int)option].integer = integer;
     return 0;

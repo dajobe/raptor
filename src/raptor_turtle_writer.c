@@ -71,6 +71,12 @@ struct raptor_turtle_writer_s {
 
   /* indentation per level if formatting */
   int indent;
+
+  /* Soft line length limit, or 0 for no wrapping */
+  int line_length;
+
+  /* Output offset immediately after the last newline */
+  unsigned long line_start;
 };
 
 
@@ -104,6 +110,7 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
   int num_spaces;
   
   raptor_iostream_write_byte('\n', turtle_writer->iostr);
+  turtle_writer->line_start = raptor_iostream_tell(turtle_writer->iostr);
  
   if(!TURTLE_WRITER_AUTO_INDENT(turtle_writer))
     return;
@@ -121,6 +128,20 @@ raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer)
   }
 
   return;
+}
+
+
+/* Return non-0 when the next object separator should start a new line. */
+int
+raptor_turtle_writer_should_wrap(raptor_turtle_writer *turtle_writer)
+{
+  unsigned long column;
+
+  if(!turtle_writer->line_length)
+    return 0;
+
+  column = raptor_iostream_tell(turtle_writer->iostr) - turtle_writer->line_start;
+  return column >= (unsigned long)turtle_writer->line_length;
 }
 
 
@@ -208,6 +229,8 @@ raptor_new_turtle_writer(raptor_world* world,
 
   turtle_writer->flags = flags;
   turtle_writer->indent = 2;
+  turtle_writer->line_length = RAPTOR_WRITER_DEFAULT_LINE_LENGTH;
+  turtle_writer->line_start = raptor_iostream_tell(iostr);
 
   turtle_writer->base_uri = NULL;
   /* Ensure any initial base URI is not written relative */
@@ -252,6 +275,23 @@ raptor_turtle_writer_contains_newline_or_carriage_return(const unsigned char *s,
 }
 
 
+/* Record the last newline in text written without escaping. */
+static void
+raptor_turtle_writer_track_newlines(raptor_turtle_writer* turtle_writer,
+                                    const unsigned char *s, size_t len)
+{
+  size_t i;
+
+  for(i = len; i > 0; i--) {
+    if(s[i-1] == '\n' || s[i-1] == '\r') {
+      turtle_writer->line_start = raptor_iostream_tell(turtle_writer->iostr) -
+                                  (unsigned long)(len - i);
+      break;
+    }
+  }
+}
+
+
 /**
  * raptor_turtle_writer_raw:
  * @turtle_writer: Turtle writer object
@@ -265,6 +305,7 @@ raptor_turtle_writer_raw(raptor_turtle_writer* turtle_writer,
                          const unsigned char *s)
 {
   raptor_iostream_string_write(s, turtle_writer->iostr);
+  raptor_turtle_writer_track_newlines(turtle_writer, s, strlen((const char*)s));
 }
 
 
@@ -282,6 +323,7 @@ raptor_turtle_writer_raw_counted(raptor_turtle_writer* turtle_writer,
                                  const unsigned char *s, unsigned int len)
 {
   raptor_iostream_counted_string_write(s, len, turtle_writer->iostr);
+  raptor_turtle_writer_track_newlines(turtle_writer, s, len);
 }
 
 
@@ -310,6 +352,7 @@ raptor_turtle_writer_namespace_prefix(raptor_turtle_writer* turtle_writer,
     raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
   else
     raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
+  turtle_writer->line_start = raptor_iostream_tell(turtle_writer->iostr);
 }
 
 
@@ -333,6 +376,7 @@ raptor_turtle_writer_base(raptor_turtle_writer* turtle_writer,
       raptor_iostream_counted_string_write(" ;\n", 3, turtle_writer->iostr);
     else
       raptor_iostream_counted_string_write(" .\n", 3, turtle_writer->iostr);
+    turtle_writer->line_start = raptor_iostream_tell(turtle_writer->iostr);
   }
 }
 
@@ -416,18 +460,31 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
 
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
   while(len) {
-    const unsigned char* nul = RAPTOR_GOOD_CAST(const unsigned char*,
-                                                memchr(s, '\0', len));
-    size_t part_len = nul ? (size_t)(nul - s) : len;
+    size_t part_len;
 
+    /* Find first NUL or raw newline (only inside """longstring""") */
+    for(part_len = 0; part_len < len; part_len++) {
+      if(!s[part_len])
+        break;
+      if(q_len == 3 && (s[part_len] == '\n' || s[part_len] == '\r'))
+        break;
+    }
+
+    /* Escape what we found so far */
     rc = raptor_string_escaped_write(s, part_len, '"', flags,
                                      turtle_writer->iostr);
     if(rc)
       break;
+
     s += part_len;
     len -= part_len;
-    if(nul) {
-      raptor_iostream_counted_string_write("\\u0000", 6, turtle_writer->iostr);
+    if(len) {
+      if(*s) {
+        /* Write raw newline in a triple-quoted string */
+        raptor_iostream_write_byte(*s, turtle_writer->iostr);
+        turtle_writer->line_start = raptor_iostream_tell(turtle_writer->iostr);
+      } else
+        raptor_iostream_counted_string_write("\\u0000", 6, turtle_writer->iostr);
       s++;
       len--;
     }
@@ -679,6 +736,10 @@ raptor_turtle_writer_set_option(raptor_turtle_writer *turtle_writer,
     case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       turtle_writer->indent = value;
       break;
+
+    case RAPTOR_OPTION_WRITER_LINE_LENGTH:
+      turtle_writer->line_length = value;
+      break;
     
     case RAPTOR_OPTION_WRITER_AUTO_EMPTY:
     case RAPTOR_OPTION_WRITER_XML_VERSION:
@@ -802,6 +863,10 @@ raptor_turtle_writer_get_option(raptor_turtle_writer *turtle_writer,
 
     case RAPTOR_OPTION_WRITER_INDENT_WIDTH:
       result = turtle_writer->indent;
+      break;
+
+    case RAPTOR_OPTION_WRITER_LINE_LENGTH:
+      result = turtle_writer->line_length;
       break;
     
     /* writer options */
@@ -1057,6 +1122,130 @@ const unsigned char* longstr = (const unsigned char*)"it's quoted\nand has newli
 
 #define OUT_BYTES_COUNT 149
 
+static int
+test_line_length(raptor_world* world, const char* program)
+{
+  static const struct {
+    const char* name;
+    const unsigned char* value;
+    size_t length;
+    int quoted;
+    int wrap;
+  } cases[] = {
+    { "below limit", (const unsigned char*)"123456789012345", 15, 0, 0 },
+    { "at limit", (const unsigned char*)"1234567890123456", 16, 0, 1 },
+    { "raw newline", (const unsigned char*)"1234567890123456\nx", 18, 0, 0 },
+    { "raw carriage return", (const unsigned char*)"1234567890123456\rx", 18, 0, 0 },
+    { "long literal newline", (const unsigned char*)"1234567890123456\nx", 18, 1, 0 },
+    { "long literal closing quotes", (const unsigned char*)"\n1234567890123", 14, 1, 1 },
+    { "NUL escape below limit", (const unsigned char*)"1234567\0", 8, 1, 0 },
+    { "NUL escape at limit", (const unsigned char*)"12345678\0", 9, 1, 1 }
+  };
+  raptor_namespace_stack* nstack = NULL;
+  raptor_turtle_writer* writer = NULL;
+  raptor_iostream* iostr = NULL;
+  void* output = NULL;
+  size_t i;
+  const char* check = "initialization";
+  int failed = 0;
+#ifdef RAPTOR_SERIALIZER_TURTLE
+  raptor_serializer* serializer = NULL;
+  int serializer_value;
+#endif
+
+  nstack = raptor_new_namespaces(world, 1);
+  iostr = raptor_new_iostream_to_string(world, &output, NULL, NULL);
+  if(!nstack || !iostr)
+    goto failed;
+  writer = raptor_new_turtle_writer(world, NULL, 0, nstack, iostr, 0);
+  if(!writer)
+    goto failed;
+
+  check = "default line length";
+  if(raptor_turtle_writer_get_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH)
+       != 1024)
+    goto failed;
+  check = "negative line length";
+  if(!raptor_turtle_writer_set_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH, -1))
+    goto failed;
+  if(raptor_turtle_writer_get_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH)
+       != 1024)
+    goto failed;
+  check = "line length from string";
+  if(raptor_turtle_writer_set_option_string(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                            (const unsigned char*)"16"))
+    goto failed;
+  if(raptor_turtle_writer_get_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH) != 16)
+    goto failed;
+
+  for(i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+    check = cases[i].name;
+    raptor_turtle_writer_newline(writer);
+    if(cases[i].quoted) {
+      if(raptor_turtle_writer_quoted_counted_string(writer, cases[i].value,
+                                                    cases[i].length))
+        goto failed;
+    } else
+      raptor_turtle_writer_raw_counted(writer, cases[i].value,
+                                       (unsigned int)cases[i].length);
+    if(raptor_turtle_writer_should_wrap(writer) != cases[i].wrap)
+      goto failed;
+  }
+
+  check = "raw string newline";
+  raptor_turtle_writer_raw(writer, (const unsigned char*)"1234567890123456\nx");
+  if(raptor_turtle_writer_should_wrap(writer))
+    goto failed;
+  check = "disabled wrapping";
+  if(raptor_turtle_writer_set_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH, 0))
+    goto failed;
+  raptor_turtle_writer_raw(writer, (const unsigned char*)"1234567890123456");
+  if(raptor_turtle_writer_should_wrap(writer))
+    goto failed;
+#ifdef RAPTOR_SERIALIZER_TURTLE
+  check = "serializer line length";
+  serializer = raptor_new_serializer(world, "turtle");
+  if(!serializer)
+    goto failed;
+  if(raptor_serializer_get_option(serializer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                   NULL, &serializer_value))
+    goto failed;
+  if(serializer_value != 1024)
+    goto failed;
+  if(!raptor_serializer_set_option(serializer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                    NULL, -1))
+    goto failed;
+  if(raptor_serializer_set_option(serializer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                   "80", 0))
+    goto failed;
+  if(raptor_serializer_get_option(serializer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                   NULL, &serializer_value))
+    goto failed;
+  if(serializer_value != 80)
+    goto failed;
+#endif
+  goto cleanup;
+
+failed:
+  fprintf(stderr, "%s: Turtle writer %s failed\n", program, check);
+  failed = 1;
+
+cleanup:
+#ifdef RAPTOR_SERIALIZER_TURTLE
+  if(serializer)
+    raptor_free_serializer(serializer);
+#endif
+  if(writer)
+    raptor_free_turtle_writer(writer);
+  if(nstack)
+    raptor_free_namespaces(nstack);
+  if(iostr)
+    raptor_free_iostream(iostr);
+  if(output)
+    raptor_free_memory(output);
+  return failed;
+}
+
 int
 main(int argc, char *argv[]) 
 {
@@ -1077,6 +1266,11 @@ main(int argc, char *argv[])
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
+
+  if(test_line_length(world, program)) {
+    raptor_free_world(world);
+    return 1;
+  }
   
   iostr = raptor_new_iostream_to_string(world, &string, &string_len, NULL);
   if(!iostr) {

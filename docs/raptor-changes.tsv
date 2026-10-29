@@ -595,3 +595,4 @@
 2.0.15	enum	-	-	2.0.16	enum	raptor_rdf_schema_namespace_uri_len	-	-
 2.0.16	enum	RAPTOR_NORETURN	-	2.0.17	enum	-	-	Unused public macro removed.
 2.0.16	enum	-	-	2.0.17	enum	RAPTOR_WORLD_FLAG_LIBXML_SKIP_CLEANUP	-	-
+2.0.16	enum	-	-	2.0.17	enum	RAPTOR_OPTION_WRITER_LINE_LENGTH	-	Soft maximum line length for Turtle writers.

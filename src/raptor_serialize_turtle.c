@@ -177,7 +177,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
     if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
+      raptor_iostream_write_byte(' ', serializer->iostream);
     else
       raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"( )", 3);
     return 0;
@@ -188,7 +188,7 @@ raptor_turtle_emit_resource(raptor_serializer *serializer,
 
   if(raptor_uri_equals(node->term->value.uri, context->rdf_nil_uri)) {
     if(emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
+      raptor_iostream_write_byte(' ', serializer->iostream);
     else
       raptor_turtle_writer_raw_counted(turtle_writer ,(const unsigned char*)"( )", 3);
     return 0;
@@ -542,7 +542,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       if(last_predicate) {
         if(emit_mkr && !context->resultset) {
           if(numobj > 1)
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+            raptor_iostream_write_byte(']', serializer->iostream);
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
         } else {
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
@@ -557,7 +557,7 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
         if(emit_mkr)
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"rdf:type", 8);
         else
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"a", 1);
+          raptor_iostream_write_byte('a', serializer->iostream);
       } else if(qname) {
         raptor_turtle_writer_qname(turtle_writer, qname);
       } else {
@@ -566,16 +566,20 @@ raptor_turtle_emit_subject_properties(raptor_serializer* serializer,
       if(emit_mkr) {
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" = ", 3);
         if(numobj > 1)
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
+          raptor_iostream_write_byte('[', serializer->iostream);
       } else {
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
+        raptor_iostream_write_byte(' ', serializer->iostream);
       }
 
 
       if(qname)
         raptor_free_qname(qname);
     } else { /* not last object for this predicate */
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)", ", 2);
+      raptor_iostream_write_byte(',', serializer->iostream);
+      if(!emit_mkr && raptor_turtle_writer_should_wrap(turtle_writer))
+        raptor_turtle_writer_newline(turtle_writer);
+      else
+        raptor_iostream_write_byte(' ', serializer->iostream);
     }
 
 
@@ -913,7 +917,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
   if(collection) {
     if(!emit_mkr)
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"(", 1);
+      raptor_iostream_write_byte('(', serializer->iostream);
     raptor_turtle_writer_increase_indent(turtle_writer);
 
     rc = raptor_turtle_emit_subject_collection_items(serializer, subject, depth+1);
@@ -922,7 +926,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
     if(!emit_mkr) {
       raptor_turtle_writer_newline(turtle_writer);
-      raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)")", 1);
+      raptor_iostream_write_byte(')', serializer->iostream);
     }
 
   } else {
@@ -959,7 +963,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
         if(blank && depth > 1) {
           if(numobj > 1)
-            raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+            raptor_iostream_write_byte(']', serializer->iostream);
           raptor_turtle_writer_newline(turtle_writer);
           raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)";}", 2);
         }
@@ -967,7 +971,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     } else {
       /* Turtle */
       if(blank && depth > 1)
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"[", 1);
+        raptor_iostream_write_byte('[', serializer->iostream);
 
       raptor_turtle_writer_increase_indent(turtle_writer);
       raptor_turtle_writer_newline(turtle_writer);
@@ -978,7 +982,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
 
       if(blank && depth > 1) {
         raptor_turtle_writer_newline(turtle_writer);
-        raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+        raptor_iostream_write_byte(']', serializer->iostream);
       }
     }
   }
@@ -992,7 +996,7 @@ raptor_turtle_emit_subject(raptor_serializer *serializer,
     if(emit_mkr) {
       if(!context->resultset) {
         if(numobj > 1)
-          raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)"]", 1);
+          raptor_iostream_write_byte(']', serializer->iostream);
         raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ;", 2);
         raptor_turtle_writer_newline(turtle_writer);
         raptor_turtle_writer_newline(turtle_writer);
@@ -1316,6 +1320,10 @@ raptor_turtle_serialize_start(raptor_serializer* serializer)
                                   RAPTOR_OPTION_WRITER_AUTO_INDENT, 1);
   raptor_turtle_writer_set_option(turtle_writer,
                                   RAPTOR_OPTION_WRITER_INDENT_WIDTH, 2);
+  raptor_turtle_writer_set_option(turtle_writer,
+                                  RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                  RAPTOR_OPTIONS_GET_NUMERIC(serializer,
+                                  RAPTOR_OPTION_WRITER_LINE_LENGTH));
 
   context->turtle_writer = turtle_writer;
 

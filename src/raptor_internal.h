@@ -301,6 +301,8 @@ typedef struct
 int raptor_option_value_is_numeric(const raptor_option option);
 int raptor_option_is_valid_for_area(const raptor_option option, raptor_option_area area);
 
+#define RAPTOR_WRITER_DEFAULT_LINE_LENGTH 1024
+
 void raptor_object_options_init(raptor_object_options* options, raptor_option_area area);
 void raptor_object_options_clear(raptor_object_options* options);
 int raptor_object_options_copy_state(raptor_object_options* to, raptor_object_options* from);
@@ -1404,6 +1406,7 @@ RAPTOR_INTERNAL_API void raptor_turtle_writer_base(raptor_turtle_writer* turtle_
 RAPTOR_INTERNAL_API void raptor_turtle_writer_increase_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_decrease_indent(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_newline(raptor_turtle_writer *turtle_writer);
+RAPTOR_INTERNAL_API int raptor_turtle_writer_should_wrap(raptor_turtle_writer *turtle_writer);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_reference(raptor_turtle_writer* turtle_writer, raptor_uri* uri);
 RAPTOR_INTERNAL_API int raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer, raptor_namespace_stack *nstack, const unsigned char *s, size_t length, const unsigned char* lang, raptor_uri* datatype);
 RAPTOR_INTERNAL_API void raptor_turtle_writer_csv_string(raptor_turtle_writer* turtle_writer, const unsigned char *s);

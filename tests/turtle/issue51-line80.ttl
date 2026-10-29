@@ -1,0 +1,17 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/issue51.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> .
+
+<urn:s>
+    <urn:p> <urn:item00-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item01-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item02-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item03-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item04-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item05-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item06-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item07-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item08-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item09-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item10-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item11-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item12-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item13-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item14-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item15-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item16-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item17-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item18-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item19-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item20-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item21-abcdefghijklmnopqrstuvwxyz0123456789>,
+    <urn:item22-abcdefghijklmnopqrstuvwxyz0123456789>, <urn:item23-abcdefghijklmnopqrstuvwxyz0123456789> .
+
