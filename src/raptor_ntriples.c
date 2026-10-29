@@ -400,8 +400,10 @@ raptor_ntriples_parse_term_internal(raptor_world* world,
   /* terminate dest, can be shorter than source */
   *dest = '\0';
 
+  /* Escapes can shorten the input and decoded strings can contain NUL, so
+   * calculate the decoded byte length from the destination pointers. */
   if(dest_lenp)
-    *dest_lenp = p - *start;
+    *dest_lenp = dest - dest_start;
 
   *start = p;
 
@@ -595,10 +597,9 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
         unsigned char *object_literal_language = NULL;
         unsigned char *object_literal_datatype = NULL;
         raptor_uri* datatype_uri = NULL;
+        size_t lang_len = 0;
 
         if(*len_p && *p == '@') {
-          size_t lang_len;
-
           object_literal_language = p;
 
           /* Skip - */
@@ -621,7 +622,7 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
             goto fail;
           }
 
-          if(!lang_len) {
+          if(!lang_len || lang_len > 255) {
             raptor_log_error_formatted(world, RAPTOR_LOG_LEVEL_ERROR, locator, "Invalid language tag at @%s", p);
             goto fail;
           }
@@ -681,10 +682,12 @@ raptor_ntriples_parse_term(raptor_world* world, raptor_locator* locator,
           object_literal_language = NULL;
         }
 
-        *term_p = raptor_new_term_from_literal(world,
-                                               dest,
-                                               datatype_uri,
-                                               object_literal_language);
+        *term_p = raptor_new_term_from_counted_literal(world,
+                                                       dest, term_length,
+                                                       datatype_uri,
+                                                       object_literal_language,
+                                                       object_literal_language ?
+                                                       (unsigned char)lang_len : 0);
         if(datatype_uri)
           raptor_free_uri(datatype_uri);
       }

@@ -260,7 +260,8 @@ raptor_json_serialize_avltree_visit(int depth, void* data, void *user_data)
         
       case RAPTOR_TERM_TYPE_BLANK:
         raptor_iostream_counted_string_write("\"_:", 3, serializer->iostream);
-        raptor_string_escaped_write(s1->subject->value.blank.string, 0,
+        raptor_string_escaped_write(s1->subject->value.blank.string,
+                                    s1->subject->value.blank.string_len,
                                     '"', flags,
                                     serializer->iostream);
         raptor_iostream_write_byte('"', serializer->iostream);

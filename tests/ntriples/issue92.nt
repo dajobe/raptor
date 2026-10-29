@@ -1,0 +1,7 @@
+<http://example.org/s> <http://example.org/p> "before\u0000after" .
+<http://example.org/s> <http://example.org/p> "\u0000start" .
+<http://example.org/s> <http://example.org/p> "end\U00000000" .
+<http://example.org/s> <http://example.org/p> "a\u0000b\u0000c"@en .
+<http://example.org/s> <http://example.org/p> "a\u0000b"^^<http://example.org/type> .
+<http://example.org/s> <http://example.org/p> "\u00E9\u0000\u00E9" .
+<http://example.org/s> <http://example.org/p> "\"\u0000\\" .

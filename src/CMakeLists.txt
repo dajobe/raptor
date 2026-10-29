@@ -402,6 +402,10 @@ ADD_EXECUTABLE(raptor_term_test raptor_term.c)
 TARGET_LINK_LIBRARIES(raptor_term_test raptor2_impl)
 ADD_TEST(raptor_term_test raptor_term_test)
 
+ADD_EXECUTABLE(raptor_escaped_test raptor_escaped_test.c)
+TARGET_LINK_LIBRARIES(raptor_escaped_test raptor2_impl)
+ADD_TEST(raptor_escaped_test raptor_escaped_test)
+
 ADD_EXECUTABLE(raptor_permute_test raptor_permute_test.c)
 TARGET_LINK_LIBRARIES(raptor_permute_test raptor2_impl)
 ADD_TEST(raptor_permute_test raptor_permute_test)

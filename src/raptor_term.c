@@ -206,7 +206,7 @@ raptor_new_term_from_counted_literal(raptor_world* world,
       datatype = NULL;
   }
 
-  if(!literal || !*literal)
+  if(!literal)
     literal_len = 0;
 
   if(RAPTOR_SIZE_T_ADD_OVERFLOWS(literal_len, 1))
@@ -685,8 +685,8 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
         /* different lengths */
         break;
 
-      d = !strcmp((const char*)t1->value.literal.string,
-                  (const char*)t2->value.literal.string);
+      d = !memcmp(t1->value.literal.string, t2->value.literal.string,
+                  t1->value.literal.string_len);
       if(!d)
         break;
       
@@ -731,9 +731,9 @@ raptor_term_equals(raptor_term* t1, raptor_term* t2)
  * If types are different, the #raptor_term_type order is used.
  *
  * Resource and datatype URIs are compared with raptor_uri_compare(),
- * blank nodes and literals with strcmp().  If one literal has no
- * language, it is earlier than one with a language.  If one literal
- * has no datatype, it is earlier than one with a datatype.
+ * blank nodes with strcmp() and literals by their counted bytes.  If one
+ * literal has no language, it is earlier than one with a language.  If one
+ * literal has no datatype, it is earlier than one with a datatype.
  * 
  * Return value: <0 if t1 is before t2, 0 if equal, >0 if t1 is after t2
  */
@@ -765,8 +765,15 @@ raptor_term_compare(const raptor_term *t1,  const raptor_term *t2)
       break;
       
     case RAPTOR_TERM_TYPE_LITERAL:
-      d = strcmp((const char*)t1->value.literal.string,
-                 (const char*)t2->value.literal.string);
+      {
+        size_t len1 = t1->value.literal.string_len;
+        size_t len2 = t2->value.literal.string_len;
+        size_t min_len = len1 < len2 ? len1 : len2;
+
+        d = memcmp(t1->value.literal.string, t2->value.literal.string, min_len);
+        if(!d && len1 != len2)
+          d = len1 < len2 ? -1 : 1;
+      }
       if(d)
         break;
       
@@ -860,6 +867,23 @@ static const numeric_literal_case numeric_literal_cases[] = {
   { "9e9", "http://www.w3.org/2001/XMLSchema#double" }
 };
 
+typedef struct {
+  const char* name;
+  const unsigned char* value;
+  size_t length;
+} nul_literal_case;
+
+/* Test cases with NUL in them for counted strings */
+static const nul_literal_case nul_literal_cases[] = {
+  { "empty counted value", (const unsigned char*)"ignored", 0 },
+  { "only NUL", (const unsigned char*)"\0", 1 },
+  { "leading NUL", (const unsigned char*)"\0start", 6 },
+  { "embedded NUL", (const unsigned char*)"a\0b", 3 },
+  { "trailing NUL", (const unsigned char*)"end\0", 4 },
+  { "multiple NULs", (const unsigned char*)"a\0b\0c", 5 },
+  { "counted prefix", (const unsigned char*)"a\0bextra", 3 }
+};
+
 int
 main(int argc, char *argv[])
 {
@@ -889,6 +913,109 @@ main(int argc, char *argv[])
   world = raptor_new_world();
   if(!world || raptor_world_open(world))
     exit(1);
+
+  for(i = 0; i < sizeof(nul_literal_cases) / sizeof(nul_literal_cases[0]); i++) {
+    const nul_literal_case* test = &nul_literal_cases[i];
+    raptor_term* result = raptor_new_term_from_counted_literal(
+        world, test->value, test->length, NULL, NULL, 0);
+
+    if(!result)
+      goto literal_case_failed;
+    if(result->type != RAPTOR_TERM_TYPE_LITERAL)
+      goto literal_case_failed;
+    if(result->value.literal.string_len != test->length)
+      goto literal_case_failed;
+    if(memcmp(result->value.literal.string, test->value, test->length))
+      goto literal_case_failed;
+    if(result->value.literal.string[test->length])
+      goto literal_case_failed;
+    goto literal_case_cleanup;
+
+  literal_case_failed:
+    fprintf(stderr, "%s: counted literal %s failed\n", program, test->name);
+    rc = 1;
+
+  literal_case_cleanup:
+    if(result)
+      raptor_free_term(result);
+    if(rc)
+      goto tidy;
+  }
+
+  {
+    const unsigned char value1[] = { 0, 'a', 0, 'b' };
+    const unsigned char value2[] = { 0, 'a', 0, 'c' };
+    unsigned char raw_literal[] = { '"', 0, 'a', 0, 'b', '"', 0 };
+    raptor_term* first = raptor_new_term_from_counted_literal(
+        world, value1, sizeof(value1), NULL, NULL, 0);
+    raptor_term* second = raptor_new_term_from_counted_literal(
+        world, value2, sizeof(value2), NULL, NULL, 0);
+    raptor_term* prefix = raptor_new_term_from_counted_literal(
+        world, value1, sizeof(value1) - 1, NULL, NULL, 0);
+    raptor_term* parsed = raptor_new_term_from_counted_string(
+        world, raw_literal, sizeof(raw_literal) - 1);
+    raptor_term* tagged = raptor_new_term_from_counted_literal(
+        world, value1, sizeof(value1), NULL, (const unsigned char*)"en", 2);
+    const char* check = "creating literals containing NUL";
+
+    if(!first || !second || !prefix || !parsed || !tagged)
+      goto failed;
+
+    check = "counted literal value";
+    if(first->value.literal.string_len != sizeof(value1))
+      goto failed;
+    if(memcmp(first->value.literal.string, value1, sizeof(value1)))
+      goto failed;
+
+    check = "equivalent literals";
+    if(!raptor_term_equals(first, parsed))
+      goto failed;
+    if(raptor_term_compare(first, parsed))
+      goto failed;
+
+    check = "distinct literal equality";
+    if(raptor_term_equals(first, second))
+      goto failed;
+    if(raptor_term_equals(first, prefix))
+      goto failed;
+    if(raptor_term_equals(first, tagged))
+      goto failed;
+
+    check = "literal suffix ordering";
+    if(raptor_term_compare(first, second) >= 0)
+      goto failed;
+    if(raptor_term_compare(second, first) <= 0)
+      goto failed;
+
+    check = "literal prefix ordering";
+    if(raptor_term_compare(prefix, first) >= 0)
+      goto failed;
+    if(raptor_term_compare(first, prefix) <= 0)
+      goto failed;
+
+    check = "literal language ordering";
+    if(raptor_term_compare(first, tagged) >= 0)
+      goto failed;
+    goto cleanup;
+
+  failed:
+    fprintf(stderr, "%s: %s failed\n", program, check);
+    rc = 1;
+
+  cleanup:
+    if(first)
+      raptor_free_term(first);
+    if(second)
+      raptor_free_term(second);
+    if(prefix)
+      raptor_free_term(prefix);
+    if(parsed)
+      raptor_free_term(parsed);
+    if(tagged)
+      raptor_free_term(tagged);
+    if(rc)
+      goto tidy;
+  }
 
   for(i = 0;
       i < sizeof(counted_term_failure_cases) /

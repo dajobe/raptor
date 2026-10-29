@@ -63,7 +63,8 @@ raptor_string_escaped_write(const unsigned char *string,
   if(!string)
     return 1;
   
-  for(; (c=*string); string++, len--) {
+  for(; len; string++, len--) {
+    c = *string;
     if((delim && c == delim && (delim == '\'' || delim == '"')) ||
        c == '\\') {
       raptor_iostream_write_byte('\\', iostr);

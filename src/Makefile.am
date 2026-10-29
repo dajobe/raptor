@@ -34,7 +34,7 @@ TESTS=raptor_parse_test raptor_rfc2396_test raptor_uri_test \
 raptor_namespace_test strcasecmp_test raptor_www_test \
 raptor_sequence_test raptor_stringbuffer_test \
 raptor_uri_win32_test raptor_iostream_test raptor_xml_writer_test \
-raptor_turtle_writer_test raptor_avltree_test raptor_term_test \
+raptor_turtle_writer_test raptor_avltree_test raptor_term_test raptor_escaped_test \
 raptor_permute_test raptor_snprintf_test raptor_sort_r_test
 if RAPTOR_PARSER_RDFXML
 TESTS += raptor_set_test raptor_xml_test
@@ -214,6 +214,7 @@ EXTRA_DIST=\
 CMakeLists.txt \
 raptor_config_cmake.h.in \
 raptor_permute_test.c \
+raptor_escaped_test.c \
 raptor_www_test.c \
 raptor_nfc_test.c \
 raptor_win32.c \
@@ -316,6 +317,9 @@ raptor_avltree_test: $(srcdir)/raptor_avltree.c libraptor2_impl.la
 
 raptor_term_test: $(srcdir)/raptor_term.c libraptor2_impl.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_term.c $(RAPTOR_STANDALONE_LIBS)
+
+raptor_escaped_test: $(srcdir)/raptor_escaped_test.c libraptor2_impl.la
+	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. $(srcdir)/raptor_escaped_test.c $(RAPTOR_STANDALONE_LIBS)
 
 raptor_permute_test: $(srcdir)/raptor_permute_test.c libraptor2_impl.la
 	$(LINK) $(DEFS) $(CPPFLAGS) -I$(srcdir) -I. -DSTANDALONE $(srcdir)/raptor_permute_test.c $(RAPTOR_STANDALONE_LIBS)
