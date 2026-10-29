@@ -1,0 +1,2 @@
+<http://example.org/subject> <http://example.org/a-property-name-long-enough-to-wrap-the-first-namespace-attribute-in-abbreviated-rdfxml> <http://example.org/a-long-resource-name-with-an-indivisible-attribute-value> .
+<http://example.org/subject> <http://example.org/text> "  preserved  spaces & <markup> \"quotes\" and a newline\nfollowed by text  "@en .

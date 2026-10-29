@@ -298,10 +298,10 @@ static const struct
     "Parsers and SAX2 should load external entities."
   },
   { RAPTOR_OPTION_WRITER_LINE_LENGTH,
-    (raptor_option_area)(RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_TURTLE_WRITER),
+    (raptor_option_area)(RAPTOR_OPTION_AREA_SERIALIZER | RAPTOR_OPTION_AREA_TURTLE_WRITER | RAPTOR_OPTION_AREA_XML_WRITER),
     RAPTOR_OPTION_VALUE_TYPE_INT,
     "lineLength",
-    "Turtle writer soft maximum line length in bytes (default 1024, 0 disables wrapping)."
+    "Turtle and XML writer soft maximum line length in bytes (default 1024, 0 disables wrapping)."
   }
 };
 

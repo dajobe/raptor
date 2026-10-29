@@ -537,10 +537,11 @@ typedef struct {
  * @RAPTOR_OPTION_WWW_SSL_VERIFY_HOST: Integer. SSL verify host - 0 none, 1 CN match, 2 host match (default). Other values are ignored.
  * @RAPTOR_OPTION_NO_FILE: Deny file reading requests inside other requests.
  * @RAPTOR_OPTION_LOAD_EXTERNAL_ENTITIES: When reading XML, load external entities.
- * @RAPTOR_OPTION_WRITER_LINE_LENGTH: Soft maximum Turtle output line length in
- *   bytes (default 1024). Object lists wrap at the next separator after this
- *   length is reached. Individual terms can exceed the limit.
- *   A value of 0 disables wrapping.
+ * @RAPTOR_OPTION_WRITER_LINE_LENGTH: Soft maximum Turtle and XML output line
+ *   length in bytes (default 1024). Turtle object lists wrap at separators;
+ *   XML start tags wrap between attributes and namespace declarations.
+ *   Individual terms, attribute values and text can exceed the limit.
+ *   A value of 0 disables this additional wrapping.
  * @RAPTOR_OPTION_LAST: Internal
  *
  * Raptor parser, serializer or XML writer options.

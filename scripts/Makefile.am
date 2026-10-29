@@ -20,6 +20,7 @@
 # 
 
 EXTRA_DIST= \
+check-serializer-wrapping.py \
 fix-groff-xhtml.py \
 fix-readme-html.py \
 fix-gtkdoc-header.py \

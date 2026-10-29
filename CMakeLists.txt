@@ -45,7 +45,8 @@ FIND_PACKAGE(YAJL)
 
 # Release tarballs ship the bison/flex generated parser sources
 # (src/turtle_parser.c, src/turtle_lexer.c, src/parsedate.c and headers),
-# so python3/flex/bison are only needed when the parsers are regenerated.
+# so flex/bison are only needed when the parsers are regenerated.
+# Python3 is also used by the XML line-length regression test.
 SET(RAPTOR_HAVE_PREBUILT_PARSERS FALSE)
 IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_parser.c
    AND EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/src/turtle_lexer.c

@@ -2232,6 +2232,10 @@ raptor_rss10_serialize_end(raptor_serializer* serializer)
                                RAPTOR_OPTION_WRITER_AUTO_INDENT, NULL, 1);
   raptor_xml_writer_set_option(xml_writer,
                                RAPTOR_OPTION_WRITER_AUTO_EMPTY, NULL, 1);
+  raptor_xml_writer_set_option(xml_writer,
+                               RAPTOR_OPTION_WRITER_LINE_LENGTH, NULL,
+                               RAPTOR_OPTIONS_GET_NUMERIC(serializer,
+                               RAPTOR_OPTION_WRITER_LINE_LENGTH));
 
   raptor_rss10_build_xml_names(serializer, (is_atom && entry_uri));
 

@@ -532,4 +532,20 @@ RAPPER_TEST(rdfxml.ex-60
 	${CMAKE_CURRENT_SOURCE_DIR}/ex-60.rdf
 )
 
+IF(RAPTOR_PARSER_NTRIPLES AND RAPTOR_PARSER_RDFXML AND
+   RAPTOR_SERIALIZER_NTRIPLES)
+	FIND_PACKAGE(Python3 REQUIRED COMPONENTS Interpreter)
+	FOREACH(SERIALIZER rdfxml rdfxml-abbrev)
+		STRING(TOUPPER "${SERIALIZER}" SERIALIZER_OPTION)
+		STRING(REPLACE "-" "_" SERIALIZER_OPTION "${SERIALIZER_OPTION}")
+		IF(RAPTOR_SERIALIZER_${SERIALIZER_OPTION})
+			ADD_TEST(rdfxml.line-length.${SERIALIZER} "${Python3_EXECUTABLE}"
+				${Raptor2_SOURCE_DIR}/scripts/check-serializer-wrapping.py
+				${RAPPER} ${CMAKE_CURRENT_SOURCE_DIR}/line-length.nt
+				--input-format ntriples --serializer ${SERIALIZER}
+				--output-parser rdfxml --line-length 80)
+		ENDIF()
+	ENDFOREACH()
+ENDIF()
+
 # end raptor/tests/rdfxml/CMakeLists.txt

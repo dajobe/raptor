@@ -99,6 +99,7 @@ DAML_OIL_DOC_URI="http://www.daml.org/2001/03/daml+oil"
 OWL_WINE_URI="http://www.w3.org/TR/owl-guide/wine.rdf"
 
 EXTRA_DIST = \
+	line-length.nt \
 	CMakeLists.txt \
 	$(RDF_TEST_FILES) \
 	$(RDF_MAYFAIL_XML_TEST_FILES) \
@@ -127,10 +128,36 @@ build-rapper:
 build-rdfdiff:
 	@(cd $(top_builddir)/utils ; $(MAKE) rdfdiff$(EXEEXT))
 
+LINE_LENGTH_TEST =
+if RAPTOR_PARSER_NTRIPLES
+if RAPTOR_PARSER_RDFXML
+if RAPTOR_SERIALIZER_NTRIPLES
+if RAPTOR_SERIALIZER_RDFXML
+LINE_LENGTH_TEST += check-line-length-rdfxml
+endif
+if RAPTOR_SERIALIZER_RDFXML_ABBREV
+LINE_LENGTH_TEST += check-line-length-rdfxml-abbrev
+endif
+endif
+endif
+endif
+
 check-local: build-rapper \
 check-rdf check-mayfail-xml-rdf check-assume-rdf check-scan-rdf \
 check-bad-rdf check-bad-nfc-rdf check-warn-rdf \
-check-rdfdiff check-rdfxml check-rdfxmla
+check-rdfdiff check-rdfxml check-rdfxmla $(LINE_LENGTH_TEST)
+
+check-line-length: $(LINE_LENGTH_TEST)
+
+check-line-length-rdfxml: build-rapper
+	$(PYTHON3) $(top_srcdir)/scripts/check-serializer-wrapping.py "$(RAPPER)" \
+	  "$(srcdir)/line-length.nt" --input-format ntriples \
+	  --serializer rdfxml --output-parser rdfxml --line-length 80
+
+check-line-length-rdfxml-abbrev: build-rapper
+	$(PYTHON3) $(top_srcdir)/scripts/check-serializer-wrapping.py "$(RAPPER)" \
+	  "$(srcdir)/line-length.nt" --input-format ntriples \
+	  --serializer rdfxml-abbrev --output-parser rdfxml --line-length 80
 
 ## Some non-GNU Make programs modify variables that appear in a target's
 ## dependencies by prepending VPATH to filenames. We don't want this, so

@@ -86,6 +86,9 @@ struct raptor_xml_writer_s {
   /* An extra newline is wanted */
   int pending_newline;
 
+  /* Stream offset immediately after the most recent output newline. */
+  unsigned long line_start;
+
   /* Options (per-object) */
   raptor_object_options options;
 };
@@ -113,6 +116,7 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
   if(!XML_WRITER_AUTO_INDENT(xml_writer)) {
     if(xml_writer->pending_newline) {
       raptor_iostream_write_byte('\n', xml_writer->iostr);
+      xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
       xml_writer->pending_newline = 0;
 
       if(xml_writer->current_element)
@@ -131,6 +135,7 @@ raptor_xml_writer_indent(raptor_xml_writer *xml_writer)
     xml_writer->xml_declaration_checked++;
   else {
     raptor_iostream_write_byte('\n', xml_writer->iostr);
+    xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
     xml_writer->pending_newline = 0;
   }
   
@@ -174,6 +179,34 @@ raptor_xml_writer_nsd_compare(const void *a, const void *b)
 }
 
 
+/* Write whitespace before a complete attribute or namespace declaration.
+ *
+ * Preserve automatic indentation, otherwise break the line if the separator
+ * and declaration would exceed the enabled line length limit. Whitespace
+ * between attributes does not change their values or the element content.
+ */
+static void
+raptor_xml_writer_write_attribute_separator(raptor_xml_writer* xml_writer,
+                                            size_t length, int need_indent)
+{
+  int limit = RAPTOR_OPTIONS_GET_NUMERIC(xml_writer,
+                                         RAPTOR_OPTION_WRITER_LINE_LENGTH);
+  unsigned long column = raptor_iostream_tell(xml_writer->iostr) -
+                         xml_writer->line_start;
+
+  if(XML_WRITER_AUTO_INDENT(xml_writer) && need_indent) {
+    raptor_xml_writer_newline(xml_writer);
+    xml_writer->depth++;
+    raptor_xml_writer_indent(xml_writer);
+    xml_writer->depth--;
+  } else if(limit > 0 && (column + 1 + length) > (unsigned long)limit) {
+    raptor_iostream_write_byte('\n', xml_writer->iostr);
+    xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
+  }
+  raptor_iostream_write_byte(' ', xml_writer->iostr);
+}
+
+
 static int
 raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
                                        raptor_xml_element* element,
@@ -182,7 +215,6 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
   raptor_iostream* iostr = xml_writer->iostr;
   raptor_namespace_stack *nstack = xml_writer->nstack;
   int depth = xml_writer->depth;
-  int auto_indent = XML_WRITER_AUTO_INDENT(xml_writer);
   struct nsd *nspace_declarations = NULL;
   size_t nspace_declarations_count = 0;  
   unsigned int i;
@@ -336,14 +368,9 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       if(!nspace_declarations[i].nspace)
         continue;
 
-      if(auto_indent && need_indent) {
-        /* indent attributes */
-        raptor_xml_writer_newline(xml_writer);
-        xml_writer->depth++;
-        raptor_xml_writer_indent(xml_writer);
-        xml_writer->depth--;
-      }
-      raptor_iostream_write_byte(' ', iostr);
+      raptor_xml_writer_write_attribute_separator(xml_writer,
+                                                  nspace_declarations[i].length,
+                                                  need_indent);
       raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
                                            nspace_declarations[i].length,
                                            iostr);
@@ -362,14 +389,9 @@ raptor_xml_writer_start_element_common(raptor_xml_writer* xml_writer,
       if(nspace_declarations[i].nspace)
         continue;
 
-      if(auto_indent && need_indent) {
-        /* indent attributes */
-        raptor_xml_writer_newline(xml_writer);
-        xml_writer->depth++;
-        raptor_xml_writer_indent(xml_writer);
-        xml_writer->depth--;
-      }
-      raptor_iostream_write_byte(' ', iostr);
+      raptor_xml_writer_write_attribute_separator(xml_writer,
+                                                  nspace_declarations[i].length,
+                                                  need_indent);
       raptor_iostream_counted_string_write((const char*)nspace_declarations[i].declaration,
                                            nspace_declarations[i].length,
                                            iostr);
@@ -474,6 +496,7 @@ raptor_new_xml_writer(raptor_world* world,
   }
 
   xml_writer->iostr = iostr;
+  xml_writer->line_start = raptor_iostream_tell(iostr);
 
   raptor_object_options_init(&xml_writer->options,
                              RAPTOR_OPTION_AREA_XML_WRITER);
@@ -521,6 +544,7 @@ raptor_xml_writer_write_xml_declaration(raptor_xml_writer* xml_writer)
                                            3, xml_writer->iostr);
       raptor_iostream_string_write((const unsigned char*)"\" encoding=\"utf-8\"?>\n",
                                    xml_writer->iostr);
+      xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
     }
   }
 
@@ -648,6 +672,62 @@ raptor_xml_writer_newline(raptor_xml_writer* xml_writer)
 }
 
 
+/*
+ * raptor_xml_writer_write_content:
+ * @xml_writer: XML writer object
+ * @s: content to write
+ * @len: content length in bytes
+ * @escape: non-0 to XML escape the content, 0 to write it raw
+ *
+ * Write content without inserting line breaks and update line_start to the
+ * stream offset immediately after the last output line break, if any.
+ * Attribute wrapping uses this offset to measure the current byte column.
+ *
+ * For escaped content, write through the last LF first and record the stream
+ * offset before writing the suffix. Escaping can expand suffix characters,
+ * so its input length cannot be used to calculate the output column. CR is
+ * escaped as a character reference and does not start a new output line.
+ *
+ * For raw content, LF and CR both start a new line. Subtract the unchanged
+ * suffix length from the final stream offset to locate that line's start.
+ */
+static void
+raptor_xml_writer_write_content(raptor_xml_writer* xml_writer,
+                                const unsigned char* s, size_t len, int escape)
+{
+  size_t suffix = len;
+
+  while(suffix) {
+    if(s[suffix - 1] == '\n')
+      break;
+    if(!escape && s[suffix - 1] == '\r')
+      break;
+    suffix--;
+  }
+
+  if(escape) {
+    /* Write through the last newline first so escaped suffix bytes count
+     * towards the column. Carriage returns are escaped, not line breaks.
+     */
+    if(suffix) {
+      if(raptor_xml_escape_string_any_write(s, suffix, '\0',
+                                            XML_WRITER_XML_VERSION(xml_writer),
+                                            xml_writer->iostr))
+        return;
+      xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
+    }
+    raptor_xml_escape_string_any_write(s + suffix, len - suffix, '\0',
+                                       XML_WRITER_XML_VERSION(xml_writer),
+                                       xml_writer->iostr);
+  } else {
+    raptor_iostream_counted_string_write(s, len, xml_writer->iostr);
+    if(suffix)
+      xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr) -
+                               (len - suffix);
+  }
+}
+
+
 /**
  * raptor_xml_writer_cdata:
  * @xml_writer: XML writer object
@@ -667,10 +747,7 @@ raptor_xml_writer_cdata(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_xml_escape_string_any_write(s, strlen((const char*)s),
-                                      '\0',
-                                      XML_WRITER_XML_VERSION(xml_writer),
-                                      xml_writer->iostr);
+  raptor_xml_writer_write_content(xml_writer, s, strlen((const char*)s), 1);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -697,10 +774,7 @@ raptor_xml_writer_cdata_counted(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_xml_escape_string_any_write(s, len,
-                                      '\0',
-                                      XML_WRITER_XML_VERSION(xml_writer),
-                                      xml_writer->iostr);
+  raptor_xml_writer_write_content(xml_writer, s, len, 1);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -726,7 +800,7 @@ raptor_xml_writer_raw(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_string_write(s, xml_writer->iostr);
+  raptor_xml_writer_write_content(xml_writer, s, strlen((const char*)s), 0);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -753,7 +827,7 @@ raptor_xml_writer_raw_counted(raptor_xml_writer* xml_writer,
 
   XML_WRITER_FLUSH_CLOSE_BRACKET(xml_writer);
   
-  raptor_iostream_counted_string_write(s, len, xml_writer->iostr);
+  raptor_xml_writer_write_content(xml_writer, s, len, 0);
 
   if(xml_writer->current_element)
     xml_writer->current_element->content_cdata_seen = 1;
@@ -819,6 +893,7 @@ raptor_xml_writer_flush(raptor_xml_writer* xml_writer)
 {
   if(xml_writer->pending_newline) {
     raptor_iostream_write_byte('\n', xml_writer->iostr);
+    xml_writer->line_start = raptor_iostream_tell(xml_writer->iostr);
     xml_writer->pending_newline = 0;
   }
 }
@@ -910,6 +985,54 @@ int main(int argc, char *argv[]);
 const unsigned char *base_uri_string = (const unsigned char*)"http://example.org/base#";
 
 #define OUT_BYTES_COUNT 135
+
+static int
+raptor_xml_writer_test_wrap(raptor_world* world, int limit, int auto_indent,
+                           const char* prefix, int escape,
+                           const char* value, const char* expected)
+{
+  void* output = NULL;
+  size_t length = 0;
+  raptor_iostream* iostr = raptor_new_iostream_to_string(world, &output,
+                                                       &length, NULL);
+  raptor_xml_writer* writer = raptor_new_xml_writer(world, NULL, iostr);
+  raptor_namespace_stack* nstack = raptor_new_namespaces(world, 1);
+  raptor_qname* name = raptor_new_qname(nstack,
+                                       (const unsigned char*)"e", NULL);
+  raptor_xml_element* element = raptor_new_xml_element(name, NULL, NULL);
+  raptor_qname** attrs = RAPTOR_CALLOC(raptor_qname**, 1, sizeof(*attrs));
+  int failed;
+
+  attrs[0] = raptor_new_qname(nstack, (const unsigned char*)"a",
+                             (const unsigned char*)value);
+  raptor_xml_element_set_attributes(element, attrs, 1);
+  raptor_xml_writer_set_option(writer, RAPTOR_OPTION_WRITER_XML_DECLARATION,
+                               NULL, 0);
+  raptor_xml_writer_set_option(writer, RAPTOR_OPTION_WRITER_AUTO_INDENT,
+                               NULL, auto_indent);
+  if(limit >= 0)
+    raptor_xml_writer_set_option(writer, RAPTOR_OPTION_WRITER_LINE_LENGTH,
+                                 NULL, limit);
+  if(prefix) {
+    if(escape)
+      raptor_xml_writer_cdata(writer, (const unsigned char*)prefix);
+    else
+      raptor_xml_writer_raw(writer, (const unsigned char*)prefix);
+  }
+  raptor_xml_writer_empty_element(writer, element);
+  raptor_free_xml_writer(writer);
+  raptor_free_iostream(iostr);
+  failed = 0;
+  if(strcmp((const char*)output, expected)) {
+    failed = 1;
+    fprintf(stderr, "XML wrapping: got [%s], expected [%s]\n",
+            (const char*)output, expected);
+  }
+  raptor_free_memory(output);
+  raptor_free_xml_element(element);
+  raptor_free_namespaces(nstack);
+  return failed;
+}
 
 int
 main(int argc, char *argv[]) 
@@ -1044,6 +1167,59 @@ main(int argc, char *argv[])
 #endif
 
   raptor_free_memory(string);
+
+  {
+    static const struct {
+      int limit;
+      int auto_indent;
+      const char* prefix;
+      int escape;
+      const char* value;
+      const char* expected;
+    } cases[] = {
+      { -1, 0, NULL, 0, "x", "<e a=\"x\"/>" },
+      { 0, 0, NULL, 0, "long value", "<e a=\"long value\"/>" },
+      { 8, 0, NULL, 0, "x", "<e a=\"x\"/>" },
+      { 7, 0, NULL, 0, "x", "<e\n a=\"x\"/>" },
+      { 8, 0, NULL, 0, "&", "<e\n a=\"&amp;\"/>" },
+      { 1, 0, NULL, 0, "long value", "<e\n a=\"long value\"/>" },
+      { 8, 0, "long prefix\n", 0, "x", "long prefix\n<e a=\"x\"/>" },
+      { 8, 0, "long prefix\r", 0, "x", "long prefix\r<e a=\"x\"/>" },
+      { 9, 0, "long prefix\n&", 1, "x", "long prefix\n&amp;<e\n a=\"x\"/>" },
+      { 13, 0, "long prefix\n&", 1, "x", "long prefix\n&amp;<e a=\"x\"/>" },
+      { 8, 0, "\r", 1, "x", "&#xD;<e\n a=\"x\"/>" },
+      { 8, 1, NULL, 0, "x", "<e a=\"x\"/>" },
+    };
+    size_t i;
+
+    for(i = 0; i < sizeof(cases) / sizeof(cases[0]); i++) {
+      if(raptor_xml_writer_test_wrap(world, cases[i].limit,
+                                    cases[i].auto_indent, cases[i].prefix,
+                                    cases[i].escape, cases[i].value,
+                                    cases[i].expected)) {
+        raptor_free_world(world);
+        return 1;
+      }
+    }
+  }
+
+  {
+    char value[1031];
+    char expected[1045];
+
+    memset(value, 'x', sizeof(value) - 1);
+    value[sizeof(value) - 1] = '\0';
+    snprintf(expected, sizeof(expected), "<e\n a=\"%s\"/>", value);
+    if(raptor_xml_writer_test_wrap(world, -1, 0, NULL, 0, value, expected)) {
+      raptor_free_world(world);
+      return 1;
+    }
+    snprintf(expected, sizeof(expected), "<e a=\"%s\"/>", value);
+    if(raptor_xml_writer_test_wrap(world, 0, 0, NULL, 0, value, expected)) {
+      raptor_free_world(world);
+      return 1;
+    }
+  }
   
   raptor_free_world(world);
   
