@@ -17,6 +17,7 @@
 
 typedef struct {
   const char *value;
+  size_t value_length;
   int uri_object;
   int named_graph;
   int statements;
@@ -41,6 +42,9 @@ streaming_statement_handler(void *user_data, raptor_statement *statement)
 {
   streaming_result *result = (streaming_result*)user_data;
   const unsigned char *value = NULL;
+  size_t value_length = 0;
+  const char *expected;
+  size_t expected_length;
 
   result->statements++;
   if(result->named_graph) {
@@ -56,22 +60,38 @@ streaming_statement_handler(void *user_data, raptor_statement *statement)
     return;
   }
   if(result->statements == 1 && result->uri_object) {
-    if(statement->object->type == RAPTOR_TERM_TYPE_URI)
+    if(statement->object->type == RAPTOR_TERM_TYPE_URI) {
       value = raptor_uri_as_string(statement->object->value.uri);
-  } else if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL)
+      if(value)
+        value_length = strlen((const char*)value);
+    }
+  } else if(statement->object->type == RAPTOR_TERM_TYPE_LITERAL) {
     value = statement->object->value.literal.string;
+    value_length = statement->object->value.literal.string_len;
+  }
 
-  if(!value || strcmp((const char*)value,
-                     result->statements == 1 ? result->value : "after") ||
-     result->statements > 2)
-    result->invalid++;
+  expected = result->statements == 1 ? result->value : "after";
+  expected_length = result->statements == 1 ? result->value_length : 5;
+  if(!value)
+    goto invalid;
+  if(value_length != expected_length)
+    goto invalid;
+  if(memcmp(value, expected, expected_length))
+    goto invalid;
+  if(result->statements > 2)
+    goto invalid;
+  return;
+
+invalid:
+  result->invalid++;
 }
 
 /* finish: 0 abandons input, 1 sends a separate EOF, 2 ends the last chunk. */
 static int
 streaming_parse(const char *syntax, const char *document, size_t length,
                 size_t chunk_size, int finish, const char *value,
-                int uri_object, int expected_statements, int expected_error,
+                size_t value_length, int uri_object,
+                int expected_statements, int expected_error,
                 int expected_line)
 {
   raptor_world *world = raptor_new_world();
@@ -85,6 +105,7 @@ streaming_parse(const char *syntax, const char *document, size_t length,
 
   memset(&result, 0, sizeof(result));
   result.value = value;
+  result.value_length = value_length;
   result.uri_object = uri_object;
   result.named_graph = !strcmp(syntax, "trig");
   if(!world)
@@ -194,16 +215,16 @@ main(void)
                             length : chunk_sizes[chunk];
         for(finish = 1; finish <= 2; finish++) {
           failures += streaming_parse(syntaxes[syntax], document, length,
-                                       chunk_size, finish, value, uri_object,
+                                       chunk_size, finish, value, value_length, uri_object,
                                        2, 0, 0);
           failures += streaming_parse(syntaxes[syntax], document,
                                        incomplete_length, chunk_size, finish,
-                                       value, uri_object, 0, 1,
+                                       value, value_length, uri_object, 0, 1,
                                        expected_line);
         }
         failures += streaming_parse(syntaxes[syntax], document,
                                      incomplete_length, chunk_size, 0,
-                                     value, uri_object, 0, 0, 0);
+                                     value, value_length, uri_object, 0, 0, 0);
       }
     }
   }
@@ -218,7 +239,49 @@ main(void)
                              "<s> <q> \"after\" .\n", value);
   for(finish = 1; finish <= 2; finish++)
     failures += streaming_parse("turtle", document, length, 25, finish,
-                                 value, 0, 2, 0, 0);
+                                 value, LARGE_TOKEN_SIZE, 0, 2, 0, 0);
+
+  {
+    static const char raw_value[] = { 0, 'a', 0, 'b' };
+    static const char raw_multiline[] = { 'a', 0, '\n', 'b' };
+    static const char *quotes[] = { "\"", "'", "\"\"\"", "'''" };
+
+    for(syntax = 0; syntax < sizeof(syntaxes) / sizeof(syntaxes[0]); syntax++) {
+      const char *graph_start = syntax ? "<http://example.org/g> { " : "";
+      const char *graph_end = syntax ? "}\n" : "";
+
+      for(kind = 0; kind < sizeof(quotes) / sizeof(quotes[0]); kind++) {
+        length = (size_t)snprintf(document, LARGE_TOKEN_SIZE + 256,
+                                  "%s<s> <p> %s", graph_start, quotes[kind]);
+        memcpy(document + length, raw_value, sizeof(raw_value));
+        length += sizeof(raw_value);
+        length += (size_t)snprintf(document + length,
+                                   LARGE_TOKEN_SIZE + 256 - length,
+                                   "%s .\n<s> <q> \"after\" .\n%s",
+                                   quotes[kind], graph_end);
+        for(chunk = 0; chunk < 2; chunk++) {
+          size_t chunk_size = chunk ? 25 : 1;
+          for(finish = 1; finish <= 2; finish++)
+            failures += streaming_parse(syntaxes[syntax], document, length,
+                                         chunk_size, finish, raw_value,
+                                         sizeof(raw_value), 0, 2, 0, 0);
+        }
+
+        if(kind >= 2) {
+          length = (size_t)snprintf(document, LARGE_TOKEN_SIZE + 256,
+                                    "%s<s> <p> %s", graph_start, quotes[kind]);
+          memcpy(document + length, raw_multiline, sizeof(raw_multiline));
+          length += sizeof(raw_multiline);
+          for(chunk = 0; chunk < 2; chunk++) {
+            size_t chunk_size = chunk ? 25 : 1;
+            failures += streaming_parse(syntaxes[syntax], document, length,
+                                         chunk_size, 1, raw_multiline,
+                                         sizeof(raw_multiline), 0, 0, 1, 2);
+          }
+        }
+      }
+    }
+  }
 
   free(value);
   free(document);

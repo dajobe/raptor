@@ -40,6 +40,7 @@ SET(TEST_FILES
 	test-38.ttl
 	test-40.ttl
 	test-41.ttl
+	issue92.ttl
 	bad-15.ttl
 	bad-17.ttl
 	bad-18.ttl
@@ -82,6 +83,7 @@ SET(TEST_SERIALIZE_FILES
 	test-34.ttl
 	test-39.ttl
 	test-42.ttl
+	issue92.ttl
 )
 
 SET(NT_TEST_FILES
@@ -94,6 +96,7 @@ SET(NT_TEST_FILES
 	bug-574.nt
 	bug-577.nt
 	issue77.nt
+	issue92.nt
 )
 
 SET(RDF_TEST_FILES

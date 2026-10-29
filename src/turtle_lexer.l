@@ -118,7 +118,7 @@
 
 /* Prototypes */ 
 static unsigned char *turtle_copy_token(unsigned char *text, size_t len);
-static unsigned char *turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim);
+static unsigned char *turtle_copy_string_token(raptor_parser* rdf_parser, unsigned char *text, size_t len, int delim, size_t *result_len);
 void turtle_lexer_syntax_error(void* ctx, const char *message, ...) RAPTOR_PRINTF_FORMAT(2, 3);
 
 #ifdef RAPTOR_DEBUG
@@ -255,14 +255,14 @@ EXPONENT [eE][+-]?[0-9]+
 "false"   { return FALSE_TOKEN; }
 
 
-\"([^\"\\\n\r]|\\[^\n\r])*\"   { yylval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
-                                if(!yylval->string)
+\"([^\"\\\n\r]|\\[^\n\r])*\"   { yylval->literal.string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"', &yylval->literal.length); /* ' */
+                                if(!yylval->literal.string)
                                   yyterminate();
 
                                 return STRING_LITERAL; }
 
-\'([^\'\\\n\r]|\\[^\n\r])*\'   { yylval->string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"'); /* ' */
-                                if(!yylval->string)
+\'([^\'\\\n\r]|\\[^\n\r])*\'   { yylval->literal.string = turtle_copy_string_token(rdf_parser, (unsigned char*)yytext+1, yyleng-2, '"', &yylval->literal.length); /* ' */
+                                if(!yylval->literal.string)
                                   yyterminate();
 
                                 return STRING_LITERAL; }
@@ -278,21 +278,22 @@ EXPONENT [eE][+-]?[0-9]+
      
 		  BEGIN(INITIAL);
                   len = raptor_stringbuffer_length(turtle_parser->sb);
-                  yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
-                  if(!yylval->string)
+                  yylval->literal.string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!yylval->literal.string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len + 1);
-                  yylval->string[len]='\0';
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, yylval->literal.string, len + 1);
+                  yylval->literal.string[len]='\0';
+                  yylval->literal.length = len;
 
                   raptor_free_stringbuffer(turtle_parser->sb);
                   turtle_parser->sb = NULL;
                   return STRING_LITERAL; }
 
 <LONG_DLITERAL>\"|(\\.|[^\"\\]|\n)*	{
-		  char *p;
+		  int i;
 
-		  for(p = yytext; *p; p++) {
-                    if(*p == '\n')
+		  for(i = 0; i < yyleng; i++) {
+                    if(yytext[i] == '\n')
                       turtle_parser->lineno++;
                   }
 
@@ -338,29 +339,22 @@ EXPONENT [eE][+-]?[0-9]+
      
 		  BEGIN(INITIAL);
                   len = raptor_stringbuffer_length(turtle_parser->sb);
-                  yylval->string = RAPTOR_MALLOC(unsigned char*, len + 1);
-                  if(!yylval->string)
+                  yylval->literal.string = RAPTOR_MALLOC(unsigned char*, len + 1);
+                  if(!yylval->literal.string)
                     TURTLE_LEXER_OOM();
-                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, (unsigned char*)yylval->string, len + 1);
-                  yylval->string[len]='\0';
+                  raptor_stringbuffer_copy_to_string(turtle_parser->sb, yylval->literal.string, len + 1);
+                  yylval->literal.string[len]='\0';
+                  yylval->literal.length = len;
 
                   raptor_free_stringbuffer(turtle_parser->sb);
                   turtle_parser->sb = NULL;
                   return STRING_LITERAL; }
 
 <LONG_SLITERAL>\'|(\\.|[^\'\\]|\n)*	{
-		  char *p;
+		  int i;
 
-		  if(*yytext == YY_END_OF_BUFFER_CHAR) {
-                    BEGIN(INITIAL);
-                    turtle_syntax_error(rdf_parser, "End of file in middle of \'\'\'literal\'\'\'");
-                    raptor_free_stringbuffer(turtle_parser->sb);
-                    turtle_parser->sb = NULL;
-                    return EOF;
-                  }
-
-		  for(p = yytext; *p; p++) {
-                    if(*p == '\n')
+		  for(i = 0; i < yyleng; i++) {
+                    if(yytext[i] == '\n')
                       turtle_parser->lineno++;
                   }
 
@@ -566,7 +560,8 @@ turtle_copy_token(unsigned char *text, size_t len)
 
 static unsigned char *
 turtle_copy_string_token(raptor_parser* rdf_parser, 
-                         unsigned char *string, size_t len, int delim)
+                         unsigned char *string, size_t len, int delim,
+                         size_t *result_len)
 {
   raptor_stringbuffer* sb = NULL;
   int rc;
@@ -597,6 +592,7 @@ turtle_copy_string_token(raptor_parser* rdf_parser,
   if(sb)
     raptor_free_stringbuffer(sb);
   
+  *result_len = len;
   return string;
 }
 
@@ -933,7 +929,7 @@ turtle_token_print(raptor_world* world, int token, YYSTYPE *lval)
 
     case STRING_LITERAL:
       snprintf(buffer, TTP_DEBUG_BUFFER_SIZE, "STRING_LITERAL(%s)",
-               lval->string);
+               lval->literal.string);
       return buffer;
 
     case URI_LITERAL:
@@ -1005,6 +1001,9 @@ turtle_token_free(raptor_world* world, int token, YYSTYPE *lval)
 
   switch(token) {
     case STRING_LITERAL:
+      if(lval->literal.string)
+        RAPTOR_FREE(char*, lval->literal.string);
+      break;
     case BLANK_LITERAL:
     case IDENTIFIER:
       if(lval->string)

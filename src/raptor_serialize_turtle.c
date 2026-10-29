@@ -233,6 +233,7 @@ raptor_turtle_emit_literal(raptor_serializer *serializer,
 
   rc = raptor_turtle_writer_literal(turtle_writer, context->nstack,
                                     node->term->value.literal.string,
+                                    node->term->value.literal.string_len,
                                     node->term->value.literal.language,
                                     node->term->value.literal.datatype);
 

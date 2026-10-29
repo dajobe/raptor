@@ -415,8 +415,23 @@ raptor_turtle_writer_quoted_counted_string(raptor_turtle_writer* turtle_writer,
   }
 
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
-  rc = raptor_string_escaped_write(s, len, '"',
-                                   flags, turtle_writer->iostr);
+  while(len) {
+    const unsigned char* nul = RAPTOR_GOOD_CAST(const unsigned char*,
+                                                memchr(s, '\0', len));
+    size_t part_len = nul ? (size_t)(nul - s) : len;
+
+    rc = raptor_string_escaped_write(s, part_len, '"', flags,
+                                     turtle_writer->iostr);
+    if(rc)
+      break;
+    s += part_len;
+    len -= part_len;
+    if(nul) {
+      raptor_iostream_counted_string_write("\\u0000", 6, turtle_writer->iostr);
+      s++;
+      len--;
+    }
+  }
   raptor_iostream_counted_string_write(q, q_len, turtle_writer->iostr);
 
   return rc;
@@ -502,6 +517,7 @@ raptor_turtle_writer_lexical_is_xsd_double(const unsigned char* s)
  * @turtle_writer: Turtle writer object
  * @nstack: Namespace stack for making a QName for datatype URI
  * @s: literal string to write (SHARED)
+ * @length: length of the literal string in bytes
  * @lang: language tag (may be NULL)
  * @datatype: datatype URI (may be NULL)
  *
@@ -512,7 +528,8 @@ raptor_turtle_writer_lexical_is_xsd_double(const unsigned char* s)
 int
 raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
                              raptor_namespace_stack *nstack,
-                             const unsigned char* s, const unsigned char* lang,
+                             const unsigned char* s, size_t length,
+                             const unsigned char* lang,
                              raptor_uri* datatype)
 {
   /* DBL_MAX = 309 decimal digits */
@@ -525,7 +542,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   int written = 0;
 
   /* typed literal special cases */
-  if(datatype) {
+  if(datatype && !memchr(s, '\0', length)) {
     /* integer */
     if(raptor_uri_equals(datatype, turtle_writer->world->xsd_integer_uri)) {
       /* FIXME. Work around that gcc < 4.5 cannot disable warn_unused_result */
@@ -573,8 +590,7 @@ raptor_turtle_writer_literal(raptor_turtle_writer* turtle_writer,
   if(written)
     return 0;
     
-  if(raptor_turtle_writer_quoted_counted_string(turtle_writer, s,
-                                                strlen((const char*)s)))
+  if(raptor_turtle_writer_quoted_counted_string(turtle_writer, s, length))
     return 1;
 
   /* typed literal, not a special case */
@@ -1008,6 +1024,7 @@ raptor_turtle_writer_term(raptor_turtle_writer* turtle_writer,
     rc = raptor_turtle_writer_literal(turtle_writer,
                                       turtle_writer->nstack,
                                       term->value.literal.string,
+                                      term->value.literal.string_len,
                                       term->value.literal.language, 
                                       term->value.literal.datatype);
   } else if(term->type == RAPTOR_TERM_TYPE_BLANK) {
@@ -1112,7 +1129,7 @@ main(int argc, char *argv[])
   raptor_turtle_writer_raw_counted(turtle_writer, (const unsigned char*)" ", 1);
 
   raptor_turtle_writer_literal(turtle_writer, nstack,
-                               (const unsigned char*)"10.0", NULL,
+                               (const unsigned char*)"10.0", 4, NULL,
                                world->xsd_decimal_uri);
 
   raptor_turtle_writer_newline(turtle_writer);

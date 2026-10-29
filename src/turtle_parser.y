@@ -110,6 +110,10 @@ static void raptor_turtle_generate_statement(raptor_parser *parser, raptor_state
 static void raptor_turtle_defer_statement(raptor_parser *parser, raptor_statement *triple);
 
 static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_statement *triple);
+static raptor_term* raptor_turtle_new_literal(raptor_parser *parser,
+                                             const unsigned char *string,
+                                             size_t length, raptor_uri *datatype,
+                                             const unsigned char *language);
 
 %}
 
@@ -151,6 +155,10 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 /* Interface between lexer and parser */
 %union {
   unsigned char *string;
+  struct {
+    unsigned char *string;
+    size_t length;
+  } literal;
   raptor_term *identifier;
   raptor_sequence *sequence;
   raptor_uri *uri;
@@ -180,13 +188,14 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
 /* literals */
 %token
   <string>
-    STRING_LITERAL "string literal"
     IDENTIFIER "identifier"
     LANGTAG "langtag"
     INTEGER_LITERAL "integer literal"
     FLOATING_LITERAL "floating point literal"
     DECIMAL_LITERAL "decimal literal"
     BLANK_LITERAL "blank node"
+  <literal>
+    STRING_LITERAL "string literal"
   <uri>
     URI_LITERAL "URI literal"
     GRAPH_NAME_LEFT_CURLY "Graph URI literal {"
@@ -204,6 +213,11 @@ static void raptor_turtle_handle_statement(raptor_parser *parser, raptor_stateme
   if($$)
     RAPTOR_FREE(char*, $$);
 } <string>
+
+%destructor {
+  if($$.string)
+    RAPTOR_FREE(char*, $$.string);
+} <literal>
 
 %destructor {
   if($$)
@@ -887,11 +901,12 @@ object: resource
 literal: STRING_LITERAL LANGTAG
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language string=\"%s\"\n", $1);
+  printf("literal + language string=\"%s\"\n", $1.string);
 #endif
 
-  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, NULL, $2);
-  RAPTOR_FREE(char*, $1);
+  $$ = raptor_turtle_new_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                                 $1.string, $1.length, NULL, $2);
+  RAPTOR_FREE(char*, $1.string);
   RAPTOR_FREE(char*, $2);
   if(!$$)
     YYERROR;
@@ -899,12 +914,12 @@ literal: STRING_LITERAL LANGTAG
 | STRING_LITERAL LANGTAG HAT URI_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1, $2, raptor_uri_as_string($4));
+  printf("literal + language=\"%s\" datatype string=\"%s\" uri=\"%s\"\n", $1.string, $2, raptor_uri_as_string($4));
 #endif
 
   raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                       "Language not allowed with datatyped literal");
-  RAPTOR_FREE(char*, $1);
+  RAPTOR_FREE(char*, $1.string);
   RAPTOR_FREE(char*, $2);
   if($4)
     raptor_free_uri($4);
@@ -914,12 +929,12 @@ literal: STRING_LITERAL LANGTAG
 | STRING_LITERAL LANGTAG HAT QNAME_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1, $2, raptor_uri_as_string($4));
+  printf("literal + language=\"%s\" datatype string=\"%s\" qname URI=<%s>\n", $1.string, $2, raptor_uri_as_string($4));
 #endif
 
   raptor_parser_error(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
                       "Language not allowed with datatyped literal");
-  RAPTOR_FREE(char*, $1);
+  RAPTOR_FREE(char*, $1.string);
   RAPTOR_FREE(char*, $2);
   if($4)
     raptor_free_uri($4);
@@ -929,12 +944,13 @@ literal: STRING_LITERAL LANGTAG
 | STRING_LITERAL HAT URI_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" uri=\"%s\"\n", $1.string, raptor_uri_as_string($3));
 #endif
 
   if($3) {
-    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $3, NULL);
-    RAPTOR_FREE(char*, $1);
+    $$ = raptor_turtle_new_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                                   $1.string, $1.length, $3, NULL);
+    RAPTOR_FREE(char*, $1.string);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -945,12 +961,13 @@ literal: STRING_LITERAL LANGTAG
 | STRING_LITERAL HAT QNAME_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1, raptor_uri_as_string($3));
+  printf("literal + datatype string=\"%s\" qname URI=<%s>\n", $1.string, raptor_uri_as_string($3));
 #endif
 
   if($3) {
-    $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, $3, NULL);
-    RAPTOR_FREE(char*, $1);
+    $$ = raptor_turtle_new_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                                   $1.string, $1.length, $3, NULL);
+    RAPTOR_FREE(char*, $1.string);
     raptor_free_uri($3);
     if(!$$)
       YYERROR;
@@ -960,11 +977,12 @@ literal: STRING_LITERAL LANGTAG
 | STRING_LITERAL
 {
 #if defined(RAPTOR_DEBUG) && RAPTOR_DEBUG > 1  
-  printf("literal string=\"%s\"\n", $1);
+  printf("literal string=\"%s\"\n", $1.string);
 #endif
 
-  $$ = raptor_new_term_from_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx)->world, $1, NULL, NULL);
-  RAPTOR_FREE(char*, $1);
+  $$ = raptor_turtle_new_literal(PARSER_FROM_FSP_CONTEXT(fsp_ctx),
+                                 $1.string, $1.length, NULL, NULL);
+  RAPTOR_FREE(char*, $1.string);
   if(!$$)
     YYERROR;
 }
@@ -1571,6 +1589,22 @@ raptor_turtle_parse_terminate(raptor_parser *rdf_parser) {
 }
 
 
+static raptor_term*
+raptor_turtle_new_literal(raptor_parser *parser, const unsigned char *string,
+                          size_t length, raptor_uri *datatype,
+                          const unsigned char *language)
+{
+  size_t language_len = language ? strlen((const char*)language) : 0;
+
+  if(language_len > 255)
+    return NULL;
+
+  return raptor_new_term_from_counted_literal(parser->world, string, length,
+                                               datatype, language,
+                                               (unsigned char)language_len);
+}
+
+
 static void
 raptor_turtle_clone_statement(raptor_parser *parser, raptor_statement *t)
 {
@@ -1625,10 +1659,10 @@ raptor_turtle_clone_statement(raptor_parser *parser, raptor_statement *t)
     /* RAPTOR_TERM_TYPE_LITERAL */
     RAPTOR_ASSERT(t->object->type != RAPTOR_TERM_TYPE_LITERAL,
                   "object type is not literal");
-    statement->object = raptor_new_term_from_literal(parser->world,
-                                                     t->object->value.literal.string,
-                                                     t->object->value.literal.datatype,
-                                                     t->object->value.literal.language);
+    statement->object = raptor_new_term_from_counted_literal(
+        parser->world, t->object->value.literal.string,
+        t->object->value.literal.string_len, t->object->value.literal.datatype,
+        t->object->value.literal.language, t->object->value.literal.language_len);
   }
 }
 

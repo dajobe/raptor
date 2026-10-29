@@ -1,0 +1,15 @@
+@base <http://www.w3.org/2001/sw/DataAccess/df1/tests/issue92.ttl> .
+@prefix rdf: <../../../../../1999/02/22-rdf-syntax-ns#> .
+
+<urn:s>
+    <urn:boolean> "true\u0000suffix"^^<../../../../XMLSchema#boolean> ;
+    <urn:decimal> "1.0\u0000suffix"^^<../../../../XMLSchema#decimal> ;
+    <urn:double> "1e0\u0000suffix"^^<../../../../XMLSchema#double> ;
+    <urn:integer> "1\u0000suffix"^^<../../../../XMLSchema#integer> ;
+    <urn:long-double> "end\u0000" ;
+    <urn:long-single> "a\u0000b\u0000c"^^<urn:type> ;
+    <urn:multiline> """first
+\u0000second""" ;
+    <urn:short-double> "a\u0000b" ;
+    <urn:short-single> "\u0000start"@en .
+
